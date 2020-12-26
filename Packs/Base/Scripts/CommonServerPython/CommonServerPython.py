@@ -1105,6 +1105,33 @@ class IntegrationLogger(object):
             demisto.info(text)
             self.messages = []
 
+    def build_curl(self, text):
+        data = text.split("send: b'")[1]
+        if data.startswith('{'):  # it is the request url query params/post body
+            self.curl += "-d '{}".format(data)
+        else:
+            method = ''
+            url = ''
+            headers = []
+            headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
+            request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
+            for line, part in enumerate(request_parts):
+                if line == 0:
+                    method, url, _ = part[1:].split()  # ignoring " at first char
+                elif line != len(request_parts) - 1:  # ignoring the last line which is empty
+                    if part.startswith('Host:'):
+                        _, host = part.split('Host: ')
+                        url = 'https://{}{}'.format(host, url)
+                    else:
+                        if any(header_to_skip in part for header_to_skip in headers_to_skip):
+                            continue
+                        headers.append(part)
+            curl_headers = ''
+            for header in headers:
+                if header:
+                    curl_headers += '-H "{}" '.format(header)
+            self.curl += 'curl -X {} {} {}'.format(method, url, curl_headers)
+
     def write(self, msg):
         # same as __call__ but allows IntegrationLogger to act as a File like object.
         msg = self.encode(msg)
@@ -1122,31 +1149,10 @@ class IntegrationLogger(object):
             else:
                 demisto.info(text)
                 if is_debug_mode() and text.startswith('send:'):
-                    data = text.split("send: b'")[1]
-                    if data.startswith('{'):  # it is the request url query params/post body
-                        self.curl += "-d '{}".format(data)
-                    else:
-                        method = ''
-                        url = ''
-                        headers = []
-                        headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
-                        request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
-                        for line, part in enumerate(request_parts):
-                            if line == 0:
-                                method, url, _ = part[1:].split()  # ignoring " at first char
-                            elif line != len(request_parts) - 1:  # ignoring the last line which is empty
-                                if part.startswith('Host:'):
-                                    _, host = part.split('Host: ')
-                                    url = 'https://{}{}'.format(host, url)
-                                else:
-                                    if any(header_to_skip in part for header_to_skip in headers_to_skip):
-                                        continue
-                                    headers.append(part)
-                        curl_headers = ''
-                        for header in headers:
-                            if header:
-                                curl_headers += '-H "{}" '.format(header)
-                        self.curl += 'curl -X {} {} {}'.format(method, url, curl_headers)
+                    try:
+                        self.build_curl(text)
+                    except Exception as e:  # should fail silently
+                        demisto.debug('Failed generating curl - {}'.format(str(e)))
             self.write_buf = []
 
     def print_override(self, *args, **kwargs):
