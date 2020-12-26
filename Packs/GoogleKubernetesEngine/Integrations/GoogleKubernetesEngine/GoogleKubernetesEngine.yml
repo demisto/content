@@ -1179,7 +1179,7 @@ script:
     description: Cancel operation by operation name.
     execution: false
     name: gcloud-operations-cancel
-  dockerimage: demisto/google-k8s-engine:1.0.0.14650
+  dockerimage: demisto/google-k8s-engine:1.0.0.9467
   feed: false
   isfetch: false
   longRunning: false
