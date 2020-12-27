@@ -1,5 +1,4 @@
 category: Network Security
-fromversion: 5.0.0
 commonfields:
   id: Cisco Firepower
   version: -1
@@ -912,7 +911,7 @@ script:
     deprecated: false
     description: Retrieves a list of all ISE security group tag objects.
     execution: false
-    name: ciscofp-list-ise-security-group-tags
+    name: ciscofp-list-ise-security-group-tag
     outputs:
     - contextPath: CiscoFP.SecurityGroupTags.ID
       description: ID of security group tag.
@@ -2269,3 +2268,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0

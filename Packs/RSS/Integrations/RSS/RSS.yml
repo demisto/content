@@ -15,20 +15,19 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Simple RSS reader than can ingest new items as Incidents
+description: Simple RSS reader that can ingest new items as Incidents
 display: RSS
 name: RSS
 script:
-  commands:
-  - arguments: []
-    name: test-fetch-rss
-    description: ''
   dockerimage: demisto/feed-parser:1.0.0.13383
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
 tests:
 - No tests
+fromversion: 6.0.0

@@ -47,7 +47,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 18. ciscofp-update-access-policy
 19. ciscofp-delete-access-policy
 20. ciscofp-list-security-group-tags
-21. ciscofp-list-ise-security-group-tags
+21. ciscofp-list-ise-security-group-tag
 22. ciscofp-list-vlan-tags
 23. ciscofp-list-vlan-tags-group
 24. ciscofp-list-applications
@@ -1919,13 +1919,13 @@ Retrieves a list of all custom security group tag objects.
 | 5fce8cce-aa67-11e5-816b-95eb712b72a1 | ANY | 65535 |
 
 
-### 21. ciscofp-list-ise-security-group-tags
+### 21. ciscofp-list-ise-security-group-tag
 ---
 Retrieves a list of all ISE security group tag objects.
 
 ##### Base Command
 
-`ciscofp-list-ise-security-group-tags`
+`ciscofp-list-ise-security-group-tag`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1944,7 +1944,7 @@ Retrieves a list of all ISE security group tag objects.
 
 
 ##### Command Example
-```!ciscofp-list-ise-security-group-tags```
+```!ciscofp-list-ise-security-group-tag```
 
 ##### Context Example
 ```
