@@ -1,0 +1,52 @@
+category: Utilities
+commonfields:
+  id: BaseIntegration
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  additionalinfo: The API Key to use for connection
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
+display: '[Name of the integration as it will appear in the XSOAR UI.]'
+name: BaseIntegration
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+      isArray: false
+      name: dummy
+      required: true
+      secret: false
+    deprecated: false
+    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    execution: false
+    name: baseintegration-dummy
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.8.6.14516
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

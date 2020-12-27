@@ -681,10 +681,31 @@ def category_ioc_update(category_data):
     return response
 
 
-def get_categories_command(display_url):
-    display_urls = True if display_url == 'true' else False
-    raw_categories = get_categories()
+def url_quota_command():
+    cmd_url = '/urlCategories/urlQuota'
+    response = http_request('GET', cmd_url).json()
+
+    human_readable = {
+        'Unique Provisioned URLs': response.get('uniqueUrlsProvisioned'),
+        'Remaining URLs Quota': response.get('remainingUrlsQuota'),
+    }
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown("Quota Information", human_readable),
+        'EntryContext': {'Zscaler.Quota': response},
+    }
+    return entry
+
+
+def get_categories_command(display_url, custom_only=False):
     categories = []
+    display_urls = argToBoolean(display_url)
+    custom_only = argToBoolean(custom_only)
+
+    raw_categories = get_categories(custom_only)
     for raw_category in raw_categories:
         category = {
             'ID': raw_category['id'],
@@ -716,8 +737,9 @@ def get_categories_command(display_url):
     return entry
 
 
-def get_categories():
-    cmd_url = '/urlCategories'
+def get_categories(custom_only=False):
+    cmd_url = '/urlCategories?customOnly=true' if custom_only else '/urlCategories'
+
     response = http_request('GET', cmd_url).json()
     return response
 
@@ -755,14 +777,16 @@ def sandbox_report_command():
             'Vendor': 'Zscaler',
             'Description': 'Classified as Malicious, with threat score: ' + str(human_readable_report["Zscaler Score"])
         }
-    demisto.results({
+    entry = {
         'Type': entryTypes['note'],
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Full Sandbox Report', human_readable_report, removeNull=True),
         'EntryContext': ec
-    })
+    }
+
+    return entry
 
 
 def sandbox_report(md5, details):
@@ -823,55 +847,59 @@ def test_module():
 
 
 def main():
-    LOG('command is %s' % (demisto.command(),))
+    command = demisto.command()
 
-    if demisto.command() == 'zscaler-login':
+    LOG('command is %s' % (command,))
+    args = demisto.args()
+    if command == 'zscaler-login':
         return_results(login_command())
-    elif demisto.command() == 'zscaler-logout':
+    elif command == 'zscaler-logout':
         return_results(logout_command())
     else:
         login()
         try:
-            if demisto.command() == 'test-module':
-                demisto.results(test_module())
-            elif demisto.command() == 'url':
-                demisto.results(url_lookup(demisto.args()))
-            elif demisto.command() == 'ip':
-                demisto.results(ip_lookup(demisto.args()['ip']))
-            elif demisto.command() == 'zscaler-blacklist-url':
-                demisto.results(blacklist_url(demisto.args()['url']))
-            elif demisto.command() == 'zscaler-undo-blacklist-url':
-                demisto.results(unblacklist_url(demisto.args()['url']))
-            elif demisto.command() == 'zscaler-whitelist-url':
-                demisto.results(whitelist_url(demisto.args()['url']))
-            elif demisto.command() == 'zscaler-undo-whitelist-url':
-                demisto.results(unwhitelist_url(demisto.args()['url']))
-            elif demisto.command() == 'zscaler-blacklist-ip':
-                demisto.results(blacklist_ip(demisto.args()['ip']))
-            elif demisto.command() == 'zscaler-undo-blacklist-ip':
-                demisto.results(unblacklist_ip(demisto.args()['ip']))
-            elif demisto.command() == 'zscaler-whitelist-ip':
-                demisto.results(whitelist_ip(demisto.args()['ip']))
-            elif demisto.command() == 'zscaler-undo-whitelist-ip':
-                demisto.results(unwhitelist_ip(demisto.args()['ip']))
-            elif demisto.command() == 'zscaler-category-add-url':
-                demisto.results(category_add_url(demisto.args()['category-id'], demisto.args()['url']))
-            elif demisto.command() == 'zscaler-category-add-ip':
-                demisto.results(category_add_ip(demisto.args()['category-id'], demisto.args()['ip']))
-            elif demisto.command() == 'zscaler-category-remove-url':
-                demisto.results(category_remove_url(demisto.args()['category-id'], demisto.args()['url']))
-            elif demisto.command() == 'zscaler-category-remove-ip':
-                demisto.results(category_remove_ip(demisto.args()['category-id'], demisto.args()['ip']))
-            elif demisto.command() == 'zscaler-get-categories':
-                demisto.results(get_categories_command(demisto.args()['displayURL']))
-            elif demisto.command() == 'zscaler-get-blacklist':
-                demisto.results(get_blacklist_command())
-            elif demisto.command() == 'zscaler-get-whitelist':
-                demisto.results(get_whitelist_command())
-            elif demisto.command() == 'zscaler-sandbox-report':
-                demisto.results(sandbox_report_command())
-            elif demisto.command() == 'zscaler-activate-changes':
+            if command == 'test-module':
+                return_results(test_module())
+            elif command == 'url':
+                return_results(url_lookup(demisto.args()))
+            elif command == 'ip':
+                return_results(ip_lookup(args.get('ip')))
+            elif command == 'zscaler-blacklist-url':
+                return_results(blacklist_url(args.get('url')))
+            elif command == 'zscaler-undo-blacklist-url':
+                return_results(unblacklist_url(args.get('url')))
+            elif command == 'zscaler-whitelist-url':
+                return_results(whitelist_url(args.get('url')))
+            elif command == 'zscaler-undo-whitelist-url':
+                return_results(unwhitelist_url(args.get('url')))
+            elif command == 'zscaler-blacklist-ip':
+                return_results(blacklist_ip(args.get('ip')))
+            elif command == 'zscaler-undo-blacklist-ip':
+                return_results(unblacklist_ip(args.get('ip')))
+            elif command == 'zscaler-whitelist-ip':
+                return_results(whitelist_ip(args.get('ip')))
+            elif command == 'zscaler-undo-whitelist-ip':
+                return_results(unwhitelist_ip(args.get('ip')))
+            elif command == 'zscaler-category-add-url':
+                return_results(category_add_url(args.get('category-id'), args.get('url')))
+            elif command == 'zscaler-category-add-ip':
+                return_results(category_add_ip(args.get('category-id'), args.get('ip')))
+            elif command == 'zscaler-category-remove-url':
+                return_results(category_remove_url(args.get('category-id'), args.get('url')))
+            elif command == 'zscaler-category-remove-ip':
+                return_results(category_remove_ip(args.get('category-id'), args.get('ip')))
+            elif command == 'zscaler-get-categories':
+                return_results(get_categories_command(args.get('displayURL'), args.get('custom_categories_only')))
+            elif command == 'zscaler-get-blacklist':
+                return_results(get_blacklist_command())
+            elif command == 'zscaler-get-whitelist':
+                return_results(get_whitelist_command())
+            elif command == 'zscaler-sandbox-report':
+                return_results(sandbox_report_command())
+            elif command == 'zscaler-activate-changes':
                 return_results(activate_command())
+            elif command == 'zscaler-url-quota':
+                return_results(url_quota_command())
         except Exception as e:
             LOG(str(e))
             LOG.print_log()
@@ -879,7 +907,7 @@ def main():
         finally:
             try:
                 # activate changes only when required
-                if demisto.params().get('auto_activate') and demisto.command() in AUTO_ACTIVATE_CHANGES_COMMANDS:
+                if demisto.params().get('auto_activate') and command in AUTO_ACTIVATE_CHANGES_COMMANDS:
                     activate_changes()
                 if demisto.params().get('auto_logout'):
                     logout()
