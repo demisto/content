@@ -1029,7 +1029,7 @@ class IntegrationLogger(object):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
-        self.curl = ''  # type: str
+        self.curl = []  # type: list
         self.buffering = True
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
@@ -1108,8 +1108,9 @@ class IntegrationLogger(object):
     def build_curl(self, text):
         http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
         data = text.split("send: b'")[1]
-        if data.startswith('{'):  # it is the request url query params/post body
-            self.curl += "-d '{}".format(data)
+        if data.startswith('{'):
+            # it is the request url query params/post body - will always come after we already have the url and headers
+            self.curl[-1] += "-d '{}".format(data)
         elif any(http_method in data for http_method in http_methods):
             method = ''
             url = ''
@@ -1131,15 +1132,16 @@ class IntegrationLogger(object):
             for header in headers:
                 if header:
                     curl_headers += '-H "{}" '.format(header)
-            self.curl += 'curl -X {} {} {}'.format(method, url, curl_headers)
+            curl = 'curl -X {} {} {}'.format(method, url, curl_headers)
             if demisto.params().get('proxy'):
                 proxy_address = os.environ.get('https_proxy')
                 if proxy_address:
-                    self.curl += '--proxy {} '.format(proxy_address)
+                    curl += '--proxy {} '.format(proxy_address)
             else:
-                self.curl += '--noproxy '
+                curl += '--noproxy '
             if demisto.params().get('insecure'):
-                self.curl += '-k '
+                curl += '-k '
+            self.curl.append(curl)
 
     def write(self, msg):
         # same as __call__ but allows IntegrationLogger to act as a File like object.
@@ -4907,7 +4909,8 @@ class DebugLogger(object):
             else:
                 delattr(self.http_client, 'print')
             if self.int_logger.curl:
-                demisto.info('cURL:\n' + self.int_logger.curl)
+                for curl in self.int_logger.curl:
+                    demisto.info('cURL:\n' + curl)
 
     def log_start_debug(self):
         """
