@@ -122,7 +122,7 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
             update_index_folder(index_folder_path, d.name, d.path)
     try:
         print('\n\n\n trying to ls index_folder_path after addition of private packs \n\n\n')
-        subprocess.call(f'ls {index_folder_path}')
+        subprocess.call(f'ls {index_folder_path}', shell=True)
     except Exception as e:
         print(f'\n\n\n path {index_folder_path} does not exist')
 
@@ -235,7 +235,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
 
     print(f'\n\n\nindex folder path is; {index_folder_path}\n\n\n')
     try:
-        subprocess.call(f'ls {index_folder_path}')
+        subprocess.call(f'ls {index_folder_path}', shell=True)
     except Exception as e:
         print(f'\n\n\n path {index_folder_path} does not exist.\n {e}')
 
@@ -252,7 +252,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         return
     print(f'\n\n\nprinting index after folder metadata\n\n\n')
     try:
-        subprocess.call(f'ls {index_folder_path}')
+        subprocess.call(f'ls {index_folder_path}', shell=True)
     except Exception as e:
         print(f'\n\n\n path {index_folder_path} does not exist\n {e}')
     task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
@@ -469,7 +469,7 @@ def main():
         print(f'\n\n\n private_packs:{private_packs},\n\n\n private_index_path:{private_index_path} \n\n\n')
         try:
             print('\n\n\n ls to private_index_path \n\n\n')
-            subprocess.call(f'ls {private_index_path}')
+            subprocess.call(f'ls {private_index_path}', shell=True)
         except Exception as e:
             print('\n\n was not able to ls to private_index_path \n\n')
 

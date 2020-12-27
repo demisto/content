@@ -113,7 +113,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
     print(f'\n\n\n download_index_path:{download_index_path} \n\n\n')
     try:
         print('\n\n\n ls to download_index_path \n\n\n')
-        subprocess.call(f'ls {download_index_path}')
+        subprocess.call(f'ls {download_index_path}', shell=True)
     except Exception as e:
         print('\n\n was not able to ls to download_index_path. \n{e} \n\n')
 
@@ -122,7 +122,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
             index_zip.extractall(extract_destination_path)
             try:
                 print('\n\n\n ls to extract_destination_path \n\n\n')
-                subprocess.call(f'ls {extract_destination_path}')
+                subprocess.call(f'ls {extract_destination_path}', shell=True)
             except Exception as e:
                 print('\n\n was not able to ls to extract_destination_path \n\n')
 
