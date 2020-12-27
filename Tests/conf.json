@@ -268,7 +268,6 @@
             "playbookID": "AzureFeed - Test",
             "fromversion": "5.5.0"
         },
-
         {
             "playbookID": "CreateIndicatorFromSTIXTest",
             "fromversion": "5.0.0"
@@ -2066,7 +2065,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 115,
-            "pid_threshold": 5
+            "pid_threshold": 60
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -2079,7 +2078,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 100,
-            "pid_threshold": 5
+            "pid_threshold": 60
         },
         {
             "integrations": "duo",
@@ -3193,6 +3192,7 @@
         }
     ],
     "skipped_tests": {
+        "urlscan_malicious_Test": "Issue 20111",
         "Workday - Test": "No credentials Issue 29595",
         "PCAP File Carving Test": "Merged with PCAP Analysis Test",
         "PCAP Parsing And Indicator Enrichment Test": "Merged with PCAP Analysis Test",
@@ -3276,17 +3276,17 @@
         "PhishLabsIOC TestPlaybook": "Issue 30874",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
-        "Test-Detonate URL - Crowdstrike": "Issue 30879",
         "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Akamai_WAF-Test": "Issue 31900",
         "Carbon Black Enterprise Protection V2 Test": "Issue 27846",
-        "Archer-Test-Playbook": "Issue 26851"
+        "Archer-Test-Playbook": "Issue 26851",
+        "Carbon Black Live Response Test": "Issue 28237"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
@@ -3371,11 +3371,12 @@
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        "Infoblox": "Unstable instance, issue 25651",
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
@@ -3383,7 +3384,7 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3405,9 +3406,11 @@
         "Lastline v2",
         "TruSTAR",
         "SlackV2",
-        "VulnDB"
+        "VulnDB",
+        "urlscan.io"
     ],
     "unmockable_integrations": {
+        "urlscan.io": "Uses data that comes in the headers",
         "QRadar_v2": "Test playbook 'test playbook - QRadarCorrelations' has multiple branches",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
         "EWS v2": "Fetches bytes data (!ews-get-items-from-folder)",
@@ -3573,7 +3576,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
