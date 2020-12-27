@@ -17,7 +17,7 @@ url_list = []
 ec = {
     'URL': [],
     'DBotScore': []
-}
+}   # type: dict
 
 for url in urls:
     url_obj = {
@@ -26,7 +26,7 @@ for url in urls:
     malicious = None
 
     # Check if url is non SSL
-    if not SSL_PREFIX in url.lower():
+    if SSL_PREFIX not in url.lower():
         malicious = {
             "Vendor": VENDOR,
             "Description": "The URL is not secure under SSL"
@@ -35,12 +35,12 @@ for url in urls:
     else:
         try:
             requests.get(url)
-        except requests.exceptions.SSLError as e:
+        except requests.exceptions.SSLError:
             malicious = {
                 "Vendor": VENDOR,
                 "Description": "SSL Certificate verification failed"
             }
-        except requests.exceptions.RequestException as e:
+        except requests.exceptions.RequestException:
             malicious = {
                 "Vendor": VENDOR,
                 "Description": "Failed to establish a new connection with the URL"
