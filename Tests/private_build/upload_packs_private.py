@@ -9,8 +9,8 @@ from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, CONTENT_ROOT_PATH, get_packs_statistics_dataframe, load_json, get_content_git_client, \
     get_recent_commits_data
-from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index,\
-    update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config,\
+from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
+    update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config, \
     upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -101,6 +101,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
+                    'commitHash': metadata.get('commitHash', "")
                 })
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
@@ -174,7 +175,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                        packs_dependencies_mapping: dict, private_bucket_name: str,
                                        private_storage_bucket: bool = None,
                                        content_repo: bool = None, current_commit_hash: str = '',
-                                       remote_previous_commit_hash: str = '', packs_statistic_df: Any = None)\
+                                       remote_previous_commit_hash: str = '', packs_statistic_df: Any = None) \
         -> Any:
     """
     The main logic flow for the create and upload process. Acts as a decision tree while consistently
