@@ -93,7 +93,7 @@ def test_credentials_not_part_of_params(mocker):
     assert main() is None
 
 
-def raise_exception():
+def raise_exception_3006():
     raise DemistoException('error (3006) Missing required field \'uuid\'.')
 
 
@@ -113,8 +113,7 @@ def test_connect_with_credentials(mocker):
                                                          'api_key': 'apikey',
                                                          'api_token': 'apitoken'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(Client, 'get_report', side_effect=raise_exception)
-    client = Client(base_url='test.com', api_params = {}, credentials={'identifier': 'identifier',
-                                                                       'password': 'password'})
+    mocker.patch.object(Client, 'get_report', side_effect=raise_exception_3006)
+    client = Client(base_url='test.com', api_params={}, credentials={'identifier': 'identifier',
+                                                                     'password': 'password'})
     assert client.test_module_command() == ('ok', {}, {})
-
