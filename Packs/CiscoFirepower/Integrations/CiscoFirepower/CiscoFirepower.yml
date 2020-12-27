@@ -912,7 +912,7 @@ script:
     deprecated: false
     description: Retrieves a list of all ISE security group tag objects.
     execution: false
-    name: ciscofp-list-ise-security-group-tag
+    name: ciscofp-list-ise-security-group-tags
     outputs:
     - contextPath: CiscoFP.SecurityGroupTags.ID
       description: ID of security group tag.
