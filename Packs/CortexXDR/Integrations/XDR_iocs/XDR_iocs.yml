@@ -21,12 +21,14 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex XDR. Disable if you prefer to use a playbook to sync indicators.
+  additionalinfo: When enabled, indicators will be synced from Cortex XSOAR to Cortex
+    XDR. Disable if you prefer to use a playbook to sync indicators.
   display: Auto Sync
   name: autoSync
   required: false
   type: 8
-- additionalinfo: Map the severity of each indicator that will be synced to Cortex XDR.
+- additionalinfo: Map the severity of each indicator that will be synced to Cortex
+    XDR.
   display: Cortex XDR Severity
   hidden: false
   name: severity
@@ -44,7 +46,8 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to Cortex XDR.
+- additionalinfo: The query used to collect indicators to sync from Cortex XSOAR to
+    Cortex XDR.
   defaultvalue: reputation:Bad and (type:File or type:Domain or type:IP)
   display: Sync Query
   hidden: false
@@ -83,7 +86,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -96,10 +100,10 @@ configuration:
 - display: ''
   name: feedExpirationPolicy
   options:
-    - never
-    - interval
-    - indicatorType
-    - suddenDeath
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
   required: false
   type: 17
 - display: ''
@@ -124,7 +128,15 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+description: Use the Cortex XDR - IOCs feed integration to sync indicators from Cortex
+  XSOAR to Cortex XDR and back to Cortex XSOAR. Cortex XDR is the world's first detection
+  and response app that natively integrates network, endpoint and cloud data to stop
+  sophisticated attacks.
 display: Cortex XDR - IOC
 name: Cortex XDR - IOC
 script:
@@ -149,7 +161,8 @@ script:
     name: xdr-iocs-sync
   - arguments:
     - default: false
-      description: IOCs to push. leave empty to push all recently modified IOCs.the indicators
+      description: IOCs to push. leave empty to push all recently modified IOCs.the
+        indicators
       isArray: true
       name: indicator
       required: false
@@ -180,7 +193,7 @@ script:
     description: Disables IOCs in the XDR server.
     execution: false
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.14516
   feed: true
   isfetch: false
   longRunning: false
