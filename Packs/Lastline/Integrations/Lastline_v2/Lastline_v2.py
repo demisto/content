@@ -108,7 +108,7 @@ class Client(BaseClient):
         try:
             self.get_report()
         except DemistoException as error:
-            if str(error) == 'error Missing required field \'uuid\'.':
+            if 'Missing required field \'uuid\'.' in str(error):
                 return 'ok', {}, {}
             else:
                 raise error

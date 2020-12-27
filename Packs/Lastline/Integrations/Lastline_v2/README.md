@@ -5,11 +5,14 @@ Use the Lastline v2 integration to provide threat analysts and incident response
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Lastline v2.
-3. Click **Add instance** to create and configure a new integration instance.
+3. Click **Add instance** to create and configure a new integration instance. 
+Note that you can configure your instance using an API Key and API Token OR Email address and Password.
     - **Name**: a textual name for the integration instance.
     - **Server URL (e.g. https://analysis.lastline.com)**
     - **API Key for accessing Lastline APIs**
     - **API Token for accessing Lastline APIs**
+    - **Email Address for accessing Lastline APIs using account based authentication**
+    - **Password for accessing Lastline APIs using account based authentication**
     - **Use system proxy settings**
     - **Trust any certificate (not secure)**
     - **Threshold**
