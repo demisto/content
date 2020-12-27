@@ -823,24 +823,6 @@ script:
       type: boolean
   - arguments:
     - default: false
-      description: 'Site ID of the site to expire, for example: "225494730938493804".'
-      isArray: false
-      name: site_id
-      required: true
-      secret: false
-    deprecated: true
-    description: Expires a site.
-    execution: false
-    name: sentinelone-expire-site
-    outputs:
-    - contextPath: SentinelOne.Site.ID
-      description: ID of the site.
-      type: String
-    - contextPath: SentinelOne.Site.Expired
-      description: A boolean to check if the site was expired or not.
-      type: Boolean
-  - arguments:
-    - default: false
       description: 'Return activities created after this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
       isArray: false
       name: created_after
