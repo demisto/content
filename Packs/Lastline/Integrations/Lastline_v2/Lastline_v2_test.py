@@ -92,10 +92,10 @@ def test_credentials_not_part_of_params(mocker):
 def test_connect_with_credentials(mocker):
     """
     Given:
-        - connect cedentials
+        - Valid credentials
 
     When:
-        - testing connect to integration, using credentials: email and password.
+        - Running the integration test module, using valid credentials: email and password.
 
     Then:
         - validating no error is raised.
@@ -125,13 +125,14 @@ def raise_exception():
 def test_test_module_wrong_credentials(mocker, params):
     """
     Given:
-        - connect cedentials
+        - Case a: wrong user and password
+        - Case b: wrong API token and key
 
     When:
-        - testing connect to integration, using credentials: email and password.
+        - Running the integration test module
 
     Then:
-        - validating no error is raised.
+        - Validating the right error message raised
 
     """
     mocker.patch.object(demisto, 'params', return_value=params)
