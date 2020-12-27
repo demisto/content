@@ -553,5 +553,5 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-defaultmapperin: 6e9cd6b1-641a-4a66-8359-1f4193ab04c0
-fromversion: 5.0.0
+defaultmapperin: MobileIron Incident Incoming Mapper
+fromversion: 6.0.0
