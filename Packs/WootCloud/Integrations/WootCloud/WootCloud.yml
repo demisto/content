@@ -792,7 +792,7 @@ script:
       - contextPath: WootCloud.PacketAlert.references
         description: 'references'
         type: String
-    - name: wootcloud-fetch-bt-alert
+    - name: wootcloud-fetch-bluetooth-alert
       description: retrieve single bluetooth alert given packet id
       arguments:
       - name: alert_id

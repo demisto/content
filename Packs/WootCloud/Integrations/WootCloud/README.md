@@ -862,13 +862,13 @@ retrieve single packet alert given packet id
 | 3c:a9:f4:64:06:e0 | Generic Protocol Command Decode | ET INFO WinHttp AutoProxy Request wpad.dat Possible BadTunnel | city: Boardman<br/>continent: North America<br/>country: United States<br/>ip: 3.3.3.3<br/>latitude: 45.8696<br/>longitude: -119.688<br/>mac: c4:24:56:87:ef:11<br/>network: external<br/>port: 80<br/>state: Oregon<br/>subnet: <br/>time_zone: America/Los_Angeles<br/>zip: 97818<br/>inferred: {"device_id": "5d73f6a3c250255491ce3839", "asset": "unmanaged", "managed": false, "category": "networking_equipment", "control": "auto", "host_name": "", "os": "linux", "os_version": "", "ownership": "corporate-unmanaged", "total_risk": 0, "type": "network infrastructure", "username": "", "managed_info": {"host_name": ""}} | alert | hostname: api-wootuno-1606049077.us-west-2.elb.amazonaws.com<br/>http_method: GET<br/>http_user_agent: WinHttp-Autoproxy-Service/5.1<br/>length: 134<br/>protocol: HTTP/1.1<br/>redirect: https://api-wootuno-1606049077.us-west-2.elb.amazonaws.com:443/wpad.dat<br/>http_refer: <br/>status: 301<br/>url: /wpad.dat | eyJpIjoiU05XT09UQVBQUFJPRDAxXzI2MzY1XzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDEwMDQifQ== | R0VUIC93cGFkLmRhdCBIVFRQLzEuMQ0KQ29ubmVjdGlvbjogS2VlcC1BbGl2ZQ0KQWNjZXB0OiAqLyoNClVzZXItQWdlbnQ6IFdpbkh0dHAtQXV0b3Byb3h5LVNlcnZpY2UvNS4xDQpIb3N0OiBhcGktd29vdHVuby0xNjA2MDQ5MDc3LnVzLXdlc3QtMi5lbGIuYW1hem9uYXdzLmNvbQ0KDQo= |  | info | ET INFO WinHttp AutoProxy Request wpad.dat Possible BadTunnel | city: Unknown<br/>continent: Unknown<br/>country: Unknown<br/>ip: 10.10.10.10<br/>latitude: -1<br/>longitude: -1<br/>mac: 3c:a9:f4:64:06:e0<br/>network: internal<br/>port: 63202<br/>state: Unknown<br/>subnet: 10.10.10.10/24<br/>time_zone: Unknown<br/>zip: Unknown<br/>inferred: {"device_id": "5b4c3c91072c98142d308b29", "asset": "managed", "managed": true, "category": "computer", "control": "auto", "host_name": "DESKTOP-EV607JG", "os": "windows", "os_version": "10", "ownership": "corporate", "total_risk": 0, "type": "computer", "username": "3ca9f46406e0", "managed_info": {"host_name": "DESKTOP-EV607JG"}} | protocol-command-decode | 2020-10-04T04:09:05Z | Generic Protocol Command Decode | pkt_alert |
 
 
-### 5. wootcloud-fetch-bt-alert
+### 5. wootcloud-fetch-bluetooth-alert
 ---
 retrieve single bluetooth alert given packet id
 
 ##### Base Command
 
-`wootcloud-fetch-bt-alert`
+`wootcloud-fetch-bluetooth-alert`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -906,7 +906,7 @@ retrieve single bluetooth alert given packet id
 
 
 ##### Command Example
-```!wootcloud-fetch-bt-alert alert_id="EXMP001"```
+```!wootcloud-fetch-bluetooth-alert alert_id="EXMP001"```
 
 ##### Human Readable Output
 
