@@ -94,6 +94,18 @@ configuration:
   name: comment_tag
   required: false
   type: 0
+- additionalinfo: Fetch comments for Jira ticket
+  display: Fetch Comments
+  hidden: false
+  name: fetch_comments
+  required: false
+  type: 8
+- additionalinfo: Fetch attachments for Jira ticket
+  display: Fetch Attachments
+  hidden: false
+  name: fetch_attachments
+  required: false
+  type: 8
 description: Use the Jira integration to manage issues and create Demisto incidents
   from projects, From version XSOAR 6.0 and above mirror issues to existing issue
   incidents in demisto.
