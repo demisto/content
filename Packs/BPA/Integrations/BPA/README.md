@@ -1,355 +1,302 @@
+Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
+This integration was integrated and tested with version xx of BPA.
+Supported Cortex XSOAR versions: 5.0.0 and later.
 
-<p>
-BPA Integration
+## Configure BPA on Cortex XSOAR
 
-Used to run Best Practice Assessment checks for Panorama. 
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for BPA.
+3. Click **Add instance** to create and configure a new integration instance.
 
-This integration was integrated and tested with version 1.0 of BPA
-</p>
-<h2>BPA Playbook</h2>
-<p>You can use the <strong>"Run Panorama Best Practice Assessment"</strong> playbook to run a BPA job on the configured instance. </p>
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | server | Panorama Server URL \(e.g., https://192.168.0.1\) | True |
+    | key | Panorama API Key | True |
+    | token | BPA Access Token | True |
+    | insecure | Trust any certificate \(not secure\) | False |
+    | proxy | Use system proxy settings | False |
 
-<h2>Configure BPA on Demisto</h2>
-<ol>
-  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for BPA.</li>
-  <li>
-    Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-    <ul>
-      <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>Panorama Server URL (e.g., https://192.168.0.1)</strong></li>
-   <li><strong>Panorama Server Port (e.g 443)</strong></li>
-   <li><strong>Panorama API Key</strong></li>
-   <li><strong>BPA Access Token</strong></li>
-    </ul>
-  </li>
-  <li>
-    Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-  </li>
-</ol>
-<h2>Commands</h2>
-<p>
-  You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
-  After you successfully execute a command, a DBot message appears in the War Room with the command details.
-</p>
-<ol>
-  <li><a href="#pan-os-get-documentation" target="_self">Get documentaion: pan-os-get-documentation</a></li>
-  <li><a href="#pan-os-bpa-submit-job" target="_self">Submits a BPA job: pan-os-bpa-submit-job</a></li>
-  <li><a href="#pan-os-bpa-get-job-results" target="_self">Returns results of BPA job: pan-os-bpa-get-job-results</a></li>
-</ol>
-<h3 id="pan-os-get-documentation">1. pan-os-get-documentation</h3>
-<hr>
-<p>Get documentaion</p>
-<h5>Base Command</h5>
-<p>
-  <code>pan-os-get-documentation</code>
-</p>
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### pan-os-get-documentation
+***
+Gets the documentation of all BPA checks.
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
-<h5>Input</h5>
-There are no input arguments for this command.
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>PAN-OS-BPA.Documentation</td>
-      <td>string</td>
-      <td>Gets the documentation of all BPA checks</td>
-    </tr>
-  </tbody>
-</table>
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!pan-os-get-documentation</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+#### Base Command
+
+`pan-os-get-documentation`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of ids of the documents to return. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PAN-OS-BPA.Documentation.Document.DocId | Number | The id of the document. | 
+| PAN-OS-BPA.Documentation.Document.TopNav | String | The TopNav field of the document. | 
+| PAN-OS-BPA.Documentation.Document.LeftNav | String | The LeftNav of the document | 
+| PAN-OS-BPA.Documentation.Document.Title | String | The title of the document. | 
+| PAN-OS-BPA.Documentation.Document.DocType | String | The type of the document. | 
+| PAN-OS-BPA.Documentation.Document.Description | String | The description of the document. | 
+| PAN-OS-BPA.Documentation.Document.Rationale | String | The rationale of the document. | 
+| PAN-OS-BPA.Documentation.Document.References | String | The references for the document. | 
+| PAN-OS-BPA.Documentation.Document.Active | Boolean | Whether the document is active or not. | 
+| PAN-OS-BPA.Documentation.Document.LastUpdatedDate | String | The date the document was last updated. | 
+| PAN-OS-BPA.Documentation.Document.CapabilityLabel | Unknown | The CapabilityLabel of the document. | 
+| PAN-OS-BPA.Documentation.Document.ClassLabel | Unknown | The class label of the document. | 
+| PAN-OS-BPA.Documentation.Document.ControlCategory | Unknown | The control category of the document. | 
+| PAN-OS-BPA.Documentation.Document.Cscv6Control | Unknown | The cscv6 control of the document. | 
+| PAN-OS-BPA.Documentation.Document.Cscv7Control | Unknown | The cscv7 control of the document. | 
+
+
+#### Command Example
+```!pan-os-get-documentation ids=4,6,7```
+
+#### Context Example
+```json
 {
-    "PAN-OS-BPA.Documentation": [
-        {
-            "active": true,
-            "created_time": "2019-08-14T23:10:09.935024Z",
-            "description": "GRE Tunnel Keep-Alive",
-            "doc_id": 246,
-            "doc_type": "Warning",
-            "id": 246,
-            "last_updated_time": "2019-08-14T23:10:09.935040Z",
-            "left_nav": "GRE Tunnels",
-            "rationale": "Configure Keep-alive on GRE Tunnel to ensure stability and monitoring of tunnel activity.",
-            "references": "https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-admin/networking/gre-tunnels/create-a-gre-tunnel.html",
-            "title": "GRE Tunnel Keep-Alive",
-            "top_nav": "Network"
-        },
-        ...
-       ]
-
-<h5>Human Readable Output</h5>
-<p>
-<h3>BPA documentation</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>active</strong></th>
-      <th><strong>created_time</strong></th>
-      <th><strong>description</strong></th>
-      <th><strong>doc_id</strong></th>
-      <th><strong>doc_type</strong></th>
-      <th><strong>id</strong></th>
-      <th><strong>last_updated_time</strong></th>
-      <th><strong>left_nav</strong></th>
-      <th><strong>rationale</strong></th>
-      <th><strong>references</strong></th>
-      <th><strong>title</strong></th>
-      <th><strong>top_nav</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> true </td>
-      <td> 2019-08-14T23:10:09.935024Z </td>
-      <td> GRE Tunnel Keep-Alive </td>
-      <td> 246 </td>
-      <td> Warning </td>
-      <td> 246 </td>
-      <td> 2019-08-14T23:10:09.935040Z </td>
-      <td> GRE Tunnels </td>
-      <td> Configure Keep-alive on GRE Tunnel to ensure stability and monitoring of tunnel activity. </td>
-      <td> https://docs.paloaltonetworks.com/pan-os/9-0/pan-os-admin/networking/gre-tunnels/create-a-gre-tunnel.html </td>
-      <td> GRE Tunnel Keep-Alive </td>
-      <td> Network </td>
-    </tr>
-    </tbody>
-    </table>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
-
-<h3 id="pan-os-bpa-submit-job">2. pan-os-bpa-submit-job</h3>
-<hr>
-<p>Submits a BPA job.</p>
-<h5>Base Command</h5>
-<p>
-  <code>pan-os-bpa-submit-job</code>
-</p>
-
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>generate_zip_bundle</td>
-      <td>Whether to download the Panorama report. Can be "true" or "false". Default is "false".</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>PAN-OS-BPA.SubmittedJob.JobID</td>
-      <td>string</td>
-      <td>Submitted job ID</td>
-    </tr>
-  </tbody>
-</table>
-
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!pan-os-bpa-submit-job</code>
-</p>
-<h5>Context Example</h5>
-<pre>
-{
-    "PAN-OS-BPA.SubmittedJob": {
-        "JobID": "2b0c40d6-73a8-4d23-9bd8-27548b28beb5"
+    "PAN-OS-BPA": {
+        "Documentation": {
+            "Document": [
+                {
+                    "Active": true,
+                    "CapabilityLabel": [
+                        "Preventative",
+                        "Corrective"
+                    ],
+                    "ClassLabel": [
+                        "Technical"
+                    ],
+                    "Complexity": "Advanced",
+                    "ControlCategory": [
+                        "Access Control"
+                    ],
+                    "Cscv6Control": [
+                        "11.1",
+                        "12.1"
+                    ],
+                    "Cscv7Control": [
+                        "11.1",
+                        "12.3"
+                    ],
+                    "Description": "Do not specify both the source and destination zones as \"any\" on the rule.",
+                    "DocId": 4,
+                    "DocType": "Warning",
+                    "Effort": 60,
+                    "LastUpdatedDate": "2020-10-05T22:46:57.585179Z",
+                    "LeftNav": "Security",
+                    "Rationale": "Use Security policy settings to create rules that exactly define the traffic to which the rules apply (zones, IP addresses, users, applications). Policies that are too general may match traffic you don\u2019t want the policy to match and either permit undesirable traffic or deny legitimate traffic. Defining the source, destination, or both zones prevents potentially malicious traffic that uses evasive or deceptive techniques to avoid detection or appear benign from traversing the entire network, which reduces the attack surface and the threat scope. The exception to this best practice is when the Security policy needs to protect the entire network. For example, a rule that blocks traffic to malware or phishing URL categories can apply to all zones (and all traffic) because the URL Category clearly defines the traffic to block. Another example is blocking all unknown traffic with a block rule that applies to all traffic in all zones and defining the blocked applications as \u201cunknown-tcp\u201d, \u201cunknown-udp\u201d, and \u201cunknown-p2p\u201d.",
+                    "References": "['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-internet-gateway/best-practice-internet-gateway-security-policy/define-the-initial-internet-gateway-security-policy']",
+                    "Title": "Source/Destination = any/any",
+                    "TopNav": "Policies"
+                },
+                {
+                    "Active": true,
+                    "CapabilityLabel": [
+                        "Performance"
+                    ],
+                    "ClassLabel": [
+                        "Technical"
+                    ],
+                    "Complexity": "Advanced",
+                    "ControlCategory": [
+                        "Audit and Accountability"
+                    ],
+                    "Cscv6Control": [],
+                    "Cscv7Control": [],
+                    "Description": "Don't enable \"Log at Session Start\" in a rule except for troubleshooting purposes.",
+                    "DocId": 6,
+                    "DocType": "Warning",
+                    "Effort": 60,
+                    "LastUpdatedDate": "2020-10-05T22:46:57.596239Z",
+                    "LeftNav": "Security",
+                    "Rationale": "By default, the firewall creates logs at the end of the session for all sessions that match a Security policy rule because the application identification is likely to change as the firewall identifies the specific application and because logging at the session end consumes fewer resources than logging the session start. For example, at the start of a session, the firewall identifies Facebook traffic as web-browsing traffic, but after examining a few packets, the firewall refines the application to Facebook-base. Use \u201cLog at Session Start\u201d only to troubleshoot packet flow and related issues, or for tunnel session logs (only logging at session start shows active GRE tunnels in the Application Command Center).",
+                    "References": "['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-data-center/data-center-best-practice-security-policy/log-and-monitor-data-center-traffic/what-data-center-traffic-to-log-and-monitor']",
+                    "Title": "Log at Start of Session",
+                    "TopNav": "Policies"
+                },
+                {
+                    "Active": true,
+                    "CapabilityLabel": [
+                        "Recovery",
+                        "Detective"
+                    ],
+                    "ClassLabel": [
+                        "Operational",
+                        "Technical"
+                    ],
+                    "Complexity": "Advanced",
+                    "ControlCategory": [
+                        "Contingency Planning",
+                        "Audit and Accountability"
+                    ],
+                    "Cscv6Control": [
+                        "6.2",
+                        "6.6",
+                        "10.1"
+                    ],
+                    "Cscv7Control": [
+                        "6.3",
+                        "6.6",
+                        "10.1"
+                    ],
+                    "Description": "Create and enable a Log Forwarding profile on the rule.",
+                    "DocId": 7,
+                    "DocType": "Warning",
+                    "Effort": 60,
+                    "LastUpdatedDate": "2020-10-05T22:46:57.601517Z",
+                    "LeftNav": "Security",
+                    "Rationale": "The firewall has limited log storage space and when the space fills up, the firewall purges the oldest logs. Configure Log Forwarding for the traffic that matches each Security policy rule. You can create profiles that send logs to a dedicated storage device such as Panorama in Log Collector mode, a syslog or SNMP server, or to an email profile, to provide redundant storage for the logs on the firewall and a long-term repository for older logs. You can create profiles to forward logs to one or more external storage devices to remain in compliance, run analytics, and review abnormal activity, threat behaviors, and long-term patterns.",
+                    "References": "['https://www.paloaltonetworks.com/documentation/81/pan-os/pan-os/monitoring/configure-log-forwarding']",
+                    "Title": "Log Forwarding",
+                    "TopNav": "Policies"
+                }
+            ]
+        }
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-Submitted BPA job ID: 2b0c40d6-73a8-4d23-9bd8-27548b28beb5
-</p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+```
 
-<h3 id="pan-os-bpa-get-job-results">3. pan-os-bpa-get-job-results</h3>
-<hr>
-<p>Returns results of BPA job.</p>
-<h5>Base Command</h5>
-<p>
-  <code>pan-os-bpa-get-job-results</code>
-</p>
+#### Human Readable Output
 
-<h5>Required Permissions</h5>
-<p>The following permissions are required for this command.</p>
-<ul>
-    <li>permission 1</li>
-    <li>permission 2</li>
-</ul>
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-      <th>
-        <strong>Default Value</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>task_id</td>
-      <td>The job id to get results from</td>
-      <td>Required</td>
-      <td>-</td>
-    </tr>
-    <tr>
-      <td>exclude_passed_checks</td>
-      <td>Whether to exclude passed checks or not.</td>
-      <td>Not Required</td>
-      <td>false</td>
-    </tr>
-  </tbody>
-</table>
+>### BPA documentation
+>|Active|CapabilityLabel|ClassLabel|Complexity|ControlCategory|Cscv6Control|Cscv7Control|Description|DocId|DocType|Effort|LastUpdatedDate|LeftNav|Rationale|References|Title|TopNav|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| true | Preventative,<br/>Corrective | Technical | Advanced | Access Control | 11.1,<br/>12.1 | 11.1,<br/>12.3 | Do not specify both the source and destination zones as "any" on the rule. | 4 | Warning | 60 | 2020-10-05T22:46:57.585179Z | Security | Use Security policy settings to create rules that exactly define the traffic to which the rules apply (zones, IP addresses, users, applications). Policies that are too general may match traffic you don’t want the policy to match and either permit undesirable traffic or deny legitimate traffic. Defining the source, destination, or both zones prevents potentially malicious traffic that uses evasive or deceptive techniques to avoid detection or appear benign from traversing the entire network, which reduces the attack surface and the threat scope. The exception to this best practice is when the Security policy needs to protect the entire network. For example, a rule that blocks traffic to malware or phishing URL categories can apply to all zones (and all traffic) because the URL Category clearly defines the traffic to block. Another example is blocking all unknown traffic with a block rule that applies to all traffic in all zones and defining the blocked applications as “unknown-tcp”, “unknown-udp”, and “unknown-p2p”. | ['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-internet-gateway/best-practice-internet-gateway-security-policy/define-the-initial-internet-gateway-security-policy'] | Source/Destination = any/any | Policies |
+>| true | Performance | Technical | Advanced | Audit and Accountability |  |  | Don't enable "Log at Session Start" in a rule except for troubleshooting purposes. | 6 | Warning | 60 | 2020-10-05T22:46:57.596239Z | Security | By default, the firewall creates logs at the end of the session for all sessions that match a Security policy rule because the application identification is likely to change as the firewall identifies the specific application and because logging at the session end consumes fewer resources than logging the session start. For example, at the start of a session, the firewall identifies Facebook traffic as web-browsing traffic, but after examining a few packets, the firewall refines the application to Facebook-base. Use “Log at Session Start” only to troubleshoot packet flow and related issues, or for tunnel session logs (only logging at session start shows active GRE tunnels in the Application Command Center). | ['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-data-center/data-center-best-practice-security-policy/log-and-monitor-data-center-traffic/what-data-center-traffic-to-log-and-monitor'] | Log at Start of Session | Policies |
+>| true | Recovery,<br/>Detective | Operational,<br/>Technical | Advanced | Contingency Planning,<br/>Audit and Accountability | 6.2,<br/>6.6,<br/>10.1 | 6.3,<br/>6.6,<br/>10.1 | Create and enable a Log Forwarding profile on the rule. | 7 | Warning | 60 | 2020-10-05T22:46:57.601517Z | Security | The firewall has limited log storage space and when the space fills up, the firewall purges the oldest logs. Configure Log Forwarding for the traffic that matches each Security policy rule. You can create profiles that send logs to a dedicated storage device such as Panorama in Log Collector mode, a syslog or SNMP server, or to an email profile, to provide redundant storage for the logs on the firewall and a long-term repository for older logs. You can create profiles to forward logs to one or more external storage devices to remain in compliance, run analytics, and review abnormal activity, threat behaviors, and long-term patterns. | ['https://www.paloaltonetworks.com/documentation/81/pan-os/pan-os/monitoring/configure-log-forwarding'] | Log Forwarding | Policies |
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>PAN-OS-BPA.JobResults.JobID</td>
-      <td>string</td>
-      <td>Submitted job ID</td>
-    </tr>
-    <tr>
-      <td>PAN-OS-BPA.JobResults.Status</td>
-      <td>string</td>
-      <td>Job status</td>
-    </tr>
-    <tr>
-      <td>PAN-OS-BPA.JobResults.Checks</td>
-      <td>Unknown</td>
-      <td>List of checks</td>
-    </tr>
-  </tbody>
-</table>
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!pan-os-bpa-get-job-results task_id=32bc2c82-5b8b-471d-aed1-cccb36a6d6f7</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### pan-os-bpa-submit-job
+***
+Submits a job to the BPA job queue.
+
+
+#### Base Command
+
+`pan-os-bpa-submit-job`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| generate_zip_bundle | Whether to download the Panorama report. Can be "true" or "false". Default is "false". Possible values are: false, true. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PAN-OS-BPA.SubmittedJob.JobID | String | Submitted Job ID, used to query results when job is done. | 
+
+
+#### Command Example
+```!pan-os-bpa-submit-job```
+
+#### Context Example
+```json
 {
-    "PAN-OS-BPA.JobResults": {
-        "Checks": [
-            {
-                "check_category": "device",
-                "check_feature": "admin_role",
-                "check_id": 154,
-                "check_message": "It is recommended to create and use custom admin roles",
-                "check_name": "Custom Admin Roles",
-                "check_severity": "Info",
-                "check_type": "Note"
-            },
-            ..
-           ]
+    "PAN-OS-BPA": {
+        "SubmittedJob": {
+            "JobID": "4ad21582-4e7d-4b08-866d-45bef41963d6"
+        }
+    }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-Checks received.
-</p>
-<!-- remove the following comments to manually add an image: -->
-<!--
-<a href="insert URL to your image" target="_blank" rel="noopener noreferrer"><img src="insert URL to your image"
- alt="image" width="749" height="412"></a>
- -->
-</p>
+```
+
+#### Human Readable Output
+
+>Submitted BPA job ID: 4ad21582-4e7d-4b08-866d-45bef41963d6
+
+### pan-os-bpa-get-job-results
+***
+Returns results of BPA job.
+
+
+#### Base Command
+
+`pan-os-bpa-get-job-results`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| task_id | The job ID for which to return results. | Required | 
+| exclude_passed_checks | Whether to exclude passed checks. Can be "true" or "false". Default is "false". Possible values are: true, false. Default is false. | Optional | 
+| check_id | A comma-separated list of the ids of the results to return. | Optional | 
+| check_name | A comma-separated list of name of the results to return. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PAN-OS-BPA.JobResults.JobID | String | The submitted job ID. | 
+| PAN-OS-BPA.JobResults.Status | String | The job status in the queue \(in progress or completed\). | 
+| PAN-OS-BPA.JobResults.Checks | Unknown | The list of checks. | 
+| InfoFile.Name | string | File name | 
+| InfoFile.EntryID | string | File entry ID | 
+| InfoFile.Size | number | File size | 
+| InfoFile.Type | string | File type, e.g., "PE" | 
+| InfoFile.Info | string | Basic information of the file | 
+| InfoFile.Extension | string | File extension | 
+
+
+#### Command Example
+```!pan-os-bpa-get-job-results task_id=b0539068-e1c1-496c-9dfd-a1274947f76e check_id=104,105 check_name="Accelerated Aging"```
+
+#### Context Example
+```json
+{
+    "PAN-OS-BPA": {
+        "JobResults": {
+            "Checks": [
+                {
+                    "check_category": "device",
+                    "check_feature": "device_setup_services",
+                    "check_id": 105,
+                    "check_message": "It is recommended to configure a primary and secondary NTP Server Address",
+                    "check_name": "NTP Server Address",
+                    "check_passed": false,
+                    "check_type": "Warning"
+                },
+                {
+                    "check_category": "device",
+                    "check_feature": "device_setup_services",
+                    "check_id": 104,
+                    "check_message": null,
+                    "check_name": "Verify Update Server Identity",
+                    "check_passed": true,
+                    "check_type": "Warning"
+                },
+                {
+                    "check_category": "device",
+                    "check_feature": "device_setup_session",
+                    "check_id": 121,
+                    "check_message": null,
+                    "check_name": "Accelerated Aging",
+                    "check_passed": true,
+                    "check_type": "Warning"
+                }
+            ],
+            "JobID": "b0539068-e1c1-496c-9dfd-a1274947f76e",
+            "Status": "complete"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### BPA Results
+>|check_category|check_feature|check_id|check_message|check_name|check_passed|check_type|
+>|---|---|---|---|---|---|---|
+>| device | device_setup_services | 105 | It is recommended to configure a primary and secondary NTP Server Address | NTP Server Address | false | Warning |
+>| device | device_setup_services | 104 |  | Verify Update Server Identity | true | Warning |
+>| device | device_setup_session | 121 |  | Accelerated Aging | true | Warning |
+

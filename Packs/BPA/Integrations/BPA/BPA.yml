@@ -23,31 +23,86 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
+description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama
+  configurations and compares them to the best practices.
 display: Palo Alto Networks BPA
 name: BPA
 script:
   commands:
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: A comma-separated list of ids of the documents to return.
+      isArray: false
+      name: ids
+      required: false
+      secret: false
+    deprecated: false
     description: Gets the documentation of all BPA checks.
     execution: false
     name: pan-os-get-documentation
     outputs:
-    - contextPath: PAN-OS-BPA.Documentation
-      description: The list of BPA checks.
+    - contextPath: PAN-OS-BPA.Documentation.Document.DocId
+      description: The id of the document.
+      type: Number
+    - contextPath: PAN-OS-BPA.Documentation.Document.TopNav
+      description: The TopNav field of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.LeftNav
+      description: The LeftNav of the document
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.Title
+      description: The title of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.DocType
+      description: The type of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.Description
+      description: The description of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.Rationale
+      description: The rationale of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.References
+      description: The references for the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.Active
+      description: Whether the document is active or not.
+      type: Boolean
+    - contextPath: PAN-OS-BPA.Documentation.Document.LastUpdatedDate
+      description: The date the document was last updated.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.CapabilityLabel
+      description: The CapabilityLabel of the document.
       type: Unknown
-  - deprecated: false
+    - contextPath: PAN-OS-BPA.Documentation.Document.ClassLabel
+      description: The class label of the document.
+      type: Unknown
+    - contextPath: PAN-OS-BPA.Documentation.Document.ControlCategory
+      description: The control category of the document.
+      type: Unknown
+    - contextPath: PAN-OS-BPA.Documentation.Document.Cscv6Control
+      description: The cscv6 control of the document.
+      type: Unknown
+    - contextPath: PAN-OS-BPA.Documentation.Document.Cscv7Control
+      description: The cscv7 control of the document.
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to download the Panorama report. Can be "true" or "false".
+        Default is "false".
+      isArray: false
+      name: generate_zip_bundle
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    deprecated: false
     description: Submits a job to the BPA job queue.
     execution: false
     name: pan-os-bpa-submit-job
-    arguments:
-    - name: generate_zip_bundle
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Whether to download the Panorama report. Can be "true" or "false". Default is "false".
-      defaultValue: "false"
     outputs:
     - contextPath: PAN-OS-BPA.SubmittedJob.JobID
       description: Submitted Job ID, used to query results when job is done.
@@ -59,14 +114,30 @@ script:
       name: task_id
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to exclude passed checks. Can be "true" or "false". Default
+        is "false".
+      isArray: false
       name: exclude_passed_checks
-      description: Whether to exclude passed checks. Can be "true" or "false". Default is "false".
-      auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the ids of the results to return.
+      isArray: false
+      name: check_id
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of name of the results to return.
+      isArray: false
+      name: check_name
+      required: false
+      secret: false
     deprecated: false
     description: Returns results of BPA job.
     execution: false
@@ -99,7 +170,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension
       type: string
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
   longRunning: false

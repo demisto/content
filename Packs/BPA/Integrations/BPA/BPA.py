@@ -120,21 +120,29 @@ class Client(BaseClient):
         return response
 
 
-def filter_doc(doc: Dict) -> Dict:
-    clone = doc.copy()
-    del clone['complexity']
-    del clone['effort']
-    return clone
+def create_output(doc: dict):
+    doc_output = {}
+    for key in doc.keys():
+        doc_output[string_to_context_key(key)] = doc.get(key)
+    return doc_output
 
 
-def get_documentation_command(client: Client) -> Tuple[str, Dict, Dict]:
+def get_documentation_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     raw = client.get_documentation_request()
     if not raw:
         raise Exception('Failed getting documentation from BPA')
-    filtered_docs = [filter_doc(doc) for doc in raw]
+    filter_by_ids = args.get('ids')
+    if filter_by_ids:
+        output = []
+        id_list = filter_by_ids.split(',')
+        for doc in raw:
+            if str(doc.get('doc_id')) in id_list:
+                output.append(create_output(doc))
+    else:
+        output = [create_output(doc) for doc in raw]
 
-    entry_context = {'PAN-OS-BPA.Documentation': filtered_docs}
-    human_readable = tableToMarkdown('BPA documentation', filtered_docs)
+    entry_context = {'PAN-OS-BPA.Documentation.Document': output}
+    human_readable = tableToMarkdown('BPA documentation', output)
 
     return human_readable, entry_context, raw
 
@@ -174,6 +182,8 @@ def get_checks_from_feature(feature, feature_name, category):
 
 def get_results_command(client: Client, args: Dict):
     task_id = args.get('task_id', '')
+    filter_by_check_id = args.get('check_id', '').split(',') if args.get('check_id') else []
+    filter_by_check_name = args.get('check_name', '').split(',') if args.get('check_name') else []
     raw: Dict = client.get_results_request(task_id)
     status = raw.get('status')
     results = raw.get('results', {})
@@ -200,6 +210,9 @@ def get_results_command(client: Client, args: Dict):
                 checks = get_checks_from_feature(feature_contents[0], feature_name, category_name)
                 if exclude_passed_checks:
                     job_checks.extend([check for check in checks if not check.get('check_passed')])
+                elif filter_by_check_id or filter_by_check_name:
+                    job_checks.extend([check for check in checks if str(check.get('check_id')) in filter_by_check_id
+                                       or check.get('check_name') in filter_by_check_name])
                 else:
                     job_checks.extend(checks)
 
@@ -254,7 +267,7 @@ def main():
         elif command == 'pan-os-bpa-get-job-results':
             return_outputs(*get_results_command(client, demisto.args()))
         elif command == 'pan-os-get-documentation':
-            return_outputs(*get_documentation_command(client))
+            return_outputs(*get_documentation_command(client, demisto.args()))
         elif command == 'test-module':
             return_outputs(*test_module(client, panorama))
         else:
