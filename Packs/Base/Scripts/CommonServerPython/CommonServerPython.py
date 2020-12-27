@@ -1106,10 +1106,11 @@ class IntegrationLogger(object):
             self.messages = []
 
     def build_curl(self, text):
+        http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
         data = text.split("send: b'")[1]
         if data.startswith('{'):  # it is the request url query params/post body
             self.curl += "-d '{}".format(data)
-        else:
+        elif any(http_method in data for http_method in http_methods):
             method = ''
             url = ''
             headers = []
@@ -1131,6 +1132,14 @@ class IntegrationLogger(object):
                 if header:
                     curl_headers += '-H "{}" '.format(header)
             self.curl += 'curl -X {} {} {}'.format(method, url, curl_headers)
+            if demisto.params().get('proxy'):
+                proxy_address = os.environ.get('https_proxy')
+                if proxy_address:
+                    self.curl += '--proxy {} '.format(proxy_address)
+            else:
+                self.curl += '--noproxy '
+            if demisto.params().get('insecure'):
+                self.curl += '-k '
 
     def write(self, msg):
         # same as __call__ but allows IntegrationLogger to act as a File like object.
@@ -4897,7 +4906,8 @@ class DebugLogger(object):
                 setattr(self.http_client, 'print', self.http_client_print)
             else:
                 delattr(self.http_client, 'print')
-            demisto.info('cURL:\n' + self.int_logger.curl)
+            if self.int_logger.curl:
+                demisto.info('cURL:\n' + self.int_logger.curl)
 
     def log_start_debug(self):
         """
