@@ -12,20 +12,20 @@ configuration:
   name: api_key
   required: false
   type: 0
-  additionalinfo: Note that whe when credentials are filled with data, the integration
-    use account-based authentication.
+  additionalinfo: Note that when credentials are set, the integration
+    uses account-based authentication.
 - display: API Token for accessing Lastline APIs
   name: api_token
   required: false
   type: 4
-  additionalinfo: Note that when credentials are filled with data, the integration
+  additionalinfo: Note that when credentials are set, the integration
     use account-based authentication.
 - display: Email address
   name: credentials
   required: false
   type: 9
-  additionalinfo: Note that when credentials are filled with data, the integration
-    use account-based authentication.
+  additionalinfo: Note that when credentials are set, the integration
+    uses account-based authentication.
 - display: Use system proxy settings
   name: proxy
   required: false
