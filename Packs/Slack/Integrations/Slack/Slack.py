@@ -662,7 +662,8 @@ def check_for_answers():
         body = {
             'entitlement': entitlement
         }
-        res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, proxies=PROXIES, verify=VERIFY_CERT)
+        res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, proxies=PROXIES, verify=VERIFY_CERT,
+                            timeout=30)
         if res.status_code != 200:
             demisto.error(f'Slack - failed to poll for answers: {res.content!r}, status code: {res.status_code!r}')
             continue
