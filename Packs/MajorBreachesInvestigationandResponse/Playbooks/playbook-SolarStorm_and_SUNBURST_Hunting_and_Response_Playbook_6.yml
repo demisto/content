@@ -179,12 +179,12 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 1b0e1396-52f7-4145-84d7-ea0b3ab16770
+    taskid: e7f96868-9c74-418a-8376-194801b5229c
     type: playbook
     task:
-      id: 1b0e1396-52f7-4145-84d7-ea0b3ab16770
+      id: e7f96868-9c74-418a-8376-194801b5229c
       version: -1
-      name: Panorama Query Logs
+      name: Panorama search in threat logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs
@@ -567,12 +567,12 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: a1fdc1ec-7589-4c93-8af0-649bb04b4406
+    taskid: e5958ad7-cae6-4e95-8e48-71f1c280d8ce
     type: playbook
     task:
-      id: a1fdc1ec-7589-4c93-8af0-649bb04b4406
+      id: e5958ad7-cae6-4e95-8e48-71f1c280d8ce
       version: -1
-      name: Panorama Query Logs
+      name: Panorama search in traffic  logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs
@@ -2027,12 +2027,12 @@ tasks:
     quietmode: 0
   "76":
     id: "76"
-    taskid: 7d54b4ae-c05a-4d7c-8ac0-959bbf6fa5b3
+    taskid: 3dc3e1ad-f26a-4692-8ba7-7a16a3d5d2e0
     type: regular
     task:
-      id: 7d54b4ae-c05a-4d7c-8ac0-959bbf6fa5b3
+      id: 3dc3e1ad-f26a-4692-8ba7-7a16a3d5d2e0
       version: -1
-      name: Expense search for SolarStorm Issues
+      name: Expense search for SolarWinds server
       description: Retrieve issues
       script: '|||expanse-get-issues'
       type: regular
@@ -2065,8 +2065,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3360,
-          "y": 1350
+          "x": 3590,
+          "y": 1310
         }
       }
     note: false
@@ -2076,12 +2076,12 @@ tasks:
     quietmode: 0
   "77":
     id: "77"
-    taskid: 6aa4ecce-c1f2-4f1e-8642-cab9e08e8dd0
+    taskid: 2c0475f9-3ef1-4ba7-844e-6d18f9b6640f
     type: regular
     task:
-      id: 6aa4ecce-c1f2-4f1e-8642-cab9e08e8dd0
+      id: 2c0475f9-3ef1-4ba7-844e-6d18f9b6640f
       version: -1
-      name: Expense get list of risky flows
+      name: Expense Search for SolarStorm C2 traffic
       description: List risk rules from Expanse Behavior.
       script: '|||expanse-list-risk-rules'
       type: regular
@@ -2096,8 +2096,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3790,
-          "y": 1190
+          "x": 4030,
+          "y": 1150
         }
       }
     note: false
@@ -2139,8 +2139,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3790,
-          "y": 1350
+          "x": 4030,
+          "y": 1320
         }
       }
     note: false
@@ -2199,12 +2199,12 @@ tasks:
     quietmode: 0
   "81":
     id: "81"
-    taskid: d077c127-226e-431e-8486-8d16baa634a6
+    taskid: dc0d9da2-ba62-4849-87f6-7b2353a410ce
     type: title
     task:
-      id: d077c127-226e-431e-8486-8d16baa634a6
+      id: dc0d9da2-ba62-4849-87f6-7b2353a410ce
       version: -1
-      name: Expanse Search
+      name: Expanse Search SolarWinds Server and C2 Network Connection
       type: title
       iscommand: false
       brand: ""
@@ -2419,10 +2419,10 @@ tasks:
     quietmode: 0
   "89":
     id: "89"
-    taskid: 3b3ec9c2-0455-4d4c-8578-120f9d6ec4e2
+    taskid: 00fc5c7f-974c-49fc-8274-0aaf9fb481cd
     type: regular
     task:
-      id: 3b3ec9c2-0455-4d4c-8578-120f9d6ec4e2
+      id: 00fc5c7f-974c-49fc-8274-0aaf9fb481cd
       version: -1
       name: 'Add indicator of the C2 Address '
       description: commands.local.cmd.extract.indicators
@@ -2444,6 +2444,7 @@ tasks:
           transformers:
           - operator: uniq
     reputationcalc: 2
+    continueonerror: true
     separatecontext: false
     view: |-
       {
@@ -2529,7 +2530,8 @@ view: |-
       "78_19_#default#": 0.1,
       "84_24_#default#": 0.12,
       "84_85_yes": 0.47,
-      "90_19_#default#": 0.1
+      "90_19_#default#": 0.22,
+      "90_76_yes": 0.29
     },
     "paper": {
       "dimensions": {
