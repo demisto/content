@@ -4,7 +4,6 @@ from urllib3 import disable_warnings
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from datetime import datetime
 
 
 INTEGRATION_COMMAND_NAME = "lastline"

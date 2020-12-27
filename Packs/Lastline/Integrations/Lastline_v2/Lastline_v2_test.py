@@ -119,8 +119,8 @@ def raise_exception():
                                      'credentials': {'identifier': 'identifier',
                                                      'password': 'password'}},
                                     {'url': 'testurl.com',
-                                     'username': 'identifier',
-                                     'password': 'password-wrong'},
+                                     'api_key': 'apikey',
+                                     'api_token': 'apitoken'},
                                     ])
 def test_test_module_wrong_credentials(mocker, params):
     """
