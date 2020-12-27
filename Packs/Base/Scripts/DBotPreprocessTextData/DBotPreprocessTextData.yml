@@ -162,7 +162,7 @@ tags:
 - ml
 timeout: 120µs
 type: python
-dockerimage: demisto/ml:1.0.0.12611
+dockerimage: demisto/ml:1.0.0.13629
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test

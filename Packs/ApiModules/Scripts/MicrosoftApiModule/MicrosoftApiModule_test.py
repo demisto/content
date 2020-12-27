@@ -58,7 +58,8 @@ def self_deployed_client():
                            resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
 
 
-def test_error_parser():
+def test_error_parser(mocker):
+    mocker.patch.object(demisto, 'error')
     err = Response()
     err.status_code = 401
     err._content = b'{"error":{"code":"code","message":"message"}}'

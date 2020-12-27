@@ -14,6 +14,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 ## Use Cases
 * Create custom security rules in Palo Alto Networks PAN-OS.
 * Creating and updating address objects, address-groups, custom URL categories, URL filtering objects.
+* Use the URL Filtering category information from Palo Alto Networks to enrich URLs by checking the *use_url_filtering* parameter. A valid license for the Firewall is required.
 * Get URL Filtering category information from Palo Alto - Request Change is a known Palo Alto limitation.
 * Add URL filtering objects including overrides to Palo Alto Panorama and Firewall.
 * Committing configuration to Palo Alto FW and to Panorama, and pushing configuration from Panorama to Pre-Defined Device-Groups of Firewalls.
@@ -2998,6 +2999,7 @@ enforce the policy. |
 | Panorama.Monitor.Logs.Bytes | String | Total log bytes. | 
 | Panorama.Monitor.Logs.BytesReceived | String | Log bytes received. | 
 | Panorama.Monitor.Logs.BytesSent | String | Log bytes sent. | 
+| Panorama.Monitor.Logs.Vsys | String | Vsys on the firewall that generated the log. | 
 
 
 #### Command Example

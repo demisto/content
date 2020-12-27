@@ -1,0 +1,16 @@
+{
+    "name": "Cloud Convert",
+    "description": "Use this integration to convert files using CloudConvert API",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-10-07T14:31:24Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

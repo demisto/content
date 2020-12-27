@@ -60,7 +60,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.12701
+dockerimage: demisto/ml:1.0.0.13629
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0

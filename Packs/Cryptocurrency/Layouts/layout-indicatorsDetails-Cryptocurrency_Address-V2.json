@@ -1,0 +1,117 @@
+{
+ "TypeName": "Cryptocurrency Address",
+ "kind": "indicatorsDetails",
+ "layout": {
+  "TypeName": "",
+  "id": "Cryptocurrency Address",
+  "kind": "indicatorsDetails",
+  "modified": "2020-11-17T16:29:59.166387894Z",
+  "name": "",
+  "system": false,
+  "tabs": [
+   {
+    "id": "default-main",
+    "name": "Info",
+    "sections": [
+     {
+      "h": 2,
+      "i": "default-main-reputationSources",
+      "name": "Reputation",
+      "type": "reputationSources",
+      "w": 2,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "h": 3,
+      "i": "default-main-relatedIncidents",
+      "name": "Related Incidents",
+      "type": "relatedIncidents",
+      "w": 2,
+      "x": 1,
+      "y": 2
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "default-main-indicatorTimeline",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "firstseen",
+        "height": 24,
+        "id": "indicator-first-seen",
+        "index": 0,
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "lastseen",
+        "height": 24,
+        "id": "indicator-last-seen",
+        "index": 1,
+        "startCol": 0
+       }
+      ],
+      "name": "Timeline",
+      "type": "indicatorTimeline",
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "displayType": "ROW",
+      "h": 3,
+      "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "cryptocurrencyaddresstype",
+        "height": 24,
+        "id": "1aa17e40-28f2-11eb-aafb-5b941276df73",
+        "index": 0,
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "source",
+        "height": 24,
+        "id": "indicator-source",
+        "index": 1,
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "comment",
+        "height": 48,
+        "id": "indicator-comment",
+        "index": 2,
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "indicatortype",
+        "height": 24,
+        "id": "indicator-type",
+        "index": 3,
+        "startCol": 0
+       }
+      ],
+      "name": "Basic Information",
+      "w": 1,
+      "x": 0,
+      "y": 1
+     }
+    ],
+    "type": "custom"
+   }
+  ],
+  "typeId": "Cryptocurrency Address",
+  "version": -1
+ },
+ "typeId": "Cryptocurrency Address",
+ "version": -1,
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0",
+ "description": ""
+}

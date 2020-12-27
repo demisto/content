@@ -2,7 +2,7 @@
     "name": "Email Communication",
     "description": "Do you have to send multiple emails to end users? This content pack helps you streamline the process and automate updates, notifications and more.\n",
     "support": "xsoar",
-    "currentVersion": "1.3.0",
+    "currentVersion": "1.3.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

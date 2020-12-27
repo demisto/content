@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "1.8.5",
+    "currentVersion": "1.8.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -295,7 +295,14 @@
         "CrowdStrikeFalconX": {
             "mandatory": false,
             "display_name": "CrowdStrike Falcon X"
+        },
+        "Kenna": {
+            "mandatory": false,
+            "display_name": "Kenna"
+        },
+        "Rapid7_Nexpose": {
+            "mandatory": false,
+            "display_name": "Rapid7 Nexpose"
         }
     }
 }
-
