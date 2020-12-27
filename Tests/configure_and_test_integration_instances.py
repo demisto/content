@@ -525,7 +525,7 @@ def set_integration_params(build,
                 integration['params'].update({'proxy': True})
             else:
                 integration['params'].update({'proxy': False})
-        logging.debug(f'Configuring integration "{integration["name"]}" with params: {pformat(integration["params"])}')
+            logging.debug(f'Configuring integration "{integration["name"]}" with params: {pformat(integration["params"])}')
 
     return True
 
