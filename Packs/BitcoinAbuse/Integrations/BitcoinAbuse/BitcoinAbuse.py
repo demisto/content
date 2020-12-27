@@ -111,7 +111,7 @@ def build_fetch_indicators_url_suffixes(params: Dict, test_module: bool) -> set:
         return {FEED_ENDPOINT_SUFFIX + first_feed_interval_url_suffix, FEED_ENDPOINT_SUFFIX + '30d'}
 
 
-def _assure_valid_response(indicators: List[Dict]) -> None:
+def assure_valid_response(indicators: List[Dict]) -> None:
     """
     Receives the indicators fetched from Bitcoin Abuse service, and checks if
     the response received is valid.
@@ -181,7 +181,7 @@ def report_address_command(params: Dict, args: Dict, api_key: str) -> CommandRes
         raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
 
 
-def _build_csv_client_params(params: Dict, test_module: bool, api_key: str):
+def _build_params_for_csv_module(params: Dict, test_module: bool, api_key: str):
     """
     Adds additional params needed for fetching indicators in order to build csv client properly
     and fetch csv from Bitcoin Abuse service
@@ -220,10 +220,9 @@ def fetch_indicators(params: Dict, api_key: str, test_module: bool):
         - Fetches indicators if the call to Bitcoin Abuse service was successful and command is not test module
         - 'ok' if the call to Bitcoin Abuse service was successful and command is test_module
     """
-    params = _build_csv_client_params(params, test_module, api_key)
+    params = _build_params_for_csv_module(params, test_module, api_key)
     csv_module_client = Client(**params)
 
-    highest_fetched_id = demisto.getIntegrationContext().get('highest_fetched_id', 0)
     indicators = fetch_indicators_command(
         client=csv_module_client,
         default_indicator_type='Cryptocurrency Address',
@@ -231,27 +230,29 @@ def fetch_indicators(params: Dict, api_key: str, test_module: bool):
         limit=0
     )
 
-    _assure_valid_response(indicators)
+    assure_valid_response(indicators)
 
     if not test_module:
-        indicators_without_duplicates = []
-        indicators_ids = set()
-        for indicator in indicators:
-            try:
-                indicator_id = int(indicator['rawJSON']['id'])
-                if indicator_id not in indicators_ids and indicator_id > highest_fetched_id:
-                    indicator['fields']['Cryptocurrency Address Type'] = 'bitcoin'
-                    indicators_without_duplicates.append(indicator)
-                    indicators_ids.add(indicator_id)
-            except ValueError:
-                pass
+        final_indicator_list = []
+        have_fetched_first_time = argToBoolean(demisto.getIntegrationContext().get('have_fetched_first_time', False))
 
-        highest_id_fetched_from_indicators = max(indicators_ids) if indicators_ids else 0
-        highest_fetched_id = max(highest_fetched_id, highest_id_fetched_from_indicators)
-        demisto.setIntegrationContext({'highest_fetched_id': highest_fetched_id})
+        if have_fetched_first_time:
+            final_indicator_list = indicators
+
+        else:
+            indicators_ids = set()
+            for indicator in indicators:
+                try:
+                    indicator_id = int(indicator['rawJSON']['id'])
+                    if indicator_id not in indicators_ids:
+                        indicator['fields']['Cryptocurrency Address Type'] = 'bitcoin'
+                        final_indicator_list.append(indicator)
+                        indicators_ids.add(indicator_id)
+                except ValueError:
+                    demisto.debug(f'The following indicator was found invalid and was skipped: {indicator}')
 
         # we submit the indicators in batches
-        for b in batch(indicators_without_duplicates, batch_size=2000):
+        for b in batch(final_indicator_list, batch_size=2000):
             demisto.createIndicators(b)  # type: ignore
 
     else:
