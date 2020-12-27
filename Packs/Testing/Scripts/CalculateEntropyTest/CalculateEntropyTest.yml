@@ -1,0 +1,36 @@
+args:
+- default: true
+  description: The data for which to calculate entropy.
+  isArray: false
+  name: data
+  required: true
+  secret: false
+- default: false
+  defaultValue: '0'
+  description: The minimum entropy value. Default is 0.
+  isArray: false
+  name: minimum_entropy
+  required: false
+  secret: false
+comment: Calculates the entropy for the given data.
+commonfields:
+  id: CalculateEntropy
+  version: -1
+enabled: false
+name: CalculateEntropy
+outputs:
+- contextPath: EntropyResult.checked_value
+  description: The given value (data).
+  type: String
+- contextPath: EntropyResult.entropy
+  description: The entropy score.
+  type: Number
+script: '-'
+subtype: python3
+system: false
+tags:
+- entropy
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.14516
+fromversion: 5.0.0
