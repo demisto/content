@@ -737,16 +737,10 @@ class Pack(object):
 
     @staticmethod
     def encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path):
-        current_working_dir = os.getcwd()
-        new_artefacts = os.path.join(current_working_dir, 'weird_test')
-        print("doing ls at start to see what is in the folder")
-        cmd = f'ls {new_artefacts}'
-        subprocess.call(cmd, shell=True)
-
         try:
+            current_working_dir = os.getcwd()
             shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
-            current_working_dir = os.getcwd()
             os.chdir(extract_destination_path)
             output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             subprocess.call('chmod +x ./encryptor', shell=True)
