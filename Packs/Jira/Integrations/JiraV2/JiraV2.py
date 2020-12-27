@@ -314,6 +314,15 @@ def create_incident_from_ticket(issue):
         elif demisto.get(issue, 'fields.priority.name') == 'Low':
             severity = 1
 
+    file_names = []
+    if isinstance(demisto.get(issue, 'fields.attachments'), list):
+        for file_result in demisto.get(issue, 'fields.attachments'):
+            if file_result['Type'] != entryTypes['error']:
+                file_names.append({
+                    'path': file_result.get('FileID', ''),
+                    'name': file_result.get('File', '')
+                })
+
     # Adding mirroring details
     if demisto.params().get("incoming_mirror") and demisto.params().get("outgoing_mirror"):
         issue['mirror_direction'] = 'Both'
@@ -335,6 +344,7 @@ def create_incident_from_ticket(issue):
         "labels": labels,
         "details": demisto.get(issue, "fields.description"),
         "severity": severity,
+        "attachment": file_names,
         "rawJSON": json.dumps(issue)
     }
 
@@ -876,6 +886,7 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
     parsed_entries = []
     parsed_args = GetRemoteDataArgs(args)
     # Get raw response on issue ID
+
     _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
 
     # Timestamp - Issue last modified in jira server side
@@ -907,10 +918,10 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         for attachment in entries['attachments']:
             parsed_entries.append(attachment)
 
-
     if parsed_entries:
         demisto.info(f'&&&&&&&&&&&&&&&: \n{parsed_entries}\n')
     return GetRemoteDataResponse(incident_update, parsed_entries)
+
 
 
 def main():
