@@ -2,38 +2,37 @@
 
 ## MobileIron Cloud - Getting Started
 
-1. Log in to the MobileIron Cloud Admin console
-2. Open the users section
-3. Click on the create user button and select the option to create a new API user. It is recommended to create a new user for the Demisto integration specifically and not reuse
-an existing one  
-4. Fill in all the required details (ex. use demisto-api-user as the username) and make sure you enter a strong password.
-5. When setting up the Demisto integration use the auto-generated email address as the username and the password you 
-defined as the MobileIron tenant credentials
-6. Click the `Test` button and ensure the connection can be established
+1. Log in to the MobileIron Cloud Admin console.
+2. Open the users section.
+3. Click the create user button and select the option to create a new API user. It is recommended to create a new user for the Cortex XSOAR integration specifically and not reuse
+an existing one.  
+4. Fill in all the required details (i.e., use demisto-api-user as the username) and make sure you enter a strong password.
+5. When setting up the Cortex XSOAR integration, use the auto-generated email address as the username and the password you 
+defined as the MobileIron tenant credentials.
+6. Click the `Test` button and ensure the connection can be established.
 
 Refer to the API documentation at the MobileIron community for more details on setting up the API user.
 
 ### MobileIron Cloud - Spaces
 
-In case you are dividing the devices into different spaces, it is important to make sure the integration
+If you are dividing the devices into different spaces, it is important to make sure the integration
 points to the correct `Partition ID (Device Space ID)`.
  
-You should leave this value blank if you are not using spaces or you want the integration to automatically resolve the 
-default space id.
+You should leave this value blank if you are not using spaces or if you want the integration to automatically resolve the 
+default space ID.
 
 ### Setting up pre-processing rules
 
-In case you are using the fetch incidents option its advisable to set-up a pre-processing rule in order
+If you are using the fetch incidents option, we recommend to set-up a pre-processing rule in order
 to filter out any duplicates that might show up as part of the command. 
 
-- Inside the Demisto XSOAR admin go to Settings -> Integrations -> Pre-Processing Rules
-- In *Step 1* add a rule for *Type* equals *MobileIron Cloud Device Incident*
-- In *Step 2* select *Drop and Update*
+- In the Cortex XSOAR admin go to Settings -> Integrations -> Pre-Processing Rules
+- In *Step 1* add a rule for *Type* equals *MobileIron Cloud Device Incident*.
+- In *Step 2* select *Drop and Update*.
 - In *Step 3* select *Link to oldest incident* created within the last *15 days* and check the checkbox next to 
-*Search closed incidents* 
-- Add an *AND* statement and enter *MobileIron Device ID* of existing incident is identical to the one of the 
-incoming incident 
-- Save
+*Search closed incidents* .
+- Add an *AND* statement and enter *MobileIron Device ID* of existing incident is identical to the one of the incoming incident.
+- Save the rule.
 
 Here is an example image of the rule
 
@@ -47,7 +46,7 @@ Here is an example image of the rule
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | url | Server URL \(ex. https://eu1.mobileiron.com \) | True |
+    | url | Server URL \(i.e., https://eu1.mobileiron.com \) | True |
     | credentials | User Name | True |
     | incidentType | Incident type | False |
     | partition_id | Partition ID \(leave empty to resolve default\) | False |
@@ -63,7 +62,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### mobileiron-cloud-get-devices-data
 ***
-This command is used to get all the devices based on a particular filter query. The command might execute multiple API calls depending on the amount of devices that would be returned.
+Gets all the devices based on a particular filter query. The command might execute multiple API calls depending on the amount of devices that would be returned.
 
 
 #### Base Command
@@ -74,43 +73,43 @@ This command is used to get all the devices based on a particular filter query. 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Filter query for fetching the device data. Default is registrationState=ACTIVE. | Optional | 
-| max_fetch | Limit the number of items returned in the list. | Optional | 
+| max_fetch | The maximum number of items returned in the list. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCloud.Device.id | Number | Device Id | 
-| MobileIronCloud.Device.guid | String | Device GUID | 
-| MobileIronCloud.Device.deviceModel | String | Device Model | 
-| MobileIronCloud.Device.deviceName | String | Device Name | 
-| MobileIronCloud.Device.platformType | String | Platform Type | 
-| MobileIronCloud.Device.platformVersion | String | Platform Version | 
-| MobileIronCloud.Device.osBuildVersion | String | OS Build Version | 
-| MobileIronCloud.Device.lastCheckin | Date | Last Check In | 
-| MobileIronCloud.Device.registrationState | String | Registration State | 
-| MobileIronCloud.Device.displayName | String | Display Name | 
-| MobileIronCloud.Device.firstName | String | First Name | 
-| MobileIronCloud.Device.lastName | String | Last Name | 
-| MobileIronCloud.Device.uid | String | Device UID | 
-| MobileIronCloud.Device.emailAddress | String | Email Address | 
-| MobileIronCloud.Device.manufacturer | String | Manufacturer | 
-| MobileIronCloud.Device.imei | Unknown | IMEI | 
-| MobileIronCloud.Device.imei2 | Unknown | IMEI2 | 
-| MobileIronCloud.Device.imsi | String | IMSI | 
-| MobileIronCloud.Device.wifiMacAddress | String | WIFI Mac Address | 
-| MobileIronCloud.Device.serialNumber | Unknown | Serial Number | 
-| MobileIronCloud.Device.altSerialNumber | Unknown | Alternative Serial Number | 
-| MobileIronCloud.Device.ownershipType | String | Ownership Type | 
-| MobileIronCloud.Device.complianceState | Boolean | Compliance State | 
-| MobileIronCloud.Device.roaming | Boolean | Roaming Status | 
-| MobileIronCloud.Device.supervised | Unknown | Device Supervised | 
-| MobileIronCloud.Device.udid | String | Device UDID | 
-| MobileIronCloud.Device.policyViolationCount | Number | Policy Violation Count | 
-| MobileIronCloud.Device.lastRegistrationTime | Date | Last Registration Time | 
-| MobileIronCloud.Device.quarantined | Boolean | Quarantined | 
-| MobileIronCloud.Device.jailbroken | Boolean | Jailbroken | 
+| MobileIronCloud.Device.id | Number | ID of the device that is fetched. | 
+| MobileIronCloud.Device.guid | String | GUID of the device that is fetched. | 
+| MobileIronCloud.Device.deviceModel | String | Model of the device that is fetched. | 
+| MobileIronCloud.Device.deviceName | String | Name of the device that is fetched. | 
+| MobileIronCloud.Device.platformType | String | Platform type of the device that is fetched. | 
+| MobileIronCloud.Device.platformVersion | String | Platform version of the device that is fetched. | 
+| MobileIronCloud.Device.osBuildVersion | String | Operating system build version of the device that is fetched. | 
+| MobileIronCloud.Device.lastCheckin | Date | Last check in time of the device that is fetched. | 
+| MobileIronCloud.Device.registrationState | String | Registration state of the device that is fetched. | 
+| MobileIronCloud.Device.displayName | String | Display name of the device that is fetched. | 
+| MobileIronCloud.Device.firstName | String | First name of the device that is fetched. | 
+| MobileIronCloud.Device.lastName | String | Last name of the device that is fetched. | 
+| MobileIronCloud.Device.uid | String | UID of the device that is fetched. | 
+| MobileIronCloud.Device.emailAddress | String | Email address of the device that is fetched. | 
+| MobileIronCloud.Device.manufacturer | String | Manufacturer of the device that is fetched. | 
+| MobileIronCloud.Device.imei | Unknown | International Mobile Equipment Identity (IMEI) of the device that is fetched. | 
+| MobileIronCloud.Device.imei2 | Unknown | International Mobile Equipment Identity 2 (IME2) of the device that is fetched. | 
+| MobileIronCloud.Device.imsi | String | International Mobile Subscriber Identity (IMSI) of the device that is fetched. | 
+| MobileIronCloud.Device.wifiMacAddress | String | WiFi MAC address of the device that is fetched. | 
+| MobileIronCloud.Device.serialNumber | Unknown | Serial number of the device that is fetched. | 
+| MobileIronCloud.Device.altSerialNumber | Unknown | Alternative serial number of the device that is fetched. | 
+| MobileIronCloud.Device.ownershipType | String | Ownership type of the device that is fetched. | 
+| MobileIronCloud.Device.complianceState | Boolean | Compliance state of the device that is fetched. | 
+| MobileIronCloud.Device.roaming | Boolean | Roaming status of the device that is fetched. | 
+| MobileIronCloud.Device.supervised | Unknown | Device supervised. | 
+| MobileIronCloud.Device.udid | String | UDID of the device that is fetched. | 
+| MobileIronCloud.Device.policyViolationCount | Number | Policy violation count of the device that is fetched. | 
+| MobileIronCloud.Device.lastRegistrationTime | Date | Last registration time of the device that is fetched. | 
+| MobileIronCloud.Device.quarantined | Boolean | Whether the device is quarantined. | 
+| MobileIronCloud.Device.jailbroken | Boolean | Whether the device is jailbroken. | 
 
 
 #### Command Example
@@ -164,7 +163,7 @@ This command is used to get all the devices based on a particular filter query. 
 
 ### mobileiron-cloud-get-device-by-mac
 ***
-Used to get a single device matching the provided mac address
+Gets a single device matching the provided mac address.
 
 
 #### Base Command
@@ -174,43 +173,43 @@ Used to get a single device matching the provided mac address
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_mac | Device MAC address. | Required | 
+| device_mac | THe MAC address of the device to fetch. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCloud.Device.id | Number | Device Id | 
-| MobileIronCloud.Device.guid | String | Device GUID | 
-| MobileIronCloud.Device.deviceModel | String | Device Model | 
-| MobileIronCloud.Device.deviceName | String | Device Name | 
-| MobileIronCloud.Device.platformType | String | Platform Type | 
-| MobileIronCloud.Device.platformVersion | String | Platform Version | 
-| MobileIronCloud.Device.osBuildVersion | String | OS Build Version | 
-| MobileIronCloud.Device.lastCheckin | Date | Last Check In | 
-| MobileIronCloud.Device.registrationState | String | Registration State | 
-| MobileIronCloud.Device.displayName | String | Display Name | 
-| MobileIronCloud.Device.firstName | String | First Name | 
-| MobileIronCloud.Device.lastName | String | Last Name | 
-| MobileIronCloud.Device.uid | String | Device UID | 
-| MobileIronCloud.Device.emailAddress | String | Email Address | 
-| MobileIronCloud.Device.manufacturer | String | Manufacturer | 
-| MobileIronCloud.Device.imei | Unknown | IMEI | 
-| MobileIronCloud.Device.imei2 | Unknown | IMEI2 | 
-| MobileIronCloud.Device.imsi | String | IMSI | 
-| MobileIronCloud.Device.wifiMacAddress | String | WIFI Mac Address | 
-| MobileIronCloud.Device.serialNumber | Unknown | Serial Number | 
-| MobileIronCloud.Device.altSerialNumber | Unknown | Alternative Serial Number | 
-| MobileIronCloud.Device.ownershipType | String | Ownership Type | 
-| MobileIronCloud.Device.complianceState | Boolean | Compliance State | 
-| MobileIronCloud.Device.roaming | Boolean | Roaming Status | 
+| MobileIronCloud.Device.id | Number | The ID of the device that is fetched. | 
+| MobileIronCloud.Device.guid | String | GUID of the device that is fetched. | 
+| MobileIronCloud.Device.deviceModel | String | Model of the device that is fetched. | 
+| MobileIronCloud.Device.deviceName | String | Name of the device that is fetched. | 
+| MobileIronCloud.Device.platformType | String | Platform type of the device that is fetched. | 
+| MobileIronCloud.Device.platformVersion | String | Platform version of the device that is fetched. | 
+| MobileIronCloud.Device.osBuildVersion | String | Operating system build version of the device that is fetched. | 
+| MobileIronCloud.Device.lastCheckin | Date | Last check in time of the device that is fetched. | 
+| MobileIronCloud.Device.registrationState | String | Registration state of the device that is fetched. | 
+| MobileIronCloud.Device.displayName | String | Display name of the device that is fetched. | 
+| MobileIronCloud.Device.firstName | String | First name of the device that is fetched. | 
+| MobileIronCloud.Device.lastName | String | Last name of the device that is fetched. | 
+| MobileIronCloud.Device.uid | String | UID of the device that is fetched. | 
+| MobileIronCloud.Device.emailAddress | String | Email address of the device that is fetched. | 
+| MobileIronCloud.Device.manufacturer | String | Manufacturer of the device that is fetched. | 
+| MobileIronCloud.Device.imei | Unknown | International Mobile Equipment Identity (IMEI) of the device that is fetched. | 
+| MobileIronCloud.Device.imei2 | Unknown | International Mobile Equipment Identity 2 (IME2) of the device that is fetched. | 
+| MobileIronCloud.Device.imsi | String | International mobile subscriber identity (IMSI) of the device that is fetched. | 
+| MobileIronCloud.Device.wifiMacAddress | String | WiFi MAC address of the device that is fetched. | 
+| MobileIronCloud.Device.serialNumber | Unknown | Serial number of the device that is fetched. | 
+| MobileIronCloud.Device.altSerialNumber | Unknown | Alternative serial number of the device that is fetched. | 
+| MobileIronCloud.Device.ownershipType | String | Ownership type of the device that is fetched. | 
+| MobileIronCloud.Device.complianceState | Boolean | Compliance state of the device that is fetched. | 
+| MobileIronCloud.Device.roaming | Boolean | Roaming status of the device that is fetched. | 
 | MobileIronCloud.Device.supervised | Unknown | Device Supervised | 
-| MobileIronCloud.Device.udid | String | Device UDID | 
-| MobileIronCloud.Device.policyViolationCount | Number | Policy Violation Count | 
-| MobileIronCloud.Device.lastRegistrationTime | Date | Last Registration Time | 
-| MobileIronCloud.Device.quarantined | Boolean | Quarantined | 
-| MobileIronCloud.Device.jailbroken | Boolean | Jailbroken | 
+| MobileIronCloud.Device.udid | String | Device UDID of the device that is fetched. | 
+| MobileIronCloud.Device.policyViolationCount | Number | Policy violation count of the device that is fetched. | 
+| MobileIronCloud.Device.lastRegistrationTime | Date | Last registration time of the device that is fetched. | 
+| MobileIronCloud.Device.quarantined | Boolean | Whether the device is quarantined. | 
+| MobileIronCloud.Device.jailbroken | Boolean | Whether the device is jailbroken. | 
 
 
 #### Command Example
@@ -262,7 +261,7 @@ Used to get a single device matching the provided mac address
 
 ### mobileiron-cloud-get-device-by-serial
 ***
-Used to get a single device matching the provided value for the device serial number
+Gets a single device matching the provided value for the device serial number.
 
 
 #### Base Command
@@ -272,43 +271,43 @@ Used to get a single device matching the provided value for the device serial nu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_serial | Device Serial Number. | Optional | 
+| device_serial | Serial number of the device to fetch. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCloud.Device.id | Number | Device Id | 
-| MobileIronCloud.Device.guid | String | Device GUID | 
-| MobileIronCloud.Device.deviceModel | String | Device Model | 
-| MobileIronCloud.Device.deviceName | String | Device Name | 
-| MobileIronCloud.Device.platformType | String | Platform Type | 
-| MobileIronCloud.Device.platformVersion | String | Platform Version | 
-| MobileIronCloud.Device.osBuildVersion | String | OS Build Version | 
-| MobileIronCloud.Device.lastCheckin | Date | Last Check In | 
-| MobileIronCloud.Device.registrationState | String | Registration State | 
-| MobileIronCloud.Device.displayName | String | Display Name | 
-| MobileIronCloud.Device.firstName | String | First Name | 
-| MobileIronCloud.Device.lastName | String | Last Name | 
-| MobileIronCloud.Device.uid | String | Device UID | 
-| MobileIronCloud.Device.emailAddress | String | Email Address | 
-| MobileIronCloud.Device.manufacturer | String | Manufacturer | 
-| MobileIronCloud.Device.imei | Unknown | IMEI | 
-| MobileIronCloud.Device.imei2 | Unknown | IMEI2 | 
-| MobileIronCloud.Device.imsi | String | IMSI | 
-| MobileIronCloud.Device.wifiMacAddress | String | WIFI Mac Address | 
-| MobileIronCloud.Device.serialNumber | Unknown | Serial Number | 
-| MobileIronCloud.Device.altSerialNumber | Unknown | Alternative Serial Number | 
-| MobileIronCloud.Device.ownershipType | String | Ownership Type | 
-| MobileIronCloud.Device.complianceState | Boolean | Compliance State | 
-| MobileIronCloud.Device.roaming | Boolean | Roaming Status | 
+| MobileIronCloud.Device.id | Number | The ID of the device that is fetched. | 
+| MobileIronCloud.Device.guid | String | GUID of the device that is fetched. | 
+| MobileIronCloud.Device.deviceModel | String | Model of the device that is fetched. | 
+| MobileIronCloud.Device.deviceName | String | Name of the device that is fetched. | 
+| MobileIronCloud.Device.platformType | String | Platform type of the device that is fetched. | 
+| MobileIronCloud.Device.platformVersion | String | Platform version of the device that is fetched. | 
+| MobileIronCloud.Device.osBuildVersion | String | Operating system build version of the device that is fetched. | 
+| MobileIronCloud.Device.lastCheckin | Date | Last check in time of the device that is fetched. | 
+| MobileIronCloud.Device.registrationState | String | Registration state of the device that is fetched. | 
+| MobileIronCloud.Device.displayName | String | Display name of the device that is fetched. | 
+| MobileIronCloud.Device.firstName | String | First name of the device that is fetched. | 
+| MobileIronCloud.Device.lastName | String | Last name of the device that is fetched. | 
+| MobileIronCloud.Device.uid | String | UID of the device that is fetched. | 
+| MobileIronCloud.Device.emailAddress | String | Email address of the device that is fetched. | 
+| MobileIronCloud.Device.manufacturer | String | Manufacturer of the device that is fetched. | 
+| MobileIronCloud.Device.imei | Unknown | International Mobile Equipment Identity (IMEI) of the device that is fetched. | 
+| MobileIronCloud.Device.imei2 | Unknown | International Mobile Equipment Identity 2 (IME2) of the device that is fetched. | 
+| MobileIronCloud.Device.imsi | String | International mobile subscriber identity (IMSI) of the device that is fetched. | 
+| MobileIronCloud.Device.wifiMacAddress | String | WiFi MAC address of the device that is fetched. | 
+| MobileIronCloud.Device.serialNumber | Unknown | Serial number of the device that is fetched. | 
+| MobileIronCloud.Device.altSerialNumber | Unknown | Alternative serial number of the device that is fetched. | 
+| MobileIronCloud.Device.ownershipType | String | Ownership type of the device that is fetched. | 
+| MobileIronCloud.Device.complianceState | Boolean | Compliance state of the device that is fetched. | 
+| MobileIronCloud.Device.roaming | Boolean | Roaming status of the device that is fetched. | 
 | MobileIronCloud.Device.supervised | Unknown | Device Supervised | 
-| MobileIronCloud.Device.udid | String | Device UDID | 
-| MobileIronCloud.Device.policyViolationCount | Number | Policy Violation Count | 
-| MobileIronCloud.Device.lastRegistrationTime | Date | Last Registration Time | 
-| MobileIronCloud.Device.quarantined | Boolean | Quarantined | 
-| MobileIronCloud.Device.jailbroken | Boolean | Jailbroken | 
+| MobileIronCloud.Device.udid | String | Device UDID of the device that is fetched. | 
+| MobileIronCloud.Device.policyViolationCount | Number | Policy violation count of the device that is fetched. | 
+| MobileIronCloud.Device.lastRegistrationTime | Date | Last registration time of the device that is fetched. | 
+| MobileIronCloud.Device.quarantined | Boolean | Whether the device is quarantined. | 
+| MobileIronCloud.Device.jailbroken | Boolean | Whether the device is jailbroken. | 
 
 
 #### Command Example
@@ -360,7 +359,7 @@ Used to get a single device matching the provided value for the device serial nu
 
 ### mobileiron-cloud-unlock-device
 ***
-This command is used to send an unlock action to the device
+Sends an unlock action to the device.
 
 
 #### Base Command
@@ -370,7 +369,7 @@ This command is used to send an unlock action to the device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The MobileIron Device Id. | Optional | 
+| device_id | The ID of the MobileIron device to fetch. | Optional | 
 
 
 #### Command Example
@@ -382,7 +381,7 @@ This command is used to send an unlock action to the device
 
 ### mobileiron-cloud-retire-device
 ***
-This command is used to send an retire action to the device
+Sends a retire action to the device.
 
 
 #### Base Command
@@ -392,7 +391,7 @@ This command is used to send an retire action to the device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The MobileIron Device Id. | Optional | 
+| device_id | The ID of the MobileIron device to fetch. | Optional | 
 
 
 #### Human Readable Output
@@ -401,7 +400,7 @@ This command is used to send an retire action to the device
 
 ### mobileiron-cloud-wipe-device
 ***
-This command is used to send a wipe action to the device. This is a potentially destructive action as it will completely wipe the device
+Sends a wipe action to the device. This is a potentially destructive action as it will completely wipe the device.
 
 
 #### Base Command
@@ -411,7 +410,7 @@ This command is used to send a wipe action to the device. This is a potentially 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The MobileIron Device Id. | Optional | 
+| device_id | The ID of the MobileIron device to fetch. | Optional | 
 
 
 #### Human Readable Output
@@ -421,7 +420,7 @@ This command is used to send a wipe action to the device. This is a potentially 
 
 ### mobileiron-cloud-force-check-in
 ***
-This command is used to force checkin to the particular device based on device id
+Forces a check in to the particular device based on the device ID.
 
 
 #### Base Command
@@ -431,7 +430,7 @@ This command is used to force checkin to the particular device based on device i
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The MobileIron Device Id. | Optional | 
+| device_id | The ID of the MobileIron device to fetch. | Optional | 
 
 
 #### Human Readable Output
@@ -441,7 +440,7 @@ This command is used to force checkin to the particular device based on device i
 
 ### mobileiron-cloud-send-message
 ***
-This command is used to send an message to the device
+Sends a message to the device.
 
 
 #### Base Command
@@ -451,10 +450,10 @@ This command is used to send an message to the device
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The MobileIron Device Id. | Optional | 
-| message_type | If a push notification should be sent. Possible values are: email, push. Default is push. | Required | 
-| subject | Provide Subject for email (only used in case email should be sent). | Optional | 
-| message | Provide the message to be sent. | Required | 
+| device_id | The ID of the MobileIron device to fetch. | Optional | 
+| message_type | The type of notification to send. Possible values are: email, push. Default is push. | Required | 
+| subject | The subject of the email. (Only used if an email should be sent). | Optional | 
+| message | The message to be sent. | Required | 
 
 
 #### Human Readable Output
@@ -464,7 +463,7 @@ This command is used to send an message to the device
 
 ### mobileiron-cloud-get-device-by-id
 ***
-Returns the data for a particular device based on the device id
+Returns the data for a particular device based on the device ID.
 
 #### Base Command
 
@@ -473,43 +472,43 @@ Returns the data for a particular device based on the device id
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_id | The MobileIron Device Id. | Required | 
+| device_id | The ID of the MobileIron device to fetch. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MobileIronCloud.Device.id | Number | Device Id | 
-| MobileIronCloud.Device.guid | String | Device GUID | 
-| MobileIronCloud.Device.deviceModel | String | Device Model | 
-| MobileIronCloud.Device.deviceName | String | Device Name | 
-| MobileIronCloud.Device.platformType | String | Platform Type | 
-| MobileIronCloud.Device.platformVersion | String | Platform Version | 
-| MobileIronCloud.Device.osBuildVersion | String | OS Build Version | 
-| MobileIronCloud.Device.lastCheckin | Date | Last Check In | 
-| MobileIronCloud.Device.registrationState | String | Registration State | 
-| MobileIronCloud.Device.displayName | String | Display Name | 
-| MobileIronCloud.Device.firstName | String | First Name | 
-| MobileIronCloud.Device.lastName | String | Last Name | 
-| MobileIronCloud.Device.uid | String | Device UID | 
-| MobileIronCloud.Device.emailAddress | String | Email Address | 
-| MobileIronCloud.Device.manufacturer | String | Manufacturer | 
-| MobileIronCloud.Device.imei | Unknown | IMEI | 
-| MobileIronCloud.Device.imei2 | Unknown | IMEI2 | 
-| MobileIronCloud.Device.imsi | String | IMSI | 
-| MobileIronCloud.Device.wifiMacAddress | String | WIFI Mac Address | 
-| MobileIronCloud.Device.serialNumber | Unknown | Serial Number | 
-| MobileIronCloud.Device.altSerialNumber | Unknown | Alternative Serial Number | 
-| MobileIronCloud.Device.ownershipType | String | Ownership Type | 
-| MobileIronCloud.Device.complianceState | Boolean | Compliance State | 
-| MobileIronCloud.Device.roaming | Boolean | Roaming Status | 
+| MobileIronCloud.Device.id | Number | The ID of the device that is fetched. | 
+| MobileIronCloud.Device.guid | String | GUID of the device that is fetched. | 
+| MobileIronCloud.Device.deviceModel | String | Model of the device that is fetched. | 
+| MobileIronCloud.Device.deviceName | String | Name of the device that is fetched. | 
+| MobileIronCloud.Device.platformType | String | Platform type of the device that is fetched. | 
+| MobileIronCloud.Device.platformVersion | String | Platform version of the device that is fetched. | 
+| MobileIronCloud.Device.osBuildVersion | String | Operating system build version of the device that is fetched. | 
+| MobileIronCloud.Device.lastCheckin | Date | Last check in time of the device that is fetched. | 
+| MobileIronCloud.Device.registrationState | String | Registration state of the device that is fetched. | 
+| MobileIronCloud.Device.displayName | String | Display name of the device that is fetched. | 
+| MobileIronCloud.Device.firstName | String | First name of the device that is fetched. | 
+| MobileIronCloud.Device.lastName | String | Last name of the device that is fetched. | 
+| MobileIronCloud.Device.uid | String | UID of the device that is fetched. | 
+| MobileIronCloud.Device.emailAddress | String | Email address of the device that is fetched. | 
+| MobileIronCloud.Device.manufacturer | String | Manufacturer of the device that is fetched. | 
+| MobileIronCloud.Device.imei | Unknown | International Mobile Equipment Identity (IMEI) of the device that is fetched. | 
+| MobileIronCloud.Device.imei2 | Unknown | International Mobile Equipment Identity 2 (IME2) of the device that is fetched. | 
+| MobileIronCloud.Device.imsi | String | International mobile subscriber identity (IMSI) of the device that is fetched. | 
+| MobileIronCloud.Device.wifiMacAddress | String | WiFi MAC address of the device that is fetched. | 
+| MobileIronCloud.Device.serialNumber | Unknown | Serial number of the device that is fetched. | 
+| MobileIronCloud.Device.altSerialNumber | Unknown | Alternative serial number of the device that is fetched. | 
+| MobileIronCloud.Device.ownershipType | String | Ownership type of the device that is fetched. | 
+| MobileIronCloud.Device.complianceState | Boolean | Compliance state of the device that is fetched. | 
+| MobileIronCloud.Device.roaming | Boolean | Roaming status of the device that is fetched. | 
 | MobileIronCloud.Device.supervised | Unknown | Device Supervised | 
-| MobileIronCloud.Device.udid | String | Device UDID | 
-| MobileIronCloud.Device.policyViolationCount | Number | Policy Violation Count | 
-| MobileIronCloud.Device.lastRegistrationTime | Date | Last Registration Time | 
-| MobileIronCloud.Device.quarantined | Boolean | Quarantined | 
-| MobileIronCloud.Device.jailbroken | Boolean | Jailbroken | 
+| MobileIronCloud.Device.udid | String | Device UDID of the device that is fetched. | 
+| MobileIronCloud.Device.policyViolationCount | Number | Policy violation count of the device that is fetched. | 
+| MobileIronCloud.Device.lastRegistrationTime | Date | Last registration time of the device that is fetched. | 
+| MobileIronCloud.Device.quarantined | Boolean | Whether the device is quarantined. | 
+| MobileIronCloud.Device.jailbroken | Boolean | Whether the device is jailbroken. | 
 
 
 #### Command Example
