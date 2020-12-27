@@ -14,10 +14,10 @@ args:
   secret: false
 comment: Calculates the entropy for the given data.
 commonfields:
-  id: CalculateEntropy
+  id: CalculateEntropyTest
   version: -1
 enabled: false
-name: CalculateEntropy
+name: CalculateEntropyTest
 outputs:
 - contextPath: EntropyResult.checked_value
   description: The given value (data).
