@@ -1,10 +1,14 @@
 The RSA Archer GRC Platform provides a common foundation for managing policies, controls, risks, assessments and deficiencies across lines of business.
-This integration was integrated and tested with version xx of RSA Archer v2
+
 ## Configure RSA Archer v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for RSA Archer v2.
 3. Click **Add instance** to create and configure a new integration instance.
+
+## Clarifications  
+The timezone (offset) parameter should be used if the Cortex XSOAR server and Archer's server aren't in the same time zone.
+If the Cortex XSOAR server time is 00:00 and the Archer server time is 01:00, the timezone parameter should be +60 (minutes).
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -22,6 +26,7 @@ This integration was integrated and tested with version xx of RSA Archer v2
 | fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
 | fields_to_fetch | List of fields from the application to gets into the incident | False |
 | time_zone | Timezone offset in minutes of the RSA Archer server machine \(\+60, \-60, in minutes\) | False |
+| useEuropeanTime | Use European Time format (DD/MM/YYYY) instead of the American one. (According to the applicationDateField) | False | 
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -406,6 +411,19 @@ Gets information about a content record in the given application
 ***
 Creates a new content record in the given application.
 
+In this command when creating a new record, it is important to pay attention to the way the values are sent through the argument - *fieldsToValues*.
+
+when field type is *Values List* - example: {"Type": \["Switch"], fieldname: \[value1, value2]}
+
+when field type is *External Links* - example: {"Patch URL": \[{"value":"github", "link": "https://github.com"}]}
+
+when field type is *Users/Groups List* - example: {"Policy Owner":{"users":ֿ \[20],"groups": \[30]}}
+
+when field type is *Cross- Reference* - for example: {"Area Reference(s)": \[20]}
+
+In other cases the value can be sent as is.
+
+To know what the type of the value you are using, you can use `archer-get-application-fields` command with the `applicationId` to get the list of all *FieldType* by *FieldName*.
 
 #### Base Command
 
@@ -787,7 +805,8 @@ Returns a list of values for a specified field, e.g., fieldID=16114. This comman
 
 ### archer-upload-file
 ***
-Uploads a file to Archer
+Uploads a file to Archer. Can associate the file to a record.
+To associate to a record, must provide all of the following arguments: applicationId, contentId, associatedField.
 
 
 #### Base Command
@@ -798,8 +817,9 @@ Uploads a file to Archer
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entryId | The entry id of the file in Demisto's context | Required | 
-
-
+| contentId | The Content (record) ID to update.| Optional | 
+| applicationId | ID of the application which we want to upload the file to. | Optional | 
+| associatedField | Archer field name to associate the file with. | Optional
 #### Context Output
 
 There is no context output for this command.

@@ -1,0 +1,17 @@
+{
+ "id": "host-container-bar",
+ "version": -1,
+ "fromVersion": "6.1.0",
+ "name": "Docker Container Count per Host",
+ "description": "The number of Docker containers used per host.",
+ "dataType": "system",
+ "widgetType": "bar",
+ "query": "host.account-docker-containers",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "host"
+  ]
+ },
+ "size": 61
+}

@@ -1,8 +1,8 @@
 {
-    "name": "SplunkPy",
+    "name": "Splunk",
     "description": "Run queries on Splunk servers.",
     "support": "xsoar",
-  "currentVersion": "1.2.4",
+    "currentVersion": "1.2.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,5 +12,29 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Malware": {
+            "mandatory": true,
+            "display_name": "Malware"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "AccessInvestigation": {
+            "mandatory": true,
+            "display_name": "Access Investigation"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "Malware",
+        "CommonTypes",
+        "AccessInvestigation"
+    ]
 }

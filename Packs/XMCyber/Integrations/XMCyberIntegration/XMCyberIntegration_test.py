@@ -130,7 +130,7 @@ def test_hostname(requests_mock):
         'hostname': 'CorporateDC'
     })
 
-    assert_response(response, 'XMCyber.Entity', 'id', [{
+    assert_response(response[0], 'XMCyber.Entity', 'id', [{
         'id': '3110337924893579985',
         'name': 'CorporateDC',
         'affectedEntities': 29,
@@ -163,9 +163,9 @@ def test_ip(requests_mock):
         'ip': '172.0.0.1'
     })
 
-    assert response.outputs_prefix == 'XMCyber.Entity'
-    assert response.outputs_key_field == 'id'
-    assert response.outputs == [{
+    assert response[0].outputs_prefix == 'XMCyber.Entity'
+    assert response[0].outputs_key_field == 'id'
+    assert response[0].outputs == [{
         'id': '3110337924893579985',
         'name': 'CorporateDC',
         'affectedEntities': 29,

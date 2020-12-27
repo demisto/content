@@ -2,10 +2,11 @@ commonfields:
   id: Box
   version: -1
 name: Box
-display: Box
+deprecated: true
+display: Box (Deprecated)
 category: IT Services
 image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFsAAAAyCAYAAAAzzacLAAAKkklEQVR42u1aeXAT1xkPJtAAJSRMgRAaJsAAhTapMaEECDTh8G1J1uED6HAEKFMmpDRpSNMOSaYtk84ESqeTtCmHQ9rEWNaxki3JxtwMdwM0DTTQkITa+3ZXK1myjW0wBvW3xviK9mlXWvKXduYbezS7733v9773Hb/v3Xdf8vlmn8UfhcbkebgSk4P48xly2eRgX8z0NaUkkdH4yatoHmK2Cx8bnWzE6CQdArAjOrf4uyQ6Gj8AemU+0w10t7BivpOMSCKkKdj+LV8H+o7kO7nUJEIaPiaHuE0ObEhaEqEk2Emwk08S7CTYSbCTYCfBToKdfJJgJ8FOPvGBrXMLY/VuzmJkyB/AEJbinSpIDcQN2Wm2cy/r3fwcXQU3RCsdwdEMsNj8T2L8n4KzeRd/7ZC9kGqIDfJni417Xu8mU+YfFPsrHdfgIqONTm4dvn9b7+KW6V38sER1XbBfSMnz8AsNLm6zycltyvX601SBnV4TGJhXKZgsdk4Ctpnyfk+5Csp2K0CfHK/ilnJuRD7D/xJj/QtyS8Gc7VjkGQD4AozhYdrYuZ6Ghdi4QM/vC2zsf6ZcujYxXn1HCe3353j5D7DuPhwT+5oSsH8Ixefnu7jzCgGOJtch75gc/EilSud6/ANzvfxLUFpUO5+p+3/O4GJfyPFwA/qOv/z98IM4gZ9H+1ZfwZ/N23stLgs3O8WtRkd0vQyuYBYN7BuQA5C2BIDuKbV6t5Ad262RyfkMd8KkzZxYJDlsdPjH9XJLLjJbdrPA5ZvtfJlaoItL61dFp6q79NgSy7I1Ffj4CHzrS3IK51WSdLwX1Hpek50jZgeZ3e2ealNNDvn3zXY2sqiGf0Nx3LM3PIuT0ko7bVlVwpvfKNh3LcfoDL7aV+FVO8OZOPYt92xupi5ktjV0Aa53kb0SqPLfsJEFB0IFsYB+4hNxgq6CraNtHtYsGpz1UxMFux0SgogqAmcH4Gkf+5d2WZr1ypMqLVpycYHOb24o/46rtTBN46U55xxtHJdXyf3P7JAHvKCcYIOCafKuo3kIAvhxE2UMi006JQ0WJQEymtzEsdgLv/e8keFxHJExONmH8p11Yw0MQYTnN+Odr+hgd/yt17nqJhbvEfvBR56SXEyMwBfCUd1hZDgDgu0k/DbczJDhAFDy8Wbo83f81qTAle3NrRT7SWtPPd/6DH5roempqyCXf/Dp9dHRwC7aw5fQgJZOzrwj4deVpn59FOVOF5T7Z8U6WngXTWTuNdpCOpRxsB8Z3WRjrHnNDm7X4lLhUQXzjgP4ZbFOVY6H/1m3O6lfZbbT39e5/dU6V2uvrCbLF34Fbo+2tgjqjTI1RU0PoNmdOV5hoJoIjdx8tsVOCCWzkDKdVooVtllsZKXqQs1JNsAqb1Myg6+yvd15uMkhbKEBZ3LURQqtgT/dfX/u0UBeQXndLdoGZVbzZydcufmQarDRgd8Rb6I/76iQisImQAsg0X0diTz1z8Yl8c777CFxLS0Awv2tv/vurBO3Uyw20RXLJRhcwmqzLTwR31LjS6GVcFm+G5PUluuSdZ3RM2RQIiWsoYL9iRqw7/i64LZES+dF+/jtFBdxque7c461fyevQrhA0xM0RT0q1C9j6H5z3pHmzHi4EYiYpQm/wZD9yi2bJQtr+FGJzjn3aHAs4oycFbbpGXFq73w5PK0zu4ozO4P1M40b4iWiziDQ9dMCbIOLtyhVuqCc26oViZXr4f8iZ606N7e27/uzjwcKJB+tvn4gkUX7yPb4WT+H8ioqJm/A+Ed25sYxFU/fX/9jrebN9nLZ8keevBftmxUloTd6XsdTYtEFNuFIlrdtUAJgk3wt6Vyjgz2uQPnG3Er/o1rNiRpgrFzBBVq1UnaTfEErLWD2zDxQHF2dcebG4wnx2Tj6M7XlzjmXArC/wJEcpNkGM9wwiQGMvj7usNx3K0pahiIjOh07mJPGpf9ofUqpL90iPxA/Q1PLdrJOBWBL1OcDGm7wgxiPlZnriNx3aedaUpCy7o+VRSGmiXnu0ASFR5v7DQXsbG0tmz2sAOx6s00YqdmcdjIGYzbIUAA++XTV/47SwIgC6fzkz4LDlVRbS6OzZMgKrMIrWi06o4ofRrGwXpJRLWrmvgrLxGcpxlQSfYMC69QESNC38NuCI8sbomduFnvtNHnyhzug1aJ1nmCGcjqUbNIsQDLkLVmQbOQXfd9f8mFwAVzDjXio48Iy4fdUZbJ8/FAodFVmkFvPHQxqYmWgK8uVK85dKtwjfjvROTN94sOUtUmbOr13M7tpPDKL2niLGqnyzagOLIm1+yWUC/GeRBe9cF94kdpKTO8ObUw4t7fXvkmZ54LZxnYxec8dDAwG93zMRHEfwKlZ6ovSgiaMqnH+gfof0XLRTApDhh0L/DruypGpHw3lLqvvrJAWfSU7L24C7EhDJixNvn/KsK/34lFqxF30vJqNrChpeDXb2zJT72Zb6Xm3cGnKxZuPRC9pK4MpuDNxUt53s2Dh+A2q/XSlXwL6FAXU250iF+kFpKazVG+wS0wHaRSmULshNDu6ipBCq/CyOQbQBkawdq2rQlwjdWBo7iTb6/fNON3cX4Z75g2xIjCi9y4k8SOUAc1lggT6IkaOeghM2w7qvA7ShHx3ncnhj3n5prCcfAv+fiM26brcUZc64ItL/Zu7s5WGXLzbTmsCYMPPPvFJey9uOr2mfhtNb8nCC6wUjqfYypUqoEIFyGaDm50OJQZ3nQ4vn6KvIKMMDGdCX85Hs9hOa7mVUR2cW1waHFZURgli3UHzHGRtto8fD6sd0J278wP1bv8knYd/EbpfjMmT27kLy3eLHfdCFuxr+550eujtO1acdq43O9jheh2tuKVFqmjXF6TNgP9eHT0zqRJH5XjIJYXcs2QNAEm6gUROIHj8G3/Dylg9Fq39YBfJlXq+ORdK31boz6VW2yWI5PYkF/XfzotASrpNrcXlwbnSnOiiDM+q4s/R/DRwaJtxOpQpZ5zLS1pHF5Xxl2kWDnfTsuZvd+aMcletJQ2uQrxXVwqkY4nrbLujBNL16pg2tZd12MiqXaFld+fL8Qil1KsMTF1k9faG9bFc1+xjrTORRDTKGagU7+AGP3/65PUxMnfs/E/LkTeJSmE5//7kz9rvlynnN5juDdg3AfbKbtqVTJV+o7fAgn9V3qRoKqa5kztdel4+ldW5idRrO6Xd5RzSluPlfhW74hPy4JIEDYEmsKz0XsZkY5+hBTb0Gg8WlV5TRYYVl/o30Xue7JYYRUHgAQSgTRLHnNgR5k7kegTFlWi2z/8YLnOWJgjyLcy7Gxv3tTsfOm9gBMbnolsg9+X3Pw2Pja9REdgjXxRxZmVlb7X/MRwDiWOoU3WZx0EOQ8y4w9c/rgrQhguQDLFirGsq5m1AyvkB/k6njZ3jC6MJzbb3ATuQUV07K95CaubJtmEwzkN9U80iq/Cu6sFQGQ3FHQtUm9zbsBjprvbFTt/uv5OZSGQ7LJLhfg7qdmqBldekf4m5vosLL8uQl+8EkEexAVc6U1Chk/8+BNLsPRRmxTCKR5QXPyQV3/4Rl4DKIL/VV/KPJ6yrMzAYqe8auOAPoVMJ/jcUlYma4JB8VDz/B8NzDA4p3965AAAAAElFTkSuQmCC
-description: Manage Box users
+description: Deprecated. Use Box v2 instead. Manage Box users
 detaileddescription: |-
   Note: the following stages should be done in less than 30 seconds due to Box security.
   1. Create a new Box instance
@@ -23,25 +24,18 @@ detaileddescription: |-
 configuration:
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 script:
-  script: >-
+  script: |-
     /*
         params.code = access_code in new integration
     */
-
     var Base = 'https://api.box.com/2.0/';
-
     var BrandData = getBrandContext();
-
     var ContextData = getIntegrationContext();
-
     var CurrentTime = new Date();
-
     var twoGraceMinute = 2 * 60 * 1000;
-
 
     function fileInfoKeysCamelized(old_obj){
         /* Gettin a JSON Object and returning all keys in camelcases and without underscore */
@@ -62,7 +56,6 @@ script:
         return new_obj;
     }
 
-
     var sendRequest = function(method, url, body, token, redirect) {
         if (redirect === undefined){
             redirect = true;
@@ -79,7 +72,6 @@ script:
                 redirect
             );
     }
-
 
     var getNewToken = function() {
         var request = {
@@ -104,7 +96,6 @@ script:
         setIntegrationContext(newResponse);
         return newResponse.access_token;
     }
-
 
     function refreshToken(){
         ContextData = getIntegrationContext();
@@ -139,7 +130,6 @@ script:
         return refreshResponse.access_token;
     }
 
-
     var getToken = function(forceRefresh) {
         var returnToken = '';
         ContextData = getIntegrationContext();
@@ -156,7 +146,6 @@ script:
         return returnToken;
     }
 
-
     var urlDict = {
         'box_get_current_user': 'users/me',
         'box_get_users':'users',
@@ -168,7 +157,6 @@ script:
         'box_files_get_info': 'files/',
         'box_files_upload': 'files/content'
     }
-
 
     var methodDict = {
         'box_get_current_user': 'GET',
@@ -182,7 +170,6 @@ script:
         'box_files_upload': 'POST'
     }
 
-
     var userTableDict = {
         'id':'ID',
         'login':'Username',
@@ -191,7 +178,6 @@ script:
         'status':'Status'
     }
 
-
     var userContextDict = {
         'id':'ID',
         'name':'Display Name',
@@ -199,18 +185,18 @@ script:
         'type':'Groups'
     }
 
-
-
     var encodeBody = function(command, args) {
         if (command === 'box_move_folder') {
             return JSON.stringify({'owned_by': { 'id': args['to_user_id']}});
         }
         if (args && Object.keys(args).length) {
+            if (typeof args.force === 'string') {
+                args.force = args.force === 'true';
+            }
             return JSON.stringify(args);
         }
         return undefined;
     }
-
 
     var getURL = function(command, args) {
         var base = urlDict[command];
@@ -239,7 +225,6 @@ script:
         return base
     }
 
-
     var usersToEc = function(users) {
         var ec={};
         ec.Account=[];
@@ -260,7 +245,6 @@ script:
         }
         return ec;
     }
-
     var usersToMd = function(users,verbose) {
         var md ='';
         if (!users) {
@@ -308,7 +292,6 @@ script:
     };
 
 
-
     function getFileInfo(){
         // Getting file info
         var command = 'box_files_get_info'
@@ -333,7 +316,6 @@ script:
         var ec = null;
         return response;
     }
-
     function getFiles(){
         // Getting file info
         var name = JSON.parse(getFileInfo().Body).name;
@@ -357,11 +339,8 @@ script:
         return {Type: 3, FileID: saveFile(response.Bytes), File: name, Contents: name};
     }
 
-
     // Initialize token
-
     var token = getToken(false);
-
     switch (command) {
         case 'test-module':
             return "Please use box_initiate command to initialize Box's instance.";
@@ -452,17 +431,21 @@ script:
       - "true"
       - "false"
       description: Print verbose data on each user
-    description: Retrieves information about the user who is currently logged in i.e. the user for whom this auth token was generated
+    description: Retrieves information about the user who is currently logged in i.e.
+      the user for whom this auth token was generated
   - name: box_get_users
     arguments:
     - name: filter_term
-      description: A string used to filter the results to only users starting with the filter_term in either the name or the login
+      description: A string used to filter the results to only users starting with
+        the filter_term in either the name or the login
     - name: limit
-      description: The number of records to return. The default is 100 and the max is 1000
+      description: The number of records to return. The default is 100 and the max
+        is 1000
     - name: offset
       description: The record at which to start. The default is 0
     - name: user_type
-      description: The type of user to search for. Valid values are all, external or managed. If nothing is provided, the default behavior will be managed only
+      description: The type of user to search for. Valid values are all, external
+        or managed. If nothing is provided, the default behavior will be managed only
     - name: verbose
       auto: PREDEFINED
       predefined:
@@ -471,14 +454,19 @@ script:
       description: Print verbose data on each user
     outputs:
     - contextPath: Account
-      description: Account information of users returned by query, including ID, name and username
-    description: Returns a list of all users for the Enterprise along with their user_id, public_name, and login
+      description: Account information of users returned by query, including ID, name
+        and username
+    description: Returns a list of all users for the Enterprise along with their user_id,
+      public_name, and login
   - name: box_update_user
     arguments:
     - name: notify
-      description: Whether the user should receive an email when they are rolled out of an enterprise
+      description: Whether the user should receive an email when they are rolled out
+        of an enterprise
     - name: enterprise
-      description: Setting this to null will roll the user out of the enterprise and make them a free user. When passing a null value, do not pass this value as a string
+      description: Setting this to null will roll the user out of the enterprise and
+        make them a free user. When passing a null value, do not pass this value as
+        a string
     - name: name
       description: The name of this user
     - name: role
@@ -494,11 +482,13 @@ script:
     - name: address
       description: The user’s address
     - name: space_amount
-      description: The user’s total available space amount in byte. A value of -1 grants unlimited storage
+      description: The user’s total available space amount in byte. A value of -1
+        grants unlimited storage
     - name: tracking_codes
       description: An array of key/value pairs set by the user’s admin
     - name: can_see_managed_users
-      description: ' boolean Whether this user can see other enterprise users in its contact list'
+      description: ' boolean Whether this user can see other enterprise users in its
+        contact list'
     - name: status
       description: Can be active, inactive, cannot_delete_edit, or cannot_delete_edit_upload
     - name: timezone
@@ -551,9 +541,11 @@ script:
   - name: box_delete_user
     arguments:
     - name: notify
-      description: Determines if the destination user should receive email notification of the transfer
+      description: Determines if the destination user should receive email notification
+        of the transfer
     - name: force
-      description: Whether or not the user should be deleted even if this user still own files
+      description: Whether or not the user should be deleted even if this user still
+        own files
     - name: user_id
       required: true
       default: true
@@ -568,9 +560,13 @@ script:
     - name: to_user_id
       required: true
       description: The ID of the user who the folder will be transferred to
-    description: Moves all of the owned content from within one user’s folder into a new folder in another user’s account. You can move folders across users as long as the you have administrative permissions and the ‘source’ user owns the folders. To move everything from the root folder, use “0” which always represents the root folder of a Box account (Currently only moving of the root folder (0) is supported)
+    description: Moves all of the owned content from within one user’s folder into
+      a new folder in another user’s account. You can move folders across users as
+      long as the you have administrative permissions and the ‘source’ user owns the
+      folders. To move everything from the root folder, use “0” which always represents
+      the root folder of a Box account (Currently only moving of the root folder (0)
+      is supported)
   - name: box_files_get
-    description: getting a file from private Box storage
     arguments:
     - name: file_id
       required: true
@@ -594,6 +590,7 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file
       type: string
+    description: getting a file from private Box storage
   - name: box_initiate
     arguments:
     - name: access_code
@@ -720,5 +717,5 @@ script:
     description: Getting file info of provided ID
   runonce: false
 tests:
-- No test
+  - No test
 fromversion: 5.0.0

@@ -133,7 +133,7 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
-                 get_token_flag=True, no_json=False, json=None):
+                 get_token_flag=True, no_json=False, json=None, status_code=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -162,7 +162,11 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :param get_token_flag: If set to True will call get_token()
 
         :type no_json: ``bool``
-        :param no_json: If set to true will not parse the content and will return the raw response object for successful response
+        :param no_json: If set to true will not parse the content and will return the raw response object for successful
+        response
+
+        :type status_code: ``int``
+        :param: status_code: The request codes to accept as OK.
 
         :return: Returns the http request response json
         :rtype: ``dict``
@@ -185,7 +189,11 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     try:
-        if res.status_code not in {200, 201, 202, 204}:
+        valid_status_codes = {200, 201, 202, 204}
+        # Handling a case when we want to return an entry for 404 status code.
+        if status_code:
+            valid_status_codes.add(status_code)
+        if res.status_code not in valid_status_codes:
             res_json = res.json()
             reason = res.reason
             resources = res_json.get('resources', {})
@@ -208,7 +216,15 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 LOG(err_msg)
                 token = get_token(new_token=True)
                 headers['Authorization'] = 'Bearer {}'.format(token)
-                return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
+                return http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    data=data,
+                    headers=headers,
+                    safe=safe,
+                    get_token_flag=False
+                )
             elif safe:
                 return None
             return_error(err_msg)
@@ -1077,7 +1093,12 @@ def get_ioc_device_count(ioc_type, value):
         type=ioc_type,
         value=value
     )
-    return http_request('GET', '/indicators/aggregates/devices-count/v1', payload)
+    response = http_request('GET', '/indicators/aggregates/devices-count/v1', payload, status_code=404)
+    errors = response.get('errors', [])
+    for error in errors:
+        if error.get('code') == 404:
+            return f'No results found for {ioc_type} - {value}'
+    return response
 
 
 def get_process_details(ids):
@@ -1463,14 +1484,17 @@ def get_ioc_device_count_command(ioc_type: str, value: str):
     :param value: The IOC value
     """
     raw_res = get_ioc_device_count(ioc_type, value)
-    handle_response_errors(raw_res)
-    device_count_res = raw_res.get('resources')
-    ioc_id = f"{ioc_type}:{value}"
-    if not device_count_res:
-        return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
-    context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
-    hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
-    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
+    if 'No results found for' in raw_res:
+        return raw_res
+    else:
+        handle_response_errors(raw_res)
+        device_count_res = raw_res.get('resources')
+        ioc_id = f"{ioc_type}:{value}"
+        if not device_count_res:
+            return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
+        context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
+        hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
+        return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
 
 
 def get_process_details_command(ids: str):
@@ -2229,7 +2253,11 @@ def get_indicator_device_id():
         type=ioc_type,
         value=ioc_value
     )
-    raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params)
+    raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params, status_code=404)
+    errors = raw_res.get('errors', [])
+    for error in errors:
+        if error.get('code') == 404:
+            return f'No results found for {ioc_type} - {ioc_value}'
     context_output = ''
     if validate_response(raw_res):
         context_output = raw_res.get('resources')
