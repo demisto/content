@@ -1898,7 +1898,7 @@ def get_audit_agent_reports_command(client, args):
         tableToMarkdown('Audit Agent Reports', audit_logs),
         {
             f'{INTEGRATION_CONTEXT_BRAND}.AuditAgentReports': audit_logs,
-            'Endpoint(val.ID && val.ID == obj.ID)': endpoint_context
+            Common.Endpoint.CONTEXT_PATH: endpoint_context
         },
         audit_logs
     )
@@ -2903,7 +2903,7 @@ def main():
             raise
 
         demisto.error(traceback.format_exc())
-        return_error(f'Error: {str(err)}\nTrace\n:{traceback.format_exc()}')
+        return_error(f'Error: {str(err)}\nTrace: \n{traceback.format_exc()}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
