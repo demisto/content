@@ -146,6 +146,6 @@ def test_test_module_wrong_credentials(mocker, params):
         'key': params.get('api_key'),
         'api_token': params.get('api_token')
     }
-    client = Client(base_url='test.com', api_params=api_params, credentials=params.get('credentials'))
+    client = Client(base_url=params.get('url'), api_params=api_params, credentials=params.get('credentials'))
     with pytest.raises(DemistoException, match='Authentication Error.'):
         client.test_module_command()
