@@ -14,7 +14,7 @@ args:
 - name: url
   required: true
   default: true
-  description: URL to verify
+  description: Comma separated list of URLs to verify.
   isArray: true
 outputs:
 - contextPath: URL
