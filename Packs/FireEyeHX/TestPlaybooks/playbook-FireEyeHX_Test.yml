@@ -439,11 +439,11 @@ tasks:
       - "13"
     scriptarguments:
       category:
-        simple: ${FireEyeHX.Indicators.[0].category.name}
+        simple: ${FireEyeHX.Indicators.[0].category.uri_name}
       condition:
         simple: example.abc,example.lol
       name:
-        simple: ${FireEyeHX.Indicators.[0].name}
+        simple: ${FireEyeHX.Indicators.[0].uri_name}
     separatecontext: false
     view: |-
       {
@@ -503,7 +503,8 @@ tasks:
       - "15"
     scriptarguments:
       alerted: {}
-      category: {}
+      category:
+        simple: Custom
       createdBy: {}
       limit: {}
       searchTerm: {}
