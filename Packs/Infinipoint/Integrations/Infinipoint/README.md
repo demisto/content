@@ -1076,14 +1076,14 @@ run queries
 >| 40151026-c5a6-4a3a-92a4-39a0bbee5902 | Name | 0 | User Profile Not In Use (90 days) |
 
 
-### infinipoint-get-non-compliance
+### infinipoint-get-events
 ***
 get non compliance devices
 
 
 #### Base Command
 
-`infinipoint-get-non-compliance`
+`infinipoint-get-events`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1110,7 +1110,7 @@ get non compliance devices
 
 
 #### Command Example
-``` !infinipoint-get-non-compliance limit=100 offset=0```
+``` !infinipoint-get-events limit=100 offset=0```
 
 #### Human Readable Output
 
