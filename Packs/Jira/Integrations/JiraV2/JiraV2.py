@@ -295,8 +295,7 @@ def create_incident_from_ticket(issue):
         {'type': 'created', 'value': str(demisto.get(issue, 'fields.created'))},
         {'type': 'summary', 'value': str(demisto.get(issue, 'fields.summary'))},
         {'type': 'description', 'value': str(demisto.get(issue, 'fields.description'))},
-        {'type': 'attachments', 'value': str(demisto.get(issue, 'fields.attachments'))},
-        {'type': 'comments', 'value': str(demisto.get(issue, 'fields.comments'))},
+
     ]
 
     name = demisto.get(issue, 'fields.summary')
@@ -315,14 +314,18 @@ def create_incident_from_ticket(issue):
             severity = 1
 
     file_names = []
-    if isinstance(demisto.get(issue, 'fields.attachments'), list):
-        for file_result in demisto.get(issue, 'fields.attachments'):
+    if demisto.params().get('fetch_attachments'):
+        for file_result in get_entries_for_fetched_incident(issue.get('id'), False, True)['attachments']:
             if file_result['Type'] != entryTypes['error']:
                 file_names.append({
                     'path': file_result.get('FileID', ''),
                     'name': file_result.get('File', '')
                 })
-
+    if demisto.params().get('fetch_comments'):
+        labels.append({'type': 'comments', 'value': str(get_entries_for_fetched_incident(issue.get('id'), True, False)
+                                                        ['comments'])})
+    else:
+        labels.append({'type': 'comments', 'value': '[]'})
     # Adding mirroring details
     if demisto.params().get("incoming_mirror") and demisto.params().get("outgoing_mirror"):
         issue['mirror_direction'] = 'Both'
@@ -704,13 +707,13 @@ def test_module() -> str:
     return 'ok'
 
 
-def get_entries_for_fetched_incident(ticket_id):
+def get_entries_for_fetched_incident(ticket_id, should_get_comments, should_get_attachments):
     entries = {'comments': [], 'attachments': []}
     try:
         _, _, raw_response = get_issue(issue_id=ticket_id)
-        entries = get_incident_entries(raw_response, '', False)
+        entries = get_incident_entries(raw_response, '', False, should_get_comments, should_get_attachments)
     except Exception as e:
-        demisto.error(f'could not get attachments for {ticket_id} while fetch this incident')
+        demisto.error(f'could not get attachments for {ticket_id} while fetch this incident because: {str(e)}')
     finally:
         return entries
 
@@ -734,9 +737,6 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
         curr_id = id_offset
         for ticket in res.get('issues'):
             ticket_id = int(ticket.get("id"))
-            entries = get_entries_for_fetched_incident(ticket_id)
-            ticket['fields']['comments'] = entries['comments']
-            ticket['fields']['attachments'] = entries['attachments']
             if ticket_id == curr_id:
                 continue
             id_offset = max(int(id_offset), ticket_id)
@@ -786,18 +786,20 @@ def get_comments(comments,incident_modified_date,  only_new=True):
         return returned_comments
 
 
-def get_incident_entries(issue, incident_modified_date, only_new=True):
+def get_incident_entries(issue, incident_modified_date, only_new=True, should_get_comments=True, should_get_attachments=True):
     entries = {'comments': [], 'attachments': []}
-    _, _, comments_content = get_comments_command(issue['id'])
-    if comments_content:
-        raw_comments_content = comments_content
-        commands = get_comments(raw_comments_content.get('comments', []), incident_modified_date, only_new)
-        entries['comments'] = commands
-    attachments = demisto.get(issue, 'fields.attachment')
-    if attachments:
-        file_results = get_attachments(attachments, incident_modified_date, only_new)
-        if file_results:
-            entries['attachments'] = file_results
+    if should_get_comments:
+        _, _, comments_content = get_comments_command(issue['id'])
+        if comments_content:
+            raw_comments_content = comments_content
+            commands = get_comments(raw_comments_content.get('comments', []), incident_modified_date, only_new)
+            entries['comments'] = commands
+    if should_get_attachments:
+        attachments = demisto.get(issue, 'fields.attachment')
+        if attachments:
+            file_results = get_attachments(attachments, incident_modified_date, only_new)
+            if file_results:
+                entries['attachments'] = file_results
     return entries
 
 
