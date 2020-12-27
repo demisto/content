@@ -10,8 +10,7 @@ SUSPICIOUS_SCORE = 2
 URL_REGEX_PATTERN = r',(?=https?://)'
 
 url_arg = demisto.get(demisto.args(), "url")
-# urls = re.split(URL_REGEX_PATTERN, url_arg)
-urls = argToList(url_arg)
+urls = re.split(URL_REGEX_PATTERN, url_arg)
 
 url_list = []
 
