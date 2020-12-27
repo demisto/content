@@ -648,7 +648,7 @@ script:
         in milliseconds, or a string value in date format 2019-10-23T10:00:00. If not
         set, the event time will be defined as now.
       isArray: false
-      name: event_timestampt
+      name: event_timestamp
       required: false
       secret: false
     - auto: PREDEFINED
