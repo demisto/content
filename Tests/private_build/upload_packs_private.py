@@ -120,6 +120,12 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
     for d in os.scandir(private_index_path):
         if os.path.isdir(d.path):
             update_index_folder(index_folder_path, d.name, d.path)
+    try:
+        print('\n\n\n trying to ls index_folder_path after addition of private packs \n\n\n')
+        subprocess.call(f'ls {index_folder_path}')
+    except Exception as e:
+        print(f'\n\n\n path {index_folder_path} does not exist')
+
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
@@ -149,6 +155,7 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
+        print(f'\n\n\n private packs are: {private_packs} \n\n\n')
         logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
         logging.info("Finished updating index with priced packs")
@@ -428,6 +435,7 @@ def main():
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
+    print(f'\n\n\n index_folder_path:{index_folder_path} \n\n\n')
 
     # content repo client initialized
     if not is_private_build:
@@ -458,6 +466,13 @@ def main():
                                                                                                index_folder_path,
                                                                                                pack_names,
                                                                                                is_private_build)
+        print(f'\n\n\n private_packs:{private_packs},\n\n\n private_index_path:{private_index_path} \n\n\n')
+        try:
+            print('\n\n\n ls to private_index_path \n\n\n')
+            subprocess.call(f'ls {private_index_path}')
+        except Exception as e:
+            print('\n\n was not able to ls to private_index_path \n\n')
+
     else:  # skipping private packs
         logging.info("Skipping index update of priced packs")
         private_packs = []
@@ -471,6 +486,7 @@ def main():
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket)
     # starting iteration over packs
+    print(f'\n\n packs_list is:{packs_list}\n\n')
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
                                            packs_dependencies_mapping, private_bucket_name,

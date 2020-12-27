@@ -1,5 +1,6 @@
 import json
 import os
+import subprocess
 import sys
 import argparse
 import shutil
@@ -109,10 +110,21 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
     index_generation = index_blob.generation
 
     index_blob.download_to_filename(download_index_path, if_generation_match=index_generation)
+    print(f'\n\n\n download_index_path:{download_index_path} \n\n\n')
+    try:
+        print('\n\n\n ls to download_index_path \n\n\n')
+        subprocess.call(f'ls {download_index_path}')
+    except Exception as e:
+        print('\n\n was not able to ls to download_index_path \n\n')
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:
             index_zip.extractall(extract_destination_path)
+            try:
+                print('\n\n\n ls to extract_destination_path \n\n\n')
+                subprocess.call(f'ls {extract_destination_path}')
+            except Exception as e:
+                print('\n\n was not able to ls to extract_destination_path \n\n')
 
         if not os.path.exists(index_folder_path):
             logging.critical(f"Failed creating {GCPConfig.INDEX_NAME} folder with extracted data.")
