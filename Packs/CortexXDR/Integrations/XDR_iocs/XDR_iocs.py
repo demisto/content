@@ -48,7 +48,7 @@ class Client:
         self._base_url: str = urljoin(params.get('url'), '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
         self._headers: Dict = get_headers(params)
-        self._proxy = handle_proxy()
+        handle_proxy()
 
     def http_request(self, url_suffix: str, requests_kwargs) -> Dict:
         url: str = f'{self._base_url}{url_suffix}'
