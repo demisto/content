@@ -74,8 +74,12 @@ def test_get_report_context(path):
 
 def test_credentials_not_part_of_params(mocker):
     """
+        Given:
+            - Valid api-key and token
+
         When:
             - testing connect to integration, using API key and API token only.
+            (Without username and password.)
 
         Then:
             - validating that main finishes successfully without raising an error
