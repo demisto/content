@@ -25,7 +25,7 @@ configuration:
   required: false
   type: 0
 description: Rundeck is a runbook automation for incident management, business continuity, and self-service operations. |-
-  The integration enables you to install software on a list of machines or perform a task periodically. Can be used when there is a new attack and you want to perform an update of the software to block the attack.
+  The integration enables you to install software on a list of machines or perform a task periodically. Can be used when there is a new attack and you want to perform an update of the software to block the attack
 display: Rundeck
 name: Rundeck
 script:
@@ -1094,7 +1094,7 @@ script:
     - contextPath: Rundeck.WebhookEvent.executionId
       description: The ID of the execution.
       type: String
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
   longRunning: false
