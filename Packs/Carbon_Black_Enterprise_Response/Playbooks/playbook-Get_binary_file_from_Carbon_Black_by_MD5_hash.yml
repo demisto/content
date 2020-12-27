@@ -1,8 +1,8 @@
-id: Get binary file from Carbon Black by MD5 hash
+id: Get a binary file from Carbon Black by its MD5 hash
 version: -1
 name: Get a binary file from Carbon Black by its MD5 hash
-description: This playbook retrieves a binary file by its MD5 hash from the Carbon Black telemetry
-  data.
+description: This playbook retrieves a binary file by its MD5 hash from the Carbon
+  Black telemetry data.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,8 +40,8 @@ tasks:
       id: 2af5f32e-9d78-4753-81e3-6be566ecf9fd
       version: -1
       name: 'Is VMware Carbon Black EDR v2 enabled? '
-      description: Returns 'yes' if the integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -141,8 +141,8 @@ tasks:
       id: 417a3cd6-63f9-4c91-86f8-8e6903c288ca
       version: -1
       name: Get the binary file from Carbon Black by its MD5 hash
-      description: Retrieve a binary from CarbonBlack based on its hash. Returns a .zip
-        file containing the requested file and its metadata.
+      description: Retrieve a binary from CarbonBlack based on its hash. Returns a
+        .zip file containing the requested file and its metadata.
       script: '|||cb-binary-download'
       type: regular
       iscommand: true
@@ -190,7 +190,7 @@ inputs:
       root: File
       accessor: MD5
   required: false
-  description: MD5 hash of the binary file to be retrieved. 
+  description: MD5 hash of the binary file to be retrieved.
   playbookInputQuery:
 outputs:
 - contextPath: File.Size
