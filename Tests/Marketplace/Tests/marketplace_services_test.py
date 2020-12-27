@@ -629,7 +629,7 @@ This is visible
            Given:
                - release notes, display version and build number
            When:
-               - new init changelog entry must created
+               - initial changelog entry must created
            Then:
                - return changelog entry with release notes and without R letter in display name
        """
@@ -647,15 +647,15 @@ This is visible
     @staticmethod
     def os_path_join(path, *paths):
 
-        if path == 'exist':
+        if path == 'changelog_exist':
             return 'Tests/Marketplace/Tests/test_data/changelog_test_date.json'
-        if path == 'not_exist':
+        if path == 'changelog_not_exist':
             return 'test'
 
     @freeze_time("2020-11-04T13:34:14.75Z")
     @pytest.mark.parametrize('is_changelog_exist, expected_date', [
-        ('exist', '2020-12-21T12:10:55Z'),
-        ('not_exist', '2020-11-04T13:34:14Z')
+        ('changelog_exist', '2020-12-21T12:10:55Z'),
+        ('changelog_not_exist', '2020-11-04T13:34:14Z')
     ])
     def test_handle_pack_create_date_changelog_exist(self, mocker, dummy_pack, is_changelog_exist, expected_date):
         """
@@ -667,7 +667,7 @@ This is visible
                - changelog entry not exists
 
            Then:
-           - return the released field fron the changelog file
+           - return the released field from the changelog file
            - return datetime.utcnow
        """
         from Tests.Marketplace.marketplace_services import os

@@ -662,7 +662,7 @@ class Pack(object):
             version_display_name (str): display name version.
             build_number (srt): current build number.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
-            initial_release (bool):
+            initial_release (bool): whether the entry is an initial release or not.
 
         Returns:
             dict: release notes entry of changelog
