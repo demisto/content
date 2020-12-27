@@ -1,6 +1,6 @@
 import io
 
-from pytest import raises, fixture, mark
+from pytest import raises, fixture
 
 from CommonServerPython import *
 
