@@ -11,17 +11,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-CortexXDRIR
+**CortexXDRIR**
 
 ### Scripts
-* ExportToCSV
-* Set
-* SetGridField
+- **ExportToCSV**
+- **Set**
+- **SetGridField**
 
 ### Commands
-* xdr-get-endpoints
-* send-mail
-* setIncident
+- ***xdr-get-endpoints***
+- ***send-mail***
+- ***setIncident***
 
 ## Playbook Inputs
 ---
