@@ -2840,10 +2840,10 @@ def main():
             return_outputs(*get_audit_agent_reports_command(client, args))
 
         elif demisto.command() == 'xdr-blacklist-files':
-            return_outputs(*blacklist_files_command(client, args()))
+            return_outputs(*blacklist_files_command(client, args))
 
         elif demisto.command() == 'xdr-whitelist-files':
-            return_outputs(*whitelist_files_command(client, args()))
+            return_outputs(*whitelist_files_command(client, args))
 
         elif demisto.command() == 'xdr-quarantine-files':
             return_outputs(*quarantine_files_command(client, args))
