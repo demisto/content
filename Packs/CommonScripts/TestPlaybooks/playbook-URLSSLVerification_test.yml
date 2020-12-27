@@ -1,0 +1,314 @@
+id: URLSSLVerification_test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: URLSSLVerification_test
+description: This test can only run successfully on a non-local machine (due to SSL
+  verification)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0c6f2a17-b80c-480d-822f-65036ddc443d
+    type: start
+    task:
+      id: 0c6f2a17-b80c-480d-822f-65036ddc443d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: b24aaae4-5be9-45df-8f69-52d83331b709
+    type: regular
+    task:
+      id: b24aaae4-5be9-45df-8f69-52d83331b709
+      version: -1
+      name: URLSSLVerification
+      description: Verify URL SSL certificate
+      scriptName: URLSSLVerification
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      url:
+        simple: https://ynet.co.il,http://ynet.co.il,https://a.b?a,b
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: fe43f706-8081-4455-85b2-7e2ea08c2a4a
+    type: condition
+    task:
+      id: fe43f706-8081-4455-85b2-7e2ea08c2a4a
+      version: -1
+      name: Verify https://ynet.co.il
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://ynet.co.il
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Verified
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 52b5ffeb-08fd-4835-8026-72534b155ca3
+    type: condition
+    task:
+      id: 52b5ffeb-08fd-4835-8026-72534b155ca3
+      version: -1
+      name: Verify http://ynet.co.il
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://ynet.co.il
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Verified
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://ynet.co.il
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5a84060f-36e4-4da8-8545-8963f88db10e
+    type: condition
+    task:
+      id: 5a84060f-36e4-4da8-8545-8963f88db10e
+      version: -1
+      name: Verify https://a.b?a,b
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://a.b?a,b
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Verified
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://a.b?a,b
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1d746008-932b-4ed6-8a55-a77a8e9ea610
+    type: title
+    task:
+      id: 1d746008-932b-4ed6-8a55-a77a8e9ea610
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
