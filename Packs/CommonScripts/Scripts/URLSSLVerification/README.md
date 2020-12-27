@@ -14,7 +14,7 @@ Verifies the URL's SSL certificate.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| url | The URL to verify. |
+| url | Comma separated list of URLs to verify. |
 
 ## Outputs
 ---
