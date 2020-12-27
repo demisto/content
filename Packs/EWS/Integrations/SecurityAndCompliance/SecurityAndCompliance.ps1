@@ -1240,6 +1240,9 @@ function NewSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     $public_folder_location = ArgToList $kwargs.public_folder_location
     $share_point_location = ArgToList $kwargs.share_point_location
     $share_point_location_exclusion = ArgToList $kwargs.share_point_location_exclusion
+    if (!$kwargs.search_name -or $kwargs.search_name -eq "") {
+        $kwargs.search_name = "XSOAR-$(New-Guid)"
+    }
     # Raw response
     $raw_response = $client.NewSearch($kwargs.search_name, $kwargs.case, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
                                       $exchange_location, $exchange_location_exclusion, $public_folder_location, $share_point_location, $share_point_location_exclusion)
