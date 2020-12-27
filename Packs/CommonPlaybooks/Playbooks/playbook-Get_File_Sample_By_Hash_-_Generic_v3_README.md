@@ -6,7 +6,7 @@ This playbook returns a file sample correlating to a hash in the War Room using 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Get binary file from Carbon Black by MD5 hash
+* Get the binary file from Carbon Black by its MD5 hash
 * Get File Sample By Hash - Cylance Protect v2
 
 ### Integrations
