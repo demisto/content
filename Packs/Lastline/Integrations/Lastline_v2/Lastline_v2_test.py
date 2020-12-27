@@ -105,13 +105,10 @@ def test_connect_with_credentials(mocker):
         - validating no error is raised.
 
     """
-    mocker.patch.object(demisto, 'params', return_value={'url': 'testurl.com',
-                                                         'credentials': {'identifier': 'identifier',
-                                                                         'password': 'password'}})
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(Client, 'get_task_list', return_value=('Human readable', {}, {}))
-    client = Client(base_url='test.com', api_params={}, credentials={'username': 'identifier',
-                                                                     'password': 'password'})
+    client = Client(base_url='testurl.com', api_params={}, credentials={'username': 'identifier',
+                                                                        'password': 'password'})
     assert client.test_module_command() == ('ok', {}, {})
 
 
