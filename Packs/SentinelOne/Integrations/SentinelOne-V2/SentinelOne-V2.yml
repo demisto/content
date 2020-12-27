@@ -1426,7 +1426,7 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: true
   longRunning: false
   longRunningPort: false

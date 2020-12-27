@@ -19,7 +19,7 @@ description: Simple RSS reader that can ingest new items as Incidents
 display: RSS
 name: RSS
 script:
-  dockerimage: demisto/feed-parser:1.0.0.13383
+  dockerimage: demisto/feed-parser:1.0.0.14495
   feed: false
   isfetch: true
   longRunning: false
