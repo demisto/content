@@ -90,7 +90,6 @@ class RemotingClient
             # single fqdn
             if ($fqdn -and ($fqdn.GetType().fullname -eq 'System.String'))
             {
-                # TODO: Improve list creation
                 $fqdn_list = [System.Collections.ArrayList]::new()
                 $fqdn_list += $fqdn
                 $fqdn = $fqdn_list + $ip_hosts
@@ -193,13 +192,222 @@ class RemotingClient
     #>
     }
 
-    CopyItemInSession([string]$path, [string]$file_name)
+    CopyItemFromSession([string]$path, [string]$file_name)
     {
         if (!$this.session)
         {
             $this.CreateSession()
         }
         Copy-Item -FromSession $this.session $path -Destination $file_name
+    }
+
+    CopyItemToSession([string]$path, [string]$file_name)
+    {
+        if (!$this.session)
+        {
+            $this.CreateSession()
+        }
+        Copy-Item -ToSession $this.session $path -Destination $file_name
+    }
+
+    ExportMFT() {
+        if (!$this.session)
+        {
+            $this.CreateSession()
+        }
+        $remote_script_block = {
+            Param($volume, $output_file_path)
+
+            if ($volume -ne 0)
+            {
+                $Win32_Volume = Get-WmiObject -Class Win32_Volume -Filter "DriveLetter LIKE '$( $volume ):'"
+                if ($Win32_Volume.FileSystem -ne "NTFS")
+                {
+                    Write-Error "$volume is not an NTFS filesystem."
+                    break
+                }
+            }
+            else
+            {
+                $Win32_Volume = Get-WmiObject -Class Win32_Volume -Filter "DriveLetter LIKE '$( $env:SystemDrive )'"
+                if ($Win32_Volume.FileSystem -ne "NTFS")
+                {
+                    Write-Error "$env:SystemDrive is not an NTFS filesystem."
+                    break
+                }
+            }
+            if (-not$output_file_path)
+            {
+                $output_file_path = $env:TEMP + "\$([IO.Path]::GetRandomFileName() )"
+            }
+
+            #region WinAPI
+
+            $GENERIC_READWRITE = 0x80000000
+            $FILE_SHARE_READWRITE = 0x02 -bor 0x01
+            $OPEN_EXISTING = 0x03
+
+            $DynAssembly = New-Object System.Reflection.AssemblyName('MFT')
+            $AssemblyBuilder = [AppDomain]::CurrentDomain.DefineDynamicAssembly($DynAssembly, [Reflection.Emit.AssemblyBuilderAccess]::Run)
+            $ModuleBuilder = $AssemblyBuilder.DefineDynamicModule('InMemory', $false)
+
+            $TypeBuilder = $ModuleBuilder.DefineType('kernel32', 'Public, Class')
+            $DllImportConstructor = [Runtime.InteropServices.DllImportAttribute].GetConstructor(@([String]))
+            $SetLastError = [Runtime.InteropServices.DllImportAttribute].GetField('SetLastError')
+            $SetLastErrorCustomAttribute = New-Object Reflection.Emit.CustomAttributeBuilder($DllImportConstructor,
+            @('kernel32.dll'),
+            [Reflection.FieldInfo[]]@($SetLastError),
+            @($True))
+
+            #CreateFile
+            $PInvokeMethodBuilder = $TypeBuilder.DefinePInvokeMethod('CreateFile', 'kernel32.dll',
+                    ([Reflection.MethodAttributes]::Public -bor [Reflection.MethodAttributes]::Static),
+                    [Reflection.CallingConventions]::Standard,
+                    [IntPtr],
+                    [Type[]]@([String],[Int32],[UInt32],[IntPtr],[UInt32],[UInt32],[IntPtr]),
+                    [Runtime.InteropServices.CallingConvention]::Winapi,
+                    [Runtime.InteropServices.CharSet]::Ansi)
+            $PInvokeMethodBuilder.SetCustomAttribute($SetLastErrorCustomAttribute)
+
+            #CloseHandle
+            $PInvokeMethodBuilder = $TypeBuilder.DefinePInvokeMethod('CloseHandle', 'kernel32.dll',
+                    ([Reflection.MethodAttributes]::Public -bor [Reflection.MethodAttributes]::Static),
+                    [Reflection.CallingConventions]::Standard,
+                    [Bool],
+                    [Type[]]@([IntPtr]),
+                    [Runtime.InteropServices.CallingConvention]::Winapi,
+                    [Runtime.InteropServices.CharSet]::Auto)
+            $PInvokeMethodBuilder.SetCustomAttribute($SetLastErrorCustomAttribute)
+
+            $Kernel32 = $TypeBuilder.CreateType()
+
+            #endregion WinAPI
+
+            # Get handle to volume
+            if ($volume -ne 0)
+            {
+                $VolumeHandle = $Kernel32::CreateFile(('\\.\' + $volume + ':'), $GENERIC_READWRITE, $FILE_SHARE_READWRITE, [IntPtr]::Zero, $OPEN_EXISTING, 0, [IntPtr]::Zero)
+            }
+            else
+            {
+                $VolumeHandle = $Kernel32::CreateFile(('\\.\' + $env:SystemDrive), $GENERIC_READWRITE, $FILE_SHARE_READWRITE, [IntPtr]::Zero, $OPEN_EXISTING, 0, [IntPtr]::Zero)
+                $volume = ($env:SystemDrive).TrimEnd(':')
+            }
+
+            if ($VolumeHandle -eq -1)
+            {
+                Write-Error "Unable to obtain read handle for volume."
+                break
+            }
+
+            # Create a FileStream to read from the volume handle
+            $FileStream = New-Object IO.FileStream($VolumeHandle, [IO.FileAccess]::Read)
+
+            # Read VBR from volume
+            $VolumeBootRecord = New-Object Byte[](512)
+            if ($FileStream.Read($VolumeBootRecord, 0, $VolumeBootRecord.Length) -ne 512)
+            {
+                Write-Error "Error reading volume boot record."
+            }
+
+            # Parse MFT offset from VBR and set stream to its location
+            $MftOffset = [Bitconverter]::ToInt32($VolumeBootRecord[0x30..0x37], 0) * 0x1000
+            $FileStream.Position = $MftOffset
+
+            # Read MFT's file record header
+            $MftFileRecordHeader = New-Object byte[](48)
+            if ($FileStream.Read($MftFileRecordHeader, 0, $MftFileRecordHeader.Length) -ne $MftFileRecordHeader.Length)
+            {
+                Write-Error "Error reading MFT file record header."
+            }
+
+            # Parse values from MFT's file record header
+            $OffsetToAttributes = [Bitconverter]::ToInt16($MftFileRecordHeader[0x14..0x15], 0)
+            $AttributesRealSize = [Bitconverter]::ToInt32($MftFileRecordHeader[0x18..0x21], 0)
+
+            # Read MFT's full file record
+            $MftFileRecord = New-Object byte[]($AttributesRealSize)
+            $FileStream.Position = $MftOffset
+            if ($FileStream.Read($MftFileRecord, 0, $MftFileRecord.Length) -ne $AttributesRealSize)
+            {
+                Write-Error "Error reading MFT file record."
+            }
+
+            # Parse MFT's attributes from file record
+            $Attributes = New-object byte[]($AttributesRealSize - $OffsetToAttributes)
+            [Array]::Copy($MftFileRecord, $OffsetToAttributes, $Attributes, 0, $Attributes.Length)
+
+            # Find Data attribute
+            $CurrentOffset = 0
+            do
+            {
+                $AttributeType = [Bitconverter]::ToInt32($Attributes[$CurrentOffset..$( $CurrentOffset + 3 )], 0)
+                $AttributeSize = [Bitconverter]::ToInt32($Attributes[$( $CurrentOffset + 4 )..$( $CurrentOffset + 7 )], 0)
+                $CurrentOffset += $AttributeSize
+            } until ($AttributeType -eq 128)
+
+            # Parse data attribute from all attributes
+            $DataAttribute = $Attributes[$( $CurrentOffset - $AttributeSize )..$( $CurrentOffset - 1 )]
+
+            # Parse MFT size from data attribute
+            $MftSize = [Bitconverter]::ToUInt64($DataAttribute[0x30..0x37], 0)
+
+            # Parse data runs from data attribute
+            $OffsetToDataRuns = [Bitconverter]::ToInt16($DataAttribute[0x20..0x21], 0)
+            $DataRuns = $DataAttribute[$OffsetToDataRuns..$( $DataAttribute.Length - 1 )]
+
+            # Convert data run info to string[] for calculations
+            $DataRunStrings = ([Bitconverter]::ToString($DataRuns)).Split('-')
+
+            # Setup to read MFT
+            $FileStreamOffset = 0
+            $DataRunStringsOffset = 0
+            $TotalBytesWritten = 0
+            $MftData = New-Object byte[](0x1000)
+            $OutputFileStream = [IO.File]::OpenWrite($output_file_path)
+
+            do
+            {
+                $StartBytes = [int]($DataRunStrings[$DataRunStringsOffset][0]).ToString()
+                $LengthBytes = [int]($DataRunStrings[$DataRunStringsOffset][1]).ToString()
+
+                $DataRunStart = "0x"
+                for ($i = $StartBytes; $i -gt 0; $i--) {
+                    $DataRunStart += $DataRunStrings[($DataRunStringsOffset + $LengthBytes + $i)]
+                }
+
+                $DataRunLength = "0x"
+                for ($i = $LengthBytes; $i -gt 0; $i--) {
+                    $DataRunLength += $DataRunStrings[($DataRunStringsOffset + $i)]
+                }
+
+                $FileStreamOffset += ([int]$DataRunStart * 0x1000)
+                $FileStream.Position = $FileStreamOffset
+
+                for ($i = 0; $i -lt [int]$DataRunLength; $i++) {
+                    if ($FileStream.Read($MftData, 0, $MftData.Length) -ne $MftData.Length)
+                    {
+                        Write-Warning "Possible error reading MFT data on $env:COMPUTERNAME."
+                    }
+                    $OutputFileStream.Write($MftData, 0, $MftData.Length)
+                    $TotalBytesWritten += $MftData.Length
+                }
+                $DataRunStringsOffset += $StartBytes + $LengthBytes + 1
+            } until ($TotalBytesWritten -eq $MftSize)
+
+            $FileStream.Dispose()
+            $OutputFileStream.Dispose()
+
+            $Properties = @{
+                NetworkPath = "\\$( $env:COMPUTERNAME )\C$\$($output_file_path.TrimStart('C:\') )"
+                ComputerName = $env:COMPUTERNAME
+                'MFT Size' = "$( $MftSize / 1024 / 1024 ) MB"
+                'MFT Volume' = $volume
+                'MFT File' = $output_file_path
+            }
+            New-Object -TypeName PSObject -Property $Properties
+        }
+        return Invoke-Command -Session $this.session -ScriptBlock $remote_script_block -ArgumentList @($volume, $output_file_path)
     }
 }
 
@@ -234,7 +442,7 @@ function InvokeCommandCommand([RemotingClient]$client, [string]$command, [string
     #>
 }
 
-function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$hostname, [string]$ip_hosts, [string]$zip_file, [string]$check_hash)
+function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zip_file, [string]$check_hash)
 {
     $temp = $demisto.UniqueFile()
     $file_name = "$demisto.Investigation().id_$temp"
@@ -264,7 +472,7 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$ho
         $src_hash = $client.InvokeCommandInSession($command)
     }
 
-    client.CopyItemInSession($path, $file_name)
+    client.CopyItemFromSession($path, $file_name)
     if ($zip_file -eq 'true')
     {
         # clean zip from host
@@ -286,8 +494,8 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$ho
     $file_extension = [System.IO.Path]::GetExtension($file_name_leaf)
     $file_extension = If ($file_extension) {$file_extension.SubString(1, $file_extension.length - 1)} else {""}
 
-    $entry_context = [PSCustomObject]@{
-        PsRemoteDownloadedFile = [PSCustomObject]@{
+    $entry_context = @{
+        PsRemoteDownloadedFile = @{
             FileName = $file_name_leaf;
             FileSize = Get-Item $file_name | % { [math]::ceiling($_.length / 1kb) };
             FileSHA1 = (Get-FileHash $file_name -Algorithm SHA1).Hash;
@@ -309,8 +517,8 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$ho
     $demisto.Results($demisto_results)
 }
 
-function StartETLCommand([RemotingClient]$client, [string]$hostname, [string]$ip_hosts, [string]$etl_path,
-                         [string]$etl_filter, [string]$etl_max_size, [string]$etl_time_lim, [string]$overwrite)
+function StartETLCommand([RemotingClient]$client, [string]$etl_path, [string]$etl_filter, [string]$etl_max_size,
+                         [string]$etl_time_lim, [string]$overwrite)
 {
     $command = "netsh trace start capture=yes traceFile=$etl_path maxsize=$etl_max_size overwrite=$overwrite $etl_filter"
     $raw_result = client.InvokeCommandInSession($command)
@@ -329,353 +537,121 @@ function StartETLCommand([RemotingClient]$client, [string]$hostname, [string]$ip
     return $human_readable, $entry_context, $raw_result
 }
 
-function StopETL($Hostname, $IPHosts)
+function StopETL([RemotingClient]$client)
 {
-    #
-    $Command = 'netsh trace stop'
-    $Session = CreateSession $Hostname $IPHosts
-    $Contents = InvokeCommandInSession $Command $Session
-    $Session | Remove-PSsession
-    $EtlPath = echo $Contents | Select-String -Pattern "File location = "
-    if ($EtlPath)
+    $command = 'netsh trace stop'
+    $raw_results = $client.InvokeCommandInSession($command)
+    $client.CloseSession()
+    $etl_path = echo $raw_results | Select-String -Pattern "File location = "
+    if ($etl_path)
     {
-        $EtlPath = $EtlPath.ToString()
-        $EtlPath = $EtlPath.Substring(16, $EtlPath.Length - 16)
+        # clean "File location = "
+        $etl_path = $etl_path.ToString()
+        $etl_path = $etl_path.Substring(16, $etl_path.Length - 16)
     }
     else
     {
-        $EtlPath = ""
+        $etl_path = ""
     }
-    if ($Contents)
+    if ($raw_results)
     {
-        $Contents = [string]$Contents
+        $raw_results = [string]$raw_results
     }
-    $EntryContext = [PSCustomObject]@{
-        PsRemote = [PSCustomObject]@{ CommandResult = $Contents; EtlFilePath = $EtlPath; EtlFileName = If ($EtlPath)
-        {
-            Split-Path $EtlPath -leaf
-        }
-        else
-        {
-            ""
-        } }
+    $entry_context = @{
+        $script:INTEGRATION_ENTRY_CONTEX = @{
+            CommandResult = $raw_results
+            EtlFilePath = $etl_path
+            EtlFileName = if ($etl_path) {Split-Path $etl_path -leaf} else {""}}
     }
 
-    $DemistoResult = @{
-        Type = 1;
-        ContentsFormat = "json";
-        Contents = $Contents;
-        EntryContext = $EntryContext;
-        ReadableContentsFormat = "markdown";
-        HumanReadable = $Contents;
-    }
+    $human_readable = $raw_results
 
-    return $DemistoResult
+    return $human_readable, $entry_context, $raw_result
 }
 
-function ExportRegistry($Hostname, $IPHosts, $RegKeyHive, $FilePath)
+function ExportRegistry($volume, $output_file_path)
 {
-    $command = If ($RegKeyHive -eq 'all')
-    {
-        'regedit /e '
-    }
-    Else
-    {
-        'reg export ' + $RegKeyHive + ' '
-    }
-    $command = $command + $FilePath
-    $Title = "Ran Export Registry. `n"
-    $Session = CreateSession $Hostname $IPHosts
-    $Contents = InvokeCommandInSession $Command $Session
-    $EntryContext = [PSCustomObject]@{
-        PsRemote = [PSCustomObject]@{ CommandResult = $Contents; RegistryFilePath = $FilePath; RegistryFileName = Split-Path $FilePath -leaf }
+    $command = if ($reg_key_hive -eq 'all') {"regedit /e $file_path"} else {"reg export $reg_key_hive $file_path"}
+    $raw_results = $client.InvokeCommandInSession($command)
+    $client.CloseSession()
+    $title = "Ran Export Registry. `n"
+    $entry_context = @{
+        $script:INTEGRATION_ENTRY_CONTEX = @{
+            CommandResult = $raw_results
+            RegistryFilePath = $file_path
+            RegistryFileName = Split-Path $file_path -leaf
+        }
     }
 
-    $DemistoResult = @{
-        Type = 1;
-        ContentsFormat = "json";
-        Contents = $Contents;
-        EntryContext = $EntryContext;
-        ReadableContentsFormat = "markdown";
-        HumanReadable = $Title + $Contents;
-    }
+    $human_readable = $title + $raw_result
 
-    return $DemistoResult
+    return $human_readable, $entry_context, $raw_result
 }
 
-function UploadFile($EntryId, $DstPath, $Hostname, $IPHosts, $ZipFile, $CheckHash)
+function UploadFileCommand($entry_id, $dst_path, $hostname, $ip_hosts, $zip_file, $check_hash)
 {
-    $Session = CreateSession $Hostname $IPHosts
-    $SrcPath = $demisto.GetFilePath($EntryId).path
-    if ($ZipFile -eq 'true')
+    $src_path = $demisto.GetFilePath($entry_id).path
+    if ($zip_file -eq 'true')
     {
-        $OldPath = $SrcPath
-        $SrcPath = $SrcPath + ".zip"
-        Compress-Archive -Path $OldPath -Update -DestinationPath $SrcPath
+        # compress file before upload
+        $old_path = $src_path
+        $src_path = "$src_path.zip"
+        Compress-Archive -Path $old_path -Update -DestinationPath $src_path
     }
-    if ($CheckHash -eq 'true')
+    if ($check_hash -eq 'true')
     {
-        $SrcHash = (Get-FileHash $SrcPath -Algorithm MD5).Hash
+        # save hash before upload
+        $src_hash = (Get-FileHash $src_path -Algorithm MD5).Hash
     }
-    Copy-Item -ToSession $Session $SrcPath -Destination $DstPath
-    if ($CheckHash -eq 'true')
+    $client.CopyItemToSession($src_path, $dst_path)
+    if ($check_hash -eq 'true')
     {
-        $command = '(Get-FileHash ' + $DstPath + ' -Algorithm MD5).Hash'
-        $DstHash = InvokeCommandInSession $command $Session
-        if ($SrcHash -ne $DstHash)
+        $command = "(Get-FileHash $dst_path -Algorithm MD5).Hash"
+        $dst_hash = $client.InvokeCommandInSession($command)
+        if ($src_hash -ne $dst_hash)
         {
-            ReturnError('Failed check_hash: The uploaded file has a different hash than the local file. LocalFileHash=' + $SrcHash + ' UploadedFileHash=' + $DstHash)
-            exit(0)
+            throw "Failed check_hash: The uploaded file has a different hash than the local file. LocalFileHash=$src_hash UploadedFileHash=$dst_hash"
         }
     }
-    $Session | Remove-PSsession
+    $client.CloseSession()
 
-    $FileNameLeaf = Split-Path $SrcPath -leaf
-    $FileExtension = [System.IO.Path]::GetExtension($FileNameLeaf)
-    $FileExtension = If ($FileExtension)
-    {
-        $FileExtension.SubString(1, $FileExtension.length - 1)
-    }
-    else
-    {
-        ""
-    }
+    $file_name_leaf = Split-Path $src_path -leaf
+    $file_ext = [System.IO.Path]::GetExtension($file_name_leaf)
+    $file_ext = If ($file_ext) {$file_ext.SubString(1, $file_ext.length - 1)} else {""}
 
-    $EntryContext = [PSCustomObject]@{
-        PsRemoteDownloadedFile = [PSCustomObject]@{
-            FileName = $FileNameLeaf;
-            FileSize = Get-Item $SrcPath | % { [math]::ceiling($_.length / 1kb) };
-            FileSHA1 = (Get-FileHash $SrcPath -Algorithm SHA1).Hash;
-            FileSHA256 = (Get-FileHash $SrcPath -Algorithm SHA256).Hash;
-            FileMD5 = (Get-FileHash $SrcPath -Algorithm MD5).Hash;
-            FileExtension = $FileExtension
+    $entry_context = @{
+        PsRemoteUploadedFile = @{
+            FileName = $file_name_leaf;
+            FileSize = Get-Item $src_path | % { [math]::ceiling($_.length / 1kb) };
+            FileSHA1 = (Get-FileHash $src_path -Algorithm SHA1).Hash;
+            FileSHA256 = (Get-FileHash $src_path -Algorithm SHA256).Hash;
+            FileMD5 = (Get-FileHash $src_path -Algorithm MD5).Hash;
+            FileExtension = $file_ext
         }
     }
-    return $DemistoResult = @{
-        Type = 1;
-        ContentsFormat = "text";
-        Contents = "";
-        EntryContext = $EntryContext;
-        HumanReadable = "File upload command finished execution."
-    }
+    $human_readable = $title + $raw_result
+
+    return $human_readable, $entry_context, ""
 }
 
-function ExportMFT($Hostname, $IPHosts, $Volume, $OutPutFilePath)
+function ExportMFTCommand($volume, $output_file_path)
 {
-    $RemoteScriptBlock = {
-        Param($Volume, $OutPutFilePath)
+    $raw_response = $client.ExportMFT($volume, $output_file_path)
+    $client.CloseSession()
 
-        if ($Volume -ne 0)
-        {
-            $Win32_Volume = Get-WmiObject -Class Win32_Volume -Filter "DriveLetter LIKE '$( $Volume ):'"
-            if ($Win32_Volume.FileSystem -ne "NTFS")
-            {
-                Write-Error "$Volume is not an NTFS filesystem."
-                break
-            }
+    $raw_response = $raw_response | Add-Member -NotePropertyMembers @{ Host = ($hostname + $ip_hosts) } -PassThru
+    $entry_context = @{
+        $script:INTEGRATION_ENTRY_CONTEX = @{
+            ExportMFT = $raw_response
         }
-        else
-        {
-            $Win32_Volume = Get-WmiObject -Class Win32_Volume -Filter "DriveLetter LIKE '$( $env:SystemDrive )'"
-            if ($Win32_Volume.FileSystem -ne "NTFS")
-            {
-                Write-Error "$env:SystemDrive is not an NTFS filesystem."
-                break
-            }
-        }
-        if (-not$OutputFilePath)
-        {
-            $OutputFilePath = $env:TEMP + "\$([IO.Path]::GetRandomFileName() )"
-        }
-
-        #region WinAPI
-
-        $GENERIC_READWRITE = 0x80000000
-        $FILE_SHARE_READWRITE = 0x02 -bor 0x01
-        $OPEN_EXISTING = 0x03
-
-        $DynAssembly = New-Object System.Reflection.AssemblyName('MFT')
-        $AssemblyBuilder = [AppDomain]::CurrentDomain.DefineDynamicAssembly($DynAssembly, [Reflection.Emit.AssemblyBuilderAccess]::Run)
-        $ModuleBuilder = $AssemblyBuilder.DefineDynamicModule('InMemory', $false)
-
-        $TypeBuilder = $ModuleBuilder.DefineType('kernel32', 'Public, Class')
-        $DllImportConstructor = [Runtime.InteropServices.DllImportAttribute].GetConstructor(@([String]))
-        $SetLastError = [Runtime.InteropServices.DllImportAttribute].GetField('SetLastError')
-        $SetLastErrorCustomAttribute = New-Object Reflection.Emit.CustomAttributeBuilder($DllImportConstructor,
-        @('kernel32.dll'),
-        [Reflection.FieldInfo[]]@($SetLastError),
-        @($True))
-
-        #CreateFile
-        $PInvokeMethodBuilder = $TypeBuilder.DefinePInvokeMethod('CreateFile', 'kernel32.dll',
-                ([Reflection.MethodAttributes]::Public -bor [Reflection.MethodAttributes]::Static),
-                [Reflection.CallingConventions]::Standard,
-                [IntPtr],
-                [Type[]]@([String],[Int32],[UInt32],[IntPtr],[UInt32],[UInt32],[IntPtr]),
-                [Runtime.InteropServices.CallingConvention]::Winapi,
-                [Runtime.InteropServices.CharSet]::Ansi)
-        $PInvokeMethodBuilder.SetCustomAttribute($SetLastErrorCustomAttribute)
-
-        #CloseHandle
-        $PInvokeMethodBuilder = $TypeBuilder.DefinePInvokeMethod('CloseHandle', 'kernel32.dll',
-                ([Reflection.MethodAttributes]::Public -bor [Reflection.MethodAttributes]::Static),
-                [Reflection.CallingConventions]::Standard,
-                [Bool],
-                [Type[]]@([IntPtr]),
-                [Runtime.InteropServices.CallingConvention]::Winapi,
-                [Runtime.InteropServices.CharSet]::Auto)
-        $PInvokeMethodBuilder.SetCustomAttribute($SetLastErrorCustomAttribute)
-
-        $Kernel32 = $TypeBuilder.CreateType()
-
-        #endregion WinAPI
-
-        # Get handle to volume
-        if ($Volume -ne 0)
-        {
-            $VolumeHandle = $Kernel32::CreateFile(('\\.\' + $Volume + ':'), $GENERIC_READWRITE, $FILE_SHARE_READWRITE, [IntPtr]::Zero, $OPEN_EXISTING, 0, [IntPtr]::Zero)
-        }
-        else
-        {
-            $VolumeHandle = $Kernel32::CreateFile(('\\.\' + $env:SystemDrive), $GENERIC_READWRITE, $FILE_SHARE_READWRITE, [IntPtr]::Zero, $OPEN_EXISTING, 0, [IntPtr]::Zero)
-            $Volume = ($env:SystemDrive).TrimEnd(':')
-        }
-
-        if ($VolumeHandle -eq -1)
-        {
-            Write-Error "Unable to obtain read handle for volume."
-            break
-        }
-
-        # Create a FileStream to read from the volume handle
-        $FileStream = New-Object IO.FileStream($VolumeHandle, [IO.FileAccess]::Read)
-
-        # Read VBR from volume
-        $VolumeBootRecord = New-Object Byte[](512)
-        if ($FileStream.Read($VolumeBootRecord, 0, $VolumeBootRecord.Length) -ne 512)
-        {
-            Write-Error "Error reading volume boot record."
-        }
-
-        # Parse MFT offset from VBR and set stream to its location
-        $MftOffset = [Bitconverter]::ToInt32($VolumeBootRecord[0x30..0x37], 0) * 0x1000
-        $FileStream.Position = $MftOffset
-
-        # Read MFT's file record header
-        $MftFileRecordHeader = New-Object byte[](48)
-        if ($FileStream.Read($MftFileRecordHeader, 0, $MftFileRecordHeader.Length) -ne $MftFileRecordHeader.Length)
-        {
-            Write-Error "Error reading MFT file record header."
-        }
-
-        # Parse values from MFT's file record header
-        $OffsetToAttributes = [Bitconverter]::ToInt16($MftFileRecordHeader[0x14..0x15], 0)
-        $AttributesRealSize = [Bitconverter]::ToInt32($MftFileRecordHeader[0x18..0x21], 0)
-
-        # Read MFT's full file record
-        $MftFileRecord = New-Object byte[]($AttributesRealSize)
-        $FileStream.Position = $MftOffset
-        if ($FileStream.Read($MftFileRecord, 0, $MftFileRecord.Length) -ne $AttributesRealSize)
-        {
-            Write-Error "Error reading MFT file record."
-        }
-
-        # Parse MFT's attributes from file record
-        $Attributes = New-object byte[]($AttributesRealSize - $OffsetToAttributes)
-        [Array]::Copy($MftFileRecord, $OffsetToAttributes, $Attributes, 0, $Attributes.Length)
-
-        # Find Data attribute
-        $CurrentOffset = 0
-        do
-        {
-            $AttributeType = [Bitconverter]::ToInt32($Attributes[$CurrentOffset..$( $CurrentOffset + 3 )], 0)
-            $AttributeSize = [Bitconverter]::ToInt32($Attributes[$( $CurrentOffset + 4 )..$( $CurrentOffset + 7 )], 0)
-            $CurrentOffset += $AttributeSize
-        } until ($AttributeType -eq 128)
-
-        # Parse data attribute from all attributes
-        $DataAttribute = $Attributes[$( $CurrentOffset - $AttributeSize )..$( $CurrentOffset - 1 )]
-
-        # Parse MFT size from data attribute
-        $MftSize = [Bitconverter]::ToUInt64($DataAttribute[0x30..0x37], 0)
-
-        # Parse data runs from data attribute
-        $OffsetToDataRuns = [Bitconverter]::ToInt16($DataAttribute[0x20..0x21], 0)
-        $DataRuns = $DataAttribute[$OffsetToDataRuns..$( $DataAttribute.Length - 1 )]
-
-        # Convert data run info to string[] for calculations
-        $DataRunStrings = ([Bitconverter]::ToString($DataRuns)).Split('-')
-
-        # Setup to read MFT
-        $FileStreamOffset = 0
-        $DataRunStringsOffset = 0
-        $TotalBytesWritten = 0
-        $MftData = New-Object byte[](0x1000)
-        $OutputFileStream = [IO.File]::OpenWrite($OutputFilePath)
-
-        do
-        {
-            $StartBytes = [int]($DataRunStrings[$DataRunStringsOffset][0]).ToString()
-            $LengthBytes = [int]($DataRunStrings[$DataRunStringsOffset][1]).ToString()
-
-            $DataRunStart = "0x"
-            for ($i = $StartBytes; $i -gt 0; $i--) {
-                $DataRunStart += $DataRunStrings[($DataRunStringsOffset + $LengthBytes + $i)]
-            }
-
-            $DataRunLength = "0x"
-            for ($i = $LengthBytes; $i -gt 0; $i--) {
-                $DataRunLength += $DataRunStrings[($DataRunStringsOffset + $i)]
-            }
-
-            $FileStreamOffset += ([int]$DataRunStart * 0x1000)
-            $FileStream.Position = $FileStreamOffset
-
-            for ($i = 0; $i -lt [int]$DataRunLength; $i++) {
-                if ($FileStream.Read($MftData, 0, $MftData.Length) -ne $MftData.Length)
-                {
-                    Write-Warning "Possible error reading MFT data on $env:COMPUTERNAME."
-                }
-                $OutputFileStream.Write($MftData, 0, $MftData.Length)
-                $TotalBytesWritten += $MftData.Length
-            }
-            $DataRunStringsOffset += $StartBytes + $LengthBytes + 1
-        } until ($TotalBytesWritten -eq $MftSize)
-
-        $FileStream.Dispose()
-        $OutputFileStream.Dispose()
-
-        $Properties = @{
-            NetworkPath = "\\$( $env:COMPUTERNAME )\C$\$($OutputFilePath.TrimStart('C:\') )"
-            ComputerName = $env:COMPUTERNAME
-            'MFT Size' = "$( $MftSize / 1024 / 1024 ) MB"
-            'MFT Volume' = $Volume
-            'MFT File' = $OutputFilePath
-        }
-        New-Object -TypeName PSObject -Property $Properties
     }
-    $Session = CreateSession $Hostname $IPHosts
-    $ReturnedObjects = Invoke-Command -Session $Session -ScriptBlock $RemoteScriptBlock -ArgumentList @($Volume, $OutPutFilePath)
-    $Session | Remove-PSsession
+    $human_readable = 'MFT Export results: `n' + $raw_response
 
-    $ReturnedObjects = $ReturnedObjects | Add-Member -NotePropertyMembers @{ Host = ($Hostname + $IPHosts) } -PassThru
-    $Context = [PSCustomObject]@{
-        PsRemote = [PSCustomObject]@{ ExportMFT = $ReturnedObjects }
-    }
-    $HumanReadable = 'MFT Export results: `n' + $ReturnedObjects
-    return $DemistoResult = @{
-        Type = 1;
-        ContentsFormat = "json";
-        Contents = $ReturnedObjects;
-        EntryContext = $Context;
-        ReadableContentsFormat = "markdown";
-        HumanReadable = $HumanReadable
-    }
+    return $human_readable, $entry_context, $raw_result
 }
 
 function Main
 {
-    #TODO: Handle this block
     $command = $Demisto.GetCommand()
     $args = $Demisto.Args()
     $params = $Demisto.Params()
@@ -708,43 +684,27 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = InvokeCommandCommand $cs_client $args.command $hostname $ip_hosts
             }
             "$script:COMMAND_PREFIX-download-file" {
-                $FileResult = DownloadFileCommand $cs_client $args.path $hostname $ip_hosts $args.zip_file $args.check_hash
+                $FileResult = DownloadFileCommand $cs_client $args.path $args.zip_file $args.check_hash
                 return
             }
             "$script:COMMAND_PREFIX-etl-create-start" {
-                ($human_readable, $entry_context, $raw_response) = StartETLCommand $cs_client $hostname $ip_hosts $args.etl_path $args.etl_filter $args.etl_max_size $args.etl_time_limit $args.overwrite
+                ($human_readable, $entry_context, $raw_response) = StartETLCommand $cs_client $args.etl_path $args.etl_filter $args.etl_max_size $args.etl_time_limit $args.overwrite
             }
             "$script:COMMAND_PREFIX-etl-create-stop" {
-                $Hostname = ArgToList $demisto.Args().host
-
-                $EtlStopResult = StopETL $Hostname $IPHosts
-                $demisto.Results($EtlStopResult); Break
+                ($human_readable, $entry_context, $raw_response) = StopETLCommand $cs_client
             }
             "$script:COMMAND_PREFIX-export-registry" {
-                $RegKeyHive = $demisto.Args().reg_key_hive
-                $FilePath = $demisto.Args().file_path
-
-                $result = ExportRegistry $Hostname $IPHosts $RegKeyHive $FilePath
-                $demisto.Results($result); Break
+                ($human_readable, $entry_context, $raw_response) = ExportRegistry $args.reg_key_hive $args.file_path
             }
             "$script:COMMAND_PREFIX-upload-file" {
-                $EntryId = $demisto.Args().entry_id
-                $Path = $demisto.Args().path
-                $ZipFile = $demisto.Args().zip_file
-                $CheckHash = $demisto.Args().check_hash
-
-                $Result = UploadFile $EntryId $Path $Hostname $IPHosts $ZipFile $CheckHash
-                $demisto.Results($Result); Break
+                # to be tested
+                ($human_readable, $entry_context, $raw_response) = UploadFileCommand $args.entry_id $args.path $args.zip_file $args.check_hash
             }
             "$script:COMMAND_PREFIX-export-mft" {
-                $Volume = $demisto.Args().volume
-                $OutPutFilePath = $demisto.Args().output_path
-
-                $Result = ExportMFT $Hostname $IPHosts $Volume $OutPutFilePath
-                $demisto.Results($Result); Break
+                ($human_readable, $entry_context, $raw_response) = ExportMFTCommand $hostname $ip_hosts $args.volume $args.output_path
             }
             Default {
-                $demisto.Error('Unsupported command was entered.')
+                $demisto.Error("Unsupported command was entered: $command.")
             }
         }
         # Return results to Demisto Server
