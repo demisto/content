@@ -1169,7 +1169,7 @@ def main() -> None:
             'cloudshare-get-classes': get_classes_command,
             'cloudshare-get-class': get_class_command,
             'cloudshare-delete-class': delete_class_command,
-            'cloudshare-delete-class-environemtns': delete_class_environments_command, # This is here for maintaining BC
+            'cloudshare-delete-class-environemtns': delete_class_environments_command,  # This is here for maintaining BC
             'cloudshare-delete-class-environemnts': delete_class_environments_command,
             'cloudshare-get-classes-countries': get_classes_countries_command,
             'cloudshare-get-classes-customfields': get_classes_customfields_command,
