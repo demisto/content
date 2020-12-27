@@ -227,7 +227,10 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         return
 
     print(f'\n\n\nindex folder path is; {index_folder_path}\n\n\n')
-    subprocess.call(f'ls {index_folder_path}')
+    try:
+        subprocess.call(f'ls {index_folder_path}')
+    except Exception as e:
+        print(f'\n\n\n path {index_folder_path} does not exist')
 
     task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                        integration_images=integration_images, author_image=author_image,
@@ -241,7 +244,10 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
     print(f'\n\n\nprinting index after folder metadata\n\n\n')
-    subprocess.call(f'ls {index_folder_path}')
+    try:
+        subprocess.call(f'ls {index_folder_path}')
+    except Exception as e:
+        print(f'\n\n\n path {index_folder_path} does not exist')
     task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
     if not task_status:
         pack.status = PackStatus.FAILED_RELEASE_NOTES.name

@@ -1062,7 +1062,10 @@ class Pack(object):
 
             pack_path = os.path.join(index_folder_path, self._pack_name)
             print(f'\n\n\n path to pack is: {pack_path}\n\n\n')
-            subprocess.call(f'ls {pack_path}')
+            try:
+                subprocess.call(f'ls {pack_path}')
+            except Exception as e:
+                print(f'\n\n\n path {pack_path} does not exist')
 
             if os.path.exists(changelog_index_path):
                 changelog, changelog_latest_rn_version = self.get_changelog_latest_rn(changelog_index_path)
