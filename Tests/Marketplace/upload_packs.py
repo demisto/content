@@ -115,7 +115,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         print('\n\n\n ls to download_index_path \n\n\n')
         subprocess.call(f'ls {download_index_path}')
     except Exception as e:
-        print('\n\n was not able to ls to download_index_path \n\n')
+        print('\n\n was not able to ls to download_index_path. \n{e} \n\n')
 
     if os.path.exists(download_index_path):
         with ZipFile(download_index_path, 'r') as index_zip:

@@ -1056,6 +1056,10 @@ class Pack(object):
         task_status = False
         not_updated_build = False
 
+        print('doing plain ls')
+        subprocess.call('ls')
+        print(subprocess.call('ls'))
+
         try:
             # load changelog from downloaded index
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
