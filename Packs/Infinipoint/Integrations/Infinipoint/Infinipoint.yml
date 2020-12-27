@@ -841,7 +841,7 @@ script:
     - contextPath: Infinipoint.Scripts.execute.name
       description: Query name
       type: String
-  - name: infinipoint-get-events
+  - name: infinipoint-get-non-compliance
     description: Get compliance details by time offset
     arguments:
     - name: offset
