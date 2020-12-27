@@ -139,11 +139,11 @@ def get_credentials(additional_scopes=None, delegated_user=None):
 
 def get_service(serviceName, version, additional_scopes=None, delegated_user=None):
     credentials = get_credentials(additional_scopes=additional_scopes, delegated_user=delegated_user)
-    if PROXY or DISABLE_SSL:
+    if not PROXY:
+        handle_proxy()
+    elif PROXY or DISABLE_SSL:
         http_client = credentials.authorize(get_http_client_with_proxy())
         return discovery.build(serviceName, version, http=http_client)
-    elif not PROXY:
-        handle_proxy()
     return discovery.build(serviceName, version, credentials=credentials)
 
 
