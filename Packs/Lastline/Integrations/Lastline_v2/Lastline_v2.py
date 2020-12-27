@@ -4,6 +4,7 @@ from urllib3 import disable_warnings
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from datetime import datetime
 
 
 INTEGRATION_COMMAND_NAME = "lastline"
@@ -105,13 +106,9 @@ class Client(BaseClient):
         return human_readable, context_entry, result
 
     def test_module_command(self):
-        try:
-            self.get_report()
-        except DemistoException as error:
-            if 'Missing required field \'uuid\'.' in str(error):
-                return 'ok', {}, {}
-            else:
-                raise error
+        self.command_params.update({'after': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")})
+        self.get_task_list()
+        return 'ok', {}, {}
 
     def get_status_and_time(self, uuids) -> List:
         task_list: List[List] = []

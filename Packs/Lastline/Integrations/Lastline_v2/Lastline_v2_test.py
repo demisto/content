@@ -72,10 +72,6 @@ def test_get_report_context(path):
         get_report_context(out_dict)
 
 
-def raise_exception():
-    raise DemistoException('error Missing required field \'uuid\'.')
-
-
 def test_credentials_not_part_of_params(mocker):
     """
         When:
@@ -89,12 +85,8 @@ def test_credentials_not_part_of_params(mocker):
                                                          'api_key': 'apikey',
                                                          'api_token': 'apitoken'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(Client, 'get_report', side_effect=raise_exception)
+    mocker.patch.object(Client, 'get_task_list', return_value=('Human readable', {}, {}))
     assert main() is None
-
-
-def raise_exception_3006():
-    raise DemistoException('error (3006) Missing required field \'uuid\'.')
 
 
 def test_connect_with_credentials(mocker):
@@ -110,10 +102,45 @@ def test_connect_with_credentials(mocker):
 
     """
     mocker.patch.object(demisto, 'params', return_value={'url': 'testurl.com',
-                                                         'api_key': 'apikey',
-                                                         'api_token': 'apitoken'})
+                                                         'credentials': {'identifier': 'identifier',
+                                                                         'password': 'password'}})
     mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(Client, 'get_report', side_effect=raise_exception_3006)
-    client = Client(base_url='test.com', api_params={}, credentials={'identifier': 'identifier',
+    mocker.patch.object(Client, 'get_task_list', return_value=('Human readable', {}, {}))
+    client = Client(base_url='test.com', api_params={}, credentials={'username': 'identifier',
                                                                      'password': 'password'})
     assert client.test_module_command() == ('ok', {}, {})
+
+
+def raise_exception():
+    raise DemistoException('Authentication Error.')
+
+
+@pytest.mark.parametrize('params', [{'url': 'testurl.com',
+                                     'credentials': {'identifier': 'identifier',
+                                                     'password': 'password'}},
+                                    {'url': 'testurl.com',
+                                     'username': 'identifier',
+                                     'password': 'password-wrong'},
+                                    ])
+def test_test_module_wrong_credentials(mocker, params):
+    """
+    Given:
+        - connect cedentials
+
+    When:
+        - testing connect to integration, using credentials: email and password.
+
+    Then:
+        - validating no error is raised.
+
+    """
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(Client, 'get_task_list', side_effect=raise_exception)
+    api_params = {
+        'key': params.get('api_key'),
+        'api_token': params.get('api_token')
+    }
+    client = Client(base_url='test.com', api_params=api_params, credentials=params.get('credentials'))
+    with pytest.raises(DemistoException, match='Authentication Error.'):
+        client.test_module_command()
