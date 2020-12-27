@@ -1221,26 +1221,27 @@ def get_process_context(alert, process_type):
     }
 
     remove_nulls_from_dictionary(process_context)
+
+    # If the process contains only 'HostName' , don't create an indicator
     if len(process_context.keys()) == 1 and 'Hostname' in process_context.keys():
         return {}
     return process_context
 
 
 def add_to_ip_context(alert, ip_context):
-
     action_local_ip = alert.get('action_local_ip')
     action_remote_ip = alert.get('action_remote_ip')
     if action_local_ip:
         ip_context.append(
             {
-                'Address': alert.get('action_local_ip')
+                'Address': action_local_ip
             }
         )
 
     if action_remote_ip:
         ip_context.append(
             {
-                'Address': alert.get('action_remote_ip')
+                'Address': action_remote_ip
             }
         )
 
@@ -1250,10 +1251,11 @@ def create_context_from_network_artifacts(network_artifacts, ip_context):
 
     if network_artifacts:
         for artifact in network_artifacts:
-            if artifact.get('network_domain'):
+            domain = artifact.get('network_domain')
+            if domain:
                 domain_context.append(
                     {
-                        'Name': artifact.get('network_domain')
+                        'Name': domain
                     }
                 )
 
@@ -1271,8 +1273,8 @@ def create_context_from_network_artifacts(network_artifacts, ip_context):
 
 
 def get_indicators_context(incident):
-    file_context = []
-    process_context = []
+    file_context: List[Any] = []
+    process_context: List[Any] = []
     ip_context: List[Any] = []
     for alert in incident.get('alerts'):
         # file context
