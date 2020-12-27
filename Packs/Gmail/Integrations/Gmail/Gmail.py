@@ -142,6 +142,8 @@ def get_service(serviceName, version, additional_scopes=None, delegated_user=Non
     if PROXY or DISABLE_SSL:
         http_client = credentials.authorize(get_http_client_with_proxy())
         return discovery.build(serviceName, version, http=http_client)
+    elif not PROXY:
+        handle_proxy()
     return discovery.build(serviceName, version, credentials=credentials)
 
 
