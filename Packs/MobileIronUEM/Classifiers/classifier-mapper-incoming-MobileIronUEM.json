@@ -1,0 +1,311 @@
+{
+ "description": "Incoming mapper for the MobileIron UEM integration",
+ "feed": false,
+ "id": "6e9cd6b1-641a-4a66-8359-1f4193ab04c0",
+ "mapping": {
+  "MobileIron Cloud Device Incident": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Compliance State": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "complianceState",
+      "transformers": [
+       {
+        "args": {
+         "else": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "Device Is Not Compliant"
+          }
+         },
+         "equals": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "true"
+          }
+         },
+         "then": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "Device Is Compliant"
+          }
+         }
+        },
+        "operator": "If-Then-Else"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Device Alt Serial Number": {
+     "complex": null,
+     "simple": "altSerialNumber"
+    },
+    "Device ID": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "id",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Device Model": {
+     "complex": null,
+     "simple": "prettyModel"
+    },
+    "Device Name": {
+     "complex": null,
+     "simple": "deviceName"
+    },
+    "Device Owner": {
+     "complex": null,
+     "simple": "ownershipType"
+    },
+    "Device Registration Status": {
+     "complex": null,
+     "simple": "registrationState"
+    },
+    "Device Registration Timestamp": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "lastRegistrationTime",
+      "transformers": [
+       {
+        "args": {
+
+        },
+        "operator": "TimeStampToDate"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Device Serial Number": {
+     "complex": null,
+     "simple": "serialNumber"
+    },
+    "Device UDID": {
+     "complex": null,
+     "simple": "udid"
+    },
+    "Device UUID": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "guid",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Device User ID": {
+     "complex": null,
+     "simple": "uid"
+    },
+    "IMEI": {
+     "complex": null,
+     "simple": "imei"
+    },
+    "IMSI": {
+     "complex": null,
+     "simple": "imsi"
+    },
+    "Is Device Jailbroken?": {
+     "complex": null,
+     "simple": "jailbroken"
+    },
+    "Is Device Quarantined?": {
+     "complex": null,
+     "simple": "quarantined"
+    },
+    "Last Check-in Timestamp": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "clientLastCheckin",
+      "transformers": [
+       {
+        "args": {
+
+        },
+        "operator": "TimeStampToDate"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "MAC Address": {
+     "complex": null,
+     "simple": "wifiMacAddress"
+    },
+    "Manufacturer": {
+     "complex": null,
+     "simple": "manufacturer"
+    },
+    "OS": {
+     "complex": null,
+     "simple": "platformType"
+    },
+    "OS Version": {
+     "complex": null,
+     "simple": "platformVersion"
+    },
+    "Phone Number": {
+     "complex": null,
+     "simple": "phoneNumber"
+    },
+    "Platform": {
+     "complex": null,
+     "simple": "platformType"
+    },
+    "Source Username": {
+     "complex": null,
+     "simple": "displayName"
+    },
+    "User Email Address": {
+     "complex": null,
+     "simple": "emailAddress"
+    }
+   }
+  },
+  "MobileIron Core Device Incident": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "MobileIron Compliance State": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "common_compliant",
+      "transformers": [
+       {
+        "args": {
+         "else": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "Device not compliant"
+          }
+         },
+         "equals": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "true"
+          }
+         },
+         "then": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "Device is compliant"
+          }
+         }
+        },
+        "operator": "If-Then-Else"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "MobileIron Device ID": {
+     "complex": null,
+     "simple": "common_id"
+    },
+    "MobileIron Device Model": {
+     "complex": null,
+     "simple": "common_model"
+    },
+    "MobileIron Device Owner": {
+     "complex": null,
+     "simple": "common_owner"
+    },
+    "MobileIron Device Registration Status": {
+     "complex": null,
+     "simple": "common_status"
+    },
+    "MobileIron Device Registration Timestamp": {
+     "complex": null,
+     "simple": "common_registration_date"
+    },
+    "MobileIron Device UUID": {
+     "complex": null,
+     "simple": "common_uuid"
+    },
+    "MobileIron Device User ID": {
+     "complex": null,
+     "simple": "user_user_id"
+    },
+    "MobileIron IMEI": {
+     "complex": null,
+     "simple": "common_imei"
+    },
+    "MobileIron IMSI": {
+     "complex": null,
+     "simple": "common_imsi"
+    },
+    "MobileIron Is Device Quarantined?": {
+     "complex": null,
+     "simple": "common_quarantined"
+    },
+    "MobileIron Last Check-in Timestamp": {
+     "complex": null,
+     "simple": "common_last_connected_at"
+    },
+    "MobileIron MAC Address": {
+     "complex": null,
+     "simple": "common_wifi_mac_address"
+    },
+    "MobileIron Manufacturer": {
+     "complex": null,
+     "simple": "common_manufacturer"
+    },
+    "MobileIron Platform": {
+     "complex": null,
+     "simple": "common_platform"
+    },
+    "OS": {
+     "complex": null,
+     "simple": "common_platform"
+    },
+    "MobileIron Security State": {
+     "complex": null,
+     "simple": "common_security_state"
+    },
+    "MobileIron Source Username": {
+     "complex": null,
+     "simple": "user_display_name"
+    },
+    "MobileIron User Email Address": {
+     "complex": null,
+     "simple": "user_email_address"
+    }
+   }
+  }
+ },
+ "name": "MobileIron Incident Incoming Mapper",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

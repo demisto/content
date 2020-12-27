@@ -1,0 +1,827 @@
+category: Endpoint
+commonfields:
+  id: MobileIronCORE
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: MobileIron Core Device Incident
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Server URL (ex. https://core.mobileiron.com )
+  name: url
+  required: true
+  type: 0
+- defaultvalue: '1'
+  display: Admin Space ID (ex. 1 for the global space id)
+  name: admin_space_id
+  required: true
+  type: 0
+- display: API User Credentials
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: '50'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: MobileIron CORE Integration
+display: MobileIronCORE
+name: MobileIronCORE
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron send message command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    - default: false
+      description: Provide Subject for email
+      isArray: false
+      name: subject
+      required: true
+      secret: false
+    - default: false
+      description: Provide message for email
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Send Message Mode
+      isArray: false
+      name: message_type
+      predefined:
+      - pns
+      - sms
+      - email
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to send a message to the particular device based
+      on device id
+    execution: false
+    name: mobileiron-core-send-message
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron update os command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to update OS to the particular device based
+      on device id
+    execution: false
+    name: mobileiron-core-update-os
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron unlock device
+        only command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to unlock device to the particular device based
+      on device id
+    execution: false
+    name: mobileiron-core-unlock-device-only
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron enable voice roaming
+        command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to enable voice roaming to the particular device
+      based on device id
+    execution: false
+    name: mobileiron-core-enable-voice-roaming
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron disable voice
+        roaming command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to disable voice roaming to the particular device
+      based on device id
+    execution: false
+    name: mobileiron-core-disable-voice-roaming
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron enable data roaming
+        command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to enable data roaming to the particular device
+      based on device id
+    execution: false
+    name: mobileiron-core-enable-data-roaming
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron disable data roaming
+        command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to disable data roaming to the particular device
+      based on device id
+    execution: false
+    name: mobileiron-core-disable-data-roaming
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron enable personal
+        hotspot command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to enable personal hotspot to the particular
+      device based on device id
+    execution: false
+    name: mobileiron-core-enable-personal-hotspot
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron disable personal
+        hotspot command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to disable personal hotspot to the particular
+      device based on device id
+    execution: false
+    name: mobileiron-core-disable-personal-hotspot
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron unlock app connect
+        container command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to unlock app connect container to the particular
+      device based on device id
+    execution: false
+    name: mobileiron-core-unlock-app-connect-container
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron retire device
+        command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to retire device to the particular device based
+      on device id
+    execution: false
+    name: mobileiron-core-retire-device
+  - arguments:
+    - default: false
+      description: device id pointing to the device to execute the command on
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to wipe device to the particular device based
+      on device id
+    execution: false
+    name: mobileiron-core-wipe-device
+  - arguments:
+    - default: false
+      description: This argument fetch the device id for mobileiron force checkin
+        command
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: This command is used to force checkin to the particular device based
+      on device id
+    execution: false
+    name: mobileiron-core-force-checkin
+  - arguments:
+    - default: true
+      defaultValue: common.status = "ACTIVE"
+      description: The query which to execute to filter down the list of devices
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: comma separated list of fields to query from the API
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
+    - default: false
+      description: limit the number of items that should be returned
+      isArray: false
+      name: max_fetch
+      required: false
+      secret: false
+    deprecated: false
+    description: This command is used to get a list of devices matching the provided
+      query
+    execution: false
+    name: mobileiron-core-get-devices-data
+    outputs:
+    - contextPath: MobileIronCore.Device.common_model
+      description: Model
+      type: String
+    - contextPath: MobileIronCore.Device.common_os_version
+      description: OS Version
+      type: String
+    - contextPath: MobileIronCore.Device.common_platform
+      description: Platform Name
+      type: String
+    - contextPath: MobileIronCore.Device.common_status
+      description: Status
+      type: String
+    - contextPath: MobileIronCore.Device.common_imei
+      description: IMEI
+      type: String
+    - contextPath: MobileIronCore.Device.common_platform
+      description: Platform
+      type: String
+    - contextPath: MobileIronCore.Device.common_security_state
+      description: Security State
+      type: String
+    - contextPath: MobileIronCore.Device.user_display_name
+      description: Display Name
+      type: String
+    - contextPath: MobileIronCore.Device.common_last_connected_at
+      description: Last Connected At
+      type: Date
+    - contextPath: MobileIronCore.Device.common_uuid
+      description: Device UUID
+      type: String
+    - contextPath: MobileIronCore.Device.common_quarantined
+      description: Quarantined
+      type: Boolean
+    - contextPath: MobileIronCore.Device.common_id
+      description: Device ID
+      type: Number
+    - contextPath: MobileIronCore.Device.common_imsi
+      description: IMSI
+      type: String
+    - contextPath: MobileIronCore.Device.common_owner
+      description: Device Owner
+      type: String
+    - contextPath: MobileIronCore.Device.user_email_address
+      description: User Email Address
+      type: String
+    - contextPath: MobileIronCore.Device.common_manufacturer
+      description: Manufacturer
+      type: String
+    - contextPath: MobileIronCore.Device.common_compliant
+      description: Compliant
+      type: Boolean
+    - contextPath: MobileIronCore.Device.user_user_id
+      description: User ID
+      type: String
+    - contextPath: MobileIronCore.Device.common_registration_date
+      description: Registration Date
+      type: Date
+    - contextPath: MobileIronCore.Device.common_wifi_mac_address
+      description: Wifi MAC Address
+      type: String
+    - contextPath: MobileIronCore.Device.common_noncompliance_reasons
+      description: Non compliance Reasons
+      type: String
+    - contextPath: MobileIronCore.Device.ios_iPhone_UDID
+      description: iPhone UDID
+      type: String
+    - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
+      description: IPhone MAC Address EN0
+      type: String
+    - contextPath: MobileIronCore.Device.ios_Current_MCC
+      description: Current MCC
+      type: String
+    - contextPath: MobileIronCore.Device.common_current_country_code
+      description: Current country code
+      type: String
+    - contextPath: MobileIronCore.Device.user_sam_account_name
+      description: SAM account name
+      type: String
+    - contextPath: MobileIronCore.Device.common_current_country_name
+      description: Current country name
+      type: String
+    - contextPath: MobileIronCore.Device.common_home_country_name
+      description: Home country name
+      type: String
+    - contextPath: MobileIronCore.Device.common_home_country_code
+      description: Home country code
+      type: String
+    - contextPath: MobileIronCore.Device.common_device_is_compromised
+      description: True if device is compromised
+      type: Boolean
+    - contextPath: MobileIronCore.Device.common_SerialNumber
+      description: Device serial number
+      type: String
+    - contextPath: MobileIronCore.Device.common_mdm_managed
+      description: Device is MDM managed
+      type: Boolean
+  - arguments:
+    - default: false
+      description: device uuid
+      isArray: false
+      name: device_uuid
+      required: true
+      secret: false
+    - default: false
+      description: comma separated list of fields to query from the API
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: This command is used to get a single device based on the device uuid
+    execution: false
+    name: mobileiron-core-get-device-by-uuid
+    outputs:
+    - contextPath: MobileIronCore.Device.common_model
+      description: Model
+      type: String
+    - contextPath: MobileIronCore.Device.common_os_version
+      description: OS Version
+      type: String
+    - contextPath: MobileIronCore.Device.common_platform
+      description: Platform Name
+      type: String
+    - contextPath: MobileIronCore.Device.common_status
+      description: Status
+      type: String
+    - contextPath: MobileIronCore.Device.common_imei
+      description: IMEI
+      type: String
+    - contextPath: MobileIronCore.Device.common_platform
+      description: Platform
+      type: String
+    - contextPath: MobileIronCore.Device.common_security_state
+      description: Security State
+      type: String
+    - contextPath: MobileIronCore.Device.user_display_name
+      description: Display Name
+      type: String
+    - contextPath: MobileIronCore.Device.common_last_connected_at
+      description: Last Connected At
+      type: Date
+    - contextPath: MobileIronCore.Device.common_uuid
+      description: Device UUID
+      type: String
+    - contextPath: MobileIronCore.Device.common_quarantined
+      description: Quarantined
+      type: Boolean
+    - contextPath: MobileIronCore.Device.common_id
+      description: Device ID
+      type: Number
+    - contextPath: MobileIronCore.Device.common_imsi
+      description: IMSI
+      type: String
+    - contextPath: MobileIronCore.Device.common_owner
+      description: Device Owner
+      type: String
+    - contextPath: MobileIronCore.Device.user_email_address
+      description: User Email Address
+      type: String
+    - contextPath: MobileIronCore.Device.common_manufacturer
+      description: Manufacturer
+      type: String
+    - contextPath: MobileIronCore.Device.common_compliant
+      description: Compliant
+      type: Boolean
+    - contextPath: MobileIronCore.Device.user_user_id
+      description: User ID
+      type: String
+    - contextPath: MobileIronCore.Device.common_registration_date
+      description: Registration Date
+      type: Date
+    - contextPath: MobileIronCore.Device.common_wifi_mac_address
+      description: Wifi MAC Address
+      type: String
+    - contextPath: MobileIronCore.Device.common_noncompliance_reasons
+      description: Non compliance Reasons
+      type: String
+    - contextPath: MobileIronCore.Device.ios_iPhone_UDID
+      description: iPhone UDID
+      type: String
+    - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
+      description: IPhone MAC Address EN0
+      type: String
+    - contextPath: MobileIronCore.Device.ios_Current_MCC
+      description: Current MCC
+      type: String
+    - contextPath: MobileIronCore.Device.common_current_country_code
+      description: Current country code
+      type: String
+    - contextPath: MobileIronCore.Device.user_sam_account_name
+      description: SAM account name
+      type: String
+    - contextPath: MobileIronCore.Device.common_current_country_name
+      description: Current country name
+      type: String
+    - contextPath: MobileIronCore.Device.common_home_country_name
+      description: Home country name
+      type: String
+    - contextPath: MobileIronCore.Device.common_home_country_code
+      description: Home country code
+      type: String
+    - contextPath: MobileIronCore.Device.common_device_is_compromised
+      description: True if device is compromised
+      type: Boolean
+    - contextPath: MobileIronCore.Device.common_SerialNumber
+      description: Device serial number
+      type: String
+    - contextPath: MobileIronCore.Device.common_mdm_managed
+      description: Device is MDM managed
+      type: Boolean
+  - arguments:
+    - default: false
+      description: device serial
+      isArray: false
+      name: device_serial
+      required: true
+      secret: false
+    - default: false
+      description: comma separated list of fields to query from the API
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: This command is used to get a single device based on the device serial
+      number
+    execution: false
+    name: mobileiron-core-get-device-by-serial
+    outputs:
+    - contextPath: MobileIronCore.Device.common_model
+      description: Model
+      type: String
+    - contextPath: MobileIronCore.Device.common_os_version
+      description: OS Version
+      type: String
+    - contextPath: MobileIronCore.Device.common_platform
+      description: Platform Name
+      type: String
+    - contextPath: MobileIronCore.Device.common_status
+      description: Status
+      type: String
+    - contextPath: MobileIronCore.Device.common_imei
+      description: IMEI
+      type: String
+    - contextPath: MobileIronCore.Device.common_platform
+      description: Platform
+      type: String
+    - contextPath: MobileIronCore.Device.common_security_state
+      description: Security State
+      type: String
+    - contextPath: MobileIronCore.Device.user_display_name
+      description: Display Name
+      type: String
+    - contextPath: MobileIronCore.Device.common_last_connected_at
+      description: Last Connected At
+      type: Date
+    - contextPath: MobileIronCore.Device.common_uuid
+      description: Device UUID
+      type: String
+    - contextPath: MobileIronCore.Device.common_quarantined
+      description: Quarantined
+      type: Boolean
+    - contextPath: MobileIronCore.Device.common_id
+      description: Device ID
+      type: Number
+    - contextPath: MobileIronCore.Device.common_imsi
+      description: IMSI
+      type: String
+    - contextPath: MobileIronCore.Device.common_owner
+      description: Device Owner
+      type: String
+    - contextPath: MobileIronCore.Device.user_email_address
+      description: User Email Address
+      type: String
+    - contextPath: MobileIronCore.Device.common_manufacturer
+      description: Manufacturer
+      type: String
+    - contextPath: MobileIronCore.Device.common_compliant
+      description: Compliant
+      type: Boolean
+    - contextPath: MobileIronCore.Device.user_user_id
+      description: User ID
+      type: String
+    - contextPath: MobileIronCore.Device.common_registration_date
+      description: Registration Date
+      type: Date
+    - contextPath: MobileIronCore.Device.common_wifi_mac_address
+      description: Wifi MAC Address
+      type: String
+    - contextPath: MobileIronCore.Device.common_noncompliance_reasons
+      description: Non compliance Reasons
+      type: String
+    - contextPath: MobileIronCore.Device.ios_iPhone_UDID
+      description: iPhone UDID
+      type: String
+    - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
+      description: IPhone MAC Address EN0
+      type: String
+    - contextPath: MobileIronCore.Device.ios_Current_MCC
+      description: Current MCC
+      type: String
+    - contextPath: MobileIronCore.Device.common_current_country_code
+      description: Current country code
+      type: String
+    - contextPath: MobileIronCore.Device.user_sam_account_name
+      description: SAM account name
+      type: String
+    - contextPath: MobileIronCore.Device.common_current_country_name
+      description: Current country name
+      type: String
+    - contextPath: MobileIronCore.Device.common_home_country_name
+      description: Home country name
+      type: String
+    - contextPath: MobileIronCore.Device.common_home_country_code
+      description: Home country code
+      type: String
+    - contextPath: MobileIronCore.Device.common_device_is_compromised
+      description: True if device is compromised
+      type: Boolean
+    - contextPath: MobileIronCore.Device.common_SerialNumber
+      description: Device serial number
+      type: String
+    - contextPath: MobileIronCore.Device.common_mdm_managed
+      description: Device is MDM managed
+      type: Boolean
+  - arguments:
+    - default: false
+      description: device mac
+      isArray: false
+      name: device_mac
+      required: true
+      secret: false
+    - default: false
+      description: comma separated list of fields to query from the API
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: This command is used to get a single device based on the device wifi
+      mac address
+    execution: false
+    name: mobileiron-core-get-device-by-mac
+    outputs:
+    - contextPath: MobileIronCore.Device.common_model
+      description: Model
+      type: String
+    - contextPath: MobileIronCore.Device.common_os_version
+      description: OS Version
+      type: String
+    - contextPath: MobileIronCore.Device.common_platform
+      description: Platform Name
+      type: String
+    - contextPath: MobileIronCore.Device.common_status
+      description: Status
+      type: String
+    - contextPath: MobileIronCore.Device.common_imei
+      description: IMEI
+      type: String
+    - contextPath: MobileIronCore.Device.common_platform
+      description: Platform
+      type: String
+    - contextPath: MobileIronCore.Device.common_security_state
+      description: Security State
+      type: String
+    - contextPath: MobileIronCore.Device.user_display_name
+      description: Display Name
+      type: String
+    - contextPath: MobileIronCore.Device.common_last_connected_at
+      description: Last Connected At
+      type: Date
+    - contextPath: MobileIronCore.Device.common_uuid
+      description: Device UUID
+      type: String
+    - contextPath: MobileIronCore.Device.common_quarantined
+      description: Quarantined
+      type: Boolean
+    - contextPath: MobileIronCore.Device.common_id
+      description: Device ID
+      type: Number
+    - contextPath: MobileIronCore.Device.common_imsi
+      description: IMSI
+      type: String
+    - contextPath: MobileIronCore.Device.common_owner
+      description: Device Owner
+      type: String
+    - contextPath: MobileIronCore.Device.user_email_address
+      description: User Email Address
+      type: String
+    - contextPath: MobileIronCore.Device.common_manufacturer
+      description: Manufacturer
+      type: String
+    - contextPath: MobileIronCore.Device.common_compliant
+      description: Compliant
+      type: Boolean
+    - contextPath: MobileIronCore.Device.user_user_id
+      description: User ID
+      type: String
+    - contextPath: MobileIronCore.Device.common_registration_date
+      description: Registration Date
+      type: Date
+    - contextPath: MobileIronCore.Device.common_wifi_mac_address
+      description: Wifi MAC Address
+      type: String
+    - contextPath: MobileIronCore.Device.common_noncompliance_reasons
+      description: Non compliance Reasons
+      type: String
+    - contextPath: MobileIronCore.Device.ios_iPhone_UDID
+      description: iPhone UDID
+      type: String
+    - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
+      description: IPhone MAC Address EN0
+      type: String
+    - contextPath: MobileIronCore.Device.ios_Current_MCC
+      description: Current MCC
+      type: String
+    - contextPath: MobileIronCore.Device.common_current_country_code
+      description: Current country code
+      type: String
+    - contextPath: MobileIronCore.Device.user_sam_account_name
+      description: SAM account name
+      type: String
+    - contextPath: MobileIronCore.Device.common_current_country_name
+      description: Current country name
+      type: String
+    - contextPath: MobileIronCore.Device.common_home_country_name
+      description: Home country name
+      type: String
+    - contextPath: MobileIronCore.Device.common_home_country_code
+      description: Home country code
+      type: String
+    - contextPath: MobileIronCore.Device.common_device_is_compromised
+      description: True if device is compromised
+      type: Boolean
+    - contextPath: MobileIronCore.Device.common_SerialNumber
+      description: Device serial number
+      type: String
+    - contextPath: MobileIronCore.Device.common_mdm_managed
+      description: Device is MDM managed
+      type: Boolean
+  - arguments:
+    - default: false
+      description: device IP
+      isArray: false
+      name: device_ip
+      required: true
+      secret: false
+    - default: false
+      description: comma separated list of fields to query from the API
+      isArray: false
+      name: additional_fields
+      required: false
+      secret: false
+    deprecated: false
+    description: This command is used to get a single device based on the device ip
+    execution: false
+    name: mobileiron-core-get-device-by-ip
+    outputs:
+    - contextPath: MobileIronCore.Device.common_model
+      description: Model
+      type: String
+    - contextPath: MobileIronCore.Device.common_os_version
+      description: OS Version
+      type: String
+    - contextPath: MobileIronCore.Device.common_platform
+      description: Platform Name
+      type: String
+    - contextPath: MobileIronCore.Device.common_status
+      description: Status
+      type: String
+    - contextPath: MobileIronCore.Device.common_imei
+      description: IMEI
+      type: String
+    - contextPath: MobileIronCore.Device.common_platform
+      description: Platform
+      type: String
+    - contextPath: MobileIronCore.Device.common_security_state
+      description: Security State
+      type: String
+    - contextPath: MobileIronCore.Device.user_display_name
+      description: Display Name
+      type: String
+    - contextPath: MobileIronCore.Device.common_last_connected_at
+      description: Last Connected At
+      type: Date
+    - contextPath: MobileIronCore.Device.common_uuid
+      description: Device UUID
+      type: String
+    - contextPath: MobileIronCore.Device.common_quarantined
+      description: Quarantined
+      type: Boolean
+    - contextPath: MobileIronCore.Device.common_id
+      description: Device ID
+      type: Number
+    - contextPath: MobileIronCore.Device.common_imsi
+      description: IMSI
+      type: String
+    - contextPath: MobileIronCore.Device.common_owner
+      description: Device Owner
+      type: String
+    - contextPath: MobileIronCore.Device.user_email_address
+      description: User Email Address
+      type: String
+    - contextPath: MobileIronCore.Device.common_manufacturer
+      description: Manufacturer
+      type: String
+    - contextPath: MobileIronCore.Device.common_compliant
+      description: Compliant
+      type: Boolean
+    - contextPath: MobileIronCore.Device.user_user_id
+      description: User ID
+      type: String
+    - contextPath: MobileIronCore.Device.common_registration_date
+      description: Registration Date
+      type: Date
+    - contextPath: MobileIronCore.Device.common_wifi_mac_address
+      description: Wifi MAC Address
+      type: String
+    - contextPath: MobileIronCore.Device.common_noncompliance_reasons
+      description: Non compliance Reasons
+      type: String
+    - contextPath: MobileIronCore.Device.ios_iPhone_UDID
+      description: iPhone UDID
+      type: String
+    - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
+      description: IPhone MAC Address EN0
+      type: String
+    - contextPath: MobileIronCore.Device.ios_Current_MCC
+      description: Current MCC
+      type: String
+    - contextPath: MobileIronCore.Device.common_current_country_code
+      description: Current country code
+      type: String
+    - contextPath: MobileIronCore.Device.user_sam_account_name
+      description: SAM account name
+      type: String
+    - contextPath: MobileIronCore.Device.common_current_country_name
+      description: Current country name
+      type: String
+    - contextPath: MobileIronCore.Device.common_home_country_name
+      description: Home country name
+      type: String
+    - contextPath: MobileIronCore.Device.common_home_country_code
+      description: Home country code
+      type: String
+    - contextPath: MobileIronCore.Device.common_device_is_compromised
+      description: True if device is compromised
+      type: Boolean
+    - contextPath: MobileIronCore.Device.common_SerialNumber
+      description: Device serial number
+      type: String
+    - contextPath: MobileIronCore.Device.common_mdm_managed
+      description: Device is MDM managed
+      type: Boolean
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+defaultmapperin: 6e9cd6b1-641a-4a66-8359-1f4193ab04c0
+fromversion: 5.0.0

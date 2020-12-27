@@ -1,0 +1,751 @@
+{
+ "description": "Basic layout for MobileIron Device Incidents",
+ "detailsV2": {
+  "tabs": [
+   {
+    "id": "summary",
+    "name": "Legacy Summary",
+    "type": "summary"
+   },
+   {
+    "id": "caseinfoid",
+    "name": "Incident Info",
+    "sections": [
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "type",
+        "height": 22,
+        "id": "incident-type-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "severity",
+        "height": 22,
+        "id": "incident-severity-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "isdevicejailbroken",
+        "height": 22,
+        "id": "77897930-2e58-11eb-b078-43650932fa7f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "isdevicequarantined",
+        "height": 22,
+        "id": "78c9e870-2e58-11eb-b078-43650932fa7f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "compliancestate",
+        "height": 22,
+        "id": "22ed0310-2e58-11eb-b078-43650932fa7f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "securitystate",
+        "height": 22,
+        "id": "7fc74e60-2e58-11eb-b078-43650932fa7f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotsource",
+        "height": 22,
+        "id": "2ec78700-2e58-11eb-b078-43650932fa7f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourceinstance",
+        "height": 22,
+        "id": "incident-sourceInstance-field",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "playbookid",
+        "height": 22,
+        "id": "incident-playbookId-field",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileironlastcheckintimestamp",
+        "height": 22,
+        "id": "41bf3760-4521-11eb-97b3-a3577eafb040",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileironisdevicejailbroken",
+        "height": 22,
+        "id": "3d2d5330-4521-11eb-97b3-a3577eafb040",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileironisdevicequarantined",
+        "height": 22,
+        "id": "3ee2cb60-4521-11eb-97b3-a3577eafb040",
+        "index": 7,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileironsecuritystate",
+        "height": 22,
+        "id": "4a3e0d30-4521-11eb-97b3-a3577eafb040",
+        "index": 8,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileironcompliancestate",
+        "height": 22,
+        "id": "1a6e0fb0-4521-11eb-97b3-a3577eafb040",
+        "index": 10,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Case Details",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Notes",
+      "static": false,
+      "type": "notes",
+      "w": 1,
+      "x": 2,
+      "y": 4
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+      "isVisible": true,
+      "maxH": null,
+      "maxW": 2,
+      "minH": 1,
+      "minW": 2,
+      "moved": false,
+      "name": "Linked Incidents",
+      "static": false,
+      "type": "linkedIncidents",
+      "w": 2,
+      "x": 0,
+      "y": 8
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "hideName": false,
+      "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Team Members",
+      "static": false,
+      "type": "team",
+      "w": 1,
+      "x": 1,
+      "y": 2
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+      "items": [
+       {
+        "endCol": 1,
+        "fieldId": "occurred",
+        "height": 22,
+        "id": "incident-occurred-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 1,
+        "fieldId": "dbotmodified",
+        "height": 22,
+        "id": "incident-modified-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotduedate",
+        "height": 22,
+        "id": "incident-dueDate-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotcreated",
+        "height": 22,
+        "id": "incident-created-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 1
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotclosed",
+        "height": 22,
+        "id": "incident-closed-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 1
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Timeline Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 4
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "dbotclosed",
+        "height": 22,
+        "id": "incident-dbotClosed-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "closereason",
+        "height": 22,
+        "id": "incident-closeReason-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "closenotes",
+        "height": 22,
+        "id": "incident-closeNotes-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Closing Information",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 6
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "details",
+        "height": 22,
+        "id": "incident-details-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Investigation Data",
+      "static": false,
+      "w": 1,
+      "x": 1,
+      "y": 4
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "i": "caseinfoid-2ba1b320-0ee1-11eb-8413-238b70debbe5",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "incident_labels",
+        "height": 22,
+        "id": "2b9508f1-0ee1-11eb-8413-238b70debbe5",
+        "index": 0,
+        "isVisible": true,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 2,
+      "minH": 1,
+      "minW": 2,
+      "moved": false,
+      "name": "Labels",
+      "static": false,
+      "type": "labels",
+      "w": 2,
+      "x": 0,
+      "y": 6
+     },
+     {
+      "displayType": "CARD",
+      "h": 4,
+      "hideName": false,
+      "i": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "deviceid",
+        "height": 53,
+        "id": "3fa46160-0ee1-11eb-8413-238b70debbe5",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "deviceuuid",
+        "height": 53,
+        "id": "1637fda0-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "deviceudid",
+        "height": 53,
+        "id": "9190e010-2e59-11eb-b078-43650932fa7f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "deviceserialnumber",
+        "height": 53,
+        "id": "67928f30-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "devicealtserialnumber",
+        "height": 53,
+        "id": "59f59ac0-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "lastcheckintimestamp",
+        "height": 53,
+        "id": "7a8cce20-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "deviceregistrationtimestamp",
+        "height": 53,
+        "id": "65fd9750-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "deviceregistrationstatus",
+        "height": 53,
+        "id": "64576160-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "imsi",
+        "height": 53,
+        "id": "6ff21d30-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "imei",
+        "height": 53,
+        "id": "6e62caa0-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "platform",
+        "height": 53,
+        "id": "7e585510-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "deviceowner",
+        "height": 53,
+        "id": "62ae9360-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "manufacturer",
+        "height": 53,
+        "id": "7bf055c0-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileironmanufacturer",
+        "height": 53,
+        "id": "45951e90-4521-11eb-97b3-a3577eafb040",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileironplatform",
+        "height": 53,
+        "id": "47fc81a0-4521-11eb-97b3-a3577eafb040",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileirondeviceudid",
+        "height": 53,
+        "id": "30664c60-4521-11eb-97b3-a3577eafb040",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileirondeviceuuid",
+        "height": 53,
+        "id": "34bb4ea0-4521-11eb-97b3-a3577eafb040",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileironimei",
+        "height": 53,
+        "id": "36d46aa0-4521-11eb-97b3-a3577eafb040",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileironimsi",
+        "height": 53,
+        "id": "38ea2b40-4521-11eb-97b3-a3577eafb040",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 2,
+        "fieldId": "devicename",
+        "height": 53,
+        "id": "ab3a2250-16a9-11eb-be14-11bb9207a6ef",
+        "index": 6,
+        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileirondeviceserialnumber",
+        "height": 53,
+        "id": "2c62c580-4521-11eb-97b3-a3577eafb040",
+        "index": 7,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileirondevicealtserialnumber",
+        "height": 53,
+        "id": "22043330-4521-11eb-97b3-a3577eafb040",
+        "index": 8,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileirondeviceid",
+        "height": 53,
+        "id": "239cfba0-4521-11eb-97b3-a3577eafb040",
+        "index": 9,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileirondeviceregistrationstatus",
+        "height": 53,
+        "id": "27124c40-4521-11eb-97b3-a3577eafb040",
+        "index": 10,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileirondeviceregistrationtimestamp",
+        "height": 53,
+        "id": "29f39a40-4521-11eb-97b3-a3577eafb040",
+        "index": 11,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileirondeviceowner",
+        "height": 53,
+        "id": "25cab110-4521-11eb-97b3-a3577eafb040",
+        "index": 12,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Device Details",
+      "static": false,
+      "w": 1,
+      "x": 2,
+      "y": 0
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "hideName": false,
+      "i": "caseinfoid-1af6c8c0-2e59-11eb-b078-43650932fa7f",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "useremailaddress",
+        "height": 53,
+        "id": "814da040-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "deviceuserid",
+        "height": 53,
+        "id": "6a78bf30-2e58-11eb-b078-43650932fa7f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "username",
+        "height": 53,
+        "id": "3ef85040-2e59-11eb-b078-43650932fa7f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileirondeviceuserid",
+        "height": 53,
+        "id": "32727010-4521-11eb-97b3-a3577eafb040",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "mobileironuseremailaddress",
+        "height": 22,
+        "id": "4cfe8cc0-4521-11eb-97b3-a3577eafb040",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Device User Details",
+      "static": false,
+      "w": 1,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-6cfa4f00-4517-11eb-ac0d-13a4b544c831",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Work Plan",
+      "static": false,
+      "type": "workplan",
+      "w": 1,
+      "x": 0,
+      "y": 2
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "id": "warRoom",
+    "name": "War Room",
+    "type": "warRoom"
+   },
+   {
+    "id": "workPlan",
+    "name": "Work Plan",
+    "type": "workPlan"
+   },
+   {
+    "id": "evidenceBoard",
+    "name": "Evidence Board",
+    "type": "evidenceBoard"
+   },
+   {
+    "id": "relatedIncidents",
+    "name": "Related Incidents",
+    "type": "relatedIncidents"
+   },
+   {
+    "id": "canvas",
+    "name": "Canvas",
+    "type": "canvas"
+   }
+  ]
+ },
+ "group": "incident",
+ "id": "3272733e-a21a-49b4-8685-700ecfc68165",
+ "name": "MobileIron Incident Layout",
+ "system": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}
