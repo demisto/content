@@ -1,7 +1,7 @@
 {
  "description": "Incoming mapper for the MobileIron UEM integration",
  "feed": false,
- "id": "Incoming mapper for the MobileIron UEM integration",
+ "id": "MobileIron Incident Incoming Mapper",
  "mapping": {
   "MobileIron Cloud Device Incident": {
    "dontMapEventToLabels": false,
