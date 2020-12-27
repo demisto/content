@@ -68,17 +68,20 @@ class BitcoinAbuseClient(BaseClient):
         Returns:
             Returns if post request was successful.
         """
+        params = {
+            'api_token': self.api_key,
+            'address': address,
+            'abuse_type_id': abuse_type_id,
+            'abuser': abuser,
+            'description': description
+        }
+        if abuse_type_other is not None:
+            params['abuse_type_other'] = abuse_type_other
+
         return self._http_request(
             method='POST',
             url_suffix=REPORT_ADDRESS_SUFFIX,
-            params={
-                'api_token': self.api_key,
-                'address': address,
-                'abuse_type_id': abuse_type_id,
-                'abuse_type_other': abuse_type_other,
-                'abuser': abuser,
-                'description': description
-            }
+            params=params
         )
 
 
