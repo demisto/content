@@ -97,19 +97,21 @@ def html_to_text(html):
 
 # disable-secrets-detection-start
 def get_http_client_with_proxy():
+    proxy_info = None
     proxies = handle_proxy()
-    if not proxies or not proxies['https']:
-        raise Exception('https proxy value is empty. Check Demisto server configuration')
-    https_proxy = proxies['https']
-    if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
-        https_proxy = 'https://' + https_proxy
-    parsed_proxy = urlparse.urlparse(https_proxy)
-    proxy_info = httplib2.ProxyInfo(
-        proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
-        proxy_host=parsed_proxy.hostname,
-        proxy_port=parsed_proxy.port,
-        proxy_user=parsed_proxy.username,
-        proxy_pass=parsed_proxy.password)
+    if PROXY:
+        if not proxies or not proxies['https']:
+            raise Exception('https proxy value is empty. Check Demisto server configuration')
+        https_proxy = proxies['https']
+        if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
+            https_proxy = 'https://' + https_proxy
+        parsed_proxy = urlparse.urlparse(https_proxy)
+        proxy_info = httplib2.ProxyInfo(
+            proxy_type=httplib2.socks.PROXY_TYPE_HTTP,  # disable-secrets-detection
+            proxy_host=parsed_proxy.hostname,
+            proxy_port=parsed_proxy.port,
+            proxy_user=parsed_proxy.username,
+            proxy_pass=parsed_proxy.password)
     return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=DISABLE_SSL)
 
 
@@ -139,12 +141,9 @@ def get_credentials(additional_scopes=None, delegated_user=None):
 
 def get_service(serviceName, version, additional_scopes=None, delegated_user=None):
     credentials = get_credentials(additional_scopes=additional_scopes, delegated_user=delegated_user)
-    if not PROXY:
-        handle_proxy()
-    elif PROXY or DISABLE_SSL:
-        http_client = credentials.authorize(get_http_client_with_proxy())
-        return discovery.build(serviceName, version, http=http_client)
-    return discovery.build(serviceName, version, credentials=credentials)
+    http_client = credentials.authorize(get_http_client_with_proxy())
+    return discovery.build(serviceName, version, http=http_client)
+    # return discovery.build(serviceName, version, credentials=credentials)
 
 
 def parse_mail_parts(parts):
