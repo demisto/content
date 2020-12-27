@@ -30,6 +30,7 @@ def arg_to_list_with_regex(arg):
         return re.split(URL_REGEX_PATTERN, arg)
     return arg
 
+
 def main():
     url_arg = demisto.get(demisto.args(), "url")
     urls = arg_to_list_with_regex(url_arg)
@@ -39,7 +40,7 @@ def main():
     ec = {
         'URL': [],
         'DBotScore': []
-    }   # type: dict
+    }  # type: dict
 
     for url in urls:
         url_obj = {
@@ -82,7 +83,6 @@ def main():
             url_obj["Verified"] = True
 
         url_list.append(url_obj)
-
 
     ec["URL(val.Data && val.Data === obj.Data)"] = url_list
 
