@@ -1,12 +1,13 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import os
 import socket
 import ssl
 from pathlib import Path
 from typing import List, Dict, Optional, Any
-
-import demistomock as demisto  # noqa: F401
+import subprocess
+import re
 import pem
-from CommonServerPython import *  # noqa: F401
 from cryptography import x509
 from cryptography.x509.extensions import ExtensionNotFound
 from cryptography.hazmat.backends import default_backend
@@ -153,39 +154,53 @@ def docker_container_details() -> dict:
             1. Global veriables which used by requests module:
                 a. SSL_CERT_FILE
                 b. REQUESTS_CA_BUNDLE
-            2. Custom python ssl file located in docker container - /etc/custom-python-ssl/certs.pem
+            2. Custom python ssl file located in docker container - SSL_CERT_FILE
 
     Returns:
         dict: Corresponding enrty context.
     """
-    container_ca_file = Path('/etc/custom-python-ssl/certs.pem')
-    certificates = "" if not container_ca_file.is_file() else container_ca_file.read_text()
+    ssl_cert_file_env = os.environ.get('SSL_CERT_FILE')
+    custom_certs = []
+    if ssl_cert_file_env:
+        container_ca_file = Path(ssl_cert_file_env)
+        certificates = "" if not container_ca_file.is_file() else container_ca_file.read_text()
+        custom_certs = parse_all_certificates(certificates)
+        demisto.debug(f'custom certs len: {len(custom_certs)}')
     return {
         "ShellVariables": {
             "SSL_CERT_FILE": os.environ.get('SSL_CERT_FILE'),
             "CERT_FILE": os.environ.get('REQUESTS_CA_BUNDLE'),
         },
-        "CustomCertificateAuthorities": parse_all_certificates(certificates),
+        "CustomCertificateAuthorities": custom_certs[:5],
     }
 
 
-def get_certificate(endpoint: str, port: str) -> str:
+def get_certificates(endpoint: str, port: str) -> str:
     """Download certificate from remote server.
 
     Args:
         endpoint: url to get certificate from.
         port: endpoint port.
+        mode: use either openssl or python
 
     Returns:
-        str: certificate string in PEM format.
+        str: certificate string containing the certs in PEM format.
     """
-    hostname = endpoint
-    conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-    sock = context.wrap_socket(conn, server_hostname=hostname)
-    sock.connect((hostname, int(port)))
-
-    return ssl.DER_cert_to_PEM_cert(sock.getpeercert(True))  # type: ignore
+    mode = demisto.getArg('mode') or 'python'
+    if mode == "openssl":
+        openssl_res = subprocess.check_output(['openssl', 's_client', '-servername', endpoint,
+                                               '-host', endpoint, '-port', port, '-showcerts'], text=True,
+                                              stderr=subprocess.STDOUT)
+        demisto.debug(f'openssl output: {openssl_res}')
+        return '\n'.join(re.findall(r'^-----BEGIN CERT.*?^-----END CERTIFICATE-----', openssl_res, re.DOTALL | re.MULTILINE))
+    else:
+        hostname = endpoint
+        conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        sock = context.wrap_socket(conn, server_hostname=hostname)
+        sock.settimeout(60)  # make sure we don't get stuck
+        sock.connect((hostname, int(port)))
+        return ssl.DER_cert_to_PEM_cert(sock.getpeercert(True))  # type: ignore
 
 
 def endpoint_certificate(endpoint: str, port: str) -> dict:
@@ -198,7 +213,8 @@ def endpoint_certificate(endpoint: str, port: str) -> dict:
     Returns:
         dict: Corresponding enrty context.
     """
-    certificates = get_certificate(endpoint, port)
+    certificates = get_certificates(endpoint, port)
+    demisto.debug(f'endpoint: {endpoint} port: {port} certs: {certificates}')
     return {
         "Identifier": endpoint,
         "Certificates": parse_all_certificates(certificates)

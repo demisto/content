@@ -5,7 +5,17 @@ args:
   name: endpoint
   required: true
   secret: false
-- default: true
+- default: false
+  description: Operation mode. Determines how the endpoint is inspected. Either python or openssl.  
+  name: mode
+  required: false
+  auto: PREDEFINED
+  predefined:
+  - python
+  - openssl
+  defaultValue: python
+  secret: false
+- default: false
   defaultValue: '443'
   description: The endpoint port. Default is 443.
   isArray: false
@@ -377,7 +387,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/ssl-analyze:1.0.0.12471
+dockerimage: demisto/ssl-analyze:1.0.0.14890
 runas: DBotWeakRole
 runonce: false
 tests:
