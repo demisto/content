@@ -41,7 +41,7 @@ def parse_certificate_object_identifier_extentions(certificate: x509.Extensions,
     """
     try:
         values = certificate.get_extension_for_oid(oid).value
-        attributes = [item.value for item in values]    # type: ignore
+        attributes = [item.value for item in values]    # type: ignore[attr-defined]
     except ExtensionNotFound:
         attributes = []
 
@@ -200,7 +200,11 @@ def get_certificates(endpoint: str, port: str) -> str:
         sock = context.wrap_socket(conn, server_hostname=hostname)
         sock.settimeout(60)  # make sure we don't get stuck
         sock.connect((hostname, int(port)))
-        return ssl.DER_cert_to_PEM_cert(sock.getpeercert(True))  # type: ignore
+        peer_cert = sock.getpeercert(True)
+        if peer_cert:
+            return ssl.DER_cert_to_PEM_cert(peer_cert)
+        else:
+            return ""
 
 
 def endpoint_certificate(endpoint: str, port: str) -> dict:
