@@ -50,7 +50,7 @@ tasks:
       id: 4c8d746b-4112-4ce3-82e7-f6e2ce3f5ca3
       version: -1
       name: Search connector
-      description: Returns objects that match given criteria
+      description: Returns objects that match given criteria test
       script: CarbonBlackProtectionV2|||cbp-connector-search
       type: regular
       iscommand: true
