@@ -40,7 +40,7 @@ configuration:
   name: timeout
   required: false
   type: 0
-- additionalinfo: The maximum number of incidents per fetch cannot exceed 100.
+- additionalinfo: The maximum number of incidents per fetch. cannot exceed 100.
   defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
