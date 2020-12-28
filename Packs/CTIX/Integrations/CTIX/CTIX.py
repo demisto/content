@@ -392,7 +392,7 @@ def main() -> None:
     base_url = demisto.params().get('base_url')
     access_id = demisto.params().get('access_id')
     secret_key = demisto.params().get('secret_key')
-    verify = demisto.params().get('insecure')
+    verify = not demisto.params().get('insecure', False)
     proxies = handle_proxy(proxy_param_name="proxy")
 
     demisto.debug(f'Command being called is {demisto.command()}')
