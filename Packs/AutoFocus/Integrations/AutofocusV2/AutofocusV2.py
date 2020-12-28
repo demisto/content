@@ -1356,48 +1356,6 @@ def search_ip_command(ip):
     return command_results
 
 
-def search_domain_command(args):
-    indicator_type = 'Domain'
-    domain_name_list = argToList(args.get('domain'))
-
-    command_results = []
-
-    for domain_name in domain_name_list:
-        raw_res = search_indicator('domain', domain_name)
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
-
-        indicator = raw_res.get('indicator')
-        raw_tags = raw_res.get('tags')
-
-        score = calculate_dbot_score(indicator, indicator_type)
-
-        dbot_score = Common.DBotScore(
-            indicator=domain_name,
-            indicator_type=DBotScoreType.DOMAIN,
-            integration_name=VENDOR_NAME,
-            score=score
-        )
-
-        domain = Common.Domain(
-            domain=domain_name,
-            dbot_score=dbot_score,
-            creation_date=indicator.get('whoisDomainCreationDate'),
-            expiration_date=indicator.get('whoisDomainExpireDate'),
-            updated_date=indicator.get('whoisDomainUpdateDate'),
-
-            admin_email=indicator.get('whoisAdminEmail'),
-            admin_name=indicator.get('whoisAdminName'),
-
-            registrar_name=indicator.get('whoisRegistrar'),
-
-            registrant_name=indicator.get('whoisRegistrant')
-        )
-
-        autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
-
-
-
 def search_url_command(url):
     indicator_type = 'URL'
     url_list = argToList(url)
