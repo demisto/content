@@ -69,12 +69,7 @@ def azure_sql_servers_list_command(client: Client) -> CommandResults:
     """azure-sql-servers-list command: Returns a list of all servers
 
     :type client: ``Client``
-    :param Client: AzureSQLManagement client to use
-
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['server_name']`` list of scan IDs or single scan ID
+    :param client: AzureSQLManagement client to use
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
@@ -145,14 +140,14 @@ def main() -> None:
         )
         commands = {
             'azure-sql-servers-list': azure_sql_servers_list_command,
-            'azure-sql-db-list': azure_sql_db_list_command,
-            'azure-sql-db-audit-policy-list': azure_sql_db_audit_policy_list_command,
-            'azure-sql-db-audit-policy-create-update': azure_sql_db_audit_policy_create_update_command,
-            'azure-sql-db-threat-policy-get': azure_sql_db_threat_policy_get_command,
-            'azure-sql-db-threat-policy-create-update': azure_sql_db_threat_policy_create_update_command,
-            'azure-sql-auth-start': start_auth,
-            'azure-sql-auth-complete': complete_auth,
-            'azure-sql-auth-reset': reset_auth,
+            # 'azure-sql-db-list': azure_sql_db_list_command,
+            # 'azure-sql-db-audit-policy-list': azure_sql_db_audit_policy_list_command,
+            # 'azure-sql-db-audit-policy-create-update': azure_sql_db_audit_policy_create_update_command,
+            # 'azure-sql-db-threat-policy-get': azure_sql_db_threat_policy_get_command,
+            # 'azure-sql-db-threat-policy-create-update': azure_sql_db_threat_policy_create_update_command,
+            # 'azure-sql-auth-start': start_auth,
+            # 'azure-sql-auth-complete': complete_auth,
+            # 'azure-sql-auth-reset': reset_auth,
         }
         if command == 'test-module':
             return_error("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
