@@ -40,6 +40,5 @@
   }
  ],
  "sla": 0,
- "threshold": 72,
- "fromVersion": "5.0.0"
+ "threshold": 72
 }
