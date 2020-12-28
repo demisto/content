@@ -20,7 +20,7 @@ def test_cyberark_aim_commands(command, http_response, context, mocker):
     - make sure the key "Content" that contains the password doesn't appear in content or raw_response
     """
     client = Client(server_url="https://api.cyberark.com/", use_ssl=False, proxy=False, app_id="app", folder="Root",
-                    safe="safe1", credential_object="object1", username="", password="", cert_text="", key_text="")
+                    safe="safe1", credentials_object="object1", username="", password="", cert_text="", key_text="")
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)
 
