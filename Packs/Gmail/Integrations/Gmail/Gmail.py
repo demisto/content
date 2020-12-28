@@ -96,9 +96,8 @@ def html_to_text(html):
 
 
 # disable-secrets-detection-start
-def get_http_client_with_proxy():
+def get_http_client_with_proxy(proxies):
     proxy_info = None
-    proxies = handle_proxy()
     if PROXY:
         if not proxies or not proxies['https']:
             raise Exception('https proxy value is empty. Check Demisto server configuration')
@@ -141,9 +140,11 @@ def get_credentials(additional_scopes=None, delegated_user=None):
 
 def get_service(serviceName, version, additional_scopes=None, delegated_user=None):
     credentials = get_credentials(additional_scopes=additional_scopes, delegated_user=delegated_user)
-    http_client = credentials.authorize(get_http_client_with_proxy())
-    return discovery.build(serviceName, version, http=http_client)
-    # return discovery.build(serviceName, version, credentials=credentials)
+    proxies = handle_proxy()
+    if PROXY or DISABLE_SSL:
+        http_client = credentials.authorize(get_http_client_with_proxy(proxies))
+        return discovery.build(serviceName, version, http=http_client)
+    return discovery.build(serviceName, version, credentials=credentials)
 
 
 def parse_mail_parts(parts):
