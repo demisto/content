@@ -27,5 +27,5 @@ def test_cyberark_aim_commands(command, http_response, context, mocker):
     outputs = command(client)
     results = outputs.to_context()
     assert results.get("EntryContext") == context
-    assert not results.get("EntryContext")['CyberArkAIM(val.Name == obj.Name)'].get("Content")
-    assert not results.get("Contents").get("Content")
+    assert not results.get("EntryContext")['CyberArkAIM(val.Name == obj.Name)'][0].get("Content")
+    assert not results.get("Contents")[0].get("Content")
