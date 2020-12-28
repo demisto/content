@@ -2901,7 +2901,7 @@ def main():
             raise
 
         demisto.error(traceback.format_exc())
-        return_error(f'Error: {str(err)}\nTrace: \n{traceback.format_exc()}')
+        return_error(str(err))
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
