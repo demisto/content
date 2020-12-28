@@ -32,7 +32,8 @@ Fetch the latest AWS compliance data from Lacework.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS Account ID to use when fetching compliance data. | Required | 
+| account_id | The AWS Account ID to use when fetching compliance data. | Required |
+| rec_id | Setting the 'rec_id' will filter compliance results for the specified Recommendation ID. | Optional | 
 | report_type | The Report Type to fetch from Lacework. | Optional | 
 
 
@@ -100,7 +101,8 @@ Fetch the latest Azure compliance data from Lacework.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tenant_id | The Azure Tenant ID to use when fetching compliance data. | Required | 
-| subscription_id | The Azure Subscription ID to use when fetching compliance data. | Required | 
+| subscription_id | The Azure Subscription ID to use when fetching compliance data. | Required |
+| rec_id | Setting the 'rec_id' will filter compliance results for the specified Recommendation ID. | Optional | 
 | report_type | The Report Type to fetch from Lacework. | Optional | 
 
 
@@ -169,6 +171,7 @@ Fetch the latest GCP compliance data from Lacework.
 | --- | --- | --- |
 | organization_id | The GCP Organization ID to use when fetching compliance data. | Required | 
 | project_id | The GCP Project ID to use when fetching compliance data. | Required | 
+| rec_id | Setting the 'rec_id' will filter compliance results for the specified Recommendation ID. | Optional | 
 | report_type | The Report Type to fetch from Lacework. | Optional | 
 
 

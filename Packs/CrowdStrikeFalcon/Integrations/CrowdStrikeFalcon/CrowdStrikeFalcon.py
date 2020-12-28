@@ -216,7 +216,15 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 LOG(err_msg)
                 token = get_token(new_token=True)
                 headers['Authorization'] = 'Bearer {}'.format(token)
-                return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
+                return http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    data=data,
+                    headers=headers,
+                    safe=safe,
+                    get_token_flag=False
+                )
             elif safe:
                 return None
             return_error(err_msg)
