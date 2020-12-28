@@ -1,12 +1,13 @@
 commonfields:
-  id: ChronicleDBotScoreWidgetScript
+  id: ChroniclePotentiallyBlockedIPWidgetScript
   version: -1
-name: ChronicleDBotScoreWidgetScript
+name: ChroniclePotentiallyBlockedIPWidgetScript
 script: ''
 type: python
 tags:
-- dynamic-section
-comment: Shows the DBot Score and reputation of the Domain.
+- dynamic-indicator-section
+comment: Notifies if the IP address associated with the ChronicleAsset is potentially
+  blocked or not.
 enabled: true
 scripttarget: 0
 subtype: python3
