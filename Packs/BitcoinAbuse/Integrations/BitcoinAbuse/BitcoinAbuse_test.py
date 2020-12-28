@@ -57,7 +57,7 @@ def test_report_address_successful_command(requests_mock, response: Dict, addres
         'https://www.bitcoinabuse.com/api/reports/create',
         json=response
     )
-    assert report_address_command({}, address_report, '').readable_output == expected
+    assert report_address_command({}, address_report).readable_output == expected
 
 
 @pytest.mark.parametrize('address_report, expected',
@@ -80,7 +80,7 @@ def test_report_address_command_invalid_arguments(address_report: Dict, expected
        """
 
     with pytest.raises(DemistoException, match=expected):
-        report_address_command({}, address_report, '')
+        report_address_command({}, address_report)
 
 
 def test_failure_response_from_bitcoin_abuse(requests_mock):
@@ -100,29 +100,28 @@ def test_failure_response_from_bitcoin_abuse(requests_mock):
         json=bitcoin_responses['failure']
     )
     with pytest.raises(DemistoException, match=failure_bitcoin_report_command_output):
-        report_address_command({}, report_address_scenarios['valid'], '')
+        report_address_command({}, report_address_scenarios['valid'])
 
 
-@pytest.mark.parametrize('params, have_fetched_first_time, test_module, expected, expected_have_fetched_first_time',
-                         [({'initial_fetch_interval': '30 Days'}, False, False, {'download/30d'}, True),
-                          ({'initial_fetch_interval': 'Forever'}, False, False, {'download/forever', 'download/30d'},
-                           True),
-                          ({'initial_fetch_interval': '30 Days'}, True, False, {'download/1d'}, True),
-                          ({'initial_fetch_interval': '30 Days'}, False, True, {'download/30d'}, False)
+@pytest.mark.parametrize('params, have_fetched_first_time, expected_url_suffix, expected_have_fetched_first_time',
+                         [({'initial_fetch_interval': '30 Days'}, False, {'download/30d'}, True),
+                          ({'initial_fetch_interval': 'Forever'}, False, {'download/forever', 'download/30d'}, True),
+                          ({'initial_fetch_interval': '30 Days'}, True, {'download/1d'}, True)
                           ])
-def test_url_suffixes_builder(params, have_fetched_first_time, test_module, expected, expected_have_fetched_first_time):
+def test_url_suffixes_builder(params, have_fetched_first_time, expected_url_suffix, expected_have_fetched_first_time):
     """
     Given:
      - Request for url to fetch indicators
 
     When:
-     - Trying to fetch indicators
+     - Case a: First fetch time is 30 Days, fetching for the first time.
+     - Case b: First fetch time is Forever, fetching for first time.
+     - Case c: First fetch time is 30 Days, not fetching for first time.
 
     Then:
-     - Ensure on first fetch the feed_interval_suffix_url is returned
-     - Ensure on any other fetch the daily download suffix is returned
-     - Ensure on first fetch the have_fetched_first_time is set to True only if call was not made by test_module
+     - Case a: Ensure that the monthly download suffix is returned.
+     - Case b: Ensure that the monthly and forever download suffix is returned.
+     - Case c: Ensure that the daily download suffix is returned
     """
     demisto.setIntegrationContext({'have_fetched_first_time': have_fetched_first_time})
-    assert build_fetch_indicators_url_suffixes(params, test_module) == expected
-    assert demisto.getIntegrationContext().get('have_fetched_first_time') == expected_have_fetched_first_time
+    assert build_fetch_indicators_url_suffixes(params) == expected_url_suffix

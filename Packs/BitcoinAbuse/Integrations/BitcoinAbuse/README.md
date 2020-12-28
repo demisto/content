@@ -28,14 +28,14 @@ Supported Cortex XSOAR versions: 5.5.0 and later.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### bitcoin-report-address
+### bitcoinabuse-report-address
 ***
 Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is required when 'abuse_type' is other
 
 
 #### Base Command
 
-`bitcoin-report-address`
+`bitcoinabuse-report-address`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,7 +52,7 @@ Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is required
 There is no context output for this command.
 
 #### Command Example
-```!bitcoin-report-address address=abcde12345 abuser=abuser@abuse.net abuse_type="bitcoin tumbler" description="this is a description of the abuse"```
+```!bitcoinabuse-report-address address=abcde12345 abuser=abuser@abuse.net abuse_type="bitcoin tumbler" description="this is a description of the abuse"```
 
 #### Context Example
 ```json

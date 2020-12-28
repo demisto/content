@@ -76,7 +76,7 @@ tasks:
       name: Bitcoin Report Address
       description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other'
         field is required when 'abuse_type' is other
-      script: '|||bitcoin-report-address'
+      script: '|||bitcoinabuse-report-address'
       type: regular
       iscommand: true
       brand: ""

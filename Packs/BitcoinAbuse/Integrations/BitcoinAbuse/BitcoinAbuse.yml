@@ -128,7 +128,7 @@ script:
       name: abuse_type_other
     description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is
       required when 'abuse_type' is other
-    name: bitcoin-report-address
+    name: bitcoinabuse-report-address
   dockerimage: demisto/python3:3.8.6.14516
   feed: true
   isFetchSamples: true

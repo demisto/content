@@ -68,24 +68,21 @@ class BitcoinAbuseClient(BaseClient):
         Returns:
             Returns if post request was successful.
         """
-        params = {
-            'api_token': self.api_key,
-            'address': address,
-            'abuse_type_id': abuse_type_id,
-            'abuser': abuser,
-            'description': description
-        }
-        if abuse_type_other is not None:
-            params['abuse_type_other'] = abuse_type_other
-
         return self._http_request(
             method='POST',
             url_suffix=REPORT_ADDRESS_SUFFIX,
-            params=params
+            params=assign_params(
+                api_token=self.api_key,
+                address=address,
+                abuse_type_id=abuse_type_id,
+                abuser=abuser,
+                description=description,
+                abuse_type_other=abuse_type_other
+            )
         )
 
 
-def build_fetch_indicators_url_suffixes(params: Dict, test_module: bool) -> set:
+def build_fetch_indicators_url_suffixes(params: Dict) -> set:
     """Builds the URL suffix fo the fetch. Default is 'FEED_ENDPOINT_DAILY_SUFFIX_SUFFIX' unless this is a first fetch
     which will be determined by the user parameter - initial_fetch_interval
 
@@ -96,7 +93,6 @@ def build_fetch_indicators_url_suffixes(params: Dict, test_module: bool) -> set:
 
     Args:
         params (Dict): Demisto params
-        test_module (bool): Indicates if command is test_module command
 
     Returns:
         - str: URL suffix to be used in the fetch process.
@@ -109,8 +105,6 @@ def build_fetch_indicators_url_suffixes(params: Dict, test_module: bool) -> set:
     if have_fetched_first_time:
         return {FEED_ENDPOINT_DAILY_SUFFIX}
     else:
-        if not test_module:
-            demisto.setIntegrationContext({'have_fetched_first_time': True})
         return {FEED_ENDPOINT_SUFFIX + first_feed_interval_url_suffix, FEED_ENDPOINT_SUFFIX + '30d'}
 
 
@@ -135,22 +129,22 @@ def assure_valid_response(indicators: List[Dict]) -> None:
         raise DemistoException('api token inserted is not valid')
 
 
-def report_address_command(params: Dict, args: Dict, api_key: str) -> CommandResults:
+def report_address_command(params: Dict, args: Dict) -> CommandResults:
     """
     Reports a bitcoin abuse to Bitcoin Abuse service
 
     Args:
         params (Dict):  Demisto params.
         args (Dict): Demisto args for report address command.
-        api_key (str): For Bitcoin Abuse service.
 
     Returns:
         str: 'bitcoin address (address reported) by abuser (abuser reported) was
         reported to BitcoinAbuse API' if http request was successful'
     """
-
+    api_key = params.get('api_key', '')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+
     bitcoin_client = BitcoinAbuseClient(
         base_url=SERVER_URL,
         verify=verify_certificate,
@@ -184,22 +178,21 @@ def report_address_command(params: Dict, args: Dict, api_key: str) -> CommandRes
         raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
 
 
-def _build_params_for_csv_module(params: Dict, test_module: bool, api_key: str):
+def build_params_for_csv_module(params: Dict):
     """
     Adds additional params needed for fetching indicators in order to build csv client properly
     and fetch csv from Bitcoin Abuse service
 
     Args:
         params (Dict): Demisto params
-        test_module (bool): Indicates if command is test_module command
-        api_key (str): For Bitcoin Abuse service
 
     Returns:
-        - If command is bitcoin-report-address: returns the params enriched with url
+        - If command is bitcoinabuse-report-address: returns the params enriched with url
         - If command is anything else - enriches params with more required params to
           CSVFeedApiModule fetch_indicators_command
     """
-    urls_suffixes = build_fetch_indicators_url_suffixes(params, test_module)
+    api_key = params.get('api_key', '')
+    urls_suffixes = build_fetch_indicators_url_suffixes(params)
     urls = [f'{SERVER_URL}{url_suffix}?api_token={api_key}' for url_suffix in urls_suffixes]
     feed_url_to_config = {url: READER_CONFIG for url in urls}
 
@@ -210,12 +203,11 @@ def _build_params_for_csv_module(params: Dict, test_module: bool, api_key: str):
     return params
 
 
-def fetch_indicators(params: Dict, api_key: str, test_module: bool):
+def fetch_indicators(params: Dict, test_module: bool):
     """
      Wrapper which calls to CSVFeedApiModule for fetching indicators from Bitcoin Abuse download csv feed.
     Args:
         params (Dict): Demisto params.
-        api_key (str): For Bitcoin Abuse service.
         test_module (bool): Indicates if command is test_module command
 
     Returns:
@@ -223,7 +215,7 @@ def fetch_indicators(params: Dict, api_key: str, test_module: bool):
         - Fetches indicators if the call to Bitcoin Abuse service was successful and command is not test module
         - 'ok' if the call to Bitcoin Abuse service was successful and command is test_module
     """
-    params = _build_params_for_csv_module(params, test_module, api_key)
+    params = build_params_for_csv_module(params)
     csv_module_client = Client(**params)
 
     indicators = fetch_indicators_command(
@@ -235,51 +227,49 @@ def fetch_indicators(params: Dict, api_key: str, test_module: bool):
 
     assure_valid_response(indicators)
 
+    indicators_without_duplicates = []
+    have_fetched_first_time = argToBoolean(demisto.getIntegrationContext().get('have_fetched_first_time', False))
+
+    # in every fetch apart from first fetch, we are only fetching one csv file, so we know there aren't any duplicates
+    if have_fetched_first_time:
+        indicators_without_duplicates = indicators
+
+    # in first fetch according to configurations, we might fetch more than one csv file, so we need to remove duplicates
+    else:
+        indicators_ids = set()
+        for indicator in indicators:
+            try:
+                indicator_id = int(indicator['rawJSON']['id'])
+                if indicator_id not in indicators_ids:
+                    indicator['fields']['Cryptocurrency Address Type'] = 'bitcoin'
+                    indicators_without_duplicates.append(indicator)
+                    indicators_ids.add(indicator_id)
+            except ValueError:
+                demisto.debug(f'The following indicator was found invalid and was skipped: {indicator}')
+
     if not test_module:
-        final_indicator_list = []
-        have_fetched_first_time = argToBoolean(demisto.getIntegrationContext().get('have_fetched_first_time', False))
-
-        if have_fetched_first_time:
-            final_indicator_list = indicators
-
-        else:
-            indicators_ids = set()
-            for indicator in indicators:
-                try:
-                    indicator_id = int(indicator['rawJSON']['id'])
-                    if indicator_id not in indicators_ids:
-                        indicator['fields']['Cryptocurrency Address Type'] = 'bitcoin'
-                        final_indicator_list.append(indicator)
-                        indicators_ids.add(indicator_id)
-                except ValueError:
-                    demisto.debug(f'The following indicator was found invalid and was skipped: {indicator}')
-
         # we submit the indicators in batches
-        for b in batch(final_indicator_list, batch_size=2000):
+        for b in batch(indicators_without_duplicates, batch_size=2000):
             demisto.createIndicators(b)  # type: ignore
-
+        demisto.setIntegrationContext({'have_fetched_first_time': True})
     else:
         demisto.results('ok')
 
 
 def main() -> None:
     command = demisto.command()
-    api_key = demisto.params().get('api_key', '')
-
-    args = demisto.args()
-
     demisto.debug(f'Bitcoin Abuse: Command being called is {demisto.command()}')
 
     try:
 
         if command == 'test-module':
-            fetch_indicators(demisto.params(), api_key, test_module=True)
+            fetch_indicators(demisto.params(), test_module=True)
 
         elif command == 'fetch-indicators':
-            fetch_indicators(demisto.params(), api_key, test_module=False)
+            fetch_indicators(demisto.params(), test_module=False)
 
-        elif command == 'bitcoin-report-address':
-            return_results(report_address_command(demisto.params(), args, api_key))
+        elif command == 'bitcoinabuse-report-address':
+            return_results(report_address_command(demisto.params(), demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
