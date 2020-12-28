@@ -12,12 +12,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Server URL (ex. https://core.mobileiron.com )
+- display: Server URL (i.e., https://core.mobileiron.com )
   name: url
   required: true
   type: 0
 - defaultvalue: '1'
-  display: Admin Space ID (ex. 1 for the global space id)
+  display: Admin Space ID (i.e., 1 for the global space ID)
   name: admin_space_id
   required: true
   type: 0
@@ -45,26 +45,26 @@ script:
   commands:
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron send message command
+      description: The ID of the device to send a message to. 
       isArray: false
       name: device_id
       required: true
       secret: false
     - default: false
-      description: Provide Subject for email
+      description: The subject of the email.
       isArray: false
       name: subject
       required: true
       secret: false
     - default: false
-      description: Provide message for email
+      description: The message of the email.
       isArray: false
       name: message
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Send Message Mode
+      description: 'The type of message to send. Possible values are: "pns", "sms" and "email".'
       isArray: false
       name: message_type
       predefined:
@@ -74,743 +74,717 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: This command is used to send a message to the particular device based
-      on device id
+    description: Sends a message to the particular device based on the device ID.
     execution: false
     name: mobileiron-core-send-message
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron update os command
+      description: The ID of the device on which to update the operating system. 
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to update OS to the particular device based
-      on device id
+    description: Updates the operating system on the particular device based on the device ID.
     execution: false
     name: mobileiron-core-update-os
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron unlock device
-        only command
+      description: The ID of the device to unlock. 
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to unlock device to the particular device based
-      on device id
+    description: Unlocks the particular device based on the device ID.
     execution: false
     name: mobileiron-core-unlock-device-only
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron enable voice roaming
-        command
+      description: The ID of the device on which to enable voice roaming.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to enable voice roaming to the particular device
-      based on device id
+    description: Enables voice roaming on the particular device based on the device ID.
     execution: false
     name: mobileiron-core-enable-voice-roaming
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron disable voice
-        roaming command
+      description: The ID of the device on which to disable voice roaming.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to disable voice roaming to the particular device
-      based on device id
+    description: Disables voice roaming on the particular device based on the device ID.
     execution: false
     name: mobileiron-core-disable-voice-roaming
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron enable data roaming
-        command
+      description: The ID of the device on which to enable data roaming.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to enable data roaming to the particular device
-      based on device id
+    description: Enables data roaming on the particular device based on the device ID.
     execution: false
     name: mobileiron-core-enable-data-roaming
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron disable data roaming
-        command
+      description: The ID of the device on which to disable data roaming.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to disable data roaming to the particular device
-      based on device id
+    description: Disables data roaming on the particular device based on the device ID.
     execution: false
     name: mobileiron-core-disable-data-roaming
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron enable personal
-        hotspot command
+      description: The ID of the device on which to enable a personal hotspot.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to enable personal hotspot to the particular
-      device based on device id
+    description: Enables a personal hotspot on the particular device based on the device ID.
     execution: false
     name: mobileiron-core-enable-personal-hotspot
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron disable personal
-        hotspot command
+      description: The ID of the device on which to disable a personal hotspot.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to disable personal hotspot to the particular
-      device based on device id
+    description: Disables a personal hotspot on the particular device based on the device ID.
     execution: false
     name: mobileiron-core-disable-personal-hotspot
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron unlock app connect
-        container command
+      description: The ID of the device on which to unlock an app connect container.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to unlock app connect container to the particular
-      device based on device id
+    description: Unlocks an app connect container on the particular device based on the device ID.
     execution: false
     name: mobileiron-core-unlock-app-connect-container
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron retire device
-        command
+      description: The ID of the device to retire.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to retire device to the particular device based
-      on device id
+    description: Retires a device based on the device ID.
     execution: false
     name: mobileiron-core-retire-device
   - arguments:
     - default: false
-      description: device id pointing to the device to execute the command on
+      description: ID of the device to wipe.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to wipe device to the particular device based
-      on device id
+    description: Wipes a device based on the device ID.
     execution: false
     name: mobileiron-core-wipe-device
   - arguments:
     - default: false
-      description: This argument fetch the device id for mobileiron force checkin
-        command
+      description: ID of the device on which to force check in.
       isArray: false
       name: device_id
       required: true
       secret: false
     deprecated: false
-    description: This command is used to force checkin to the particular device based
-      on device id
+    description: Forces check in to the device based on the device ID.
     execution: false
     name: mobileiron-core-force-checkin
   - arguments:
     - default: true
       defaultValue: common.status = "ACTIVE"
-      description: The query which to execute to filter down the list of devices
+      description: 'The query used to filter the list of devices. Default is: common.status = "ACTIVE".'
       isArray: false
       name: query
       required: true
       secret: false
     - default: false
-      description: comma separated list of fields to query from the API
+      description: Comma-separated list of fields to query from the API.
       isArray: false
       name: additional_fields
       required: false
       secret: false
     - default: false
-      description: limit the number of items that should be returned
+      description: The maximum number of items to return.
       isArray: false
       name: max_fetch
       required: false
       secret: false
     deprecated: false
-    description: This command is used to get a list of devices matching the provided
-      query
+    description: Gets a list of devices matching the provided query.
     execution: false
     name: mobileiron-core-get-devices-data
     outputs:
     - contextPath: MobileIronCore.Device.common_model
-      description: Model
+      description: Model of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_os_version
-      description: OS Version
+      description: Operating system version of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
-      description: Platform Name
+      description: Platform name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_status
-      description: Status
+      description: Status of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_imei
-      description: IMEI
+      description: International Mobile Equipment Identity (IMEI) of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
-      description: Platform
+      description: Platform of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_security_state
-      description: Security State
+      description: Security state of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_display_name
-      description: Display Name
+      description: Display name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_last_connected_at
-      description: Last Connected At
+      description: Date the device that was fetched was last connected.
       type: Date
     - contextPath: MobileIronCore.Device.common_uuid
-      description: Device UUID
+      description: Device UUID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_quarantined
-      description: Quarantined
+      description: Whether the device was quarantined.
       type: Boolean
     - contextPath: MobileIronCore.Device.common_id
-      description: Device ID
+      description: ID of the device that was fetched.
       type: Number
     - contextPath: MobileIronCore.Device.common_imsi
-      description: IMSI
+      description: International mobile subscriber identity (IMSI) of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_owner
-      description: Device Owner
+      description: Owner of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_email_address
-      description: User Email Address
+      description: User email address of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_manufacturer
-      description: Manufacturer
+      description: Manufacturer of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_compliant
-      description: Compliant
+      description: Whether the device that was fetched is compliant.
       type: Boolean
     - contextPath: MobileIronCore.Device.user_user_id
-      description: User ID
+      description: User ID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_registration_date
-      description: Registration Date
+      description: Registration date of the device that was fetched.
       type: Date
     - contextPath: MobileIronCore.Device.common_wifi_mac_address
-      description: Wifi MAC Address
+      description: WiFi MAC address of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_noncompliance_reasons
-      description: Non compliance Reasons
+      description: Non-compliance reasons for the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_iPhone_UDID
-      description: iPhone UDID
+      description: iPhone UDID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
-      description: IPhone MAC Address EN0
+      description: IPhone MAC address EN0 of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_Current_MCC
-      description: Current MCC
+      description: Current MCC of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_current_country_code
-      description: Current country code
+      description: Current country code of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_sam_account_name
-      description: SAM account name
+      description: SAM account name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_current_country_name
-      description: Current country name
+      description: Current country name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_home_country_name
-      description: Home country name
+      description: Home country name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_home_country_code
-      description: Home country code
+      description: Home country code of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_device_is_compromised
-      description: True if device is compromised
+      description: Whether the device that was fetched was compromised.
       type: Boolean
     - contextPath: MobileIronCore.Device.common_SerialNumber
-      description: Device serial number
+      description: Device serial number of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_mdm_managed
-      description: Device is MDM managed
+      description: Whether the device that was fetched is MDM managed.
       type: Boolean
   - arguments:
     - default: false
-      description: device uuid
+      description: The UUID of the device to fetch.
       isArray: false
       name: device_uuid
       required: true
       secret: false
     - default: false
-      description: comma separated list of fields to query from the API
+      description: Comma-separated list of fields to query from the API.
       isArray: false
       name: additional_fields
       required: false
       secret: false
     deprecated: false
-    description: This command is used to get a single device based on the device uuid
+    description: Gets a single device based on the device UUID.
     execution: false
     name: mobileiron-core-get-device-by-uuid
     outputs:
     - contextPath: MobileIronCore.Device.common_model
-      description: Model
+      description: Model of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_os_version
-      description: OS Version
+      description: Operating system version of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
-      description: Platform Name
+      description: Platform name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_status
-      description: Status
+      description: Status of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_imei
-      description: IMEI
+      description: International Mobile Equipment Identity (IMEI) of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
-      description: Platform
+      description: Platform of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_security_state
-      description: Security State
+      description: Security state of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_display_name
-      description: Display Name
+      description: Display name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_last_connected_at
-      description: Last Connected At
+      description: Date the device that was fetched was last connected.
       type: Date
     - contextPath: MobileIronCore.Device.common_uuid
-      description: Device UUID
+      description: Device UUID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_quarantined
-      description: Quarantined
+      description: Whether the device that was fetched was quarantined.
       type: Boolean
     - contextPath: MobileIronCore.Device.common_id
-      description: Device ID
+      description: ID of the device that was fetched.
       type: Number
     - contextPath: MobileIronCore.Device.common_imsi
-      description: IMSI
+      description: International mobile subscriber identity (IMSI) of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_owner
-      description: Device Owner
+      description: Owner of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_email_address
-      description: User Email Address
+      description: User email address of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_manufacturer
-      description: Manufacturer
+      description: Manufacturer of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_compliant
-      description: Compliant
+      description: Whether the device that was fetched was compliant.
       type: Boolean
     - contextPath: MobileIronCore.Device.user_user_id
-      description: User ID
+      description: User ID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_registration_date
-      description: Registration Date
+      description: Registration date of the device that was fetched.
       type: Date
     - contextPath: MobileIronCore.Device.common_wifi_mac_address
-      description: Wifi MAC Address
+      description: WiFi MAC address of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_noncompliance_reasons
-      description: Non compliance Reasons
+      description: Non-compliance reasons for the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_iPhone_UDID
-      description: iPhone UDID
+      description: iPhone UDID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
-      description: IPhone MAC Address EN0
+      description: IPhone MAC address EN0 of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_Current_MCC
-      description: Current MCC
+      description: Current MCC of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_current_country_code
-      description: Current country code
+      description: Current country code of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_sam_account_name
-      description: SAM account name
+      description: SAM account name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_current_country_name
-      description: Current country name
+      description: Current country name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_home_country_name
-      description: Home country name
+      description: Home country name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_home_country_code
-      description: Home country code
+      description: Home country code of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_device_is_compromised
-      description: True if device is compromised
+      description: Whether the device that was fetched was compromised.
       type: Boolean
     - contextPath: MobileIronCore.Device.common_SerialNumber
-      description: Device serial number
+      description: Device serial number of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_mdm_managed
-      description: Device is MDM managed
+      description: Whether the device that was fetched is MDM managed.
       type: Boolean
   - arguments:
     - default: false
-      description: device serial
+      description: The serial number of the device to fetch.
       isArray: false
       name: device_serial
       required: true
       secret: false
     - default: false
-      description: comma separated list of fields to query from the API
+      description: Comma-separated list of fields to query from the API.
       isArray: false
       name: additional_fields
       required: false
       secret: false
     deprecated: false
-    description: This command is used to get a single device based on the device serial
-      number
+    description: Gets a single device based on the device serial number.
     execution: false
     name: mobileiron-core-get-device-by-serial
     outputs:
     - contextPath: MobileIronCore.Device.common_model
-      description: Model
+      description: Model of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_os_version
-      description: OS Version
+      description: Operating system version of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
-      description: Platform Name
+      description: Platform name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_status
-      description: Status
+      description: Status of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_imei
-      description: IMEI
+      description: International Mobile Equipment Identity (IMEI) of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
-      description: Platform
+      description: Platform of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_security_state
-      description: Security State
+      description: Security state of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_display_name
-      description: Display Name
+      description: Display name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_last_connected_at
-      description: Last Connected At
+      description: Date the device that was fetched was last connected.
       type: Date
     - contextPath: MobileIronCore.Device.common_uuid
-      description: Device UUID
+      description: Device UUID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_quarantined
-      description: Quarantined
+      description: Whether the device that was fetched was quarantined.
       type: Boolean
     - contextPath: MobileIronCore.Device.common_id
-      description: Device ID
+      description: ID of the device that was fetched.
       type: Number
     - contextPath: MobileIronCore.Device.common_imsi
-      description: IMSI
+      description: International mobile subscriber identity (IMSI) of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_owner
-      description: Device Owner
+      description: Owner of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_email_address
-      description: User Email Address
+      description: User email address of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_manufacturer
-      description: Manufacturer
+      description: Manufacturer of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_compliant
-      description: Compliant
+      description: Whether the device that was fetched was compliant.
       type: Boolean
     - contextPath: MobileIronCore.Device.user_user_id
-      description: User ID
+      description: User ID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_registration_date
-      description: Registration Date
+      description: Registration date of the device that was fetched.
       type: Date
     - contextPath: MobileIronCore.Device.common_wifi_mac_address
-      description: Wifi MAC Address
+      description: WiFi MAC address of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_noncompliance_reasons
-      description: Non compliance Reasons
+      description: Non-compliance reasons for the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_iPhone_UDID
-      description: iPhone UDID
+      description: iPhone UDID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
-      description: IPhone MAC Address EN0
+      description: IPhone MAC address EN0 of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_Current_MCC
-      description: Current MCC
+      description: Current MCC of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_current_country_code
-      description: Current country code
+      description: Current country code of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_sam_account_name
-      description: SAM account name
+      description: SAM account name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_current_country_name
-      description: Current country name
+      description: Current country name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_home_country_name
-      description: Home country name
+      description: Home country name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_home_country_code
-      description: Home country code
+      description: Home country code of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_device_is_compromised
-      description: True if device is compromised
+      description: Whether the device that was fetched was compromised.
       type: Boolean
     - contextPath: MobileIronCore.Device.common_SerialNumber
-      description: Device serial number
+      description: Device serial number of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_mdm_managed
-      description: Device is MDM managed
+      description: Whether the device that was fetched is MDM managed.
       type: Boolean
   - arguments:
     - default: false
-      description: device mac
+      description: MAC address of the device to fetch.
       isArray: false
       name: device_mac
       required: true
       secret: false
     - default: false
-      description: comma separated list of fields to query from the API
+      description: Comma-separated list of fields to query from the API.
       isArray: false
       name: additional_fields
       required: false
       secret: false
     deprecated: false
-    description: This command is used to get a single device based on the device wifi
-      mac address
+    description: Gets a single device based on the device WiFi MAC address.
     execution: false
     name: mobileiron-core-get-device-by-mac
     outputs:
     - contextPath: MobileIronCore.Device.common_model
-      description: Model
+      description: Model of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_os_version
-      description: OS Version
+      description: Operating system version of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
-      description: Platform Name
+      description: Platform name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_status
-      description: Status
+      description: Status of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_imei
-      description: IMEI
+      description: International Mobile Equipment Identity (IMEI) of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
-      description: Platform
+      description: Platform of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_security_state
-      description: Security State
+      description: Security state of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_display_name
-      description: Display Name
+      description: Display name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_last_connected_at
-      description: Last Connected At
+      description: Date the device that was fetched was last connected.
       type: Date
     - contextPath: MobileIronCore.Device.common_uuid
-      description: Device UUID
+      description: Device UUID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_quarantined
-      description: Quarantined
+      description: Whether the device that was fetched was quarantined.
       type: Boolean
     - contextPath: MobileIronCore.Device.common_id
-      description: Device ID
+      description: ID of the device that was fetched.
       type: Number
     - contextPath: MobileIronCore.Device.common_imsi
-      description: IMSI
+      description: International mobile subscriber identity (IMSI) of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_owner
-      description: Device Owner
+      description: Owner of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_email_address
-      description: User Email Address
+      description: User email address of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_manufacturer
-      description: Manufacturer
+      description: Manufacturer of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_compliant
-      description: Compliant
+      description: Whether the device that was fetched was compliant.
       type: Boolean
     - contextPath: MobileIronCore.Device.user_user_id
-      description: User ID
+      description: User ID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_registration_date
-      description: Registration Date
+      description: Registration date of the device that was fetched.
       type: Date
     - contextPath: MobileIronCore.Device.common_wifi_mac_address
-      description: Wifi MAC Address
+      description: WiFi MAC address of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_noncompliance_reasons
-      description: Non compliance Reasons
+      description: Non-compliance reasons for the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_iPhone_UDID
-      description: iPhone UDID
+      description: iPhone UDID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
-      description: IPhone MAC Address EN0
+      description: IPhone MAC address EN0 of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_Current_MCC
-      description: Current MCC
+      description: Current MCC of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_current_country_code
-      description: Current country code
+      description: Current country code of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_sam_account_name
-      description: SAM account name
+      description: SAM account name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_current_country_name
-      description: Current country name
+      description: Current country name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_home_country_name
-      description: Home country name
+      description: Home country name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_home_country_code
-      description: Home country code
+      description: Home country code of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_device_is_compromised
-      description: True if device is compromised
+      description: Whether the device that was fetched was compromised.
       type: Boolean
     - contextPath: MobileIronCore.Device.common_SerialNumber
-      description: Device serial number
+      description: Device serial number of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_mdm_managed
-      description: Device is MDM managed
+      description: Whether the device that was fetched is MDM managed.
       type: Boolean
   - arguments:
     - default: false
-      description: device IP
+      description: IP address of the device to fetch.
       isArray: false
       name: device_ip
       required: true
       secret: false
     - default: false
-      description: comma separated list of fields to query from the API
+      description: Comma-separated list of fields to query from the API.
       isArray: false
       name: additional_fields
       required: false
       secret: false
     deprecated: false
-    description: This command is used to get a single device based on the device ip
+    description: Gets a single device based on the device IP address.
     execution: false
     name: mobileiron-core-get-device-by-ip
     outputs:
     - contextPath: MobileIronCore.Device.common_model
-      description: Model
+      description: Model of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_os_version
-      description: OS Version
+      description: Operating system version of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
-      description: Platform Name
+      description: Platform name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_status
-      description: Status
+      description: Status of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_imei
-      description: IMEI
+      description: International Mobile Equipment Identity (IMEI) of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_platform
-      description: Platform
+      description: Platform of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_security_state
-      description: Security State
+      description: Security state of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_display_name
-      description: Display Name
+      description: Display name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_last_connected_at
-      description: Last Connected At
+      description: Date the device that was fetched was last connected.
       type: Date
     - contextPath: MobileIronCore.Device.common_uuid
-      description: Device UUID
+      description: Device UUID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_quarantined
-      description: Quarantined
+      description: Whether the device that was fetched was quarantined.
       type: Boolean
     - contextPath: MobileIronCore.Device.common_id
-      description: Device ID
+      description: ID of the device that was fetched.
       type: Number
     - contextPath: MobileIronCore.Device.common_imsi
-      description: IMSI
+      description: International mobile subscriber identity (IMSI) of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_owner
-      description: Device Owner
+      description: Owner of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_email_address
-      description: User Email Address
+      description: User email address of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_manufacturer
-      description: Manufacturer
+      description: Manufacturer of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_compliant
-      description: Compliant
+      description: Whether the device that was fetched was compliant.
       type: Boolean
     - contextPath: MobileIronCore.Device.user_user_id
-      description: User ID
+      description: User ID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_registration_date
-      description: Registration Date
+      description: Registration date of the device that was fetched.
       type: Date
     - contextPath: MobileIronCore.Device.common_wifi_mac_address
-      description: Wifi MAC Address
+      description: WiFi MAC address of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_noncompliance_reasons
-      description: Non compliance Reasons
+      description: Non-compliance reasons for the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_iPhone_UDID
-      description: iPhone UDID
+      description: iPhone UDID of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_iPhone_MAC_ADDRESS_EN0
-      description: IPhone MAC Address EN0
+      description: IPhone MAC address EN0 of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.ios_Current_MCC
-      description: Current MCC
+      description: Current MCC of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_current_country_code
-      description: Current country code
+      description: Current country code of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.user_sam_account_name
-      description: SAM account name
+      description: SAM account name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_current_country_name
-      description: Current country name
+      description: Current country name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_home_country_name
-      description: Home country name
+      description: Home country name of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_home_country_code
-      description: Home country code
+      description: Home country code of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_device_is_compromised
-      description: True if device is compromised
+      description: Whether the device that was fetched was compromised.
       type: Boolean
     - contextPath: MobileIronCore.Device.common_SerialNumber
-      description: Device serial number
+      description: Device serial number of the device that was fetched.
       type: String
     - contextPath: MobileIronCore.Device.common_mdm_managed
-      description: Device is MDM managed
+      description: Whether the device that was fetched is MDM managed.
       type: Boolean
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
