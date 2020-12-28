@@ -5,15 +5,14 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cc5a95d3-42ae-4a73-8a09-747dd630b35c
+    taskid: c4a0ecf8-cc9f-44fe-8f59-82cda52a29a6
     type: start
     task:
-      id: cc5a95d3-42ae-4a73-8a09-747dd630b35c
+      id: c4a0ecf8-cc9f-44fe-8f59-82cda52a29a6
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -44,13 +43,13 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 4c8d746b-4112-4ce3-82e7-f6e2ce3f5ca3
+    taskid: 9d561500-8e17-468b-8121-9d9f1b8a8bfb
     type: regular
     task:
-      id: 4c8d746b-4112-4ce3-82e7-f6e2ce3f5ca3
+      id: 9d561500-8e17-468b-8121-9d9f1b8a8bfb
       version: -1
       name: Search connector
-      description: Returns objects that match given criteria test
+      description: Returns objects that match given criteria
       script: CarbonBlackProtectionV2|||cbp-connector-search
       type: regular
       iscommand: true
@@ -81,16 +80,15 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 4996b113-1518-416a-8f5e-5054412c8153
+    taskid: a81733e9-b81a-4f46-8942-b54c977fba02
     type: title
     task:
-      id: 4996b113-1518-416a-8f5e-5054412c8153
+      id: a81733e9-b81a-4f46-8942-b54c977fba02
       version: -1
       name: Connector
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -109,10 +107,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 06f7a02c-1832-4c91-8678-60efb90a3ddd
+    taskid: 1857753e-9e9a-4e33-8fd0-81d923fbed16
     type: regular
     task:
-      id: 06f7a02c-1832-4c91-8678-60efb90a3ddd
+      id: 1857753e-9e9a-4e33-8fd0-81d923fbed16
       version: -1
       name: Get 3rd connector
       description: Returns object instance of this class
@@ -142,16 +140,15 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 914db638-4191-44ed-8b49-f068d13419cc
+    taskid: 944bdfc8-a5cc-4678-8032-7ac682cf4840
     type: title
     task:
-      id: 914db638-4191-44ed-8b49-f068d13419cc
+      id: 944bdfc8-a5cc-4678-8032-7ac682cf4840
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
@@ -167,16 +164,15 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 60cb0012-e06e-4cc0-8098-696bb416833e
+    taskid: 43bf86c1-967b-400f-8139-438f082fd523
     type: title
     task:
-      id: 60cb0012-e06e-4cc0-8098-696bb416833e
+      id: 43bf86c1-967b-400f-8139-438f082fd523
       version: -1
       name: Computer
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -195,10 +191,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 43b2fa2b-69a4-4e7a-8bbf-ace3957098bf
+    taskid: 943123f6-4e60-49c9-8a5a-8a2ed24a9067
     type: regular
     task:
-      id: 43b2fa2b-69a4-4e7a-8bbf-ace3957098bf
+      id: 943123f6-4e60-49c9-8a5a-8a2ed24a9067
       version: -1
       name: Search computer
       description: 'Search for computers. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
@@ -236,10 +232,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 51ca4bdd-aede-4994-8a35-8ff5baf1d16e
+    taskid: 177c1b8c-ab57-4273-818c-1cae7c5422be
     type: condition
     task:
-      id: 51ca4bdd-aede-4994-8a35-8ff5baf1d16e
+      id: 177c1b8c-ab57-4273-818c-1cae7c5422be
       version: -1
       name: Verify context
       type: condition
@@ -286,10 +282,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 9b01153c-eaf6-496e-8626-61de4c2499a9
+    taskid: fa3a45e0-a597-4026-86c4-4a04b40bceb6
     type: regular
     task:
-      id: 9b01153c-eaf6-496e-8626-61de4c2499a9
+      id: fa3a45e0-a597-4026-86c4-4a04b40bceb6
       version: -1
       name: Get computer
       description: 'Returns computer. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#computer'
@@ -319,10 +315,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 39eeb391-3d4e-443b-84f0-648472c4a7a1
+    taskid: 74703b83-e4a7-41dc-8475-d52f9b5c4d91
     type: condition
     task:
-      id: 39eeb391-3d4e-443b-84f0-648472c4a7a1
+      id: 74703b83-e4a7-41dc-8475-d52f9b5c4d91
       version: -1
       name: Verify context
       type: condition
@@ -369,16 +365,15 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 88670832-8c43-4a45-8844-eb4d6dee6103
+    taskid: a176b9ab-fd9f-4a4f-80d1-9a0db353a95e
     type: title
     task:
-      id: 88670832-8c43-4a45-8844-eb4d6dee6103
+      id: a176b9ab-fd9f-4a4f-80d1-9a0db353a95e
       version: -1
       name: File Catalog
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -397,10 +392,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 4006b180-fe7f-4b33-8910-8a0a3c078fe6
+    taskid: 76768e6a-4b7b-4153-8ac6-cb2117057f59
     type: regular
     task:
-      id: 4006b180-fe7f-4b33-8910-8a0a3c078fe6
+      id: 76768e6a-4b7b-4153-8ac6-cb2117057f59
       version: -1
       name: Search file catalog using query
       description: 'Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filecatalog'
@@ -434,10 +429,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: d8636b3a-8aaf-402c-8473-e19aa1c0b0c2
+    taskid: 73e2d6cc-f5bc-49f5-86a4-845ac83b1c18
     type: condition
     task:
-      id: d8636b3a-8aaf-402c-8473-e19aa1c0b0c2
+      id: 73e2d6cc-f5bc-49f5-86a4-845ac83b1c18
       version: -1
       name: Verify context
       type: condition
@@ -494,16 +489,15 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 700cf9aa-743d-4519-8f0c-a52bd56df062
+    taskid: d01c42de-74c1-400d-82db-be093f2bac10
     type: title
     task:
-      id: 700cf9aa-743d-4519-8f0c-a52bd56df062
+      id: d01c42de-74c1-400d-82db-be093f2bac10
       version: -1
       name: File Instance
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -522,10 +516,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: d30b0713-fbb2-4b91-8e46-8d7e1b9166ed
+    taskid: c6fc4489-cf17-4e68-8cb5-ce3aa820eddb
     type: regular
     task:
-      id: d30b0713-fbb2-4b91-8e46-8d7e1b9166ed
+      id: c6fc4489-cf17-4e68-8cb5-ce3aa820eddb
       version: -1
       name: Search file instance
       description: 'Search for file instances. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#fileinstance'
@@ -560,10 +554,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 36985b7b-69fd-4cf6-83ec-6e8293f4f4a8
+    taskid: ae54b61a-62a7-4108-824f-512675a82297
     type: condition
     task:
-      id: 36985b7b-69fd-4cf6-83ec-6e8293f4f4a8
+      id: ae54b61a-62a7-4108-824f-512675a82297
       version: -1
       name: Verify context
       type: condition
@@ -640,16 +634,15 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: fe5bd173-e78e-4b90-8355-04a5b2ba7f31
+    taskid: cad88ea5-d962-48ab-8aaf-834510ae4ffc
     type: title
     task:
-      id: fe5bd173-e78e-4b90-8355-04a5b2ba7f31
+      id: cad88ea5-d962-48ab-8aaf-834510ae4ffc
       version: -1
       name: Event
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "19"
@@ -668,10 +661,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 725fa852-b91a-4f4d-8ac4-a355876cc538
+    taskid: c5590895-8ee1-4eea-8d4d-74c12fb86026
     type: regular
     task:
-      id: 725fa852-b91a-4f4d-8ac4-a355876cc538
+      id: c5590895-8ee1-4eea-8d4d-74c12fb86026
       version: -1
       name: Search events using sort and limit
       description: 'Search for events. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#event'
@@ -706,10 +699,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: ce6b8e6e-58b5-41bb-8729-b2c8ee09f6cf
+    taskid: 381df303-1d74-41d5-81ef-e91b06a51410
     type: condition
     task:
-      id: ce6b8e6e-58b5-41bb-8729-b2c8ee09f6cf
+      id: 381df303-1d74-41d5-81ef-e91b06a51410
       version: -1
       name: Verify context
       type: condition
@@ -750,16 +743,15 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 6e20e370-0461-45d8-8ce6-133ff557c852
+    taskid: f5f3c725-a587-4f4a-8a15-b42fcbd3c4a0
     type: title
     task:
-      id: 6e20e370-0461-45d8-8ce6-133ff557c852
+      id: f5f3c725-a587-4f4a-8a15-b42fcbd3c4a0
       version: -1
       name: File rule
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -778,10 +770,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: beb18e9d-d3d9-4b0b-8193-ec6fb4b7fcc4
+    taskid: 0f94bf12-4e5e-4fe0-85e0-4e2fe5a79121
     type: regular
     task:
-      id: beb18e9d-d3d9-4b0b-8193-ec6fb4b7fcc4
+      id: 0f94bf12-4e5e-4fe0-85e0-4e2fe5a79121
       version: -1
       name: Create file rule
       description: 'Creates or updates file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
@@ -824,10 +816,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 30274925-f0ef-4842-8b1f-608b62bc84a8
+    taskid: d8344182-5afa-40ab-8960-e4e5005fe723
     type: regular
     task:
-      id: 30274925-f0ef-4842-8b1f-608b62bc84a8
+      id: d8344182-5afa-40ab-8960-e4e5005fe723
       version: -1
       name: Delete file rule
       description: 'Deletes the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
@@ -859,10 +851,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 48657b1c-c0aa-4f6b-8476-6d99d498a9fa
+    taskid: 88ae5a58-377b-489b-8d43-895d4949cb02
     type: regular
     task:
-      id: 48657b1c-c0aa-4f6b-8476-6d99d498a9fa
+      id: 88ae5a58-377b-489b-8d43-895d4949cb02
       version: -1
       name: Get deleted file rule
       description: 'Gets the file rule. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
@@ -894,10 +886,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 2edd5053-2ce9-4a34-8476-2808cdc47762
+    taskid: 330cc504-1318-4d3c-8286-c46e7fda1a9c
     type: condition
     task:
-      id: 2edd5053-2ce9-4a34-8476-2808cdc47762
+      id: 330cc504-1318-4d3c-8286-c46e7fda1a9c
       version: -1
       name: Verify file was deleted
       type: condition
@@ -934,10 +926,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: e719de53-729b-40aa-8360-1a93c7787852
+    taskid: d17d3d16-b250-44f2-8e6a-980d062f3669
     type: regular
     task:
-      id: e719de53-729b-40aa-8360-1a93c7787852
+      id: d17d3d16-b250-44f2-8e6a-980d062f3669
       version: -1
       name: Search file rule
       description: 'Search for file rules. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#filerule'
@@ -980,10 +972,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: c02e46a1-57dd-4263-8fe4-83f4ca7b5586
+    taskid: 50b1a05b-012f-4a85-8ef8-9d8ff5bc0fb1
     type: condition
     task:
-      id: c02e46a1-57dd-4263-8fe4-83f4ca7b5586
+      id: 50b1a05b-012f-4a85-8ef8-9d8ff5bc0fb1
       version: -1
       name: Verify context
       type: condition
@@ -1020,16 +1012,15 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: fc087e99-f4c1-4b40-846d-fc79899c5f8a
+    taskid: f7c90ed5-f796-4123-8634-0572b1c4cf00
     type: title
     task:
-      id: fc087e99-f4c1-4b40-846d-fc79899c5f8a
+      id: f7c90ed5-f796-4123-8634-0572b1c4cf00
       version: -1
       name: Policy
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -1048,10 +1039,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: e16fa5a5-0392-4af7-8631-f93695991d6f
+    taskid: f929334a-178f-449c-8cdf-ec3df42d0b2d
     type: regular
     task:
-      id: e16fa5a5-0392-4af7-8631-f93695991d6f
+      id: f929334a-178f-449c-8cdf-ec3df42d0b2d
       version: -1
       name: Policy query
       description: 'Search for policies. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#policy'
@@ -1085,10 +1076,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 526ebdad-8b04-4015-89ff-6473fa7fbe2d
+    taskid: b2178f7e-e012-4544-8d33-01abb45cb75c
     type: condition
     task:
-      id: 526ebdad-8b04-4015-89ff-6473fa7fbe2d
+      id: b2178f7e-e012-4544-8d33-01abb45cb75c
       version: -1
       name: Verify context
       type: condition
@@ -1139,16 +1130,15 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: c628757c-861c-4942-8a34-729e551d0ca0
+    taskid: 253f3386-bdda-4b8c-893c-220cdfb77e22
     type: title
     task:
-      id: c628757c-861c-4942-8a34-729e551d0ca0
+      id: 253f3386-bdda-4b8c-893c-220cdfb77e22
       version: -1
       name: Server Config
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -1167,10 +1157,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: fc61f6f6-6c54-40ce-89c1-2071e014f375
+    taskid: 32bb6800-47ae-4015-8c6a-494c0f2d1687
     type: regular
     task:
-      id: fc61f6f6-6c54-40ce-89c1-2071e014f375
+      id: 32bb6800-47ae-4015-8c6a-494c0f2d1687
       version: -1
       name: Search server config
       description: 'Search in server configurations. See more: https://developer.carbonblack.com/reference/enterprise-protection/7.2/rest-api/#serverconfig'
@@ -1204,10 +1194,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 6d99b6b8-5ff0-452b-8c13-928803cca093
+    taskid: 29c7c7dd-d586-46ce-88bb-5f2243d34936
     type: condition
     task:
-      id: 6d99b6b8-5ff0-452b-8c13-928803cca093
+      id: 29c7c7dd-d586-46ce-88bb-5f2243d34936
       version: -1
       name: Verify context
       type: condition
@@ -1254,16 +1244,15 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: cd484add-2faa-49c6-8129-2d1b1208b5b6
+    taskid: 5b3c7bb2-0d8c-4b02-80d7-a6877edad40a
     type: title
     task:
-      id: cd484add-2faa-49c6-8129-2d1b1208b5b6
+      id: 5b3c7bb2-0d8c-4b02-80d7-a6877edad40a
       version: -1
       name: Publisher
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "35"
@@ -1282,10 +1271,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 59543dff-4de8-42ad-8d44-8cc32f3641f4
+    taskid: fb24855f-bfb5-4bf6-8ff6-42f5a33b4a1d
     type: regular
     task:
-      id: 59543dff-4de8-42ad-8d44-8cc32f3641f4
+      id: fb24855f-bfb5-4bf6-8ff6-42f5a33b4a1d
       version: -1
       name: Search publisher
       script: CarbonBlackProtectionV2|||cbp-publisher-search
@@ -1322,10 +1311,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: ff69a478-0044-4fd6-8a6a-2c19d313624f
+    taskid: 1ceda7fe-7ef9-4e9f-87a7-73392a110784
     type: condition
     task:
-      id: ff69a478-0044-4fd6-8a6a-2c19d313624f
+      id: 1ceda7fe-7ef9-4e9f-87a7-73392a110784
       version: -1
       name: Verify context
       type: condition
@@ -1382,16 +1371,15 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: acddd394-87ba-488c-8522-08114d2e7d8a
+    taskid: ab2e4adf-6387-4529-8845-da9423a38883
     type: title
     task:
-      id: acddd394-87ba-488c-8522-08114d2e7d8a
+      id: ab2e4adf-6387-4529-8845-da9423a38883
       version: -1
       name: File Analysis
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -1410,10 +1398,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: edfff42b-ccf5-467b-8de6-280023228205
+    taskid: 14940d82-a5fb-4bcc-89cc-24f23c87f606
     type: regular
     task:
-      id: edfff42b-ccf5-467b-8de6-280023228205
+      id: 14940d82-a5fb-4bcc-89cc-24f23c87f606
       version: -1
       name: Create file analysis
       description: Creates or updates file analysis request
@@ -1449,10 +1437,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 67468c9c-b9d2-45ad-892f-10d53d9a7026
+    taskid: 63b6a0a0-80a9-4dcd-8fb6-9c76ae9f4fdb
     type: condition
     task:
-      id: 67468c9c-b9d2-45ad-892f-10d53d9a7026
+      id: 63b6a0a0-80a9-4dcd-8fb6-9c76ae9f4fdb
       version: -1
       name: Verify context
       type: condition
@@ -1509,10 +1497,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 3a74b6d4-7116-4333-8cfc-2f220090f98a
+    taskid: 813d780f-acf6-4b22-863c-5499430ee0d1
     type: regular
     task:
-      id: 3a74b6d4-7116-4333-8cfc-2f220090f98a
+      id: 813d780f-acf6-4b22-863c-5499430ee0d1
       version: -1
       name: Get file analysis
       description: Returns object instance of this class
@@ -1525,7 +1513,11 @@ tasks:
       - "41"
     scriptarguments:
       id:
-        simple: "19"
+        complex:
+          root: CBP.FileAnalysis
+          accessor: ID
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     view: |-
       {
@@ -1541,10 +1533,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 6ad68d59-44d0-490c-82aa-b9bb64f7af18
+    taskid: 690b1dd6-a4ad-4108-8a4b-cc9e7e89f25f
     type: condition
     task:
-      id: 6ad68d59-44d0-490c-82aa-b9bb64f7af18
+      id: 690b1dd6-a4ad-4108-8a4b-cc9e7e89f25f
       version: -1
       name: Verify context
       type: condition
@@ -1581,16 +1573,15 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 6f3643d3-db28-49a8-8cb9-01c63c0d331d
+    taskid: cfcf303f-c8cc-40a4-8f56-4561bc251acf
     type: title
     task:
-      id: 6f3643d3-db28-49a8-8cb9-01c63c0d331d
+      id: cfcf303f-c8cc-40a4-8f56-4561bc251acf
       version: -1
       name: File Upload
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1609,10 +1600,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 18b8862b-9e62-4896-813d-0be8daaac997
+    taskid: b75d0e09-36ff-4aa6-8ee7-68d1e835e3fd
     type: regular
     task:
-      id: 18b8862b-9e62-4896-813d-0be8daaac997
+      id: b75d0e09-36ff-4aa6-8ee7-68d1e835e3fd
       version: -1
       name: Search file upload
       description: Returns objects that match given criteria
@@ -1650,10 +1641,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 1abbdd8e-9a79-4191-8014-bbf1f60f8ed4
+    taskid: 09993800-fa11-4c56-87ee-477a889b5e31
     type: regular
     task:
-      id: 1abbdd8e-9a79-4191-8014-bbf1f60f8ed4
+      id: 09993800-fa11-4c56-87ee-477a889b5e31
       version: -1
       name: Get file upload
       description: Returns object instance of this class
@@ -1683,10 +1674,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 01c67a74-b368-4318-836b-7431bda5007e
+    taskid: af6b8739-171c-45c5-818f-223f31237bfa
     type: condition
     task:
-      id: 01c67a74-b368-4318-836b-7431bda5007e
+      id: af6b8739-171c-45c5-818f-223f31237bfa
       version: -1
       name: Verify context
       type: condition
@@ -1718,16 +1709,15 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 50f7d530-94e5-437a-8622-3aba2d8d3a3f
+    taskid: 280121c0-45c4-49bc-8ee6-bd85628b2022
     type: title
     task:
-      id: 50f7d530-94e5-437a-8622-3aba2d8d3a3f
+      id: 280121c0-45c4-49bc-8ee6-bd85628b2022
       version: -1
       name: Connector
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "47"
@@ -1746,10 +1736,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 6479f9e1-ede2-491a-8249-8afb964a7a28
+    taskid: dd0a2a33-db86-481e-86c3-3a689ef6edca
     type: regular
     task:
-      id: 6479f9e1-ede2-491a-8249-8afb964a7a28
+      id: dd0a2a33-db86-481e-86c3-3a689ef6edca
       version: -1
       name: Search connectors offset 1
       description: Returns objects that match given criteria
@@ -1783,10 +1773,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 1d5fdf8f-3094-4341-8d41-c0e9475c5c67
+    taskid: 52f447e6-2ac9-40a9-8832-4913db6bafc8
     type: regular
     task:
-      id: 1d5fdf8f-3094-4341-8d41-c0e9475c5c67
+      id: 52f447e6-2ac9-40a9-8832-4913db6bafc8
       version: -1
       name: Get first connector
       description: Returns object instance of this class
@@ -1816,10 +1806,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: 42b54ea8-813d-450c-8143-6ce7fb9edefb
+    taskid: 110947df-1403-4260-84ce-189b8a6519cb
     type: condition
     task:
-      id: 42b54ea8-813d-450c-8143-6ce7fb9edefb
+      id: 110947df-1403-4260-84ce-189b8a6519cb
       version: -1
       name: Verify context
       type: condition
@@ -1868,10 +1858,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: e6ec30b9-e2f0-43a5-8ff9-baff97015e4e
+    taskid: 082bc732-99aa-4d75-8472-7b6966ba06e1
     type: regular
     task:
-      id: e6ec30b9-e2f0-43a5-8ff9-baff97015e4e
+      id: 082bc732-99aa-4d75-8472-7b6966ba06e1
       version: -1
       name: Fetch Incidents
       description: Execute FetchIncident for a given instance
@@ -1902,10 +1892,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: fce41915-e2b5-4615-8499-f7262cc24c99
+    taskid: 06ee8736-4d45-437f-8617-42455b647c18
     type: regular
     task:
-      id: fce41915-e2b5-4615-8499-f7262cc24c99
+      id: 06ee8736-4d45-437f-8617-42455b647c18
       version: -1
       name: Search file catalog using specific query args
       description: 'Search for file catalogs. See more: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#filecatalog'
@@ -1946,10 +1936,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: 6b3cc482-cddb-49f6-8517-d0055ee6a1c5
+    taskid: 80eeca18-437c-4c93-8ad5-69af616c5950
     type: condition
     task:
-      id: 6b3cc482-cddb-49f6-8517-d0055ee6a1c5
+      id: 80eeca18-437c-4c93-8ad5-69af616c5950
       version: -1
       name: Verify context
       type: condition
@@ -1984,10 +1974,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: 8144ab24-e4d7-424a-82b9-e05a5a557d86
+    taskid: e0af7e84-0eee-4223-8293-24cfd2a25d0c
     type: regular
     task:
-      id: 8144ab24-e4d7-424a-82b9-e05a5a557d86
+      id: e0af7e84-0eee-4223-8293-24cfd2a25d0c
       version: -1
       name: Search file instance using specific query args
       description: 'Search for file instances. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#fileinstance'
@@ -2024,10 +2014,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: f0cc5ade-9bbb-4b81-852c-97d02d075d09
+    taskid: 5ee9cef0-3b70-4c17-8b94-6e4d9bbf9fe4
     type: regular
     task:
-      id: f0cc5ade-9bbb-4b81-852c-97d02d075d09
+      id: 5ee9cef0-3b70-4c17-8b94-6e4d9bbf9fe4
       version: -1
       name: Search events using specific query arguments
       description: 'Search for events. For more information, see the Carbon Black documentation: https://developer.carbonblack.com/reference/enterprise-protection/8.0/rest-api/#event'
@@ -2074,10 +2064,10 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: 8f8a833e-7bb4-4b88-856e-62cd9349201d
+    taskid: 6dc81490-5126-4409-861b-fc3e4ff28426
     type: regular
     task:
-      id: 8f8a833e-7bb4-4b88-856e-62cd9349201d
+      id: 6dc81490-5126-4409-861b-fc3e4ff28426
       version: -1
       name: Search file analysis using custom filters
       description: Returns objects that match the specified criteria.
@@ -2116,10 +2106,10 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: bfeee25d-8f94-4b89-865f-b8e7662b0bde
+    taskid: 4247b3ea-569f-4123-8019-4d9432ebe69e
     type: condition
     task:
-      id: bfeee25d-8f94-4b89-865f-b8e7662b0bde
+      id: 4247b3ea-569f-4123-8019-4d9432ebe69e
       version: -1
       name: Verify context
       type: condition
@@ -2132,14 +2122,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isNotEmpty
           left:
             value:
               simple: CBP.FileAnalysis.ID
             iscontext: true
-          right:
-            value:
-              simple: "17"
     view: |-
       {
         "position": {
@@ -2154,10 +2141,10 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: 42534fcb-9585-4b5a-8322-2479e9bd9db8
+    taskid: 2831251e-d775-4bc0-8638-d7e55d6e79e6
     type: regular
     task:
-      id: 42534fcb-9585-4b5a-8322-2479e9bd9db8
+      id: 2831251e-d775-4bc0-8638-d7e55d6e79e6
       version: -1
       name: Search with specific query arguments
       description: Returns objects that match the specified criteria.
@@ -2209,4 +2196,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
