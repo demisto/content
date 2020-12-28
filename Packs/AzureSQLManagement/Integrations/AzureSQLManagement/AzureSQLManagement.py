@@ -138,11 +138,11 @@ def azure_sql_servers_list_command(client: Client, args: Dict[str, Any]) -> Comm
     :rtype: ``CommandResults``
     """
 
-    scan_id_list = argToList(args.get('scan_id', []))
+    server_name = args.get('server_name')
 
-    scan = client.scan_status(scan_id=scan_id)
+    server_list = client.azure_sql_servers_list(server_name=server_name)
 
-    readable_output = tableToMarkdown('Scan status', scan_list)
+    readable_output = tableToMarkdown('Servers List', server_list)
 
     return CommandResults(
         readable_output=readable_output,
