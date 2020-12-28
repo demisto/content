@@ -96,6 +96,12 @@
             ]
         },
         {
+            "integrations":"Azure Network Security Groups",
+            "fromversion": "5.0.0",
+            "instance_names": "azure_nsg_prod",
+            "playbookID": "Azure NSG - Test"
+        },
+        {
             "integrations": "OpenCTI Feed",
             "playbookID": "OpenCTI Feed Test"
         },
