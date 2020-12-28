@@ -1,12 +1,13 @@
 commonfields:
-  id: ChronicleDBotScoreWidgetScript
+  id: ChronicleIsolatedHostnameWidgetScript
   version: -1
-name: ChronicleDBotScoreWidgetScript
+name: ChronicleIsolatedHostnameWidgetScript
 script: ''
 type: python
 tags:
-- dynamic-section
-comment: Shows the DBot Score and reputation of the Domain.
+- dynamic-indicator-section
+comment: Notifies if the hostname associated with the ChronicleAsset is isolated or
+  not.
 enabled: true
 scripttarget: 0
 subtype: python3
