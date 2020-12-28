@@ -1,0 +1,18 @@
+{
+    "name": "Cognni",
+    "description": "Cognni integration",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Cognni",
+    "url": "https://github.com/AVAILOTECH/x2o-demisto-content",
+    "email": "vered@cognni.ai",
+    "created": "2020-09-24T16:39:50Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": ["tal2", "VeredRozen"],
+    "dependencies": {}
+}

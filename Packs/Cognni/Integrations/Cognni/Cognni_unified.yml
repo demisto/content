@@ -1,0 +1,407 @@
+category: Utilities
+commonfields:
+  id: Cognni
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: Each event may return more than one incident
+  defaultvalue: '10'
+  display: Maximum number of events per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- defaultvalue: Low
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  options:
+  - Low
+  - Medium
+  - High
+  - Critical
+  required: true
+  type: 15
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Cognni Integration
+detaileddescription: "## Cognni\r\n\r\nCognni adds meaning to information events,\
+  \ enabling autonomous detection and investigation of information security incidents.\
+  \ Cognni's integration empowers Palo Alto customers with Information Intelligence\
+  \ capabilities.\r\n\r\n\r\nStep 1: Get API Key from Cognni\r\n\r\n1. Send an email\
+  \ to successteam@cognni.ai requesting an API Key for your Demisto integration \r\
+  \n2. Receive an email with the API Key\r\n3. Copy the API Key. \r\n\r\nStep 2: Add\
+  \ the API Key to Demisto \r\n1. Visit demisto.com\r\n2. Login to Demisto using your\
+  \ credentials\r\n3. In the side bar, select Settings > Integrations.\r\n4. Under\
+  \ Utilities, select Cognni\r\n5. Select the relevant instance\r\n6. Paste the API\
+  \ Key from Step 1 into the API Key bar.\r\n7. Select Done."
+display: Cognni
+name: Cognni
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The event ID
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch a single event by ID
+    execution: false
+    name: cognni-get-event
+    outputs:
+    - contextPath: Cognni.Event.id
+      description: id
+      type: String
+    - contextPath: Cognni.Event.date
+      description: date
+      type: Date
+    - contextPath: Cognni.Event.description
+      description: description
+      type: String
+    - contextPath: Cognni.Event.severity
+      description: severity
+      type: Number
+    - contextPath: Cognni.Event.sourceApplication
+      description: The source of the event
+      type: String
+  - arguments:
+    - default: false
+      description: The insight ID
+      isArray: false
+      name: insight_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch a single insight by ID
+    execution: false
+    name: cognni-get-insight
+    outputs:
+    - contextPath: Cognni.insight.id
+      description: ID
+      type: String
+    - contextPath: Cognni.insight.name
+      description: name
+      type: String
+    - contextPath: Cognni.insight.description
+      description: description
+      type: String
+    - contextPath: Cognni.insight.severity
+      description: severity
+      type: Number
+  - arguments:
+    - default: false
+      defaultValue: '2'
+      description: Minimum severity of insights to fetch
+      isArray: false
+      name: min_severity
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetch insights
+    execution: false
+    name: cognni-fetch-insights
+    outputs:
+    - contextPath: Cognni.insights.id
+      description: id
+      type: String
+    - contextPath: Cognni.insights.name
+      description: name
+      type: String
+    - contextPath: Cognni.insights.description
+      description: description
+      type: String
+    - contextPath: Cognni.insights.severity
+      description: severity
+      type: Number
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: "# \n\nfrom datetime import datetime\n\nimport urllib3\nimport dateparser\n\
+    import traceback\nfrom typing import Any, Dict, List, Optional, Tuple, cast, Iterable\n\
+    \nurllib3.disable_warnings()\n\n''' CONSTANTS '''\n\nDATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'\n\
+    MAX_EVENTS_TO_FETCH = 50\nCOGNNI_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']\n\
+    SUNDAY_ISO_WEEKDAY = 7\n\n''' CLIENT CLASS '''\n\n\nclass Client(BaseClient):\n\
+    \    \"\"\"Client class to interact with the service API\n\n    This Client implements\
+    \ API calls, and does not contain any Demisto logic.\n    Should only do requests\
+    \ and return data.\n    It inherits from BaseClient defined in CommonServer Python.\n\
+    \    Most calls use _http_request() that handles proxy, SSL verification, etc.\n\
+    \    \"\"\"\n\n    def fetch_key(self, api_key: str) -> Dict[str, Any]:\n    \
+    \    return self._http_request(\n            method='GET',\n            url_suffix=f\"\
+    /api/v1/login/key/{api_key}\"\n        )\n\n    def graphql(self, query: str,\
+    \ variables: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:\n        if not\
+    \ variables:\n            variables = {}\n\n        graphql_operation = {\n  \
+    \          \"query\": query,\n            \"variables\": variables\n        }\n\
+    \n        res = self._http_request(\n            method='POST',\n            url_suffix='/intelligence/data/graphql',\n\
+    \            json_data=graphql_operation\n        )\n        return res['data']\n\
+    \n    def ping(self) -> Dict[str, Any]:\n        query = \"{ping}\"\n\n      \
+    \  return self.graphql(\n            query=query\n        )\n\n    def fetch_events(self,\
+    \ min_severity: int, start_time: str, events_limit: int, offset: int) -> List[Dict[str,\
+    \ Any]]:\n        query = \"\"\"\n            query($severityValue:String!, $pagination:Pagination)\
+    \ {\n              events(\n                filter: {\n                  coordinates:\
+    \ [\n                    {\n                      x: {\n                     \
+    \   type: None,\n                        value: \"none\"\n                   \
+    \   },\n                      y: {\n                        type: Severity,\n\
+    \                        value: $severityValue\n                      },\n   \
+    \                   z: {\n                        type:Week,\n               \
+    \         values:[\\\"\"\"\" + start_time + \"\"\"\\\"]\n                    \
+    \  }\n                    }\n                ]\n                  pagination:\
+    \ $pagination\n                }\n            ) {\n                eventId: id\n\
+    \                description\n                severity\n                sourceApplication\n\
+    \                date\n                items {\n                    itemId: id\n\
+    \                    externalId\n                    type\n                  \
+    \  name\n                    clusterUID\n                    data\n          \
+    \          createdAt\n                    labels {\n                        name\n\
+    \                    }\n                }\n                insights {\n      \
+    \              name\n                }\n            }\n        }\n        \"\"\
+    \"\n\n        variables = {\n            \"pagination\": {\n                \"\
+    limit\": events_limit,\n                \"offset\": offset,\n                \"\
+    direction\": \"Ascend\"\n            },\n            \"severityValue\": str(min_severity),\n\
+    \        }\n        res = self.graphql(\n            query=query,\n          \
+    \  variables=variables\n        )\n        return res['events']\n\n    def get_event(self,\
+    \ event_id: str) -> Dict[str, Any]:\n        query = \"\"\"\n            query\
+    \ ($event_id: ID!) {\n                event(id: $event_id){\n                \
+    \    id\n                    description\n                    sourceApplication\n\
+    \                    date\n                }\n            }\n        \"\"\"\n\n\
+    \        variables = {\n            \"event_id\": event_id\n        }\n\n    \
+    \    res = self.graphql(\n            query=query,\n            variables=variables\n\
+    \        )\n        return res['event']\n\n    def fetch_insights(self, min_severity:\
+    \ int) -> List[Dict[str, Any]]:\n        query = \"\"\"\n             query ($min_severity:\
+    \ Int) {\n                 insights(minSeverity: $min_severity){\n           \
+    \          id\n                     description\n                     name\n \
+    \                    severity\n                 }\n             }\n         \"\
+    \"\"\n\n        variables = {\n            \"min_severity\": int(min_severity)\n\
+    \        }\n\n        res = self.graphql(\n            query=query,\n        \
+    \    variables=variables\n        )\n        return res['insights']\n\n    def\
+    \ get_insight(self, insight_id: str) -> Dict[str, Any]:\n        query = \"\"\"\
+    \n            query ($insight_id: ID!) {\n              insight(id: $insight_id)\
+    \ {\n                  id\n                  name\n                  description\n\
+    \                  severity\n              }\n            }\n        \"\"\"\n\n\
+    \        variables = {\n            \"insight_id\": insight_id\n        }\n\n\
+    \        res = self.graphql(\n            query=query,\n            variables=variables\n\
+    \        )\n        return res['insight']\n\n\n''' HELPER FUNCTIONS '''\n\n\n\
+    def convert_to_demisto_severity(severity: str) -> int:\n    \"\"\"Maps Cognni\
+    \ severity to Cortex XSOAR severity\n\n    Converts the Cognni alert severity\
+    \ level ('Low', 'Medium',\n    'High', 'Critical') to Cortex XSOAR incident severity\
+    \ (1 to 4)\n    for mapping.\n\n    :type severity: ``str``\n    :param severity:\
+    \ severity as returned from the Cognni API (str)\n\n    :return: Cortex XSOAR\
+    \ Severity (1 to 4)\n    :rtype: ``int``\n    \"\"\"\n    return {\n        'Low':\
+    \ 1,  # low severity\n        'Medium': 2,  # medium severity\n        'High':\
+    \ 3,  # high severity\n        'Critical': 4  # critical severity\n    }[severity]\n\
+    \n\ndef convert_to_demisto_severity_int(severity: int) -> int:\n    \"\"\"Maps\
+    \ Cognni severity to Cortex XSOAR severity\n\n    Converts the Cognni alert severity\
+    \ level ('Low', 'Medium',\n    'High', 'Critical') to Cortex XSOAR incident severity\
+    \ (1 to 4)\n    for mapping.\n\n    :type severity: ``str``\n    :param severity:\
+    \ severity as returned from the Cognni API (str)\n\n    :return: Cortex XSOAR\
+    \ Severity (1 to 4)\n    :rtype: ``int``\n    \"\"\"\n\n    return severity\n\n\
+    \ndef arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:\n\
+    \    \"\"\"Converts an XSOAR argument to a Python int\n\n    This function is\
+    \ used to quickly validate an argument provided to XSOAR\n    via ``demisto.args()``\
+    \ into an ``int`` type. It will throw a ValueError\n    if the input is invalid.\
+    \ If the input is None, it will throw a ValueError\n    if required is ``True``,\
+    \ or ``None`` if required is ``False.\n\n    :type arg: ``Any``\n    :param arg:\
+    \ argument to convert\n\n    :type arg_name: ``str``\n    :param arg_name: argument\
+    \ name\n\n    :type required: ``bool``\n    :param required:\n        throws exception\
+    \ if ``True`` and argument provided is None\n\n    :return:\n        returns an\
+    \ ``int`` if arg can be converted\n        returns ``None`` if arg is ``None``\
+    \ and required is set to ``False``\n        otherwise throws an Exception\n  \
+    \  :rtype: ``Optional[int]``\n    \"\"\"\n\n    if arg is None:\n        if required\
+    \ is True:\n            raise ValueError(f'Missing \"{arg_name}\"')\n        return\
+    \ None\n    if isinstance(arg, str):\n        if arg.isdigit():\n            return\
+    \ int(arg)\n        raise ValueError(f'Invalid number: \"{arg_name}\"=\"{arg}\"\
+    ')\n    if isinstance(arg, int):\n        return arg\n    raise ValueError(f'Invalid\
+    \ number: \"{arg_name}\"')\n\n\ndef arg_to_timestamp(arg: Any, arg_name: str,\
+    \ required: bool = False) -> Optional[int]:\n    \"\"\"Converts an XSOAR argument\
+    \ to a timestamp (seconds from epoch)\n\n    This function is used to quickly\
+    \ validate an argument provided to XSOAR\n    via ``demisto.args()`` into an ``int``\
+    \ containing a timestamp (seconds\n    since epoch). It will throw a ValueError\
+    \ if the input is invalid.\n    If the input is None, it will throw a ValueError\
+    \ if required is ``True``,\n    or ``None`` if required is ``False.\n\n    :type\
+    \ arg: ``Any``\n    :param arg: argument to convert\n\n    :type arg_name: ``str``\n\
+    \    :param arg_name: argument name\n\n    :type required: ``bool``\n    :param\
+    \ required:\n        throws exception if ``True`` and argument provided is None\n\
+    \n    :return:\n        returns an ``int`` containing a timestamp (seconds from\
+    \ epoch) if conversion works\n        returns ``None`` if arg is ``None`` and\
+    \ required is set to ``False``\n        otherwise throws an Exception\n    :rtype:\
+    \ ``Optional[int]``\n    \"\"\"\n\n    if arg is None:\n        if required is\
+    \ True:\n            raise ValueError(f'Missing \"{arg_name}\"')\n        return\
+    \ None\n\n    if isinstance(arg, str) and arg.isdigit():\n        return int(arg)\n\
+    \    if isinstance(arg, str):\n        date = dateparser.parse(arg, settings={'TIMEZONE':\
+    \ 'UTC'})\n        if date is None:\n            raise ValueError(f'Invalid date:\
+    \ {arg_name}')\n\n        return int(date.timestamp())\n    if isinstance(arg,\
+    \ (int, float)):\n        return int(arg)\n    raise ValueError(f'Invalid date:\
+    \ \"{arg_name}\"')\n\n\ndef flatten_event_file_items(event: Dict[str, Any]):\n\
+    \    if not event or not event['items']:\n        return []\n\n    return list(map(lambda\
+    \ item: {\n        \"eventId\": event.get('eventId'),\n        \"fileName\": item.get('name'),\n\
+    \        \"fileId\": item.get('itemId'),\n        \"name\": item.get('name'),\n\
+    \        \"eventType\": item.get('type'),\n        \"description\": event.get('description'),\n\
+    \        \"date\": event.get('date'),\n        \"severity\": event.get('severity'),\n\
+    \        \"sourceApplication\": event.get('sourceApplication')\n    }, event['items']))\n\
+    \n\ndef convert_file_event_to_incident(file_event: Dict[str, Any]):\n    return\
+    \ {\n        'name': file_event.get('name'),\n        'details': file_event['description'],\n\
+    \        'occurred': file_event.get('date'),\n        'rawJSON': json.dumps(file_event),\n\
+    \        'severity': convert_to_demisto_severity_int(file_event.get('severity',\
+    \ 1)),\n    }\n\n\ndef convert_events_to_incidents(events: Iterable[Dict[str,\
+    \ Any]]) -> List[Dict[str, Any]]:\n    if not events:\n        return []\n\n \
+    \   file_events: List[Dict[str, Any]] = sum(map(flatten_event_file_items, events),\
+    \ [])\n\n    incidents = list(map(convert_file_event_to_incident, file_events))\n\
+    \n    return incidents\n\n\ndef find_latest_event(events: Iterable[Dict[str, Any]])\
+    \ -> Optional[Dict[str, Any]]:\n    last_date = 0\n    latest_event = None\n\n\
+    \    for event in events:\n        event_date = date_to_timestamp(\n         \
+    \   date_str_or_dt=event.get('date', ''),\n            date_format='%Y-%m-%dT%H:%M:%S.000Z')\n\
+    \        if last_date < event_date:\n            last_date = event_date\n    \
+    \        latest_event = event\n\n    return latest_event\n\n\n''' COMMAND FUNCTIONS\
+    \ '''\n\n\ndef test_module(client: Client, api_key: str, first_fetch: int) ->\
+    \ str:\n    \"\"\"Tests API connectivity and authentication'\n\n    Returning\
+    \ 'ok' indicates that the integration works like it is supposed to.\n    Connection\
+    \ to the service is successful.\n    Raises exceptions if something goes wrong.\n\
+    \n    :type client: ``Client``\n    :param client: Cognni client to use\n\n  \
+    \  :return: 'ok' if test passed, anything else will fail the test.\n    :rtype:\
+    \ ``str``\n    \"\"\"\n    try:\n        answer = ''\n        client.fetch_key(api_key)\n\
+    \    except ValueError:\n        answer += 'The api key is invalid'\n    try:\n\
+    \        timestamp_to_datestring(timestamp=first_fetch * 1000, date_format=\"\
+    %Y-%m-%d\")\n    except ValueError:\n        answer += 'Incorrect first fetch\
+    \ time format, should be YYYY-MM-DD'\n\n    if not answer:\n        return 'ok'\n\
+    \    else:\n        return answer\n\n\ndef fetch_incidents(client: Client, last_run:\
+    \ Dict[str, int],\n                    first_fetch_time: Optional[int],\n    \
+    \                events_limit: int,\n                    min_severity: int\n \
+    \                   ) -> Tuple[Dict[str, int], List[dict]]:\n    \"\"\"This function\
+    \ retrieves new alerts every interval (default is 1 minute).\n\n    This function\
+    \ has to implement the logic of making sure that incidents are\n    fetched only\
+    \ once and no incidents are missed. By default it's invoked by\n    XSOAR every\
+    \ minute. It will use last_run to save the timestamp of the last\n    incident\
+    \ it processed. If last_run is not provided, it should use the\n    integration\
+    \ parameter first_fetch_time to determine when to start fetching\n    the first\
+    \ time.\n\n    :param events_limit:\n    :type client: ``Client``\n    :param\
+    \ client: Cognni client to use\n\n    :type last_run: ``Optional[Dict[str, int]]``\n\
+    \    :param last_run:\n        A dict with a key containing the latest incident\
+    \ created time we got\n        from last fetch\n\n    :type first_fetch_time:\
+    \ ``Optional[int]``\n    :param first_fetch_time:\n        If last_run is None\
+    \ (first time we are fetching), it contains\n        the timestamp in milliseconds\
+    \ on when to start fetching incidents\n\n    :type min_severity: ``str``\n   \
+    \ :param min_severity:\n        minimum severity of the alert to search for.\n\
+    \        Options are: \"Low\", \"Medium\", \"High\", \"Critical\"\n\n    :return:\n\
+    \        A tuple containing two elements:\n            next_run (``Dict[str, int]``):\
+    \ Contains the timestamp that will be\n                    used in ``last_run``\
+    \ on the next fetch.\n            incidents (``List[dict]``): List of incidents\
+    \ that will be created in XSOAR\n\n    :rtype: ``Tuple[Dict[str, int], List[dict]]``\n\
+    \    \"\"\"\n\n    last_fetch = last_run.get('last_fetch', None)\n    is_initial_run\
+    \ = last_run.get('is_initial_run', True)\n    offset = last_run.get('offset')\n\
+    \    if last_fetch is None:\n        last_fetch = first_fetch_time\n    else:\n\
+    \        last_fetch = int(last_fetch)\n\n    latest_created_time = cast(int, last_fetch)\n\
+    \n    if offset is None or (\n        not is_initial_run\n            and datetime.utcnow().isoweekday()\
+    \ == SUNDAY_ISO_WEEKDAY\n            and datetime.utcfromtimestamp(latest_created_time).isoweekday()\
+    \ != SUNDAY_ISO_WEEKDAY):\n        offset = 0\n\n    events = client.fetch_events(\n\
+    \        events_limit=events_limit,\n        offset=offset,\n        start_time=timestamp_to_datestring(timestamp=latest_created_time\
+    \ * 1000, is_utc=True),\n        min_severity=min_severity\n    )\n\n    if not\
+    \ events:\n        next_run = {'last_fetch': latest_created_time, 'offset': offset,\
+    \ 'is_initial_run': False}\n        return next_run, list()\n\n    latest_event\
+    \ = find_latest_event(events)\n    if latest_event:\n        latest_created_time\
+    \ = int(date_to_timestamp(\n            date_str_or_dt=latest_event.get('date',\
+    \ latest_created_time),\n            date_format='%Y-%m-%dT%H:%M:%S.000Z'\n  \
+    \      ) / 1000)\n\n    incidents = convert_events_to_incidents(events)\n\n  \
+    \  next_run = {'last_fetch': latest_created_time,\n                'offset': offset\
+    \ + len(events),\n                'is_initial_run': is_initial_run}\n\n    return\
+    \ next_run, incidents\n\n\ndef get_event_command(client: Client, args: Dict[str,\
+    \ Any]) -> CommandResults:\n    \"\"\"cognni-get-event command: Returns a Cognni\
+    \ event\n\n    :type client: ``Client``\n    :param client: Cognni client to use\n\
+    \n    :type args: ``Dict[str, Any]``\n    :param args:\n        all command arguments,\
+    \ usually passed from ``demisto.args()``.\n        ``args['event_id']`` alert\
+    \ ID to return\n\n    :return:\n        A ``CommandResults`` object that is then\
+    \ passed to ``return_results``,\n        that contains an alert\n\n    :rtype:\
+    \ ``CommandResults``\n    \"\"\"\n\n    event_id = args.get('event_id', None)\n\
+    \    if not event_id:\n        raise ValueError('event_id not specified')\n\n\
+    \    event = client.get_event(event_id=event_id)\n    readable_output = tableToMarkdown(f'Cognni\
+    \ event {event_id}', event)\n\n    return CommandResults(\n        readable_output=readable_output,\n\
+    \        outputs_prefix='Cognni.event',\n        outputs_key_field='id',\n   \
+    \     outputs=event\n    )\n\n\ndef fetch_insights_command(client: Client, args:\
+    \ Dict[str, Any]) -> CommandResults:\n    min_severity = int(args.get('min_severity',\
+    \ 2))\n\n    insights = client.fetch_insights(min_severity=min_severity)\n\n \
+    \   readable_output = tableToMarkdown(f'Cognni {len(insights)} insights', insights)\n\
+    \n    return CommandResults(\n        readable_output=readable_output,\n     \
+    \   outputs_prefix='Cognni.insights',\n        outputs_key_field='id',\n     \
+    \   outputs=insights\n    )\n\n\ndef get_insight_command(client: Client, args:\
+    \ Dict[str, Any]) -> CommandResults:\n    \"\"\"cognni-get-insight command: Returns\
+    \ a Cognni event\n\n    :type client: ``Client``\n    :param client: Cognni client\
+    \ to use\n\n    :type args: ``Dict[str, Any]``\n    :param args:\n        all\
+    \ command arguments, usually passed from ``demisto.args()``.\n        ``args['event_id']``\
+    \ alert ID to return\n\n    :return:\n        A ``CommandResults`` object that\
+    \ is then passed to ``return_results``,\n        that contains an alert\n\n  \
+    \  :rtype: ``CommandResults``\n    \"\"\"\n\n    insight_id = args.get('insight_id',\
+    \ None)\n    if not insight_id:\n        raise ValueError('insight_id not specified')\n\
+    \n    insight = client.get_insight(insight_id=insight_id)\n\n    readable_output\
+    \ = tableToMarkdown(f'Cognni event {insight_id}', insight)\n\n    return CommandResults(\n\
+    \        readable_output=readable_output,\n        outputs_prefix='Cognni.insight',\n\
+    \        outputs_key_field='id',\n        outputs=insight\n    )\n\n\n''' MAIN\
+    \ FUNCTION '''\n\n\ndef main() -> None:\n    \"\"\"main function, parses params\
+    \ and runs command functions\n\n    :return:\n    :rtype:\n    \"\"\"\n\n    api_key\
+    \ = demisto.params().get('apikey')\n\n    # get the service API url\n    base_url\
+    \ = demisto.params()['url']\n\n    verify_certificate = not demisto.params().get('insecure',\
+    \ False)\n\n    first_fetch_time = arg_to_timestamp(\n        arg=demisto.params().get('first_fetch',\
+    \ '3 days'),\n        arg_name='First fetch time',\n        required=True\n  \
+    \  )\n    assert isinstance(first_fetch_time, int)\n    proxy = demisto.params().get('proxy',\
+    \ False)\n\n    demisto.debug(f'Command being called is {demisto.command()}')\n\
+    \    try:\n        client = Client(\n            base_url=base_url,\n        \
+    \    verify=verify_certificate,\n            proxy=proxy)\n\n        if demisto.command()\
+    \ == 'test-module':\n            # This is the call made when pressing the integration\
+    \ Test button.\n            result = test_module(client, api_key, first_fetch_time)\n\
+    \            return_results(result)\n\n        else:\n            fetch_key_res\
+    \ = client.fetch_key(api_key)\n            access_token = fetch_key_res['token']\n\
+    \n            headers = {\n                'Authorization': f'Bearer {access_token}',\n\
+    \                'Content-Type': 'application/json',\n            }\n        \
+    \    client = Client(\n                base_url=base_url,\n                verify=verify_certificate,\n\
+    \                headers=headers,\n                proxy=proxy)\n\n          \
+    \  if demisto.command() == 'fetch-incidents':\n                min_severity =\
+    \ demisto.params().get('min_severity', None)\n\n                max_fetch = arg_to_int(\n\
+    \                    arg=demisto.params().get('max_fetch'),\n                \
+    \    arg_name='max_fetch',\n                    required=False\n             \
+    \   )\n                if not max_fetch or max_fetch > MAX_EVENTS_TO_FETCH:\n\
+    \                    max_fetch = MAX_EVENTS_TO_FETCH\n\n                next_run,\
+    \ incidents = fetch_incidents(\n                    client=client,\n         \
+    \           events_limit=max_fetch,\n                    last_run=demisto.getLastRun(),\
+    \  # getLastRun() gets the last run dict\n                    first_fetch_time=first_fetch_time,\n\
+    \                    min_severity=convert_to_demisto_severity(min_severity)\n\
+    \                )\n                demisto.setLastRun(next_run)\n           \
+    \     demisto.incidents(incidents)\n\n            elif demisto.command() == 'cognni-get-event':\n\
+    \                return_results(get_event_command(client, demisto.args()))\n\n\
+    \            elif demisto.command() == 'cognni-fetch-insights':\n            \
+    \    return_results(fetch_insights_command(client, demisto.args()))\n\n      \
+    \      elif demisto.command() == 'cognni-get-insight':\n                return_results(get_insight_command(client,\
+    \ demisto.args()))\n\n    # Log exceptions and return errors\n    except Exception\
+    \ as e:\n        demisto.error(traceback.format_exc())\n        return_error(f'Failed\
+    \ to execute {demisto.command()} command.\\nError:\\n{str(e)}')\n\n\n''' ENTRY\
+    \ POINT '''\n\nif __name__ in ('__main__', '__builtin__', 'builtins'):\n    main()"
+  subtype: python3
+  type: python
+image: data:image/png;base64,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
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
