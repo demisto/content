@@ -63,5 +63,4 @@ script:
 beta: true
 tests:
 - Azure SQL - Test
-defaultclassifier: HelloWorld
 fromversion: 5.0.0
