@@ -374,11 +374,11 @@ def create_update_incident_from_ticket(issue: dict) -> dict:
                         'emailAddress': str(issue['fields']['reporter'].get('emailAddress', ''))},
             'summary': str(demisto.get(issue, 'fields.summary')),
             'description': str(demisto.get(issue, 'fields.description')),
-            'duedate': str(demisto.get(issue, 'fields.duedate')),  #TODO need to test
+            'duedate': str(demisto.get(issue, 'fields.duedate')),
             'labels': str(demisto.get(issue, 'fields.labels')),
-            'updated': str(demisto.get(issue, 'fields.updated')),  #TODO need to test
-            'created': str(demisto.get(issue, 'fields.created')),  #TODO need to test
-            'lastViewed': str(demisto.get(issue, 'fields.lastViewed')),  #TODO need to test
+            'updated': str(demisto.get(issue, 'fields.updated')),
+            'created': str(demisto.get(issue, 'fields.created')),
+            'lastViewed': str(demisto.get(issue, 'fields.lastViewed')),
         }
     }
 
@@ -727,7 +727,7 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
     if not id_offset:
         id_offset = 0
 
-    incidents, max_results = [], 1  # TODO: need to change this value back to 50
+    incidents, max_results = [], 50
     if id_offset:
         query = f'{query} AND id >= {id_offset}'
     if fetch_by_created:
@@ -850,40 +850,35 @@ def update_remote_system_command(args):
     remote_args = UpdateRemoteSystemArgs(args)
     entries = remote_args.entries
     remote_id = remote_args.remote_incident_id
-    demisto.info(f' ^^^^^^^^^ entries: {entries}\n')
-    demisto.info(f' ^^^^^^^^^ data: {remote_args.data}\n')
-    demisto.info(f' ^^^^^^^^^ incidentChanged: {remote_args.incident_changed}\n')
-    demisto.info(f' ^^^^^^^^^ remoteId: {remote_id}\n')
+    demisto.debug(f'Update remote system check if need to update: remoteId: {remote_id}, incidentChanged: {remote_args.incident_changed}, data:'
+                  f' {remote_args.data}, entries: {entries}')
     try:
         if remote_args.delta and remote_args.incident_changed:
-            demisto.info(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
+            demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
                           f'incident {remote_id}')
 
             edit_issue_command(remote_id, **remote_args.delta)
 
         else:
-            demisto.info(f'Skipping updating remote incident fields [{remote_id}] '
+            demisto.debug(f'Skipping updating remote incident fields [{remote_id}] '
                           f'as it is not new nor changed')
 
         if entries:
             for entry in entries:
-                demisto.info(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
+                demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
                 if entry.get('type') == 3:
-                    demisto.info('Add new file\n')
+                    demisto.debug('Add new file\n')
                     path_res = demisto.getFilePath(entry.get('id'))
                     full_file_name = path_res.get('name')
                     file_name, _ = os.path.splitext(full_file_name)
                     upload_file(entry.get('id'), remote_id, file_name)
                 else:  # handle comments
-                    demisto.info('Add new comment\n')
-                    demisto.info(f' \n \n id: {remote_id}')
-                    demisto.info(f"\n \n content: {str(entry.get('contents', ''))}")
+                    demisto.debug('Add new comment\n')
                     add_comment(remote_id, str(entry.get('contents', '')))
     except Exception as e:
-        demisto.info(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \n"
+        demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
     finally:
-        demisto.info(f' ************now returns: {remote_id}')
         return remote_id
 
 
@@ -920,13 +915,13 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         incident_update = create_update_incident_from_ticket(
             issue_raw_response)  # Getting labels to be updated in incident
 
-        demisto.info(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
+        demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
                       f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
                       f"\n\tRemote last updated time: {jira_modified_date}\n")
-        demisto.info(f'@@@@@@@@@@: \n{incident_update}\n')
 
         closed_issue = handle_incoming_closing_incident(incident_update)
         if closed_issue:
+            demisto.debug(f'Close incident with ID: {parsed_args.remote_incident_id} this issue was marked as "Done"')
             return GetRemoteDataResponse(incident_update, [closed_issue])
 
         entries = get_incident_entries(issue_raw_response, incident_modified_date)
@@ -941,7 +936,8 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
             })
         for attachment in entries['attachments']:
             parsed_entries.append(attachment)
-
+    if parsed_entries:
+        demisto.debug(f'Update the next entries: {parsed_entries}')
     return GetRemoteDataResponse(incident_update, parsed_entries)
 
 
