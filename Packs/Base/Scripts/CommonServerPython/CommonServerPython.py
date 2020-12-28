@@ -1106,6 +1106,15 @@ class IntegrationLogger(object):
             self.messages = []
 
     def build_curl(self, text):
+        """
+        Parses the HTTP client "send" log messages and generates cURL queries out of them.
+
+        :type text: ``str``
+        :param text: The HTTP client log message.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
         http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
         data = text.split("send: b'")[1]
         if data.startswith('{'):
