@@ -7,6 +7,7 @@ import json
 import requests
 from github import Github, PaginatedList, File, PullRequest
 import urllib3
+from pprint import pformat
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -46,11 +47,11 @@ def create_slack_markdown(text: str) -> dict:
     }
 
 
-def create_slack_fields(text_fields: list) -> dict:
+def create_slack_fields(text_fields: List) -> dict:
     """Create slack block-kit section entry with fields key
 
         Args:
-            text_fields (list): String to appear in the entry
+            text_fields (List): String to appear in the entry
 
         Returns:
             (dict): section entry for the slack block-kit
@@ -84,7 +85,7 @@ def create_individual_pack_segment(metadata_obj: dict) -> List[dict]:
             metadata_obj (dict): metadata information dictionary
 
         Returns:
-            (list): List of slack blocks representing the pack information
+            (List): List of slack blocks representing the pack information
     """
     pack_name = metadata_obj.get('name')
     version = metadata_obj.get('currentVersion')
@@ -108,7 +109,7 @@ def create_packs_segment(metadata_files: PaginatedList) -> List[dict]:
             metadata_files (PaginatedList): List of File objects representing metadata files
 
         Returns:
-            (list): List of slack blocks representing all packs information
+            (List): List of slack blocks representing all packs information
     """
     all_packs = []
     for file in metadata_files:
@@ -125,7 +126,7 @@ def create_pull_request_segment(pr: PullRequest) -> List[dict]:
             pr (PullRequest): object that represents the pull request.
 
         Returns:
-            (list): List containing a slack block-kit section entry which represents the PR info
+            (List): List containing a slack block-kit section entry which represents the PR info
     """
     assignees = ','.join([assignee.login for assignee in pr.assignees])
     contributor = pr.user.login
@@ -147,7 +148,7 @@ def create_pr_title(pr: PullRequest) -> List[dict]:
             pr (PullRequest): object that represents the pull request.
 
         Returns:
-            (list): List containing a dictionary which represents the message title
+            (List): List containing a dictionary which represents the message title
     """
     header = [{
         "type": "header",
@@ -160,16 +161,16 @@ def create_pr_title(pr: PullRequest) -> List[dict]:
     return header
 
 
-def slack_post_message(client: WebClient, message_blocks: list, pr: PullRequest):
+def slack_post_message(client: WebClient, message_blocks: List, pr: PullRequest):
     """Post a message to a slack channel
 
         Args:
             client (WebClient): Slack web-client object.
-            message_blocks (list): List fo blocks representing the message blocks.
+            message_blocks (List): List of blocks representing the message blocks.
             pr (PullRequest): object that represents the pull request.
 
         Returns:
-            (list): List containing a dictionary which represents the message title
+            (List): List containing a dictionary which represents the message title
     """
     client.chat_postMessage(
         channel="WHCL130LE",
@@ -206,7 +207,7 @@ def main():
     pull_request_segment = create_pull_request_segment(pr)
     packs_segment = create_packs_segment(metadata_files)
     blocks = header + pull_request_segment + packs_segment
-    print(f'{t.yellow}Finished preparing message: {json.dumps(blocks)}{t.normal}')
+    print(f'{t.yellow}Finished preparing message: \n{pformat(blocks)}{t.normal}')
 
     # Send message
     slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
