@@ -1,55 +1,55 @@
 {
-    "id": "incident_apdattacktypes",
-    "version": -1,
-    "modified": "2020-11-27T17:54:14.413897396+05:30",
-    "name": "APD Attack Types",
-    "ownerOnly": false,
-    "cliName": "apdattacktypes",
-    "type": "grid",
-    "closeForm": false,
-    "editForm": true,
-    "required": false,
-    "neverSetAsRequired": false,
-    "isReadOnly": false,
-    "useAsKpi": true,
-    "locked": false,
-    "system": false,
-    "content": true,
-    "group": 0,
-    "hidden": false,
-    "associatedTypes": [
-        "Agari Phishing Defense Policy Event"
-    ],
-    "associatedToAll": false,
-    "unmapped": false,
-    "unsearchable": false,
-    "caseInsensitive": true,
-    "columns": [
-        {
-            "key": "types",
-            "displayName": "Types",
-            "type": "shortText",
-            "required": false,
-            "script": "",
-            "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        }
-    ],
-    "defaultRows": [
-        {
+ "id": "incident_apdattacktypes",
+ "version": -1,
+ "modified": "2020-11-27T17:54:14.413897396+05:30",
+ "name": "APD Attack Types",
+ "ownerOnly": false,
+ "cliName": "apdattacktypes",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": true,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Agari Phishing Defense Policy Event"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "types",
+   "displayName": "Types",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": [
+  {
 
-        },
-        {
+  },
+  {
 
-        },
-        {
+  },
+  {
 
-        }
-    ],
-    "sla": 0,
-    "threshold": 72,
-    "fromVersion": "5.0.0"
+  }
+ ],
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
 }

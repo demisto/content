@@ -124,6 +124,10 @@ class Client(BaseClient):
                 with self.lock:
                     if int(time.time() + TOKEN_TIME_DIFF) >= self.api_token_valid_until:
                         self.api_token, self.api_token_valid_until = self.get_api_token()
+            # pylint: disable=E1101
+            headers['User-Agent'] = "AgariDemisto APDIntegration/v1.0 DemistoServer/" + \
+                                    demisto.demistoVersion()['version']  # type: ignore[attr-defined]
+            # pylint: enable=E1101
             resp = super()._http_request(method=method, url_suffix=url_suffix, json_data=json_data, params=params,
                                          headers=headers, resp_type='response',
                                          timeout=self.request_timeout,

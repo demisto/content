@@ -197,13 +197,13 @@ Retrieves a list of messages.
                 ],
                 "enforcement_action": "move",
                 "enforcement_result": "pending",
-                "from": "Accounts@service-now.com",
-                "from_domain": "service-now.com",
+                "from": "Accounts@abc.com",
+                "from_domain": "abc.com",
                 "has_attachment": "false",
                 "id": "785d91a8-34fb-11eb-bf90-f6ba445dac4f",
-                "ip": "203.26.100.17",
-                "message_details_link": "https://api.agari.com/v1/ep/messages/785d91a8-34fb-11eb-bf90-f6ba445dac4f",
-                "message_id": "<facade2c87954f9c91c755d17f1134cb@BY2PR12MB0054.service-now.com>",
+                "ip": "1.2.3.4",
+                "message_details_link": "https://apis.com/messages/785d91a8-34fb-11eb-bf90-f6ba445dac4f",
+                "message_id": "<facade2c8712345c91c755d17f1134cb@BY2PR12MB0054.abc.com>",
                 "message_trust_score": "0.6",
                 "policy_ids": [
                     9014,
@@ -212,7 +212,7 @@ Retrieves a list of messages.
                 ],
                 "subject": "Please approve and forward expense report \"December Expenses\"",
                 "timestamp_ms": "1606961222000",
-                "to": "acoyle@sashimibank.com"
+                "to": "acoyle@xyz.com"
             },
             {
                 "attack_types": [
@@ -226,13 +226,13 @@ Retrieves a list of messages.
                 ],
                 "enforcement_action": "move",
                 "enforcement_result": "pending",
-                "from": "help@sashimibank.com",
-                "from_domain": "sashimibank.com",
+                "from": "help@xyz.com",
+                "from_domain": "xyz.com",
                 "has_attachment": "false",
                 "id": "7852dc68-34fb-11eb-bf90-f6ba445dac4f",
-                "ip": "203.26.100.17",
-                "message_details_link": "https://api.agari.com/v1/ep/messages/7852dc68-34fb-11eb-bf90-f6ba445dac4f",
-                "message_id": "<facade2c87954f9c91c755d17f1134cb@BY2PR12MB0054.sashimibank.com>",
+                "ip": "2.2.3.4",
+                "message_details_link": "https://apis.com/messages/7852dc68-34fb-11eb-bf90-f6ba445dac4f",
+                "message_id": "<facade2c12345f9c91c755d17f1134cb@BY2PR12MB0054.xyz.com>",
                 "message_trust_score": "0.8",
                 "policy_ids": [
                     9014,
@@ -241,7 +241,7 @@ Retrieves a list of messages.
                 ],
                 "subject": "Please approve and forward expense report \"December Expenses\"",
                 "timestamp_ms": "1606961222000",
-                "to": "aarmstrong@sashimibank.com"
+                "to": "aarmstrong@xyz.com"
             }
         ]
     }
@@ -253,8 +253,8 @@ Retrieves a list of messages.
 >### Messages
 >|ID|From|To|Subject|Message Trust Score|Domain Reputation|IP|Authenticity|Attack Types|Date|
 >|---|---|---|---|---|---|---|---|---|---|
->| 785d91a8-34fb-11eb-bf90-f6ba445dac4f | Accounts@service-now.com | acoyle@sashimibank.com | Please approve and forward expense report "December Expenses" | 0.6 | 9.0 | 203.26.100.17 | 0.085819915 | spoof (Domain spoof) | 2020-12-03T02:07:02+00:00 |
->| 7852dc68-34fb-11eb-bf90-f6ba445dac4f | help@sashimibank.com | aarmstrong@sashimibank.com | Please approve and forward expense report "December Expenses" | 0.8 | 8.6 | 203.26.100.17 | 0.07902577 | spoof (Domain spoof) | 2020-12-03T02:07:02+00:00 |
+>| 785d91a8-34fb-11eb-bf90-f6ba445dac4f | Accounts@abc.com | acoyle@xyz.com | Please approve and forward expense report "December Expenses" | 0.6 | 9.0 | 1.2.3.4 | 0.085819915 | spoof (Domain spoof) | 2020-12-03T02:07:02+00:00 |
+>| 7852dc68-34fb-11eb-bf90-f6ba445dac4f | help@xyz.com | aarmstrong@xyz.com | Please approve and forward expense report "December Expenses" | 0.8 | 8.6 | 2.2.3.4 | 0.07902577 | spoof (Domain spoof) | 2020-12-03T02:07:02+00:00 |
 
 
 ### apd-remediate-message

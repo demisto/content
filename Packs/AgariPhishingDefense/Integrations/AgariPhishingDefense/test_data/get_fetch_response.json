@@ -31,8 +31,8 @@
       "message_details":{
         "trust_score":1.1,
         "date":"",
-        "from":"Anta Gabik <Anta.Gabik@comcast-aps-lower.saas.appdynamics.com>",
-        "to":"acoyle@sashimibank.com",
+        "from":"Anta Gabik <Anta.Gabik@abc.com>",
+        "to":"acoyle@xyz.com",
         "subject":"Fwd HIPAA/BAA Compliance - Update"
       },
       "conditions":{
@@ -40,7 +40,7 @@
         "message_trust_score_min":0
       },
       "links":{
-        "messages":"https://api.agari.com/v1/ep/messages/0c976c3a-2e0e-11eb-815a-0a8f2da72108"
+        "messages":"https://apis.com/messages/0c976c3a-2e0e-11eb-815a-0a8f2da72108"
       }
     }
   },
@@ -53,11 +53,11 @@
       "mail_from":"",
       "sbrs":"",
       "reply_to":"",
-      "to":"acoyle@sashimibank.com",
+      "to":"acoyle@xyz.com",
       "id":"0c976c3a-2e0e-11eb-815a-0a8f2da72108",
-      "from":"Anta Gabik <Anta.Gabik@comcast-aps-lower.saas.appdynamics.com>",
-      "from_domain":"comcast-aps-lower.saas.appdynamics.com",
-      "message_id":"<facade06a004063e987349ecb7569d38@BY2PR12MB0054.comcast-aps-lower.saas.appdynamics.com>",
+      "from":"Anta Gabik <Anta.Gabik@abc.com>",
+      "from_domain":"abc.com",
+      "message_id":"<facade06a004063e987349ecb7561234@BY2PR12MB0054.abc.com>",
       "domain_reputation":7.9,
       "date":"2020-11-24T06:32:24+00:00",
       "subject":"Fwd HIPAA/BAA Compliance - Update",
@@ -65,7 +65,7 @@
       "message_trust_score":1.1,
       "risk_reason":" from highly trusted domain",
       "attack_class":{
-        "domain_spoof":"Message sent from a server not known to send mail for comcast-aps-lower.saas.appdynamics.com"
+        "domain_spoof":"Message sent from a server not known to send mail for abc.com"
       },
       "matched_policies":[
         "Untrusted Messages"
@@ -73,10 +73,10 @@
       "dkim_d_tag":"",
       "authentication_results":"; ; ",
       "sending_ip_address":{
-        "ip":"69.27.44.226",
+        "ip":"1.1.1.1",
         "ptr_name":""
       }
     }
   },
-  [{"last_fetch": "2020-11-24T04:32:25Z", "id": 544635182}, [{"name": "544635182", "rawJSON": "{\"message\": {\"authenticity_score\": 0.1, \"mail_from\": \"\", \"sbrs\": \"\", \"reply_to\": \"\", \"to\": \"acoyle@sashimibank.com\", \"id\": \"0c976c3a-2e0e-11eb-815a-0a8f2da72108\", \"from\": \"Anta Gabik <Anta.Gabik@comcast-aps-lower.saas.appdynamics.com>\", \"from_domain\": \"comcast-aps-lower.saas.appdynamics.com\", \"message_id\": \"<facade06a004063e987349ecb7569d38@BY2PR12MB0054.comcast-aps-lower.saas.appdynamics.com>\", \"domain_reputation\": 7.9, \"date\": \"2020-11-24T06:32:24+00:00\", \"subject\": \"Fwd HIPAA/BAA Compliance - Update\", \"timestamp_ms\": 1606199544000, \"message_trust_score\": 1.1, \"risk_reason\": \" from highly trusted domain\", \"attack_class\": {\"domain_spoof\": \"Message sent from a server not known to send mail for comcast-aps-lower.saas.appdynamics.com\"}, \"matched_policies\": [\"Untrusted Messages\"], \"dkim_d_tag\": \"\", \"authentication_results\": \"; ; \", \"sending_ip_address\": {\"ip\": \"69.27.44.226\", \"ptr_name\": \"\"}, \"attack_class_types\": [{\"Types\": \"domain_spoof\"}]}, \"policy\": {\"alert_definition_name\": \"Untrusted Messages\", \"created_at\": \"2020-11-24T04:32:25Z\", \"id\": 544635182, \"notified_original_recipients\": false, \"summary\": false, \"updated_at\": \"2020-11-24T04:32:25Z\", \"admin_recipients\": [], \"policy_action\": \"none\", \"policy_enabled\": true}}"}]]
+  [{"last_fetch": "2020-11-24T04:32:25Z", "id": 544635182}, [{"name": "544635182", "rawJSON": "{\"message\": {\"authenticity_score\": 0.1, \"mail_from\": \"\", \"sbrs\": \"\", \"reply_to\": \"\", \"to\": \"acoyle@xyz.com\", \"id\": \"0c976c3a-2e0e-11eb-815a-0a8f2da72108\", \"from\": \"Anta Gabik <Anta.Gabik@abc.com>\", \"from_domain\": \"abc.com\", \"message_id\": \"<facade06a004063e987349ecb7561234@BY2PR12MB0054.abc.com>\", \"domain_reputation\": 7.9, \"date\": \"2020-11-24T06:32:24+00:00\", \"subject\": \"Fwd HIPAA/BAA Compliance - Update\", \"timestamp_ms\": 1606199544000, \"message_trust_score\": 1.1, \"risk_reason\": \" from highly trusted domain\", \"attack_class\": {\"domain_spoof\": \"Message sent from a server not known to send mail for abc.com\"}, \"matched_policies\": [\"Untrusted Messages\"], \"dkim_d_tag\": \"\", \"authentication_results\": \"; ; \", \"sending_ip_address\": {\"ip\": \"1.1.1.1\", \"ptr_name\": \"\"}, \"attack_class_types\": [{\"Types\": \"domain_spoof\"}]}, \"policy\": {\"alert_definition_name\": \"Untrusted Messages\", \"created_at\": \"2020-11-24T04:32:25Z\", \"id\": 544635182, \"notified_original_recipients\": false, \"summary\": false, \"updated_at\": \"2020-11-24T04:32:25Z\", \"admin_recipients\": [], \"policy_action\": \"none\", \"policy_enabled\": true}}"}]]
 ]

@@ -142,144 +142,160 @@ def test_get_api_token_when_found_in_integration_context(mocker_set_context, moc
     assert mocker_set_context.call_count == 0
 
 
+@patch('demistomock.demistoVersion', create=True)
 @patch('AgariPhishingDefense.BaseClient._http_request')
 @patch('AgariPhishingDefense.Client.get_api_token')
-def test_http_request_invalid_schema_error(mocker_api_token, mock_base_http_request, client):
+def test_http_request_invalid_schema_error(mocker_api_token, mock_base_http_request, demisto_version, client):
     """
         When http request return invalid schema exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = InvalidSchema
     mocker_api_token.return_value = API_TOKEN, 14400
+    demisto_version.return_value = {"version": "6.0.2"}
 
     # Execute
     with pytest.raises(ValueError) as e:
-        client.http_request('GET', MOCK_TEST_URL_SUFFIX)
+        client.http_request('GET', MOCK_TEST_URL_SUFFIX, headers={})
 
     # Assert
     assert str(e.value) == 'Invalid API URL. Supplied schema is invalid, supports http(s).'
 
 
+@patch('demistomock.demistoVersion', create=True)
 @patch('AgariPhishingDefense.BaseClient._http_request')
 @patch('AgariPhishingDefense.Client.get_api_token')
-def test_http_proxy_error(mocker_get_api_token, mock_base_http_request, client):
+def test_http_proxy_error(mocker_get_api_token, mock_base_http_request, demisto_version, client):
     """
         When http request return proxy error with exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = DemistoException('Proxy Error')
     mocker_get_api_token.return_value = API_TOKEN, 14400
+    demisto_version.return_value = {"version": "6.0.2"}
     # Execute
     with pytest.raises(ConnectionError) as e:
-        client.http_request('GET', MOCK_TEST_URL_SUFFIX)
+        client.http_request('GET', MOCK_TEST_URL_SUFFIX, headers={})
 
     # Assert
     assert str(e.value) == 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\'' \
                            ' check-box or check the host, authentication details and connection details for the proxy.'
 
 
+@patch('demistomock.demistoVersion', create=True)
 @patch('AgariPhishingDefense.Client._http_request')
 @patch('AgariPhishingDefense.Client.get_api_token')
-def test_http_request_connection_error(mocker_get_api_token, mock_base_http_request, client):
+def test_http_request_connection_error(mocker_get_api_token, mock_base_http_request, demisto_version, client):
     """
         When http request return connection error with Demisto exception then appropriate error message should match.
     """
     # Configure
     mocker_get_api_token.return_value = API_TOKEN, 14400
     mock_base_http_request.side_effect = DemistoException('ConnectionError')
+    demisto_version.return_value = {"version": "6.0.2"}
 
     # Execute
     with pytest.raises(ConnectionError) as e:
-        client.http_request('GET', MOCK_TEST_URL_SUFFIX)
+        client.http_request('GET', MOCK_TEST_URL_SUFFIX, headers={})
 
     # Assert
     assert str(e.value) == 'Connectivity failed. Check your internet connection or the API URL.'
 
 
+@patch('demistomock.demistoVersion', create=True)
 @patch('AgariPhishingDefense.BaseClient._http_request')
 @patch('AgariPhishingDefense.Client.get_api_token')
-def test_http_request_read_timeout_error(mocker_get_api_token, mock_base_http_request, client):
+def test_http_request_read_timeout_error(mocker_get_api_token, mock_base_http_request, demisto_version, client):
     """
         When http request return connection error with Demisto exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = DemistoException('ReadTimeoutError')
     mocker_get_api_token.return_value = API_TOKEN, 14400
+    demisto_version.return_value = {"version": "6.0.2"}
     # Execute
     with pytest.raises(ConnectionError) as e:
-        client.http_request('GET', MOCK_TEST_URL_SUFFIX)
+        client.http_request('GET', MOCK_TEST_URL_SUFFIX, headers={})
 
     # Assert
     assert str(e.value) == 'Request timed out. Check the configured HTTP(S) Request Timeout (in seconds) value.'
 
 
+@patch('demistomock.demistoVersion', create=True)
 @patch('AgariPhishingDefense.BaseClient._http_request')
 @patch('AgariPhishingDefense.Client.get_api_token')
-def test_http_ssl_error(mocker_get_api_token, mock_base_http_request, client):
+def test_http_ssl_error(mocker_get_api_token, mock_base_http_request, demisto_version, client):
     """
         When http request return ssl error with Demisto exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = DemistoException('SSLError')
     mocker_get_api_token.return_value = API_TOKEN, 14400
+    demisto_version.return_value = {"version": "6.0.2"}
     # Execute
     with pytest.raises(SSLError) as e:
-        client.http_request('GET', MOCK_TEST_URL_SUFFIX)
+        client.http_request('GET', MOCK_TEST_URL_SUFFIX, headers={})
 
     # Assert
     assert str(e.value) == 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox ' \
                            'in the integration configuration.'
 
 
+@patch('demistomock.demistoVersion', create=True)
 @patch('AgariPhishingDefense.BaseClient._http_request')
 @patch('AgariPhishingDefense.Client.get_api_token')
-def test_http_request_missing_schema_error(mocker_get_api_token, mock_base_http_request, client):
+def test_http_request_missing_schema_error(mocker_get_api_token, mock_base_http_request, demisto_version, client):
     """
         When http request return MissingSchema exception then appropriate error message should display.
     """
     # Configure
     mock_base_http_request.side_effect = MissingSchema
     mocker_get_api_token.return_value = API_TOKEN, 14400
+    demisto_version.return_value = {"version": "6.0.2"}
 
     # Execute
     with pytest.raises(ValueError) as e:
-        client.http_request('GET', MOCK_TEST_URL_SUFFIX)
+        client.http_request('GET', MOCK_TEST_URL_SUFFIX, headers={})
 
     # Assert
     assert str(e.value) == 'Invalid API URL. No schema supplied: http(s).'
 
 
+@patch('demistomock.demistoVersion', create=True)
 @patch('AgariPhishingDefense.BaseClient._http_request')
 @patch('AgariPhishingDefense.Client.get_api_token')
-def test_http_request_invalid_url_error(mocker_get_api_token, mock_base_http_request, client):
+def test_http_request_invalid_url_error(mocker_get_api_token, mock_base_http_request, demisto_version, client):
     """
         When http request return invalid url exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = InvalidURL
     mocker_get_api_token.return_value = API_TOKEN, 14400
+    demisto_version.return_value = {"version": "6.0.2"}
 
     # Execute
     with pytest.raises(ValueError) as e:
-        client.http_request('GET', MOCK_TEST_URL_SUFFIX)
+        client.http_request('GET', MOCK_TEST_URL_SUFFIX, headers={})
 
     # Assert
     assert str(e.value) == 'Invalid API URL.'
 
 
+@patch('demistomock.demistoVersion', create=True)
 @patch('AgariPhishingDefense.BaseClient._http_request')
 @patch('AgariPhishingDefense.Client.get_api_token')
-def test_http_request_other_demisto_exception(mocker_get_api_token, mock_base_http_request, client):
+def test_http_request_other_demisto_exception(mocker_get_api_token, mock_base_http_request, demisto_version, client):
     """
         When http request return other custom Demisto exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = DemistoException('custom')
     mocker_get_api_token.return_value = API_TOKEN, 14400
+    demisto_version.return_value = {"version": "6.0.2"}
 
     # Execute
     with pytest.raises(Exception) as e:
-        client.http_request('GET', MOCK_TEST_URL_SUFFIX)
+        client.http_request('GET', MOCK_TEST_URL_SUFFIX, headers={})
 
     # Assert
     assert str(e.value) == 'custom'
