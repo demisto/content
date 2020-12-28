@@ -1208,6 +1208,35 @@ def get_incidents_command(client, args):
     )
 
 
+def create_endpoint_context(audit_logs):
+    endpoints = []
+    for log in audit_logs:
+        endpoint_details = {
+            'ID': log.get('ENDPOINTID'),
+            'Hostname': log.get('ENDPOINTNAME'),
+            'Domain': log.get('DOMAIN'),
+        }
+        remove_nulls_from_dictionary(endpoint_details)
+        if endpoint_details:
+            endpoints.append(endpoint_details)
+
+    return endpoints
+
+
+def create_account_context(endpoints):
+    account_context = []
+    for endpoint in endpoints:
+        domain = endpoint.get('domain')
+        if domain:
+            for user in endpoint.get('users', []):
+                account_context.append({
+                    'Username': user,
+                    'Domain': domain,
+                })
+
+    return account_context
+
+
 def get_process_context(alert, process_type):
     process_context = {
         'Name': alert.get(f'{process_type}_process_image_name'),
@@ -1217,7 +1246,7 @@ def get_process_context(alert, process_type):
         'CommandLine': alert.get(f'{process_type}_process_command_line'),
         'Path': alert.get(f'{process_type}_process_image_path'),
         'Start Time': alert.get(f'{process_type}_process_execution_time'),
-        'Hostname': alert.get('host_name')
+        'Hostname': alert.get('host_name'),
     }
 
     remove_nulls_from_dictionary(process_context)
@@ -1232,18 +1261,14 @@ def add_to_ip_context(alert, ip_context):
     action_local_ip = alert.get('action_local_ip')
     action_remote_ip = alert.get('action_remote_ip')
     if action_local_ip:
-        ip_context.append(
-            {
-                'Address': action_local_ip
-            }
-        )
+        ip_context.append({
+            'Address': action_local_ip
+        })
 
     if action_remote_ip:
-        ip_context.append(
-            {
-                'Address': action_remote_ip
-            }
-        )
+        ip_context.append({
+            'Address': action_remote_ip
+        })
 
 
 def create_context_from_network_artifacts(network_artifacts, ip_context):
@@ -1253,15 +1278,14 @@ def create_context_from_network_artifacts(network_artifacts, ip_context):
         for artifact in network_artifacts:
             domain = artifact.get('network_domain')
             if domain:
-                domain_context.append(
-                    {
-                        'Name': domain
-                    }
-                )
+                domain_context.append({
+                    'Name': domain,
+                })
 
             network_ip_details = {
                 'Address': artifact.get('network_remote_ip'),
-                'GEO.Country': artifact.get('network_country')
+                'GEO': {
+                    'Country': artifact.get('network_country')},
             }
 
             remove_nulls_from_dictionary(network_ip_details)
@@ -1276,13 +1300,13 @@ def get_indicators_context(incident):
     file_context: List[Any] = []
     process_context: List[Any] = []
     ip_context: List[Any] = []
-    for alert in incident.get('alerts'):
+    for alert in incident.get('alerts', []):
         # file context
         file_details = {
             'Name': alert.get('action_file_name'),
             'Path': alert.get('action_file_path'),
             'SHA265': alert.get('action_file_sha256'),
-            'MD5': alert.get('action_file_md5')
+            'MD5': alert.get('action_file_md5'),
         }
         remove_nulls_from_dictionary(file_details)
 
@@ -1305,10 +1329,13 @@ def get_indicators_context(incident):
 
     file_artifacts = incident.get('file_artifacts', [])
     for file in file_artifacts:
-        file_context.append({
+        file_details = {
             'Name': file.get('file_name'),
-            'SHA256': file.get('file_sha256')
-        })
+            'SHA256': file.get('file_sha256'),
+        }
+        remove_nulls_from_dictionary(file_details)
+        if file_details:
+            file_context.append(file_details)
 
     return file_context, process_context, domain_context, ip_context
 
@@ -1462,20 +1489,6 @@ def arg_to_int(arg, arg_name: str, required: bool = False):
     return ValueError(f'Invalid number: "{arg_name}"')
 
 
-def create_account_context(endpoints):
-    account_context = []
-    for endpoint in endpoints:
-        domain = endpoint.get('domain')
-        if domain:
-            for user in endpoint.get('users', []):
-                account_context.append({
-                    'Username': user,
-                    'Domain': domain
-                })
-
-    return account_context
-
-
 def get_endpoints_command(client, args):
     page_number = arg_to_int(
         arg=args.get('page'),
@@ -1544,7 +1557,7 @@ def get_endpoints_command(client, args):
         )
     context = {
         f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-        'Endpoint(val.ID == obj.ID)': return_endpoint_standard_context(endpoints)
+        Common.Endpoint.CONTEXT_PATH: return_endpoint_standard_context(endpoints)
     }
     account_context = create_account_context(endpoints)
     if account_context:
@@ -1831,21 +1844,6 @@ def get_audit_management_logs_command(client, args):
     )
 
 
-def create_endpoint_context(audit_logs):
-    endpoints = []
-    for log in audit_logs:
-        endpoint_details = {
-            'ID': log.get('ENDPOINTID'),
-            'Hostname': log.get('ENDPOINTNAME'),
-            'Domain': log.get('DOMAIN')
-        }
-        remove_nulls_from_dictionary(endpoint_details)
-        if endpoint_details:
-            endpoints.append(endpoint_details)
-
-    return endpoints
-
-
 def get_audit_agent_reports_command(client, args):
     endpoint_ids = argToList(args.get('endpoint_ids'))
     endpoint_names = argToList(args.get('endpoint_names'))
@@ -1893,15 +1891,13 @@ def get_audit_agent_reports_command(client, args):
         sort_by=sort_by,
         sort_order=sort_order
     )
-
+    integration_context = {f'{INTEGRATION_CONTEXT_BRAND}.AuditAgentReports': audit_logs}
     endpoint_context = create_endpoint_context(audit_logs)
-
+    if endpoint_context:
+        integration_context[Common.Endpoint.CONTEXT_PATH] = endpoint_context
     return (
         tableToMarkdown('Audit Agent Reports', audit_logs),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.AuditAgentReports': audit_logs,
-            Common.Endpoint.CONTEXT_PATH: endpoint_context
-        },
+        integration_context,
         audit_logs
     )
 
