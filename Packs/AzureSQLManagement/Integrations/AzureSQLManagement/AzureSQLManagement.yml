@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: AzureSQLManagement
+  id: Azure SQL Management
   version: -1
 configuration:
 - display: Application ID
@@ -28,8 +28,8 @@ configuration:
   type: 8
 description: Microsoft Azure SQL Database is a managed cloud database provided as
   part of Microsoft Azure.
-display: AzureSQLManagement
-name: AzureSQLManagement
+display: Azure SQL Management (Beta)
+name: Azure SQL Management
 script:
   commands:
   - deprecated: false
@@ -60,6 +60,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+beta: true
 tests:
 - Azure SQL - Test
 defaultclassifier: HelloWorld
