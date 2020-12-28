@@ -1,13 +1,11 @@
 {
- "TypeName": "ChronicleAsset Indicator",
- "kind": "indicatorsDetails",
- "layout": {
-  "TypeName": "",
-  "id": "dc99a4c4-fe7c-4a8c-8637-2a786e31efbe",
-  "kind": "indicatorsDetails",
-  "modified": "2020-10-20T17:54:40.988416365+05:30",
-  "name": "",
-  "system": false,
+ "id": "ChronicleAsset Indicator",
+ "group": "indicator",
+ "name": "ChronicleAsset Indicator",
+ "description": "ChronicleAsset Indicator Layout",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "indicatorsDetails": {
   "tabs": [
    {
     "id": "default-main",
@@ -396,13 +394,6 @@
     ],
     "type": "custom"
    }
-  ],
-  "typeId": "ChronicleAsset Indicator",
-  "version": -1
- },
- "typeId": "ChronicleAsset Indicator",
- "version": -1,
- "toVersion": "5.9.9",
- "fromVersion": "5.0.0",
- "description": ""
+  ]
+ }
 }
