@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#2979FF",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Integration Troubleshooting",
+ "layout": "a5eb2fda-2f96-490d-856d-88940cd32eb3",
+ "locked": false,
+ "name": "Integration Troubleshooting",
+ "playbookId": "Integration Troubleshooting",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "5.0.0"
+}

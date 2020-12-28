@@ -1,0 +1,44 @@
+args:
+- default: false
+  description: Instance to check command on
+  isArray: false
+  name: instance_name
+  required: false
+  secret: false
+- default: false
+  description: command line to process
+  isArray: false
+  name: command_line
+  required: false
+  secret: false
+comment: Gets a command with arguments, validates the command and the arguemnts and
+  then parsing it to use in CortexXSOAR context.
+commonfields:
+  id: GetCommandandArgs
+  version: -1
+enabled: false
+name: GetCommandandArgs
+outputs:
+- contextPath: CommandArgs.instance_name
+  description: The instance name.
+  type: String
+- contextPath: CommandArgs.command
+  description: The command
+  type: String
+- contextPath: CommandArgs.Arguments
+  description: All arguments in the command
+  type: String
+- contextPath: CommandArgs.Arguments.using
+  description: The instance name. All other args are dynamically given
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- troubleshoot
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.14516
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,31 @@
+args:
+- default: true
+  description: The docker image to check
+  isArray: false
+  name: docker_image
+  required: true
+  secret: false
+comment: Gets a docker image and check if it exists on the machine running CortexXSOAR.
+commonfields:
+  id: IsDockerImageExists
+  version: -1
+enabled: false
+name: IsDockerImageExists
+outputs:
+- contextPath: IsDockerImageExists.docker_image
+  description: The docker image name.
+  type: String
+- contextPath: IsDockerImageExists.exists
+  description: Is the docker image exists?
+  type: Boolean
+script: '-'
+system: false
+tags:
+- troubleshoot
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.6.14516
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

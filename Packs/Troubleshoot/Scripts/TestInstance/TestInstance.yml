@@ -1,0 +1,43 @@
+args:
+- default: false
+  description: Instance parameters - Can acquired from the GetInstanceParameter command.
+  isArray: false
+  name: parameters
+  required: true
+  secret: false
+- default: false
+  description: Keys to check the negative result of the tes button.
+  isArray: false
+  name: keys
+  required: false
+  secret: false
+comment: Clicking on the "Test" button and return if the test failed.
+commonfields:
+  id: TestInstance
+  version: -1
+enabled: false
+name: TestInstance
+outputs:
+- contextPath: TestInstance.instance_name
+  description: Name of the instance
+  type: String
+- contextPath: TestInstance.Errors
+  description: Errors after changing all the wanted keys
+  type: String
+- contextPath: TestInstance.changed_keys
+  description: Keys that changed in the test
+  type: String
+- contextPath: TestInstance.succeed
+  description: Is the test passed
+  type: Boolean
+script: '-'
+system: false
+tags:
+- troubleshoot
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.8.6.14516
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

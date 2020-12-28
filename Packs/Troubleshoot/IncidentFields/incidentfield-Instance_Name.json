@@ -1,0 +1,34 @@
+{
+ "associatedToAll": true,
+ "caseInsensitive": true,
+ "cliName": "instancename",
+ "closeForm": false,
+ "content": true,
+ "description": "Name of the instance to troubleshoot",
+ "editForm": true,
+ "fieldCalcScript": "096f78c3-e8a5-42ee-82e5-1540fc285d3f",
+ "group": 0,
+ "hidden": false,
+ "id": "incident_instancename",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Instance Name",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "propagationLabels": [
+  "all"
+ ],
+ "required": false,
+ "selectValues": [
+  ""
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

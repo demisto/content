@@ -1,0 +1,52 @@
+args:
+- default: false
+  description: Parameters that changed and succeded running
+  isArray: true
+  name: succeeded_changed_params
+  required: false
+  secret: false
+- default: false
+  description: All file entry IDs in the incident
+  isArray: true
+  name: file_entry_id
+  required: false
+  secret: false
+- default: false
+  description: The raw configuration output
+  isArray: false
+  name: configuration
+  required: true
+  secret: false
+- default: false
+  description: The errors when testing instance
+  isArray: true
+  name: errors
+  required: false
+  secret: false
+- default: false
+  description: Errors from ExecuteCommand automation.
+  isArray: true
+  name: execute_command_errors
+  required: false
+  secret: false
+comment: Aggregate Results
+commonfields:
+  id: AggregateResults
+  version: -1
+enabled: false
+name: AggregateResults
+outputs:
+- contextPath: HelloWorld.hello
+  description: Should be Hello **something** here.
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- troubleshoot
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.14516
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

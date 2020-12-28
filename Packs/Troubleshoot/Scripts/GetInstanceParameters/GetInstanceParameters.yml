@@ -5,12 +5,12 @@ args:
   required: true
   secret: false
   description: The instane name to get its parameters
-comment: Gets an integration's parameters
+comment: Gets an intance's configuration parameters in order to troubleshoot the instance.
 commonfields:
-  id: GetIntegrationParameters
+  id: GetInstanceParameters
   version: -1
 enabled: false
-name: GetIntegrationParameters
+name: GetInstanceParameters
 outputs:
 - contextPath: InstanceParameters.instance_name
   type: String
@@ -21,29 +21,46 @@ outputs:
 - contextPath: InstanceParameters.deprecated
   description: Is deprecated integration
   type: Boolean
-- contextPath: type
-  description: Integration code type (python or javascript)
-  type: String
-- contextPath: isFetch
+- contextPath: InstanceParameters.isFetch
   description: Is fetch configured
   type: Boolean
 - contextPath: InstanceParameters.proxy
   description: is "use proxy" ticked. If any param isn't called proxy, it will be
     wrong.
   type: Boolean
+- contextPath: InstanceParameters.proxy_key
+  description: The key which insecure hosted in. Can be null of no key found.
+  type: String
 - contextPath: InstanceParameters.insecure
   description: is "use unsecure connection" ticked. If any param isn't called insecure,
     it will be wrong.
   type: Boolean
+- contextPath: InstanceParameters.insecure_key
+  description: The key which insecure hosted in. Can be null of no key found.
+  type: String
+- contextPath: InstanceParameters.type
+  description: The type of the integration. Can be javascript or python
+  type: String
+- contextPath: InstanceParameters.subtype
+  description: The subtype of a python integration. Can be python2 or python3
+  type: String
 - contextPath: InstanceParameters.engine
   description: The engine used by the integration, if any.
+  type: String
+- contextPath: InstanceParameters.dockerimage
+  description: The docker image used by the integration, if any.
+  type: String
+- contextPath: InstanceParameters.RawInstance
+  description: The raw instance, should be used when checking the instance configuration.
   type: String
 script: '-'
 subtype: python3
 system: false
 tags:
-- ''
+- troubleshoot
 timeout: '0'
 type: python
 dockerimage: demisto/python3:3.8.6.14516
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
