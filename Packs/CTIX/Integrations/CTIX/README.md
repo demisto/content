@@ -1,5 +1,5 @@
 This is Cyware Threat Intelligence eXhange(CTIX) integration which enriches IP/Domain/URL/File Data.
-This integration was integrated and tested with version xx of CTIX.
+This integration was integrated and tested with version 2.4 and 2.7 of CTIX.
 Supported Cortex XSOAR versions: 5.0.0 and later.
 
 ## Configure CTIX on Cortex XSOAR
