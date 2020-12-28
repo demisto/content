@@ -15,112 +15,57 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
+API_VERSION = '2019-06-01-preview'
 ''' CLIENT CLASS '''
 
 
-class Client(BaseClient):
+class Client:
     """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
     """
+    @logger
+    def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy):
+        self.resource_group_name = resource_group_name
+        if '@' in app_id:
+            app_id, refresh_token = app_id.split('@')
+            integration_context = get_integration_context()
+            integration_context.update(current_refresh_token=refresh_token)
+            set_integration_context(integration_context)
+        base_url = f'https://management.azure.com/subscriptions/{subscription_id}'
+        client_args = {
+            'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
+                                    # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+                                    # flow and most of the same arguments should be set, as we're !not! using OProxy.
+            'auth_id': app_id,
+            'token_retrieval_url': 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            'grant_type': DEVICE_CODE,  # disable-secrets-detection
+            'base_url': base_url,
+            'verify': verify,
+            'proxy': proxy,
+            'resource': 'https://management.core.windows.net',   # disable-secrets-detection
+            'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
+            'ok_codes': (200, 201, 202, 204),
+        }
+        self.ms_client = MicrosoftClient(**client_args)
 
-    def get_alert(self, alert_id: str) -> Dict[str, Any]:
-        """Gets a specific HelloWorld alert by id
+    @logger
+    def http_request(self, method: str, url_suffix: str = None, full_url: str = None, params: dict = {},
+                     data: dict = None, resp_type: str = 'json') -> requests.Response:
+        if not full_url:
+            params['api-version'] = API_VERSION
 
-        :type alert_id: ``str``
-        :param alert_id: id of the alert to return
+        return self.ms_client.http_request(method=method,
+                                           url_suffix=url_suffix,
+                                           full_url=full_url,
+                                           json_data=data,
+                                           params=params,
+                                           resp_type=resp_type)
 
-        :return: dict containing the alert as returned from the API
-        :rtype: ``Dict[str, Any]``
-        """
-
-        return self._http_request(
-            method='GET',
-            url_suffix='/get_alert_details',
-            params={
-                'alert_id': alert_id
-            }
-        )
-
-
-''' HELPER FUNCTIONS '''
-
-
-def parse_domain_date(domain_date: Union[List[str], str], date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> Optional[str]:
-    """Converts whois date format to an ISO8601 string
-
-    Converts the HelloWorld domain WHOIS date (YYYY-mm-dd HH:MM:SS) format
-    in a datetime. If a list is returned with multiple elements, takes only
-    the first one.
-
-    :type domain_date: ``Union[List[str],str]``
-    :param date_format:
-        a string or list of strings with the format 'YYYY-mm-DD HH:MM:SS'
-
-    :return: Parsed time in ISO8601 format
-    :rtype: ``Optional[str]``
-    """
-
-    if isinstance(domain_date, str):
-        # if str parse the value
-        domain_date_dt = dateparser.parse(domain_date)
-        if domain_date_dt:
-            return domain_date_dt.strftime(date_format)
-    elif isinstance(domain_date, list) and len(domain_date) > 0 and isinstance(domain_date[0], str):
-        # if list with at least one element, parse the first element
-        domain_date_dt = dateparser.parse(domain_date[0])
-        if domain_date_dt:
-            return domain_date_dt.strftime(date_format)
-    # in any other case return nothing
-    return None
+    @logger
+    def azure_sql_servers_list(self):
+        return self.http_request('GET', '/providers/Microsoft.Sql/servers')
 
 
-''' COMMAND FUNCTIONS '''
-
-
-def test_module(client: Client, first_fetch_time: int) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type name: ``str``
-    :param name: name to append to the 'Hello' string
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    # INTEGRATION DEVELOPER TIP
-    # Client class should raise the exceptions, but if the test fails
-    # the exception text is printed to the Cortex XSOAR UI.
-    # If you have some specific errors you want to capture (i.e. auth failure)
-    # you should catch the exception here and return a string with a more
-    # readable output (for example return 'Authentication Error, API Key
-    # invalid').
-    # Cortex XSOAR will print everything you return different than 'ok' as
-    # an error
-    try:
-        client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None,
-                             severity=None)
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return 'ok'
-
-
-def azure_sql_servers_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def azure_sql_servers_list_command(client: Client) -> CommandResults:
     """azure-sql-servers-list command: Returns a list of all servers
 
     :type client: ``Client``
@@ -138,18 +83,45 @@ def azure_sql_servers_list_command(client: Client, args: Dict[str, Any]) -> Comm
     :rtype: ``CommandResults``
     """
 
-    server_name = args.get('server_name')
+    server_list = client.azure_sql_servers_list()
 
-    server_list = client.azure_sql_servers_list(server_name=server_name)
-
-    readable_output = tableToMarkdown('Servers List', server_list)
+    readable_output = tableToMarkdown(name='Servers List', t=server_list.get('value', ''),
+                                      headerTransform=pascalToSpace)
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='HelloWorld.Scan',
-        outputs_key_field='scan_id',
-        outputs=scan_list
+        outputs_prefix='AzureSQL.Server',
+        outputs_key_field='id',
+        outputs=server_list
     )
+
+
+@logger
+def test_connection(client: Client) -> CommandResults:
+    client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
+    return CommandResults(readable_output='✅ Success!')
+
+
+@logger
+def start_auth(client: Client) -> CommandResults:
+    user_code = client.ms_client.device_auth_request()
+    return CommandResults(readable_output=f"""### Authorization instructions
+1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
+ and enter the code **{user_code}** to authenticate.
+2. Run the **!azure-nsg-auth-complete** command in the War Room.""")
+
+
+@logger
+def complete_auth(client: Client) -> CommandResults:
+    client.ms_client.get_access_token()
+    return CommandResults(readable_output='✅ Authorization completed successfully.')
+
+
+@logger
+def reset_auth(client: Client) -> CommandResults:
+    set_integration_context({})
+    return CommandResults(readable_output='Authorization was reset successfully. You can now run '
+                                          '**!azure-nsg-auth-start** and **!azure-nsg-auth-complete**.')
 
 
 ''' MAIN FUNCTION '''
@@ -158,9 +130,6 @@ def azure_sql_servers_list_command(client: Client, args: Dict[str, Any]) -> Comm
 def main() -> None:
     """main function, parses params and runs command functions
     """
-
-    base_url = f'https://management.azure.com/subscriptions/{subscription_id}'
-
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
@@ -168,6 +137,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
+            app_id=params.get('app_id', ''),
             subscription_id=params.get('subscription_id', ''),
             resource_group_name=params.get('resource_group_name', ''),
             verify=not params.get('insecure', False),
@@ -180,16 +150,16 @@ def main() -> None:
             'azure-sql-db-audit-policy-create-update': azure_sql_db_audit_policy_create_update_command,
             'azure-sql-db-threat-policy-get': azure_sql_db_threat_policy_get_command,
             'azure-sql-db-threat-policy-create-update': azure_sql_db_threat_policy_create_update_command,
-            'azure-nsg-auth-start': start_auth,
-            'azure-nsg-auth-complete': complete_auth,
-            'azure-nsg-auth-reset': reset_auth,
+            'azure-sql-auth-start': start_auth,
+            'azure-sql-auth-complete': complete_auth,
+            'azure-sql-auth-reset': reset_auth,
         }
         if command == 'test-module':
             return_error("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
                          " For more details press the (?) button.")
 
-        if command == 'azure-nsg-auth-test':
-            return_results(test_connection(client, params))
+        if command == 'azure-sql-auth-test':
+            return_results(test_connection(client))
         else:
             return_results(commands[command](client, **args))
 
@@ -198,6 +168,8 @@ def main() -> None:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
+
+from MicrosoftApiModule import *  # noqa: E402
 
 ''' ENTRY POINT '''
 
