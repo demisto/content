@@ -391,3 +391,16 @@ def test_update_remote_system(mocker):
     assert res == '17757'
 
 
+def test_fetch_incident_with_getting_attachments_and_comments(mocker):
+    from JiraV2 import fetch_incidents
+    mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
+    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
+    mocker.patch(
+        'JiraV2.get_comments_command',
+        return_value=('', '', {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00'}]})
+    )
+    mocker.patch(
+        'JiraV2.get_attachments',
+        return_value='here there is attachment'
+    )
+    res = fetch_incidents()

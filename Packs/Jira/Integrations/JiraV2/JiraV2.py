@@ -982,7 +982,6 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
     return GetRemoteDataResponse(incident_update, parsed_entries)
 
 
-
 def main():
     demisto.debug(f'Command being called is {demisto.command()}')
     try:

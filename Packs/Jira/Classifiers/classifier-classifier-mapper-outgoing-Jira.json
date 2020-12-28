@@ -1,0 +1,48 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "1a77d3a4-7a26-4223-82b1-ba0a5470899e",
+ "mapping": {
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "assignee": {
+     "complex": null,
+     "simple": "assigneduser"
+    },
+    "description": {
+     "complex": null,
+     "simple": "jiradescription"
+    },
+    "dueDate": {
+     "complex": null,
+     "simple": "jiraduedate"
+    },
+    "issueId": {
+     "complex": null,
+     "simple": "dbotMirrorId"
+    },
+    "labels": {
+     "complex": null,
+     "simple": "jiralabels"
+    },
+    "priority": {
+     "complex": null,
+     "simple": "jirapriority"
+    },
+    "status": {
+     "complex": null,
+     "simple": "jirastatus"
+    },
+    "summary": {
+     "complex": null,
+     "simple": "jirasummary"
+    }
+   }
+  }
+ },
+ "name": "classifier-mapper-outgoing-Jira",
+ "type": "mapping-outgoing",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

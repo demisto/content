@@ -1,0 +1,100 @@
+{
+ "description": "Jira V2 mirror in classifier.",
+ "feed": false,
+ "id": "d892884d-4fc7-420e-8992-c6e502c871da",
+ "mapping": {
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Assigned User": {
+     "complex": null,
+     "simple": "fields.assignee.emailAddress"
+    },
+    "JIRA_Description": {
+     "complex": null,
+     "simple": "fields.issuetype.description"
+    },
+    "JIRA_Duedate": {
+     "complex": null,
+     "simple": "fields.duedate"
+    },
+    "JIRA_Labels": {
+     "complex": null,
+     "simple": "fields.labels"
+    },
+    "JIRA_Priority": {
+     "complex": null,
+     "simple": "fields.priority.name"
+    },
+    "JIRA_Status": {
+     "complex": null,
+     "simple": "fields.status.name"
+    },
+    "JIRA_Summary": {
+     "complex": null,
+     "simple": "fields.summary"
+    },
+    "Jira Attachments": {
+     "complex": null,
+     "simple": "fields.attachment"
+    },
+    "Jira Description": {
+     "complex": null,
+     "simple": "fields.description"
+    },
+    "Jira Due Date": {
+     "complex": null,
+     "simple": "fields.duedate"
+    },
+    "Jira Due date": {
+     "complex": null,
+     "simple": "fields.duedate"
+    },
+    "Jira Labels": {
+     "complex": null,
+     "simple": "fields.labels"
+    },
+    "Jira Priority": {
+     "complex": null,
+     "simple": "fields.priority.name"
+    },
+    "Jira Reporter Email": {
+     "complex": null,
+     "simple": "fields.reporter.emailAddress"
+    },
+    "Jira Reporter name": {
+     "complex": null,
+     "simple": "fields.reporter.displayName"
+    },
+    "Jira Status": {
+     "complex": null,
+     "simple": "fields.status.name"
+    },
+    "Jira Summary": {
+     "complex": null,
+     "simple": "fields.summary"
+    },
+    "dbotMirrorDirection": {
+     "complex": null,
+     "simple": "mirror_direction"
+    },
+    "dbotMirrorId": {
+     "complex": null,
+     "simple": "id"
+    },
+    "dbotMirrorInstance": {
+     "complex": null,
+     "simple": "mirror_instance"
+    },
+    "dbotMirrorTags": {
+     "complex": null,
+     "simple": "mirror_tags"
+    }
+   }
+  }
+ },
+ "name": "classifier-mapper-incoming-JiraV2",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}
