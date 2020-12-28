@@ -101,7 +101,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
-                    'commitHash': metadata.get('commitHash', "")
+                    'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
