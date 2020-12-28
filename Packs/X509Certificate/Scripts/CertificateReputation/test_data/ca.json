@@ -1,0 +1,66 @@
+{
+    "Certificate(val.MD5 \u0026\u0026 val.MD5 == obj.MD5 || val.SHA1 \u0026\u0026 val.SHA1 == obj.SHA1 || val.SHA256 \u0026\u0026 val.SHA256 == obj.SHA256 || val.SHA512 \u0026\u0026 val.SHA512 == obj.SHA512)": {
+      "Extension": [
+        {
+          "Critical": true,
+          "Name": "basicConstraints",
+          "OID": "2.5.29.19",
+          "Value": {
+            "CA": true
+          }
+        },
+        {
+          "Critical": false,
+          "Name": "subjectKeyIdentifier",
+          "OID": "2.5.29.14",
+          "Value": {
+            "Digest": "b3be4ae4f7a3116cf78b9c09b120f3c793061e1f"
+          }
+        },
+        {
+          "Critical": false,
+          "Name": "keyUsage",
+          "OID": "2.5.29.15",
+          "Value": {
+            "CrlSign": true,
+            "KeyCertSign": true
+          }
+        },
+        {
+          "Critical": false,
+          "Name": "Unknown OID",
+          "OID": "2.16.840.1.113730.1.1",
+          "Value": "\u003cUnrecognizedExtension(oid=\u003cObjectIdentifier(oid=2.16.840.1.113730.1.1, name=Unknown OID)\u003e, value=b'\\x03\\x02\\x00\\x07')\u003e"
+        }
+      ],
+      "IssuerDN": "CN=TestCA,OU=CA,O=Example.com,L=Casacca,ST=PR,C=IT",
+      "MD5": "61a09fa9411f9a4abbde586660473d7d",
+      "Name": [
+        "TestCA"
+      ],
+      "PEM": "-----BEGIN CERTIFICATE-----\nMIIFlDCCA3ygAwIBAgIIbPxjUzDJcmgwDQYJKoZIhvcNAQELBQAwYDELMAkGA1UE\nBhMCSVQxCzAJBgNVBAgTAlBSMRAwDgYDVQQHEwdDYXNhY2NhMRQwEgYDVQQKEwtF\neGFtcGxlLmNvbTELMAkGA1UECxMCQ0ExDzANBgNVBAMTBlRlc3RDQTAeFw0yMDEy\nMDIxMjE1MDBaFw0zMDEyMDIxMjE1MDBaMGAxCzAJBgNVBAYTAklUMQswCQYDVQQI\nEwJQUjEQMA4GA1UEBxMHQ2FzYWNjYTEUMBIGA1UEChMLRXhhbXBsZS5jb20xCzAJ\nBgNVBAsTAkNBMQ8wDQYDVQQDEwZUZXN0Q0EwggIiMA0GCSqGSIb3DQEBAQUAA4IC\nDwAwggIKAoICAQDKswb8mZOjMkax9GLKBBIAr4vWAztMcx12hcit58fR4v/hbI2O\nDzsPCFpy9DflKXMYQ0iOF+tMoGlb2dfmkTydy1MN9yeVcatyulpsONIXu2B7HTvm\nJ48bbfTuj1V81DD0vVUwRDg6Obw6kESsuqfPqqqANQc1E1mvG/UMm0ysP/KtdaQg\n+NMbxPRTfH6N+WJLlgMUv9GGfuJSFxLcpJMGKVM1EwHexb/c+Oy0yxnoDzS+h8lj\nsm+/qUTpx/MG08CTU0vryrdauSNRx9JW9EA39+abQL+Nefsh62X/XvIQ9EqtZmfG\nqNtimE/wMcFOlUOIs4AQTt5HJDW9jQofbrRH3eiGRbFgiOxZsufQkYnK4D9NGN4b\nwM78xs7piHWg2qOAZAXKM3UnkmbsV4WVn5edRcGZtNAb17tQtl03ueCl642yZStK\nxHtA/Vx9McX4QR1IoGjAxax/HMfsXU9NGzivbzB5oX9Mh14oONFr5/mX8URCbm65\n/dPXbeQhp+ILp7AH9ejlCE2IDUoq59QR5WGCcS3fqe4EUDiSJB1oJCGfSwCHNyZ/\nftroTC29pUHKlkv47kSGfJkKA9MaZ2uBmc1dtGk7Dpygb5gpOiogDyq1lqwxLJiv\noOsHgL7AzLJF99f6SgifJeVZv8m4sZx0zZN7eZtUgPKYhrgcNrXvMEXyZQIDAQAB\no1IwUDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSzvkrk96MRbPeLnAmxIPPH\nkwYeHzALBgNVHQ8EBAMCAQYwEQYJYIZIAYb4QgEBBAQDAgAHMA0GCSqGSIb3DQEB\nCwUAA4ICAQB5Q3RBUYvJbCcqLINXeOFMVgRLF+t3QjzNv/IfYKkoR2sox5wIFb/t\nTQDlWmtOFj5PuBnpEC43DjAhlOB5Vx+Cbb09RxJgcwQb7ksPdCTNE1KFLAsIjwS8\nj+zkHv/ltkcNndu3zvfe4sIa6M2z5LflkFxzEQl2GFjN8xba8SRHzoKOhkkaQVDo\nKcBA1aS5ZFOZKJ0ffh6jwwh9wr1WaDgWQKH+/XuNg9gItnjCDy/WrxeMXswu0Vs4\nuW0w4qHW05rwiPQdkdrx6+MdzqSD95EXKXapB7NMgTeQxr68QZ5d8/QUw3X+WbIm\n7TCperF0dEyR689/aWorMirgC2HNDUKZ92sPZecBByG/U5ZO/BLWOUQG1DwHgMpr\nI24I7bD5Q9ac8ykn95219dNONkqIFgBQ0icVzEoO+UxnKQEqQMTQ/HJbkPmqV60U\nj2u7gvvdqfVvBWPIcpzrZ+rCPaElouai28Vsd6RwYXWP0mmOI50VHUEuzf+6n//R\nyep7URSnr6MK0NhfyagqUrnFD704hnLmNfxE1fKxNRnSA82zN1hdfV4xsJ33q08A\nSj5OytEStP+Qw+at1jhzOiZteLZDJPh5eiAGeErnFrZaZCFgidiwiyPxCar+Ncg+\nxWoOfXqzeNuQx6279zaLrlp8P5J/xEXl4BPwLortwckFg41eVC2CFA==\n-----END CERTIFICATE-----\n",
+      "PublicKey": {
+        "Algorithm": "RSA",
+        "Exponent": 65537,
+        "Length": 4096,
+        "Modulus": "ca:b3:06:fc:99:93:a3:32:46:b1:f4:62:ca:04:12:00:af:8b:d6:03:3b:4c:73:1d:76:85:c8:ad:e7:c7:d1:e2:ff:e1:6c:8d:8e:0f:3b:0f:08:5a:72:f4:37:e5:29:73:18:43:48:8e:17:eb:4c:a0:69:5b:d9:d7:e6:91:3c:9d:cb:53:0d:f7:27:95:71:ab:72:ba:5a:6c:38:d2:17:bb:60:7b:1d:3b:e6:27:8f:1b:6d:f4:ee:8f:55:7c:d4:30:f4:bd:55:30:44:38:3a:39:bc:3a:90:44:ac:ba:a7:cf:aa:aa:80:35:07:35:13:59:af:1b:f5:0c:9b:4c:ac:3f:f2:ad:75:a4:20:f8:d3:1b:c4:f4:53:7c:7e:8d:f9:62:4b:96:03:14:bf:d1:86:7e:e2:52:17:12:dc:a4:93:06:29:53:35:13:01:de:c5:bf:dc:f8:ec:b4:cb:19:e8:0f:34:be:87:c9:63:b2:6f:bf:a9:44:e9:c7:f3:06:d3:c0:93:53:4b:eb:ca:b7:5a:b9:23:51:c7:d2:56:f4:40:37:f7:e6:9b:40:bf:8d:79:fb:21:eb:65:ff:5e:f2:10:f4:4a:ad:66:67:c6:a8:db:62:98:4f:f0:31:c1:4e:95:43:88:b3:80:10:4e:de:47:24:35:bd:8d:0a:1f:6e:b4:47:dd:e8:86:45:b1:60:88:ec:59:b2:e7:d0:91:89:ca:e0:3f:4d:18:de:1b:c0:ce:fc:c6:ce:e9:88:75:a0:da:a3:80:64:05:ca:33:75:27:92:66:ec:57:85:95:9f:97:9d:45:c1:99:b4:d0:1b:d7:bb:50:b6:5d:37:b9:e0:a5:eb:8d:b2:65:2b:4a:c4:7b:40:fd:5c:7d:31:c5:f8:41:1d:48:a0:68:c0:c5:ac:7f:1c:c7:ec:5d:4f:4d:1b:38:af:6f:30:79:a1:7f:4c:87:5e:28:38:d1:6b:e7:f9:97:f1:44:42:6e:6e:b9:fd:d3:d7:6d:e4:21:a7:e2:0b:a7:b0:07:f5:e8:e5:08:4d:88:0d:4a:2a:e7:d4:11:e5:61:82:71:2d:df:a9:ee:04:50:38:92:24:1d:68:24:21:9f:4b:00:87:37:26:7f:7e:da:e8:4c:2d:bd:a5:41:ca:96:4b:f8:ee:44:86:7c:99:0a:03:d3:1a:67:6b:81:99:cd:5d:b4:69:3b:0e:9c:a0:6f:98:29:3a:2a:20:0f:2a:b5:96:ac:31:2c:98:af:a0:eb:07:80:be:c0:cc:b2:45:f7:d7:fa:4a:08:9f:25:e5:59:bf:c9:b8:b1:9c:74:cd:93:7b:79:9b:54:80:f2:98:86:b8:1c:36:b5:ef:30:45:f2:65"
+      },
+      "SHA1": "47dda52bfa465c5533a849e3ed5478b16a34da47",
+      "SHA256": "e0550eaac1c01ac1716c4112acd07154de6abacd6f448f294017563c872bd209",
+      "SPKISHA256": "85c21a4fd051493bc538975cddf11ab1f8cd6e1304bb78455335ddbc2081d768",
+      "SerialNumber": "7853261059179246184",
+      "Signature": {
+        "Algorithm": "sha256",
+        "Signature": "79437441518bc96c272a2c835778e14c56044b17eb77423ccdbff21f60a928476b28c79c0815bfed4d00e55a6b4e163e4fb819e9102e370e302194e079571f826dbd3d47126073041bee4b0f7424cd1352852c0b088f04bc8fece41effe5b6470d9ddbb7cef7dee2c21ae8cdb3e4b7e5905c731109761858cdf316daf12447ce828e86491a4150e829c040d5a4b9645399289d1f7e1ea3c3087dc2bd5668381640a1fefd7b8d83d808b678c20f2fd6af178c5ecc2ed15b38b96d30e2a1d6d39af088f41d91daf1ebe31dcea483f791172976a907b34c813790c6bebc419e5df3f414c375fe59b226ed30a97ab174744c91ebcf7f696a2b322ae00b61cd0d4299f76b0f65e7010721bf53964efc12d6394406d43c0780ca6b236e08edb0f943d69cf32927f79db5f5d34e364a88160050d22715cc4a0ef94c6729012a40c4d0fc725b90f9aa57ad148f6bbb82fbdda9f56f0563c8729ceb67eac23da125a2e6a2dbc56c77a47061758fd2698e239d151d412ecdffba9fffd1c9ea7b5114a7afa30ad0d85fc9a82a52b9c50fbd388672e635fc44d5f2b13519d203cdb337585d7d5e31b09df7ab4f004a3e4ecad112b4ff90c3e6add638733a266d78b64324f8797a2006784ae716b65a64216089d8b08b23f109aafe35c83ec56a0e7d7ab378db90c7adbbf7368bae5a7c3f927fc445e5e013f02e8aedc1c905838d5e542d8214"
+      },
+      "SubjectDN": "CN=TestCA,OU=CA,O=Example.com,L=Casacca,ST=PR,C=IT",
+      "ValidityNotAfter": "2030-12-02T12:15:00.000Z",
+      "ValidityNotBefore": "2020-12-02T12:15:00.000Z"
+    },
+    "DBotScore(val.Indicator \u0026\u0026 val.Indicator == obj.Indicator \u0026\u0026 val.Vendor == obj.Vendor \u0026\u0026 val.Type == obj.Type)": {
+      "Indicator": "e0550eaac1c01ac1716c4112acd07154de6abacd6f448f294017563c872bd209",
+      "Score": 0,
+      "Type": "certificate",
+      "Vendor": "X509Certificate"
+    }
+  }

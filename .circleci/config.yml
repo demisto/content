@@ -46,9 +46,9 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.12.0"
+      CONTENT_VERSION: "20.12.1"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "c49eabe52f748c4e2a3a5bdd1ab64ccf3c12a83b" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "758aee8a0dc3e5c905ebbab94a91bb4bf7931cf5" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -133,7 +133,11 @@ references:
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
         sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS/
+
+        # Creating new clean logs folder
+        rm -rf $CIRCLE_ARTIFACTS/logs
         mkdir -p $CIRCLE_ARTIFACTS/logs
+
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
         chmod +x ./Tests/Marketplace/*
@@ -230,13 +234,8 @@ references:
         python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
-        zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
-        rm -f $CIRCLE_ARTIFACTS/server*.log
-        if [ -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log ];
-        then
-            zip -P $PSWD $CIRCLE_ARTIFACTS/logs/Run_Tests.zip $CIRCLE_ARTIFACTS/logs/Run_Tests.log
-            rm -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log
-        fi
+        zip -P $PSWD -j $CIRCLE_ARTIFACTS/Logs.zip $CIRCLE_ARTIFACTS/server*.log $CIRCLE_ARTIFACTS/logs/* || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
+        rm -f $CIRCLE_ARTIFACTS/server*.log $CIRCLE_ARTIFACTS/logs/Run_Tests.log $CIRCLE_ARTIFACTS/logs/Install_Content_And_Configure_Integrations_On_Server.log
       when: always
 
   persist_to_workspace: &persist_to_workspace
@@ -939,15 +938,6 @@ jobs:
             fi
             ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE"
       - run:
-          name: Validate Premium Packs
-          shell: /bin/bash
-          when: always
-          command: |
-            if [ -n "${NIGHTLY}" ] ;
-              then
-                  ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
-            fi
-      - run:
           name: Run Tests - Demisto Master
           shell: /bin/bash
           when: always
@@ -1034,6 +1024,12 @@ jobs:
 
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH
                   rm $GCS_PATH
+            - run:
+                name: Validate Premium Packs
+                shell: /bin/bash
+                when: always
+                command: |
+                  ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
       - run:
           name: Slack Notifier
           shell: /bin/bash
