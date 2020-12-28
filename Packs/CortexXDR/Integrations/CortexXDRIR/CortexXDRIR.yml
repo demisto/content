@@ -560,22 +560,22 @@ script:
       description: The full file name (including file extension).
       type: String
     - contextPath: Process.Name
-      description: The full file name (including file extension).
+      description: The name of the process.
       type: String
     - contextPath: Process.MD5
-      description: The full file name (including file extension).
+      description: The MD5 hash of the process.
       type: String
     - contextPath: Process.SHA256
-      description: The full file name (including file extension).
+      description: The SHA256 hash of the process.
       type: String
     - contextPath: Process.PID
-      description: The full file name (including file extension).
+      description: The PID of the process.
       type: String
     - contextPath: Process.Path
-      description: The full file name (including file extension).
+      description: The file system path to the binary file.
       type: String
     - contextPath: Process.Start Time
-      description: The full file name (including file extension).
+      description: The timestamp of the process start time.
       type: String
     - contextPath: Process.CommandLine
       description: The full command line (including arguments).
