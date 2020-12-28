@@ -109,7 +109,7 @@ tasks:
       name: Get the binary file from Carbon Black by its MD5 hash
       description: This playbook retrieves the binary file by its MD5 hash from Carbon Black
         telemetry data.
-      playbookName: Get binary file from Carbon Black by its MD5 hash
+      playbookName: Get the binary file from Carbon Black by its MD5 hash
       type: playbook
       iscommand: false
       brand: ""
