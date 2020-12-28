@@ -65,6 +65,7 @@ class Client:
         return self.http_request('GET', '/providers/Microsoft.Sql/servers')
 
 
+@logger
 def azure_sql_servers_list_command(client: Client) -> CommandResults:
     """azure-sql-servers-list command: Returns a list of all servers
 
@@ -92,6 +93,31 @@ def azure_sql_servers_list_command(client: Client) -> CommandResults:
 
 
 @logger
+def azure_sql_db_list_command(client: Client) -> CommandResults:
+    return CommandResults(readable_output='TODO')
+
+
+@logger
+def azure_sql_db_audit_policy_list_command(client: Client) -> CommandResults:
+    return CommandResults(readable_output='TODO')
+
+
+@logger
+def azure_sql_db_audit_policy_create_update_command(client: Client) -> CommandResults:
+    return CommandResults(readable_output='TODO')
+
+
+@logger
+def azure_sql_db_threat_policy_get_command(client: Client) -> CommandResults:
+    return CommandResults(readable_output='TODO')
+
+
+@logger
+def azure_sql_db_threat_policy_create_update_command(client: Client) -> CommandResults:
+    return CommandResults(readable_output='TODO')
+
+
+@logger
 def test_connection(client: Client) -> CommandResults:
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
@@ -103,7 +129,7 @@ def start_auth(client: Client) -> CommandResults:
     return CommandResults(readable_output=f"""### Authorization instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
  and enter the code **{user_code}** to authenticate.
-2. Run the **!azure-nsg-auth-complete** command in the War Room.""")
+2. Run the **!azure-sql-auth-complete** command in the War Room.""")
 
 
 @logger
@@ -116,7 +142,7 @@ def complete_auth(client: Client) -> CommandResults:
 def reset_auth(client: Client) -> CommandResults:
     set_integration_context({})
     return CommandResults(readable_output='Authorization was reset successfully. You can now run '
-                                          '**!azure-nsg-auth-start** and **!azure-nsg-auth-complete**.')
+                                          '**!azure-sql-auth-start** and **!azure-sql-auth-complete**.')
 
 
 ''' MAIN FUNCTION '''
@@ -140,17 +166,17 @@ def main() -> None:
         )
         commands = {
             'azure-sql-servers-list': azure_sql_servers_list_command,
-            # 'azure-sql-db-list': azure_sql_db_list_command,
-            # 'azure-sql-db-audit-policy-list': azure_sql_db_audit_policy_list_command,
-            # 'azure-sql-db-audit-policy-create-update': azure_sql_db_audit_policy_create_update_command,
-            # 'azure-sql-db-threat-policy-get': azure_sql_db_threat_policy_get_command,
-            # 'azure-sql-db-threat-policy-create-update': azure_sql_db_threat_policy_create_update_command,
-            # 'azure-sql-auth-start': start_auth,
-            # 'azure-sql-auth-complete': complete_auth,
-            # 'azure-sql-auth-reset': reset_auth,
+            'azure-sql-db-list': azure_sql_db_list_command,
+            'azure-sql-db-audit-policy-list': azure_sql_db_audit_policy_list_command,
+            'azure-sql-db-audit-policy-create-update': azure_sql_db_audit_policy_create_update_command,
+            'azure-sql-db-threat-policy-get': azure_sql_db_threat_policy_get_command,
+            'azure-sql-db-threat-policy-create-update': azure_sql_db_threat_policy_create_update_command,
+            'azure-sql-auth-start': start_auth,
+            'azure-sql-auth-complete': complete_auth,
+            'azure-sql-auth-reset': reset_auth,
         }
         if command == 'test-module':
-            return_error("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
+            return_error("Please run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to log in."
                          " For more details press the (?) button.")
 
         if command == 'azure-sql-auth-test':

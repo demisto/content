@@ -60,7 +60,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-beta: true
 tests:
 - Azure SQL - Test
 fromversion: 5.0.0
