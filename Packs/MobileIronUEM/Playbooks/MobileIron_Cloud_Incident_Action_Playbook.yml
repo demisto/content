@@ -7,7 +7,7 @@ inputs:
   playbookInputQuery:
   required: true
   value: {}
-- description: This is the subject for the email message
+- description: This is the subject for the email message.
   key: subject
   playbookInputQuery:
   required: false
@@ -63,7 +63,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Device specific actions
+      description: Device specific actions.
       id: 7f467b5d-461e-486d-816e-a42bd3f7483e
       iscommand: false
       name: Select Action
@@ -131,7 +131,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Retire device action
+      description: Retire device action.
       id: 8b06c077-2574-4b6d-8b43-b398af702d67
       iscommand: true
       name: RETIRE DEVICE
@@ -165,7 +165,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Wipe device action
+      description: Wipe device action.
       id: 7134f514-4c91-4df9-8f3b-4a1e69160359
       iscommand: true
       name: WIPE DEVICE
@@ -199,7 +199,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Force check-in action
+      description: Force check-in action.
       id: d6e000e6-0f2b-42ce-8fe0-3e1d53418267
       iscommand: true
       name: FORCE CHECKIN
@@ -239,7 +239,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Send message action
+      description: Send message action.
       id: 34a4ae78-7287-48c9-8d90-aef7b1273064
       iscommand: true
       name: SEND MESSAGE
