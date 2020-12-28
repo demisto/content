@@ -29,6 +29,7 @@ ISSUE_INCIDENT_FIELDS = {'issueId': 'The ID of the issue to edit',
                          }
 BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
                        " longer supported, please use an API Token or OAuth 1.0"
+JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
 USE_SSL = not demisto.params().get('insecure', False)
 
 
@@ -819,6 +820,21 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
+def handle_incoming_closing_incident(incident_data):
+    closing_entry = {}  # type: Dict
+    if incident_data.get('fields').get('status').get('name') == 'Done':
+        demisto.debug(f"Closing Jira issue {incident_data.get('id')}")
+        closing_entry = {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': JIRA_RESOLVE_REASON,
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }
+    return closing_entry
+
+
 def update_remote_system_command(args):
     """ Mirror-out data that is in Demito into Jira issue
 
@@ -848,6 +864,7 @@ def update_remote_system_command(args):
         else:
             demisto.info(f'Skipping updating remote incident fields [{remote_id}] '
                           f'as it is not new nor changed')
+
         if entries:
             for entry in entries:
                 demisto.info(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
@@ -908,7 +925,12 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
                       f"\n\tRemote last updated time: {jira_modified_date}\n")
         demisto.info(f'@@@@@@@@@@: \n{incident_update}\n')
 
+        closed_issue = handle_incoming_closing_incident(incident_update)
+        if closed_issue:
+            return GetRemoteDataResponse(incident_update, [closed_issue])
+
         entries = get_incident_entries(issue_raw_response, incident_modified_date)
+
         for comment in entries['comments']:
             parsed_entries.append({
                 'Type': EntryType.NOTE,
@@ -920,8 +942,6 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         for attachment in entries['attachments']:
             parsed_entries.append(attachment)
 
-    if parsed_entries:
-        demisto.info(f'&&&&&&&&&&&&&&&: \n{parsed_entries}\n')
     return GetRemoteDataResponse(incident_update, parsed_entries)
 
 
