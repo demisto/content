@@ -1,6 +1,6 @@
-This Playbook is used to handle a Shadow IT incident. A Shadow IT incident occurs when a resource attributed to the organization that is not sanctioned by IT nor protected by the InfoSec team is found.
+This playbook is used to handle a Shadow IT incident. A Shadow IT incident occurs when a resource attributed to the organization that is not sanctioned by IT nor protected by the InfoSec team is found.
 
-This playbook handles the incident by helping the analyst to find the owner of the resource based on existing evidence. The playbook also marks the service indicators (IP or FQDN) with a Shadow IT tag. The possible owner and their manager are notified and onboarding of the asset on Prisma Cloud is triggered through a manual process.
+This playbook handles the incident by helping the analyst find the owner of the resource based on existing evidence. The playbook also marks the service indicators (IP or FQDN) with a Shadow IT tag. The possible owner and their manager are notified and onboarding of the asset on Prisma Cloud is triggered through a manual process.
 Supported Cortex XSOAR versions: 6.0.0 and later.
 
 
@@ -8,7 +8,7 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Active Directory - Get User Manager Details
+* **Active Directory - Get User Manager Details**
 
 ### Integrations
 This playbook does not use any integrations.
@@ -17,10 +17,10 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* setIncident
-* findIndicators
-* send-mail
-* appendIndicatorField
+* ***setIncident***
+* ***findIndicators***
+* ***send-mail***
+* ***appendIndicatorField***
 
 ## Playbook Inputs
 ---
