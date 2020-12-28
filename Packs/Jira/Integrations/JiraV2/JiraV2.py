@@ -709,12 +709,19 @@ def test_module() -> str:
 
 
 def get_entries_for_fetched_incident(ticket_id, should_get_comments, should_get_attachments):
+    """
+    Get entries for incident
+    :param ticket_id: the remote system id of the ticket
+    :param should_get_comments: if 'True', return ticket's comments
+    :param should_get_attachments: if 'True', return ticket's attachments
+    :return: incident's entries.
+    """
     entries = {'comments': [], 'attachments': []}
     try:
         _, _, raw_response = get_issue(issue_id=ticket_id)
         entries = get_incident_entries(raw_response, '', False, should_get_comments, should_get_attachments)
     except Exception as e:
-        demisto.error(f'could not get attachments for {ticket_id} while fetch this incident because: {str(e)}')
+        demisto.debug(f'could not get attachments for {ticket_id} while fetch this incident because: {str(e)}')
     finally:
         return entries
 
@@ -748,6 +755,11 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
 
 
 def get_attachment_data(attachment):
+    """
+    Get attachments content
+    :param attachment: attachment metadata
+    :return: attachment name and content
+    """
     attachment_url = f"secure{attachment['content'].split('/secure')[-1]}"
     filename = attachment_url.split("/")[-1]
     attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
@@ -755,6 +767,13 @@ def get_attachment_data(attachment):
 
 
 def get_attachments(attachments, incident_modified_date, only_new=True):
+    """
+    Get incident attachments as fileResults objects
+    :param attachments: the issue's attachments
+    :param incident_modified_date: the date the incident was last updated
+    :param only_new: if 'True', getting only attachments that was added after the incident_modified_date
+    :return: a list of fileResults
+    """
     file_results = []
     # list of all attachments
     if attachments:
@@ -773,7 +792,14 @@ def get_attachments(attachments, incident_modified_date, only_new=True):
     return file_results
 
 
-def get_comments(comments,incident_modified_date,  only_new=True):
+def get_comments(comments, incident_modified_date,  only_new=True):
+    """
+    Get issue's comments
+    :param comments: the issue's comments
+    :param incident_modified_date: the date the incident was last updated
+    :param only_new: if 'True', getting only comments that was added after the incident_modified_date
+    :return: a list of comments
+    """
     if not only_new:
         return comments
     else:
@@ -788,6 +814,15 @@ def get_comments(comments,incident_modified_date,  only_new=True):
 
 
 def get_incident_entries(issue, incident_modified_date, only_new=True, should_get_comments=True, should_get_attachments=True):
+    """
+    This function get for incident entries
+    :param issue: the incident to get its entries
+    :param incident_modified_date: when the incident was last modified
+    :param only_new: if 'True' it gets only entries that were added after the incident was last modified
+    :param should_get_comments: if 'True', the returned entries will contain comments
+    :param should_get_attachments: if 'True' the returned entries will contain attachments
+    :return: the incident's comments and attachments
+    """
     entries = {'comments': [], 'attachments': []}
     if should_get_comments:
         _, _, comments_content = get_comments_command(issue['id'])
@@ -821,6 +856,12 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 
 def handle_incoming_closing_incident(incident_data):
+    """
+    This function creates an object for issues with status 'Done' in order to close its incident when getting remote
+     data
+    :param incident_data: the data of an incident
+    :return: the object using to close the incident in Demito
+    """
     closing_entry = {}  # type: Dict
     if incident_data.get('fields').get('status').get('name') == 'Done':
         demisto.debug(f"Closing Jira issue {incident_data.get('id')}")
