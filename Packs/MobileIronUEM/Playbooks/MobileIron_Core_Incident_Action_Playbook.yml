@@ -1,12 +1,12 @@
 description: General Incident Actions Playbook
 id: MobileIron Core Incident Action Playbook
 inputs:
-- description: This is the default subject for the send message action
+- description: This is the default subject for the send message action.
   key: subject
   playbookInputQuery:
   required: true
   value: {}
-- description: This is the default message for the send message action
+- description: This is the default message for the send message action.
   key: message
   playbookInputQuery:
   required: true
@@ -57,8 +57,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to update OS to the particular device based
-        on device id
+      description: This command is used to update the OS to the particular device based
+        on the device ID.
       id: f9004505-81b5-44c2-8dc1-59f920e51320
       iscommand: true
       name: Update OS
@@ -90,8 +90,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to unlock device to the particular device
-        based on device id
+      description: This command is used to unlock a particular device
+        based on the device ID.
       id: 381e8709-21e4-4707-8e08-23a43e50e0a7
       iscommand: true
       name: Unlock Device  Only
@@ -124,7 +124,7 @@ tasks:
     task:
       brand: ""
       description: This command is used to enable voice roaming to the particular
-        device based on device id
+        device based on the device ID.
       id: 7ee075a1-eba5-4b47-803f-6dcadfaaac69
       iscommand: true
       name: Enable Voice Roaming
@@ -157,7 +157,7 @@ tasks:
     task:
       brand: ""
       description: This command is used to disable voice roaming to the particular
-        device based on device id
+        device based on the device ID.
       id: c6808865-a274-4669-8cf9-e66719a3c859
       iscommand: true
       name: Disable Voice Roaming
@@ -189,8 +189,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to enable personal hotspot to the particular
-        device based on device id
+      description: This command is used to enable a personal hotspot to the particular
+        device based on the device ID.
       id: af6fa0d7-77c6-4fa3-83d8-379e78e2f61e
       iscommand: true
       name: Enable Personal Hotspot
@@ -222,8 +222,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to disable personal hotspot to the particular
-        device based on device id
+      description: This command is used to disable a personal hotspot to the particular
+        device based on the device ID.
       id: 55e44f67-af5e-42d2-8c4d-4b362ab3867d
       iscommand: true
       name: Disable Personal Hotspot
@@ -255,8 +255,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to unlock app connect container to the particular
-        device based on device id
+      description: This command is used to unlock an app connect container on the particular
+        device based on the device ID.
       id: 97bf0174-dda2-409c-8953-3920c25f3ef1
       iscommand: true
       name: Unlock App Connect Container
@@ -288,8 +288,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to retire device to the particular device
-        based on device id
+      description: This command is used to retire a device on the particular device
+        based on the device ID.
       id: 0dae4269-d22f-47cf-88ed-3a3cdd4614c3
       iscommand: true
       name: Retire Device
@@ -321,8 +321,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to wipe device to the particular device based
-        on device id
+      description: This command is used to wipe a device on the particular device based
+        on the device ID.
       id: 1931dcf3-9121-422e-8c7d-4d41c3f344e6
       iscommand: true
       name: Wipe Device
@@ -354,8 +354,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to retire device to the particular device
-        based on device id
+      description: This command is used to retire a particular device
+        based on the device ID.
       id: a99d98ee-75c2-4bbd-8eb9-068cc888c4bc
       iscommand: true
       name: Force Checkin
@@ -424,7 +424,7 @@ tasks:
     task:
       brand: ""
       description: This command is used to enable data roaming to the particular device
-        based on device id
+        based on the device ID.
       id: 72292fe2-9399-49de-8e5c-18b3a8d71caa
       iscommand: true
       name: Enable Data Roaming
@@ -457,7 +457,7 @@ tasks:
     task:
       brand: ""
       description: This command is used to disable data roaming to the particular
-        device based on device id
+        device based on the device ID.
       id: 9a0c7872-5e10-4b11-84b1-00aad05dbe4c
       iscommand: true
       name: Disable Data Roaming
@@ -511,7 +511,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Verify device platform
+      description: Verify device platform.
       id: b316ef90-7be7-4134-82b1-5e143680da7c
       iscommand: false
       name: Verify Platform
@@ -549,7 +549,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Android specific actions
+      description: Android specific actions.
       id: 23e41d5b-7d9d-472d-8223-d8a85b0f3891
       iscommand: false
       name: Android Actions
@@ -633,7 +633,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Actions related to other devices
+      description: Actions related to other devices.
       id: 3c3e73a0-7355-461e-8d07-a8d95462df50
       iscommand: false
       name: General Device Actions
@@ -736,8 +736,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to unlock device to the particular device
-        based on device id
+      description: This command is used to unlock a device 
+        based on the device ID.
       id: 7d1fb79f-0554-419c-8fb8-0a3e368d1dc2
       iscommand: true
       name: Unlock Device  Only
@@ -769,8 +769,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to wipe device to the particular device based
-        on device id
+      description: This command is used to wipe a device to the particular device based
+        on the device ID.
       id: 2d60c6ce-9c10-4f3d-8759-1a2ac3476e01
       iscommand: true
       name: Wipe Device
@@ -802,8 +802,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to retire device to the particular device
-        based on device id
+      description: This command is used to retire a device to the particular device
+        based on the device ID.
       id: 107ec769-fca2-4c1f-85bd-1a6ebdd8e1ac
       iscommand: true
       name: Retire Device
@@ -835,8 +835,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to retire device to the particular device
-        based on device id
+      description: This command is used to retire a device to the particular device
+        based on the device ID.
       id: ec6b6d30-16bc-4c2d-894e-0d78be21353a
       iscommand: true
       name: Force Checkin
@@ -877,7 +877,7 @@ tasks:
     task:
       brand: ""
       description: This command is used to send a message to the particular device
-        based on device id
+        based on the device ID.
       id: 77bba84d-59f5-4ec5-8eca-d7158d168a9f
       iscommand: true
       name: Send Message
@@ -918,7 +918,7 @@ tasks:
     task:
       brand: ""
       description: This command is used to send a message to the particular device
-        based on device id
+        based on the device ID.
       id: 1bb5eba9-5792-4d33-87f7-a1f8015553ff
       iscommand: true
       name: Send Message
@@ -950,8 +950,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to wipe device to the particular device based
-        on device id
+      description: This command is used to wipe a device for the particular device based
+        on the device ID.
       id: fc9b7b53-b08b-4cf5-86b5-9601cc8f7370
       iscommand: true
       name: Wipe Device
@@ -983,8 +983,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to retire device to the particular device
-        based on device id
+      description: This command is used to retire a device to the particular device
+        based on the device ID.
       id: 9b136bba-af4f-48e5-889c-5d8d025582a7
       iscommand: true
       name: Force Checkin
@@ -1025,7 +1025,7 @@ tasks:
     task:
       brand: ""
       description: This command is used to send a message to the particular device
-        based on device id
+        based on the device ID.
       id: 85203d8f-2789-4c14-881d-cfff91fbc94e
       iscommand: true
       name: Send Message
@@ -1057,8 +1057,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This command is used to retire device to the particular device
-        based on device id
+      description: This command is used to retire a device for the particular device
+        based on the device ID.
       id: 28e4453c-bdbb-4297-8df1-036372c910d1
       iscommand: true
       name: Retire Device
