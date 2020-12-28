@@ -1262,12 +1262,12 @@ def add_to_ip_context(alert, ip_context):
     action_remote_ip = alert.get('action_remote_ip')
     if action_local_ip:
         ip_context.append({
-            'Address': action_local_ip
+            'Address': action_local_ip,
         })
 
     if action_remote_ip:
         ip_context.append({
-            'Address': action_remote_ip
+            'Address': action_remote_ip,
         })
 
 
