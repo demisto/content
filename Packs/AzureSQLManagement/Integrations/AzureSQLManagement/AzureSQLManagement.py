@@ -159,53 +159,39 @@ def main() -> None:
     """main function, parses params and runs command functions
     """
 
-    subscription_id = demisto.params().get('subscription_id', '')
-    resource_group_name = demisto.params().get('resource_group_name', '')
-
     base_url = f'https://management.azure.com/subscriptions/{subscription_id}'
 
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
 
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
-        headers = {}
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
-        command = demisto.command()
-
+            subscription_id=params.get('subscription_id', ''),
+            resource_group_name=params.get('resource_group_name', ''),
+            verify=not params.get('insecure', False),
+            proxy=params.get('proxy', False),
+        )
+        commands = {
+            'azure-sql-servers-list': azure_sql_servers_list_command,
+            'azure-sql-db-list': azure_sql_db_list_command,
+            'azure-sql-db-audit-policy-list': azure_sql_db_audit_policy_list_command,
+            'azure-sql-db-audit-policy-create-update': azure_sql_db_audit_policy_create_update_command,
+            'azure-sql-db-threat-policy-get': azure_sql_db_threat_policy_get_command,
+            'azure-sql-db-threat-policy-create-update': azure_sql_db_threat_policy_create_update_command,
+            'azure-nsg-auth-start': start_auth,
+            'azure-nsg-auth-complete': complete_auth,
+            'azure-nsg-auth-reset': reset_auth,
+        }
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client, first_fetch_timestamp)
-            return_results(result)
+            return_error("Please run `!azure-nsg-auth-start` and `!azure-nsg-auth-complete` to log in."
+                         " For more details press the (?) button.")
 
-        elif command == 'azure-sql-servers-list':
-            return_results(azure_sql_servers_list_command(client, demisto.args()))
-
-        elif command == 'azure-sql-db-list':
-            return_results(azure_sql_db_list_command(client, demisto.args()))
-
-        elif command == 'azure-sql-db-audit-policy-list':
-            return_results(azure_sql_db_audit_policy_list_command(client, demisto.args()))
-
-        elif command == 'azure-sql-db-audit-policy-create-update':
-            return_results(azure_sql_db_audit_policy_create_update_command(client, demisto.args()))
-
-        elif command == 'azure-sql-db-threat-policy-get':
-            return_results(azure_sql_db_threat_policy_get_command(client, demisto.args()))
-
-        elif command == 'azure-sql-db-threat-policy-create-update':
-            return_results(azure_sql_db_threat_policy_create_update_command(client, demisto.args()))
+        if command == 'azure-nsg-auth-test':
+            return_results(test_connection(client, params))
+        else:
+            return_results(commands[command](client, **args))
 
     # Log exceptions and return errors
     except Exception as e:
