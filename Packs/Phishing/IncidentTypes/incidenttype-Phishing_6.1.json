@@ -18,8 +18,8 @@
  "default": false,
  "autorun": false,
  "disabled": false,
- "reputationCalc": 0,
- "onChangeRepAlg": 1,
+ "reputationCalc": 1,
+ "onChangeRepAlg": 2,
  "fromVersion": "6.1.",
  "layout": "Phishing",
  "extractSettings": {
