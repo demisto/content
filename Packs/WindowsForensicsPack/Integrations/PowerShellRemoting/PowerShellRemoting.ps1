@@ -9,7 +9,7 @@ $script:INTEGRATION_ENTRY_CONTEX = "PsRemote"
 function CreateNewSession {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope = 'Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
-    param([string]$fqdn_list, [string]$username, [string]$password, [bool]$insecure, [bool]$proxy)
+    param([string]$fqdn_list, [string]$username, [string]$password, [bool]$insecure)
 
     $credential = ConvertTo-SecureString "$password" -AsPlainText -Force
     $ps_credential = New-Object System.Management.Automation.PSCredential($username, $credential)
@@ -17,7 +17,6 @@ function CreateNewSession {
     $session_option_params = @{
         "SkipCACheck" = $insecure
         "SkipCNCheck" = $insecure
-        "ProxyAccessType" = If ($proxy) {"IEConfig"} Else {"None"} # Needs to be further tested
     }
     $session_options = New-PSSessionOption @session_option_params
     $sessions_params = @{
@@ -44,9 +43,6 @@ function CreateNewSession {
         .PARAMETER password
         Password of the system user.
 
-        .EXAMPLE proxy
-        Wheter to user system proxy configuration or not.
-
         .PARAMETER insecure
         Wheter to trust any TLS/SSL Certificate) or not.
 
@@ -63,7 +59,7 @@ function CreateNewSession {
 
 class RemotingClient
 {
-    [string]$hostname
+    [string]$fqdn_list
     [string]$username
     [string]$password
     [string]$domain
@@ -74,7 +70,7 @@ class RemotingClient
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
     RemotingClient([string]$hostname, [string]$username, [string]$password, [string]$domain, [string]$dns,
-                   [string]$ip_hosts, [bool]$insecure, [bool]$proxy)
+                   [string]$ip_hosts, [string]$insecure, [string]$proxy)
     {
         # set the container's resolv.conf to use to provided dns
         if ($dns)
@@ -82,7 +78,7 @@ class RemotingClient
             "nameserver $dns" | Set-Content -Path \etc\resolv.conf
         }
 
-        $domain = If ($domain) {"." + $domain } Else {"" }
+        $this.domain = If ($domain) {".$domain"} Else {""}
         # generically handle 0-* hosts fqdn
         $fqdn = $hostname | ForEach-Object -Process { $_ + $domain }
         if ($ip_hosts)
@@ -90,9 +86,9 @@ class RemotingClient
             # single fqdn
             if ($fqdn -and ($fqdn.GetType().fullname -eq 'System.String'))
             {
-                $fqdn_list = [System.Collections.ArrayList]::new()
-                $fqdn_list += $fqdn
-                $fqdn = $fqdn_list + $ip_hosts
+                $fqdn_lst = [System.Collections.ArrayList]::new()
+                $fqdn_lst += $fqdn
+                $fqdn = $fqdn_lst + $ip_hosts
             }
             # no / multiple fqdn
             else
@@ -136,7 +132,7 @@ class RemotingClient
 
     CreateSession()
     {
-        $this.session = CreateNewSession -fqdn_list $this.fqdn_list -username $this.username -password $this.password -insecure $this.insecure -proxy $this.proxy
+        $this.session = CreateNewSession -fqdn_list $this.fqdn_list -username $this.username -password $this.password -insecure $this.insecure
         <#
             .DESCRIPTION
             This method is for internal use. It creates session to the remote hosts.
@@ -170,16 +166,17 @@ class RemotingClient
     }
 
 
-    InvokeCommandInSession([string]$remote_command)
+    [string]InvokeCommandInSession([string]$remote_command)
     {
         if (!$this.session)
         {
             $this.CreateSession()
         }
-        $temp = $demisto.UniqueFile()
-        $file_name = "$demisto.Investigation().id_$temp.ps1"
+        $temp = $script:Demisto.UniqueFile()
+        $file_name = $script:Demisto.Investigation().id + "_" + $temp + ".ps1"
         echo $remote_command | Out-File -FilePath $file_name
-        return Invoke-Command $this.session -FilePath $file_name
+        $result = Invoke-Command -Session $this.session -FilePath $file_name
+        return $result
     <#
         .DESCRIPTION
         This method invokes a command in the session via a temporary file.
@@ -210,7 +207,7 @@ class RemotingClient
         Copy-Item -ToSession $this.session $path -Destination $file_name
     }
 
-    ExportMFT() {
+    [string]ExportMFT([string]$volume, [string]$output_file_path) {
         if (!$this.session)
         {
             $this.CreateSession()
@@ -412,13 +409,12 @@ class RemotingClient
 }
 
 function TestModuleCommand ([RemotingClient]$client, [string]$hostname) {
-    client.InvokeCommandInSession('$PSVersionTable')
+    $raw_response = $client.InvokeCommandInSession('$PSVersionTable')
 
-    $raw_response = $null
     $human_readable = "ok"
     $entry_context = $null
 
-    return $human_readable, $entry_context, $raw_response
+    return $human_readable, $entry_context, $null
 }
 
 function InvokeCommandCommand([RemotingClient]$client, [string]$command, [string]$hostname, $ip_hosts)
@@ -431,7 +427,7 @@ function InvokeCommandCommand([RemotingClient]$client, [string]$command, [string
         Result = $raw_result
     }
     $entry_context = @{
-        script:INTEGRATION_ENTRY_CONTEX = @{ Command = $context_result }
+        $script:INTEGRATION_ENTRY_CONTEX = @{ Command = $context_result }
     }
     $human_readable = $title + $raw_result
 
@@ -444,13 +440,13 @@ function InvokeCommandCommand([RemotingClient]$client, [string]$command, [string
 
 function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zip_file, [string]$check_hash)
 {
-    $temp = $demisto.UniqueFile()
-    $file_name = "$demisto.Investigation().id_$temp"
+    $temp = $script:Demisto.UniqueFile()
+    $file_name = $script:Demisto.Investigation().id + "_$temp"
 
     # assert file exists in the system
-    $command = "[System.IO.File]::Exists($path)"
+    $command = '[System.IO.File]::Exists("' + $path + '")'
     $raw_result = $client.InvokeCommandInSession($command)
-    if (!$raw_result)
+    if (-Not $raw_result -or ($raw_result -eq 'False'))
     {
         $client.CloseSession()
         throw "$path was not found on the remote host."
@@ -472,12 +468,12 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
         $src_hash = $client.InvokeCommandInSession($command)
     }
 
-    client.CopyItemFromSession($path, $file_name)
+    $client.CopyItemFromSession($path, $file_name)
     if ($zip_file -eq 'true')
     {
         # clean zip from host
         $command = "Remove-Item $path"
-        client.InvokeCommandInSession($command)
+        $client.InvokeCommandInSession($command)
     }
     $client.CloseSession()
     if ($check_hash -eq 'true')
@@ -514,7 +510,7 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
         FileID = $temp
         EntryContext = $entry_context
     }
-    $demisto.Results($demisto_results)
+    $script:Demisto.Results($demisto_results)
 }
 
 function StartETLCommand([RemotingClient]$client, [string]$etl_path, [string]$etl_filter, [string]$etl_max_size,
@@ -590,7 +586,7 @@ function ExportRegistry($volume, $output_file_path)
 
 function UploadFileCommand($entry_id, $dst_path, $hostname, $ip_hosts, $zip_file, $check_hash)
 {
-    $src_path = $demisto.GetFilePath($entry_id).path
+    $src_path = $script:Demisto.GetFilePath($entry_id).path
     if ($zip_file -eq 'true')
     {
         # compress file before upload
@@ -666,16 +662,18 @@ function Main
     {
         $hostname = if ($command -eq 'test-module') {ArgToList $params.hostname } else {ArgToList $args.host}
         # ip_hosts is expected as an optional input for every command other than test-module
-        $ip_hosts = args.ip
-        if (-not($ip_hosts -or $ip_hosts)) {
+        $ip_hosts = $args.ip
+        if (-not($hostname -or $ip_hosts)) {
             throw 'Please provide "hostname" or "ip"".'
         }
+        # add domain path
+        $domain = if ($params.domain) {"." + $params.domain} else {""}
         # Creating Remoting client
         $cs_client = [RemotingClient]::new($params.hostname, $params.credentials.identifier, $params.credentials.password,
-                                           $params.domain, $params.dns, $ip_hosts, $insecure, $no_proxy)
+                                           $domain, $params.dns, $ip_hosts, $insecure, $no_proxy)
         # Executing command
         $Demisto.Debug("Command being called is $command")
-        switch ($comand)
+        switch ($command)
         {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $cs_client $hostname
@@ -704,7 +702,7 @@ function Main
                 ($human_readable, $entry_context, $raw_response) = ExportMFTCommand $hostname $ip_hosts $args.volume $args.output_path
             }
             Default {
-                $demisto.Error("Unsupported command was entered: $command.")
+                $Demisto.Error("Unsupported command was entered: $command.")
             }
         }
         # Return results to Demisto Server
