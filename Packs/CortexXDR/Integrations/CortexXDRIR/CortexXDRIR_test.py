@@ -2,6 +2,7 @@ import json
 import pytest
 import copy
 import demistomock as demisto
+from CommonServerPython import Common
 from freezegun import freeze_time
 
 XDR_URL = 'https://api.xdrurl.com'
@@ -155,7 +156,13 @@ def test_get_incident_extra_data(requests_mock):
     })
 
     expected_output = {
-        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': expected_incident
+        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': expected_incident,
+        Common.File.CONTEXT_PATH: [{'Name': 'wildfire-test-pe-file.exe',
+                                    'SHA256': '8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca'}],
+        'Process(val.Name && val.Name == obj.Name)':
+            [{'Name': 'wildfire-test-pe-file.exe',
+              'CommandLine': '"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe"',
+              'Hostname': 'AAAAAA'}]
     }
     assert expected_output == outputs
 
@@ -435,6 +442,9 @@ def test_get_audit_agent_reports(requests_mock):
     readable_output, outputs, _ = get_audit_agent_reports_command(client, args)
     expected_outputs = get_audit_agent_reports_response.get('reply').get('data')
     assert outputs['PaloAltoNetworksXDR.AuditAgentReports'] == expected_outputs
+    assert outputs['Endpoint(val.ID && val.ID == obj.ID)'] == [{'ID': '1111', 'Hostname': '1111.eu-central-1'},
+                                                               {'ID': '1111', 'Hostname': '1111.eu-central-1'},
+                                                               {'ID': '1111', 'Hostname': '1111.eu-central-1'}]
 
 
 def test_insert_cef_alerts(requests_mock):
@@ -1245,7 +1255,8 @@ def test_retrieve_files_command(requests_mock):
     from CortexXDRIR import retrieve_files_command, Client
     from CommonServerPython import tableToMarkdown, string_to_table_header
 
-    retrieve_expected_result = {'PaloAltoNetworksXDR.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+    retrieve_expected_result = {
+        'PaloAltoNetworksXDR.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
     result = {'action_id': 1773}
 
@@ -1350,7 +1361,8 @@ def test_get_script_metadata_command(requests_mock):
 
     get_script_metadata_response = load_test_data('./test_data/get_script_metadata.json')
     get_scripts_expected_result = {
-        'PaloAltoNetworksXDR.ScriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get('reply')
+        'PaloAltoNetworksXDR.ScriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get(
+            'reply')
     }
     script_metadata = copy.deepcopy(get_script_metadata_response).get('reply')
     timestamp = script_metadata.get('modification_date')
