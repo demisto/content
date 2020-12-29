@@ -65,19 +65,26 @@ def get_pr_modified_files_and_packs(pr_number, github_token, verify_ssl):
     pr_files = [f.get('filename') for f in pr_changed_data]
     modified_packs = {Path(p).parts[1] for p in pr_files if p.startswith(PACKS_FOLDER) and len(Path(p).parts) > 1}
 
-    return modified_packs, pr_files
+    blob_url = pr_changed_data[0].get('blob_url').split('/')
+    commit = blob_url[blob_url.index('blob')+1]
+
+    return modified_packs, pr_files, commit
 
 
-def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, github_token: str = None,
+def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, commit: str, github_token: str = None,
                    verify_ssl: bool = True):
     comments_endpoint = f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/issues/{pr_number}/comments"
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     reviewers_comment = "\n".join({f"- @{r}" for r in reviewers})
-    pack_files_comment = "\n".join(pack_files)
+    # pack_files_comment = "\n[".join(pack_files) + ']'
+    pack_files_comment = ''
+    new_line = '/n'
+    for file in pack_files:
+        pack_files_comment += f'[{new_line}{file}](https://github.com/demisto/content/blob/{commit}/{file})'
 
     comment_body = {
-        "body": f"### Your contributed {pack} {PR_COMMENT_PREFIX}\n"
+        "body": f"### Your contributed {pack} {PR_COMMENT_PREFIX}"
                 f"{pack_files_comment}\n"
                 f" Please review the changes.\n"
                 f"{reviewers_comment}"
@@ -115,8 +122,9 @@ def get_pr_tagged_reviewers(pr_number, github_token, verify_ssl, pack):
 
 
 def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True):
-    modified_packs, modified_files = get_pr_modified_files_and_packs(pr_number=pr_number, github_token=github_token,
-                                                                     verify_ssl=verify_ssl)
+    modified_packs, modified_files, commit = get_pr_modified_files_and_packs(pr_number=pr_number,
+                                                                             github_token=github_token,
+                                                                             verify_ssl=verify_ssl)
     pr_author = get_pr_author(pr_number=pr_number, github_token=github_token, verify_ssl=verify_ssl)
 
     for pack in modified_packs:
@@ -149,7 +157,7 @@ def check_pack_and_request_review(pr_number, github_token=None, verify_ssl=True)
                 pack_files = {file for file in modified_files if file.startswith(PACKS_FOLDER)
                               and Path(file).parts[1] == pack}
                 tag_user_on_pr(reviewers=reviewers, pr_number=pr_number, pack=pack, pack_files=pack_files,
-                               github_token=github_token, verify_ssl=verify_ssl)
+                               commit=commit, github_token=github_token, verify_ssl=verify_ssl)
             else:
                 print(f"{pack} pack No reviewers were found.")
 
