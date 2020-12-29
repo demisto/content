@@ -1,12 +1,12 @@
-!rapid7-insight-idr-list-investigations time_range="7 days" page_size=6
-!rapid7-insight-idr-get-investigation investigation_id=f24fedd4-698b-441e-9ccf-d7d3c2b617a3
-!rapid7-insight-idr-set-status status=open investigation_id=ed475853-05da-4a8a-9f99-b9139d0fe8c0,524b1447-b155-4f9c-b94d-67f7d2f835bd
-!rapid7-insight-idr-close-investigations source=HUNT start_time=2020-11-14T10:00:00.453Z end_time=2020-11-15T10:00:00.448Z
+!rapid7-insight-idr-list-investigations time_range="27 days"
+!rapid7-insight-idr-get-investigation investigation_id=15229912-517a-4bc7-8257-3e7da8205df6
+!rapid7-insight-idr-set-status status=open investigation_id=15229912-517a-4bc7-8257-3e7da8205df6,d3e4c470-1472-49ad-839b-fefa9b0683c5
+!rapid7-insight-idr-close-investigations source=HUNT start_time=2020-12-04T10:00:00.515Z end_time=2020-12-29T10:00:00.526Z
 !rapid7-insight-idr-add-threat-indicators key=75fd98f3-a88c-475e-be39-ad9e44ecc6db ip_addresses=20.20.20.20
 !rapid7-insight-idr-replace-threat-indicators key=75fd98f3-a88c-475e-be39-ad9e44ecc6db ip_addresses=30.30.30.30
 !rapid7-insight-idr-list-logs
 !rapid7-insight-idr-list-log-sets
 !rapid7-insight-idr-download-logs log_ids=ab5a7594-5fde-4c5c-9ee6-e67291f0a40c time_range="last 7 days"
-!rapid7-insight-idr-query-log log_id=ab5a7594-5fde-4c5c-9ee6-e67291f0a40c query=where(destination_asset=\"jenkinsnode.qmasters.co\") start_time=0 end_time=3000557004000
-!rapid7-insight-idr-query-log-set log_set_id=74c4af9d-2673-4bc2-b8e8-afe3d1354987 query=where(destination_asset=\"jenkinsnode.qmasters.co\") start_time=0 end_time=3000557004000
-!rapid7-insight-idr-assign-user investigation_id=ed475853-05da-4a8a-9f99-b9139d0fe8c0  user_email_address=ykatzir@qmasters.co
+!rapid7-insight-idr-query-log log_id=ab5a7594-5fde-4c5c-9ee6-e67291f0a40c query=where(destination_asset=\"jenkinsnode.someoragnization.co\") start_time=0 end_time=3000557004000
+!rapid7-insight-idr-query-log-set log_set_id=74c4af9d-2673-4bc2-b8e8-afe3d1354987 query=where(destination_asset=\"jenkinsnode.someoragnization.co\") start_time=0 end_time=3000557004000
+!rapid7-insight-idr-assign-user investigation_id=ed475853-05da-4a8a-9f99-b9139d0fe8c0  user_email_address=johndoe@email.com
