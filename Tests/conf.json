@@ -2034,6 +2034,16 @@
             "toversion": "4.4.9"
         },
         {
+            "integrations": [
+                "carbonblack-v2",
+                "carbonblackliveresponse",
+                "Cylance Protect v2"
+
+            ],
+            "playbookID": "Retrieve File from Endpoint - Generic V2 Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Zscaler",
             "playbookID": "Zscaler Test",
             "nightly": true,
