@@ -6,7 +6,7 @@ This automation exports all custom certificate-related information from the Pyth
 
 After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/configure-python-docker-integrations-to-trust-custom-certificates) to update your custom certificate in `Cortex XSOAR Server`/ `Cortex XSOAR Engine`, validate the configuration applied using this script.
 
-The Script supports two modes of operation:
+The script supports two modes of operation:
 
   1. **python**: will use the python built-in SSL library to detect the endpoint's certificates.
   2. **openssl**: will use the openssl client to detect the endpoint's certificates. Use this mode if the `python` mode fails for some reason.
