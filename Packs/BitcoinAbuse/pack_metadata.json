@@ -19,6 +19,10 @@
     "Cryptocurrency": {
       "mandatory": true,
       "display_name": "Cryptocurrency"
+    },
+    "CommonTypes": {
+      "mandatory": true,
+      "display_name": "Common Types"
     }
   }
 }
