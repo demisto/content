@@ -1131,6 +1131,15 @@ class Client(BaseClient):
         )
         return reply
 
+    def save_modified_incidents_to_integration_context(self):
+        last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
+        modified_incidents_context = {}
+        for incident in last_modified_incidents:
+            incident_id = incident.get('incident_id')
+            modified_incidents_context[incident_id] = incident.get('modification_time')
+
+        set_integration_context({'modified_incidents': modified_incidents_context})
+
 
 def get_incidents_command(client, args):
     """
@@ -1199,10 +1208,186 @@ def get_incidents_command(client, args):
     )
 
 
+def create_endpoint_context(audit_logs):
+    endpoints = []
+    for log in audit_logs:
+        endpoint_details = {
+            'ID': log.get('ENDPOINTID'),
+            'Hostname': log.get('ENDPOINTNAME'),
+            'Domain': log.get('DOMAIN'),
+        }
+        remove_nulls_from_dictionary(endpoint_details)
+        if endpoint_details:
+            endpoints.append(endpoint_details)
+
+    return endpoints
+
+
+def create_account_context(endpoints):
+    account_context = []
+    for endpoint in endpoints:
+        domain = endpoint.get('domain')
+        if domain:
+            for user in endpoint.get('users', []):
+                account_context.append({
+                    'Username': user,
+                    'Domain': domain,
+                })
+
+    return account_context
+
+
+def get_process_context(alert, process_type):
+    process_context = {
+        'Name': alert.get(f'{process_type}_process_image_name'),
+        'MD5': alert.get(f'{process_type}_process_image_md5'),
+        'SHA256': alert.get(f'{process_type}_process_image_sha256'),
+        'PID': alert.get(f'{process_type}_process_os_pid'),
+        'CommandLine': alert.get(f'{process_type}_process_command_line'),
+        'Path': alert.get(f'{process_type}_process_image_path'),
+        'Start Time': alert.get(f'{process_type}_process_execution_time'),
+        'Hostname': alert.get('host_name'),
+    }
+
+    remove_nulls_from_dictionary(process_context)
+
+    # If the process contains only 'HostName' , don't create an indicator
+    if len(process_context.keys()) == 1 and 'Hostname' in process_context.keys():
+        return {}
+    return process_context
+
+
+def add_to_ip_context(alert, ip_context):
+    action_local_ip = alert.get('action_local_ip')
+    action_remote_ip = alert.get('action_remote_ip')
+    if action_local_ip:
+        ip_context.append({
+            'Address': action_local_ip,
+        })
+
+    if action_remote_ip:
+        ip_context.append({
+            'Address': action_remote_ip,
+        })
+
+
+def create_context_from_network_artifacts(network_artifacts, ip_context):
+    domain_context = []
+
+    if network_artifacts:
+        for artifact in network_artifacts:
+            domain = artifact.get('network_domain')
+            if domain:
+                domain_context.append({
+                    'Name': domain,
+                })
+
+            network_ip_details = {
+                'Address': artifact.get('network_remote_ip'),
+                'GEO': {
+                    'Country': artifact.get('network_country')},
+            }
+
+            remove_nulls_from_dictionary(network_ip_details)
+
+            if network_ip_details:
+                ip_context.append(network_ip_details)
+
+    return domain_context
+
+
+def get_indicators_context(incident):
+    file_context: List[Any] = []
+    process_context: List[Any] = []
+    ip_context: List[Any] = []
+    for alert in incident.get('alerts', []):
+        # file context
+        file_details = {
+            'Name': alert.get('action_file_name'),
+            'Path': alert.get('action_file_path'),
+            'SHA265': alert.get('action_file_sha256'),
+            'MD5': alert.get('action_file_md5'),
+        }
+        remove_nulls_from_dictionary(file_details)
+
+        if file_details:
+            file_context.append(file_details)
+
+        # process context
+        process_types = ['actor', 'os_actor', 'causality_actor', 'action']
+        for process_type in process_types:
+            single_process_context = get_process_context(alert, process_type)
+            if single_process_context:
+                process_context.append(single_process_context)
+
+        # ip context
+        add_to_ip_context(alert, ip_context)
+
+    network_artifacts = incident.get('network_artifacts', [])
+
+    domain_context = create_context_from_network_artifacts(network_artifacts, ip_context)
+
+    file_artifacts = incident.get('file_artifacts', [])
+    for file in file_artifacts:
+        file_details = {
+            'Name': file.get('file_name'),
+            'SHA256': file.get('file_sha256'),
+        }
+        remove_nulls_from_dictionary(file_details)
+        if file_details:
+            file_context.append(file_details)
+
+    return file_context, process_context, domain_context, ip_context
+
+
+def check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time_timestamp, last_modified_incidents_dict):
+    if incident_id in last_modified_incidents_dict:  # search the incident in the dict of modified incidents
+        incident_modification_time_in_xdr = int(str(last_modified_incidents_dict[incident_id]))
+
+        demisto.debug(f"XDR incident {incident_id}\n"
+                      f"modified time:         {incident_modification_time_in_xdr}\n"
+                      f"last mirrored in time: {last_mirrored_in_time_timestamp}")
+
+        if incident_modification_time_in_xdr > last_mirrored_in_time_timestamp:  # need to update this incident
+            demisto.info(f"Incident '{incident_id}' was modified. performing extra-data request.")
+            return True
+    else:  # the incident was not modified
+        return False
+
+
+def get_last_mirrored_in_time(args):
+    demisto_incidents = demisto.get_incidents()  # type: ignore
+
+    if demisto_incidents:  # handling 5.5 version
+        demisto_incident = demisto_incidents[0]
+        last_mirrored_in_time = demisto_incident.get('CustomFields', {}).get('lastmirroredintime')
+        if not last_mirrored_in_time:  # this is an old incident, update anyway
+            return 0
+        last_mirrored_in_timestamp = arg_to_timestamp(last_mirrored_in_time, 'last_mirrored_in_time')
+
+    else:  # handling 6.0 version
+        last_mirrored_in_time = arg_to_timestamp(args.get('last_update'), 'last_update')
+        last_mirrored_in_timestamp = (last_mirrored_in_time - 120)
+
+    return last_mirrored_in_timestamp
+
+
 def get_incident_extra_data_command(client, args):
     incident_id = args.get('incident_id')
     alerts_limit = int(args.get('alerts_limit', 1000))
+    return_only_updated_incident = argToBoolean(args.get('return_only_updated_incident', 'False'))
 
+    if return_only_updated_incident:
+        last_mirrored_in_time = get_last_mirrored_in_time(args)
+        last_modified_incidents_dict = get_integration_context().get('modified_incidents', {})
+
+        if check_if_incident_was_modified_in_xdr(incident_id, last_mirrored_in_time, last_modified_incidents_dict):
+            pass  # the incident was modified. continue to perform extra-data request
+
+        else:  # the incident was not modified
+            return "The incident was not modified in XDR since the last mirror in.", {}, {}
+
+    demisto.debug(f"Performing extra-data request on incident: {incident_id}")
     raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
 
     incident = raw_incident.get('incident')
@@ -1249,6 +1434,17 @@ def get_incident_extra_data_command(client, args):
         context_output['Account(val.Username==obj.Username)'] = account_context_output
     if endpoint_context_output:
         context_output['Endpoint(val.Hostname==obj.Hostname)'] = endpoint_context_output
+
+    file_context, process_context, domain_context, ip_context = get_indicators_context(incident)
+
+    if file_context:
+        context_output[Common.File.CONTEXT_PATH] = file_context
+    if domain_context:
+        context_output[Common.Domain.CONTEXT_PATH] = domain_context
+    if ip_context:
+        context_output[Common.IP.CONTEXT_PATH] = ip_context
+    if process_context:
+        context_output['Process(val.Name && val.Name == obj.Name)'] = process_context
 
     return (
         '\n'.join(readable_output),
@@ -1359,10 +1555,16 @@ def get_endpoints_command(client, args):
             sort_by_first_seen=sort_by_first_seen,
             sort_by_last_seen=sort_by_last_seen
         )
+    context = {
+        f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
+        Common.Endpoint.CONTEXT_PATH: return_endpoint_standard_context(endpoints)
+    }
+    account_context = create_account_context(endpoints)
+    if account_context:
+        context[Common.Account.CONTEXT_PATH] = account_context
     return (
         tableToMarkdown('Endpoints', endpoints),
-        {f'{INTEGRATION_CONTEXT_BRAND}.Endpoint(val.endpoint_id == obj.endpoint_id)': endpoints,
-         'Endpoint(val.ID == obj.ID)': return_endpoint_standard_context(endpoints)},
+        context,
         endpoints
     )
 
@@ -1689,12 +1891,13 @@ def get_audit_agent_reports_command(client, args):
         sort_by=sort_by,
         sort_order=sort_order
     )
-
+    integration_context = {f'{INTEGRATION_CONTEXT_BRAND}.AuditAgentReports': audit_logs}
+    endpoint_context = create_endpoint_context(audit_logs)
+    if endpoint_context:
+        integration_context[Common.Endpoint.CONTEXT_PATH] = endpoint_context
     return (
         tableToMarkdown('Audit Agent Reports', audit_logs),
-        {
-            f'{INTEGRATION_CONTEXT_BRAND}.AuditAgentReports': audit_logs
-        },
+        integration_context,
         audit_logs
     )
 
@@ -2082,22 +2285,19 @@ def get_remote_data_command(client, args):
     incident_data = {}
     try:
         incident_data = get_incident_extra_data_command(client, {"incident_id": remote_args.remote_incident_id,
-                                                                 "alerts_limit": 1000})[2].get('incident')
-
-        incident_data['id'] = incident_data.get('incident_id')
-        current_modified_time = int(str(incident_data.get('modification_time')))
-        demisto.debug(f"XDR incident {remote_args.remote_incident_id}\n"  # type:ignore
-                      f"modified time: {int(incident_data.get('modification_time'))}\n"
-                      f"update time:   {arg_to_timestamp(remote_args.last_update, 'last_update')}")
-
-        sort_all_list_incident_fields(incident_data)
-
-        # deleting creation time as it keeps updating in the system
-        del incident_data['creation_time']
-
-        if arg_to_timestamp(current_modified_time, 'modification_time') > \
-                arg_to_timestamp(remote_args.last_update, 'last_update'):
+                                                                 "alerts_limit": 1000,
+                                                                 "return_only_updated_incident": True,
+                                                                 "last_update": remote_args.last_update})
+        if 'The incident was not modified' not in incident_data[0]:
             demisto.debug(f"Updating XDR incident {remote_args.remote_incident_id}")
+
+            incident_data = incident_data[2].get('incident')
+            incident_data['id'] = incident_data.get('incident_id')
+
+            sort_all_list_incident_fields(incident_data)
+
+            # deleting creation time as it keeps updating in the system
+            del incident_data['creation_time']
 
             # handle unasignment
             if incident_data.get('assigned_user_mail') is None:
@@ -2122,13 +2322,11 @@ def get_remote_data_command(client, args):
                 entries=reformatted_entries
             )
 
-        else:
-            # no new data modified - resetting error if needed
-            incident_data['in_mirror_error'] = ''
-
-            # handle unasignment
-            if incident_data.get('assigned_user_mail') is None:
-                handle_incoming_user_unassignment(incident_data)
+        else:  # no need to update this incident
+            incident_data = {
+                'id': remote_args.remote_incident_id,
+                'in_mirror_error': ""
+            }
 
             return GetRemoteDataResponse(
                 mirrored_object=incident_data,
@@ -2238,25 +2436,25 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         raw_incidents = client.get_incidents(gte_creation_time_milliseconds=last_fetch,
                                              limit=max_fetch, sort_by_creation_time='asc')
 
+    # save the last 100 modified incidents to the integration context - for mirroring purposes
+    client.save_modified_incidents_to_integration_context()
+
     # maintain a list of non created incidents in a case of a rate limit exception
     non_created_incidents: list = raw_incidents.copy()
     next_run = dict()
-
     try:
         for raw_incident in raw_incidents:
             incident_id = raw_incident.get('incident_id')
 
-            if demisto.params().get('extra_data'):
-                incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
-                                                                         "alerts_limit": 1000})[2].get('incident')
-            else:
-                incident_data = raw_incident
+            incident_data = get_incident_extra_data_command(client, {"incident_id": incident_id,
+                                                                     "alerts_limit": 1000})[2].get('incident')
 
             sort_all_list_incident_fields(incident_data)
 
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
             incident_data['mirror_instance'] = integration_instance
+            incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
 
             description = raw_incident.get('description')
             occurred = timestamp_to_datestring(raw_incident['creation_time'], TIME_FORMAT + 'Z')

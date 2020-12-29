@@ -1,8 +1,8 @@
 {
     "name": "Chronicle",
-  "description": "Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise",
+    "description": "Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise",
     "support": "partner",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.4",
     "certification": "certified",
     "author": "Chronicle",
     "url": "",
@@ -193,6 +193,102 @@
         "CrowdStrikeIntel": {
             "mandatory": false,
             "display_name": "CrowdStrike Falcon Intel"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "Shodan": {
+            "mandatory": false,
+            "display_name": "Shodan"
+        },
+        "TCPIPUtils": {
+            "mandatory": false,
+            "display_name": "TCPIPUtils"
+        },
+        "MISP": {
+            "mandatory": false,
+            "display_name": "MISP"
+        },
+        "PaloAltoNetworks_Threat_Vault": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Threat Vault"
+        },
+        "RiskIQDigitalFootprint": {
+            "mandatory": false,
+            "display_name": "RiskIQ Digital Footprint"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "AbuseDB": {
+            "mandatory": false,
+            "display_name": "AbuseIPDB"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "ipinfo": {
+            "mandatory": false,
+            "display_name": "ipinfo"
+        },
+        "MaxMind_GeoIP2": {
+            "mandatory": false,
+            "display_name": "MaxMind GeoIP2"
+        },
+        "Ipstack": {
+            "mandatory": false,
+            "display_name": "Ipstack"
+        },
+        "Sixgill-Darkfeed": {
+            "mandatory": true,
+            "display_name": "Sixgill Darkfeed - Annual Subscription"
+        },
+        "Barracuda": {
+            "mandatory": false,
+            "display_name": "Barracuda"
+        },
+        "Synapse": {
+            "mandatory": false,
+            "display_name": "Synapse"
+        },
+        "Cofense-Intelligence": {
+            "mandatory": false,
+            "display_name": "Cofense Intelligence"
+        },
+        "Zscaler": {
+            "mandatory": false,
+            "display_name": "Zscaler"
+        },
+        "Spamcop": {
+            "mandatory": false,
+            "display_name": "Spamcop"
+        },
+        "Pulsedive": {
+            "mandatory": false,
+            "display_name": "Pulsedive"
+        },
+        "PAN-OS": {
+            "mandatory": true,
+            "display_name": "PAN-OS"
         }
     },
     "displayedImages": [
@@ -239,6 +335,30 @@
         "Anomali_ThreatStream",
         "Maltiverse",
         "TruSTAR",
-        "CrowdStrikeIntel"
+        "CrowdStrikeIntel",
+        "Gmail",
+        "MailSenderNew",
+        "Shodan",
+        "TCPIPUtils",
+        "MISP",
+        "PaloAltoNetworks_Threat_Vault",
+        "RiskIQDigitalFootprint",
+        "EWSMailSender",
+        "EWS",
+        "MicrosoftGraphListener",
+        "AbuseDB",
+        "GmailSingleUser",
+        "MicrosoftGraphMail",
+        "ipinfo",
+        "MaxMind_GeoIP2",
+        "Ipstack",
+        "Sixgill-Darkfeed",
+        "Barracuda",
+        "Synapse",
+        "Cofense-Intelligence",
+        "Zscaler",
+        "Spamcop",
+        "Pulsedive",
+        "PAN-OS"
     ]
 }

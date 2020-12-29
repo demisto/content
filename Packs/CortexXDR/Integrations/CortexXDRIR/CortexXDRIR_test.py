@@ -2,6 +2,8 @@ import json
 import pytest
 import copy
 import demistomock as demisto
+from CommonServerPython import Common
+from freezegun import freeze_time
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -32,6 +34,7 @@ def test_get_incident_list(requests_mock):
     assert expected_output == outputs
 
 
+@freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents(requests_mock, mocker):
     from CortexXDRIR import fetch_incidents, Client, sort_all_list_incident_fields
     import copy
@@ -44,6 +47,7 @@ def test_fetch_incidents(requests_mock, mocker):
     modified_raw_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     modified_raw_incident['mirror_direction'] = 'In'
     modified_raw_incident['mirror_instance'] = 'MyInstance'
+    modified_raw_incident['last_mirrored_in'] = 740314800000
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
@@ -65,6 +69,7 @@ def test_fetch_incidents(requests_mock, mocker):
 
     if 'network_artifacts' not in json.loads(incidents[0]['rawJSON']):
         assert False
+    assert json.loads(incidents[0]['rawJSON']).pop('last_mirrored_in')
     assert incidents[0]['rawJSON'] == json.dumps(modified_raw_incident)
 
 
@@ -76,6 +81,7 @@ def return_extra_data_result(*args):
         return {}, {}, {"incident": incident_from_extra_data_command}
 
 
+@freeze_time("1993-06-17 11:00:00 GMT")
 def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     """
     Given:
@@ -95,6 +101,7 @@ def test_fetch_incidents_with_rate_limit_error(requests_mock, mocker):
     modified_raw_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
     modified_raw_incident['mirror_direction'] = 'In'
     modified_raw_incident['mirror_instance'] = 'MyInstance'
+    modified_raw_incident['last_mirrored_in'] = 740314800000
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
@@ -149,7 +156,13 @@ def test_get_incident_extra_data(requests_mock):
     })
 
     expected_output = {
-        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': expected_incident
+        'PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)': expected_incident,
+        Common.File.CONTEXT_PATH: [{'Name': 'wildfire-test-pe-file.exe',
+                                    'SHA256': '8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca'}],
+        'Process(val.Name && val.Name == obj.Name)':
+            [{'Name': 'wildfire-test-pe-file.exe',
+              'CommandLine': '"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe"',
+              'Hostname': 'AAAAAA'}]
     }
     assert expected_output == outputs
 
@@ -429,6 +442,9 @@ def test_get_audit_agent_reports(requests_mock):
     readable_output, outputs, _ = get_audit_agent_reports_command(client, args)
     expected_outputs = get_audit_agent_reports_response.get('reply').get('data')
     assert outputs['PaloAltoNetworksXDR.AuditAgentReports'] == expected_outputs
+    assert outputs['Endpoint(val.ID && val.ID == obj.ID)'] == [{'ID': '1111', 'Hostname': '1111.eu-central-1'},
+                                                               {'ID': '1111', 'Hostname': '1111.eu-central-1'},
+                                                               {'ID': '1111', 'Hostname': '1111.eu-central-1'}]
 
 
 def test_insert_cef_alerts(requests_mock):
@@ -870,7 +886,7 @@ def test_get_mapping_fields_command():
     assert expected_mapping == res.extract_mapping()
 
 
-def test_get_remote_data_command_should_update(requests_mock):
+def test_get_remote_data_command_should_update(requests_mock, mocker):
     """
     Given:
         -  an XDR client
@@ -903,6 +919,10 @@ def test_get_remote_data_command_should_update(requests_mock):
 
     expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
         expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
+
+    # make sure get-extra-data is returning an incident
+    mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
+    mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=True)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)
@@ -941,7 +961,7 @@ def test_get_remote_data_command_with_rate_limit_exception(mocker):
     assert demisto.results.call_args[0][0].get('Contents') == "API rate limit"
 
 
-def test_get_remote_data_command_should_not_update(requests_mock):
+def test_get_remote_data_command_should_not_update(requests_mock, mocker):
     """
     Given:
         -  an XDR client
@@ -953,7 +973,6 @@ def test_get_remote_data_command_should_not_update(requests_mock):
         - returns an empty dict
     """
     from CortexXDRIR import get_remote_data_command, Client, sort_all_list_incident_fields
-    import copy
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -962,18 +981,15 @@ def test_get_remote_data_command_should_not_update(requests_mock):
         'lastUpdate': '2020-07-31T00:00:00Z'
     }
     raw_incident = load_test_data('./test_data/get_incident_extra_data.json')
-    expected_modified_incident = raw_incident['reply']['incident'].copy()
-    expected_modified_incident['alerts'] = copy.deepcopy(raw_incident['reply'].get('alerts').get('data'))
-    expected_modified_incident['network_artifacts'] = raw_incident['reply'].get('network_artifacts').get('data')
-    expected_modified_incident['file_artifacts'] = raw_incident['reply'].get('file_artifacts').get('data')
-    expected_modified_incident['id'] = expected_modified_incident.get('incident_id')
-    expected_modified_incident['assigned_user_mail'] = ''
-    expected_modified_incident['assigned_user_pretty_name'] = ''
-    expected_modified_incident['in_mirror_error'] = ''
-    del expected_modified_incident['creation_time']
-    expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
-        expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
+    expected_modified_incident = {
+        'id': 1,
+        'in_mirror_error': ''
+    }
     sort_all_list_incident_fields(expected_modified_incident)
+
+    # make sure get-extra-data is returning an incident
+    mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
+    mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=False)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
 
@@ -982,7 +998,7 @@ def test_get_remote_data_command_should_not_update(requests_mock):
     assert response.entries == []
 
 
-def test_get_remote_data_command_should_close_issue(requests_mock):
+def test_get_remote_data_command_should_close_issue(requests_mock, mocker):
     """
     Given:
         -  an XDR client
@@ -1030,6 +1046,10 @@ def test_get_remote_data_command_should_close_issue(requests_mock):
         },
         'ContentsFormat': 'json'
     }
+
+    # make sure get-extra-data is returning an incident
+    mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
+    mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=True)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
 
@@ -1079,6 +1099,10 @@ def test_get_remote_data_command_sync_owners(requests_mock, mocker):
     del expected_modified_incident['creation_time']
     expected_modified_incident.get('alerts')[0]['host_ip_list'] = \
         expected_modified_incident.get('alerts')[0].get('host_ip').split(',')
+
+    # make sure get-extra-data is returning an incident
+    mocker.patch('CortexXDRIR.get_last_mirrored_in_time', return_value=0)
+    mocker.patch('CortexXDRIR.check_if_incident_was_modified_in_xdr', return_value=True)
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incident_extra_data/', json=raw_incident)
     response = get_remote_data_command(client, args)
@@ -1231,7 +1255,8 @@ def test_retrieve_files_command(requests_mock):
     from CortexXDRIR import retrieve_files_command, Client
     from CommonServerPython import tableToMarkdown, string_to_table_header
 
-    retrieve_expected_result = {'PaloAltoNetworksXDR.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+    retrieve_expected_result = {
+        'PaloAltoNetworksXDR.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
     requests_mock.post(f'{XDR_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
     result = {'action_id': 1773}
 
@@ -1336,7 +1361,8 @@ def test_get_script_metadata_command(requests_mock):
 
     get_script_metadata_response = load_test_data('./test_data/get_script_metadata.json')
     get_scripts_expected_result = {
-        'PaloAltoNetworksXDR.ScriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get('reply')
+        'PaloAltoNetworksXDR.ScriptMetadata(val.script_uid == obj.script_uid)': get_script_metadata_response.get(
+            'reply')
     }
     script_metadata = copy.deepcopy(get_script_metadata_response).get('reply')
     timestamp = script_metadata.get('modification_date')
