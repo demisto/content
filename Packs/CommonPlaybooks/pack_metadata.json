@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "1.8.7",
+    "currentVersion": "1.8.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -291,6 +291,10 @@
         "FortiGate": {
             "mandatory": false,
             "display_name": "FortiGate"
+        },
+        "Carbon_Black_Enterprise_Live_Response": {
+            "mandatory": false,
+            "display_name": "Carbon Black Enterprise Live Response"
         },
         "CrowdStrikeFalconX": {
             "mandatory": false,
