@@ -12,7 +12,8 @@ from typing import Any, Dict, Tuple, List, Optional, Union, cast
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-
+vm_power_status_change_transition = {"ON", "OFF", "POWERCYCLE", "RESET", "PAUSE", "SUSPEND", "RESUME", "SAVE",
+                                     "ACPI_SHUTDOWN", "ACPI_REBOOT"}
 ''' CLIENT CLASS '''
 
 
@@ -258,7 +259,125 @@ def test_module(client: Client, first_fetch_time: int) -> str:
 def test_module_command():
     raise NotImplementedError
 
-def fetch_incidents_command():
+
+def fetch_incidents_command(args: Dict):
+
+    resolved = argToBoolean(args.get('resolved'))
+    auto_resolved = argToBoolean(args.get('auto_resolved'))
+    acknowledged = argToBoolean(args.get('acknowledged'))
+    alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
+    entity_ids = args.get('entity_ids')  # maybe split , in doc entity_id probably mistake
+    impact_types = args.get('impact_types')  # maybe split ,
+    classifications = args.get('classifications')  # maybe split ,
+    entity_type_ids = args.get('entity_type_ids')  # maybe split ,
+
+    raise NotImplementedError
+
+
+def nutanix_hypervisor_hosts_list_command(args: Dict):
+    context_path = 'NutanixHypervisor.Host'
+
+    filter_ = args.get('filter')
+    page = args.get('page')
+    count = args.get('count')
+
+    raise NotImplementedError
+
+
+def nutanix_hypervisor_vms_list_command(args: Dict):
+    context_path = 'NutanixHypervisor.VM'
+
+    filter_ = args.get('filter')
+    offset = args.get('offset')
+    length = args.get('length')
+
+    raise NotImplementedError
+
+
+def nutanix_hypervisor_vm_power_status_change_command(args: Dict):
+    context_path = 'NutanixHypervisor.VMPowerStatus'
+
+    vm_uuid = args.get('vm_uuid')
+    host_uuid = args.get('host_uuid')
+    transition = args.get('transition')
+
+    if transition not in vm_power_status_change_transition:
+        raise DemistoException('invalid type of transition')
+
+    raise NotImplementedError
+
+
+def nutanix_hypervisor_task_poll_command(args: Dict):
+    context_path = 'NutanixHypervisor.Task'
+
+    task_ids = args.get('task_ids')
+
+    raise NotImplementedError
+
+
+def nutanix_alerts_list_command(args: Dict):
+    context_path = 'NutanixHypervisor.Alerts'
+
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    resolved = argToBoolean(args.get('resolved'))
+    auto_resolved = argToBoolean(args.get('auto_resolved'))
+    acknowledged = argToBoolean(args.get('acknowledged'))
+    severity = args.get('severity')
+    alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
+    entity_ids = args.get('entity_ids')  # maybe split ,
+    impact_types = args.get('impact_types')  # maybe split ,
+    classifications = args.get('classifications')  # maybe split ,
+    entity_type_ids = args.get('entity_type_ids')  # maybe split ,
+    page = args.get('page')
+    count = args.get('count')
+
+    raise NotImplementedError
+
+
+def nutanix_alert_acknowledge_command(args: Dict):
+    context_path = 'NutanixHypervisor.Alert'
+
+    alert_id = args.get('alert_id')
+
+    raise NotImplementedError
+
+
+def nutanix_alert_resolve_command(args: Dict):
+    context_path = 'NutanixHypervisor.Alert'
+
+    alert_id = args.get('alert_id')
+
+    raise NotImplementedError
+
+
+def nutanix_alerts_acknowledge_by_filter_command(args: Dict):
+    context_path = 'NutanixHypervisor.Alert'
+
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    severity = args.get('severity')
+    entity_ids = args.get('entity_ids')  # maybe split , currently entity_id in design but probably mistake
+    impact_types = args.get('impact_types')  # maybe split ,
+    classifications = args.get('classifications')  # maybe split ,
+    entity_type_ids = args.get('entity_type_ids')  # maybe split ,
+    count = args.get('count')
+
+    raise NotImplementedError
+
+
+def nutanix_alerts_resolve_by_filter_command(args: Dict):
+    context_path = 'NutanixHypervisor.Alert'
+
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    severity = args.get('severity')
+    impact_types = args.get('impact_types')  # maybe split ,
+    classifications = args.get('classifications')  # maybe split ,
+    entity_type_ids = args.get('entity_type_ids')  # maybe split ,
+    page = args.get('page')
+    count = args.get('count')
+
     raise NotImplementedError
 
 ''' MAIN FUNCTION '''
@@ -267,6 +386,7 @@ def fetch_incidents_command():
 def main() -> None:
     command = demisto.command()
     params = demisto.params()
+    args = demisto.args()
 
     api_key = params.get('apikey')
     verify_certificate = not params.get('insecure', False)
@@ -283,30 +403,39 @@ def main() -> None:
             test_module_command()
 
         elif command == 'fetch-incidents':
-            raise NotImplementedError
+            fetch_incidents_command()
 
         elif command == 'nutanix-hypervisor-hosts-list':
-            raise NotImplementedError
+            nutanix_hypervisor_hosts_list_command(args)
 
         elif command == 'nutanix-hypervisor-vms-list':
-            raise NotImplementedError
+            nutanix_hypervisor_vms_list_command(args)
 
         elif command == 'nutanix-hypervisor-vm-powerstatus-change':
-            raise NotImplementedError
+            nutanix_hypervisor_vm_power_status_change_command(args)
 
-        elif command == '':
-            raise NotImplementedError
+        elif command == 'nutanix-alerts-list':
+            nutanix_alerts_list_command(args)
 
-        elif command == '':
-            raise NotImplementedError
+        elif command == 'nutanix-alert-acknowledge':
+            nutanix_alert_acknowledge_command(args)
 
-        elif command == '':
-            raise NotImplementedError
+        elif command == 'nutanix-alert-acknowledge':
+            nutanix_alert_resolve_command(args)
 
-# Log exceptions and return errors
-except Exception as e:
-demisto.error(traceback.format_exc())  # print the traceback
-return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        elif command == 'nutanix-alert-acknowledge':
+            nutanix_alert_resolve_command(args)
+
+        elif command == 'nutanix-alerts-acknowledge-by-filter':
+            nutanix_alerts_acknowledge_by_filter_command(args)
+
+        elif command == 'nutanix-alerts-resolve-by-filter':
+            nutanix_alerts_resolve_by_filter_command(args)
+
+    # Log exceptions and return errors
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 ''' ENTRY POINT '''
 
