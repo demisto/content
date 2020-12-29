@@ -134,15 +134,21 @@ def get_documentation_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     filter_by_ids = args.get('ids')
     if filter_by_ids:
         output = []
+        old_output = []  # keep old output format in order to not break backwards compatibility
         id_list = filter_by_ids.split(',')
         for doc in raw:
             if str(doc.get('doc_id')) in id_list:
                 output.append(create_output(doc))
+                old_output.append(doc)
     else:
         output = [create_output(doc) for doc in raw]
-
-    entry_context = {'PAN-OS-BPA.Documentation.Document': output}
+        old_output = raw
+    entry_context = {
+        'PAN-OS-BPA.Documentation.Document': output,
+        'PAN-OS-BPA.Documentation': old_output  # Keep old output path in order to not break backwards compatibility.
+    }
     human_readable = tableToMarkdown('BPA documentation', output)
+    # print(f'DOCUMENTATION CONTEXT: {entry_context}')
 
     return human_readable, entry_context, raw
 

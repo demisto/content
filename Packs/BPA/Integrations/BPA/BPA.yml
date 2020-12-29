@@ -86,6 +86,9 @@ script:
     - contextPath: PAN-OS-BPA.Documentation.Document.Cscv7Control
       description: The cscv7 control of the document.
       type: Unknown
+    - contextPath: PAN-OS-BPA.Documentation
+      description: The list of BPA checks.
+      type: Unknown
   - arguments:
     - auto: PREDEFINED
       default: false
@@ -127,7 +130,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the ids of the results to return.
+      description: A comma-separated list of the BPA ids of the results to return.
       isArray: false
       name: check_id
       required: false
