@@ -1,5 +1,5 @@
 SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness.  Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
-This integration was integrated and tested with version xx of SafeBreach v2
+
 
 ## Configure SafeBreach for Cortex XSOAR Integration
 

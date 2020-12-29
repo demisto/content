@@ -144,7 +144,10 @@ fi
 
 echo "======================="
 
-if [ -n "$NO_NPM" ]; then
+if [ -n "$CI" ]; then
+    echo "Detected CI env. Running npm ci..."
+    npm ci
+elif [ -n "$NO_NPM" ]; then
     echo "Skipping npm node modules setup as environment varialbe NO_NPM is set"
 else
     if ! command -v npm >/dev/null 2>&1; then
@@ -153,7 +156,7 @@ else
         echo "You can install node and npm on your machine."
         echo "and then run: 'npm install'"
     else
-        echo "Running: npm install ..."
-        npm install
+        echo "Running: npm install ..."        
+        npm install        
     fi
 fi

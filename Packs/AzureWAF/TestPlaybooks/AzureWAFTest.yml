@@ -1,0 +1,230 @@
+id: Azure WAF - Test
+version: -1
+name: Azure WAF - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 835210c1-cce7-4617-8fd0-d0590e30db0e
+    type: start
+    task:
+      id: 835210c1-cce7-4617-8fd0-d0590e30db0e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3724195e-8c93-45c5-8cc3-8f24eee61ef1
+    type: regular
+    task:
+      id: 3724195e-8c93-45c5-8cc3-8f24eee61ef1
+      version: -1
+      name: Create Test Policy
+      description: Creates or update policy with specified rule set name within a
+        resource group.
+      script: '|||azure-waf-policy-update-or-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      custom_rules: {}
+      location:
+        simple: WestUs
+      managed_rules:
+        simple: '{ "managedRuleSets": [{"ruleSetType": "OWASP","ruleSetVersion": "3.0"}]}'
+      policy_name:
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: toUnix
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: test_policy_
+              suffix:
+                value:
+                  simple: _
+      policy_settings: {}
+      resource_group_name:
+        simple: demisto-sentinel2
+      resource_id: {}
+      verbodse: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e25b57c3-1cb9-4b9e-8187-76ac2e816f4f
+    type: regular
+    task:
+      id: e25b57c3-1cb9-4b9e-8187-76ac2e816f4f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7337c29b-65a2-4618-8310-52347848c233
+    type: regular
+    task:
+      id: 7337c29b-65a2-4618-8310-52347848c233
+      version: -1
+      name: check if policy created
+      description: Retrieves protection policies within a resource group. if policy_name
+        not provided, will retrieve all.
+      script: '|||azure-waf-policies-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      limit: {}
+      policy_name:
+        simple: ${AzureWAF.Policy.name}
+      resource_group_name: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 52ea371b-758e-4094-87bb-f20a20f15912
+    type: title
+    task:
+      id: 52ea371b-758e-4094-87bb-f20a20f15912
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 95ce3589-df24-4163-81ac-e312bd7d1f52
+    type: regular
+    task:
+      id: 95ce3589-df24-4163-81ac-e312bd7d1f52
+      version: -1
+      name: Delete Test Policy
+      description: Deletes Policy.
+      script: '|||azure-waf-policy-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      policy_name:
+        simple: ${AzureWAF.Policy.name}
+      resource_group_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1035,
+        "width": 390,
+        "x": 440,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
