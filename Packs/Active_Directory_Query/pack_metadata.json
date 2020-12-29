@@ -43,10 +43,6 @@
         "MicrosoftGraphMail": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
-        },
-        "IAM": {
-            "mandatory": false,
-            "display_name": "IAM"
         }
     }
 }
