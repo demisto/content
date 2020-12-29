@@ -1,0 +1,3226 @@
+id: Hostname And IP Address Investigation And Remediation - Chronicle
+version: -1
+name: Hostname And IP Address Investigation And Remediation - Chronicle
+description: |-
+  This playbook receives ChronicleAsset type of indicators from its parent playbook "ChronicleAsset Investigation - Chronicle", performs enrichment and investigation for each one of them, provides an opportunity to isolate and block the hostname or IP address associated with the current indicator, and provides a list of isolated and blocked entities.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0c08a4af-3677-4953-8baa-4b38919cc089
+    type: start
+    task:
+      id: 0c08a4af-3677-4953-8baa-4b38919cc089
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3c6c709f-c44c-48cd-81f3-de1b2490db05
+    type: title
+    task:
+      id: 3c6c709f-c44c-48cd-81f3-de1b2490db05
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: e1baf9ef-a066-4acb-8302-dd66d7eaf79b
+    type: regular
+    task:
+      id: e1baf9ef-a066-4acb-8302-dd66d7eaf79b
+      version: -1
+      name: Check reputation of the IP Address
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        complex:
+          root: inputs.chronicleasset_ip
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    reputationcalc: 3
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2300,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 36db4968-fd5d-4392-89dc-32b95e7c2e23
+    type: regular
+    task:
+      id: 36db4968-fd5d-4392-89dc-32b95e7c2e23
+      version: -1
+      name: Get Asset Enrichment from RiskIQ Digital Footprint
+      description: Retrieves the asset details for the specified IP address from the
+        RiskIQ Digital Footprint inventory.
+      script: '|||df-get-asset'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      global:
+        simple: "true"
+      name:
+        complex:
+          root: inputs.chronicleasset_ip
+      recent: {}
+      size:
+        simple: "20"
+      type:
+        simple: IP Address
+      uuid: {}
+    reputationcalc: 3
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1690,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 86801ba1-7980-444b-8e5d-515fd562a873
+    type: regular
+    task:
+      id: 86801ba1-7980-444b-8e5d-515fd562a873
+      version: -1
+      name: Get Asset Enrichment from RiskIQ Digital Footprint
+      description: Retrieves the asset details for the specified host from the RiskIQ
+        Digital Footprint inventory.
+      script: '|||df-get-asset'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      global:
+        simple: "true"
+      name:
+        complex:
+          root: inputs.chronicleasset_hostname
+      recent: {}
+      size:
+        simple: "20"
+      type:
+        simple: Host
+      uuid: {}
+    reputationcalc: 3
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: cbe7c3a9-a6a9-4455-86c9-385e89c1f927
+    type: condition
+    task:
+      id: cbe7c3a9-a6a9-4455-86c9-385e89c1f927
+      version: -1
+      name: Is RiskIQ Digital Footprint integration enabled?
+      description: Checks whether there is an active instance of the RiskIQ Digital
+        Footprint integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RiskIQDigitalFootprint
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1900,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4bcf2b68-4294-42ee-82df-2be344fb1040
+    type: collection
+    task:
+      id: 4bcf2b68-4294-42ee-82df-2be344fb1040
+      version: -1
+      name: Isolate the Hostname
+      description: Asks the user if the hostname associated with the ChronicleAsset
+        should be isolated.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.chronicleasset_support_contact
+      subject:
+        simple: 'Chronicle XSOAR: Isolate the Hostname - ${inputs.chronicleasset_hostname}'
+      body:
+        simple: 'Redirect to the following link in order to decide if the hostname:
+          ${inputs.chronicleasset_hostname} should be isolated.'
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Do you want to isolate the hostname: ${inputs.chronicleasset_hostname}?'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "No"
+        - "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select "Yes" to isolate the hostname, otherwise select "No".
+        readonly: false
+      title: Isolate the Hostname
+      description: Select "Yes" to isolate the mentioned hostname, otherwise select "No".
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 6a9f507b-0da1-453c-80db-f2bf13a19a80
+    type: condition
+    task:
+      id: 6a9f507b-0da1-453c-80db-f2bf13a19a80
+      version: -1
+      name: Is the user willing to isolate the hostname?
+      description: Checks whether the user wants to isolate the hostname.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Isolate the Hostname
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 66731a96-168f-4281-820c-4a0416af008d
+    type: playbook
+    task:
+      id: 66731a96-168f-4281-820c-4a0416af008d
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      description: |-
+        Enrich an endpoint by hostname using one or more integrations.
+        Supported integrations:
+        - Active Directory Query v2
+        - McAfee ePolicy Orchestrator
+        - Carbon Black Enterprise Response v2
+        - Cylance Protect v2
+        - CrowdStrike Falcon Host
+        - ExtraHop Reveal(x)
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.chronicleasset_hostname
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 24b40deb-e58e-46f5-8f9f-54b76c9560de
+    type: playbook
+    task:
+      id: 24b40deb-e58e-46f5-8f9f-54b76c9560de
+      version: -1
+      name: IP Enrichment - Generic v2
+      description: |-
+        Enrich IP addresses using one or more integrations.
+
+        - Resolve IP addresses to hostnames (DNS).
+        - Provide threat information.
+        - Separate internal and external IP addresses.
+        - For internal IP addresses, get host information.
+      playbookName: IP Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+      - "80"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.chronicleasset_ip
+      InternalRange: {}
+      ResolveIP:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 091fd85c-3d1d-4b83-8f0c-2d04d20a613f
+    type: collection
+    task:
+      id: 091fd85c-3d1d-4b83-8f0c-2d04d20a613f
+      version: -1
+      name: Isolate the IP Address
+      description: Asks the user if the fetched IP address should be isolated.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.chronicleasset_support_contact
+      subject:
+        simple: 'Chronicle XSOAR: Isolate the IP Address - ${inputs.chronicleasset_ip}'
+      body:
+        simple: 'Redirect to the following link in order to decide if the IP
+          address: ${inputs.chronicleasset_ip} should be isolated.'
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Do you want to isolate the IP address: ${inputs.chronicleasset_ip}?'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "No"
+        - "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select "Yes" to isolate the IP address, otherwise select "No".
+        readonly: false
+      title: Isolate the IP Address
+      description: Select "Yes" to isolate the mentioned IP address, otherwise select "No".
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 125de4f2-4cdc-4de4-88f0-61665b8afa6a
+    type: condition
+    task:
+      id: 125de4f2-4cdc-4de4-88f0-61665b8afa6a
+      version: -1
+      name: Is the user willing to isolate the IP address?
+      description: Checks if the user wants to isolate the IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Isolate the IP Address
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -680,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: e502e198-fd5f-46c6-8b62-85a08f2c71d3
+    type: playbook
+    task:
+      id: e502e198-fd5f-46c6-8b62-85a08f2c71d3
+      version: -1
+      name: Block IP - Generic v2
+      description: |-
+        This playbook blocks malicious IP addresses using all integrations that are enabled.
+
+        Supported integrations for this playbook:
+        * Check Point Firewall
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+        * FortiGate
+      playbookName: Block IP - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          root: inputs.chronicleasset_ip
+      IPBlacklistMiner: {}
+      IPListName: {}
+      LogForwarding: {}
+      StaticAddressGroup: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 6a937b7e-c5af-412a-8918-50065492eee4
+    type: regular
+    task:
+      id: 6a937b7e-c5af-412a-8918-50065492eee4
+      version: -1
+      name: Add the hostname to the list of the isolated entities
+      description: Adds the hostname to the list of the isolated entities.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IsolatedEntities
+      stringify: {}
+      value:
+        complex:
+          root: inputs.chronicleasset_hostname
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 3f3c3c41-b9b6-45dd-8d2f-bc039715de3f
+    type: regular
+    task:
+      id: 3f3c3c41-b9b6-45dd-8d2f-bc039715de3f
+      version: -1
+      name: Add the IP address to the list of the isolated entities
+      description: Adds the IP address to the list of the isolated entities.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IsolatedEntities
+      stringify: {}
+      value:
+        complex:
+          root: inputs.chronicleasset_ip
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -880,
+          "y": 1355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 1297d3e1-cfea-4d02-86e9-eac6092d4b8a
+    type: condition
+    task:
+      id: 1297d3e1-cfea-4d02-86e9-eac6092d4b8a
+      version: -1
+      name: Is Auto Block Entities input set to "Yes" or "No"?
+      description: Checks whether the Auto Block Entities input is set to "Yes" or
+        "No".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      "no":
+      - "57"
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.auto_block_entities
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.auto_block_entities
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 0bae6c12-3169-4bd5-8967-ef315867502d
+    type: condition
+    task:
+      id: 0bae6c12-3169-4bd5-8967-ef315867502d
+      version: -1
+      name: Is Skip Entity Isolation input set to "Yes" or "No"?
+      description: Checks whether the Skip Entity Isolation input is set to "Yes"
+        or "No".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "no":
+      - "87"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.skip_entity_isolation
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.skip_entity_isolation
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 144815b6-042b-42e8-8b3a-3c0c48b49d62
+    type: regular
+    task:
+      id: 144815b6-042b-42e8-8b3a-3c0c48b49d62
+      version: -1
+      name: Set the Chronicle Isolated Host field to "Yes"
+      description: Sets the Chronicle Isolated Host indicator field to "Yes".
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      chronicleassetsummary: {}
+      chronicleisolatedhostname:
+        simple: "Yes"
+      chronicleisolatedip: {}
+      chroniclepotentiallyblockedip: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskiqassetaddedtoinventory: {}
+      riskiqassetbrands: {}
+      riskiqassetconfidence: {}
+      riskiqassetcves: {}
+      riskiqassetenterpriseasset: {}
+      riskiqassetfirstseen: {}
+      riskiqassetinventorystatus: {}
+      riskiqassetlastseen: {}
+      riskiqassetlastupdated: {}
+      riskiqassetorganizations: {}
+      riskiqassetpriority: {}
+      riskiqassettags: {}
+      riskiqassettype: {}
+      riskiqassetuuid: {}
+      safebreachattackids: {}
+      safebreachinsightids: {}
+      safebreachisbehavioral: {}
+      safebreachremediationstatus: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      siscategory: {}
+      sisexpiration: {}
+      sismalwaretype: {}
+      sismatchtype: {}
+      sixgillactor: {}
+      sixgilldescription: {}
+      sixgillfeedid: {}
+      sixgillfeedname: {}
+      sixgillindicatorid: {}
+      sixgilllanguage: {}
+      sixgillmitreattcktactic: {}
+      sixgillmitreattcktechnique: {}
+      sixgillpostreference: {}
+      sixgillposttitle: {}
+      sixgillsource: {}
+      sixgillvirustotaldetectionrate: {}
+      sixgillvirustotalurl: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: inputs.chronicleasset_value
+      xdrstatus: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 929000ab-93fb-4ff0-899e-dec49d81a71a
+    type: collection
+    task:
+      id: 929000ab-93fb-4ff0-899e-dec49d81a71a
+      version: -1
+      name: Block the IP Address
+      description: Asks the user if the IP address should be blocked.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.chronicleasset_support_contact
+      subject:
+        simple: 'Chronicle XSOAR: Block the IP address - ${inputs.chronicleasset_ip}'
+      body:
+        simple: 'Redirect to the following link in order to decide if the IP
+          address: ${inputs.chronicleasset_ip} should be blocked.'
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Do you want to block the IP address: ${inputs.chronicleasset_ip}?'
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "No"
+        - "Yes"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select "Yes" to block the IP address, otherwise select "No".
+        readonly: false
+      title: Block the IP Address
+      description: Select "Yes" to block the mentioned IP address, otherwise select "No".
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: cd2a3b25-9666-4ad1-8f04-ff9210916570
+    type: condition
+    task:
+      id: cd2a3b25-9666-4ad1-8f04-ff9210916570
+      version: -1
+      name: Is the user willing to block the IP address?
+      description: Checks if the user wants to block the IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Block the IP Address
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -100,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: ab528cb9-327a-4d1f-8dfe-b74001497a7b
+    type: regular
+    task:
+      id: ab528cb9-327a-4d1f-8dfe-b74001497a7b
+      version: -1
+      name: Add the IP address to the list of potentially blocked IP addresses
+      description: Adds the IP address to the list of potentially blocked IP addresses.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PotentiallyBlockedIPs
+      stringify: {}
+      value:
+        complex:
+          root: inputs.chronicleasset_ip
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 5e4757c5-5acd-4603-8eeb-6a98b25060a1
+    type: condition
+    task:
+      id: 5e4757c5-5acd-4603-8eeb-6a98b25060a1
+      version: -1
+      name: Is Skip Entity Isolation input set to "Yes" or "No"?
+      description: Checks whether the Skip Entity Isolation input is set to "Yes"
+        or "No".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      "no":
+      - "86"
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.skip_entity_isolation
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.skip_entity_isolation
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: d2a5a1bb-0c81-42b0-8c30-cc51b62cfcec
+    type: regular
+    task:
+      id: d2a5a1bb-0c81-42b0-8c30-cc51b62cfcec
+      version: -1
+      name: Set the Chronicle Potentially Blocked IP Address field to "Yes"
+      description: Sets the Chronicle Potentially Blocked IP Address indicator field
+        to "Yes".
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      chronicleassetsummary: {}
+      chronicleisolatedhostname: {}
+      chronicleisolatedip: {}
+      chroniclepotentiallyblockedip:
+        simple: "Yes"
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskiqassetaddedtoinventory: {}
+      riskiqassetbrands: {}
+      riskiqassetconfidence: {}
+      riskiqassetcves: {}
+      riskiqassetenterpriseasset: {}
+      riskiqassetfirstseen: {}
+      riskiqassetinventorystatus: {}
+      riskiqassetlastseen: {}
+      riskiqassetlastupdated: {}
+      riskiqassetorganizations: {}
+      riskiqassetpriority: {}
+      riskiqassettags: {}
+      riskiqassettype: {}
+      riskiqassetuuid: {}
+      safebreachattackids: {}
+      safebreachinsightids: {}
+      safebreachisbehavioral: {}
+      safebreachremediationstatus: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      siscategory: {}
+      sisexpiration: {}
+      sismalwaretype: {}
+      sismatchtype: {}
+      sixgillactor: {}
+      sixgilldescription: {}
+      sixgillfeedid: {}
+      sixgillfeedname: {}
+      sixgillindicatorid: {}
+      sixgilllanguage: {}
+      sixgillmitreattcktactic: {}
+      sixgillmitreattcktechnique: {}
+      sixgillpostreference: {}
+      sixgillposttitle: {}
+      sixgillsource: {}
+      sixgillvirustotaldetectionrate: {}
+      sixgillvirustotalurl: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: inputs.chronicleasset_value
+      xdrstatus: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 317772b8-6e2f-457e-8328-37279b0e52a1
+    type: regular
+    task:
+      id: 317772b8-6e2f-457e-8328-37279b0e52a1
+      version: -1
+      name: Set the Chronicle Isolated IP Address field to "Yes"
+      description: Sets the Chronicle Isolated IP Address indicator field to "Yes".
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      chronicleassetsummary: {}
+      chronicleisolatedhostname: {}
+      chronicleisolatedip:
+        simple: "Yes"
+      chroniclepotentiallyblockedip: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskiqassetaddedtoinventory: {}
+      riskiqassetbrands: {}
+      riskiqassetconfidence: {}
+      riskiqassetcves: {}
+      riskiqassetenterpriseasset: {}
+      riskiqassetfirstseen: {}
+      riskiqassetinventorystatus: {}
+      riskiqassetlastseen: {}
+      riskiqassetlastupdated: {}
+      riskiqassetorganizations: {}
+      riskiqassetpriority: {}
+      riskiqassettags: {}
+      riskiqassettype: {}
+      riskiqassetuuid: {}
+      safebreachattackids: {}
+      safebreachinsightids: {}
+      safebreachisbehavioral: {}
+      safebreachremediationstatus: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      siscategory: {}
+      sisexpiration: {}
+      sismalwaretype: {}
+      sismatchtype: {}
+      sixgillactor: {}
+      sixgilldescription: {}
+      sixgillfeedid: {}
+      sixgillfeedname: {}
+      sixgillindicatorid: {}
+      sixgilllanguage: {}
+      sixgillmitreattcktactic: {}
+      sixgillmitreattcktechnique: {}
+      sixgillpostreference: {}
+      sixgillposttitle: {}
+      sixgillsource: {}
+      sixgillvirustotaldetectionrate: {}
+      sixgillvirustotalurl: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: inputs.chronicleasset_value
+      xdrstatus: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -880,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 4d9b7ea4-ca90-4f9c-8d26-d81452403729
+    type: regular
+    task:
+      id: 4d9b7ea4-ca90-4f9c-8d26-d81452403729
+      version: -1
+      name: Set the Chronicle Isolated IP Address field to "No"
+      description: Sets the Chronicle Isolated IP Address indicator field to "No".
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      chronicleassetsummary: {}
+      chronicleeventsforhostname: {}
+      chronicleisolatedhostname: {}
+      chronicleisolatedip:
+        simple: "No"
+      chroniclepotentiallyblockedip: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskiqassetaddedtoinventory: {}
+      riskiqassetbrands: {}
+      riskiqassetconfidence: {}
+      riskiqassetcves: {}
+      riskiqassetenterpriseasset: {}
+      riskiqassetfirstseen: {}
+      riskiqassetinventorystatus: {}
+      riskiqassetlastseen: {}
+      riskiqassetlastupdated: {}
+      riskiqassetorganizations: {}
+      riskiqassetpriority: {}
+      riskiqassettags: {}
+      riskiqassettype: {}
+      riskiqassetuuid: {}
+      safebreachattackids: {}
+      safebreachinsightids: {}
+      safebreachisbehavioral: {}
+      safebreachremediationstatus: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      siscategory: {}
+      sisexpiration: {}
+      sismalwaretype: {}
+      sismatchtype: {}
+      sixgillactor: {}
+      sixgilldescription: {}
+      sixgillfeedid: {}
+      sixgillfeedname: {}
+      sixgillindicatorid: {}
+      sixgilllanguage: {}
+      sixgillmitreattcktactic: {}
+      sixgillmitreattcktechnique: {}
+      sixgillpostreference: {}
+      sixgillposttitle: {}
+      sixgillsource: {}
+      sixgillvirustotaldetectionrate: {}
+      sixgillvirustotalurl: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: inputs.chronicleasset_value
+      xdrstatus: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: 712b6334-ca92-4d5f-877d-02d8612bf13f
+    type: regular
+    task:
+      id: 712b6334-ca92-4d5f-877d-02d8612bf13f
+      version: -1
+      name: Set the Chronicle Potentially Blocked IP Address field to "No"
+      description: Sets the Chronicle Potentially Blocked IP Address indicator field
+        to "No".
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      chronicleassetsummary: {}
+      chronicleisolatedhostname: {}
+      chronicleisolatedip: {}
+      chroniclepotentiallyblockedip:
+        simple: "No"
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskiqassetaddedtoinventory: {}
+      riskiqassetbrands: {}
+      riskiqassetconfidence: {}
+      riskiqassetcves: {}
+      riskiqassetenterpriseasset: {}
+      riskiqassetfirstseen: {}
+      riskiqassetinventorystatus: {}
+      riskiqassetlastseen: {}
+      riskiqassetlastupdated: {}
+      riskiqassetorganizations: {}
+      riskiqassetpriority: {}
+      riskiqassettags: {}
+      riskiqassettype: {}
+      riskiqassetuuid: {}
+      safebreachattackids: {}
+      safebreachinsightids: {}
+      safebreachisbehavioral: {}
+      safebreachremediationstatus: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      siscategory: {}
+      sisexpiration: {}
+      sismalwaretype: {}
+      sismatchtype: {}
+      sixgillactor: {}
+      sixgilldescription: {}
+      sixgillfeedid: {}
+      sixgillfeedname: {}
+      sixgillindicatorid: {}
+      sixgilllanguage: {}
+      sixgillmitreattcktactic: {}
+      sixgillmitreattcktechnique: {}
+      sixgillpostreference: {}
+      sixgillposttitle: {}
+      sixgillsource: {}
+      sixgillvirustotaldetectionrate: {}
+      sixgillvirustotalurl: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: inputs.chronicleasset_value
+      xdrstatus: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 6e7d7c85-e41d-4842-88b5-5c2adbd74152
+    type: regular
+    task:
+      id: 6e7d7c85-e41d-4842-88b5-5c2adbd74152
+      version: -1
+      name: Set the Chronicle Isolated Host field to "No"
+      description: Sets the Chronicle Isolated Host indicator field to "No".
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      chronicleassetsummary: {}
+      chronicleisolatedhostname:
+        simple: "No"
+      chronicleisolatedip: {}
+      chroniclepotentiallyblockedip: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskiqassetaddedtoinventory: {}
+      riskiqassetbrands: {}
+      riskiqassetconfidence: {}
+      riskiqassetcves: {}
+      riskiqassetenterpriseasset: {}
+      riskiqassetfirstseen: {}
+      riskiqassetinventorystatus: {}
+      riskiqassetlastseen: {}
+      riskiqassetlastupdated: {}
+      riskiqassetorganizations: {}
+      riskiqassetpriority: {}
+      riskiqassettags: {}
+      riskiqassettype: {}
+      riskiqassetuuid: {}
+      safebreachattackids: {}
+      safebreachinsightids: {}
+      safebreachisbehavioral: {}
+      safebreachremediationstatus: {}
+      safebreachseverity: {}
+      safebreachseverityscore: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      siscategory: {}
+      sisexpiration: {}
+      sismalwaretype: {}
+      sismatchtype: {}
+      sixgillactor: {}
+      sixgilldescription: {}
+      sixgillfeedid: {}
+      sixgillfeedname: {}
+      sixgillindicatorid: {}
+      sixgilllanguage: {}
+      sixgillmitreattcktactic: {}
+      sixgillmitreattcktechnique: {}
+      sixgillpostreference: {}
+      sixgillposttitle: {}
+      sixgillsource: {}
+      sixgillvirustotaldetectionrate: {}
+      sixgillvirustotalurl: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: inputs.chronicleasset_value
+      xdrstatus: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 1a6596a1-1cf8-446b-8d86-6420e1776dbd
+    type: condition
+    task:
+      id: 1a6596a1-1cf8-446b-8d86-6420e1776dbd
+      version: -1
+      name: Is there a hostname associated with the ChronicleAsset?
+      description: Checks if there is a hostname associated with the ChronicleAsset.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.chronicleasset_hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 3398b88b-80bc-42ec-8d7a-4f971280a674
+    type: title
+    task:
+      id: 3398b88b-80bc-42ec-8d7a-4f971280a674
+      version: -1
+      name: IP Address Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: f5873ffc-1e88-4865-8935-cb547155fd49
+    type: condition
+    task:
+      id: f5873ffc-1e88-4865-8935-cb547155fd49
+      version: -1
+      name: Is RiskIQ Digital Footprint integration enabled?
+      description: Checks whether there is an active instance of the RiskIQ Digital
+        Footprint integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RiskIQDigitalFootprint
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2850,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: 6c9917be-1a9a-4d70-8fa4-7b6f2f7d96bb
+    type: title
+    task:
+      id: 6c9917be-1a9a-4d70-8fa4-7b6f2f7d96bb
+      version: -1
+      name: Hostname Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+      - "62"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: 250c6f2e-ba2d-4c37-8836-abb2f4522f22
+    type: condition
+    task:
+      id: 250c6f2e-ba2d-4c37-8836-abb2f4522f22
+      version: -1
+      name: Is there an IP address associated with the ChronicleAsset?
+      description: Checks if there is an IP address associated with the ChronicleAsset.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "61"
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.chronicleasset_ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: 39ec1619-1194-4fe1-8dcd-3019dd376719
+    type: regular
+    task:
+      id: 39ec1619-1194-4fe1-8dcd-3019dd376719
+      version: -1
+      name: Clear the previous user response for blocking the IP address from the
+        context
+      description: Deletes the "Block the IP Address" key from the context in order
+        to clear the previous user response for blocking the IP address.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Block the IP Address
+      keysToKeep: {}
+      subplaybook:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: fe661155-45df-4666-8a2d-687eb7397e5b
+    type: regular
+    task:
+      id: fe661155-45df-4666-8a2d-687eb7397e5b
+      version: -1
+      name: Clear the previous user response for isolating the IP address from the
+        context
+      description: Deletes the "Isolate the IP Address" key from the context in order
+        to clear the previous user response for isolating the IP address.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Isolate the IP Address
+      keysToKeep: {}
+      subplaybook:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 8a06b909-6a0e-4530-8e61-215e125a9658
+    type: regular
+    task:
+      id: 8a06b909-6a0e-4530-8e61-215e125a9658
+      version: -1
+      name: Clear the previous user response for isolating the hostname from the context
+      description: Deletes the "Isolate the Hostname" key from the context in order
+        to clear the previous user response for isolating the hostname.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+      - "60"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Isolate the Hostname
+      keysToKeep: {}
+      subplaybook:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: d607f55d-d115-4bde-8cdf-550972ea9266
+    type: title
+    task:
+      id: d607f55d-d115-4bde-8cdf-550972ea9266
+      version: -1
+      name: Block the IP Address
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: b208a050-4ec6-4c0a-8d56-081c8d79f008
+    type: condition
+    task:
+      id: b208a050-4ec6-4c0a-8d56-081c8d79f008
+      version: -1
+      name: Is the IP Address isolated?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Determines if the IP address is isolated.
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Endpoint.ip
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.chronicleasset_ip
+                      iscontext: true
+                accessor: Endpoint.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_ISOLATED
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -880,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "78":
+    id: "78"
+    taskid: 30b9624b-dd47-4a32-8a22-0405b3b5410b
+    type: condition
+    task:
+      id: 30b9624b-dd47-4a32-8a22-0405b3b5410b
+      version: -1
+      name: Is the Hostname isolated?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Determines if the hostname is isolated.
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.chronicleasset_hostname
+                      iscontext: true
+                    ignorecase: true
+                accessor: Endpoint.is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_ISOLATED
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Cybereason
+                accessor: IsIsolated
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CbResponse
+                accessor: Sensors.Isolated
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: 085a857f-6800-45e9-8340-efe0cd078abe
+    type: title
+    task:
+      id: 085a857f-6800-45e9-8340-efe0cd078abe
+      version: -1
+      name: Isolate the Hostname
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: f98e6946-a80b-43bd-8433-f2f10a3a33be
+    type: title
+    task:
+      id: f98e6946-a80b-43bd-8433-f2f10a3a33be
+      version: -1
+      name: Isolate the IP Address
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 23d62731-b17e-4c03-8733-40702b6c5a05
+    type: title
+    task:
+      id: 23d62731-b17e-4c03-8733-40702b6c5a05
+      version: -1
+      name: IP Address reputation check
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2300,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: e04b567d-7e0c-447c-8460-cecc3d5b48c4
+    type: condition
+    task:
+      id: e04b567d-7e0c-447c-8460-cecc3d5b48c4
+      version: -1
+      name: Is there an enabled integration for blocking the IP address?
+      description: Checks whether there is an active instance of any integration that
+        can be used to block the IP address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: FortiGate
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: palo_alto_networks_pan_os_edl_management
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Panorama
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Check Point
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Zscaler
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Palo Alto Minemeld
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: ca21c3fa-a582-4093-82e8-a6f3ed3fb547
+    type: playbook
+    task:
+      id: ca21c3fa-a582-4093-82e8-a6f3ed3fb547
+      version: -1
+      name: Isolate Endpoint - Generic
+      playbookName: Isolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      EndpointId: {}
+      Hostname: {}
+      IP:
+        complex:
+          root: inputs.chronicleasset_ip
+      xdr_endpoint_id: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -880,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 69771a03-8f1a-4322-8321-094088a3058c
+    type: playbook
+    task:
+      id: 69771a03-8f1a-4322-8321-094088a3058c
+      version: -1
+      name: Isolate Endpoint - Generic
+      playbookName: Isolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      EndpointId: {}
+      Hostname:
+        complex:
+          root: inputs.chronicleasset_hostname
+      IP: {}
+      xdr_endpoint_id: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_16_yes": 0.56,
+      "18_2_#default#": 0.13,
+      "22_59_#default#": 0.26,
+      "27_56_#default#": 0.44,
+      "41_57_no": 0.32,
+      "44_59_yes": 0.69,
+      "51_57_#default#": 0.2,
+      "51_85_yes": 0.59,
+      "53_56_yes": 0.33,
+      "53_86_no": 0.86,
+      "60_2_#default#": 0.11,
+      "60_63_yes": 0.51,
+      "62_2_#default#": 0.1,
+      "64_2_#default#": 0.12,
+      "64_61_yes": 0.82,
+      "71_56_#default#": 0.53,
+      "78_59_#default#": 0.65,
+      "85_29_yes": 0.34,
+      "85_57_#default#": 0.38
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2440,
+        "width": 5530,
+        "x": -2300,
+        "y": -680
+      }
+    }
+  }
+inputs:
+- key: chronicleasset_value
+  value: {}
+  required: true
+  description: The value of the ChronicleAsset indicator.
+  playbookInputQuery:
+- key: chronicleasset_hostname
+  value: {}
+  required: false
+  description: The hostname associated with the ChronicleAsset.
+  playbookInputQuery:
+- key: chronicleasset_ip
+  value: {}
+  required: false
+  description: The IP address associated with the ChronicleAsset.
+  playbookInputQuery:
+- key: chronicleasset_support_contact
+  value:
+    complex:
+      root: incident
+      accessor: chronicleassetsupportcontact
+  required: false
+  description: The support email address for the ChronicleAsset.
+  playbookInputQuery:
+- key: auto_block_entities
+  value:
+    complex:
+      root: incident
+      accessor: chronicleautoblockentities
+  required: false
+  description: Autoblock the detected suspicious IP Address(es). You can manually set this
+    as "Yes" or "No" here or you can set it in a 'Chronicle Auto Block Entities' custom incident field.
+  playbookInputQuery:
+- key: skip_entity_isolation
+  value:
+    complex:
+      root: incident
+      accessor: chronicleskipentityisolation
+  required: false
+  description: Skip the isolation of entities. You can manually set this as "Yes" or "No" 
+    here or you can set it in a 'Chronicle Skip Entity Isolation' custom incident field.
+  playbookInputQuery:
+outputs:
+- contextPath: IsolatedEntities
+  description: List of the isolated entities.
+  type: unknown
+- contextPath: PotentiallyBlockedIPs
+  description: List of potentially blocked IP Addresses.
+  type: unknown
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

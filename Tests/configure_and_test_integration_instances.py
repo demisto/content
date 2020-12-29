@@ -523,9 +523,12 @@ def set_integration_params(build,
             integration['validate_test'] = matched_integration_params.get('validate_test', True)
             if integration['name'] not in build.unmockable_integrations:
                 integration['params'].update({'proxy': True})
+                logging.debug(
+                    f'Configuring integration "{integration["name"]}" with proxy=True')
             else:
                 integration['params'].update({'proxy': False})
-            logging.debug(f'Configuring integration "{integration["name"]}" with params: {pformat(integration["params"])}')
+                logging.debug(
+                    f'Configuring integration "{integration["name"]}" with proxy=False')
 
     return True
 
