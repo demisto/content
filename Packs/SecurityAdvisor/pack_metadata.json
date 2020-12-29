@@ -1,5 +1,5 @@
 {
-    "name": "SecurityAdvisor(v1.2)",
+    "name": "SecurityAdvisor",
     "description": "Use SecurityAdvisor integration to coach your end users on cyber security threats they face. SecurityAdvisor's contextual coaching platform allows you to perform targeted coaching to users therefore making them more likely to change their behavior and reduce the number of incidents.",
     "support": "partner",
     "currentVersion": "1.2.0",

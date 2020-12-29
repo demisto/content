@@ -25,7 +25,7 @@ class Client(BaseClient):
     Calls SecurityAdvisor API and returns results
     """
 
-    def http_request_coachuser(self, data):
+    def coach_end_user_request(self, data):
         """
         calls coach user api
         """
@@ -57,7 +57,7 @@ def coach_end_user_command(client, args):
     user = args.get('user')
     context = args.get('context')
     data = json.dumps({"username": user, "context": context})
-    result = client.http_request_coachuser(data)
+    result = client.coach_end_user_request(data)
 
     contxt = makehash()
     contxt['user'] = user
@@ -85,7 +85,7 @@ def test_module(client):
         "username": "track@securityadvisor.io",
         "context": "malware"
     })
-    client.http_request_coachuser(data)
+    client.coach_end_user_request(data)
 
     return 'ok'
 
