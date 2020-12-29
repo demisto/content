@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: entry id of the file we want to zip
+  description: CSV list of entry ids of the files we want to zip.
   isArray: false
   name: entryID
   required: true
@@ -35,6 +35,6 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python_zipfile:1.0.0.7600
+dockerimage: demisto/python_zipfile:1.0.0.12410
 runonce: false
 fromversion: 5.0.0
