@@ -6,7 +6,7 @@ args:
   required: true
   secret: false
 - default: false
-  description: Operation mode. Determines how the endpoint is inspected. Either python or openssl.  
+  description: Operation mode. Determines how the endpoint is inspected. Options are either python or openssl.
   name: mode
   required: false
   auto: PREDEFINED
