@@ -95,22 +95,18 @@ def main():
             file_data = f.read()
 
         demisto.results(fileResult(zipName, file_data))
-        results = [
-            {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['json'],
-                'Contents': {'ZippedFiles': zipName},
-                'EntryContext': {
-                    'ZippedFiles': zipName,
-                    'ZipFile.ZippedFile': zipName,
-                    'File(val.EntryID=="' + fileEntryID + '").zipped': True
-                },
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Zipped Files',
-                                                 [{'original name': file_names, 'zipped file': zipName}])
-            }]
+        human_readable = tableToMarkdown(
+            'Zipped Files',
+            [{'original name': file_names, 'zipped file': zipName}])
+        context: Dict[str, Any] = {
+            'ZippedFiles': zipName,
+            'ZipFile.ZippedFile': zipName
+        }
+        for entry_id in entry_ids:
+            context[f'File(val.EntryID == {entry_id}).zipped'] = True
+        raw_response = {'ZippedFiles': zipName}
 
-        demisto.results(results)
+        return_outputs(human_readable, context, raw_response)
     except Exception as exc:
         return_error(exc)
 

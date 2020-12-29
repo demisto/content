@@ -1,17 +1,16 @@
 id: ZipFile-Test
 version: -1
-contentitemfields:
-  propagationLabels: []
+vcShouldKeepItemLegacyProdMachine: false
 name: ZipFile-Test
 description: Test ZipFile and UnzipFile scripts
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e2bbb5f1-44a1-4dc8-8024-622eabcbf93c
+    taskid: 41f86551-63ee-434c-858c-523357423b28
     type: start
     task:
-      id: e2bbb5f1-44a1-4dc8-8024-622eabcbf93c
+      id: 41f86551-63ee-434c-858c-523357423b28
       version: -1
       name: ""
       iscommand: false
@@ -24,18 +23,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 65
+          "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    taskid: f18e90fa-325e-4af2-8527-1f39747f389e
+    taskid: 369f84d7-eb83-4dae-8785-9cc9eede7113
     type: regular
     task:
-      id: f18e90fa-325e-4af2-8527-1f39747f389e
+      id: 369f84d7-eb83-4dae-8785-9cc9eede7113
       version: -1
       name: http
       description: Sends http request. Returns the response as json.
@@ -67,21 +68,24 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    taskid: 32eec206-f850-4c54-8f49-463fa1f509ca
+    taskid: f67ae4a7-1e1d-4cbe-8aa4-c698016b4295
     type: regular
     task:
-      id: 32eec206-f850-4c54-8f49-463fa1f509ca
+      id: f67ae4a7-1e1d-4cbe-8aa4-c698016b4295
       version: -1
       name: UnzipFile
-      description: Unzip a file using fileName or entryID to specify a file. Files unzipped will be pushed to the war room and names will be pushed to the context.
+      description: Unzip a file using fileName or entryID to specify a file. Files
+        unzipped will be pushed to the war room and names will be pushed to the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -114,18 +118,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 925
+          "y": 895
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    taskid: 716a17e5-d806-4a55-859a-887093bfdc5c
+    taskid: 8d273968-55b3-4484-8198-5a91e4bf6df8
     type: regular
     task:
-      id: 716a17e5-d806-4a55-859a-887093bfdc5c
+      id: 8d273968-55b3-4484-8198-5a91e4bf6df8
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -148,18 +154,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 225
+          "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "20":
     id: "20"
-    taskid: 107be8df-0151-468d-8df7-17d4ce287ea4
+    taskid: edaa59d6-6708-495c-80ab-9474c70c1a9e
     type: regular
     task:
-      id: 107be8df-0151-468d-8df7-17d4ce287ea4
+      id: edaa59d6-6708-495c-80ab-9474c70c1a9e
       version: -1
       name: http
       description: Sends http request. Returns the response as json.
@@ -191,18 +199,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1565
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "22":
     id: "22"
-    taskid: fc4c13cc-e417-4261-89d1-79542e70c4bc
+    taskid: f1cd2785-41a6-46e5-8d29-35aade87b60f
     type: title
     task:
-      id: fc4c13cc-e417-4261-89d1-79542e70c4bc
+      id: f1cd2785-41a6-46e5-8d29-35aade87b60f
       version: -1
       name: Unzip password protected file
       type: title
@@ -216,18 +226,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1275
+          "y": 1245
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "23":
     id: "23"
-    taskid: c95b9fa5-4a88-4152-8ca5-bf0ba4cc2102
+    taskid: 47e539ea-2843-46d1-8698-f8868ff6133a
     type: regular
     task:
-      id: c95b9fa5-4a88-4152-8ca5-bf0ba4cc2102
+      id: 47e539ea-2843-46d1-8698-f8868ff6133a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -250,21 +262,24 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1390
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    taskid: ea0120b6-1fb8-4a3e-852a-c1a7919430c4
+    taskid: 26ec4556-c5ed-41fc-8375-88de51034824
     type: regular
     task:
-      id: ea0120b6-1fb8-4a3e-852a-c1a7919430c4
+      id: 26ec4556-c5ed-41fc-8375-88de51034824
       version: -1
       name: Unzip with wrong password
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped
+        files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
       iscommand: false
@@ -289,26 +304,27 @@ tasks:
           accessor: EntryID
       fileName: {}
       lastZipFileInWarroom: {}
-      password:
-        simple: '{ENCRYPTED}4zr//RCcj2770fwhrAp0LpQP+bGidss1PrsLBhH3kPVp6KvOMce2wfac4R++Nau4fBGTsSpxaCJH8Fogh7Om3g=='
+      password: {}
     continueonerror: true
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 1915
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "26":
     id: "26"
-    taskid: 78c778de-cfa9-420f-8454-89a2143a5f35
+    taskid: eaf12e6a-2de8-435e-825e-527674e2226d
     type: regular
     task:
-      id: 78c778de-cfa9-420f-8454-89a2143a5f35
+      id: eaf12e6a-2de8-435e-825e-527674e2226d
       version: -1
       name: Check for error
       scriptName: ValidateErrorExistence
@@ -323,40 +339,47 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2090
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    taskid: ae13ab7b-044d-4721-8e7c-7b687b788632
+    taskid: 1fadaf6e-b4d1-4814-85e7-434c01c939e9
     type: title
     task:
-      id: ae13ab7b-044d-4721-8e7c-7b687b788632
+      id: 1fadaf6e-b4d1-4814-85e7-434c01c939e9
       version: -1
-      name: Done testing
+      name: Multiple files without password
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2265
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    taskid: 935c492a-7ece-4999-8012-58ffc99ab42f
+    taskid: 2b926531-2531-4551-8a7c-0a11043fe6ef
     type: condition
     task:
-      id: 935c492a-7ece-4999-8012-58ffc99ab42f
+      id: 2b926531-2531-4551-8a7c-0a11043fe6ef
       version: -1
       name: Validated unzipped files exists
       type: condition
@@ -385,18 +408,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1070
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    taskid: 84785497-edbe-4829-83af-a334659c82be
+    taskid: 0d1901e6-52a5-4705-848a-61cc0be17801
     type: condition
     task:
-      id: 84785497-edbe-4829-83af-a334659c82be
+      id: 0d1901e6-52a5-4705-848a-61cc0be17801
       version: -1
       name: Validated zipped file exists
       type: condition
@@ -418,18 +443,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 750
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    taskid: 49eddc5a-3ab7-4b85-84fd-b3d6e047f036
+    taskid: ead9be43-9c4c-4f35-8faf-3786c64873b9
     type: regular
     task:
-      id: 49eddc5a-3ab7-4b85-84fd-b3d6e047f036
+      id: ead9be43-9c4c-4f35-8faf-3786c64873b9
       version: -1
       name: Zip with password
       description: Zip a file and upload to war room
@@ -454,18 +481,20 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1740
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
-    taskid: 3b36bb83-a4ce-49d8-8147-308fc26e2b83
+    taskid: 7b3a55a7-843c-46e1-8e1a-c35b084cc3c4
     type: regular
     task:
-      id: 3b36bb83-a4ce-49d8-8147-308fc26e2b83
+      id: 7b3a55a7-843c-46e1-8e1a-c35b084cc3c4
       version: -1
       name: ZipFile
       description: Zip a file and upload to war room
@@ -490,21 +519,463 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 575
+          "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: fdc5305e-5ac4-4481-8add-8505edd2c855
+    type: regular
+    task:
+      id: fdc5305e-5ac4-4481-8add-8505edd2c855
+      version: -1
+      name: 'http: file1 '
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure:
+        simple: "true"
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/test_image.png
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 951aabfc-76ee-4339-8000-6b6b99d6b289
+    type: regular
+    task:
+      id: 951aabfc-76ee-4339-8000-6b6b99d6b289
+      version: -1
+      name: 'http: file2'
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure:
+        simple: "true"
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/test_image.png
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: ffd0a53d-49e3-40fb-8e07-3ed64e88b406
+    type: regular
+    task:
+      id: ffd0a53d-49e3-40fb-8e07-3ed64e88b406
+      version: -1
+      name: ZipFIle
+      description: Zip a file and upload to war room
+      scriptName: ZipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          accessor: EntryID
+      password: {}
+      zipName:
+        simple: output
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 7016ce7d-f825-4199-87c6-cbdfbcb49871
+    type: regular
+    task:
+      id: 7016ce7d-f825-4199-87c6-cbdfbcb49871
+      version: -1
+      name: Unzip
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped
+        files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: output.zip
+          accessor: EntryID
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password: {}
+      zipTool: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 452b809c-4d31-496b-86e3-54e7e2dc039c
+    type: regular
+    task:
+      id: 452b809c-4d31-496b-86e3-54e7e2dc039c
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: f8ffc356-7c99-497f-8a07-0664d1094ce8
+    type: title
+    task:
+      id: f8ffc356-7c99-497f-8a07-0664d1094ce8
+      version: -1
+      name: Multiple files with password
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 9fb987b9-a702-4049-87a6-2ba6a9741329
+    type: regular
+    task:
+      id: 9fb987b9-a702-4049-87a6-2ba6a9741329
+      version: -1
+      name: 'http: file1 '
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure:
+        simple: "true"
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/test_image.png
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 4a62cd9e-a182-4b1e-8bdb-07ee129d2040
+    type: regular
+    task:
+      id: 4a62cd9e-a182-4b1e-8bdb-07ee129d2040
+      version: -1
+      name: 'http: file2'
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      body: {}
+      filename: {}
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure:
+        simple: "true"
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/test_image.png
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 047bad54-3719-4d05-82de-7d525b2f9227
+    type: regular
+    task:
+      id: 047bad54-3719-4d05-82de-7d525b2f9227
+      version: -1
+      name: ZipFIle
+      description: Zip a file and upload to war room
+      scriptName: ZipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          accessor: EntryID
+      password:
+        complex:
+          root: inputs.password
+      zipName:
+        simple: output
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 9dbf7bca-52ab-4cec-81be-a43eedc36a40
+    type: regular
+    task:
+      id: 9dbf7bca-52ab-4cec-81be-a43eedc36a40
+      version: -1
+      name: Unzip
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped
+        files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: output.zip
+          accessor: EntryID
+      fileName: {}
+      lastZipFileInWarroom: {}
+      password:
+        simple: '{TOMMED}U4sZK2aYfbx0zQQ4FwAUt7eYNy/Uy7wJfME3T1bDxbhFvmyUJ70mxQETfjtcrs40eKCOVhYpmBWeAGfZllERaw=='
+      zipTool: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: cb98c985-b1fc-4d29-8ba8-01ae7b7a2d3f
+    type: title
+    task:
+      id: cb98c985-b1fc-4d29-8ba8-01ae7b7a2d3f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2295,
+        "height": 4145,
         "width": 380,
         "x": 50,
-        "y": 65
+        "y": 50
       }
     }
   }
@@ -514,5 +985,6 @@ inputs:
     simple: "123"
   required: false
   description: ""
+  playbookInputQuery: null
 outputs: []
 fromversion: 5.0.0
