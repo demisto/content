@@ -180,8 +180,7 @@ def get_certificates(endpoint: str, port: str) -> str:
 
     Args:
         endpoint: url to get certificate from.
-        port: endpoint port.
-        mode: use either openssl or python
+        port: endpoint port.        
 
     Returns:
         str: certificate string containing the certs in PEM format.
