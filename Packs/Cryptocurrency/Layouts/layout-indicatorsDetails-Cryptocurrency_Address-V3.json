@@ -1,11 +1,11 @@
 {
- "TypeName": "Cryptocurrency",
+ "TypeName": "Cryptocurrency Address",
  "kind": "indicatorsDetails",
  "layout": {
   "TypeName": "",
-  "id": "Cryptocurrency",
+  "id": "Cryptocurrency Address",
   "kind": "indicatorsDetails",
-  "modified": "2020-12-28T13:52:59.871675Z",
+  "modified": "2020-11-17T16:29:59.166387894Z",
   "name": "",
   "system": false,
   "tabs": [
@@ -634,11 +634,12 @@
     "type": "custom"
    }
   ],
-  "typeId": "Cryptocurrency",
+  "typeId": "Cryptocurrency Address",
   "version": -1
  },
- "typeId": "Cryptocurrency",
+ "typeId": "Cryptocurrency Address",
  "version": -1,
  "toVersion": "5.9.9",
- "fromVersion": "5.0.0"
+ "fromVersion": "5.0.0",
+ "description": ""
 }
