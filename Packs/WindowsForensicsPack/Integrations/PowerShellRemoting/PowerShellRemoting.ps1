@@ -417,7 +417,7 @@ function TestModuleCommand ([RemotingClient]$client, [string]$hostname) {
     return $human_readable, $entry_context, $null
 }
 
-function InvokeCommandCommand([RemotingClient]$client, [string]$command, [string]$hostname, $ip_hosts)
+function InvokeCommandCommand([RemotingClient]$client, [string]$command)
 {
     $title = "Result for PowerShell Remote Command: $command `n"
     $raw_result = $client.InvokeCommandInSession($command)
@@ -517,7 +517,7 @@ function StartETLCommand([RemotingClient]$client, [string]$etl_path, [string]$et
                          [string]$etl_time_lim, [string]$overwrite)
 {
     $command = "netsh trace start capture=yes traceFile=$etl_path maxsize=$etl_max_size overwrite=$overwrite $etl_filter"
-    $raw_result = client.InvokeCommandInSession($command)
+    $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
     $title = "You have executed the start ETL command successfully `n"
     $EntryContext = @{
@@ -533,7 +533,7 @@ function StartETLCommand([RemotingClient]$client, [string]$etl_path, [string]$et
     return $human_readable, $entry_context, $raw_result
 }
 
-function StopETL([RemotingClient]$client)
+function StopETLCommand([RemotingClient]$client)
 {
     $command = 'netsh trace stop'
     $raw_results = $client.InvokeCommandInSession($command)
@@ -565,17 +565,17 @@ function StopETL([RemotingClient]$client)
     return $human_readable, $entry_context, $raw_result
 }
 
-function ExportRegistry($volume, $output_file_path)
+function ExportRegistryCommand($client, $reg_key_hive, $output_file_path)
 {
-    $command = if ($reg_key_hive -eq 'all') {"regedit /e $file_path"} else {"reg export $reg_key_hive $file_path"}
+    $command = if ($reg_key_hive -eq 'all') {"regedit /e $output_file_path"} else {"reg export $reg_key_hive $output_file_path"}
     $raw_results = $client.InvokeCommandInSession($command)
     $client.CloseSession()
     $title = "Ran Export Registry. `n"
     $entry_context = @{
         $script:INTEGRATION_ENTRY_CONTEX = @{
             CommandResult = $raw_results
-            RegistryFilePath = $file_path
-            RegistryFileName = Split-Path $file_path -leaf
+            RegistryFilePath = $output_file_path
+            RegistryFileName = Split-Path $output_file_path -leaf
         }
     }
 
@@ -584,14 +584,20 @@ function ExportRegistry($volume, $output_file_path)
     return $human_readable, $entry_context, $raw_result
 }
 
-function UploadFileCommand($entry_id, $dst_path, $hostname, $ip_hosts, $zip_file, $check_hash)
+function UploadFileCommand($client, $entry_id, $dst_path, $zip_file, $check_hash)
 {
     $src_path = $script:Demisto.GetFilePath($entry_id).path
+    $file_exists = Test-Path $src_path -PathType Leaf
+    if (-Not $file_exists)
+    {
+        throw "Could not find $entry_id file, please make sure you entered it correctly."
+    }
     if ($zip_file -eq 'true')
     {
         # compress file before upload
         $old_path = $src_path
         $src_path = "$src_path.zip"
+        $dst_path = "$dst_path.zip"
         Compress-Archive -Path $old_path -Update -DestinationPath $src_path
     }
     if ($check_hash -eq 'true')
@@ -617,6 +623,7 @@ function UploadFileCommand($entry_id, $dst_path, $hostname, $ip_hosts, $zip_file
 
     $entry_context = @{
         PsRemoteUploadedFile = @{
+            FilePath = $dst_path
             FileName = $file_name_leaf;
             FileSize = Get-Item $src_path | % { [math]::ceiling($_.length / 1kb) };
             FileSHA1 = (Get-FileHash $src_path -Algorithm SHA1).Hash;
@@ -625,12 +632,12 @@ function UploadFileCommand($entry_id, $dst_path, $hostname, $ip_hosts, $zip_file
             FileExtension = $file_ext
         }
     }
-    $human_readable = $title + $raw_result
+    $human_readable = "File $file_name_leaf was uploaded successfully as: $dst_path"
 
-    return $human_readable, $entry_context, ""
+    return $human_readable, $entry_context, $null
 }
 
-function ExportMFTCommand($volume, $output_file_path)
+function ExportMFTCommand($client, $volume, $output_file_path)
 {
     $raw_response = $client.ExportMFT($volume, $output_file_path)
     $client.CloseSession()
@@ -669,37 +676,37 @@ function Main
         # add domain path
         $domain = if ($params.domain) {"." + $params.domain} else {""}
         # Creating Remoting client
-        $cs_client = [RemotingClient]::new($params.hostname, $params.credentials.identifier, $params.credentials.password,
+        $client = [RemotingClient]::new($params.hostname, $params.credentials.identifier, $params.credentials.password,
                                            $domain, $params.dns, $ip_hosts, $insecure, $no_proxy)
         # Executing command
         $Demisto.Debug("Command being called is $command")
         switch ($command)
         {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $cs_client $hostname
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $client $hostname
             }
             "$script:COMMAND_PREFIX-command" {
-                ($human_readable, $entry_context, $raw_response) = InvokeCommandCommand $cs_client $args.command $hostname $ip_hosts
+                ($human_readable, $entry_context, $raw_response) = InvokeCommandCommand $client $args.command
             }
             "$script:COMMAND_PREFIX-download-file" {
-                $FileResult = DownloadFileCommand $cs_client $args.path $args.zip_file $args.check_hash
+                $FileResult = DownloadFileCommand $client $args.path $args.zip_file $args.check_hash
                 return
             }
             "$script:COMMAND_PREFIX-etl-create-start" {
-                ($human_readable, $entry_context, $raw_response) = StartETLCommand $cs_client $args.etl_path $args.etl_filter $args.etl_max_size $args.etl_time_limit $args.overwrite
+                ($human_readable, $entry_context, $raw_response) = StartETLCommand $client $args.etl_path $args.etl_filter $args.etl_max_size $args.etl_time_limit $args.overwrite
             }
             "$script:COMMAND_PREFIX-etl-create-stop" {
-                ($human_readable, $entry_context, $raw_response) = StopETLCommand $cs_client
+                ($human_readable, $entry_context, $raw_response) = StopETLCommand $client
             }
             "$script:COMMAND_PREFIX-export-registry" {
-                ($human_readable, $entry_context, $raw_response) = ExportRegistry $args.reg_key_hive $args.file_path
+                ($human_readable, $entry_context, $raw_response) = ExportRegistryCommand $client $args.reg_key_hive $args.file_path
             }
             "$script:COMMAND_PREFIX-upload-file" {
                 # to be tested
-                ($human_readable, $entry_context, $raw_response) = UploadFileCommand $args.entry_id $args.path $args.zip_file $args.check_hash
+                ($human_readable, $entry_context, $raw_response) = UploadFileCommand $client $args.entry_id $args.path $args.zip_file $args.check_hash
             }
             "$script:COMMAND_PREFIX-export-mft" {
-                ($human_readable, $entry_context, $raw_response) = ExportMFTCommand $hostname $ip_hosts $args.volume $args.output_path
+                ($human_readable, $entry_context, $raw_response) = ExportMFTCommand $client $args.volume $args.output_path
             }
             Default {
                 $Demisto.Error("Unsupported command was entered: $command.")

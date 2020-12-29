@@ -144,6 +144,60 @@ script:
   - arguments:
     - description: The hostname on which to create the ETL file. For example myhost.
         The user can provide a comma delimited list of values.
+      name: host
+    - description: The IP of the host on which to run the command. For example 1.1.1.1.
+        The user can provide a comma delimited list of values.
+      isArray: true
+      name: ip
+    - description: The expected path of the file to upload.
+      name: path
+      required: true
+    - description: The file entry ID to upload.
+      name: entry_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: This argument specifies whether to compress the file before upload. Values can
+        be true or false.
+      name: zip_file
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Compare the values of the original file and uploaded file, and
+        returns an error if any differences are found.
+      name: check_hash
+      predefined:
+      - "true"
+      - "false"
+    description: Download a file from the remote endpoint.
+    name: ps-remote-upload-file
+    outputs:
+    - contextPath: PsRemoteUploadedFile.FileName
+      description: File name.
+      type: String
+    - contextPath: PsRemoteUploadedFile.FilePath
+      description: File path in the remote server.
+      type: String
+    - contextPath: PsRemoteUploadedFile.FileSize
+      description: File size.
+      type: Number
+    - contextPath: PsRemoteUploadedFile.FileMD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: PsRemoteUploadedFile.FileSHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: PsRemoteUploadedFile.FileSHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: PsRemoteUploadedFile.FileExtension
+      description: The extension of the file.
+      type: String
+  - arguments:
+    - description: The hostname on which to create the ETL file. For example myhost.
+        The user can provide a comma delimited list of values.
       isArray: true
       name: host
     - description: The IP of the host on which to run the command. For example 1.1.1.1.
@@ -237,6 +291,7 @@ script:
       name: ip
     - description: Specify a volume to retrieve its master file table.
       name: volume
+      required: true
     - defaultValue: "false"
       description: The Path the MFT file is to be created in.
       name: output_path
