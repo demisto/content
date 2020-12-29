@@ -2629,21 +2629,6 @@
             "instance_names": "virus_total_general"
         },
         {
-            "playbookID": "PANW - Hunting and threat detection by indicator type Test",
-            "fromversion": "5.0.0",
-            "timeout": 1200,
-            "integrations": [
-                "Panorama",
-                "Palo Alto Networks Cortex",
-                "AutoFocus V2",
-                "VirusTotal"
-            ],
-            "instance_names": [
-                "palo_alto_panorama",
-                "virus_total_general"
-            ]
-        },
-        {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "5.5.0",
             "timeout": 1500,
@@ -3325,7 +3310,6 @@
         "Vectra v2": "No instance",
         "Awake Security": "Issue 23376",
         "ExtraHop": "No license, issue 23731",
-        "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
@@ -3487,7 +3471,6 @@
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "'proxy' parameter not working",
-        "Palo Alto Networks Cortex": "SDK",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "RedLock": "SSL Issues",
