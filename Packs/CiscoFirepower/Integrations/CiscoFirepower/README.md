@@ -6,7 +6,6 @@ Use the Cisco Firepower integration for unified management of firewalls, applica
 Supports FMC 6.2.3 and above
 
 Authentication from a REST API Client
-
 Cisco recommends that you use different accounts for interfacing with the API and the Firepower User Interface. Credentials cannot be used for both interfaces simultaneously, and will be logged out without warning if used for both.
 
 
@@ -26,6 +25,7 @@ Cisco recommends that you use different accounts for interfacing with the API an
 
 ## Commands
 ---
+
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. ciscofp-list-zones

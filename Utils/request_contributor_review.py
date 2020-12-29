@@ -79,7 +79,7 @@ def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, g
     comment_body = {
         "body": f"### Your contributed {pack} {PR_COMMENT_PREFIX}\n"
                 f"{pack_files_comment}\n"
-                f" [Please review the changes here](https://github.com/demisto/content/pull/{pr_number}/files.\n"
+                f" [Please review the changes here](https://github.com/demisto/content/pull/{pr_number}/files)\n"
                 f"{reviewers_comment}"
     }
 
