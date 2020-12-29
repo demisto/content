@@ -1056,7 +1056,7 @@ def test_prepare_builder_params(requests_mock):
     When:
      - Before a builder is used.
     Then:
-     - Ensure the correct item is returned from the function based on the arguemnts.
+     - Ensure the correct item is returned from the function based on the arguments.
     """
     from sophos_firewall import Client, prepare_builder_params
     mock_response = load_mock_response('rule_get.xml')
@@ -1075,7 +1075,7 @@ def test_update_dict_from_params_using_path():
     When:
      - A value is supposed to be added to a dictionary.
     Then:
-     - Ensure the correct item is returned from the function based on the arguemnts.
+     - Ensure the correct item is returned from the function based on the arguments.
     """
     from sophos_firewall import update_dict_from_params_using_path
     result = update_dict_from_params_using_path({'a': ['b', 'c']}, {'a': ['b', 'c']}, {'a': ['d']})
@@ -1090,14 +1090,27 @@ def test_check_error_on_response():
     When:
      - A response is returned from the API
     Then:
-     - Ensure the correct item is returned from the function based on the arguemnts.
+     - Ensure the correct item is returned from the function based on the arguments.
     """
     from sophos_firewall import check_error_on_response
-    good_result = json.loads(load_mock_response('rule_get.json'))
-    check_error_on_response(good_result)
     bad_result = {'Status': 'No. of records Zero.'}
     with pytest.raises(Exception):
         check_error_on_response(bad_result)
+
+
+def test_check_error_on_response_happy():
+    """
+    Scenario: Check a response without an error.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - A response is returned from the API
+    Then:
+     - Ensure the correct item is returned from the function based on the arguments.
+    """
+    from sophos_firewall import check_error_on_response
+    good_result = json.loads(load_mock_response('rule_get.json'))
+    assert check_error_on_response(good_result) is None
 
 
 def test_retrieve_dict_item_recursively():
@@ -1108,7 +1121,7 @@ def test_retrieve_dict_item_recursively():
     When:
      - Whenever an item needs to be found in a multi-level dictionary.
     Then:
-     - Ensure the correct item is returned from the function based on the arguemnts.
+     - Ensure the correct item is returned from the function based on the arguments.
     """
     from sophos_firewall import retrieve_dict_item_recursively
     result = retrieve_dict_item_recursively({'a': {'b': 'c'}}, 'b')

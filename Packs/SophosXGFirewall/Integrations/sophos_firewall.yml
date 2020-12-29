@@ -7,7 +7,7 @@ configuration:
   display: Server URL
   name: server_url
   required: true
-  type: 8
+  type: 0
 - display: User Credentials
   name: credentials
   required: true
@@ -1012,7 +1012,7 @@ script:
       type: String
     - contextPath: SophosFirewall.SecurityPolicy.IsDeleted
       description: Whether or not the rule is deleted.
-      type: String
+      type: Bool
   - arguments:
     - default: true
       defaultValue: '0'
@@ -1267,7 +1267,7 @@ script:
       type: String
     - contextPath: SophosFirewall.SecurityPolicyGroup.IsDeleted
       description: Whether or not the group is deleted.
-      type: String
+      type: Bool
   - arguments:
     - default: true
       defaultValue: '0'
@@ -1403,7 +1403,7 @@ script:
       type: String
     - contextPath: SophosFirewall.WebFilterURLGroup.IsDeleted
       description: Whether or not the URL group is deleted.
-      type: String
+      type: Bool
   - arguments:
     - default: true
       defaultValue: '0'
@@ -1633,7 +1633,7 @@ script:
       type: String
     - contextPath: SophosFirewall.IPHost.IsDeleted
       description: Whether or not the IP host is deleted.
-      type: String
+      type: Bool
   - arguments:
     - default: true
       defaultValue: '0'
@@ -1803,7 +1803,7 @@ script:
       type: String
     - contextPath: SophosFirewall.IPHostGroup.IsDeleted
       description: Whether or not the IP host group is deleted.
-      type: String
+      type: Bool
   - arguments:
     - default: true
       defaultValue: '0'
@@ -2778,7 +2778,7 @@ script:
       type: String
     - contextPath: SophosFirewall.Services.IsDeleted
       description: Whether or not the firewall service is deleted.
-      type: String
+      type: Bool
   - arguments:
     - default: true
       defaultValue: '0'
@@ -3194,7 +3194,7 @@ script:
       type: String
     - contextPath: SophosFirewall.User.IsDeleted
       description: Whether or not the user is deleted.
-      type: String
+      type: Bool
   - arguments:
     - default: true
       defaultValue: '0'
@@ -3526,7 +3526,7 @@ script:
       type: String
     - contextPath: SophosFirewall.ApplicationFilterPolicy.IsDeleted
       description: Whether or not the firewall app policy is deleted.
-      type: String
+      type: Bool
   - arguments:
     - default: true
       defaultValue: '0'
@@ -4154,13 +4154,14 @@ script:
       type: String
     - contextPath: SophosFirewall.WebFilterPolicy.IsDeleted
       description: Whether or not the policy was deleted.
-      type: String
-  dockerimage: demisto/python3:3.8.3.8715
+      type: Bool
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
+  fromversion: 5.0.0
   type: python

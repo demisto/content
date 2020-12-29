@@ -1161,7 +1161,7 @@ Delete an existing URL group or groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the group(s). | Required | 
+| name | Name of the group. | Required | 
 
 
 #### Context Output
@@ -1182,7 +1182,7 @@ Delete an existing URL group or groups.
     "SophosFirewall": {
         "WebFilterURLGroup": {
             "IsDeleted": true,
-            "Name": "iphost"
+            "Name": "urlgroup"
         }
     }
 }

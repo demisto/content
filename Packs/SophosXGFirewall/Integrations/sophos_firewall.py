@@ -3,8 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-import json
-import requests
 import urllib3
 from typing import Union, Optional, Callable
 
@@ -13,7 +11,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VERSION = '1702.1'
+API_VERSION = '1702.1'
 
 RULE = {
     'endpoint_tag': 'SecurityPolicy',
@@ -73,15 +71,18 @@ USER = {
 
 class Client(BaseClient):
     """Sophos XG Firewall Client"""
+
     def __init__(self, base_url: str, auth: tuple, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, auth=auth, verify=verify, proxy=proxy)
 
     def request(self, data: tuple, request_method: str, xml_method: str,
                 operation: str = None) -> requests.Response:
-        return self._http_request(method=request_method,
-                                  url_suffix='/webconsole/APIController',
-                                  params=request_builder(self._auth, xml_method, data, operation),
-                                  resp_type='Response')
+        response = self._http_request(method=request_method,
+                                      url_suffix='/webconsole/APIController',
+                                      params=self.request_builder(self._auth, xml_method, data,
+                                                                  operation),
+                                      resp_type='Response')
+        return response
 
     def get_request(self, data: tuple) -> requests.Response:
         return self.request(data, 'GET', 'get')
@@ -93,14 +94,64 @@ class Client(BaseClient):
         return self.request(data, 'POST', 'remove')
 
     def get_item_by_name(self, endpoint_tag: str, name: str) -> requests.Response:
-        return self.get_request((endpoint_tag, request_one_item_builder(name)))
+        data = (endpoint_tag, self.request_one_item_builder(name))
+        return self.request(data, 'GET', 'get')
 
     def validate(self, data: tuple = (None, None)) -> requests.Response:
         return self.request(data, 'GET', 'get')
 
+    @staticmethod
+    def request_builder(auth: tuple, method: str, data: tuple, operation: str) -> dict:
+        """The builder of the basic xml request
+
+        Args:
+            auth (tuple): authentication tuple -> (username, password)
+            method (str): Get/Set/Remove
+            data (tuple): request body
+            operation (str): operation for Get method -> add/update
+
+        Returns:
+            dict: returned built dictionary
+        """
+        request_data = {
+            'Request': {
+                '@APIVersion': API_VERSION,
+                'Login': {
+                    'Username': auth[0],
+                    'Password': auth[1]
+                },
+                f'{method.title()}': {
+                    '@operation': operation if operation else '',
+                    data[0]: data[1]
+                }
+            }
+        }
+        return {'reqxml': json2xml(json.dumps(request_data))}
+
+    @staticmethod
+    def request_one_item_builder(name: str) -> dict:
+        """Build a single filter request
+
+        Args:
+            name (str): The name of the object to find with the filter
+
+        Returns:
+            dict: returned built dictionary
+        """
+        request_data = {
+            'Filter': {
+                'key': {
+                    '@name': 'Name',
+                    '@criteria': '=',
+                    '#text': name
+                }
+            }
+        }
+        return request_data
+
 
 def sophos_firewall_rule_list_command(client: Client, start: int, end: int) -> CommandResults:
-    """List all the firewall rules. 
+    """List all the firewall rules.
     Limited by start and end
 
     Args:
@@ -123,7 +174,7 @@ def sophos_firewall_rule_get_command(client: Client, name: str) -> CommandResult
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_get(client, name, **RULE)
 
 
@@ -136,7 +187,7 @@ def sophos_firewall_rule_add_command(client: Client, params: dict) -> CommandRes
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_add(client, RULE, params, rule_builder)
 
 
@@ -149,7 +200,7 @@ def sophos_firewall_rule_update_command(client: Client, params: dict) -> Command
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_update(client, RULE, params, rule_builder)
 
 
@@ -162,7 +213,7 @@ def sophos_firewall_rule_delete_command(client: Client, name: str) -> CommandRes
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_delete(client, name, RULE['endpoint_tag'])
 
 
@@ -176,7 +227,7 @@ def sophos_firewall_rule_group_list_command(client: Client, start: int, end: int
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_list(client, start, end, **RULE_GROUP)
 
 
@@ -189,12 +240,12 @@ def sophos_firewall_rule_group_get_command(client: Client, name: str) -> Command
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_get(client, name, **RULE_GROUP)
 
 
 def sophos_firewall_rule_group_add_command(client: Client, params: dict) -> CommandResults:
-    """Add rule group 
+    """Add rule group
 
     Args:
         client (Client): Sophos XG Firewall Client
@@ -202,7 +253,7 @@ def sophos_firewall_rule_group_add_command(client: Client, params: dict) -> Comm
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_add(client, RULE_GROUP, params, rule_group_builder)
 
 
@@ -215,7 +266,7 @@ def sophos_firewall_rule_group_update_command(client: Client, params: dict) -> C
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_update(client, RULE_GROUP, params, rule_group_builder)
 
 
@@ -228,7 +279,7 @@ def sophos_firewall_rule_group_delete_command(client: Client, name: str) -> Comm
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_delete(client, name, RULE_GROUP['endpoint_tag'])
 
 
@@ -242,7 +293,7 @@ def sophos_firewall_url_group_list_command(client: Client, start: int, end: int)
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_list(client, start, end, **URL_GROUP)
 
 
@@ -255,7 +306,7 @@ def sophos_firewall_url_group_get_command(client: Client, name: str) -> CommandR
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_get(client, name, **URL_GROUP)
 
 
@@ -268,7 +319,7 @@ def sophos_firewall_url_group_add_command(client: Client, params: dict) -> Comma
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_add(client, URL_GROUP, params, url_group_builder)
 
 
@@ -277,11 +328,11 @@ def sophos_firewall_url_group_update_command(client: Client, params: dict) -> Co
 
     Args:
         client (Client): Sophos XG Firewall Client
-        params (dict): params for the update 
+        params (dict): params for the update
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_update(client, URL_GROUP, params, url_group_builder)
 
 
@@ -294,7 +345,7 @@ def sophos_firewall_url_group_delete_command(client: Client, name: str) -> Comma
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_delete(client, name, URL_GROUP['endpoint_tag'])
 
 
@@ -308,7 +359,7 @@ def sophos_firewall_ip_host_list_command(client: Client, start: int, end: int) -
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_list(client, start, end, **IP_HOST)
 
 
@@ -321,7 +372,7 @@ def sophos_firewall_ip_host_get_command(client: Client, name: str) -> CommandRes
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_get(client, name, **IP_HOST)
 
 
@@ -334,7 +385,7 @@ def sophos_firewall_ip_host_add_command(client: Client, params: dict) -> Command
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_add(client, IP_HOST, params, ip_host_builder)
 
 
@@ -347,7 +398,7 @@ def sophos_firewall_ip_host_update_command(client: Client, params: dict) -> Comm
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_update(client, IP_HOST, params, ip_host_builder)
 
 
@@ -360,7 +411,7 @@ def sophos_firewall_ip_host_delete_command(client: Client, name: str) -> Command
 
     Returns:
         CommandResults: Command results object
-    """     
+    """
     return generic_delete(client, name, IP_HOST['endpoint_tag'])
 
 
@@ -375,7 +426,7 @@ def sophos_firewall_ip_host_group_list_command(client: Client, start: int,
 
     Returns:
         CommandResults: Command results object
-    """                                               
+    """
     return generic_list(client, start, end, **IP_HOST_GROUP)
 
 
@@ -388,7 +439,7 @@ def sophos_firewall_ip_host_group_get_command(client: Client, name: str) -> Comm
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_get(client, name, **IP_HOST_GROUP)
 
 
@@ -401,7 +452,7 @@ def sophos_firewall_ip_host_group_add_command(client: Client, params: dict) -> C
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_add(client, IP_HOST_GROUP, params, ip_host_group_builder)
 
 
@@ -414,7 +465,7 @@ def sophos_firewall_ip_host_group_update_command(client: Client, params: dict) -
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_update(client, IP_HOST_GROUP, params, ip_host_group_builder)
 
 
@@ -427,7 +478,7 @@ def sophos_firewall_ip_host_group_delete_command(client: Client, name: str) -> C
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_delete(client, name, IP_HOST_GROUP['endpoint_tag'])
 
 
@@ -441,7 +492,7 @@ def sophos_firewall_services_list_command(client: Client, start: int, end: int) 
 
     Returns:
         CommandResults: Command results object
-    """           
+    """
     return generic_list(client, start, end, **SERVICE)
 
 
@@ -454,7 +505,7 @@ def sophos_firewall_services_get_command(client: Client, name: str) -> CommandRe
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_get(client, name, **SERVICE)
 
 
@@ -467,7 +518,7 @@ def sophos_firewall_services_add_command(client: Client, params: dict) -> Comman
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_add(client, SERVICE, params, service_builder)
 
 
@@ -480,7 +531,7 @@ def sophos_firewall_services_update_command(client: Client, params: dict) -> Com
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_update(client, SERVICE, params, service_builder)
 
 
@@ -493,7 +544,7 @@ def sophos_firewall_services_delete_command(client: Client, name: str) -> Comman
 
     Returns:
         CommandResults: Command results object
-    """ 
+    """
     return generic_delete(client, name, SERVICE['endpoint_tag'])
 
 
@@ -507,7 +558,7 @@ def sophos_firewall_app_policy_list_command(client: Client, start: int, end: int
 
     Returns:
         CommandResults: Command results object
-    """           
+    """
     return generic_list(client, start, end, **APP_POLICY)
 
 
@@ -520,7 +571,7 @@ def sophos_firewall_app_policy_get_command(client: Client, name: str) -> Command
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_get(client, name, **APP_POLICY)
 
 
@@ -533,7 +584,7 @@ def sophos_firewall_app_policy_add_command(client: Client, params: dict) -> Comm
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_add(client, APP_POLICY, params, app_policy_builder)
 
 
@@ -546,7 +597,7 @@ def sophos_firewall_app_policy_update_command(client: Client, params: dict) -> C
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_update(client, APP_POLICY, params, app_policy_builder)
 
 
@@ -559,7 +610,7 @@ def sophos_firewall_app_policy_delete_command(client: Client, name: str) -> Comm
 
     Returns:
         CommandResults: Command results object
-    """ 
+    """
     return generic_delete(client, name, APP_POLICY['endpoint_tag'])
 
 
@@ -574,7 +625,7 @@ def sophos_firewall_app_category_list_command(client: Client, start: int,
 
     Returns:
         CommandResults: Command results object
-    """           
+    """
     return generic_list(client, start, end, **APP_CATEGORY)
 
 
@@ -587,7 +638,7 @@ def sophos_firewall_app_category_get_command(client: Client, name: str) -> Comma
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_get(client, name, **APP_CATEGORY)
 
 
@@ -600,7 +651,7 @@ def sophos_firewall_app_category_update_command(client: Client, params: dict) ->
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_update(client, APP_CATEGORY, params, app_category_builder)
 
 
@@ -614,7 +665,7 @@ def sophos_firewall_web_filter_list_command(client: Client, start: int, end: int
 
     Returns:
         CommandResults: Command results object
-    """           
+    """
     return generic_list(client, start, end, **WEB_FILTER)
 
 
@@ -627,7 +678,7 @@ def sophos_firewall_web_filter_get_command(client: Client, name: str) -> Command
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_get(client, name, **WEB_FILTER)
 
 
@@ -640,7 +691,7 @@ def sophos_firewall_web_filter_add_command(client: Client, params: dict) -> Comm
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_add(client, WEB_FILTER, params, web_filter_builder)
 
 
@@ -653,7 +704,7 @@ def sophos_firewall_web_filter_update_command(client: Client, params: dict) -> C
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_update(client, WEB_FILTER, params, web_filter_builder)
 
 
@@ -666,7 +717,7 @@ def sophos_firewall_web_filter_delete_command(client: Client, name: str) -> Comm
 
     Returns:
         CommandResults: Command results object
-    """ 
+    """
     return generic_delete(client, name, WEB_FILTER['endpoint_tag'])
 
 
@@ -680,7 +731,7 @@ def sophos_firewall_user_list_command(client: Client, start: int, end: int) -> C
 
     Returns:
         CommandResults: Command results object
-    """           
+    """
     return generic_list(client, start, end, **USER)
 
 
@@ -693,7 +744,7 @@ def sophos_firewall_user_get_command(client: Client, name: str) -> CommandResult
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_get(client, name, **USER)
 
 
@@ -706,7 +757,7 @@ def sophos_firewall_user_add_command(client: Client, params: dict) -> CommandRes
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_add(client, USER, params, user_builder)
 
 
@@ -719,7 +770,7 @@ def sophos_firewall_user_update_command(client: Client, params: dict) -> Command
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     return generic_update(client, USER, params, user_builder)
 
 
@@ -732,7 +783,7 @@ def sophos_firewall_user_delete_command(client: Client, name: str) -> CommandRes
 
     Returns:
         CommandResults: Command results object
-    """ 
+    """
     return generic_delete(client, name, USER['endpoint_tag'])
 
 
@@ -749,72 +800,27 @@ def test_module(client):
     try:
         result = client.validate()
         json_result = json.loads(xml2json(result.text))
-        status_code = dict_safe_get(json_result, ['Response', 'Status', '@code'])
 
+        status_message = retrieve_dict_item_recursively(json_result, 'status')
         message = ''
-        if status_code >= '500':
-            status_message = dict_safe_get(json_result, ['Response', 'Status', '#text'])
-            if 'enable the API Configuration' in status_message:
-                message = 'Please enable API configuration from the webconsole ' \
-                                '(in Backup & firmware)'
 
-        status_message = dict_safe_get(json_result, ['Response', 'Login', 'status'])
         if status_message and 'Successful' in status_message:
             message = 'ok'
+        elif status_message and 'Authentication Failure' in status_message:
+            message = 'Please check your credentials'
 
+        status_code = dict_safe_get(json_result, ['Response', 'Status', '@code'], 0)
+        if status_code and int(status_code) >= 500:
+            status_message = retrieve_dict_item_recursively(json_result, '#text')
+            if status_message and 'enable the API Configuration' in status_message:
+                message = 'Please enable API configuration from the webconsole ' \
+                          '(in Backup & firmware)'
+            else:
+                message = status_message
         return message
 
     except DemistoException as e:
         return e.message
-
-
-def request_builder(auth: tuple, method: str, data: tuple, operation: str) -> dict:
-    """The builder of the basic xml request
-
-    Args:
-        auth (tuple): authentication tuple -> (username, password)
-        method (str): Get/Set/Remove
-        data (tuple): request body
-        operation (str): operation for Get method -> add/update
-
-    Returns:
-        dict: returned built dictionary 
-    """    
-    request_data = {
-        'Request': {
-            '@APIVersion': VERSION,
-            'Login': {
-                'Username': auth[0],
-                'Password': auth[1]
-            },
-            f'{method.title()}': {
-                '@operation': operation if operation else '',
-                data[0]: data[1]
-            }
-        }
-    }
-    return {'reqxml': json2xml(json.dumps(request_data))}
-
-
-def request_one_item_builder(name: str) -> dict:
-    """Build a single filter request
-
-    Args:
-        name (str): The name of the object to find with the filter
-
-    Returns:
-        dict: returned built dictionary 
-    """
-    request_data = {
-        'Filter': {
-            'key': {
-                '@name': 'Name',
-                '@criteria': '=',
-                '#text': name
-            }
-        }
-    }
-    return request_data
 
 
 def generic_delete(client: Client, name: str, endpoint_tag: str) -> CommandResults:
@@ -823,11 +829,11 @@ def generic_delete(client: Client, name: str, endpoint_tag: str) -> CommandResul
     Args:
         client (Client): Sophos XG Firewall Client
         name (str): Name of the object to delete
-        endpoint_tag (str): Tag of the object to delete 
+        endpoint_tag (str): Tag of the object to delete
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     response = client.delete_request((endpoint_tag, {'Name': name}))
     response = json.loads(xml2json(response.text))
 
@@ -883,7 +889,7 @@ def merge_for_update(client: Client, name: str, data: dict, keys_for_update: dic
         endpoint_tag (str): The endpoint_tag of the object we want to get data from
 
     Returns:
-        dict: returned built dictionary 
+        dict: returned built dictionary
     """
     previous_object = client.get_item_by_name(endpoint_tag, name)
     previous_object = json.loads(xml2json(previous_object.text))
@@ -914,7 +920,7 @@ def merge_for_update(client: Client, name: str, data: dict, keys_for_update: dic
 def prepare_builder_params(client: Client, keys: dict, is_for_update: bool, name: str,
                            endpoint_tag: str, locals_copy: dict) -> dict:
     """prepare the list of objects for the builder - get the params for locals(),
-    split it into list, and return the params after the merge with the new 
+    split it into list, and return the params after the merge with the new
     object was done (if the is_for_update flag is True)
 
     Args:
@@ -926,8 +932,8 @@ def prepare_builder_params(client: Client, keys: dict, is_for_update: bool, name
         locals_copy (dict): the locals() object copy in order to extract the params
 
     Returns:
-        dict: returned built dictionary 
-    """                                      
+        dict: returned built dictionary
+    """
     params = {}
     # creates a dict with the variables names from keys, and add the current data that insides
     # the locals() in the function that called this function.
@@ -954,8 +960,8 @@ def update_dict_from_params_using_path(keys_to_update: dict, params: dict, data:
         data (dict): data of the object to update
 
     Returns:
-        dict: returned built dictionary 
-    """    
+        dict: returned built dictionary
+    """
     for key in keys_to_update:
         path = keys_to_update[key]
         # check that there is at least 2 fields for adding the data
@@ -1050,8 +1056,8 @@ def rule_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: s
         Exception: if there is an error with getting the previous rule
 
     Returns:
-        dict: returned built dictionary 
-    """    
+        dict: returned built dictionary
+    """
     keys_for_update = {
         'members': ['Identity', 'Member'],
         'source_zones': ['SourceZones', 'Zone'],
@@ -1137,8 +1143,8 @@ def rule_group_builder(client: Client, is_for_update: bool, endpoint_tag: str, n
         destination_zones (str, optional): Destination Zones information of the rule group
 
     Returns:
-        dict: returned built dictionary 
-    """    
+        dict: returned built dictionary
+    """
     keys_for_update = {
         'rules': ['SecurityPolicyList', 'SecurityPolicy'],
         'source_zones': ['SourceZones', 'Zone'],
@@ -1185,8 +1191,8 @@ def ip_host_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         Exception: Missing IP addresses
 
     Returns:
-        dict: returned built dictionary 
-    """                    
+        dict: returned built dictionary
+    """
     keys_for_update = {
         'host_group': ['HostGroupList', 'HostGroup'],
     }
@@ -1244,8 +1250,8 @@ def url_group_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         urls (str, optional): URLs information of the URL group
 
     Returns:
-        dict: returned built dictionary  
-    """                      
+        dict: returned built dictionary
+    """
     keys_for_update = {
         'urls': ['URLlist', 'URL'],
     }
@@ -1277,8 +1283,8 @@ def ip_host_group_builder(client: Client, is_for_update: bool, endpoint_tag: str
         hosts (str, optional): Hosts information of the IP host group
 
     Returns:
-        dict: returned built dictionary 
-    """                          
+        dict: returned built dictionary
+    """
     keys_for_update = {
         'hosts': ['HostList', 'Host'],
     }
@@ -1325,8 +1331,8 @@ def service_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         Exception: Missing icmp_v6_type and icmp_v6_code
 
     Returns:
-        dict: returned dictionary 
-    """                    
+        dict: returned dictionary
+    """
     previous_service_details = []
     # if the object need to be updated, merge between old and new information will happen
     if is_for_update:
@@ -1434,7 +1440,7 @@ def web_filter_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         follow_http_action (str, optional): Follow Http Action information of the web filter
 
     Returns:
-        dict: returned built dictionary 
+        dict: returned built dictionary
     """
     previous_rules_details = []
     # if the object need to be updated, merge between old and new information will happen
@@ -1504,7 +1510,7 @@ def app_category_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         qos_policy (str, optional): Qos Policy information of the app category
 
     Returns:
-        dict: returned built dictionary 
+        dict: returned built dictionary
     """
     json_data = {
         'Name': name,
@@ -1541,8 +1547,8 @@ def app_policy_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         schedule (str, optional): Schedule information of the app policy
 
     Returns:
-        dict: returned built dictionary 
-    """                       
+        dict: returned built dictionary
+    """
     previous_rules_details = []
     # if the object need to be updated, merge between old and new information will happen
     if is_for_update:
@@ -1633,8 +1639,8 @@ def user_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         Exception: if Administrator type was selected and profile was not provided
 
     Returns:
-        dict: returned built dictionary 
-    """                 
+        dict: returned built dictionary
+    """
     if user_type == 'Administrator' and not profile:
         raise Exception('Administrator type was selected. Please provide profile.')
     json_data = {
@@ -1670,7 +1676,7 @@ def check_error_on_response(response: dict) -> None:
     Raises:
         Exception: if there if an error in the response
         Exception: if there are no records on list or get
-    """    
+    """
     response_message = retrieve_dict_item_recursively(response, '#text')
     response_code = retrieve_dict_item_recursively(response, '@code')
     response_status = retrieve_dict_item_recursively(response, 'Status')
@@ -1693,7 +1699,7 @@ def generic_add(client: Client, constants: dict, params: dict, builder: Callable
 
     Returns:
         CommandResults: Command results object
-    """    
+    """
     to_update = False
     return generic_save(client, params, builder, to_update, **constants)
 
@@ -1710,13 +1716,13 @@ def generic_update(client: Client, constants: dict, params: dict,
 
     Returns:
         CommandResults: Command results object
-    """                   
+    """
     to_update = True
     return generic_save(client, params, builder, to_update, **constants)
 
 
 def generic_save(client: Client, params: dict, builder: Callable, to_update: bool,
-                 endpoint_tag: str, table_headers: list) -> CommandResults:    
+                 endpoint_tag: str, table_headers: list) -> CommandResults:
     """Generic function for add/update
 
     Args:
@@ -1724,7 +1730,7 @@ def generic_save(client: Client, params: dict, builder: Callable, to_update: boo
         params (dict): params for the builder
         builder (Callable): the builder to build the object
         to_update (bool): True if the object should be updated
-        endpoint_tag (str): The endpoint_tag of the object 
+        endpoint_tag (str): The endpoint_tag of the object
         table_headers (list): table_headers for readable outputs
 
     Returns:
@@ -1827,7 +1833,7 @@ def retrieve_dict_item_recursively(obj, key) -> Optional[Union[str, dict]]:
 
     Returns:
         Optional[Union[str, dict]]
-    """    
+    """
     if key in obj:
         return obj[key]
     for _, value in obj.items():
@@ -1843,6 +1849,7 @@ def main():
     """
     params = demisto.params()
     command = demisto.command()
+    args = demisto.args()
 
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
@@ -1859,156 +1866,157 @@ def main():
             base_url=server_url,
             verify=verify_certificate,
             auth=(username, password),
-            proxy=proxy)
+            proxy=proxy
+        )
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
         elif command == 'sophos-firewall-rule-list':
-            return_results(sophos_firewall_rule_list_command(client, **demisto.args()))
+            return_results(sophos_firewall_rule_list_command(client, **args))
 
         elif command == 'sophos-firewall-rule-get':
-            return_results(sophos_firewall_rule_get_command(client, **demisto.args()))
+            return_results(sophos_firewall_rule_get_command(client, **args))
 
         elif command == 'sophos-firewall-rule-add':
-            return_results(sophos_firewall_rule_add_command(client, demisto.args()))
+            return_results(sophos_firewall_rule_add_command(client, args))
 
         elif command == 'sophos-firewall-rule-update':
-            return_results(sophos_firewall_rule_update_command(client, demisto.args()))
+            return_results(sophos_firewall_rule_update_command(client, args))
 
         elif command == 'sophos-firewall-rule-delete':
-            return_results(sophos_firewall_rule_delete_command(client, **demisto.args()))
+            return_results(sophos_firewall_rule_delete_command(client, **args))
 
         elif command == 'sophos-firewall-rule-group-list':
-            return_results(sophos_firewall_rule_group_list_command(client, **demisto.args()))
+            return_results(sophos_firewall_rule_group_list_command(client, **args))
 
         elif command == 'sophos-firewall-rule-group-get':
-            return_results(sophos_firewall_rule_group_get_command(client, **demisto.args()))
+            return_results(sophos_firewall_rule_group_get_command(client, **args))
 
         elif command == 'sophos-firewall-rule-group-add':
-            return_results(sophos_firewall_rule_group_add_command(client, demisto.args()))
+            return_results(sophos_firewall_rule_group_add_command(client, args))
 
         elif command == 'sophos-firewall-rule-group-update':
-            return_results(sophos_firewall_rule_group_update_command(client, demisto.args()))
+            return_results(sophos_firewall_rule_group_update_command(client, args))
 
         elif command == 'sophos-firewall-rule-group-delete':
-            return_results(sophos_firewall_rule_group_delete_command(client, **demisto.args()))
+            return_results(sophos_firewall_rule_group_delete_command(client, **args))
 
         elif command == 'sophos-firewall-url-group-list':
-            return_results(sophos_firewall_url_group_list_command(client, **demisto.args()))
+            return_results(sophos_firewall_url_group_list_command(client, **args))
 
         elif command == 'sophos-firewall-url-group-get':
-            return_results(sophos_firewall_url_group_get_command(client, **demisto.args()))
+            return_results(sophos_firewall_url_group_get_command(client, **args))
 
         elif command == 'sophos-firewall-url-group-add':
-            return_results(sophos_firewall_url_group_add_command(client, demisto.args()))
+            return_results(sophos_firewall_url_group_add_command(client, args))
 
         elif command == 'sophos-firewall-url-group-update':
-            return_results(sophos_firewall_url_group_update_command(client, demisto.args()))
+            return_results(sophos_firewall_url_group_update_command(client, args))
 
         elif command == 'sophos-firewall-url-group-delete':
-            return_results(sophos_firewall_url_group_delete_command(client, **demisto.args()))
+            return_results(sophos_firewall_url_group_delete_command(client, **args))
 
         elif command == 'sophos-firewall-ip-host-list':
-            return_results(sophos_firewall_ip_host_list_command(client, **demisto.args()))
+            return_results(sophos_firewall_ip_host_list_command(client, **args))
 
         elif command == 'sophos-firewall-ip-host-get':
-            return_results(sophos_firewall_ip_host_get_command(client, **demisto.args()))
+            return_results(sophos_firewall_ip_host_get_command(client, **args))
 
         elif command == 'sophos-firewall-ip-host-add':
-            return_results(sophos_firewall_ip_host_add_command(client, demisto.args()))
+            return_results(sophos_firewall_ip_host_add_command(client, args))
 
         elif command == 'sophos-firewall-ip-host-update':
-            return_results(sophos_firewall_ip_host_update_command(client, demisto.args()))
+            return_results(sophos_firewall_ip_host_update_command(client, args))
 
         elif command == 'sophos-firewall-ip-host-delete':
-            return_results(sophos_firewall_ip_host_delete_command(client, **demisto.args()))
+            return_results(sophos_firewall_ip_host_delete_command(client, **args))
 
         elif command == 'sophos-firewall-ip-host-group-list':
-            return_results(sophos_firewall_ip_host_group_list_command(client, **demisto.args()))
+            return_results(sophos_firewall_ip_host_group_list_command(client, **args))
 
         elif command == 'sophos-firewall-ip-host-group-get':
-            return_results(sophos_firewall_ip_host_group_get_command(client, **demisto.args()))
+            return_results(sophos_firewall_ip_host_group_get_command(client, **args))
 
         elif command == 'sophos-firewall-ip-host-group-add':
-            return_results(sophos_firewall_ip_host_group_add_command(client, demisto.args()))
+            return_results(sophos_firewall_ip_host_group_add_command(client, args))
 
         elif command == 'sophos-firewall-ip-host-group-update':
-            return_results(sophos_firewall_ip_host_group_update_command(client, demisto.args()))
+            return_results(sophos_firewall_ip_host_group_update_command(client, args))
 
         elif command == 'sophos-firewall-ip-host-group-delete':
-            return_results(sophos_firewall_ip_host_group_delete_command(client, **demisto.args()))
+            return_results(sophos_firewall_ip_host_group_delete_command(client, **args))
 
         elif command == 'sophos-firewall-services-list':
-            return_results(sophos_firewall_services_list_command(client, **demisto.args()))
+            return_results(sophos_firewall_services_list_command(client, **args))
 
         elif command == 'sophos-firewall-services-get':
-            return_results(sophos_firewall_services_get_command(client, **demisto.args()))
+            return_results(sophos_firewall_services_get_command(client, **args))
 
         elif command == 'sophos-firewall-services-add':
-            return_results(sophos_firewall_services_add_command(client, demisto.args()))
+            return_results(sophos_firewall_services_add_command(client, args))
 
         elif command == 'sophos-firewall-services-update':
-            return_results(sophos_firewall_services_update_command(client, demisto.args()))
+            return_results(sophos_firewall_services_update_command(client, args))
 
         elif command == 'sophos-firewall-services-delete':
-            return_results(sophos_firewall_services_delete_command(client, **demisto.args()))
+            return_results(sophos_firewall_services_delete_command(client, **args))
 
         elif command == 'sophos-firewall-app-policy-list':
-            return_results(sophos_firewall_app_policy_list_command(client, **demisto.args()))
+            return_results(sophos_firewall_app_policy_list_command(client, **args))
 
         elif command == 'sophos-firewall-app-policy-get':
-            return_results(sophos_firewall_app_policy_get_command(client, **demisto.args()))
+            return_results(sophos_firewall_app_policy_get_command(client, **args))
 
         elif command == 'sophos-firewall-app-policy-add':
-            return_results(sophos_firewall_app_policy_add_command(client, demisto.args()))
+            return_results(sophos_firewall_app_policy_add_command(client, args))
 
         elif command == 'sophos-firewall-app-policy-update':
-            return_results(sophos_firewall_app_policy_update_command(client, demisto.args()))
+            return_results(sophos_firewall_app_policy_update_command(client, args))
 
         elif command == 'sophos-firewall-app-policy-delete':
-            return_results(sophos_firewall_app_policy_delete_command(client, **demisto.args()))
+            return_results(sophos_firewall_app_policy_delete_command(client, **args))
 
         elif command == 'sophos-firewall-app-category-list':
-            return_results(sophos_firewall_app_category_list_command(client, **demisto.args()))
+            return_results(sophos_firewall_app_category_list_command(client, **args))
 
         elif command == 'sophos-firewall-app-category-get':
-            return_results(sophos_firewall_app_category_get_command(client, **demisto.args()))
+            return_results(sophos_firewall_app_category_get_command(client, **args))
 
         elif command == 'sophos-firewall-app-category-update':
             return_results(
-                sophos_firewall_app_category_update_command(client, demisto.args()))
+                sophos_firewall_app_category_update_command(client, args))
 
         elif command == 'sophos-firewall-web-filter-list':
-            return_results(sophos_firewall_web_filter_list_command(client, **demisto.args()))
+            return_results(sophos_firewall_web_filter_list_command(client, **args))
 
         elif command == 'sophos-firewall-web-filter-get':
-            return_results(sophos_firewall_web_filter_get_command(client, **demisto.args()))
+            return_results(sophos_firewall_web_filter_get_command(client, **args))
 
         elif command == 'sophos-firewall-web-filter-add':
-            return_results(sophos_firewall_web_filter_add_command(client, demisto.args()))
+            return_results(sophos_firewall_web_filter_add_command(client, args))
 
         elif command == 'sophos-firewall-web-filter-update':
-            return_results(sophos_firewall_web_filter_update_command(client, demisto.args()))
+            return_results(sophos_firewall_web_filter_update_command(client, args))
 
         elif command == 'sophos-firewall-web-filter-delete':
-            return_results(sophos_firewall_web_filter_delete_command(client, **demisto.args()))
+            return_results(sophos_firewall_web_filter_delete_command(client, **args))
 
         elif command == 'sophos-firewall-user-list':
-            return_results(sophos_firewall_user_list_command(client, **demisto.args()))
+            return_results(sophos_firewall_user_list_command(client, **args))
 
         elif command == 'sophos-firewall-user-get':
-            return_results(sophos_firewall_user_get_command(client, **demisto.args()))
+            return_results(sophos_firewall_user_get_command(client, **args))
 
         elif command == 'sophos-firewall-user-add':
-            return_results(sophos_firewall_user_add_command(client, demisto.args()))
+            return_results(sophos_firewall_user_add_command(client, args))
 
         elif command == 'sophos-firewall-user-update':
-            return_results(sophos_firewall_user_update_command(client, demisto.args()))
+            return_results(sophos_firewall_user_update_command(client, args))
 
         elif command == 'sophos-firewall-user-delete':
-            return_results(sophos_firewall_user_delete_command(client, **demisto.args()))
+            return_results(sophos_firewall_user_delete_command(client, **args))
 
     # Log exceptions
     except Exception as error:

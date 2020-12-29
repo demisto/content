@@ -1,6 +1,6 @@
 {
     "name": "Sophos XG Firewall",
-    "description": "Sophos XG Firewall is on-premise firewall by Sophos",
+    "description": "Use the Sophos XG Firewall to manage your firewall, detect and respond to threats on your network.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
