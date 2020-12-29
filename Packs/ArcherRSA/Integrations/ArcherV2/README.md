@@ -11,7 +11,6 @@ The timezone (offset) parameter should be used if the Cortex XSOAR server and Ar
 If the Cortex XSOAR server time is 00:00 and the Archer server time is 01:00, the timezone parameter should be +60 (minutes).
 
 | **Parameter** | **Description** | **Required** |
-
 | --- | --- | --- |
 | url | Server URL \(e.g. https://example.net\) | True |
 | credentials | Username | True |
