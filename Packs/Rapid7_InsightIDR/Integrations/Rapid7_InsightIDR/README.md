@@ -259,7 +259,7 @@ Assign a user by email to an investigation
         "Investigation": {
             "alerts": [],
             "assignee": {
-                "email": "ykatzir@someorganiztion.co",
+                "email": "test@panw.com",
                 "name": "Yoel Katzir"
             },
             "created_time": "2020-11-15T10:00:00.448Z",
