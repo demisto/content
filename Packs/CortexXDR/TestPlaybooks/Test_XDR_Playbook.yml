@@ -952,6 +952,11 @@ tasks:
             value:
               simple: PaloAltoNetworksXDR.AuditAgentReports.ENDPOINTID
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.ID
+            iscontext: true
     view: |-
       {
         "position": {
@@ -1047,6 +1052,11 @@ tasks:
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
             iscontext: true
     view: |-
       {

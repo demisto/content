@@ -1,0 +1,10 @@
+{
+   "comment":"chaaned",
+   "createdAt":"2020-11-03T10:23:34.845Z",
+   "id":"811fa316-d485-4499-a979-3e1c0a89f1fd",
+   "properties":{
+      "certificateSigner":"hxello"
+   },
+   "type":"certificateSigner",
+   "updatedAt":"2020-11-03T10:24:01.897Z"
+}

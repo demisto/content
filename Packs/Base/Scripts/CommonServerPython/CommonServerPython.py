@@ -308,6 +308,16 @@ class FeedIndicatorType(object):
             return None
 
 
+def is_debug_mode():
+    """Return if this script/command was passed debug-mode=true option
+
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
+    """
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return hasattr(demisto, 'is_debug') and demisto.is_debug
+
+
 def auto_detect_indicator_type(indicator_value):
     """
       Infer the type of the indicator.
@@ -965,7 +975,9 @@ def aws_table_to_markdown(response, table_header):
                     response[list(response.keys())[0]], list):
                 if isinstance(response[list(response.keys())[0]], list):
                     list_response = response[list(response.keys())[0]]
-                    if isinstance(list_response[0], str):
+                    if not list_response:
+                        human_readable = tableToMarkdown(table_header, list_response)
+                    elif isinstance(list_response[0], str):
                         human_readable = tableToMarkdown(
                             table_header, response)
                     else:
@@ -1023,11 +1035,12 @@ class IntegrationLogger(object):
       :rtype: ``None``
     """
 
-    def __init__(self):
+    def __init__(self, debug_logging=False):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
         self.buffering = True
+        self.debug_logging = debug_logging
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
@@ -1067,6 +1080,8 @@ class IntegrationLogger(object):
         text = self.encode(message)
         if self.buffering:
             self.messages.append(text)
+            if self.debug_logging:
+                demisto.debug(text)
         else:
             demisto.info(text)
 
@@ -1099,7 +1114,8 @@ class IntegrationLogger(object):
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
                 demisto.log(text)
-            demisto.info(text)
+            if not self.debug_logging:  # we don't print out if in debug_logging as already all message where printed
+                demisto.info(text)
             self.messages = []
 
     def write(self, msg):
@@ -1139,7 +1155,7 @@ a logger for python integrations:
 use LOG(<message>) to add a record to the logger (message can be any object with __str__)
 use LOG.print_log() to display all records in War-Room and server log.
 """
-LOG = IntegrationLogger()
+LOG = IntegrationLogger(debug_logging=is_debug_mode())
 
 
 def formatAllArgs(args, kwds):
@@ -1343,6 +1359,48 @@ def appendContext(key, data, dedup=False):
         demisto.setContext(key, data)
 
 
+def url_to_clickable_markdown(data, url_keys):
+    """
+    Turn the given urls fields in to clickable url, used for the markdown table.
+
+    :type data: ``[Union[str, List[Any], Dict[str, Any]]]``
+    :param data: a dictionary or a list containing data with some values that are urls
+
+    :type url_keys: ``List[str]``
+    :param url_keys: the keys of the url's wished to turn clickable
+
+    :return: markdown format for clickable url
+    :rtype: ``[Union[str, List[Any], Dict[str, Any]]]``
+    """
+
+    if isinstance(data, list):
+        data = [url_to_clickable_markdown(item, url_keys) for item in data]
+
+    elif isinstance(data, dict):
+        data = {key: create_clickable_url(value) if key in url_keys else url_to_clickable_markdown(data[key], url_keys)
+                for key, value in data.items()}
+
+    return data
+
+
+def create_clickable_url(url):
+    """
+    Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
+
+    :type url: ``Union[List[str], str]``
+    :param url: the url of interest or a list of urls
+
+    :return: markdown format for clickable url
+    :rtype: ``str``
+
+    """
+    if not url:
+        return None
+    elif isinstance(url, list):
+        return ['[{}]({})'.format(item, item) for item in url]
+    return '[{}]({})'.format(url, url)
+
+
 def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
     """
        Converts a demisto table in JSON form to a Markdown table
@@ -1366,9 +1424,15 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
 
+       :type url_keys: ``list``
+       :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
+
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
+    # Turning the urls in the table to clickable
+    if url_keys:
+        t = url_to_clickable_markdown(t, url_keys)
 
     mdResult = ''
     if name:
@@ -4735,16 +4799,6 @@ def is_demisto_version_ge(version, build_number=''):
         raise
 
 
-def is_debug_mode():
-    """Return if this script/command was passed debug-mode=true option
-
-    :return: true if debug-mode is enabled
-    :rtype: ``bool``
-    """
-    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-    return hasattr(demisto, 'is_debug') and demisto.is_debug
-
-
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
@@ -4758,7 +4812,7 @@ class DemistoHandler(logging.Handler):
         msg = self.format(record)
         try:
             if self.int_logger:
-                self.int_logger.write(msg)
+                self.int_logger(msg)
             else:
                 demisto.debug(msg)
         except Exception:
@@ -4786,8 +4840,8 @@ class DebugLogger(object):
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
-        self.handler = DemistoHandler()
-        demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
+        self.handler = DemistoHandler(self.int_logger)
+        demisto_formatter = logging.Formatter(fmt='python logging: %(levelname)s [%(name)s] - %(message)s', datefmt=None)
         self.handler.setFormatter(demisto_formatter)
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
@@ -6126,13 +6180,17 @@ class IAMVendorActionResult:
 
 
 class IAMUserProfile:
-    """
-        A User Profile object class for IAM integrations.
+    """ A User Profile object class for IAM integrations.
 
-        Attributes:
-            _user_profile (str): The user profile information.
-            _user_profile_delta (str): The user profile delta.
-            _vendor_action_results (list): A List of data returned from the vendor.
+    :type _user_profile: ``str``
+    :param _user_profile: The user profile information.
+
+    :type _user_profile_delta: ``str``
+    :param _user_profile_delta: The user profile delta.
+
+    :type _vendor_action_results: ``list``
+    :param _vendor_action_results: A List of data returned from the vendor.
+
     :return: None
     :rtype: ``None``
     """
@@ -6140,11 +6198,6 @@ class IAMUserProfile:
     INDICATOR_TYPE = 'User Profile'
 
     def __init__(self, user_profile, user_profile_delta=None):
-        """ IAMUserProfile c'tor.
-
-        :param user_profile: (dict) the user-profile argument.
-        :param user_profile_delta: (dict) the user-profile argument.
-        """
         self._user_profile = safe_load_json(user_profile)
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
@@ -6156,7 +6209,8 @@ class IAMUserProfile:
         """ Generates a XSOAR IAM entry from the data in _vendor_action_results.
         Note: Currently we are using only the first element of the list, in the future we will support multiple results.
 
-        :return: (dict) A XSOAR entry.
+        :return: A XSOAR entry.
+        :rtype: ``dict``
         """
 
         outputs = self._vendor_action_results[0].create_outputs()
@@ -6222,9 +6276,14 @@ class IAMUserProfile:
     def map_object(self, mapper_name, mapping_type=None):
         """ Returns the user data, in an application data format.
 
-        :param mapper_name: (str) The outgoing mapper from XSOAR to the application.
-        :param mapping_type: (str) The mapping type of the mapper (optional).
-        :return: (dict) the user data, in the app data format.
+        :type mapper_name: ``str``
+        :param mapper_name: The outgoing mapper from XSOAR to the application.
+
+        :type mapping_type: ``str``
+        :param mapping_type: The mapping type of the mapper (optional).
+
+        :return: the user data, in the app data format.
+        :rtype: ``dict``
         """
         if not mapping_type:
             mapping_type = IAMUserProfile.INDICATOR_TYPE
@@ -6236,12 +6295,243 @@ class IAMUserProfile:
     def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
         """ updates the user_profile attribute according to the given app_data
 
-        :param app_data: (dict) The user data in app
-        :param mapper_name: (str) incoming mapper name
-        :param mapping_type: (str) Optional - mapping type
+        :type app_data: ``dict``
+        :param app_data: The user data in app
+
+        :type mapper_name: ``str``
+        :param mapper_name: Incoming mapper name
+
+        :type mapping_type: ``str``
+        :param mapping_type: Optional - mapping type
         """
         if not mapping_type:
             mapping_type = IAMUserProfile.INDICATOR_TYPE
         if not isinstance(app_data, dict):
             app_data = safe_load_json(app_data)
         self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
+
+
+class IAMUserAppData:
+    """ Holds user attributes retrieved from an application.
+
+    :type id: ``str``
+    :param id: The ID of the user.
+
+    :type username: ``str``
+    :param username: The username of the user.
+
+    :type is_active: ``bool``
+    :param is_active: Whether or not the user is active in the application.
+
+    :type full_data: ``dict``
+    :param full_data: The full data of the user in the application.
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, user_id, username, is_active, app_data):
+        self.id = user_id
+        self.username = username
+        self.is_active = is_active
+        self.full_data = app_data
+
+
+class IAMCommand:
+    """ A class that implements the IAM CRUD commands - should bbe used.
+
+    :type id: ``str``
+    :param id: The ID of the user.
+
+    :type username: ``str``
+    :param username: The username of the user.
+
+    :type is_active: ``bool``
+    :param is_active: Whether or not the user is active in the application.
+
+    :type full_data: ``dict``
+    :param full_data: The full data of the user in the application.
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, is_create_enabled=True, is_disable_enabled=True, is_update_enabled=True,
+                 create_if_not_exists=True, mapper_in=None, mapper_out=None):
+        """ The IAMCommand c'tor
+
+        :param is_create_enabled: (bool) Whether or not the `iam-create-user` command is enabled in the instance
+        :param is_disable_enabled: (bool) Whether or not the `iam-disable-user` command is enabled in the instance
+        :param is_update_enabled: (bool) Whether or not the `iam-update-user` command is enabled in the instance
+        :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application
+        :param mapper_in: (str) Incoming mapper from the application to Cortex XSOAR
+        :param mapper_out: (str) Outgoing mapper from the Cortex XSOAR to the application
+        """
+        self.is_create_enabled = is_create_enabled
+        self.is_disable_enabled = is_disable_enabled
+        self.is_update_enabled = is_update_enabled
+        self.create_if_not_exists = create_if_not_exists
+        self.mapper_in = mapper_in
+        self.mapper_out = mapper_out
+
+    def get_user(self, client, args):
+        """ Searches a user in the application and updates the user profile object with the data.
+            If not found, the error details will be resulted instead.
+
+        :param client: (Client) The integration Client object that implements a get_user() method
+        :param args: (dict) The `iam-get-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        try:
+            email = user_profile.get_attribute('email')
+            user_app_data = client.get_user(email)
+            if not user_app_data:
+                error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                user_profile.set_result(action=IAMActions.GET_USER,
+                                        success=False,
+                                        error_code=error_code,
+                                        error_message=error_message)
+            else:
+                user_profile.update_with_app_data(user_app_data.full_data, self.mapper_in)
+                user_profile.set_result(
+                    action=IAMActions.GET_USER,
+                    active=user_app_data.is_active,
+                    iden=user_app_data.id,
+                    email=email,
+                    username=user_app_data.username,
+                    details=user_app_data.full_data
+                )
+
+        except Exception as e:
+            client.handle_exception(user_profile, e, IAMActions.GET_USER)
+
+        return user_profile
+
+    def disable_user(self, client, args):
+        """ Disables a user in the application and updates the user profile object with the updated data.
+            If not found, the command will be skipped.
+
+        :param client: (Client) The integration Client object that implements get_user() and disable_user() methods
+        :param args: (dict) The `iam-disable-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        if not self.is_disable_enabled:
+            user_profile.set_result(action=IAMActions.DISABLE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                email = user_profile.get_attribute('email')
+                user_app_data = client.get_user(email)
+                if not user_app_data:
+                    _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                    user_profile.set_result(action=IAMActions.DISABLE_USER,
+                                            skip=True,
+                                            skip_reason=error_message)
+                else:
+                    if user_app_data.is_active:
+                        user_app_data = client.disable_user(user_app_data.id)
+                    user_profile.set_result(
+                        action=IAMActions.DISABLE_USER,
+                        active=False,
+                        iden=user_app_data.id,
+                        email=email,
+                        username=user_app_data.username,
+                        details=user_app_data.full_data
+                    )
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.DISABLE_USER)
+
+        return user_profile
+
+    def create_user(self, client, args):
+        """ Creates a user in the application and updates the user profile object with the data.
+            If a user in the app already holds the email in the given user profile, updates
+            its data with the given data.
+
+        :param client: (Client) A Client object that implements get_user(), create_user() and update_user() methods
+        :param args: (dict) The `iam-create-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+
+        if not self.is_create_enabled:
+            user_profile.set_result(action=IAMActions.CREATE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                email = user_profile.get_attribute('email')
+                user_app_data = client.get_user(email)
+                if user_app_data:
+                    # if user exists, update it
+                    user_profile = self.update_user(client, args)
+
+                else:
+                    app_profile = user_profile.map_object(self.mapper_out)
+                    created_user = client.create_user(app_profile)
+                    user_profile.set_result(
+                        action=IAMActions.CREATE_USER,
+                        active=created_user.is_active,
+                        iden=created_user.id,
+                        email=email,
+                        username=created_user.username,
+                        details=created_user.full_data
+                    )
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.CREATE_USER)
+
+        return user_profile
+
+    def update_user(self, client, args):
+        """ Creates a user in the application and updates the user profile object with the data.
+            If the user is disabled and `allow-enable` argument is `true`, also enables the user.
+            If the user does not exist in the app and the `create-if-not-exist` parameter is checked, creates the user.
+
+        :param client: (Client) A Client object that implements get_user(), create_user() and update_user() methods
+        :param args: (dict) The `iam-update-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        allow_enable = args.get('allow-enable') == 'true'
+        if not self.is_update_enabled:
+            user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                email = user_profile.get_attribute('email')
+                user_app_data = client.get_user(email)
+                if user_app_data:
+                    app_profile = user_profile.map_object(self.mapper_out)
+
+                    if allow_enable and not user_app_data.is_active:
+                        client.enable_user(user_app_data.id)
+
+                    updated_user = client.update_user(user_app_data.id, app_profile)
+                    user_profile.set_result(
+                        action=IAMActions.UPDATE_USER,
+                        active=updated_user.is_active,
+                        iden=updated_user.id,
+                        email=email,
+                        username=updated_user.username,
+                        details=updated_user.full_data
+                    )
+                else:
+                    if self.create_if_not_exists:
+                        user_profile = self.create_user(client, args)
+                    else:
+                        _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                        user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                                skip=True,
+                                                skip_reason=error_message)
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.UPDATE_USER)
+
+        return user_profile
