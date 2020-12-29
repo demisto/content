@@ -838,6 +838,104 @@ def test_debug_logger_replace_strs(mocker):
         assert s not in msg
 
 
+def test_build_curl_post_noproxy():
+    """
+    Given:
+       - HTTP client log messages of POST query
+       - Proxy is not used and insecure is not checked
+    When
+       - Building curl query
+    Then
+       - Ensure curl is generated as expected
+    """
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'POST /api HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"data\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy -d \'{"data": "value"}\''
+    ]
+
+
+def test_build_curl_get_withproxy(mocker):
+    """
+    Given:
+       - HTTP client log messages of GET query
+       - Proxy used and insecure checked
+    When
+       - Building curl query
+    Then
+       - Ensure curl is generated as expected
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'proxy': True,
+        'insecure': True
+    })
+    os.environ['https_proxy'] = 'http://proxy'
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'GET /api HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"data\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X GET https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--proxy http://proxy -k -d \'{"data": "value"}\''
+    ]
+
+
+def test_build_curl_multiple_queries():
+    """
+    Given:
+       - HTTP client log messages of POST and GET queries
+       - Proxy is not used and insecure is not checked
+    When
+       - Building curl query
+    Then
+       - Ensure two curl queries are generated as expected
+    """
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'POST /api/post HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"postdata\": \"value\"}'")
+    ilog.build_curl("send: b'GET /api/get HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"getdata\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X POST https://demisto.com/api/post -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy -d \'{"postdata": "value"}\'',
+        'curl -X GET https://demisto.com/api/get -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy -d \'{"getdata": "value"}\''
+    ]
+
+
 def test_is_mac_address():
     from CommonServerPython import is_mac_address
 

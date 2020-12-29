@@ -1039,6 +1039,7 @@ class IntegrationLogger(object):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
+        self.curl = []  # type: list
         self.buffering = True
         self.debug_logging = debug_logging
         # if for some reason you don't want to auto add credentials.password to replace strings
@@ -1118,6 +1119,53 @@ class IntegrationLogger(object):
                 demisto.info(text)
             self.messages = []
 
+    def build_curl(self, text):
+        """
+        Parses the HTTP client "send" log messages and generates cURL queries out of them.
+
+        :type text: ``str``
+        :param text: The HTTP client log message.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+        data = text.split("send: b'")[1]
+        if data.startswith('{'):
+            # it is the request url query params/post body - will always come after we already have the url and headers
+            self.curl[-1] += "-d '{}".format(data)
+        elif any(http_method in data for http_method in http_methods):
+            method = ''
+            url = ''
+            headers = []
+            headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
+            request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
+            for line, part in enumerate(request_parts):
+                if line == 0:
+                    method, url, _ = part[1:].split()  # ignoring " at first char
+                elif line != len(request_parts) - 1:  # ignoring the last line which is empty
+                    if part.startswith('Host:'):
+                        _, host = part.split('Host: ')
+                        url = 'https://{}{}'.format(host, url)
+                    else:
+                        if any(header_to_skip in part for header_to_skip in headers_to_skip):
+                            continue
+                        headers.append(part)
+            curl_headers = ''
+            for header in headers:
+                if header:
+                    curl_headers += '-H "{}" '.format(header)
+            curl = 'curl -X {} {} {}'.format(method, url, curl_headers)
+            if demisto.params().get('proxy'):
+                proxy_address = os.environ.get('https_proxy')
+                if proxy_address:
+                    curl += '--proxy {} '.format(proxy_address)
+            else:
+                curl += '--noproxy '
+            if demisto.params().get('insecure'):
+                curl += '-k '
+            self.curl.append(curl)
+
     def write(self, msg):
         # same as __call__ but allows IntegrationLogger to act as a File like object.
         msg = self.encode(msg)
@@ -1134,6 +1182,11 @@ class IntegrationLogger(object):
                 self.messages.append(text)
             else:
                 demisto.info(text)
+                if is_debug_mode() and text.startswith('send:'):
+                    try:
+                        self.build_curl(text)
+                    except Exception as e:  # should fail silently
+                        demisto.debug('Failed generating curl - {}'.format(str(e)))
             self.write_buf = []
 
     def print_override(self, *args, **kwargs):
@@ -4868,6 +4921,9 @@ class DebugLogger(object):
                 setattr(self.http_client, 'print', self.http_client_print)
             else:
                 delattr(self.http_client, 'print')
+            if self.int_logger.curl:
+                for curl in self.int_logger.curl:
+                    demisto.info('cURL:\n' + curl)
 
     def log_start_debug(self):
         """
