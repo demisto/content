@@ -231,6 +231,8 @@ def fetch_indicators(params: Dict, test_module: bool):
 
     # in every fetch apart from first fetch, we are only fetching one csv file, so we know there aren't any duplicates
     if have_fetched_first_time:
+        for indicator in indicators:
+            indicator['fields']['Cryptocurrency Address Type'] = 'bitcoin'
         indicators_without_duplicates = indicators
 
     # in first fetch according to configurations, we might fetch more than one csv file, so we need to remove duplicates
