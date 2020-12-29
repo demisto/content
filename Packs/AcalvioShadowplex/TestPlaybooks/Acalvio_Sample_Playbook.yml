@@ -1,0 +1,1269 @@
+id: 3f35b98b-ee7b-4063-876c-510b1ca67a0b
+version: 9
+fromversion: 5.0.0
+vcShouldKeepItemLegacyProdMachine: false
+rolename:
+- Administrator
+- Analyst
+name: Acalvio Sample Playbook
+description: This playbook is to test Acalvio Integration (app)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a3bc6a77-ce73-4d35-89fa-6c3c864c0e05
+    type: start
+    task:
+      id: a3bc6a77-ce73-4d35-89fa-6c3c864c0e05
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: d599f002-a843-49c4-8190-704e8b08ba13
+    type: title
+    task:
+      id: d599f002-a843-49c4-8190-704e8b08ba13
+      version: -1
+      name: END
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 728be0ff-0dc0-4d68-8565-5ae4237a9209
+    type: regular
+    task:
+      id: 728be0ff-0dc0-4d68-8565-5ae4237a9209
+      version: -1
+      name: acalvio-is-deception-file
+      description: Check if its a Deception File on the Endpoint
+      script: Acalvio ShadowPlex|||acalvio-is-deception-file
+      type: regular
+      iscommand: true
+      brand: Acalvio ShadowPlex
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      filename:
+        simple: ${Provide the below.Answers.0}
+      host:
+        simple: ${Provide the below.Answers.1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 0e33c850-1fa3-437e-81b1-13169be74bb4
+    type: regular
+    task:
+      id: 0e33c850-1fa3-437e-81b1-13169be74bb4
+      version: -1
+      name: Print File
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      value:
+        simple: '{''is_deception'' : ${Acalvio.IsDeceptionFile.is_deception}, ''filename''
+          : ${Acalvio.IsDeceptionFile.filename}, ''host'' : ${Acalvio.IsDeceptionFile.host}}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 0427b60d-3ba4-4e70-887a-0d87c391bd72
+    type: condition
+    task:
+      id: 0427b60d-3ba4-4e70-887a-0d87c391bd72
+      version: -1
+      name: checkDeception
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      FILE:
+      - "9"
+      HOST:
+      - "11"
+      USER:
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Check Deception
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - HOST
+      - USER
+      - FILE
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 8c15bd96-c152-4849-8607-735fe8dcfad0
+    type: collection
+    task:
+      id: 8c15bd96-c152-4849-8607-735fe8dcfad0
+      version: -1
+      name: fileParams
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: To check if File on Endpoint is a Deception
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Filename
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Host (Hostname or IP Address)
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide the below
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 97048a9f-0aee-4fb3-8343-5453977fa1b0
+    type: collection
+    task:
+      id: 97048a9f-0aee-4fb3-8343-5453977fa1b0
+      version: -1
+      name: hostParams
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: To check if Endpoint is a Deception
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Host (Hostname or IP Address)
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide the below
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: e18431aa-db3f-4da0-86bd-452a1f5bfcc8
+    type: collection
+    task:
+      id: e18431aa-db3f-4da0-86bd-452a1f5bfcc8
+      version: -1
+      name: userParams
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: To check if User is a Deception
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Username
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Domain
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide the below
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: fcf6813d-0863-4e15-8554-9d563c642ee5
+    type: regular
+    task:
+      id: fcf6813d-0863-4e15-8554-9d563c642ee5
+      version: -1
+      name: acalvio-is-deception-host
+      description: Check if its a Deceptiom Host
+      script: Acalvio ShadowPlex|||acalvio-is-deception-host
+      type: regular
+      iscommand: true
+      brand: Acalvio ShadowPlex
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      host:
+        simple: ${Provide the below.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2fd5e02d-edc7-42af-878f-f60ecdc9e882
+    type: regular
+    task:
+      id: 2fd5e02d-edc7-42af-878f-f60ecdc9e882
+      version: -1
+      name: Print Host
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      value:
+        simple: '{ ''is_deception'' : ${Acalvio.IsDeceptionHost.is_deception}, ''host''
+          : ${Acalvio.IsDeceptionHost.host} }'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 6cc27089-1a0c-4a8b-8ab7-b502705666e4
+    type: regular
+    task:
+      id: 6cc27089-1a0c-4a8b-8ab7-b502705666e4
+      version: -1
+      name: acalvio-is-deception-user
+      description: Check if its a Deception User
+      script: Acalvio ShadowPlex|||acalvio-is-deception-user
+      type: regular
+      iscommand: true
+      brand: Acalvio ShadowPlex
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      domain:
+        simple: ${Provide the below.Answers.1}
+      username:
+        simple: ${Provide the below.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: c584623a-c06e-42a8-8d38-b9470542ea7a
+    type: regular
+    task:
+      id: c584623a-c06e-42a8-8d38-b9470542ea7a
+      version: -1
+      name: Print User
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      value:
+        simple: '{ ''is_deception'' : ${Acalvio.IsDeceptionUser.is_deception}, ''username''
+          : ${Acalvio.IsDeceptionUser.username}, ''domain'' : ${Acalvio.IsDeceptionUser.domain}
+          }'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 8ed77ff8-6483-4f92-8f5c-a35e0b26c125
+    type: condition
+    task:
+      id: 8ed77ff8-6483-4f92-8f5c-a35e0b26c125
+      version: -1
+      name: whatToDo
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      CHECK DECEPTION:
+      - "8"
+      MUTE DECEPTION:
+      - "18"
+      UNMUTE DECEPTION:
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: What would you like to do
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - CHECK DECEPTION
+      - MUTE DECEPTION
+      - UNMUTE DECEPTION
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: aff85655-a5a0-40fe-8cec-e958930bbd1f
+    type: condition
+    task:
+      id: aff85655-a5a0-40fe-8cec-e958930bbd1f
+      version: -1
+      name: muteDeception
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      DECOY:
+      - "19"
+      ENDPOINT:
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Mute Deception
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - DECOY
+      - ENDPOINT
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: cbd10d61-a0f6-4cd0-82f8-c42d21d3ef96
+    type: collection
+    task:
+      id: cbd10d61-a0f6-4cd0-82f8-c42d21d3ef96
+      version: -1
+      name: muteDecoyHostIP
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: To mute a Decoy
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Decoy Hostname or IP Address
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide the below
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 12d18df6-bb3d-4402-8f52-cc1930b6ab2c
+    type: regular
+    task:
+      id: 12d18df6-bb3d-4402-8f52-cc1930b6ab2c
+      version: -1
+      name: acalvio-mute-decoy
+      description: Mute a Deception Host
+      script: Acalvio ShadowPlex|||acalvio-mute-deception-host
+      type: regular
+      iscommand: true
+      brand: Acalvio ShadowPlex
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      host:
+        simple: ${Provide the below.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 4f13a9c8-b481-46bd-8669-35e5baa958e4
+    type: regular
+    task:
+      id: 4f13a9c8-b481-46bd-8669-35e5baa958e4
+      version: -1
+      name: Print Mute Decoy
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      value:
+        simple: "{ \n'is_mute' : ${Acalvio.MuteDeceptionHost.is_mute}, \n'host' :
+          ${Acalvio.MuteDeceptionHost.host} \n}"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 92b17288-b3db-4baa-8e53-dba59a8741eb
+    type: collection
+    task:
+      id: 92b17288-b3db-4baa-8e53-dba59a8741eb
+      version: -1
+      name: muteEpHostIP
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: To mute Deception on Endpoint
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Endpoint Hostname or IP Address
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide the below
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: c773bc4a-aaaa-4abb-857e-ae74dd7fee37
+    type: regular
+    task:
+      id: c773bc4a-aaaa-4abb-857e-ae74dd7fee37
+      version: -1
+      name: acalvio-mute-ep
+      description: Mute a Deception on Endpoint
+      script: Acalvio ShadowPlex|||acalvio-mute-deception-on-endpoint
+      type: regular
+      iscommand: true
+      brand: Acalvio ShadowPlex
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      endpoint:
+        simple: ${Provide the below.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 032faf36-9657-41f1-869e-81cf141e9373
+    type: regular
+    task:
+      id: 032faf36-9657-41f1-869e-81cf141e9373
+      version: -1
+      name: Print Mute EP
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      value:
+        simple: "{ \n'is_mute' : ${Acalvio.MuteDeceptionEndpoint.is_mute}, \n'endpoint'
+          : ${Acalvio.MuteDeceptionEndpoint.endpoint}\n}"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 04ec04f9-5da0-45cd-8a36-f1b0d9dc5a51
+    type: condition
+    task:
+      id: 04ec04f9-5da0-45cd-8a36-f1b0d9dc5a51
+      version: -1
+      name: unmuteDeception
+      description: "Gets a value and return it. This is to be used in playbook conditional
+        tasks - get a value from incident field, label or context, and act accordingly.
+        \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      DECOY:
+      - "26"
+      ENDPOINT:
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2415,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Unmute Deception
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - DECOY
+      - ENDPOINT
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 7e439838-9873-45da-8027-116f8a9e983c
+    type: collection
+    task:
+      id: 7e439838-9873-45da-8027-116f8a9e983c
+      version: -1
+      name: unmuteDecoyHostIP
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: To unmute a Decoy
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Decoy Hostname or IP Address
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide the below
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 89176bd7-5feb-4d00-83be-881e56109a57
+    type: collection
+    task:
+      id: 89176bd7-5feb-4d00-83be-881e56109a57
+      version: -1
+      name: umuteEpHostIP
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: To unmute Deception on Endpoint
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Endpoint Hostname or IP Address
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide the below
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 8d6c0a88-3ec8-44e7-8d97-f8287337accb
+    type: regular
+    task:
+      id: 8d6c0a88-3ec8-44e7-8d97-f8287337accb
+      version: -1
+      name: acalvio-unmute-decoy
+      description: Unmute a Deception Host
+      script: Acalvio ShadowPlex|||acalvio-unmute-deception-host
+      type: regular
+      iscommand: true
+      brand: Acalvio ShadowPlex
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      host:
+        simple: ${Provide the below.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: bb9e333e-27db-4b9b-811d-780cbc71a4a8
+    type: regular
+    task:
+      id: bb9e333e-27db-4b9b-811d-780cbc71a4a8
+      version: -1
+      name: acalvio-unmute-ep
+      description: Unmute a Deception on Endpoint
+      script: Acalvio ShadowPlex|||acalvio-unmute-deception-on-endpoint
+      type: regular
+      iscommand: true
+      brand: Acalvio ShadowPlex
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      endpoint:
+        simple: ${Provide the below.Answers.0}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 1b663da9-b8de-4453-8de6-91fe0409e763
+    type: regular
+    task:
+      id: 1b663da9-b8de-4453-8de6-91fe0409e763
+      version: -1
+      name: Print Unmute Decoy
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      value:
+        simple: "{ \n'is_unmute' : ${Acalvio.UnmuteDeceptionHost.is_unmute}, \n'host'
+          : ${Acalvio.UnmuteDeceptionHost.host}\n}"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 454057e6-6cb6-4f30-8d70-6ca9bb27d1ad
+    type: regular
+    task:
+      id: 454057e6-6cb6-4f30-8d70-6ca9bb27d1ad
+      version: -1
+      name: Print Unmute EP
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      value:
+        simple: "{ \n'is_unmute' : ${Acalvio.UnmuteDeceptionEndpoint.is_unmute}, \n'endpoint'
+          : ${Acalvio.UnmuteDeceptionEndpoint.endpoint}\n}"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 77325d76-eadd-463f-8512-8aecd27d4558
+    type: title
+    task:
+      id: 77325d76-eadd-463f-8512-8aecd27d4558
+      version: -1
+      name: Mute Deception End
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: bf4a1ef8-a607-4e43-8b39-4ada34c008f2
+    type: title
+    task:
+      id: bf4a1ef8-a607-4e43-8b39-4ada34c008f2
+      version: -1
+      name: Unmute Deception End
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2415,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: fa6ab1d2-9c9c-4f85-81b9-3acbb001b017
+    type: title
+    task:
+      id: fa6ab1d2-9c9c-4f85-81b9-3acbb001b017
+      version: -1
+      name: Check Deception End
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 2960,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

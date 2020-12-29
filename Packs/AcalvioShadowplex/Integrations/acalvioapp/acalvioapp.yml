@@ -1,0 +1,183 @@
+category: Deception
+commonfields:
+  id: Acalvio ShadowPlex
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: Acalvio API Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Acalvio API Key
+  hidden: false
+  name: apikey
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Acalvio ShadowPlex is a comprehensive Autonomous Deception Platform that
+  offers Advanced Threat Detection, Investigation and Response capabilities.
+display: Acalvio ShadowPlex
+name: Acalvio ShadowPlex
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Hostname or IP Address of Endpoint
+      isArray: false
+      name: host
+      required: true
+      secret: false
+    deprecated: false
+    description: Check for a Deception Host
+    execution: false
+    name: acalvio-is-deception-host
+    outputs:
+    - contextPath: Acalvio.IsDeceptionHost.is_deception
+      description: Returns 'True' if Host is a Deception else 'False'
+      type: Boolean
+    - contextPath: Acalvio.IsDeceptionHost.host
+      description: Host to be checked if Deception
+      type: String
+  - arguments:
+    - default: false
+      description: Username of the Domain User
+      isArray: false
+      name: username
+      required: true
+      secret: false
+    - default: false
+      description: AD Domain Name to which User belongs to
+      isArray: false
+      name: domain
+      required: false
+      secret: false
+    deprecated: false
+    description: Check for a Deception User
+    execution: false
+    name: acalvio-is-deception-user
+    outputs:
+    - contextPath: Acalvio.IsDeceptionUser.is_deception
+      description: Returns 'True' if its a Deception User else 'False'
+      type: Boolean
+    - contextPath: Acalvio.IsDeceptionUser.username
+      description: Username to be checked if Deception
+      type: String
+    - contextPath: Acalvio.IsDeceptionUser.domain
+      description: Users Domain
+      type: String
+  - arguments:
+    - default: false
+      description: Hostname or IP Address of Endpoint where file resides
+      isArray: false
+      name: endpoint
+      required: true
+      secret: false
+    - default: false
+      description: Name of the file to be checked
+      isArray: false
+      name: filename
+      required: true
+      secret: false
+    deprecated: false
+    description: Check for a Deception File on the Endpoint
+    execution: false
+    name: acalvio-is-deception-file
+    outputs:
+    - contextPath: Acalvio.IsDeceptionFile.is_deception
+      description: Returns 'True' if File is a Deception else 'False'
+      type: Boolean
+    - contextPath: Acalvio.IsDeceptionFile.filename
+      description: Filename to be checked if Deception
+      type: String
+    - contextPath: Acalvio.IsDeceptionFile.endpoint
+      description: Hostname or IP Address of Endpoint where file resides
+      type: String
+  - arguments:
+    - default: false
+      description: Hostname or IP Address of Deception Host
+      isArray: false
+      name: host
+      required: true
+      secret: false
+    deprecated: false
+    description: Mute a Deception Host
+    execution: false
+    name: acalvio-mute-deception-host
+    outputs:
+    - contextPath: Acalvio.MuteDeceptionHost.host
+      description: Deception Host to be Muted
+      type: String
+    - contextPath: Acalvio.MuteDeceptionHost.is_mute
+      description: Returns 'True' if Deception is Muted else 'False'
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Hostname or IP Address of Deception Host
+      isArray: false
+      name: host
+      required: true
+      secret: false
+    deprecated: false
+    description: Unmute a Deception Host
+    execution: false
+    name: acalvio-unmute-deception-host
+    outputs:
+    - contextPath: Acalvio.UnmuteDeceptionHost.host
+      description: Deception Host to be Unmuted
+      type: String
+    - contextPath: Acalvio.UnmuteDeceptionHost.is_unmute
+      description: Returns 'True' if Deception is Unmuted else 'False'
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Hostname or IP Address of Endpoint
+      isArray: false
+      name: endpoint
+      required: true
+      secret: false
+    deprecated: false
+    description: Mute a Deception on Endpoint
+    execution: false
+    name: acalvio-mute-deception-on-endpoint
+    outputs:
+    - contextPath: Acalvio.MuteDeceptionEndpoint.endpoint
+      description: Endpoint on which Deception is to be Muted
+      type: String
+    - contextPath: Acalvio.MuteDeceptionEndpoint.is_mute
+      description: Returns 'True' if Deception is Muted else 'False'
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Hostname or IP Address of Endpoint
+      isArray: false
+      name: endpoint
+      required: true
+      secret: false
+    deprecated: false
+    description: Unmute a Deception on Endpoint
+    execution: false
+    name: acalvio-unmute-deception-on-endpoint
+    outputs:
+    - contextPath: Acalvio.UnmuteDeceptionEndpoint.endpoint
+      description: Endpoint on which Deception is to be Unmuted
+      type: String
+    - contextPath: Acalvio.UnmuteDeceptionEndpoint.is_unmute
+      description: Returns 'True' if Deception is Unmuted else 'False'
+      type: Boolean
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0
