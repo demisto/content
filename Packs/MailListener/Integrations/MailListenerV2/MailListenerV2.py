@@ -189,9 +189,12 @@ def fetch_incidents(client: IMAPClient,
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
+    uid_to_fetch_from = last_run.get('last_uid', 1)
     # time_to_fetch_from is required only for the first fetch, as after that we will use UID to fetch from
     time_to_fetch_from = parse(f'{first_fetch_time} UTC') if not last_run else None
-    uid_to_fetch_from = last_run.get('last_uid', 1)
+    if uid_to_fetch_from == 1 and last_run.get('last_fetch'):
+        # for back compatibility, if an instance was using the timestamp and was upgraded to use UID
+        time_to_fetch_from = datetime.fromisoformat(last_run.get('last_fetch', ''))
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
         client=client,
         include_raw_body=include_raw_body,
