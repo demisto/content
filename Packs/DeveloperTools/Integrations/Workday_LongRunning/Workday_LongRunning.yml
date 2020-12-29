@@ -15,6 +15,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
+description: IAM mock Workday full reports and events.
 display: Workday long running
 name: Workday_long_running
 script:
