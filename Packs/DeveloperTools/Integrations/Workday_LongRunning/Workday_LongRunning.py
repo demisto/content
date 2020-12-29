@@ -1069,7 +1069,7 @@ def get_rehire_report(user_email):
 
 
 if demisto.command() == 'long-running-execution':
-    set_integration_context({})
+    # set_integration_context({})
     integration_context = get_integration_context()
     if not integration_context:
         set_integration_context(FIRST_RUN_REPORT)
