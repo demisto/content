@@ -81,7 +81,7 @@ def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, c
     pack_files_comment = ''
     new_line = '/n'
     for file in pack_files:
-        pack_files_comment += f'[{new_line}{file}](https://github.com/demisto/content/blob/{commit}/{file})'
+        pack_files_comment += f'{new_line}[{file}](https://github.com/demisto/content/blob/{commit}/{file})'
 
     comment_body = {
         "body": f"### Your contributed {pack} {PR_COMMENT_PREFIX}"
