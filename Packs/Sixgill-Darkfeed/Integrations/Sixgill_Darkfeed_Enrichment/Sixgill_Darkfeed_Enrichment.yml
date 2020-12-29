@@ -428,7 +428,7 @@ script:
           required: false
           secret: false
       deprecated: false
-      description: Return Actor information and reputation
+      description: Query the Sixgill Darkfeed and receive all IOCs shared by that threat actor
       execution: false
       name: sixgill-get-actor
       outputs:
@@ -519,7 +519,7 @@ script:
           required: false
           secret: false
       deprecated: false
-      description: Return Postid information and reputation
+      description: Query the Sixgill Darkfeed for a specific Sixgill post ID (i.e. unique identifier of a specific post shared in the underground) and receive all IOCs shared in that post
       execution: false
       name: sixgill-get-post-id
       outputs:

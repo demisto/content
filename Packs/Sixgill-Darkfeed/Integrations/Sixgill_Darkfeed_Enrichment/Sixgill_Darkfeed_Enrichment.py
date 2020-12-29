@@ -98,7 +98,8 @@ def ip_reputation_command(client: SixgillEnrichClient, args) -> List[CommandResu
             score = max(list(map(get_score, ip_data)))
 
         dbot_score = Common.DBotScore(
-            indicator=ip, indicator_type=DBotScoreType.IP, integration_name="SixgillDarkfeedEnrichment", score=score
+            indicator=ip, indicator_type=DBotScoreType.IP, integration_name="SixgillDarkfeedEnrichment", score=score,
+            malicious_description="; ".join({ioc.get("description") for ioc in ip_data})
         )
 
         ip_standard_context = Common.IP(ip=ip, dbot_score=dbot_score)
@@ -138,6 +139,7 @@ def domain_reputation_command(client: SixgillEnrichClient, args) -> List[Command
             indicator_type=DBotScoreType.DOMAIN,
             integration_name="SixgillDarkfeedEnrichment",
             score=score,
+            malicious_description="; ".join({ioc.get("description") for ioc in domain_data})
         )
 
         domain_standard_context = Common.Domain(domain=domain, dbot_score=dbot_score)
@@ -147,7 +149,7 @@ def domain_reputation_command(client: SixgillEnrichClient, args) -> List[Command
         command_results.append(
             CommandResults(
                 readable_output=readable_output,
-                outputs_prefix="Sixgill.DOMAIN",
+                outputs_prefix="Sixgill.Domain",
                 outputs_key_field="domain",
                 outputs=domain_data,
                 indicator=domain_standard_context,
@@ -173,7 +175,8 @@ def url_reputation_command(client: SixgillEnrichClient, args) -> List[CommandRes
             score = max(list(map(get_score, url_data)))
 
         dbot_score = Common.DBotScore(
-            indicator=url, indicator_type=DBotScoreType.URL, integration_name="SixgillDarkfeedEnrichment", score=score
+            indicator=url, indicator_type=DBotScoreType.URL, integration_name="SixgillDarkfeedEnrichment", score=score,
+            malicious_description="; ".join({ioc.get("description") for ioc in url_data})
         )
 
         url_standard_context = Common.URL(url=url, dbot_score=dbot_score)
@@ -215,6 +218,7 @@ def file_reputation_command(client: SixgillEnrichClient, args) -> List[CommandRe
             indicator_type=DBotScoreType.FILE,
             integration_name="SixgillDarkfeedEnrichment",
             score=score,
+            malicious_description="; ".join({ioc.get("description") for ioc in file_data})
         )
 
         file_standard_context = Common.File(
@@ -252,12 +256,12 @@ def actor_reputation_command(client: SixgillEnrichClient, args) -> List[CommandR
     for actor in actors:
         actor_data = client.enrich_actor(actor, skip)
 
-        readable_output = tableToMarkdown("ACTOR", actor_data)
+        readable_output = tableToMarkdown("Actor", actor_data)
 
         command_results.append(
             CommandResults(
                 readable_output=readable_output,
-                outputs_prefix="Sixgill.ACTOR",
+                outputs_prefix="Sixgill.Actor",
                 outputs_key_field="actor",
                 outputs=actor_data,
             )
@@ -277,12 +281,12 @@ def postid_reputation_command(client: SixgillEnrichClient, args) -> List[Command
     for post_id in postids:
         post_id_data = client.enrich_postid(post_id, skip)
 
-        readable_output = tableToMarkdown("POSTID", post_id_data)
+        readable_output = tableToMarkdown("Postid", post_id_data)
 
         command_results.append(
             CommandResults(
                 readable_output=readable_output,
-                outputs_prefix="Sixgill.POSTID",
+                outputs_prefix="Sixgill.Postid",
                 outputs_key_field="postid",
                 outputs=post_id_data,
             )

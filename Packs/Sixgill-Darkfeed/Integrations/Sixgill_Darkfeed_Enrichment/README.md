@@ -234,7 +234,7 @@ Return file information and reputation
 
 ### actor
 ***
-Return Actor information and reputation
+Query the Sixgill Darkfeed and receive all IOCs shared by that threat actor
 
 
 #### Base Command
@@ -286,7 +286,7 @@ Return Actor information and reputation
 
 ### post_id
 ***
-Return Postid information and reputation
+Query the Sixgill Darkfeed for a specific Sixgill post ID (i.e. unique identifier of a specific post shared in the underground) and receive all IOCs shared in that post
 
 
 #### Base Command
