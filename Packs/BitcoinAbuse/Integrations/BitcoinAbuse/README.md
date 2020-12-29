@@ -24,7 +24,22 @@ Supported Cortex XSOAR versions: 5.5.0 and later.
     | feedTags | Tags | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-## Commands
+## Fetching indicators
+#### Initial Fetch
+When configuring an integration instance, you will be required to enter the first fetch parameter which will set the timeframe to pull Indicators in the first fetch, Two options are available:
+
+- 30 Days - Indicators recorded in the last 30 days (updates every Sunday between 2am-3am UTC.)
+- Forever - All recorded indicators (updates every 15th of the month between 2am-3am UTC.)
+
+
+Note: 
+- Whenever Forever is selected, in order to bring as much data as possible in the first fetch, we merge the Forever CSV together the 30 Days CSV file to avoid missing as much data as possible.
+- Restrictions will be that any data reported between Sunday  (after 30 Days file update) to the day of the first fetch
+will not be fetched
+
+#### Each fetch after the initial fetch 
+Each fetch after the initial fetch will return indicators reported on the previous day (updates once a day between 2am-3am UTC). Therefore, fetching more than once a day will not have any effect.
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bitcoinabuse-report-address
