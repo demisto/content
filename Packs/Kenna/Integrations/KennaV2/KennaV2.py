@@ -1,8 +1,9 @@
-from typing import List, Tuple, Dict, Any, Optional, Callable
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
+import demistomock as demisto  # noqa: F401
 import urllib3
-import demistomock as demisto
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
+from CommonServerPython import BaseClient
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -49,8 +50,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=header)
 
     def http_request(self, message: str, suffix: str, params: Optional[dict] = None,
-                     data: Optional[dict] = None) -> Dict[str, Any]:
-
+                     data: Optional[dict] = None):  # -> Dict[str, Any]
         """Connects to api and Returns response.
            Args:
                message: The HTTP message, for example: GET, POST, and so on
@@ -120,10 +120,10 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
     human_readable = []
     context: Dict[str, Any] = {}
     params = {
-        'id[]': argToList(args.get('id')),
-        'top_priority[]': argToList(args.get('top-priority')),
+        'id': argToList(args.get('id')),
+        'top_priority': argToList(args.get('top-priority')),
         'min_risk_meter_score': args.get('min-score'),
-        'status[]': argToList(args.get('status')),
+        'status': argToList(args.get('status')),
     }
     response = client.http_request(message='GET', suffix=url_suffix,
                                    params=params).get('vulnerabilities')
@@ -198,6 +198,73 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
     return human_readable_markdown, context, connectors
 
 
+def get_connector_runs(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+    """Get Connector Runs command.
+    Args:
+        client:  Client which connects to api
+    Returns:
+        Human Readable
+        Entry Context
+        Raw Data
+    """
+    connector_id = demisto.getArg("connector_id")
+    url_suffix = '/connectors/%s/connector_runs' % connector_id
+    human_readable = []
+    context: Dict[str, Any] = {}
+    connectors: List[Dict[str, Any]] = client.http_request(message='GET', suffix=url_suffix)
+    if connectors:
+        keys = [
+            "id", "start_time",
+            "end_time", "success",
+            "total_payload_count",
+            "processed_palyoad_count",
+            "failed_payload_count",
+            "processed_assets_count",
+            "assets_with_tags_reset_count",
+            "processed_scanner_vuln_count",
+            "created_scanner_vuln_count",
+            "closed_scanner_vuln_count",
+            "autoclosed_scanner_vuln_count",
+            "reopened_scanner_vuln_count",
+            "closed_vuln_count",
+            "autoclosed_vuln_count",
+            "reopened_vuln_count"
+        ]
+
+        context_list = parse_response(connectors, keys, keys)
+
+        for connector in connectors:
+            curr_dict = {
+                "id": connector.get("id"),
+                "start_time": connector.get("start_time"),
+                "end_time": connector.get("end_time"),
+                "success": connector.get("success"),
+                "total_payload_count": connector.get("total_payload_count"),
+                "processed_payload_count": connector.get("total_payload_count"),
+                "failed_payload_count": connector.get("failed_payload_count"),
+                "processed_assets_count": connector.get("processed_assets_count"),
+                "assets_with_tags_reset_count": connector.get("assets_with_tags_reset_count"),
+                "processed_scanner_vuln_count": connector.get("processed_scanner_vuln_count"),
+                "updated_scanner_vuln_count": connector.get("updated_scanner_vuln_count"),
+                "created_scanner_vuln_count": connector.get("created_scanner_vuln_count"),
+                "closed_scanner_vuln_count": connector.get("closed_scanner_vuln_count"),
+                "autoclosed_scanner_vuln_count": connector.get("autoclosed_scanner_vuln_count"),
+                "reopened_scanner_vuln_count": connector.get("reopened_scanner_vuln_count"),
+                "closed_vuln_count": connector.get("closed_vuln_count"),
+                "autoclosed_vuln_count": connector.get("closed_vuln_count"),
+                "reopened_vuln_count": connector.get("reopened_vuln_count")
+            }
+            human_readable.append(curr_dict)
+        context = {
+            'Kenna.ConnectorRunsList(val.ID === obj.ID)': context_list
+        }
+        human_readable_markdown = tableToMarkdown('Kenna Connector Runs', human_readable, removeNull=True)
+    else:
+        human_readable_markdown = "no connectors in get response."
+
+    return human_readable_markdown, context, connectors
+
+
 def run_connector(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Run Connector command.
     Args:
@@ -230,14 +297,14 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
     to_context = args.get('to_context')
     context: Dict[str, Any] = {}
     params = {
-        'id[]': argToList(args.get('id')),
-        'top_priority[]': argToList(args.get('top-priority')),
+        'id': argToList(args.get('id')),
+        'top_priority': argToList(args.get('top-priority')),
         'min_risk_meter_score': args.get('min-score'),
-        'status[]': argToList(args.get('status')),
-        'per_page': limit
+        'status': argToList(args.get('status')),
     }
     response = client.http_request(message='GET', suffix=url_suffix, params=params).get('fixes')
     if response:
+        fixes_list = response[:limit]
 
         wanted_keys = ['ID', 'Title', ['Assets', 'ID', 'Locator', 'PrimaryLocator', 'DisplayLocator'],
                        ['Vulnerabilities', 'ID', 'ServiceTicketStatus', 'ScannerIDs'], 'CveID', 'LastUpdatedAt',
@@ -246,10 +313,10 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
                        ['vulnerabilities', 'id', 'service_ticket_status', 'scanner_ids'], 'cves', 'updated_at',
                        'category',
                        'vuln_count', 'max_vuln_score']
-        context_list = parse_response(response, wanted_keys, actual_keys)
+        context_list = parse_response(fixes_list, wanted_keys, actual_keys)
 
         remove_html = re.compile(r'<[^>]+>')
-        for fix in response:
+        for fix in fixes_list:
             if fix:
                 human_readable_markdown += str(fix.get('title')) + '\n'
                 human_readable_markdown += '#### ID: ' + str(fix.get('id')) + '\n'
@@ -339,10 +406,10 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     else:
         tags = args.get('tags')
     params = {
-        'id[]': argToList(args.get('id')),
-        'hostname[]': argToList(args.get('hostname')),
+        'id': argToList(args.get('id')),
+        'hostname': argToList(args.get('hostname')),
         'min_risk_meter_score': args.get('min-score'),
-        'tags[]': tags
+        'tags': tags
     }
     response = client.http_request(message='GET', suffix=url_suffix, params=params).get(
         'assets')
@@ -493,6 +560,7 @@ def main():
         'kenna-get-asset-vulnerabilities': get_asset_vulnerabilities,
         'kenna-add-tag': add_tags,
         'kenna-delete-tag': delete_tags,
+        'kenna-get-connector-runs': get_connector_runs
     }
 
     try:

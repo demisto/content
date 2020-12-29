@@ -254,3 +254,43 @@ GET_ASSETS_VULNERABILITIES_RESPONSE = {
         }
     ]
 }
+
+GET_CONNECTOR_RUNS_RESPONSE = [
+    {'id': 1462281,
+        'start_time': '2020-12-21T06:32:03.000Z',
+        'end_time': '2020-12-21T07:52:28.000Z',
+        'success': True, 'total_payload_count': 6819,
+        'processed_payload_count': 6819,
+        'failed_payload_count': 0,
+        'processed_assets_count': 6456,
+        'assets_with_tags_reset_count': 0,
+        'processed_scanner_vuln_count': 651063,
+        'updated_scanner_vuln_count': 21033,
+        'created_scanner_vuln_count': 0,
+        'closed_scanner_vuln_count': 0,
+        'autoclosed_scanner_vuln_count': 0,
+        'reopened_scanner_vuln_count': 0,
+        'closed_vuln_count': 0,
+        'autoclosed_vuln_count': 0,
+        'reopened_vuln_count': 0
+    },
+    {'id': 1460258,
+        'start_time': '2020-12-20T06:32:05.000Z',
+        'end_time': '2020-12-20T07:48:42.000Z',
+        'success': True,
+        'total_payload_count': 6819,
+        'processed_payload_count': 6819,
+        'failed_payload_count': 0,
+        'processed_assets_count': 6456,
+        'assets_with_tags_reset_count': 0,
+        'processed_scanner_vuln_count': 651063,
+        'updated_scanner_vuln_count': 21033,
+        'created_scanner_vuln_count': 0,
+        'closed_scanner_vuln_count': 0,
+        'autoclosed_scanner_vuln_count': 0,
+        'reopened_scanner_vuln_count': 0,
+        'closed_vuln_count': 0,
+        'autoclosed_vuln_count': 0,
+        'reopened_vuln_count': 0
+    }
+]
