@@ -1397,18 +1397,28 @@ def search_domain_command(args):
                 md += tableToMarkdown('Indicator Tags:', tags)
             else:
                 md = tableToMarkdown(table_name, autofocus_domain_output)
-            command_results.append(CommandResults(
-                outputs_prefix='AutoFocus.Domain',
-                outputs_key_field='IndicatorValue',
-                outputs=autofocus_domain_output,
-                readable_output=md,
-                raw_response=raw_res,
-                indicator=domain
-            ))
         else:
-            command_results.append(CommandResults(
-                readable_output=f'### The Domain indicator: {domain_name} was not found in AutoFocus',
-            ))
+            dbot_score = Common.DBotScore(
+                indicator=domain_name,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=VENDOR_NAME,
+                score=0
+            )
+            domain = Common.Domain(
+                domain=domain_name,
+                dbot_score=dbot_score
+            )
+            md = f'### The Domain indicator: {domain_name} was not found in AutoFocus'
+            autofocus_domain_output = {'IndicatorValue': domain_name}
+
+        command_results.append(CommandResults(
+            outputs_prefix='AutoFocus.Domain',
+            outputs_key_field='IndicatorValue',
+            outputs=autofocus_domain_output,
+            readable_output=md,
+            raw_response=raw_res,
+            indicator=domain
+        ))
     return command_results
 
 
