@@ -1,0 +1,778 @@
+id: ChronicleAssets Investigation And Remediation - Chronicle
+version: -1
+name: ChronicleAssets Investigation And Remediation - Chronicle
+description: Performs enrichment and investigation of the ChronicleAsset type of indicators,
+  provides an opportunity to remediate in case any of the ChronicleAsset information
+  i.e., hostname or IP address is found to be malicious or suspicious, and sends out
+  an email containing the list of isolated and potentially blocked entities. To select the
+  indicators you want to add, go to playbook inputs, choose "from indicators" and
+  set your query. For example, type:ChronicleAsset etc. The default playbook query
+  is "type:ChronicleAsset". In case indicators with different query parameters are
+  to be investigated, the query must be edited accordingly. This playbook needs to
+  be used with caution as it might use up the integration’s API license when running
+  large amounts of indicators.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3bf6bc25-6b47-42d1-8b47-50a4f7bbdfb9
+    type: start
+    task:
+      id: 3bf6bc25-6b47-42d1-8b47-50a4f7bbdfb9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7eaf2ba2-466d-4f5d-8de0-e506b5b2a934
+    type: condition
+    task:
+      id: 7eaf2ba2-466d-4f5d-8de0-e506b5b2a934
+      version: -1
+      name: Is there a query result?
+      description: Checks if there is a query result for the query applied in the
+        previous task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 73bcd4de-671c-4797-8cbd-66e6e78c158f
+    type: title
+    task:
+      id: 73bcd4de-671c-4797-8cbd-66e6e78c158f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 238229c9-d376-4fdd-8f3b-d9d2e5d1579f
+    type: regular
+    task:
+      id: 238229c9-d376-4fdd-8f3b-d9d2e5d1579f
+      version: -1
+      name: Send an email to the asset support contact
+      description: Sends an email to the asset support contact notifying about the
+        isolated and potentially blocked entities.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hello,
+
+          ${emailBody}
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'Chronicle Cortex XSOAR: List of Isolated and Potentially Blocked
+          Entities'
+      templateParams: {}
+      to:
+        complex:
+          root: inputs.chronicleasset_support_contact
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 74eed0dc-dfe4-4448-8743-8f31d32566e8
+    type: condition
+    task:
+      id: 74eed0dc-dfe4-4448-8743-8f31d32566e8
+      version: -1
+      name: Is there an isolated entity?
+      description: Checks if an isolated entity was returned from the sub-playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IsolatedEntities
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 2c844a28-9992-42f2-87ef-554404eddd93
+    type: condition
+    task:
+      id: 2c844a28-9992-42f2-87ef-554404eddd93
+      version: -1
+      name: Is there a blocked IP Address?
+      description: Checks if a blocked IP address was returned from the sub-playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: PotentiallyBlockedIPs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 41247620-7d93-48ae-8a9f-af7f6f321369
+    type: regular
+    task:
+      id: 41247620-7d93-48ae-8a9f-af7f6f321369
+      version: -1
+      name: Add the list of potentially blocked IP Address(es) to the email body
+      description: Adds the list of potentially blocked entities to the "emailBody"
+        key in the context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      append: {}
+      key:
+        simple: emailBody
+      stringify: {}
+      value:
+        simple: |-
+          Find the following list of the potentially blocked IP address(es) using the XSOAR platform.
+          ${PotentiallyBlockedIPs}
+          ${emailBody}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: d4c0c7d4-50a5-481f-8d32-f3d19252a201
+    type: regular
+    task:
+      id: d4c0c7d4-50a5-481f-8d32-f3d19252a201
+      version: -1
+      name: Add the list of the isolated entities to the email body
+      description: Adds the list of the isolated entities to the "emailBody" key in
+        the context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append: {}
+      key:
+        simple: emailBody
+      stringify: {}
+      value:
+        simple: |-
+          Find the following list of the entities isolated using the XSOAR platform.
+          ${IsolatedEntities}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 1f38b01a-8438-47cc-8d86-c0aa02576600
+    type: condition
+    task:
+      id: 1f38b01a-8438-47cc-8d86-c0aa02576600
+      version: -1
+      name: Is there an email body generated?
+      description: Checks if an email body was generated from any of the preceding
+        tasks.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: emailBody
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: cbb79222-78f3-476b-8301-ce833b75bbe8
+    type: playbook
+    task:
+      id: cbb79222-78f3-476b-8301-ce833b75bbe8
+      version: -1
+      name: ChronicleAsset Investigation - Chronicle
+      description: This playbook receives indicators from its parent playbook, performs
+        enrichment and investigation for each one of them, provides an opportunity
+        to isolate and block the hostname or IP address associated with the current
+        indicator, and gives out a list of isolated and blocked entities. This playbook
+        also lists the events fetched for the asset identifier information associated
+        with the indicator.
+      playbookName: ChronicleAsset Investigation - Chronicle
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      auto_block_entities:
+        complex:
+          root: inputs.auto_block_entities
+      chronicleasset_support_contact:
+        complex:
+          root: inputs.chronicleasset_support_contact
+      chronicleasset_value:
+        complex:
+          root: playbookQuery
+          accessor: value
+          transformers:
+          - operator: uniq
+      skip_entity_isolation:
+        complex:
+          root: inputs.skip_entity_isolation
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 01fc2d69-b8a5-4403-80cc-5f6fce274103
+    type: condition
+    task:
+      id: 01fc2d69-b8a5-4403-80cc-5f6fce274103
+      version: -1
+      name: Is there an email address provided?
+      description: Checks if an email address was provided in the form of playbook
+        input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.chronicleasset_support_contact
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 16fdf320-185f-42cc-8fcb-0936056dd75d
+    type: collection
+    task:
+      id: 16fdf320-185f-42cc-8fcb-0936056dd75d
+      version: -1
+      name: Provide the email address to send the list of potentially blocked and/or
+        isolated entities
+      description: Asks the user to provide an email address of the ChronicleAsset
+        support team for sending an email containing the list of potentially blocked
+        and/or isolated entities.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body: {}
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide an email address of the ChronicleAsset support team
+            of your organization.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: Enter the email address here.
+        tooltip: Email address of the ChronicleAsset support team of your organization.
+          Keep this field empty if you do not want to send an email.
+        readonly: false
+      title: Email address of the ChronicleAsset support team
+      description: Provide an email address to send the list of potentially
+        blocked and/or isolated entities. Keep this field empty if you do not want
+        to send an email.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 25d1da30-505f-4b81-8a39-fe2474b8527a
+    type: condition
+    task:
+      id: 25d1da30-505f-4b81-8a39-fe2474b8527a
+      version: -1
+      name: Is the user willing to send an email and is the entered email address valid?
+      description: Determines if the user wants to send an email and checks if the
+        entered email address is valid.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Email address of the ChronicleAsset support team
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: Email address of the ChronicleAsset support team.Answers.0
+                      iscontext: true
+                    right:
+                      value:
+                        simple: \b[A-Za-z0-9._%=+\p{L}-]+@[A-Za-z0-9\p{L}.-]+\.[A-Za-z]{2,}\b
+                accessor: Answers.0
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 1ac39b9c-7ccf-4cca-86b2-5fd33e4ea66f
+    type: condition
+    task:
+      id: 1ac39b9c-7ccf-4cca-86b2-5fd33e4ea66f
+      version: -1
+      name: Is the provided email address valid?
+      description: Checks if the provided email address is valid.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: inputs.chronicleasset_support_contact
+            iscontext: true
+          right:
+            value:
+              simple: \b[A-Za-z0-9._%=+\p{L}-]+@[A-Za-z0-9\p{L}.-]+\.[A-Za-z]{2,}\b
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 7abbb4d4-3682-4d4a-8172-5615c97c2276
+    type: title
+    task:
+      id: 7abbb4d4-3682-4d4a-8172-5615c97c2276
+      version: -1
+      name: Send an email to the asset support contact
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 42cfdbbd-4308-4d1a-8444-27b59697ca52
+    type: regular
+    task:
+      id: 42cfdbbd-4308-4d1a-8444-27b59697ca52
+      version: -1
+      name: Send an email to the provided email address
+      description: Sends an email to the asset support contact entered by the user
+        in the previous task notifying about the isolated and potentially blocked
+        entities.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hello,
+
+          ${emailBody}
+      cc: {}
+      from: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'Chronicle Cortex XSOAR: List of Isolated and Potentially Blocked
+          Entities'
+      templateParams: {}
+      to:
+        complex:
+          root: Email address of the ChronicleAsset support team.Answers
+          accessor: "0"
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_14_yes": 0.38,
+      "12_3_#default#": 0.14,
+      "16_3_#default#": 0.2,
+      "16_5_yes": 0.52,
+      "17_3_#default#": 0.34,
+      "17_5_yes": 0.52,
+      "1_3_#default#": 0.16,
+      "6_7_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2025,
+        "width": 1190,
+        "x": -360,
+        "y": -80
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: type:ChronicleAsset
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: chronicleasset_support_contact
+  value:
+    complex:
+      root: incident
+      accessor: chronicleassetsupportcontact
+  required: false
+  description: The support email address for the chronicle asset.
+  playbookInputQuery:
+- key: auto_block_entities
+  value:
+    complex:
+      root: incident
+      accessor: chronicleautoblockentities
+  required: false
+  description: Autoblock the detected suspicious IP Address(es). You can manually set this
+    as 'Yes' or 'No' here or you can set it in a  'Chronicle Auto Block Entities' custom incident field.
+  playbookInputQuery:
+- key: skip_entity_isolation
+  value:
+    complex:
+      root: incident
+      accessor: chronicleskipentityisolation
+  required: false
+  description: Skip the isolation of entities. You can manually set this as 'Yes' or 'No'
+    here or you can set it in a 'Chronicle Skip Entity Isolation' custom incident field .
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
