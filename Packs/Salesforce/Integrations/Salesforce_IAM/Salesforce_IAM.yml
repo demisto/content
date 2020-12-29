@@ -38,8 +38,8 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Enable/Disable User Commands Enabled
-  name: enable_disable_user_enabled
+  display: Disable User Commands Enabled
+  name: disable_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
@@ -69,6 +69,18 @@ script:
       isArray: false
       name: user-profile
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active.
+      isArray: false
+      name: allow-enable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Creates a user.
@@ -112,6 +124,18 @@ script:
       isArray: false
       name: user-profile
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active.
+      isArray: false
+      name: allow-enable
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Updates an existing user with the data passed in the user-profile
@@ -284,7 +308,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python:3.8.6.14516
   feed: false
   isfetch: false
   longRunning: false

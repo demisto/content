@@ -6,69 +6,53 @@
   "User Profile": {
    "dontMapEventToLabels": true,
    "internalMapping": {
-    " Street Address": {
+    "Username": {
      "complex": null,
-     "simple": "streetAddress"
+     "simple": "Username"
     },
     "City": {
      "complex": null,
-     "simple": "l"
+     "simple": "City"
     },
     "Country Name": {
      "complex": null,
-     "simple": "c"
-    },
-    "Department": {
-     "complex": null,
-     "simple": "department"
-    },
-    "Display Name": {
-     "complex": null,
-     "simple": "displayName"
+     "simple": "Country"
     },
     "Email": {
      "complex": null,
-     "simple": "mail"
-    },
-    "Employee ID": {
-     "complex": null,
-     "simple": "employeeID"
+     "simple": "Email"
     },
     "Given Name": {
      "complex": null,
-     "simple": "givenName"
+     "simple": "FirstName"
     },
     "Surname": {
      "complex": null,
-     "simple": "sn"
+     "simple": "LastName"
     },
     "Mobile Phone": {
      "complex": null,
-     "simple": "mobile"
+     "simple": "MobilePhone"
     },
     "State Name": {
      "complex": null,
-     "simple": "st"
+     "simple": "State"
     },
     "Street Address": {
      "complex": null,
-     "simple": "streetAddress"
+     "simple": "Street"
     },
     "Title": {
      "complex": null,
-     "simple": "title"
-    },
-    "Username": {
-     "complex": null,
-     "simple": "userPrincipalName"
+     "simple": "Title"
     },
     "Work Phone": {
      "complex": null,
-     "simple": "telephoneNumber"
+     "simple": "Phone"
     },
     "Zip Code": {
      "complex": null,
-     "simple": "postalCode"
+     "simple": "PostalCode"
     }
    }
   }

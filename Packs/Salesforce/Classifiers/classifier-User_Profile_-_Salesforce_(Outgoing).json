@@ -6,71 +6,53 @@
   "User Profile": {
    "dontMapEventToLabels": true,
    "internalMapping": {
-    "in the api": {
+    "username": {
      "complex": null,
-     "simple": "user profile"
+     "simple": "username"
     },
-     "simple": ""
-    },
-    "department": {
-     "complex": null,
-     "simple": "department"
-    },
-    "displayName": {
-     "complex": null,
-     "simple": "displayname"
-    },
-    "employeeID": {
-     "complex": null,
-     "simple": "employeeid"
-    },
-    "givenName": {
-     "complex": null,
-     "simple": "givenname"
-    },
-    "l": {
+    "city": {
      "complex": null,
      "simple": "city"
     },
-    "mail": {
+    "country": {
+     "complex": null,
+     "simple": "country name"
+    },
+    "email": {
      "complex": null,
      "simple": "email"
     },
-    "mobile": {
+    "firstname": {
      "complex": null,
-     "simple": "mobilephone"
+     "simple": "given name"
     },
-    "ou": {
-     "complex": null,
-     "simple": "locationregion"
-    },
-    "postalCode": {
-     "complex": null,
-     "simple": "zipcode"
-    },
-    "sn": {
+    "lastname": {
      "complex": null,
      "simple": "surname"
     },
-    "st": {
+    "mobilephone": {
      "complex": null,
-     "simple": "statename"
+     "simple": "mobile phone"
     },
-    "streetAddress": {
+    "state": {
      "complex": null,
-     "simple": "streetaddress"
+     "simple": "state name"
+    },
+    "street address": {
+     "complex": null,
+     "simple": "street"
     },
     "title": {
      "complex": null,
      "simple": "title"
     },
-    "userPrincipalName": {
+    "phone": {
      "complex": null,
-     "simple": "username"
+     "simple": "work phone"
     },
-    "ou":{
+    "postalcode": {
      "complex": null,
-     "simple": ""
+     "simple": "zip code"
     }
    }
   }

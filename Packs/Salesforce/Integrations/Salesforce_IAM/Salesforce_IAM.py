@@ -8,6 +8,18 @@ requests.packages.urllib3.disable_warnings()
 DEFAULT_OUTGOING_MAPPER = "User Profile - Salesforce (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - Salesforce (Incoming)"
 URI_PREFIX = '/services/data/v44.0/'
+GENERATE_TOKEN_URL = 'https://login.salesforce.com/services/oauth2/token'
+LIMIT_ERROR = "LICENSE_LIMIT_EXCEEDED"
+# setting defaults for mandatory fields
+MANDATORY_FIELDS = {
+    "LastName": "",
+    "Alias": "",
+    "TimeZoneSidKey": "",
+    "LocaleSidKey": "en_US",
+    "EmailEncodingKey": "ISO-8859-1",
+    "LanguageLocaleKey": "en_US",
+    "ProfileId": "",
+}
 
 
 class Client(BaseClient):
@@ -17,32 +29,31 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url, conn_client_id, conn_client_secret, conn_username, conn_password,
-                 ok_codes, verify=True, proxy=False):
+                 ok_codes, verify=True, proxy=False, token=""):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
         self._conn_client_id = conn_client_id
         self._conn_client_secret = conn_client_secret
         self._conn_username = conn_username
         self._conn_password = conn_password
-        self.get_access_token()
+        self._instance_url = ""
+        self.token = self.get_access_token_(token)
 
-    def get_access_token(self):
-        uri = '/services/oauth2/token'
-        params = {
-            "client_id": self._conn_client_id,
-            "client_secret": self._conn_client_secret,
-            "username": self._conn_username,
-            "password": self._conn_password,
-            "grant_type": "password"
-        }
-        """
-        res = self._http_request(
-            method='POST',
-            url_suffix=uri,
-            params=params
-        )
-        token = res.get('access_token')
-        """
-        token ='00D4K0000039Io4!ARgAQKhu0If0DHLZY0YRgvmE5P8SGWIz2w1E.ctJrJ_PPVeKBLLB6vAPCVOy5urGX0HlfBh0YY0d1WatOunqtZIWec0g2.NN'
+    def get_access_token_(self, token=""):
+
+        if not token:
+            params = {
+                "client_id": self._conn_client_id,
+                "client_secret": self._conn_client_secret,
+                "username": self._conn_username,
+                "password": self._conn_password,
+                "grant_type": "password"
+            }
+            res = self._http_request(
+                method='POST',
+                full_url=GENERATE_TOKEN_URL,
+                params=params
+            )
+            token = res.get('access_token')
 
         headers = {
             'content-type': 'application/json',
@@ -50,8 +61,9 @@ class Client(BaseClient):
         }
 
         self._headers = headers
+        return token
 
-    def get_user_profile(self, user_term):
+    def get_user(self, user_term):
         uri = URI_PREFIX + f'sobjects/User/{user_term}'
         return self._http_request(
             method='GET',
@@ -72,9 +84,10 @@ class Client(BaseClient):
             params=params
         )
 
-    def get_user_id_by_mail(self, email):
+    def get_user_id_and_activity_by_mail(self, email):
         # check for errors, what id no user is found?
         user_id = ""
+        active = ""
         user_where = f"Email='{email}'"
         res = self.search_user_profile(email, user_where)
 
@@ -82,25 +95,27 @@ class Client(BaseClient):
         if len(search_records) > 0:
             for search_record in search_records:
                 user_id = search_record.get('Id')
+                active = True if search_record.get('IsActive') == 'true' else False,
 
-        return user_id
+        return user_id, active
 
-    def create_user_profile(self, data):
+    def create_user(self, data):
         uri = URI_PREFIX + 'sobjects/User'
         return self._http_request(
             method='POST',
             url_suffix=uri,
-            data=data
+            json_data=data
         )
 
-    def update_user_profile(self, user_term, data):
+    def update_user(self, user_term, data):
         uri = URI_PREFIX + f'sobjects/User/{user_term}'
         params = {"_HttpMethod": "PATCH"}
         return self._http_request(
             method='POST',
             url_suffix=uri,
             params=params,
-            data=data
+            json_data=data,
+            resp_type='text'
         )
 
 
@@ -115,8 +130,7 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    uri = URI_PREFIX + 'sobjects/User/testid'
-    client.http_request(method='GET', url_suffix=uri)
+    client.get_user_id_and_activity_by_mail("test@test.com")
     return 'ok'
 
 
@@ -126,7 +140,7 @@ def get_user_command(client, args, mapper_in):
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
         email = iam_user_profile.get_attribute('email')
-        user_id = client.get_user_id_by_mail(email)
+        user_id,_ = client.get_user_id_and_activity_by_mail(email)
 
         if not user_id:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -135,24 +149,24 @@ def get_user_command(client, args, mapper_in):
                                         error_code=error_code,
                                         action=IAMActions.GET_USER)
         else:
-            res = client.get_user_profile(user_id)
-            # make sure res contains all the params
-            github_user = res
+            # unlike query with email, getting a user by id will bring back all the attributes
+            github_user = client.get_user(user_id)
             iam_user_profile.update_with_app_data(github_user, mapper_in)
 
             iam_user_profile.set_result(success=True,
-                                        iden=res.get('Id'),
-                                        email=res.get('Email'),
-                                        username=res.get('Username'),
+                                        iden=github_user.get('Id'),
+                                        email=github_user.get('Email'),
+                                        username=github_user.get('Username'),
                                         action=IAMActions.GET_USER,
-                                        details=res,
-                                        active=res.get('IsActive'))
+                                        details=github_user,
+                                        active=True if github_user.get('IsActive') == "true" else False)
 
         return iam_user_profile
 
     except Exception as e:
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_message=e.res.text,
+                                    error_code=e.res.status_code,
                                     action=IAMActions.GET_USER
                                     )
         return iam_user_profile
@@ -170,7 +184,7 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
         else:
             email = iam_user_profile.get_attribute('email')
-            user_id = client.get_user_id_by_mail(email)
+            user_id,_ = client.get_user_id_and_activity_by_mail(email)
 
             if user_id:
                 create_if_not_exists = False
@@ -181,7 +195,8 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                 salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
                 # Removing empty elements from salesforce_user
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
-                res = client.create_user_profile(salesforce_user)
+                salesforce_user = check_and_set_manndatory_fields(salesforce_user)
+                res = client.create_user(salesforce_user)
                 iam_user_profile.set_result(success=True,
                                             iden=res.get('id'),
                                             email=salesforce_user.get('email'),
@@ -194,7 +209,8 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
     except Exception as e:
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_message=e.res.text,
+                                    error_code=e.res.status_code,
                                     action=IAMActions.CREATE_USER
                                     )
         return iam_user_profile
@@ -202,17 +218,16 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_create_user_enabled, create_if_not_exists):
     try:
-        user_profile = args.get("user-profile")
-        iam_user_profile = IAMUserProfile(user_profile=user_profile)
+        iam_user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        allow_enable = args.get('allow-enable') == 'true'
 
         if not is_command_enabled:
-            user_profile.set_result(action=IAMActions.UPDATE_USER,
-                                    skip=True,
-                                    skip_reason='Command is disabled.')
-
+            iam_user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                        skip=True,
+                                        skip_reason='Command is disabled.')
         else:
             email = iam_user_profile.get_attribute('email')
-            user_id = client.get_user_id_by_mail(email)
+            user_id, active = client.get_user_id_and_activity_by_mail(email)
 
             if not user_id:
                 # user doesn't exists
@@ -226,13 +241,16 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                                                 skip_reason=error_message)
             else:
                 salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
-                # Removing empty elements from salesforce_user
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
-                res = client.update_user_profile(user_term=user_id, data=salesforce_user)
+                if allow_enable:
+                    salesforce_user['IsActive'] = True
+                    active = True
+
+                res = client.update_user(user_term=user_id, data=salesforce_user)
 
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
-                                            active=True,
+                                            active=active,
                                             action=IAMActions.UPDATE_USER,
                                             details=res
                                             )
@@ -241,7 +259,8 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
 
     except Exception as e:
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_message=e.res.text,
+                                    error_code=e.res.status_code,
                                     action=IAMActions.UPDATE_USER
                                     )
         return iam_user_profile
@@ -259,7 +278,7 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
 
         else:
             email = iam_user_profile.get_attribute('email')
-            user_id = client.get_user_id_by_mail(email)
+            user_id,_ = client.get_user_id_and_activity_by_mail(email)
 
             if not user_id:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -277,17 +296,32 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
                                             iden=user_id,
                                             active=False,
                                             action=IAMActions.DISABLE_USER,
-                                            details=res.json()
+                                            details=res
                                             )
 
         return iam_user_profile
 
     except Exception as e:
         iam_user_profile.set_result(success=False,
-                                    error_message=str(e),
+                                    error_message=e.res.text,
+                                    error_code=e.res.status_code,
                                     action=IAMActions.DISABLE_USER
                                     )
         return iam_user_profile
+
+
+def check_and_set_manndatory_fields(salesforce_user):
+    for field, default_value in MANDATORY_FIELDS:
+        if not salesforce_user.get(field):
+            salesforce_user[field] = default_value
+
+    if not salesforce_user.get("Alias"):
+        email = salesforce_user.get("Email")
+        if email:
+            # default value for alias can be taken from email
+            salesforce_user["Alias"] = email[:7]
+
+    return salesforce_user
 
 
 def get_mapping_fields_command(client):
@@ -311,11 +345,6 @@ def main():
     password = params.get('credentials').get('password')
     client_id = params.get('consumer_key')
     client_secret = params.get('consumer_secret')
-    """
-    client_id = params.get('client_id')
-    client_secret = params.get('client_secret')
-    secret_token = params.get('secret_token') -> password = password + security token
-    """
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -324,11 +353,17 @@ def main():
     mapper_out = params.get('mapper-out', DEFAULT_OUTGOING_MAPPER)
 
     is_create_enabled = params.get("create_user_enabled")
-    is_enable_disable_enabled = params.get("enable_disable_user_enabled")
     is_update_enabled = demisto.params().get("update_user_enabled")
+    is_disable_enabled = demisto.params().get("disable_user_enabled")
     create_if_not_exists = demisto.params().get("create_if_not_exists")
 
     LOG(f'Command being called is {command}')
+
+    # getting the access token from the last run
+    token = ""
+    last_run = demisto.getLastRun()
+    if last_run:
+        token = last_run.get("token")
 
     try:
         client = Client(
@@ -339,30 +374,34 @@ def main():
             conn_password=password,
             ok_codes=(200, 201, 204),
             verify=verify_certificate,
-            proxy=proxy
+            proxy=proxy,
+            token=token
         )
 
-        if command == 'iam-get-user':
+        if command == 'test-module':
+            return_results(test_module(client))
+
+        elif command == 'iam-get-user':
             user_profile = get_user_command(client, args, mapper_in)
+            return_results(user_profile)
 
         elif command == 'iam-create-user':
             user_profile = create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled)
+            return_results(user_profile)
 
         elif command == 'iam-update-user':
             user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
                                                is_create_enabled, create_if_not_exists)
+            return_results(user_profile)
 
         elif command == 'iam-disable-user':
-            user_profile = disable_user_command(client, args, mapper_out, is_enable_disable_enabled)
-
-        elif command == 'test-module':
-            test_module(client)
+            user_profile = disable_user_command(client, args, mapper_out, is_disable_enabled)
+            return_results(user_profile)
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
 
-        if user_profile:
-            return_results(user_profile)
+        demisto.setLastRun({"token": client.token})
 
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {e}. Traceback: {traceback.format_exc()}')
