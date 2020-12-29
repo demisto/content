@@ -6,6 +6,7 @@ Use the Cisco Firepower integration for unified management of firewalls, applica
 Supports FMC 6.2.3 and above
 
 Authentication from a REST API Client
+
 Cisco recommends that you use different accounts for interfacing with the API and the Firepower User Interface. Credentials cannot be used for both interfaces simultaneously, and will be logged out without warning if used for both.
 
 
@@ -1927,7 +1928,6 @@ Retrieves a list of all ISE security group tag objects.
 
 `ciscofp-list-ise-security-group-tag`
 ##### Input
-
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
