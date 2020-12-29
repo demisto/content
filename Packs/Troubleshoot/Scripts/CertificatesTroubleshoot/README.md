@@ -9,7 +9,7 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 The script supports two modes of operation:
 
   1. **python**: Uses the Python built-in SSL library to detect the endpoint's certificates.
-  2. **openssl**: will use the openssl client to detect the endpoint's certificates. Use this mode if the `python` mode fails for some reason.
+  2. **openssl**: Uses the OpenSSL client to detect the endpoint's certificates. Use this mode if the `python` mode fails for some reason.
 
 When reporting issues always run this script with `debug-mode=true` and include the debug-mode log file.
 
