@@ -1,0 +1,282 @@
+category: Database
+commonfields:
+  id: MinIO
+  version: -1
+configuration:
+- display: Server Name or Address (e.g. 192.168.20.20)
+  name: server
+  required: true
+  type: 0
+- defaultvalue: '9000'
+  display: Port Number
+  hidden: false
+  name: port
+  required: true
+  type: 0
+- display: Access Key
+  name: access_key
+  required: true
+  type: 4
+- display: Access Secret
+  hidden: false
+  name: access_secret
+  required: true
+  type: 4
+- display: Connect over SSL
+  hidden: false
+  name: ssl
+  required: false
+  type: 8
+description: An Integration with MinIO Object Storage
+display: MinIO
+name: MinIO
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Bucket Name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Create a new bucket.
+    execution: false
+    name: minio-make-bucket
+    outputs:
+    - contextPath: MinIO.Buckets.bucket
+      description: MinIO Bucket Name
+      type: Unknown
+    - contextPath: MinIO.Buckets.status
+      description: MinIO Bucket Status
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Bucket Name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove an existing bucket.
+    execution: false
+    name: minio-remove-bucket
+    outputs:
+    - contextPath: MinIO.Buckets.bucket
+      description: MinIO Bucket Name
+      type: Unknown
+    - contextPath: MinIO.Buckets.status
+      description: MinIO Bucket Status
+      type: Unknown
+  - deprecated: false
+    description: List All MinIO Buckets
+    execution: false
+    name: minio-list-buckets
+    outputs:
+    - contextPath: MinIO.Buckets
+      description: MinIO Buckets
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Name of the bucket.
+      isArray: false
+      name: bucket_name
+      required: true
+      secret: false
+    - default: false
+      description: Object name starts with prefix.
+      isArray: false
+      name: prefix
+      required: false
+      secret: false
+    - default: false
+      description: List objects after this key name.
+      isArray: false
+      name: start_after
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: MinIO specific flag to control to include user metadata.
+      isArray: false
+      name: include_user_meta
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    deprecated: false
+    description: Lists object information of a bucket.
+    execution: false
+    name: minio-list-objects
+    outputs:
+    - contextPath: MinIO.Objects
+      description: MinIO Objects
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Bucket Name
+      isArray: false
+      name: bucket_name
+      required: true
+      secret: false
+    - default: false
+      description: Object Name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Start byte position of object data.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: Number of bytes of object data from offset.
+      isArray: false
+      name: length
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Any additional headers to be added with GET request.
+      isArray: false
+      name: request_headers
+      required: false
+      secret: false
+    - default: false
+      description: Extra query parameters for advanced usage.
+      isArray: false
+      name: extra_query_params
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets data from offset to length of an object.
+    execution: false
+    name: minio-get-object
+  - arguments:
+    - default: false
+      description: Bucket Name
+      isArray: false
+      name: bucket_name
+      required: true
+      secret: false
+    - default: false
+      description: Object Name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Extra query parameters for advanced usage.
+      isArray: false
+      name: extra_query_params
+      required: false
+      secret: false
+    deprecated: false
+    description: Get object information and metadata of an object.
+    execution: false
+    name: minio-stat-object
+  - arguments:
+    - default: false
+      description: Bucket Name
+      isArray: false
+      name: bucket_name
+      required: true
+      secret: false
+    - default: false
+      description: Object Name
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Remove an object.
+    execution: false
+    name: minio-remove-object
+    outputs:
+    - contextPath: MinIO.Objects.name
+      description: Object Name
+      type: Unknown
+    - contextPath: MinIO.Objects.status
+      description: Object Status
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Bucket Name
+      isArray: false
+      name: bucket_name
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: File Entry ID
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: File Type
+      isArray: false
+      name: content_type
+      required: false
+      secret: false
+    - default: false
+      description: Any additional metadata to be uploaded along with your PUT request.
+      isArray: false
+      name: metadata
+      required: false
+      secret: false
+    deprecated: false
+    description: Uploads data from a file to an object in a bucket.
+    execution: false
+    name: minio-fput-object
+  - arguments:
+    - default: false
+      description: Bucket Name
+      isArray: false
+      name: bucket_name
+      predefined:
+      - ''
+      required: true
+      secret: false
+    - default: false
+      description: Contains object data
+      isArray: false
+      name: data
+      required: true
+      secret: false
+    - default: false
+      description: Object name in the bucket
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: File Type
+      isArray: false
+      name: content_type
+      required: false
+      secret: false
+    - default: false
+      description: Any additional metadata to be uploaded along with your PUT request.
+      isArray: false
+      name: metadata
+      required: false
+      secret: false
+    deprecated: false
+    description: Uploads data from a stream to an object in a bucket.
+    execution: false
+    name: minio-put-object
+  dockerimage: minio:latest
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python

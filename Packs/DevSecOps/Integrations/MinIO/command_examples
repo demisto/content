@@ -1,0 +1,7 @@
+!minio-list-buckets
+!minio-fput-object bucket_name="test10" entry_id="297@58b146a9-f748-4f65-8846-a1d63c7e77f4"
+!minio-list-objects bucket_name="test10"
+!minio-get-object bucket_name="test10" name="MINIO_wordmark.png"
+!minio-make-bucket name="test20"
+!minio-remove-bucket name="test20"
+!minio-put-object bucket_name="test10" data="'test100'" name="test.txt"
