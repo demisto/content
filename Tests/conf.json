@@ -3292,7 +3292,6 @@
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Akamai_WAF-Test": "Issue 31900",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 27846",
         "Archer-Test-Playbook": "Issue 26851",
         "Carbon Black Live Response Test": "Issue 28237"
     },
