@@ -74,7 +74,7 @@ def tag_user_on_pr(reviewers: set, pr_number: str, pack: str, pack_files: set, g
     headers = {"Authorization": "Bearer " + github_token} if github_token else {}
 
     reviewers_comment = "\n".join({f"- @{r}" for r in reviewers})
-    pack_files_comment = "\n[".join(pack_files) + ']'
+    pack_files_comment = "\n".join(pack_files)
 
     comment_body = {
         "body": f"### Your contributed {pack} {PR_COMMENT_PREFIX}\n"
