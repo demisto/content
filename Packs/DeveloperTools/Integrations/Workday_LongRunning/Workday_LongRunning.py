@@ -1,6 +1,7 @@
 # noqa: F401
-from flask import Flask, Response, request, jsonify
+from flask import Flask, jsonify
 from gevent.pywsgi import WSGIServer
+from CommonServerPython import *
 
 FIRST_RUN_REPORT = {
     "Report_Entry": [
@@ -63,7 +64,7 @@ FIRST_RUN_REPORT = {
             "GDPR_Country_Flag": "0",
             "Public_Work_Mobile_Phone_Number": "+44  7900-160-819",
             "Director_Flag": "N",
-            "Email_-_Primary_Home": "stevearnoldtstc@hotmail.com",
+            "Email_-_Primary_Home": "stevearnoldtstc@test.com",
             "First_Name": "Stephen",
             "Last_Hire_Date": "10/01/2020",
             "People_Manager_Flag": "N",
@@ -534,7 +535,7 @@ UPDATE_REPORT = {
             "GDPR_Country_Flag": "0",
             "Public_Work_Mobile_Phone_Number": "+44  7900-160-819",
             "Director_Flag": "N",
-            "Email_-_Primary_Home": "stevearnoldtstc@hotmail.com",
+            "Email_-_Primary_Home": "stevearnoldtstc@test.com",
             "First_Name": "Stephen",
             "Last_Hire_Date": "10/01/2020",
             "People_Manager_Flag": "N",
@@ -1081,4 +1082,3 @@ if demisto.command() == 'long-running-execution':
 
 elif demisto.command() == 'generate-event':
     generate_event()
-

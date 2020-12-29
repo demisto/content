@@ -52,4 +52,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-vcShouldKeepItemLegacyProdMachine: false
+tests:
+  - No tests
