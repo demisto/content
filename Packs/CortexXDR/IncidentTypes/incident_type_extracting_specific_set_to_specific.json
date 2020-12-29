@@ -1,0 +1,39 @@
+{
+    "id": "phishing_temp4",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "phishing_temp4",
+    "color": "#69A636",
+    "playbookId": "access_investigation_-_generic",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Access",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "attachment": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "IPv6",
+                    "cveRep",
+                    "f70a7354-e634-423f-8256-e8f22ceee5cf"
+                ]
+            }
+        }
+    },
+    "fromVersion": "5.0.0"
+}

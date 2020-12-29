@@ -11,7 +11,7 @@
 	"id": "Cortex XDR Incident",
 	"locked": false,
 	"name": "Cortex XDR Incident",
-	"playbookId": "Cortex XDR incident handling v3",
+	"playbookId": "Cortex XDR incident handling v4",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,
