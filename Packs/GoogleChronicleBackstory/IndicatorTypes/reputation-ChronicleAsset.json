@@ -16,5 +16,6 @@
  "updateAfter": 0,
  "mergeContext": false,
  "expiration": 0,
- "fromVersion": "5.0.0"
+ "fromVersion": "5.0.0",
+ "layout": "ChronicleAsset Indicator"
 }

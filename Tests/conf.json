@@ -96,6 +96,12 @@
             ]
         },
         {
+            "integrations":"Azure Network Security Groups",
+            "fromversion": "5.0.0",
+            "instance_names": "azure_nsg_prod",
+            "playbookID": "Azure NSG - Test"
+        },
+        {
             "integrations": "OpenCTI Feed",
             "playbookID": "OpenCTI Feed Test"
         },
@@ -2026,6 +2032,16 @@
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500,
             "toversion": "4.4.9"
+        },
+        {
+            "integrations": [
+                "carbonblack-v2",
+                "carbonblackliveresponse",
+                "Cylance Protect v2"
+
+            ],
+            "playbookID": "Retrieve File from Endpoint - Generic V2 Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Zscaler",
