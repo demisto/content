@@ -155,18 +155,17 @@ def report_address_command(params: Dict, args: Dict) -> CommandResults:
     abuse_type_other = args.get('abuse_type_other')
     address = args.get('address', '')
     abuser = args.get('abuser', '')
+    description = args.get('description', '')
 
     if abuse_type_id is None:
         raise DemistoException('Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type')
-
     if abuse_type_id == abuse_type_name_to_id['other'] and abuse_type_other is None:
         raise DemistoException('Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other')
-
     http_response = bitcoin_client.report_address(address=address,
                                                   abuse_type_id=abuse_type_id,
                                                   abuse_type_other=abuse_type_other,
-                                                  abuser=args.get('abuser', ''),
-                                                  description=args.get('description', ''))
+                                                  abuser=abuser,
+                                                  description=description)
 
     if argToBoolean(http_response.get('success')):
         return CommandResults(

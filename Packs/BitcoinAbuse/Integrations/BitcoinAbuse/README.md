@@ -1,5 +1,4 @@
-BitcoinAbuse.com is a public database of bitcoin addresses used by hackers and criminals.
-This integration was integrated and tested with version xx of BitcoinAbuse.
+
 Supported Cortex XSOAR versions: 5.5.0 and later.
 
 ## Configure BitcoinAbuse on Cortex XSOAR
@@ -54,10 +53,6 @@ There is no context output for this command.
 #### Command Example
 ```!bitcoinabuse-report-address address=abcde12345 abuser=abuser@abuse.net abuse_type="bitcoin tumbler" description="this is a description of the abuse"```
 
-#### Context Example
-```json
-{}
-```
 
 #### Human Readable Output
 
