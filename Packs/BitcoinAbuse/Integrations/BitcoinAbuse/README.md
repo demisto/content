@@ -1,4 +1,4 @@
-
+BitcoinAbuse.com is a public database of bitcoin addresses used by hackers and criminals.
 Supported Cortex XSOAR versions: 5.5.0 and later.
 
 ## Configure BitcoinAbuse on Cortex XSOAR
