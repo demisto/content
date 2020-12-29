@@ -4,7 +4,7 @@ This integration enables you to run message traces and manage junk mail rules in
 
 Supported authentication methods:
 
-- Basic authentication - Fill in the UPN and password.
+- Basic authentication - Fill in the Email and password.
 - OAuth2.0 (For MFA enabled accounts) -
     1. Enter a value for the UPN parameter in the integration configuration.
     2. Run the ***ews-auth-start*** command and follow the instructions.
