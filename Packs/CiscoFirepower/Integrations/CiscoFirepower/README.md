@@ -23,9 +23,9 @@ Cisco recommends that you use different accounts for interfacing with the API an
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.
 
+
 ## Commands
 ---
-
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. ciscofp-list-zones
