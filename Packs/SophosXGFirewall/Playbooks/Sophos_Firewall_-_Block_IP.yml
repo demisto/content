@@ -221,14 +221,6 @@ tasks:
       sender: Your SOC team
       expired: false
       totalanswers: 0
-    formDisplay:
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      sender: ""
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
       submittext: ""
     skipunavailable: false
     quietmode: 0
@@ -277,15 +269,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    formDisplay:
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      sender: ""
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
     skipunavailable: false
     quietmode: 0
   "7":
@@ -636,15 +619,6 @@ tasks:
       sender: Your SOC team
       expired: false
       totalanswers: 0
-    formDisplay:
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      sender: ""
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
     skipunavailable: false
     quietmode: 0
   "21":
