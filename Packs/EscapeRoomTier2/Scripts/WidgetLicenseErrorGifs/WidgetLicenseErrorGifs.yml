@@ -1,0 +1,21 @@
+comment: A widget that failed to load unless the right time frame is used.
+commonfields:
+  id: WidgetLicenseErrorGifs
+  version: -1
+enabled: false
+name: WidgetLicenseErrorGifs
+script: '-'
+args:
+- default: true
+  description: location.
+  name: location
+  required: false
+system: false
+tags:
+- widget
+- dynamic-section
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: devdemisto/escape-room:1.0.0.12195
+fromversion: 6.0.0
