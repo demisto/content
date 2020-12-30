@@ -51,7 +51,7 @@ def create_slack_fields(text_fields: List) -> dict:
     """Create slack block-kit section entry with fields key
 
         Args:
-            text_fields (List): String to appear in the entry
+            text_fields (List): list of key-value tuples
 
         Returns:
             (dict): section entry for the slack block-kit
