@@ -311,7 +311,7 @@ references:
 
   merge_public_and_private_id_sets: &merge_public_and_private_id_sets
     run:
-      name: Create ID Set
+      name: Merge Private And Public ID Sets
       when: always
       command: |
         GCS_PATH=$(mktemp)
