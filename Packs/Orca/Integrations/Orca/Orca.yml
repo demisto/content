@@ -25,6 +25,14 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS,
   Azure, and GCP.
 display: Orca
@@ -91,6 +99,4 @@ script:
   type: python
 tests:
 - No tests
-defaultmapperin: HelloWorld-mapper
-defaultclassifier: HelloWorld
 fromversion: 5.0.0

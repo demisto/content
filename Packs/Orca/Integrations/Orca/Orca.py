@@ -45,6 +45,10 @@ class OrcaClient:
             return f"No CVE data for asset {asset_unique_id}"
         return cves
 
+def map_orca_score_to_demisto_score(orca_score:int)->int:
+    MAPPING = {1:1,2:1,3:2,4:3}
+    return MAPPING[orca_score]
+
 
 def main() -> None:
     """main function, parses params and runs command functions
@@ -80,16 +84,20 @@ def main() -> None:
     if command == "fetch-incidents":
         demisto.debug("fetch-incidents called")
         if demisto.getLastRun().get('lastRun'):
-            demisto.log("not first run, returning")
+            demisto.info("not first run, returning")
             # only first run is relevant, other incidents are dynamically pushed from Kafka
+            demisto.incidents([])
             return
+
 
         alerts = orca_client.get_alerts()
         if not alerts:
+            demisto.incidents([])
             return
 
         incidents = []
         for alert in alerts:
+            alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state").get("score"))
             incident = {
                 'name': f"Orca Cloud Incident: {alert.get('state').get('alert_id')}.",
                 'occurred': datetime_to_string(datetime.strptime(alert.get('state').get('last_seen'), "%Y-%m-%dT%H:%M:%S%z").isoformat()),
@@ -97,8 +105,8 @@ def main() -> None:
             }
             incidents.append(incident)
 
-        demisto.incidents(incidents)
         demisto.setLastRun({'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
+        demisto.incidents(incidents)
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
