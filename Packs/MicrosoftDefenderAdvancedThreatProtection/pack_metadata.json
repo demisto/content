@@ -2,7 +2,7 @@
     "name": "Microsoft Defender for Endpoint",
     "description": "Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.",
     "support": "xsoar",
-    "currentVersion": "1.2.7",
+    "currentVersion": "1.2.9",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
