@@ -21,6 +21,32 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 
 import demistomock as demisto
+import warnings
+
+
+class WarningsHandler(object):
+    """
+        Wrapper to handle warnings. We use a class to cleanup after execution
+    """
+
+    @staticmethod
+    def handle_warning(message, category, filename, lineno, file=None, line=None):
+        try:
+            msg = warnings.formatwarning(message, category, filename, lineno, line)
+            demisto.info("python warning: " + msg)
+        except Exception:
+            # ignore the warning if it can't be handled for some reason
+            pass
+
+    def __init__(self):
+        self.org_handler = warnings.showwarning
+        warnings.showwarning = WarningsHandler.handle_warning
+
+    def __del__(self):
+        warnings.showwarning = self.org_handler
+
+
+_warnings_handler = WarningsHandler()
 
 # imports something that can be missed from docker image
 try:
