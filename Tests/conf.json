@@ -3176,6 +3176,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "BitcoinAbuse",
+            "playbookID": "BitcoinAbuse-test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "ExpanseV2",
             "playbookID": "ExpanseV2 Test",
             "fromversion": "6.0.0"
@@ -3274,7 +3279,6 @@
         "CuckooTest": "Issue 25601",
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
-        "Akamai_WAF-Test": "Issue 31900",
         "Archer-Test-Playbook": "Issue 26851",
         "Carbon Black Live Response Test": "Issue 28237"
     },
