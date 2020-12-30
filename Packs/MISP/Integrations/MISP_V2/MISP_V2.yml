@@ -1924,7 +1924,7 @@ script:
     - contextPath: MISP.Event.Object.Description
       description: Description of the object.
       type: String
-  dockerimage: demisto/pymisp:1.0.0.14197
+  dockerimage: demisto/pymisp:1.0.0.52
   feed: false
   isfetch: false
   longRunning: false
