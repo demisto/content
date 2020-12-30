@@ -1,5 +1,5 @@
 Sixgill's premium underground intelligence collection capabilities, real-time collection and advanced warning about IOCs to help you keep your edge against unknown threats.
-This integration was integrated and tested with version 0.1.6 of sixgill clients
+This integration was integrated and tested with sixgill-clients
 ## Configure Sixgill_Darkfeed on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

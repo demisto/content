@@ -88,7 +88,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: ''
+- display: Incremental Feed
   defaultvalue: true
   hidden: true
   name: feedIncremental
@@ -106,7 +106,7 @@ configuration:
   type: 0
 description: Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time
   Threat Intelligence indicators. Get IOCs such as domains, URLs, hashes, and IP addresses
-  straight into the Demisto platform.
+  straight into the XSOAR platform.
 display: Sixgill DarkFeed Threat Intelligence
 name: Sixgill_Darkfeed
 script:
@@ -124,7 +124,7 @@ script:
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.10664
+  dockerimage: demisto/sixgill:1.0.0.12410
   feed: true
   isfetch: false
   longRunning: false
