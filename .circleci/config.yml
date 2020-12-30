@@ -234,8 +234,8 @@ references:
         python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
-        zip -P $PSWD -j $CIRCLE_ARTIFACTS/Logs.zip $CIRCLE_ARTIFACTS/server*.log $CIRCLE_ARTIFACTS/logs/* || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
-        rm -f $CIRCLE_ARTIFACTS/server*.log $CIRCLE_ARTIFACTS/logs/Run_Tests.log $CIRCLE_ARTIFACTS/logs/Install_Content_And_Configure_Integrations_On_Server.log
+        zip -P $PSWD -j $CIRCLE_ARTIFACTS/Logs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
+        rm -f $CIRCLE_ARTIFACTS/server*.log
       when: always
 
   persist_to_workspace: &persist_to_workspace
