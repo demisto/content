@@ -1317,6 +1317,11 @@
             "timeout": 300
         },
         {
+            "integrations": "Okta IAM",
+            "playbookID": "IAM - Test Playbook",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Test filters & transformers scripts"
         },
         {
@@ -1535,6 +1540,12 @@
             "integrations": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
+        },
+        {
+            "integrations": "ServiceNow IAM",
+            "playbookID": "IAM - Test Playbook",
+            "instance_name": "snow_basic_auth",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "LanguageDetect-Test",
@@ -2528,6 +2539,11 @@
             "playbookID": "Git_Integration-Test"
         },
         {
+            "integrations": "GitHub IAM",
+            "playbookID": "IAM - Test Playbook Github",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "LogRhythmRest",
             "playbookID": "LogRhythm REST test"
         },
@@ -3271,7 +3287,6 @@
         "AttackIQ - Test": "Issue 29774",
         "AWS-securityhub Test": "Issue 29796",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
-        "IAM - Test Playbook": "Issue 30013",
         "Trend Micro Apex - Test": "Issue 27280",
         "Azure Compute - Test": "Issue 28056",
         "Test - CrowdStrike Falcon": "Issue 30068",
