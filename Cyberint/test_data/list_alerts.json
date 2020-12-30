@@ -1,0 +1,204 @@
+{
+    "alerts": [
+        {
+            "acknowledged_by": null,
+            "acknowledged_date": null,
+            "alert_data": {
+                "application": null,
+                "csv": {
+                    "id": 329,
+                    "mimetype": "text/csv",
+                    "name": "Company Customer Credentials Exposed.csv"
+                },
+                "designated_url": "https://www.barclaycardus.com/servicing/authenticate"
+            },
+            "analysis_report": null,
+            "attachments": [
+                {
+                    "id": 18,
+                    "mimetype": "image/png",
+                    "name": "Compromised Account As Appears On Argos.png"
+                }
+            ],
+            "category": "data",
+            "closed_by": null,
+            "closure_date": null,
+            "closure_reason": null,
+            "confidence": 100,
+            "created_by": {
+                "email": "avital@cyberint.com"
+            },
+            "created_date": "2020-12-30T00:00:56",
+            "description": "CyberInt detected breached credentials of several Barclays customers, which were uploaded to an anti-virus repository. The credentials seem to have been obtained through malware, sending user inputs to the operator, and the various credentials were logged in the uploaded .txt files. As such, the file contains users’ credentials not only for barclaycardus.com but for other websites as well. \nBreached customers credentials may be used by Threat Actors to carry out fraudulent transactions on their behalf, exposing Barclays to both financial impact and legal claims.\n\n\n\n",
+            "environment": "Argos Demo",
+            "impacts": [
+                "data_compromise",
+                "unauthorized_access",
+                "account_takeover",
+                "revenue_loss",
+                "brand_degradation",
+                "customer_churn",
+                "financial_penalties"
+            ],
+            "iocs": [],
+            "modification_date": "2020-12-30T00:00:56",
+            "publish_date": "2020-11-28T12:45:36",
+            "recommendation": "1. CyberInt recommends enforcing password reset on the compromised accounts. \n2. In addition, CyberInt advises Barclays to investigate internally whether any of the accounts have been involved in fraudulent transactions, at least up to the time of detection. In case the accounts were involved in any fraudulent activity, it is recommended to identify and extract relevant IOC’s where possible and monitor them within the bank's systems.\n3. To reduce the chance of customer account takeovers by TAs, Cyberint recommends Barclays implement MFA and CAPTCHA mechanisms. The former will help set another obstacle for a TA trying to abuse the account, and the latter can help blocking credentials-stuffing tools.",
+            "ref_id": "ARG-3",
+            "related_entities": [],
+            "severity": "high",
+            "source": "argos.1",
+            "source_category": "antivirus_repository",
+            "status": "open",
+            "tags": [],
+            "targeted_brands": [],
+            "targeted_vectors": [
+                "customer"
+            ],
+            "threat_actor": "",
+            "ticket_id": null,
+            "title": "Company Customer Credentials Exposed",
+            "type": "compromised_customer_credentials"
+        },
+        {
+            "acknowledged_by": null,
+            "acknowledged_date": null,
+            "alert_data": {
+                "a_record": "129.146.184.83",
+                "detection_reasons": [
+                    "url_mentioned_assets_or_twists",
+                    "similar_logo_detected"
+                ],
+                "has_ssl_certificate": false,
+                "ip_reputation": "malicious",
+                "mx_records": null,
+                "nameservers": null,
+                "registrant_email": null,
+                "registrant_name": null,
+                "registrar": "NameSilo, LLC",
+                "requests_user_details": true,
+                "screenshot": {
+                    "id": 166,
+                    "mimetype": "image/png",
+                    "name": "Argos Screenshot of the Phishing Website.png"
+                },
+                "site_status": null,
+                "url": "http://supportcenter-ee.com/banks/bank.barclays.co.uk",
+                "url_reputation": "malicious",
+                "whois_created_date": null,
+                "whois_record": null
+            },
+            "analysis_report": {
+                "id": 26,
+                "mimetype": "application/pdf",
+                "name": "Expert Analysis - Active Phishing Website Targeting Company.pdf"
+            },
+            "attachments": [
+                {
+                    "id": 21,
+                    "mimetype": "image/png",
+                    "name": "Forensic Canvas Investigation of supportcenter-ee.com.png"
+                }
+            ],
+            "category": "phishing",
+            "closed_by": null,
+            "closure_date": null,
+            "closure_reason": null,
+            "confidence": 100,
+            "created_by": {
+                "email": "avital@cyberint.com"
+            },
+            "created_date": "2020-12-30T00:00:56",
+            "description": "CyberInt detected an active phishing website impersonating Barclays login page while abusing the brand’s name, logo and photos.\nThe website contains login, registration and checkout forms, where unsuspecting victims could be lured to fill in their PII, credentials and payment details.\nPhishing websites such as the above are often used by attackers to obtain users' credentials and PII. This information can be utilized to take over customers' accounts, causing customer churn and damage to the brand's reputation.",
+            "environment": "Argos Demo",
+            "impacts": [
+                "brand_degradation",
+                "account_takeover",
+                "user_data_compromise",
+                "data_compromise",
+                "unauthorized_access"
+            ],
+            "iocs": [
+                {
+                    "type": "domain",
+                    "value": "supportcenter-ee.com"
+                },
+                {
+                    "type": "ip",
+                    "value": "129.146.184.83"
+                },
+                {
+                    "type": "url",
+                    "value": "http://supportcenter-ee.com/banks/bank.barclays.co.uk"
+                }
+            ],
+            "modification_date": "2020-12-30T00:00:56",
+            "publish_date": "2020-09-02T00:06:49",
+            "recommendation": "CyberInt recommends Barclays take down the site; upon request, CyberInt can submit the take down request on behalf of Barclays. ",
+            "ref_id": "ARG-4",
+            "related_entities": [],
+            "severity": "very_high",
+            "source": "",
+            "source_category": "online_protection",
+            "status": "open",
+            "tags": [],
+            "targeted_brands": [],
+            "targeted_vectors": [
+                "customer"
+            ],
+            "threat_actor": "",
+            "ticket_id": null,
+            "title": "Active Phishing Website Targeting Company",
+            "type": "phishing_website"
+        },
+        {
+            "acknowledged_by": null,
+            "acknowledged_date": null,
+            "alert_data": {
+                "service": "Azure",
+                "subdomain": "s7k.paymebiz.hsbc.com.hk",
+                "vulnerable_cname_record": "s7k-paymebiz.trafficmanager.net"
+            },
+            "analysis_report": null,
+            "attachments": [],
+            "category": "vulnerabilities",
+            "closed_by": null,
+            "closure_date": null,
+            "closure_reason": null,
+            "confidence": 100,
+            "created_by": {
+                "email": "avital@cyberint.com"
+            },
+            "created_date": "2020-12-30T00:00:56",
+            "description": "CyberInt discovered a misconfiguration on an HSBC subdomain which exposes it to takeover.\nCurrently, the domain names refer to the CNAME records listed above. However, those CNAME records are no longer owned by Target, and they may have expired. This situation allows others to obtain the record, and practically get access to the HSBC subdomain.\n\nTaking over HSBC subdomains could be used to conduct complex phishing attack on the organization's employees and customers, as well potentially hijack sessions of logged-in users in any service using the vulnerable domains.",
+            "environment": "Argos Demo",
+            "impacts": [
+                "data_compromise",
+                "unauthorized_access",
+                "account_takeover"
+            ],
+            "iocs": [],
+            "modification_date": "2020-12-30T00:00:56",
+            "publish_date": "2020-11-24T20:28:00",
+            "recommendation": "CyberInt advises HSBC to choose either of the following courses of action:\n1. Update the CNAME record of the subdomains so that they no longer redirect traffic to the vulnerable subdomains.\n2. Re-purchase the record and thus avoid contradiction between the CNAME record and the Fastly interface.",
+            "ref_id": "ARG-8",
+            "related_entities": [],
+            "severity": "very_high",
+            "source": "",
+            "source_category": "my_digital_presence",
+            "status": "open",
+            "tags": [],
+            "targeted_brands": [
+                "HSBC"
+            ],
+            "targeted_vectors": [
+                "business"
+            ],
+            "threat_actor": "",
+            "ticket_id": null,
+            "title": "Company Subdomain Vulnerable to Hijacking",
+            "type": "hijackable_subdomains"
+        }
+    ],
+    "total": 3
+}

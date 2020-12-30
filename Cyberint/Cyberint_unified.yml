@@ -19,7 +19,7 @@ configuration:
   type: 8
 - additionalinfo: Choose the severity(s) (not minimum) to fetch. If none is chosen,
     all severity levels will be returned.
-  display: Fetch Severity
+  display: Fetch Severities
   name: fetch_severity
   options:
   - low
@@ -28,10 +28,26 @@ configuration:
   - very_high
   required: false
   type: 16
-- additionalinfo: Choose one or more categories to fetch if wanted. If none is chosen,
+- additionalinfo: Choose one or more statuses to fetch if wanted. If none is chosen,
     all categories will be returned.
-  display: Fetch Category
-  name: fetch_category
+  display: Fetch Statuses
+  name: fetch_status
+  options:
+  - open
+  - acknowledged
+  - closed
+  required: false
+  type: 16
+- additionalinfo: Enter one or more environments to fetch if wanted (comma separated).
+    If empty, all available environments will be returned.
+  display: Fetch Environments
+  name: fetch_environment
+  required: false
+  type: 0
+- additionalinfo: Choose one or more types to fetch if wanted. If none is chosen,
+    all types will be returned.
+  display: Fetch Types
+  name: fetch_type
   options:
   - refund_fraud
   - carding
@@ -74,16 +90,6 @@ configuration:
   - email_security_issues
   - certificate_authority_issues
   - other
-  required: false
-  type: 16
-- additionalinfo: Choose one or more statuses to fetch if wanted. If none is chosen,
-    all categories will be returned.
-  display: Fetch Status
-  name: fetch_status
-  options:
-  - open
-  - acknowledged
-  - closed
   required: false
   type: 16
 - additionalinfo: Max number of alerts per fetch. Defaults to  the minimum 10, max
@@ -412,7 +418,6 @@ script:
     import dateparser
     from typing import Dict, List, Optional, Tuple
 
-    # Disable insecure warnings
     requests.packages.urllib3.disable_warnings()
 
     ''' CONSTANTS '''
@@ -468,6 +473,7 @@ script:
                 'type': types
             }}
             body = remove_empty_elements(body)
+            print(body)
             response = self._http_request(method='POST', json_data=body, cookies=self._cookies,
                                           url_suffix='api/v1/alerts')
             return response
@@ -512,8 +518,13 @@ script:
         """
         if date_range_arg:
             start_date, end_date = parse_date_range(date_range=date_range_arg,
-                                                    date_format=DATE_FORMAT)
+                                                    date_format=DATE_FORMAT, utc=False)
             return start_date, end_date
+        min_date = datetime.fromisocalendar(2020, 12, 1)
+        if start_date_arg and not end_date_arg:
+            return start_date_arg, datetime.strftime(datetime.now(), DATE_FORMAT)
+        if end_date_arg and not start_date_arg:
+            return datetime.strftime(min_date, DATE_FORMAT), end_date_arg
         return start_date_arg, end_date_arg
 
 
@@ -528,19 +539,20 @@ script:
         Returns:
             CommandResults: outputs, readable outputs and raw response for XSOAR.
         """
-        created_date_from, created_date_to = set_date_pair(args.get('created_date_start'),
-                                                           args.get('created_date_end'),
-                                                           args.get('created_date_range'))
-        modify_date_from, modify_date_to = set_date_pair(args.get('modification_date_start'),
-                                                         args.get('modification_date_end'),
-                                                         args.get('modification_date_range'))
+        created_date_from, created_date_to = set_date_pair(args.get('created_date_from', None),
+                                                           args.get('created_date_to', None),
+                                                           args.get('created_date_range', None))
+        modify_date_from, modify_date_to = set_date_pair(args.get('modification_date_from', None),
+                                                         args.get('modification_date_to', None),
+                                                         args.get('modification_date_range', None))
         result = client.list_alerts(args.get('page'), args.get('page_size'), created_date_from,
                                     created_date_to, modify_date_from, modify_date_to,
-                                    args.get('environments'), args.get('statuses'),
-                                    args.get('severities'), args.get('types'))
+                                    argToList(args.get('environments')),
+                                    argToList(args.get('statuses')),
+                                    argToList(args.get('severities')), argToList(args.get('types')))
         alerts = result.get('alerts')
         total_alerts = result.get('total')
-        table_headers = ['ref_id', 'title', 'status', 'severity', 'publish_date', 'type',
+        table_headers = ['ref_id', 'title', 'status', 'severity', 'created_date', 'type',
                          'environment']
         readable_output = tableToMarkdown(name='Found alerts:', t=alerts, headers=table_headers,
                                           removeNull=True)
@@ -550,91 +562,94 @@ script:
                               outputs=alerts)
 
 
-    def fetch_incidents(client, last_run, first_fetch_time):
+    def fetch_incidents(client: Client, last_run: Dict[str, int],
+                        first_fetch_time: str, fetch_severity: Optional[List[str]],
+                        fetch_status: Optional[List[str]], fetch_type: Optional[List[str]],
+                        fetch_environment: Optional[List[str]],
+                        max_fetch: Optional[int]) -> Tuple[Dict[str, int], List[dict]]:
         """
-        This function will execute each interval (default is 1 minute).
-
+        Fetch incidents (alerts) each minute (by default).
         Args:
-            client (Client): HelloWorld client
-            last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
-            first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
-
+            client (Client): Cyberint Client.
+            last_run (dict): Dict with last_fetch object,
+                                      saving the last fetch time(in millisecond timestamp).
+            first_fetch_time (dict): Dict with first fetch time in str (ex: 3 days ago).
+            fetch_severity (list(str)): Severities to fetch.
+            fetch_status (list(str)): Statuses to fetch.
+            fetch_type (list(str)): Types to fetch.
+            fetch_environment (list(str)): Environments to fetch.
+            max_fetch (int): Max number of alerts to fetch.
         Returns:
-            next_run: This will be last_run in the next fetch-incidents
-            incidents: Incidents that will be created in Demisto
+            Tuple of next_run (seconds timestamp) and the incidents list
         """
-        # Get the last fetch time, if exists
-        last_fetch = last_run.get('last_fetch')
-
-        # Handle first time fetch
-        if last_fetch is None:
-            last_fetch, _ = dateparser.parse(first_fetch_time)
+        last_fetch_timestamp = last_run.get('last_fetch', None)
+        if last_fetch_timestamp:
+            last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp / 1000)
+            last_fetch = last_fetch_date
         else:
-            last_fetch = dateparser.parse(last_fetch)
-
-        latest_created_time = last_fetch
+            first_fetch_date = dateparser.parse(first_fetch_time)
+            last_fetch = first_fetch_date
         incidents = []
-        items = client.list_incidents()
-        for item in items:
-            incident_created_time = dateparser.parse(item['created_time'])
+        next_run = last_fetch
+        alerts = client.list_alerts('1', max_fetch, datetime.strftime(last_fetch, DATE_FORMAT),
+                                    datetime.strftime(datetime.now(), DATE_FORMAT), None, None,
+                                    fetch_environment, fetch_status, fetch_severity, fetch_type)
+        for alert in alerts.get('alerts', []):
+            alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
+            alert_id = alert.get('ref_id')
+            alert_title = alert.get('title')
             incident = {
-                'name': item['description'],
-                'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                'rawJSON': json.dumps(item)
+                'name': f'Cyberint alert {alert_id}: {alert_title}',
+                'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
+                'rawJSON': json.dumps(alert)
             }
-
             incidents.append(incident)
-
-            # Update last run and add incident if the incident is newer than last fetch
-            if incident_created_time > latest_created_time:
-                latest_created_time = incident_created_time
-
-        next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
-        return next_run, incidents
+        if incidents:
+            last_incident_time = incidents[0].get('occurred', '')
+            next_run = datetime.strptime(last_incident_time, DATE_FORMAT)
+        next_run += timedelta(seconds=1)
+        next_run_timestamp = int(datetime.timestamp(next_run) * 1000)
+        return {'last_fetch': next_run_timestamp}, incidents
 
 
     def main():
         """
             PARSE AND VALIDATE INTEGRATION PARAMS
         """
-        access_token = demisto.params().get('access_token')
-        environment = demisto.params().get('environment')
-
-        # get the service API url
+        params = demisto.params()
+        access_token = params.get('access_token')
+        environment = params.get('environment')
+        fetch_environment = argToList(params.get('fetch_environment', ''))
+        fetch_status = params.get('fetch_status', [])
+        fetch_type = params.get('fetch_type', [])
+        fetch_severity = params.get('fetch_severity', [])
+        max_fetch = int(params.get('max_fetch', '50'))
+        verify_certificate = not params.get('insecure', False)
+        first_fetch_time = params.get('fetch_time', '3 days').strip()
+        proxy = params.get('proxy', False)
         base_url = f'https://{environment}.cyberint.io/alert/'
-        verify_certificate = not demisto.params().get('insecure', False)
-        # How much time before the first fetch to retrieve incidents
-        first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
 
-        proxy = demisto.params().get('proxy', False)
-
-        LOG(f'Command being called is {demisto.command()}')
+        demisto.info(f'Command being called is {demisto.command()}')
         try:
             client = Client(
                 base_url=base_url,
                 verify_ssl=verify_certificate,
                 access_token=access_token,
                 proxy=proxy)
+
             if demisto.command() == 'test-module':
-                # This is the call made when pressing the integration Test button.
                 result = test_module(client)
                 demisto.results(result)
 
             elif demisto.command() == 'fetch-incidents':
-                # Set and define the fetch incidents command to run after activated via integration settings.
                 next_run, incidents = fetch_incidents(
-                    client=client,
-                    last_run=demisto.getLastRun(),
-                    first_fetch_time=first_fetch_time)
-
+                    client, demisto.getLastRun(), first_fetch_time, fetch_severity, fetch_status,
+                    fetch_type, fetch_environment, max_fetch)
                 demisto.setLastRun(next_run)
                 demisto.incidents(incidents)
 
             elif demisto.command() == 'cyberint-list-alerts':
                 return_results(cyberint_list_alerts_command(client, demisto.args()))
-
-
-        # Log exceptions
         except Exception as e:
             return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 

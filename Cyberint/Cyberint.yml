@@ -18,7 +18,7 @@ configuration:
   type: 8
 - additionalinfo: Choose the severity(s) (not minimum) to fetch. If none is chosen,
     all severity levels will be returned.
-  display: Fetch Severity
+  display: Fetch Severities
   name: fetch_severity
   options:
   - low
@@ -27,10 +27,25 @@ configuration:
   - very_high
   required: false
   type: 16
-- additionalinfo: Choose one or more categories to fetch if wanted. If none is chosen,
+- additionalinfo: Choose one or more statuses to fetch if wanted. If none is chosen,
     all categories will be returned.
-  display: Fetch Category
-  name: fetch_category
+  display: Fetch Statuses
+  name: fetch_status
+  options:
+  - open
+  - acknowledged
+  - closed
+  required: false
+  type: 16
+- additionalinfo: Enter one or more environments to fetch if wanted (comma separated).
+    If empty, all available environments will be returned.
+  display: Fetch Environments
+  name: fetch_environment
+  required: false
+- additionalinfo: Choose one or more types to fetch if wanted. If none is chosen,
+    all types will be returned.
+  display: Fetch Types
+  name: fetch_type
   options:
   - refund_fraud
   - carding
@@ -73,16 +88,6 @@ configuration:
   - email_security_issues
   - certificate_authority_issues
   - other
-  required: false
-  type: 16
-- additionalinfo: Choose one or more statuses to fetch if wanted. If none is chosen,
-    all categories will be returned.
-  display: Fetch Status
-  name: fetch_status
-  options:
-  - open
-  - acknowledged
-  - closed
   required: false
   type: 16
 - additionalinfo: "Max number of alerts per fetch. Defaults to  the minimum 10, max\
