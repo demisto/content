@@ -1,8 +1,8 @@
 {
     "name": "Chronicle",
-    "description": "Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.",
+    "description": "Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise",
     "support": "partner",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.4",
     "certification": "certified",
     "author": "Chronicle",
     "url": "",
@@ -16,5 +16,349 @@
     "keywords": [],
     "githubUser": [
         "crestdatasystems"
+    ],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "Flashpoint": {
+            "mandatory": false,
+            "display_name": "Flashpoint"
+        },
+        "VirusTotal": {
+            "mandatory": false,
+            "display_name": "VirusTotal"
+        },
+        "CyberTotal": {
+            "mandatory": false,
+            "display_name": "CyberTotal"
+        },
+        "ThreatMiner": {
+            "mandatory": false,
+            "display_name": "ThreatMiner"
+        },
+        "illuminate": {
+            "mandatory": false,
+            "display_name": "illuminate"
+        },
+        "RecordedFuture": {
+            "mandatory": false,
+            "display_name": "RecordedFuture v2"
+        },
+        "DomainTools": {
+            "mandatory": false,
+            "display_name": "DomainTools"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "SlashNextPhishingIncidentResponse": {
+            "mandatory": false,
+            "display_name": "SlashNext Phishing Incident Response"
+        },
+        "ThreatExchange": {
+            "mandatory": false,
+            "display_name": "ThreatExchange"
+        },
+        "SANS": {
+            "mandatory": true,
+            "display_name": "SANS"
+        },
+        "XForceExchange": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange"
+        },
+        "HelloWorld": {
+            "mandatory": false,
+            "display_name": "HelloWorld"
+        },
+        "JsonWhoIs": {
+            "mandatory": false,
+            "display_name": "JsonWhoIs"
+        },
+        "URLHaus": {
+            "mandatory": false,
+            "display_name": "URLhaus"
+        },
+        "Pwned": {
+            "mandatory": false,
+            "display_name": "Pwned"
+        },
+        "PassiveTotal": {
+            "mandatory": false,
+            "display_name": "PassiveTotal"
+        },
+        "PaloAltoNetworks_PAN_OS_EDL_Management": {
+            "mandatory": true,
+            "display_name": "Palo Alto Networks PAN-OS EDL Management"
+        },
+        "Cisco-umbrella": {
+            "mandatory": false,
+            "display_name": "Cisco Umbrella Investigate"
+        },
+        "ThreatQ": {
+            "mandatory": false,
+            "display_name": "ThreatQ"
+        },
+        "ThreatConnect": {
+            "mandatory": false,
+            "display_name": "ThreatConnect"
+        },
+        "XFE": {
+            "mandatory": false,
+            "display_name": "IBM X-Force Exchange"
+        },
+        "NIST": {
+            "mandatory": true,
+            "display_name": "NIST"
+        },
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "AlienVault_OTX": {
+            "mandatory": false,
+            "display_name": "AlienVault OTX"
+        },
+        "Expanse": {
+            "mandatory": false,
+            "display_name": "Expanse"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "Alexa": {
+            "mandatory": false,
+            "display_name": "Alexa Rank Indicator"
+        },
+        "Whois": {
+            "mandatory": false,
+            "display_name": "Whois"
+        },
+        "DomainTools_Iris": {
+            "mandatory": false,
+            "display_name": "DomainTools Iris"
+        },
+        "APIVoid": {
+            "mandatory": false,
+            "display_name": "APIVoid"
+        },
+        "iDefense": {
+            "mandatory": false,
+            "display_name": "iDefense"
+        },
+        "PolySwarm": {
+            "mandatory": false,
+            "display_name": "PolySwarm"
+        },
+        "Symantec_Deepsight": {
+            "mandatory": false,
+            "display_name": "Symantec Deepsight Intelligence (Beta)"
+        },
+        "isight": {
+            "mandatory": false,
+            "display_name": "FireEye iSIGHT"
+        },
+        "Recorded_Future": {
+            "mandatory": false,
+            "display_name": "Recorded Future"
+        },
+        "EclecticIQ": {
+            "mandatory": false,
+            "display_name": "EclecticIQ Platform"
+        },
+        "AwakeSecurity": {
+            "mandatory": false,
+            "display_name": "Awake Security"
+        },
+        "Anomali_ThreatStream": {
+            "mandatory": false,
+            "display_name": "Anomali ThreatStream"
+        },
+        "Maltiverse": {
+            "mandatory": false,
+            "display_name": "Maltiverse"
+        },
+        "TruSTAR": {
+            "mandatory": false,
+            "display_name": "TruSTAR"
+        },
+        "CrowdStrikeIntel": {
+            "mandatory": false,
+            "display_name": "CrowdStrike Falcon Intel"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "Shodan": {
+            "mandatory": false,
+            "display_name": "Shodan"
+        },
+        "TCPIPUtils": {
+            "mandatory": false,
+            "display_name": "TCPIPUtils"
+        },
+        "MISP": {
+            "mandatory": false,
+            "display_name": "MISP"
+        },
+        "PaloAltoNetworks_Threat_Vault": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks Threat Vault"
+        },
+        "RiskIQDigitalFootprint": {
+            "mandatory": false,
+            "display_name": "RiskIQ Digital Footprint"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "AbuseDB": {
+            "mandatory": false,
+            "display_name": "AbuseIPDB"
+        },
+        "GmailSingleUser": {
+            "mandatory": false,
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "ipinfo": {
+            "mandatory": false,
+            "display_name": "ipinfo"
+        },
+        "MaxMind_GeoIP2": {
+            "mandatory": false,
+            "display_name": "MaxMind GeoIP2"
+        },
+        "Ipstack": {
+            "mandatory": false,
+            "display_name": "Ipstack"
+        },
+        "Sixgill-Darkfeed": {
+            "mandatory": true,
+            "display_name": "Sixgill Darkfeed - Annual Subscription"
+        },
+        "Barracuda": {
+            "mandatory": false,
+            "display_name": "Barracuda"
+        },
+        "Synapse": {
+            "mandatory": false,
+            "display_name": "Synapse"
+        },
+        "Cofense-Intelligence": {
+            "mandatory": false,
+            "display_name": "Cofense Intelligence"
+        },
+        "Zscaler": {
+            "mandatory": false,
+            "display_name": "Zscaler"
+        },
+        "Spamcop": {
+            "mandatory": false,
+            "display_name": "Spamcop"
+        },
+        "Pulsedive": {
+            "mandatory": false,
+            "display_name": "Pulsedive"
+        },
+        "PAN-OS": {
+            "mandatory": true,
+            "display_name": "PAN-OS"
+        }
+    },
+    "displayedImages": [
+        "CommonTypes",
+        "Flashpoint",
+        "VirusTotal",
+        "CyberTotal",
+        "ThreatMiner",
+        "illuminate",
+        "RecordedFuture",
+        "DomainTools",
+        "AutoFocus",
+        "SlashNextPhishingIncidentResponse",
+        "ThreatExchange",
+        "SANS",
+        "XForceExchange",
+        "HelloWorld",
+        "JsonWhoIs",
+        "URLHaus",
+        "Pwned",
+        "PassiveTotal",
+        "PaloAltoNetworks_PAN_OS_EDL_Management",
+        "Cisco-umbrella",
+        "ThreatQ",
+        "ThreatConnect",
+        "XFE",
+        "NIST",
+        "Phishing",
+        "AlienVault_OTX",
+        "Expanse",
+        "CommonScripts",
+        "CommonPlaybooks",
+        "Alexa",
+        "Whois",
+        "DomainTools_Iris",
+        "APIVoid",
+        "iDefense",
+        "PolySwarm",
+        "Symantec_Deepsight",
+        "isight",
+        "Recorded_Future",
+        "EclecticIQ",
+        "AwakeSecurity",
+        "Anomali_ThreatStream",
+        "Maltiverse",
+        "TruSTAR",
+        "CrowdStrikeIntel",
+        "Gmail",
+        "MailSenderNew",
+        "Shodan",
+        "TCPIPUtils",
+        "MISP",
+        "PaloAltoNetworks_Threat_Vault",
+        "RiskIQDigitalFootprint",
+        "EWSMailSender",
+        "EWS",
+        "MicrosoftGraphListener",
+        "AbuseDB",
+        "GmailSingleUser",
+        "MicrosoftGraphMail",
+        "ipinfo",
+        "MaxMind_GeoIP2",
+        "Ipstack",
+        "Sixgill-Darkfeed",
+        "Barracuda",
+        "Synapse",
+        "Cofense-Intelligence",
+        "Zscaler",
+        "Spamcop",
+        "Pulsedive",
+        "PAN-OS"
     ]
 }

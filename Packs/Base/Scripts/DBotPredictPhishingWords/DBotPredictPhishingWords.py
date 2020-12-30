@@ -34,7 +34,7 @@ def handle_error(message, is_return_error):
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
                            word_threshold, top_word_limit, is_return_error, set_incidents_fields=False):
     model_data = get_model_data(model_name, model_store_type, is_return_error)
-    model = demisto_ml.decode_model(model_data)
+    phishing_model = demisto_ml.phishing_model_loads(model_data)
     text = "%s %s" % (email_subject, email_body)
     language = demisto.args().get('language', 'English')
     tokenization = demisto.args().get('tokenizationMethod', 'tokenizer')
@@ -47,17 +47,19 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     tokenized_text_result = res[0]['Contents']
     input_text = tokenized_text_result['hashedTokenizedText'] if tokenized_text_result.get('hashedTokenizedText') else \
         tokenized_text_result['tokenizedText']
-    filtered_text, filtered_text_number_of_words = demisto_ml.filter_model_words(input_text, model)
+    filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
     if filtered_text_number_of_words == 0:
         handle_error("The model does not contain any of the input text words", is_return_error)
     if filtered_text_number_of_words < min_text_length:
         handle_error("The model contains fewer than %d words" % min_text_length, is_return_error)
 
-    explain_result = demisto_ml.explain_model_words(model,
-                                                    input_text,
-                                                    0,
-                                                    word_threshold,
-                                                    top_word_limit)
+    explain_result = phishing_model.explain_model_words(
+        input_text,
+        0,
+        word_threshold,
+        top_word_limit
+    )
+    explain_result['Probability'] = float(explain_result["Probability"])
     predicted_prob = explain_result["Probability"]
     if predicted_prob < label_threshold:
         handle_error("Label probability is {:.2f} and it's below the input confidence threshold".format(

@@ -1,0 +1,30 @@
+{
+ "id": "indicator_cryptocurrencyaddresstype",
+ "version": -1,
+ "modified": "2020-11-10T11:16:35.081954+02:00",
+ "name": "Cryptocurrency Address Type",
+ "ownerOnly": false,
+ "cliName": "cryptocurrencyaddresstype",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "Cryptocurrency Address"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

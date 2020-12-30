@@ -96,12 +96,12 @@ configuration:
 - defaultvalue: 3 days
   display: First fetch time interval. The time range to consider for initial data
     fetch.(<number> <unit>, e.g., 1 day, 7 days, 3 months, 1 year).
-  name: first_fetch_time_interval_days
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '10'
   display: How many incidents to fetch each time
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
 - additionalinfo: Select Chronicle alert type to create actionable incident. Available
@@ -309,7 +309,7 @@ script:
       description: The IP address to check.
       isArray: true
       name: ip
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks the reputation of an IP address.
@@ -370,7 +370,7 @@ script:
       description: The domain name to check.
       isArray: true
       name: domain
-      required: false
+      required: true
       secret: false
     deprecated: false
     description: Checks the reputation of a domain.
@@ -1765,7 +1765,7 @@ script:
       description: URL to direct you to the source product console for this security
         event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.9863
+  dockerimage: demisto/googleapi-python3:1.0.0.12698
   feed: false
   isfetch: true
   longRunning: false

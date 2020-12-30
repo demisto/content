@@ -1,0 +1,454 @@
+id: FortiManager - Install Policy Package on Device
+version: -1
+name: FortiManager - Install Policy Package on Device
+starttaskid: "0"
+description: Install FortiManager firewall policy package on a given device.
+tasks:
+  "0":
+    id: "0"
+    taskid: 66019fb8-3d36-45eb-8316-595c667f6bf1
+    type: start
+    task:
+      id: 66019fb8-3d36-45eb-8316-595c667f6bf1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 642c3f2b-c322-4859-823b-713fe51f2d85
+    type: regular
+    task:
+      id: 642c3f2b-c322-4859-823b-713fe51f2d85
+      version: -1
+      name: Get Device Info
+      description: List all devices in the ADOM instance.
+      script: '|||fortimanager-devices-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      adom:
+        simple: ${inputs.adom}
+      device:
+        simple: ${inputs.device_name}
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e8bc55bc-3abf-4334-8d76-f13f78e6d620
+    type: condition
+    task:
+      id: e8bc55bc-3abf-4334-8d76-f13f78e6d620
+      version: -1
+      name: Check if Device is Insync
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: FortiManager.Device.conf_status
+            iscontext: true
+          right:
+            value:
+              simple: insync
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1746457c-ce38-4a00-8bc3-c9e2f27cd059
+    type: regular
+    task:
+      id: 1746457c-ce38-4a00-8bc3-c9e2f27cd059
+      version: -1
+      name: Initiate Policy Package installation
+      description: Schedule a policy package installation.
+      script: '|||fortimanager-firewall-policy-package-install'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      adom:
+        simple: ${inputs.adom}
+      adom_rev_comment:
+        simple: ${inputs.adom_rev_comment}
+      adom_rev_name:
+        simple: ${inputs.adom_rev_name}
+      dev_rev_comment:
+        simple: ${inputs.dev_rev_comment}
+      name:
+        simple: ${inputs.device_name}
+      package:
+        simple: ${inputs.policy_package}
+      vdom:
+        simple: ${inputs.vdom}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: eb0fa3a9-da53-4206-8753-c6ab05d78daf
+    type: playbook
+    task:
+      id: eb0fa3a9-da53-4206-8753-c6ab05d78daf
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${FortiManager.Installation.id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_id
+      PollingCommandName:
+        simple: fortimanager-firewall-policy-package-install-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: FortiManager.Installation(val.precent != 100)
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: ef5ca657-8154-4857-8648-0e363dff9afe
+    type: regular
+    task:
+      id: ef5ca657-8154-4857-8648-0e363dff9afe
+      version: -1
+      name: Get Installation Status
+      description: Get installation status.
+      script: '|||fortimanager-firewall-policy-package-install-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      task_id:
+        simple: ${FortiManager.Installation.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: d3152e7a-b087-4db9-87bb-0772ccc91781
+    type: condition
+    task:
+      id: d3152e7a-b087-4db9-87bb-0772ccc91781
+      version: -1
+      name: Check For Errors and Warnings
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: FortiManager.Installation.num_err
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: FortiManager.Installation.num_warn
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 106276e0-9977-49f2-88c6-5238dec5f9d3
+    type: title
+    task:
+      id: 106276e0-9977-49f2-88c6-5238dec5f9d3
+      version: -1
+      name: Installation Complete
+      description: Prints text to war room (Markdown supported)
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 8c5ec974-efdf-4319-85f7-b994368e51ce
+    type: regular
+    task:
+      id: 8c5ec974-efdf-4319-85f7-b994368e51ce
+      version: -1
+      name: Device Not In Sync
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      message:
+        simple: FortiManager - Device Not in sync - stopping installation. Sync the
+          device through FortiManager and resume Installation.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: a65d9c41-ba57-42a2-85bd-9707ee793ba2
+    type: regular
+    task:
+      id: a65d9c41-ba57-42a2-85bd-9707ee793ba2
+      version: -1
+      name: Manually Resume after Device Sync
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: fd360246-5964-4d5b-8b94-d35e96add7df
+    type: regular
+    task:
+      id: fd360246-5964-4d5b-8b94-d35e96add7df
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: FortiManager Installation Failed.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1775,
+        "width": 1090,
+        "x": 210,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: device_name
+  value: {}
+  required: true
+  description: The device name on which to install the policy package.
+  playbookInputQuery:
+- key: policy_package
+  value: {}
+  required: true
+  description: The policy package to install.
+  playbookInputQuery:
+- key: adom
+  value: {}
+  required: false
+  description: The ADOM in which the device exists. In not set will use the default
+    integration ADOM.
+  playbookInputQuery:
+- key: vdom
+  value: {}
+  required: false
+  description: |
+    VDOM on which to install the package.
+  playbookInputQuery:
+- key: adom_rev_comment
+  value: {}
+  required: false
+  description: The comment for the new ADOM revision.
+  playbookInputQuery:
+- key: adom_rev_name
+  value: {}
+  required: false
+  description: The name for the new ADOM revision.
+  playbookInputQuery:
+- key: dev_rev_comment
+  value: {}
+  required: false
+  description: The comment for the device configuration revision that will be generated
+    during install.
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+tests:
+- no tests

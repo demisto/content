@@ -4,7 +4,7 @@ Use the Proofpoint Protection Server integration to manage your email security a
 
 This integration was integrated and tested with version 8.11.12 of Proofpoint Protection Server.
 
-Users must be assigned to the admin role to use this integration.
+Users must be assigned to the **podadmin** role to use this integration.
 
 This integration does not support SAML protocol for authentication.
 
@@ -54,7 +54,7 @@ Download email message by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message_id | Email message ID to download. | Required |  
+| message_id | The GUID of the email message to download. | Required |  
 
 
 ##### Context Output

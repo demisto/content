@@ -175,12 +175,12 @@ script:
       required: true
       description: The summary of the issue.
     - name: projectKey
-      required: true
+      required: false
       description: The project key with which to associate the issue.
     - name: issueTypeName
       description: 'Select an issue type by name, for example: "Problem".'
     - name: issueTypeId
-      required: true
+      required: false
       description: Select an issue type by its numeric ID.
     - name: projectName
       description: The project name with which to associate the issue.
@@ -195,7 +195,7 @@ script:
     - name: assignee
       description: The name of the assignee.
     - name: reporter
-      description: The ID of the reporter.
+      description: The account ID of the reporter.
     - name: parentIssueKey
       description: The parent issue key (if you create a sub-task).
     - name: parentIssueId
@@ -214,7 +214,8 @@ script:
     - name: upload
       description: The entry ID to upload.
     - name: attachmentName
-      description: The attachment name to be displayed in Jira (overrides original file name)
+      description: The attachment name to be displayed in Jira (overrides original
+        file name)
     description: Uploads a file attachment to an issue.
   - name: jira-issue-add-comment
     arguments:
@@ -231,8 +232,8 @@ script:
   - name: jira-issue-add-link
     arguments:
     - name: globalId
-      description: If a globalId is provided, and a remote issue link exists with that
-        globalId, the remote issue link is updated.
+      description: If a globalId is provided, and a remote issue link exists with
+        that globalId, the remote issue link is updated.
     - name: relationship
       description: 'The object relationship to issue, for example: "causes".'
     - name: url
@@ -249,7 +250,8 @@ script:
     - name: applicationType
       description: The application type of the linked remote application. E.g "com.atlassian.confluence".
     - name: applicationName
-      description: The application name of the linked remote application. E.g "My Confluence Instance".
+      description: The application name of the linked remote application. E.g "My
+        Confluence Instance".
     description: Creates (or updates) an issue link.
   - name: jira-edit-issue
     arguments:
@@ -257,7 +259,8 @@ script:
       required: true
       description: The ID of the issue to edit.
     - name: issueJson
-      description: 'The issue object (in JSON format). e.g, {"fields":{"customfield_10037": "field_value"}}'
+      description: 'The issue object (in JSON format). e.g, {"fields":{"customfield_10037":
+        "field_value"}}'
     - name: summary
       description: The summary of the issue.
     - name: description
@@ -334,7 +337,7 @@ script:
       will not update the current incident, it's here for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.12447
+  dockerimage: demisto/oauthlib:1.0.0.13983
   isfetch: true
   isremotesyncin: true
   runonce: false

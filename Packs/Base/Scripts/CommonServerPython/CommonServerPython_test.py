@@ -15,7 +15,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers,\
+    url_to_clickable_markdown
 
 try:
     from StringIO import StringIO
@@ -91,20 +92,139 @@ DATA = [
         'header_1': 'a3',
         'header_2': 'b3',
         'header_3': 'c3'
-    },
+    }
 ]
 
-
-def test_tbl_to_md_only_data():
-    # sanity
-    table = tableToMarkdown('tableToMarkdown test', DATA)
-    expected_table = '''### tableToMarkdown test
+TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
+    (
+        DATA,
+        '''### tableToMarkdown test
 |header_1|header_2|header_3|
 |---|---|---|
 | a1 | b1 | c1 |
 | a2 | b2 | c2 |
 | a3 | b3 | c3 |
 '''
+    ),
+    (
+        [
+            {
+                'header_1|with_pipe': 'a1',
+                'header_2': 'b1',
+            },
+            {
+                'header_1|with_pipe': 'a2',
+                'header_2': 'b2',
+            }
+        ],
+        '''### tableToMarkdown test
+|header_1\\|with_pipe|header_2|
+|---|---|
+| a1 | b1 |
+| a2 | b2 |
+'''
+    )
+]
+
+DATA_WITH_URLS =  [(
+        [
+            {
+            'header_1': 'a1',
+            'url1': 'b1',
+            'url2': 'c1'
+            },
+            {
+            'header_1': 'a2',
+            'url1': 'b2',
+            'url2': 'c2'
+            },
+            {
+            'header_1': 'a3',
+            'url1': 'b3',
+            'url2': 'c3'
+            }
+        ],
+'''### tableToMarkdown test
+|header_1|url1|url2|
+|---|---|---|
+| a1 | [b1](b1) | [c1](c1) |
+| a2 | [b2](b2) | [c2](c2) |
+| a3 | [b3](b3) | [c3](c3) |
+'''
+    )]
+
+COMPLEX_DATA_WITH_URLS = [(
+    [
+    {'data':
+         {'id': '1',
+          'result':
+              {'files':
+                  [
+                      {
+                          'filename': 'name',
+                          'size': 0,
+                          'url': 'url'
+                      }
+                  ]
+              },
+          'links': ['link']
+          }
+     },
+    {'data':
+        {'id': '2',
+            'result':
+            {'files':
+               [
+                   {
+                       'filename': 'name',
+                       'size': 0,
+                       'url': 'url'
+                    }
+               ]
+            },
+            'links': ['link']
+         }
+     }
+],
+    [
+    {'data':
+         {'id': '1',
+          'result':
+              {'files':
+                  [
+                      {
+                          'filename': 'name',
+                          'size': 0,
+                          'url': '[url](url)'
+                      }
+                  ]
+              },
+          'links': ['[link](link)']
+          }
+     },
+    {'data':
+        {'id': '2',
+            'result':
+            {'files':
+               [
+                   {
+                       'filename': 'name',
+                       'size': 0,
+                       'url': '[url](url)'
+                    }
+               ]
+            },
+            'links': ['[link](link)']
+         }
+     }
+])]
+
+
+@pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
+def test_tbl_to_md_only_data(data, expected_table):
+    # sanity
+    table = tableToMarkdown('tableToMarkdown test', data)
+
     assert table == expected_table
 
 
@@ -342,6 +462,17 @@ def test_tbl_to_md_header_with_special_character():
     assert table_with_character == expected_string_with_special_character
 
 
+@pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
+def test_tbl_to_md_clickable_url(data, expected_table):
+    table = tableToMarkdown('tableToMarkdown test', data, url_keys=['url1', 'url2'])
+    assert table == expected_table
+
+
+@pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
+def test_url_to_clickable_markdown(data, expected_data):
+    table = url_to_clickable_markdown(data, url_keys=['url', 'links'])
+    assert table == expected_data
+
 def test_flatten_cell():
     # sanity
     utf8_to_flatten = b'abcdefghijklmnopqrstuvwxyz1234567890!'.decode('utf8')
@@ -435,22 +566,28 @@ def test_remove_empty_elements():
     assert expected_result == remove_empty_elements(test_dict)
 
 
-def test_aws_table_to_markdown():
-    header = "AWS DynamoDB DescribeBackup"
-    raw_input = {
+@pytest.mark.parametrize('header,raw_input,expected_output', [
+    ('AWS DynamoDB DescribeBackup', {
         'BackupDescription': {
             "Foo": "Bar",
             "Baz": "Bang",
             "TestKey": "TestValue"
         }
-    }
-    expected_output = '''### AWS DynamoDB DescribeBackup
-|Baz|Foo|TestKey|
-|---|---|---|
-| Bang | Bar | TestValue |
-'''
-
-    assert expected_output == aws_table_to_markdown(raw_input, header)
+    }, '''### AWS DynamoDB DescribeBackup\n|Baz|Foo|TestKey|\n|---|---|---|\n| Bang | Bar | TestValue |\n'''),
+    ('Empty Results', {'key': []}, '### Empty Results\n**No entries.**\n')
+])
+def test_aws_table_to_markdown(header, raw_input, expected_output):
+    """
+    Given
+        - A header and a dict with two levels
+        - A header and a dict with one key pointing to an empty list
+    When
+        - Creating a markdown table using the aws_table_to_markdown function
+    Ensure
+        - The header appears as a markdown header and the dictionary is translated to a markdown table
+        - The header appears as a markdown header and "No entries" text appears instead of a markdown table"
+    """
+    assert aws_table_to_markdown(raw_input, header) == expected_output
 
 
 def test_argToList():
@@ -646,6 +783,9 @@ def test_logger_replace_strs(mocker):
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
 
 
+TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
+                   'AAAAdzc2gtcn\\n-----END OPENSSH PRIVATE KEY-----'
+
 TEST_SSH_KEY = '-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
                'AAAAdzc2gtcn\n-----END OPENSSH PRIVATE KEY-----'
 
@@ -661,6 +801,7 @@ SENSITIVE_PARAM = {
             'password': 'cred_pass',
             'sortValues': None,
             'sshkey': TEST_SSH_KEY,
+            'sshkeyEsc': TEST_SSH_KEY_ESC,
             'sshkeyPass': 'ssh_key_secret_pass',
             'user': '',
             'vaultInstanceId': '',
@@ -678,8 +819,10 @@ def test_logger_replace_strs_credentials(mocker):
     mocker.patch.object(demisto, 'params', return_value=SENSITIVE_PARAM)
     ilog = IntegrationLogger()
     # log some secrets
-    ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh pass: ssh_key_secret_pass. ident: ident_pass:')
-    for s in ('cred_pass', TEST_SSH_KEY, 'ssh_key_secret_pass', 'ident_pass'):
+    ilog('my cred pass: cred_pass. my ssh key: ssh_key_secret. my ssh key: {}.'
+         'my ssh key: {}. my ssh pass: ssh_key_secret_pass. ident: ident_pass:'.format(TEST_SSH_KEY, TEST_SSH_KEY_ESC))
+
+    for s in ('cred_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC, 'ssh_key_secret_pass', 'ident_pass'):
         assert s not in ilog.messages[0]
 
 
@@ -691,8 +834,106 @@ def test_debug_logger_replace_strs(mocker):
     msg = debug_logger.int_logger.messages[0]
     assert 'debug-mode started' in msg
     assert 'Params:' in msg
-    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass'):
+    for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC):
         assert s not in msg
+
+
+def test_build_curl_post_noproxy():
+    """
+    Given:
+       - HTTP client log messages of POST query
+       - Proxy is not used and insecure is not checked
+    When
+       - Building curl query
+    Then
+       - Ensure curl is generated as expected
+    """
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'POST /api HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"data\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy -d \'{"data": "value"}\''
+    ]
+
+
+def test_build_curl_get_withproxy(mocker):
+    """
+    Given:
+       - HTTP client log messages of GET query
+       - Proxy used and insecure checked
+    When
+       - Building curl query
+    Then
+       - Ensure curl is generated as expected
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'proxy': True,
+        'insecure': True
+    })
+    os.environ['https_proxy'] = 'http://proxy'
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'GET /api HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"data\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X GET https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--proxy http://proxy -k -d \'{"data": "value"}\''
+    ]
+
+
+def test_build_curl_multiple_queries():
+    """
+    Given:
+       - HTTP client log messages of POST and GET queries
+       - Proxy is not used and insecure is not checked
+    When
+       - Building curl query
+    Then
+       - Ensure two curl queries are generated as expected
+    """
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'POST /api/post HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"postdata\": \"value\"}'")
+    ilog.build_curl("send: b'GET /api/get HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"getdata\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X POST https://demisto.com/api/post -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy -d \'{"postdata": "value"}\'',
+        'curl -X GET https://demisto.com/api/get -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy -d \'{"getdata": "value"}\''
+    ]
 
 
 def test_is_mac_address():
@@ -985,7 +1226,7 @@ class TestCommandResults:
         """
         from CommonServerPython import CommandResults
 
-        files = []
+        files = [{"key": "value"}]  # if outputs is empty list, no results are returned
         results = CommandResults(outputs_prefix='File(val.sha1 == obj.sha1 && val.md5 == obj.md5)',
                                  outputs_key_field='', outputs=files)
 
@@ -1011,7 +1252,28 @@ class TestCommandResults:
     def test_empty_outputs(self):
         """
         Given:
-        - Empty outputs
+        - Outputs as None
+
+        When:
+        - Returning results
+
+        Then:
+        - Validate EntryContext key value
+
+        """
+        from CommonServerPython import CommandResults
+        res = CommandResults(
+            outputs_prefix='FoundIndicators',
+            outputs_key_field='value',
+            outputs=None
+        )
+        context = res.to_context()
+        assert {} == context.get('EntryContext')
+
+    def test_empty_list_outputs(self):
+        """
+        Given:
+        - Outputs with empty list
 
         When:
         - Returning results
@@ -1027,7 +1289,7 @@ class TestCommandResults:
             outputs=[]
         )
         context = res.to_context()
-        assert {'FoundIndicators(val.value == obj.value)': []} == context.get('EntryContext')
+        assert {} == context.get('EntryContext')
 
     def test_return_command_results(self, clear_version_cache):
         from CommonServerPython import Common, CommandResults, EntryFormat, EntryType, DBotScoreType
@@ -1082,7 +1344,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1166,7 +1429,8 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1195,7 +1459,8 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1227,7 +1492,8 @@ class TestCommandResults:
             'EntryContext': {
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1371,7 +1637,410 @@ class TestCommandResults:
                     }
                 ]
             },
-            'IndicatorTimeline': []
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
+        }
+
+    def test_create_certificate(self):
+        """
+        Given:
+            -  an X509 Certificate with its properties
+        When
+            - creating a CommandResults with the Certificate Standard Context
+        Then
+            - the proper output Context is created
+        """
+        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+
+        dbot_score = Common.DBotScore(
+            indicator='bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d',
+            integration_name='test',
+            indicator_type=DBotScoreType.CERTIFICATE,
+            score=Common.DBotScore.NONE
+        )
+
+        cert_extensions = [
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER,
+                authority_key_identifier=Common.CertificateExtension.AuthorityKeyIdentifier(
+                    key_identifier="0f80611c823161d52f28e78d4638b42ce1c6d9e2"
+                ),
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER,
+                digest="b34972bb12121b8851cd5564ff9656dcbca3f288",
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME,
+                subject_alternative_names=[
+                    Common.GeneralName(
+                        gn_type="dNSName",
+                        gn_value="*.paloaltonetworks.com"
+                    ),
+                    Common.GeneralName(
+                        gn_type="dNSName",
+                        gn_value="paloaltonetworks.com"
+                    )
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.KEYUSAGE,
+                digital_signature=True,
+                key_encipherment=True,
+                critical=True
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE,
+                usages=[
+                    "serverAuth",
+                    "clientAuth"
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS,
+                distribution_points=[
+                    Common.CertificateExtension.DistributionPoint(
+                        full_name=[
+                            Common.GeneralName(
+                                gn_type="uniformResourceIdentifier",
+                                gn_value="http://crl3.digicert.com/ssca-sha2-g7.crl"
+                            )
+                        ]
+                    ),
+                    Common.CertificateExtension.DistributionPoint(
+                        full_name=[
+                            Common.GeneralName(
+                                gn_type="uniformResourceIdentifier",
+                                gn_value="http://crl4.digicert.com/ssca-sha2-g7.crl"
+                            )
+                        ]
+                    )
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES,
+                certificate_policies=[
+                    Common.CertificateExtension.CertificatePolicy(
+                        policy_identifier="2.16.840.1.114412.1.1",
+                        policy_qualifiers=["https://www.digicert.com/CPS"]
+                    ),
+                    Common.CertificateExtension.CertificatePolicy(
+                        policy_identifier="2.23.140.1.2.2"
+                    )
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS,
+                authority_information_access=[
+                    Common.CertificateExtension.AuthorityInformationAccess(
+                        access_method="OCSP",
+                        access_location=Common.GeneralName(
+                            gn_type="uniformResourceIdentifier",
+                            gn_value="http://ocsp.digicert.com"
+                        )
+                    ),
+                    Common.CertificateExtension.AuthorityInformationAccess(
+                        access_method="caIssuers",
+                        access_location=Common.GeneralName(
+                            gn_type="uniformResourceIdentifier",
+                            gn_value="http://cacerts.digicert.com/DigiCertSHA2SecureServerCA.crt"
+                        )
+                    )
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS,
+                basic_constraints=Common.CertificateExtension.BasicConstraints(
+                    ca=False
+                ),
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS,
+                signed_certificate_timestamps=[
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="PreCertificate"
+                    ),
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="PreCertificate"
+                    )
+                ],
+                critical=False
+            ),
+            Common.CertificateExtension(
+                extension_type=Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                signed_certificate_timestamps=[
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="X509Certificate"
+                    ),
+                    Common.CertificateExtension.SignedCertificateTimestamp(
+                        version=0,
+                        log_id="5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                        timestamp="2020-10-23T19:31:49.000Z",
+                        entry_type="X509Certificate"
+                    )
+                ],
+                critical=False
+            )
+        ]
+        certificate = Common.Certificate(
+            subject_dn='CN=*.paloaltonetworks.com,O=Palo Alto Networks\\, Inc.,L=Santa Clara,ST=California,C=US',
+            dbot_score=dbot_score,
+            serial_number='19290688218337824112020565039390569720',
+            issuer_dn='CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US',
+            validity_not_before='2020-10-23T00:00:00.000Z',
+            validity_not_after='2021-11-21T23:59:59.000Z',
+            sha256='bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d',
+            sha1='2392ea5cd4c2a61e51547570634ef887ab1942e9',
+            md5='22769ae413997b86da4a0934072d9ed0',
+            publickey=Common.CertificatePublicKey(
+                algorithm=Common.CertificatePublicKey.Algorithm.RSA,
+                length=2048,
+                modulus='00:00:00:00',
+                exponent=65537
+            ),
+            spki_sha256='94b716aeda21cd661949cfbf3f55457a277da712cdce0ab31989a4f288fad9b9',
+            signature_algorithm='sha256',
+            signature='SIGNATURE',
+            extensions=cert_extensions
+        )
+
+        results = CommandResults(
+            outputs_key_field=None,
+            outputs_prefix=None,
+            outputs=None,
+            indicators=[certificate]
+        )
+
+        CONTEXT_PATH = "Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || " \
+                       "val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)"
+
+        assert results.to_context() == {
+            'Type': EntryType.NOTE,
+            'ContentsFormat': EntryFormat.JSON,
+            'Contents': None,
+            'HumanReadable': None,
+            'EntryContext': {
+                CONTEXT_PATH: [{
+                    "SubjectDN": "CN=*.paloaltonetworks.com,O=Palo Alto Networks\\, Inc.,L=Santa Clara,ST=California,C=US",
+                    "SubjectAlternativeName": [
+                        {
+                            "Type": "dNSName",
+                            "Value": "*.paloaltonetworks.com"
+                        },
+                        {
+                            "Type": "dNSName",
+                            "Value": "paloaltonetworks.com"
+                        }
+                    ],
+                    "Name": [
+                        "*.paloaltonetworks.com",
+                        "paloaltonetworks.com"
+                    ],
+                    "IssuerDN": "CN=DigiCert SHA2 Secure Server CA,O=DigiCert Inc,C=US",
+                    "SerialNumber": "19290688218337824112020565039390569720",
+                    "ValidityNotBefore": "2020-10-23T00:00:00.000Z",
+                    "ValidityNotAfter": "2021-11-21T23:59:59.000Z",
+                    "SHA256": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
+                    "SHA1": "2392ea5cd4c2a61e51547570634ef887ab1942e9",
+                    "MD5": "22769ae413997b86da4a0934072d9ed0",
+                    "PublicKey": {
+                        "Algorithm": "RSA",
+                        "Length": 2048,
+                        "Modulus": "00:00:00:00",
+                        "Exponent": 65537
+                    },
+                    "SPKISHA256": "94b716aeda21cd661949cfbf3f55457a277da712cdce0ab31989a4f288fad9b9",
+                    "Signature": {
+                        "Algorithm": "sha256",
+                        "Signature": "SIGNATURE"
+                    },
+                    "Extension": [
+                        {
+                            "OID": "2.5.29.35",
+                            "Name": "authorityKeyIdentifier",
+                            "Critical": False,
+                            "Value": {
+                                "KeyIdentifier": "0f80611c823161d52f28e78d4638b42ce1c6d9e2"
+                            }
+                        },
+                        {
+                            "OID": "2.5.29.14",
+                            "Name": "subjectKeyIdentifier",
+                            "Critical": False,
+                            "Value": {
+                                "Digest": "b34972bb12121b8851cd5564ff9656dcbca3f288"
+                            }
+                        },
+                        {
+                            "OID": "2.5.29.17",
+                            "Name": "subjectAltName",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "Type": "dNSName",
+                                    "Value": "*.paloaltonetworks.com"
+                                },
+                                {
+                                    "Type": "dNSName",
+                                    "Value": "paloaltonetworks.com"
+                                }
+                            ]
+                        },
+                        {
+                            "OID": "2.5.29.15",
+                            "Name": "keyUsage",
+                            "Critical": True,
+                            "Value": {
+                                "DigitalSignature": True,
+                                "KeyEncipherment": True
+                            }
+                        },
+                        {
+                            "OID": "2.5.29.37",
+                            "Name": "extendedKeyUsage",
+                            "Critical": False,
+                            "Value": {
+                                "Usages": [
+                                    "serverAuth",
+                                    "clientAuth"
+                                ]
+                            }
+                        },
+                        {
+                            "OID": "2.5.29.31",
+                            "Name": "cRLDistributionPoints",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "FullName": [
+                                        {
+                                            "Type": "uniformResourceIdentifier",
+                                            "Value": "http://crl3.digicert.com/ssca-sha2-g7.crl"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "FullName": [
+                                        {
+                                            "Type": "uniformResourceIdentifier",
+                                            "Value": "http://crl4.digicert.com/ssca-sha2-g7.crl"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "OID": "2.5.29.32",
+                            "Name": "certificatePolicies",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "PolicyIdentifier": "2.16.840.1.114412.1.1",
+                                    "PolicyQualifiers": [
+                                        "https://www.digicert.com/CPS"
+                                    ]
+                                },
+                                {
+                                    "PolicyIdentifier": "2.23.140.1.2.2"
+                                }
+                            ]
+                        },
+                        {
+                            "OID": "1.3.6.1.5.5.7.1.1",
+                            "Name": "authorityInfoAccess",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "AccessMethod": "OCSP",
+                                    "AccessLocation": {
+                                        "Type": "uniformResourceIdentifier",
+                                        "Value": "http://ocsp.digicert.com"
+                                    }
+                                },
+                                {
+                                    "AccessMethod": "caIssuers",
+                                    "AccessLocation": {
+                                        "Type": "uniformResourceIdentifier",
+                                        "Value": "http://cacerts.digicert.com/DigiCertSHA2SecureServerCA.crt"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "OID": "2.5.29.19",
+                            "Name": "basicConstraints",
+                            "Critical": False,
+                            "Value": {
+                                "CA": False
+                            }
+                        },
+                        {
+                            "OID": "1.3.6.1.4.1.11129.2.4.2",
+                            "Name": "signedCertificateTimestampList",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "Version": 0,
+                                    "LogId": "f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "PreCertificate"
+                                },
+                                {
+                                    "Version": 0,
+                                    "LogId": "5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "PreCertificate"
+                                }
+                            ]
+                        },
+                        {
+                            "OID": "1.3.6.1.4.1.11129.2.4.5",
+                            "Name": "signedCertificateTimestampList",
+                            "Critical": False,
+                            "Value": [
+                                {
+                                    "Version": 0,
+                                    "LogId": "f65c942fd1773022145418083094568ee34d131933bfdf0c2f200bcc4ef164e3",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "X509Certificate"
+                                },
+                                {
+                                    "Version": 0,
+                                    "LogId": "5cdc4392fee6ab4544b15e9ad456e61037fbd5fa47dca17394b25ee6f6c70eca",
+                                    "Timestamp": "2020-10-23T19:31:49.000Z",
+                                    "EntryType": "X509Certificate"
+                                }
+                            ]
+                        }
+                    ]
+                }],
+                'DBotScore(val.Indicator && val.Indicator == obj.Indicator && '
+                'val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
+                    "Indicator": "bc33cf76519f1ec5ae7f287f321df33a7afd4fd553f364cf3c753f91ba689f8d",
+                    "Type": "certificate",
+                    "Vendor": "test",
+                    "Score": 0
+                }]
+            },
+            'IndicatorTimeline': [],
+            'IgnoreAutoExtract': False
         }
 
     def test_indicator_timeline_with_list_of_indicators(self):
@@ -1459,20 +2128,20 @@ class TestCommandResults:
         )
 
         assert results.to_context()['EntryContext'] == {
-          'IP(val.Address && val.Address == obj.Address)': [
-            {
-              'Address': '8.8.8.8'
-            }
-          ],
-          'DBotScore(val.Indicator && val.Indicator == '
-          'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
-            {
-              'Indicator': '8.8.8.8',
-              'Type': 'ip',
-              'Vendor': 'Virus Total',
-              'Score': 1
-            }
-          ]
+            'IP(val.Address && val.Address == obj.Address)': [
+                {
+                    'Address': '8.8.8.8'
+                }
+            ],
+            'DBotScore(val.Indicator && val.Indicator == '
+            'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                {
+                    'Indicator': '8.8.8.8',
+                    'Type': 'ip',
+                    'Vendor': 'Virus Total',
+                    'Score': 1
+                }
+            ]
         }
 
     def test_single_indicator_with_indicators(self, mocker):
@@ -1506,6 +2175,33 @@ class TestCommandResults:
                 indicators=[ip]
             )
         assert e.value.args[0] == 'indicators is DEPRECATED, use only indicator'
+
+    def test_indicator_with_no_auto_extract(self):
+        """
+       Given:
+           - a list of an indicator
+           - ignore_auto_extract set to True
+       When
+           - creating a CommandResults object with an indicator
+           - using Ignore Auto Extract
+
+       Then
+           - the IgnoreAutoExtract field is set to True
+       """
+        from CommonServerPython import CommandResults
+
+        indicators = ['8.8.8.8']
+
+        results = CommandResults(
+            outputs_prefix=None,
+            outputs_key_field=None,
+            outputs=None,
+            raw_response=indicators,
+            indicators_timeline=None,
+            ignore_auto_extract=True
+        )
+
+        assert results.to_context().get('IgnoreAutoExtract') is True
 
 
 class TestBaseClient:
@@ -1667,42 +2363,28 @@ class TestBaseClient:
 
     def test_exception_response_json_parsing_when_ok_code_is_invalid(self, requests_mock):
         from CommonServerPython import DemistoException
-        reason = 'Bad Request'
         json_response = {'error': 'additional text'}
         requests_mock.get('http://example.com/api/v2/event',
                           status_code=400,
-                          reason=reason,
                           json=json_response)
         try:
-            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+            self.client._http_request('get', 'event', ok_codes=(200,))
         except DemistoException as e:
-            assert e.res.get('error') == 'additional text'
+            resp_json = e.res.json()
+            assert e.res.status_code == 400
+            assert resp_json.get('error') == 'additional text'
 
     def test_exception_response_text_parsing_when_ok_code_is_invalid(self, requests_mock):
         from CommonServerPython import DemistoException
-        reason = 'Bad Request'
-        text_response = '{"error": "additional text"}'
         requests_mock.get('http://example.com/api/v2/event',
                           status_code=400,
-                          reason=reason,
-                          text=text_response)
+                          text='{"error": "additional text"}')
         try:
-            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
+            self.client._http_request('get', 'event', ok_codes=(200,))
         except DemistoException as e:
-            assert e.res.get('error') == 'additional text'
-
-    def test_exception_response_parsing_fails_when_ok_code_is_invalid(self, requests_mock):
-        from CommonServerPython import DemistoException
-        reason = 'Bad Request'
-        text_response = 'Bad Request'
-        requests_mock.get('http://example.com/api/v2/event',
-                          status_code=400,
-                          reason=reason,
-                          text=text_response)
-        try:
-            self.client._http_request('get', 'event', resp_type='text', ok_codes=(200,))
-        except DemistoException as e:
-            assert isinstance(e.res, dict) and not e.res
+            resp_json = json.loads(e.res.text)
+            assert e.res.status_code == 400
+            assert resp_json.get('error') == 'additional text'
 
     def test_is_valid_ok_codes_empty(self):
         from requests import Response
@@ -1796,6 +2478,26 @@ def test_http_client_debug(mocker):
     r.read()
     assert demisto.info.call_count > 5
     assert debug_log is not None
+
+
+def test_http_client_debug_int_logger_sensitive_query_params(mocker):
+    if not IS_PY3:
+        pytest.skip("test not supported in py2")
+        return
+    mocker.patch.object(demisto, 'params', return_value={'APIKey': 'dummy'})
+    mocker.patch.object(demisto, 'info')
+    debug_log = DebugLogger()
+    from http.client import HTTPConnection
+    HTTPConnection.debuglevel = 1
+    con = HTTPConnection("google.com")
+    con.request('GET', '?apikey=dummy')
+    r = con.getresponse()
+    r.read()
+    assert debug_log
+    for arg in demisto.info.call_args_list:
+        assert 'dummy' not in arg[0][0]
+        if 'apikey' in arg[0][0]:
+            assert 'apikey=<XX_REPLACED>' in arg[0][0]
 
 
 class TestParseDateRange:
@@ -2222,7 +2924,9 @@ INDICATOR_VALUE_AND_TYPE = [
     ('112.126.94.107', 'IP'),
     ('a', None),
     ('*castaneda-thornton.com', 'DomainGlob'),
-    ('53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b', 'File')
+    (
+        '53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b',
+        'File')
 ]
 
 
@@ -2526,7 +3230,8 @@ def test_update_context_no_merge(mocker):
     conversations.extend([new_conversation])
 
     # Arrange
-    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS, True)
+    context, version = CommonServerPython.update_integration_context({'conversations': conversations}, OBJECTS_TO_KEYS,
+                                                                     True)
     new_conversations = json.loads(context['conversations'])
 
     # Assert
@@ -2692,4 +3397,231 @@ def test_return_results_multiple_dict_results(mocker):
     demisto_results_mock = mocker.patch.object(demisto, 'results')
     mock_command_results = [{'MockContext': 0}, {'MockContext': 1}]
     return_results(mock_command_results)
+    args, kwargs = demisto_results_mock.call_args_list[0]
     assert demisto_results_mock.call_count == 1
+    assert [{'MockContext': 0}, {'MockContext': 1}] in args
+
+
+def test_arg_to_int__valid_numbers():
+    """
+    Given
+        valid numbers
+    When
+        converting them to int
+    Then
+        ensure proper int returned
+    """
+    from CommonServerPython import arg_to_number
+
+    result = arg_to_number(
+        arg='5',
+        arg_name='foo')
+
+    assert result == 5
+
+    result = arg_to_number(
+        arg='2.0',
+        arg_name='foo')
+
+    assert result == 2
+
+    result = arg_to_number(
+        arg=3,
+        arg_name='foo')
+
+    assert result == 3
+
+    result = arg_to_number(
+        arg=4,
+        arg_name='foo',
+        required=True)
+
+    assert result == 4
+
+    result = arg_to_number(
+        arg=5,
+        required=True)
+
+    assert result == 5
+
+
+def test_arg_to_int__invalid_numbers():
+    """
+    Given
+        invalid numbers
+    When
+        converting them to int
+    Then
+        raise ValueError
+    """
+    from CommonServerPython import arg_to_number
+
+    try:
+        arg_to_number(
+            arg='aa',
+            arg_name='foo')
+
+        assert False
+
+    except ValueError as e:
+        assert 'Invalid number' in str(e)
+
+
+def test_arg_to_int_required():
+    """
+    Given
+        argument foo which with value None
+
+    When
+        converting the arg to number via required flag as True
+
+    Then
+        ensure ValueError raised
+    """
+    from CommonServerPython import arg_to_number
+
+    # required set to false
+    result = arg_to_number(
+        arg=None,
+        arg_name='foo',
+        required=False)
+
+    assert result is None
+
+    try:
+        arg_to_number(
+            arg=None,
+            arg_name='foo',
+            required=True)
+
+        assert False
+
+    except ValueError as e:
+        assert 'Missing' in str(e)
+
+    try:
+        arg_to_number(
+            arg='',
+            arg_name='foo',
+            required=True)
+
+        assert False
+
+    except ValueError as e:
+        assert 'Missing' in str(e)
+
+    try:
+        arg_to_number(arg='goo')
+
+        assert False
+
+    except ValueError as e:
+        assert '"goo" is not a valid number' in str(e)
+
+
+def test_arg_to_timestamp_valid_inputs():
+    """
+    Given
+        valid dates provided
+
+    When
+        converting dates into timestamp
+
+    Then
+        ensure returned int which represents timestamp in milliseconds
+    """
+    if sys.version_info.major == 2:
+        # skip for python 2 - date
+        assert True
+        return
+
+    from CommonServerPython import arg_to_datetime
+    from datetime import datetime, timezone
+
+    # hard coded date
+    result = arg_to_datetime(
+        arg='2020-11-10T21:43:43Z',
+        arg_name='foo'
+    )
+
+    assert result == datetime(2020, 11, 10, 21, 43, 43, tzinfo=timezone.utc)
+
+    # relative dates also work
+    result = arg_to_datetime(
+        arg='2 hours ago',
+        arg_name='foo'
+    )
+
+    assert result > datetime(2020, 11, 10, 21, 43, 43)
+
+    # relative dates also work
+    result = arg_to_datetime(
+        arg=1581982463,
+        arg_name='foo'
+    )
+
+    assert int(result.timestamp()) == 1581982463
+
+    result = arg_to_datetime(
+        arg='2 hours ago'
+    )
+
+    assert result > datetime(2020, 11, 10, 21, 43, 43)
+
+
+def test_arg_to_timestamp_invalid_inputs():
+    """
+    Given
+        invalid date like 'aaaa' or '2010-32-01'
+
+    When
+        when converting date to timestamp
+
+    Then
+        ensure ValueError is raised
+    """
+    from CommonServerPython import arg_to_datetime
+    if sys.version_info.major == 2:
+        # skip for python 2 - date
+        assert True
+        return
+
+    try:
+        arg_to_datetime(
+            arg=None,
+            arg_name='foo',
+            required=True)
+
+        assert False
+
+    except ValueError as e:
+        assert 'Missing' in str(e)
+
+    try:
+        arg_to_datetime(
+            arg='aaaa',
+            arg_name='foo')
+
+        assert False
+
+    except ValueError as e:
+        assert 'Invalid date' in str(e)
+
+    try:
+        arg_to_datetime(
+            arg='2010-32-01',
+            arg_name='foo')
+
+        assert False
+
+    except ValueError as e:
+        assert 'Invalid date' in str(e)
+
+    try:
+        arg_to_datetime(
+            arg='2010-32-01')
+
+        assert False
+
+    except ValueError as e:
+        assert '"2010-32-01" is not a valid date' in str(e)

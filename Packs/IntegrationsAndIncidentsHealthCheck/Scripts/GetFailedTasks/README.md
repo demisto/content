@@ -19,7 +19,7 @@ This script is used in the following playbooks and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | query | The query by which to retrieve failed tasks. Optional. The default value is "-status:closed" |
-
+| tenant_name | The tenant name. |
 ## Outputs
 ---
 There are no outputs for this script.

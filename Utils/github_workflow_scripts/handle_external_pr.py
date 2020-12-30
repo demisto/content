@@ -13,7 +13,7 @@ from utils import get_env_var, timestamped_print
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 print = timestamped_print
 
-REVIEWERS = ['orhovy', 'adi88d', 'orlichter1']
+REVIEWERS = ['ChanochShayner', 'abaumgarten', 'barchen1']
 WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
               'wizard @{selected_reviewer} will very shortly look over your proposed changes. '
 

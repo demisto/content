@@ -116,6 +116,9 @@ def get_url_data(client: Client, url: str):
     current_data_url = None
     if is_reload_needed(client, integration_context):
         data = reload(client)
+        current_date = date_to_timestamp(datetime.now(), DATE_FORMAT)
+        context = {"list": data, "timestamp": current_date}
+        demisto.setIntegrationContext(context)
         data_contains_url = url in data
         if data_contains_url:
             current_data_url = data[url]
@@ -143,7 +146,8 @@ def create_verified_markdown(url_data, url):
     return markdown
 
 
-def url_command(client: Client, url_list: list):
+def url_command(client: Client, url_list: list) -> List[CommandResults]:
+    command_results: List[CommandResults] = []
     for url in url_list:
         markdown = "### PhishTankV2 Database - URL Query \n"
         url_data, url = get_url_data(client, url)
@@ -154,7 +158,12 @@ def url_command(client: Client, url_list: list):
         else:
             markdown += f'#### No matches for URL {url} \n'
             dbot = Common.DBotScore(url, DBotScoreType.URL, "PhishTankV2", 0)
-        return_results(CommandResults(readable_output=markdown, indicators=[Common.URL(url, dbot)]))
+        command_results.append(CommandResults(
+            indicator=Common.URL(url, dbot),
+            readable_output=markdown,
+        ))
+
+    return command_results
 
 
 def phishtank_reload_command(client: Client):
@@ -313,7 +322,7 @@ def main() -> None:
 
         elif demisto.command() == 'url':
             url = argToList(demisto.args().get("url"))
-            url_command(client, url)
+            return_results(url_command(client, url))
 
         elif demisto.command() == 'phishtank-reload':
             return_results(phishtank_reload_command(client))

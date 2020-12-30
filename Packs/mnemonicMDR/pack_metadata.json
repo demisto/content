@@ -1,0 +1,38 @@
+{
+    "name": "mnemonic MDR",
+    "description": "Rapidly detect, analyse and respond to security threats with mnemonic’s leading Managed Detection and Response (MDR) service.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "mnemonic",
+    "url": "https://mnemonic.no",
+    "email": "contact@mnemonic.no",
+    "created": "2020-10-01T14:15:52Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Alerts",
+        "Attack",
+        "Forensics",
+        "Incident Handling",
+        "Incident Response",
+        "Malware",
+        "Security",
+        "Security Analytics",
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Breach Notification",
+        "Case Management",
+        "Hunting",
+        "Incident Response",
+        "Malware",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "mnemonic",
+        "Argus",
+        "MDR"
+    ],
+    "githubUser": []
+}

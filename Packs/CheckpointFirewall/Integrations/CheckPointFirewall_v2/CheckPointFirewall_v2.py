@@ -261,6 +261,10 @@ class Client(BaseClient):
                                       json_data={'limit': limit, 'offset': offset})
         return response.get('packages')
 
+    def list_package(self, identifier: str):
+        return self._http_request(method='POST', url_suffix='show-package',
+                                  headers=self.headers, json_data={'name': identifier})
+
     def list_gateways(self, limit: int, offset: int):
         response = self._http_request(method='POST', url_suffix='show-gateways-and-servers',
                                       headers=self.headers,
@@ -438,12 +442,12 @@ def checkpoint_delete_host_command(client: Client, identifier) -> CommandResults
         client (Client): CheckPoint client.
         identifier(str): uid or name.
     """
-    identifier = argToList(identifier)
+    identifiers_list = argToList(identifier)
     readable_output = ''
     printable_result = {}
     result = []
-    for index, item in enumerate(identifier):
-        current_result = client.delete_host(item[1])
+    for item in identifiers_list:
+        current_result = client.delete_host(item)
         result.append(current_result)
         printable_result = {'message': current_result.get('message')}
         current_readable_output = tableToMarkdown('CheckPoint data for deleting host:',
@@ -1435,6 +1439,39 @@ def checkpoint_list_packages_command(client: Client, limit: int, offset: int) ->
     return command_results
 
 
+def checkpoint_list_package_command(client: Client, identifier: str) -> CommandResults:
+    """
+    Show existing package object using object name or uid.
+
+    Args:
+        client (Client): CheckPoint client.
+        identifier(str): uid or name.
+    """
+    printable_result = []
+    readable_output = ''
+    headers = ['target-name', 'target-uid', 'revision']
+    result = client.list_package(identifier)
+    if result:
+
+        gwinfo = result.get('installation-targets-revision')
+        for element in gwinfo:
+            current_printable_result = {}
+            current_printable_result['name'] = result.get('name')
+            for endpoint in headers:
+                current_printable_result[endpoint] = element.get(endpoint)
+            printable_result.append(current_printable_result)
+        readable_output = tableToMarkdown('CheckPoint data for package:', printable_result,
+                                          headers, removeNull=True)
+    command_results = CommandResults(
+        outputs_prefix='CheckPoint.Package',
+        outputs_key_field='target-uid',
+        readable_output=readable_output,
+        outputs=printable_result,
+        raw_response=result
+    )
+    return command_results
+
+
 def checkpoint_list_gateways_command(client: Client, limit: int, offset: int) -> CommandResults:
     """
     Retrieve all policy gateways.
@@ -1587,12 +1624,19 @@ def checkpoint_verify_policy_command(client: Client, policy_package: str) -> Com
 
 def checkpoint_login_and_get_sid_command(base_url: str, username: str, password: str,
                                          verify_certificate: bool,
-                                         session_timeout: int) -> CommandResults:
+                                         session_timeout: int, domain_arg: str = None) -> CommandResults:
     """login to checkpoint admin account using username and password."""
-    response = requests.post(base_url + 'login', verify=verify_certificate,
-                             headers={'Content-Type': 'application/json'},
-                             json={'user': username, 'password': password,
-                                   'session-timeout': session_timeout}).json()
+    jsonbody = {
+        'user': username,
+        'password': password,
+        'session-timeout': session_timeout
+    }
+
+    if domain_arg:
+        jsonbody['domain'] = domain_arg
+
+    response = requests.post(base_url + 'login', verify=verify_certificate, json=jsonbody,
+                             headers={'Content-Type': 'application/json'}).json()
     printable_result = {'session-id': response.get('sid')}
     readable_output = tableToMarkdown('CheckPoint session data:', printable_result)
 
@@ -1603,6 +1647,7 @@ def checkpoint_login_and_get_sid_command(base_url: str, username: str, password:
         outputs=printable_result,
         raw_response=response
     )
+
     return command_results
 
 
@@ -1738,22 +1783,23 @@ def main():
     proxy = params.get('proxy', False)
 
     is_sid_provided = True
+    domain_arg = params.get('domain', '')
 
     try:
         command = demisto.command()
         if demisto.command() == 'test-module':
             response = checkpoint_login_and_get_sid_command(base_url, username, password,
-                                                            verify_certificate, 600).outputs
+                                                            verify_certificate, 600, domain_arg).outputs
             if response:
                 sid = response.get('session-id')  # type: ignore
                 return_results(test_module(base_url, sid, verify_certificate))
                 checkpoint_logout_command(base_url, sid, verify_certificate)
                 return
-
         elif command == 'checkpoint-login-and-get-session-id':
+            session_timeout = demisto.args().get('session_timeout')
+
             return_results(checkpoint_login_and_get_sid_command(base_url, username, password,
-                                                                verify_certificate,
-                                                                **demisto.args()))
+                                                                verify_certificate, session_timeout, domain_arg))
             return
 
         elif command == 'checkpoint-logout':
@@ -1897,6 +1943,8 @@ def main():
         elif command == 'checkpoint-verify-policy':
             return_results(checkpoint_verify_policy_command(client, **demisto.args()))
 
+        elif command == 'checkpoint-package-list':
+            return_results(checkpoint_list_package_command(client, **demisto.args()))
         if not is_sid_provided:
             client.checkpoint_logout()
 

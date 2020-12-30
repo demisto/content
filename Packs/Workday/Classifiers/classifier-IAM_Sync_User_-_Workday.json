@@ -1,0 +1,180 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "IAM Sync User - Workday",
+ "mapping": {
+  "IAM - Sync User": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "City": {
+     "complex": null,
+     "simple": "City"
+    },
+    "Cost Center": {
+     "complex": null,
+     "simple": "Cost_Center_Description"
+    },
+    "Cost Center Code": {
+     "complex": null,
+     "simple": "Cost_Center_Code"
+    },
+    "Country Name": {
+     "complex": null,
+     "simple": "Country_Name"
+    },
+    "Department": {
+     "complex": null,
+     "simple": "Department"
+    },
+    "Display Name": {
+     "complex": null,
+     "simple": "Preferred_Name"
+    },
+    "Email": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Email_Address",
+      "transformers": [
+       {
+        "args": {
+
+        },
+        "operator": "toLowerCase"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Employee ID": {
+     "complex": null,
+     "simple": "Emp_ID"
+    },
+    "Employee Type": {
+     "complex": null,
+     "simple": "Employee_Type"
+    },
+    "Employment Status": {
+     "complex": null,
+     "simple": "Employment_Status"
+    },
+    "Given Name": {
+     "complex": null,
+     "simple": "Preferred_Name_-_First_Name"
+    },
+    "Hire Date": {
+     "complex": null,
+     "simple": "Last_Hire_Date"
+    },
+    "Job Code": {
+     "complex": null,
+     "simple": "Job_Code"
+    },
+    "Job Family": {
+     "complex": null,
+     "simple": "Job_Family"
+    },
+    "Job Function": {
+     "complex": null,
+     "simple": "Job_Function"
+    },
+    "Last Day of Work": {
+     "complex": null,
+     "simple": "Last_Day_of_Work"
+    },
+    "Surname": {
+     "complex": null,
+     "simple": "Preferred_Name_-_Last_Name"
+    },
+    "Leadership": {
+     "complex": null,
+     "simple": "Leadership"
+    },
+    "Location": {
+     "complex": null,
+     "simple": "Location"
+    },
+    "Location Region": {
+     "complex": null,
+     "simple": "PAN_CF_Okta_Location_Region"
+    },
+    "Manager Email Address": {
+     "complex": null,
+     "simple": "Manager_Email_Address"
+    },
+    "Manager Name": {
+     "complex": null,
+     "simple": "Manager_Preferred_Name"
+    },
+    "Mobile Phone": {
+     "complex": null,
+     "simple": "Public_Work_Mobile_Phone_Number"
+    },
+    "Personal Email": {
+     "complex": null,
+     "simple": "Email_-_Primary_Home"
+    },
+    "Prehire Flag": {
+     "complex": null,
+     "simple": "Prehire_Flag"
+    },
+    "Rehired Employee": {
+     "complex": null,
+     "simple": "Rehired_Employee"
+    },
+    "State": {
+     "complex": null,
+     "simple": "State"
+    },
+    "Street Address": {
+     "complex": null,
+     "simple": "Street_Address"
+    },
+    "Termination Date": {
+     "complex": null,
+     "simple": "Termination_Date"
+    },
+    "Title": {
+     "complex": null,
+     "simple": "Title"
+    },
+    "UserProfile": {
+     "complex": null,
+     "simple": "UserProfile"
+    },
+    "Username": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "Email_Address",
+      "transformers": [
+       {
+        "args": {
+
+        },
+        "operator": "toLowerCase"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Work Phone": {
+     "complex": null,
+     "simple": "Work_Phone"
+    },
+    "Zip Code": {
+     "complex": null,
+     "simple": "Postal_Code"
+    }
+   }
+  }
+ },
+ "name": "IAM Sync User - Workday",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

@@ -232,6 +232,17 @@ script:
       - weeks
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: If set to false, query results are not mapped into the standard command context. Default is "true".
+      isArray: false
+      name: transform_results
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Runs a query on the threat table according to preset queries.
     execution: false
@@ -2588,7 +2599,11 @@ script:
       description: Identifies the origin of the data (the system that produced the
         data.
       type: String
-  dockerimage: demisto/python_pancloud_v2:1.0.0.12463
+  - name: cdl-reset-authentication-timeout
+    deprecated: false
+    description: Use this command in case your authentication calls fail due to internal call-limit, the command will reset the limit cache.
+    execution: false
+  dockerimage: demisto/python_pancloud_v2:1.0.0.14327
   feed: false
   isfetch: true
   longRunning: false

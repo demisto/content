@@ -8331,6 +8331,7 @@ def create_outputs(whois_result, domain, query=None):
         if 'admin' in contacts and contacts['admin'] is not None:
             md['Administrator'] = contacts['admin']
             ec['Administrator'] = contacts['admin']
+            standard_ec['Admin'] = {key.capitalize(): val for key, val in contacts['admin'].items()}
             standard_ec['Admin'] = contacts['admin']
             standard_ec['WHOIS']['Admin'] = contacts['admin']
         if 'tech' in contacts and contacts['tech'] is not None:

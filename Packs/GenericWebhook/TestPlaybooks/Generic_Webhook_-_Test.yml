@@ -1,0 +1,287 @@
+id: Generic Webhook - Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Generic Webhook - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 261e0c79-b221-491b-8fbf-195d73b7497f
+    type: start
+    task:
+      id: 261e0c79-b221-491b-8fbf-195d73b7497f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 34049848-e729-4f46-84e0-f111aae7bed6
+    type: regular
+    task:
+      id: 34049848-e729-4f46-84e0-f111aae7bed6
+      version: -1
+      name: Trigger the webhook
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      body:
+        simple: '{"name":"webhook"}'
+      filename: {}
+      headers:
+        simple: Authorization:token
+      insecure: {}
+      method:
+        simple: POST
+      password: {}
+      proxy: {}
+      saveAsFile: {}
+      unsecure: {}
+      url:
+        simple: http://localhost:9000
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 0281f498-ecfc-465d-826b-ae76663de0c9
+    type: regular
+    task:
+      id: 0281f498-ecfc-465d-826b-ae76663de0c9
+      version: -1
+      name: Search the incident
+      description: Searches Demisto incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      details: {}
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id: {}
+      level: {}
+      name:
+        simple: webhook
+      notstatus: {}
+      owner: {}
+      page: {}
+      query: {}
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8aa81f4a-44c0-4804-84a2-3da76bc85b45
+    type: condition
+    task:
+      id: 8aa81f4a-44c0-4804-84a2-3da76bc85b45
+      version: -1
+      name: Verify incident was created successfully
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: foundIncidents.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 1f266ec5-8d2d-4638-8a5c-66ca3863e64a
+    type: regular
+    task:
+      id: 1f266ec5-8d2d-4638-8a5c-66ca3863e64a
+      version: -1
+      name: Close webhook triggered incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${foundIncidents.id}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 3241d749-75e4-49cb-8298-fd2705c6d7cd
+    type: regular
+    task:
+      id: 3241d749-75e4-49cb-8298-fd2705c6d7cd
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 654a9520-7130-4d8b-8f3f-d25c36f00607
+    type: condition
+    task:
+      id: 654a9520-7130-4d8b-8f3f-d25c36f00607
+      version: -1
+      name: Verify Success HTTP Response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: HttpRequest.Response.StatusCode
+            iscontext: true
+          right:
+            value:
+              simple: "200"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

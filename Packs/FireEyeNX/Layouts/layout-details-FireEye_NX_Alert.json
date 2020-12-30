@@ -1,0 +1,557 @@
+{
+ "TypeName": "FireEye NX Alert",
+ "kind": "details",
+ "layout": {
+  "TypeName": "",
+  "id": "FireEye NX Alert",
+  "kind": "details",
+  "modified": "2020-09-27T22:13:11.556621164+05:30",
+  "name": "",
+  "system": false,
+  "tabs": [
+   {
+    "id": "summary",
+    "name": "Legacy Summary",
+    "type": "summary"
+   },
+   {
+    "id": "caseinfoid",
+    "name": "Incident Info",
+    "sections": [
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "type",
+        "height": 22,
+        "id": "incident-type-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "severity",
+        "height": 22,
+        "id": "incident-severity-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "owner",
+        "height": 22,
+        "id": "incident-owner-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotsource",
+        "height": 22,
+        "id": "incident-source-field",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourcebrand",
+        "height": 22,
+        "id": "incident-sourceBrand-field",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourceinstance",
+        "height": 22,
+        "id": "incident-sourceInstance-field",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "playbookid",
+        "height": 22,
+        "id": "incident-playbookId-field",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "moved": false,
+      "name": "Case Details",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+      "isVisible": true,
+      "moved": false,
+      "name": "Linked Incidents",
+      "static": false,
+      "type": "linkedIncidents",
+      "w": 1,
+      "x": 1,
+      "y": 8
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+      "moved": false,
+      "name": "Indicators",
+      "query": "",
+      "queryType": "input",
+      "static": false,
+      "type": "indicators",
+      "w": 2,
+      "x": 0,
+      "y": 6
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+      "items": [
+       {
+        "endCol": 1,
+        "fieldId": "occurred",
+        "height": 53,
+        "id": "incident-occurred-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 1,
+        "fieldId": "dbotmodified",
+        "height": 53,
+        "id": "incident-modified-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotduedate",
+        "height": 53,
+        "id": "incident-dueDate-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotcreated",
+        "height": 53,
+        "id": "incident-created-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 1
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotclosed",
+        "height": 53,
+        "id": "incident-closed-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 1
+       }
+      ],
+      "moved": false,
+      "name": "Timeline Information",
+      "static": false,
+      "w": 1,
+      "x": 1,
+      "y": 4
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "dbotclosed",
+        "height": 22,
+        "id": "incident-dbotClosed-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "closereason",
+        "height": 22,
+        "id": "incident-closeReason-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "closenotes",
+        "height": 22,
+        "id": "incident-closeNotes-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "moved": false,
+      "name": "Closing Information",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 8
+     },
+     {
+      "displayType": "CARD",
+      "h": 4,
+      "hideName": false,
+      "i": "caseinfoid-491ac0f0-e7ad-11ea-b9fb-69214b89606a",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxscversion",
+        "height": 53,
+        "id": "6a9a3170-e7ad-11ea-b9fb-69214b89606a",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxtimeutc",
+        "height": 53,
+        "id": "6c784040-e7ad-11ea-b9fb-69214b89606a",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxtargetmacaddress",
+        "height": 53,
+        "id": "6fa60090-e7ad-11ea-b9fb-69214b89606a",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxid",
+        "height": 53,
+        "id": "714e0b40-e7ad-11ea-b9fb-69214b89606a",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxuuid",
+        "height": 53,
+        "id": "730901b0-e7ad-11ea-b9fb-69214b89606a",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalerttype",
+        "height": 53,
+        "id": "e45c6e40-00dc-11eb-8966-f589ddaf289f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalerturl",
+        "height": 53,
+        "id": "5df7a5b0-00df-11eb-8966-f589ddaf289f",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalertmalwarename",
+        "height": 53,
+        "id": "687cf9e0-00df-11eb-8966-f589ddaf289f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalerttargetip",
+        "height": 53,
+        "id": "9c0f7da0-00df-11eb-8966-f589ddaf289f",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalerttargetmacaddress",
+        "height": 53,
+        "id": "a3d19320-00df-11eb-8966-f589ddaf289f",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalertvictimip",
+        "height": 53,
+        "id": "acadcb30-00df-11eb-8966-f589ddaf289f",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "fireeyenxalertvictimmacaddress",
+        "height": 53,
+        "id": "b0a3bd80-00df-11eb-8966-f589ddaf289f",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 4,
+        "fieldId": "fireeyenxalertscversion",
+        "height": 53,
+        "id": "f4e5e960-00de-11eb-8966-f589ddaf289f",
+        "index": 0,
+        "listId": "caseinfoid-491ac0f0-e7ad-11ea-b9fb-69214b89606a",
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "dropEffect": "move",
+        "endCol": 4,
+        "fieldId": "fireeyenxalertaction",
+        "height": 53,
+        "id": "65aac710-00df-11eb-8966-f589ddaf289f",
+        "index": 1,
+        "listId": "caseinfoid-491ac0f0-e7ad-11ea-b9fb-69214b89606a",
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxalertid",
+        "height": 53,
+        "id": "9286b1e0-00df-11eb-8966-f589ddaf289f",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxalerttargetport",
+        "height": 53,
+        "id": "a1e29460-00df-11eb-8966-f589ddaf289f",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxalertuuid",
+        "height": 53,
+        "id": "a7e14f00-00df-11eb-8966-f589ddaf289f",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 2
+       },
+       {
+        "endCol": 4,
+        "fieldId": "fireeyenxalertvictimport",
+        "height": 22,
+        "id": "b2e80830-00df-11eb-8966-f589ddaf289f",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 2
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Alert Details",
+      "static": false,
+      "w": 2,
+      "x": 1,
+      "y": 0
+     },
+     {
+      "displayType": "CARD",
+      "h": 2,
+      "hideItemTitleOnlyOne": true,
+      "i": "caseinfoid-12642780-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "incident_attachment",
+        "height": 53,
+        "id": "125c5f50-00e0-11eb-8966-f589ddaf289f",
+        "index": 0,
+        "isVisible": true,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Attachments",
+      "static": false,
+      "type": "",
+      "w": 1,
+      "x": 0,
+      "y": 2
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-2a2145b0-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Work Plan",
+      "static": false,
+      "type": "workplan",
+      "w": 1,
+      "x": 0,
+      "y": 4
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-37957c70-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Notes",
+      "static": false,
+      "type": "notes",
+      "w": 1,
+      "x": 2,
+      "y": 4
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-453445a0-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Evidence",
+      "static": false,
+      "type": "evidence",
+      "w": 1,
+      "x": 2,
+      "y": 6
+     },
+     {
+      "h": 1,
+      "i": "caseinfoid-61784b80-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Child Incidents",
+      "static": false,
+      "type": "childInv",
+      "w": 1,
+      "x": 2,
+      "y": 8
+     },
+     {
+      "h": 1,
+      "i": "caseinfoid-70c8e360-00e0-11eb-8966-f589ddaf289f",
+      "items": [
+
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Team Members",
+      "static": false,
+      "type": "team",
+      "w": 1,
+      "x": 2,
+      "y": 9
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "id": "warRoom",
+    "name": "War Room",
+    "type": "warRoom"
+   },
+   {
+    "id": "workPlan",
+    "name": "Work Plan",
+    "type": "workPlan"
+   },
+   {
+    "id": "evidenceBoard",
+    "name": "Evidence Board",
+    "type": "evidenceBoard"
+   },
+   {
+    "id": "relatedIncidents",
+    "name": "Related Incidents",
+    "type": "relatedIncidents"
+   },
+   {
+    "id": "canvas",
+    "name": "Canvas",
+    "type": "canvas"
+   }
+  ],
+  "typeId": "FireEye NX Alert",
+  "version": -1
+ },
+ "typeId": "FireEye NX Alert",
+ "version": -1,
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0",
+ "description": ""
+}

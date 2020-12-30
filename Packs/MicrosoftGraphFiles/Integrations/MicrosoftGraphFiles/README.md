@@ -3,7 +3,6 @@
 ---
 
 Microsoft Graph lets your app get an authorized access to files in OneDrive, SharePoint and MS Teams across all organization. (requires admin consent).
-This integration was integrated and tested with version xx of Microsoft_Graph_Files
 
 ## Authentication
 ---

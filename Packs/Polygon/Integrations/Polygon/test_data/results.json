@@ -12,7 +12,8 @@
                 "Status": "In Progress"
             }
         },
-        "IndicatorTimeline": []
+        "IndicatorTimeline": [],
+        "IgnoreAutoExtract": false
     },
     "upload_url_results": {
         "Type": 1,
@@ -26,7 +27,8 @@
                 "Status": "In Progress"
             }
         },
-        "IndicatorTimeline": []
+        "IndicatorTimeline": [],
+        "IgnoreAutoExtract": false
     },
     "analysis_info_results": [
         {
@@ -94,7 +96,8 @@
                     "SHA256": "0d1b77c84c68c50932e28c3462a1962916abbbebb456ce654751ab401aa37697"
                 }
             },
-            "IndicatorTimeline": []
+            "IndicatorTimeline": [],
+            "IgnoreAutoExtract": false
         }
     ],
     "serialized_report": {
@@ -128,116 +131,118 @@
         }
     },
     "packages_indicators": [{
-        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
+        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)":[ {
             "Name": "url.txt",
             "MD5": "9b52c8a74353d82ef1ebca42c9a7358c",
             "SHA1": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "SHA256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
             "Type": "ASCII text, with no line terminators"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "Type": "file",
             "Vendor": "Group-IB TDS Polygon",
             "Score": 0
-        }
-    },
-    {
-        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": {
+        }]}
+  ,
+      {"File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [{
             "Name": "tmpwDwvW_",
             "MD5": "9b52c8a74353d82ef1ebca42c9a7358c",
             "SHA1": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "SHA256": "34ce805b7131eda3cec905dfd4e2708ab07dd3f038345b2ba9df51eb8fc915eb",
             "Type": "ASCII text, with no line terminators"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "eb57446af5846faa28a726a8b7d43ce5a7fcbd55",
             "Type": "file",
             "Vendor": "Group-IB TDS Polygon",
             "Score": 0
-        }
+        }]
     }],
-    "network_indicators": [{
-        "Domain(val.Name && val.Name == obj.Name)": {
+    "network_indicators": [
+      {
+        "Domain(val.Name && val.Name == obj.Name)": [{
             "Name": "svettenkirch.de",
             "DNS": "217.114.216.252"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "svettenkirch.de",
             "Type": "domain",
             "Vendor": "Group-IB TDS Polygon",
             "Score": 0
-        }
-    },
-    {
-        "Domain(val.Name && val.Name == obj.Name)": {
+        }]
+      },
+      {
+        "Domain(val.Name && val.Name == obj.Name)": [{
             "Name": "super.esu.as",
             "DNS": "79.98.29.14"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "super.esu.as",
             "Type": "domain",
             "Vendor": "Group-IB TDS Polygon",
             "Score": 0
-        }
+        }]
     },
     {
-        "IP(val.Address && val.Address == obj.Address)": {
+        "IP(val.Address && val.Address == obj.Address)": [{
             "Address": "8.8.8.8"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "8.8.8.8",
             "Type": "ip",
             "Vendor": "Group-IB TDS Polygon",
             "Score": 0
-        }
+        }]
     },
     {
-        "IP(val.Address && val.Address == obj.Address)": {
+        "IP(val.Address && val.Address == obj.Address)": [{
             "Address": "79.98.29.14"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "79.98.29.14",
             "Type": "ip",
             "Vendor": "Group-IB TDS Polygon",
             "Score": 0
-        }
+        }]
     },
     {
-        "IP(val.Address && val.Address == obj.Address)": {
+        "IP(val.Address && val.Address == obj.Address)": [{
             "Address": "217.114.216.252"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)":[ {
             "Indicator": "217.114.216.252",
             "Type": "ip",
             "Vendor": "Group-IB TDS Polygon",
             "Score": 0
-        }
+        }]
     },
     {
-        "IP(val.Address && val.Address == obj.Address)": {
+        "IP(val.Address && val.Address == obj.Address)": [{
             "Address": "217.114.216.252"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)":[ {
             "Indicator": "217.114.216.252",
             "Type": "ip",
             "Vendor": "Group-IB TDS Polygon",
             "Score": 0
-        }
+        }]
     },
     {
-        "URL(val.Data && val.Data == obj.Data)": {
+        "URL(val.Data && val.Data == obj.Data)": [{
             "Data": "http://super.esu.as/wp-content/themes/twentyeleven/inc/images/msg.jpg"
-        },
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
             "Indicator": "http://super.esu.as/wp-content/themes/twentyeleven/inc/images/msg.jpg",
             "Type": "url",
             "Vendor": "Group-IB TDS Polygon",
             "Score": 0
-        }
+        }]
     }],
-    "monitor_indicators": [{
-        "Process": {
+    "monitor_indicators": [
+      {
+        "Process": [
+          {
             "Name": "wscript.exe",
             "PID": "972",
             "Hostname": null,
@@ -250,24 +255,25 @@
             "Parent": null,
             "Sibling": null,
             "Child": null
-        }
-    },
+          }
+        ]
+      },
     {
-        "RegistryKey": {
+        "RegistryKey": [{
             "Path": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Tracing\\wscript_RASAPI32\\EnableFileTracing",
             "Name": null,
             "Value": "0"
         }
-    },
+    ]},
     {
-        "RegistryKey": {
+        "RegistryKey": [{
             "Path": "\\REGISTRY\\MACHINE\\SOFTWARE\\Microsoft\\Tracing\\wscript_RASAPI32\\EnableConsoleTracing",
             "Name": null,
             "Value": "0"
         }
-    },
+    ]},
     {
-        "Process": {
+        "Process": [{
             "Name": "(null)",
             "PID": "4",
             "Hostname": null,
@@ -281,7 +287,7 @@
             "Sibling": null,
             "Child": null
         }
-    }],
+    ]}],
     "file_reputation_results": [{
         "Type": 1,
         "ContentsFormat": "json",
@@ -319,6 +325,7 @@
                 ]
             }
         },
-        "IndicatorTimeline": []
+        "IndicatorTimeline": [],
+        "IgnoreAutoExtract": false
     }]
 }

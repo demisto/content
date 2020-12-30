@@ -1,0 +1,393 @@
+[
+  {
+    "Explanation": {
+      "MalwareDetected": {
+        "Malware": [
+          {
+            "Url": "dummy url",
+            "Application": "dummy application",
+            "Content": "text/html",
+            "Name": "dummy name",
+            "Type": "dummy type",
+            "Md5Sum": "dummy md5sum",
+            "Sha256": "dummy sha256",
+            "HttpHeader": "dummy httpHeader",
+            "Original": "dummy original",
+            "Sid": "dummy sid",
+            "Stype": "dummy stype "
+          }
+        ]
+      },
+      "CncServices": {
+        "CncService": [
+          {
+            "Address": "address",
+            "Port": 1,
+            "Protocol": "UDP"
+          }
+        ]
+      },
+      "OsChanges": [
+        {
+          "File": [
+            {
+              "Fid": {
+                "Ads": "dummy ads",
+                "Content": 1
+              },
+              "Processinfo": {
+                "Imagepath": "dummy imagepath",
+                "Tainted": false,
+                "Md5sum": "dummy md5sum",
+                "Pid": 3
+              },
+              "SrcThread": "dummy src_thread",
+              "Sha256sum": "dummy sha256sum",
+              "Filesize": 2,
+              "Type": "dummy type",
+              "CreateOptions": "0x0",
+              "Mode": "close",
+              "Sha1sum": "dummy sha1sum",
+              "PE": {
+                "InspectionType": "dummy inspection type",
+                "TimeDateStamp": "dummy 0x0000000",
+                "DllCharacteristics": {
+                  "Names": "dummy name",
+                  "Value": "dummy 0x0000"
+                },
+                "Dll": "No",
+                "Characteristics": {
+                  "Names": {
+                    "Name": [
+                      "name1",
+                      32
+                    ]
+                  },
+                  "Value": "value_test"
+                },
+                "Magic": "0x000b",
+                "Subsystem": "dummy sub system",
+                "Machine": "dummy machine"
+              },
+              "Md5sum": "dummy md5sum",
+              "Ntstatus": "dummy 0x0",
+              "Value": "dummy value",
+              "Timestamp": 0
+            }
+          ],
+          "Application": {
+            "AppName": "dummy app name"
+          },
+          "QuerySystemTime": {
+            "Processinfo": {
+              "Imagepath": "dummy image path",
+              "Md5sum": "dummy md5sum",
+              "Pid": 0
+            },
+            "Ntstatus": "0x0000000000000000",
+            "Timestamp": 0,
+            "SystemTime": {
+              "Value": "0x000000000",
+              "Time": "Mon 01/01/1999 00:00:00.00"
+            }
+          },
+          "Os": {
+            "Name": "dummy name",
+            "Arch": "x00",
+            "Version": "1.0.000",
+            "Sp": 1
+          },
+          "Uac": [
+            {
+              "Mode": "dummy mode",
+              "Value": "dummy value",
+              "Timestamp": 0,
+              "Status": "dummy status"
+            },
+            [
+              {
+                "Mode": "dummy mode",
+                "Value": "dummy value",
+                "Timestamp": 0,
+                "Status": "dummy status"
+              }
+            ]
+          ],
+          "OsMonitor": {
+            "Date": "Jul 1 1900",
+            "Build": 0,
+            "Time": "00:00:00",
+            "Version": "00R0.00"
+          },
+          "MaliciousAlert": [
+            {
+              "Classtype": "dummy class type",
+              "DisplayMsg": "dummy display msg"
+            }
+          ],
+          "Analysis": {
+            "Mode": "mode test",
+            "Product": "AAA",
+            "Ftype": "url",
+            "Version": 1
+          },
+          "Network": [
+            {
+              "Mode": "mode test",
+              "ProtocolType": "protocol type",
+              "Ipaddress": "1.1.1.1",
+              "DestinationPort": 0,
+              "Processinfo": {
+                "Imagepath": "image path",
+                "Tainted": false,
+                "Md5sum": "md5sum test",
+                "Pid": 2
+              },
+              "HttpRequest": "GET  test url.com",
+              "Timestamp": 0,
+              "Hostname": "dummy host name",
+              "Qtype": "dummy qtype",
+              "AnswerNumber": 0,
+              "DnsResponseCode": 0
+            }
+          ],
+          "Heapspraying": [
+            {
+              "Totalmemory": 0,
+              "Lastbytesreceived": 0,
+              "Processinfo": {
+                "Imagepath": "image path",
+                "Md5sum": "md5 test",
+                "Pid": 0
+              },
+              "IncrementCount": 0,
+              "Name": "test.exe",
+              "Bytesreceived": 0,
+              "Lasttotalmemory": 0,
+              "Type": "type test",
+              "Timestamp": 0,
+              "Rcount": 0,
+              "TotalSize": "dummy total size",
+              "RUnit": "dummy RUnit",
+              "Mode": "dummy mode",
+              "Pattern": "dummy pattern",
+              "BytesList": {
+                "Entry": {
+                  "Percentage": 100,
+                  "Byte": "dummy bytes",
+                  "Count": 0,
+                  "FirstOffset": "0x00000000",
+                  "IsNOP": "yes"
+                },
+                "Distinct": 1,
+                "Count": 1
+              },
+              "Javascript": "yes",
+              "DNA": 0,
+              "TotalRCount": 0,
+              "ProcessedRCount": 0,
+              "Processed": "dummy value"
+            }
+          ],
+          "Process": [
+            {
+              "Fid": {
+                "Ads": "dummy ads",
+                "Content": 10101010110
+              },
+              "ParentUserAccount": {
+                "UserSid": "dummy user sid",
+                "SessionId": 0,
+                "UserAccountName": "dummy user account name",
+                "AuthenticationId": "dummy authentication id",
+                "SuperPrivilegesPresent": 0
+              },
+              "Parentname": "dummy parent name",
+              "Sha256sum": "dummy sha256sum",
+              "Pid": 0,
+              "Filesize": 0,
+              "Ppid": 0,
+              "Mode": "dummy mode",
+              "Cmdline": "dummy cmdline",
+              "Sha1sum": "dummy sha1sum",
+              "Md5sum": "dummy md5sum",
+              "SrcThread": "dummy src thread",
+              "Value": "dummy value",
+              "UserAccount": {
+                "UserSid": "dummy user sid",
+                "SessionId": 0,
+                "UserAccountName": "dummy account name",
+                "AuthenticationId": "dummy id",
+                "SuperPrivilegesPresent": 0
+              },
+              "Timestamp": 45870,
+              "MemoryData": "dummy memory data",
+              "TelemetryData": {
+                "LocalThreadCount": 0,
+                "FileOpenCount": 0,
+                "FileModifyCount": 0,
+                "FileCreateCount": 0,
+                "ChildProcessCount": 0,
+                "FileFailedCount": 0,
+                "HttpReqCount": 0,
+                "RemoteThreadCount": 0,
+                "MutexCreateCount": 0
+              }
+            }
+          ],
+          "Regkey": [
+            {
+              "Mode": "setval",
+              "Processinfo": {
+                "Imagepath": "dummy image path",
+                "Md5sum": "dummy md5sum",
+                "Pid": 0
+              },
+              "Ntstatus": "0x00000000",
+              "Suppressed": true,
+              "Value": "dummy value",
+              "Timestamp": 0,
+              "SrcThread": "dummy source thread name",
+              "Randomized": true,
+              "Buffered": true,
+              "NoExtend": true
+            }
+          ],
+          "ActionFopen": {
+            "Mode": "dummy mode",
+            "Ext": "dummy ext",
+            "Buffered": true,
+            "Name": "dummy name",
+            "NoExtend": true,
+            "Timestamp": 0
+          },
+          "Exploitcode": [
+            {
+              "Dllname": "dummy dll name",
+              "Apiname": "dummy apiname",
+              "Address": "0x0000000",
+              "Processinfo": {
+                "Imagepath": "dummy imagepath",
+                "Md5sum": "dummy md5sum",
+                "Pid": 0
+              },
+              "SrcThread": "dummy source thread",
+              "Protection": "00000004",
+              "Callstack": {
+                "CallstackEntry": [
+                  {
+                    "SymbolName": "dummy symbol name",
+                    "FrameNumber": 3,
+                    "ModuleName": "dummy module name",
+                    "InstructionAddress": "0x0000000000000000",
+                    "SymbolDisplacement": "0x00000000"
+                  }
+                ]
+              },
+              "Params": {
+                "Param": {
+                  "Id": 1,
+                  "Content": "urlmon"
+                }
+              },
+              "Timestamp": 0
+            }
+          ],
+          "Folder": [
+            {
+              "Mode": "dummy mode",
+              "Processinfo": {
+                "Imagepath": "dummy image path",
+                "Md5sum": "dummy md5sum",
+                "Pid": 0
+              },
+              "SrcThread": "dummy source thread",
+              "Value": "dummy value",
+              "Timestamp": 0
+            }
+          ],
+          "DialogDetected": [
+            {
+              "Hwnd": "0x00000000",
+              "Processinfo": {
+                "Imagepath": "dummy image path",
+                "Pid": 0
+              },
+              "Buffered": true,
+              "NoExtend": true,
+              "Timestamp": 0,
+              "DlgId": "dummy dlg-id"
+            }
+          ],
+          "DialogDismissed": [
+            {
+              "Note": "dummy note",
+              "Hwnd": "0x000C000",
+              "Processinfo": {
+                "Imagepath": "dummy imagepath",
+                "Pid": 0
+              },
+              "Buffered": true,
+              "NoExtend": true,
+              "Timestamp": 52243,
+              "DlgId": "dummy dld-id"
+            }
+          ],
+          "Wmiquery": {
+            "Processinfo": {
+              "Imagepath": "dummy image path",
+              "Md5sum": "dummy md5sum",
+              "Pid": 0
+            },
+            "Wmicontents": {
+              "Wmicontent": {
+                "Query": "dummy query",
+                "Lang": "Wql"
+              }
+            },
+            "Timestamp": 0,
+            "Buffered": true,
+            "NoExtend": true
+          }
+        }
+      ],
+      "StaticAnalysis": {
+        "Static": [
+          {
+            "Value": "dummy value"
+          }
+        ]
+      },
+      "StolenData": {
+        "Info": {
+          "Type": "dummy type"
+        },
+        "EventId": 0
+      }
+    },
+    "Src": {
+      "Ip": "0.0.0.0",
+      "Mac": "00:00:00:00:00:00",
+      "Port": 0
+    },
+    "AlertUrl": "dummy url",
+    "Action": "dummy action",
+    "Occurred": "1999-00-00 00:00:00 +0000",
+    "AttackTime": "1999-00-00 00:00:00 +0000",
+    "Dst": {
+      "Mac": "00:00:00:00:00:00",
+      "Port": 0,
+      "Ip": "0.0.0.0"
+    },
+    "ApplianceId": "dummy appliance id",
+    "Id": 0,
+    "Name": "dummy name",
+    "Severity": "dummy severity",
+    "Uuid": "dummy uuid",
+    "Ack": "dummy ack",
+    "Product": "dummy product",
+    "Vlan": 0,
+    "Malicious": "yes",
+    "ScVersion": "0000.000"
+  }
+]

@@ -2,7 +2,7 @@
     "name": "TruSTAR",
     "description": "TruSTAR's threat intelligence platform enriches every stage of the security operations workflow from the trusted and relevant data sources.",
     "support": "partner",
-    "currentVersion": "2.1.0",
+    "currentVersion": "2.1.1",
     "author": "TruSTAR",
     "url": "https://www.trustar.co",
     "email": "support@trustar.co",
@@ -17,5 +17,6 @@
     ],
     "githubUser": [
         "hernantain"
-    ]
+    ],
+    "certification": "certified"
 }

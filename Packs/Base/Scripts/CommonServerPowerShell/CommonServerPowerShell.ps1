@@ -268,14 +268,20 @@ class DemistoObject {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        return $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } })
+        return $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } }).context
     }
 
     SetIntegrationContext ($Value) {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        $this.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{ value = $Value } })
+        $this.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{
+            value = $Value
+            version =  @{
+                "version" = -1
+                "sequenceNumber" = -1
+                "primaryTerm" = -1
+            } } })
     }
 }
 
@@ -487,6 +493,11 @@ Function TableToMarkdown{
                 # Need to convert hashtables to ordered dicts so that the keys/values will be in the same order
                 $item = $item | ConvertTo-OrderedDict
             }
+            elseif ($item -Is [PsCustomObject]){
+            $newItem = @{}
+            $item.PSObject.Properties | ForEach-Object { $newItem[$_.Name] = $_.Value }
+            $item = $newItem | ConvertTo-OrderedDict
+        }
             $items += $item
         }
     }
@@ -527,7 +538,7 @@ End {
                 }
                 foreach ($raw_value in $raw_values)
                 {
-                    if ($raw_value)
+                    if ($null -ne $raw_value)
                     {
                         if ($raw_value -Is [System.Array] -Or $raw_value -Is [Collections.IDictionary] -Or $raw_value -Is [PSCustomObject])
                         {
@@ -556,3 +567,40 @@ End {
     }
 }
 Set-Alias -Name ConvertTo-Markdown -Value TableToMarkdown
+
+function ConvertTo-Boolean
+{
+  param
+  (
+    [Parameter(Mandatory=$false)][string] $value
+  )
+  switch ($value)
+  {
+    "y" { return $true; }
+    "yes" { return $true; }
+    "true" { return $true; }
+    "t" { return $true; }
+    1 { return $true; }
+    "n" { return $false; }
+    "no" { return $false; }
+    "false" { return $false; }
+    "f" { return $false; }
+    0 { return $false; }
+  }
+}
+
+function FileResult([string]$file_name, [string]$data, [string]$file_type) {
+    if (!$file_type) {
+        $file_type = [EntryTypes]::file
+    }
+    $temp = $demisto.UniqueFile()
+    Out-File -FilePath "$($demisto.Investigation().id)_$temp" -Encoding "utf8" -InputObject $data
+
+    return @{
+        "Contents" = ''
+        "ContentsFormat" = [EntryFormats]::text.ToString()
+        "Type" = 3
+        "File" = $file_name
+        "FileID" = $temp
+    }
+}

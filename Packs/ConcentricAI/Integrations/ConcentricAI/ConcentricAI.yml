@@ -1,0 +1,155 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ConcentricAI
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- defaultvalue: low
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  options:
+  - low
+  - medium
+  - high
+  required: true
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Client ID
+  hidden: false
+  name: client_id
+  required: false
+  type: 0
+- display: Client Secret
+  hidden: false
+  name: client_secret
+  required: false
+  type: 4
+- display: Domain
+  hidden: false
+  name: domain
+  required: false
+  type: 0
+- additionalinfo: max -> 200
+  defaultvalue: '150'
+  display: Maximum no. of incidents to fetch.
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 1 day
+  display: First Fetch Time of Risks
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+description: Concentric’s Semantic Intelligence™ solution discovers and protects business
+  critical, unstructured data. We use deep learning to identify risky sharing, inappropriate
+  third party access, assets in the wrong location, mis-classified documents, or lateral
+  movement of data – all without rules or complex upfront configuration.
+display: ConcentricAI
+name: ConcentricAI
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Path of the file
+      isArray: false
+      name: path
+      required: true
+      secret: false
+    - default: false
+      description: Name of File
+      isArray: false
+      name: file-name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get's file information
+    execution: false
+    name: concentricai-get-file-details
+    outputs:
+    - contextPath: ConcentricAI.FileInfo.risk_names
+      description: Risk names.
+      type: String
+    - contextPath: ConcentricAI.FileInfo.ownerDetails
+      description: owner Details.
+      type: String
+    - contextPath: ConcentricAI.FileInfo.pii
+      description: PII present in file or not
+      type: String
+    - contextPath: ConcentricAI.FileInfo.cid
+      description: File ID
+      type: String
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: Maximum no. of users fetched per category.
+      isArray: false
+      name: max_users
+      required: false
+      secret: false
+    deprecated: false
+    description: Get overview of Users involved
+    execution: false
+    name: concentricai-get-users-overview
+  - arguments:
+    - default: false
+      description: Enter user name
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    deprecated: false
+    description: Get's user details
+    execution: false
+    name: concentricai-get-user-details
+  - arguments:
+    - default: false
+      description: File ID
+      isArray: false
+      name: cid
+      required: true
+      secret: false
+    deprecated: false
+    description: Get's file sharing details
+    execution: false
+    name: concentricai-get-file-sharing-details
+    outputs:
+      - contextPath: ConcentricAI.FileSharingInfo.type
+        description: Sharing type.
+        type: Array
+      - contextPath: ConcentricAI.FileSharingInfo.user_name
+        description: User name.
+        type: Array
+  dockerimage: demisto/python3:3.8.6.13358
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+defaultmapperin: ConcentricAi-mapper
+defaultclassifier: ConcentricAi
+fromversion: 6.0.0

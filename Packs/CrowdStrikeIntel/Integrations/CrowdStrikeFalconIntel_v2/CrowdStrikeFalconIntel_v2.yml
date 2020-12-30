@@ -6,6 +6,11 @@ display: CrowdStrike Falcon Intel v2
 category: Data Enrichment & Threat Intelligence
 description: CrowdStrike Threat intelligence service integration helps organizations defend themselves against adversary activity by investigating incidents, and accelerating alert triage and response.
 configuration:
+- defaultvalue: https://api.crowdstrike.com/
+  display: Server URL (e.g., https://example.net)
+  name: server_url
+  required: true
+  type: 0
 - display: Client ID
   displaypassword: Client Secret
   name: credentials
@@ -44,7 +49,7 @@ script:
     - name: file
       required: true
       default: true
-      description: The file hash (MD5/SHA1/SHA256) to check.
+      description: A comma-separated list of file hashes (MD5/SHA1/SHA256) to check. 
       isArray: true
     outputs:
     - contextPath: File.MD5
@@ -125,7 +130,7 @@ script:
     - name: url
       required: true
       default: true
-      description: The URL to be checked.
+      description: A comma-separated list of URLs to check. 
       isArray: true
     outputs:
     - contextPath: URL.Data
@@ -200,7 +205,7 @@ script:
     - name: domain
       required: true
       default: true
-      description: The domain to be checked.
+      description: A comma-separated list of domains to check.
       isArray: true
     outputs:
     - contextPath: Domain.Name
@@ -275,7 +280,7 @@ script:
     - name: ip
       required: true
       default: true
-      description: The IP address to check.
+      description: A comma-separated list of IP addresses to check. 
       isArray: true
     outputs:
     - contextPath: IP.Address
@@ -387,7 +392,7 @@ script:
       defaultValue: '10'
     - name: sort
       description: Sort by field and direction. Select a pre-defined value and direction. For example, for ascending list of names, "name|asc",
-       for descending list of names, "name|desc".  
+       for descending list of names, "name|desc".
       auto: PREDEFINED
       predefined:
       - name|asc

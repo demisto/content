@@ -298,7 +298,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Gets the reputation of a hash.
+    description: Get file reputation by a SHA1 hash.
     execution: false
     name: sentinelone-get-hash
     outputs:
@@ -821,24 +821,6 @@ script:
     - contextPath: SentinelOne.Site.Reactivated
       description: Whether the site was reactivated.
       type: boolean
-  - arguments:
-    - default: false
-      description: 'Site ID of the site to expire, for example: "225494730938493804".'
-      isArray: false
-      name: site_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Expires a site.
-    execution: false
-    name: sentinelone-expire-site
-    outputs:
-    - contextPath: SentinelOne.Site.ID
-      description: ID of the site.
-      type: String
-    - contextPath: SentinelOne.Site.Expired
-      description: A boolean to check if the site was expired or not.
-      type: Boolean
   - arguments:
     - default: false
       description: 'Return activities created after this timestamp, for example: "2018-02-27T04:49:26.257525Z".'
@@ -1444,7 +1426,7 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: true
   longRunning: false
   longRunningPort: false
