@@ -173,8 +173,7 @@ def slack_post_message(client: WebClient, message_blocks: List, pr: PullRequest)
             (List): List containing a dictionary which represents the message title
     """
     client.chat_postMessage(
-        channel="WHCL130LE",
-        # channel=SLACK_CHANNEL_TO_SEND_PR_TO,
+        channel=SLACK_CHANNEL_TO_SEND_PR_TO,
         url="https://google.coms",
         attachments=[
             {
