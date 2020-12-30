@@ -42,12 +42,19 @@ Instance name : {instance_name}
 {tableToMarkdown('Errors encountered in command running:', execute_command_errors, ['Errors'])}
 {tableToMarkdown('Files found in the investigation:',file_entry_ids,['Entry ID'])}
 """
+        configuration_name = f'{instance_name}_configuration.md'
+        demisto.results(fileResult(
+            configuration_name,
+            raw_instance
+        ))
+
         doc_file_name = f'{instance_name}_summary.md'
         demisto.results(fileResult(
             doc_file_name,
             doc
         ))
         return_outputs(doc)
+
     except Exception as exc:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(exc))
