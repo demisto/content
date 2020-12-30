@@ -65,7 +65,7 @@ else
       # In bucket upload flow, we exclude test-pbs in the zipped packs
       REMOVE_PBS=true
       BUCKET_UPLOAD_FLOW=true
-      GCS_PRIVATE_BUCKET="marketplace-dist-private"
+      GCS_PRIVATE_BUCKET="marketplace-dist-private-test"
     if [ -n "${FORCE_PACK_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
       # In case the workflow is force upload, we override the forced packs
       echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"
@@ -80,7 +80,7 @@ else
       PACKS_LIST="all"
     fi
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_TESTING_BUCKET" -c $CIRCLE_BRANCH -f $IS_FORCE_UPLOAD
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CIRCLE_BRANCH -f $IS_FORCE_UPLOAD
   echo "Finished updating content packs successfully."
 fi
 
