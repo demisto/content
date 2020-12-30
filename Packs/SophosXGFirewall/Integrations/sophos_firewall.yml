@@ -4163,5 +4163,5 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  fromversion: 5.0.0
   type: python
+fromversion: 5.0.0

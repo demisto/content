@@ -2,14 +2,12 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-''' IMPORTS '''
 import urllib3
-from typing import Union, Optional, Callable
+from typing import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '1702.1'
 
@@ -819,8 +817,8 @@ def test_module(client):
                 message = status_message
         return message
 
-    except DemistoException as e:
-        return e.message
+    except DemistoException as error:
+        return error.message
 
 
 def generic_delete(client: Client, name: str, endpoint_tag: str) -> CommandResults:
@@ -976,11 +974,11 @@ def rule_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: s
                  policy_type: str = None,
                  position: str = None, description: str = None, status: str = None,
                  ip_family: str = None, position_policy_name: str = None,
-                 source_zones: str = None, source_networks: str = None,
-                 destination_zones: str = None, destination_networks: str = None,
-                 services: str = None, schedule: str = None,
+                 source_zones: str = None, source_networks: str = None, # pylint: disable=unused-argument
+                 destination_zones: str = None, destination_networks: str = None, # pylint: disable=unused-argument
+                 services: str = None, members: str = None, # pylint: disable=unused-argument
                  log_traffic: str = None, match_identity: str = None,
-                 show_captive_portal: str = None, members: str = None,
+                 show_captive_portal: str = None, schedule: str = None,
                  action: str = None, dscp_marking: str = None,
                  application_control: str = None, application_based_qos_policy: str = None,
                  web_filter: str = None, web_category_base_qos_policy: str = None,
@@ -1127,8 +1125,8 @@ def rule_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: s
 
 
 def rule_group_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: str,
-                       description: str = None, policy_type: str = None, rules: str = None,
-                       source_zones: str = None, destination_zones: str = None) -> dict:
+                       description: str = None, policy_type: str = None, rules: str = None, # pylint: disable=unused-argument
+                       source_zones: str = None, destination_zones: str = None) -> dict: # pylint: disable=unused-argument
     """Rule group object builder.
 
     Args:
@@ -1167,7 +1165,7 @@ def rule_group_builder(client: Client, is_for_update: bool, endpoint_tag: str, n
 def ip_host_builder(client: Client, is_for_update: bool, endpoint_tag: str,
                     name: str, host_type: str = None, ip_address: str = None, start_ip: str = None,
                     end_ip: str = None, ip_addresses: str = None, subnet_mask: str = None,
-                    ip_family: str = None, host_group: str = None) -> dict:
+                    ip_family: str = None, host_group: str = None) -> dict: # pylint: disable=unused-argument
     """Builder for the IP host object - build the body of the request
 
     Args:
@@ -1238,7 +1236,7 @@ def ip_host_builder(client: Client, is_for_update: bool, endpoint_tag: str,
 
 
 def url_group_builder(client: Client, is_for_update: bool, endpoint_tag: str,
-                      name: str, description: str = None, urls: str = None) -> dict:
+                      name: str, description: str = None, urls: str = None) -> dict: # pylint: disable=unused-argument
     """Builder for the URL group object - build the body of the request
 
     Args:
@@ -1270,7 +1268,7 @@ def url_group_builder(client: Client, is_for_update: bool, endpoint_tag: str,
 
 def ip_host_group_builder(client: Client, is_for_update: bool, endpoint_tag: str,
                           name: str, description: str = None, ip_family: str = None,
-                          hosts: str = None) -> dict:
+                          hosts: str = None) -> dict: # pylint: disable=unused-argument
     """Builder for the IP host group - build the body of the request
 
     Args:
@@ -1497,7 +1495,7 @@ def web_filter_builder(client: Client, is_for_update: bool, endpoint_tag: str,
     return remove_empty_elements(json_data)
 
 
-def app_category_builder(client: Client, is_for_update: bool, endpoint_tag: str,
+def app_category_builder(client: Client, is_for_update: bool, endpoint_tag: str, # pylint: disable=unused-argument
                          name: str, description: str = None, qos_policy: str = None) -> dict:
     """Builder for app category object
 
@@ -1601,7 +1599,7 @@ def app_policy_builder(client: Client, is_for_update: bool, endpoint_tag: str,
     return remove_empty_elements(json_data)
 
 
-def user_builder(client: Client, is_for_update: bool, endpoint_tag: str,
+def user_builder(client: Client, is_for_update: bool, endpoint_tag: str, # pylint: disable=unused-argument
                  name: str, username: str, email: str = None, password: str = None,
                  description: str = None, group: str = None, user_type: str = None,
                  profile: str = None, surfing_quota_policy: str = None,
@@ -1824,7 +1822,7 @@ def generic_list(client: Client, start: int, end: int, endpoint_tag: str,
     )
 
 
-def retrieve_dict_item_recursively(obj, key) -> Optional[Union[str, dict]]:
+def retrieve_dict_item_recursively(obj, key) -> any:
     """Find items in given dictionary by the key
 
     Args:
@@ -1832,7 +1830,7 @@ def retrieve_dict_item_recursively(obj, key) -> Optional[Union[str, dict]]:
         key (str): the key to search for
 
     Returns:
-        Optional[Union[str, dict]]
+        The item if found
     """
     if key in obj:
         return obj[key]
@@ -1841,6 +1839,7 @@ def retrieve_dict_item_recursively(obj, key) -> Optional[Union[str, dict]]:
             item = retrieve_dict_item_recursively(value, key)
             if item:
                 return item
+    return None
 
 
 def main():
