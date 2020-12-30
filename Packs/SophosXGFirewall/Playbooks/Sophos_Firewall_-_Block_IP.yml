@@ -1,6 +1,5 @@
 id: Sophos Firewall - Block IP
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Sophos Firewall - Block IP
 description: |-
   this playbook adds the IP to a pre-configured Firewall Rule (the target firewall rule can be changed as requested).
