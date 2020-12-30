@@ -831,6 +831,7 @@ def main():
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
+    updated_private_packs = []
     if private_bucket_name:  # Add private packs to the index
         private_storage_bucket = storage_client.bucket(private_bucket_name)
         private_packs, _, _, updated_private_packs = update_index_with_priced_packs(private_storage_bucket,
