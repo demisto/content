@@ -3278,8 +3278,8 @@ script:
       isArray: false
       name: micro_app_support
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
@@ -3403,8 +3403,8 @@ script:
       isArray: false
       name: micro_app_support
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED

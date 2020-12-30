@@ -6,7 +6,8 @@ description: |-
   this playbook adds the IP to a pre-configured Firewall Rule (the target firewall rule can be changed as requested).
   Pre-Requisite :
   1) Create an IP Host Group.
-  2) Create a firewall rule which refers to the IP Host Group created on the previous step  .
+  2) Create a firewall rule which refers to the IP Host Group created on the previous step.
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":

@@ -1,7 +1,8 @@
 id: playbook-SophosXGFirewall-test
-version: 21
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: playbook-SophosXGFirewall-test
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":

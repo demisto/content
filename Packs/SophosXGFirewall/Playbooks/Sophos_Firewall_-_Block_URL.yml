@@ -7,6 +7,7 @@ description: "this playbook add the URL to the Default Block URL Policy (the tar
   rule which refers to the URL group you specified on the inputs of the playbook.\n2)Create
   a new firewall rule and assign the web policy to the one created on the previous
   step.\n "
+fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
