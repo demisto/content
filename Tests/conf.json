@@ -96,6 +96,12 @@
             ]
         },
         {
+            "integrations":"Azure Network Security Groups",
+            "fromversion": "5.0.0",
+            "instance_names": "azure_nsg_prod",
+            "playbookID": "Azure NSG - Test"
+        },
+        {
             "integrations": "OpenCTI Feed",
             "playbookID": "OpenCTI Feed Test"
         },
@@ -905,13 +911,13 @@
             "playbookID": "Google-Vault-Generic-Test",
             "nightly": true,
             "timeout": 3600,
-            "memory_threshold": 130
+            "memory_threshold": 180
         },
         {
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
-            "memory_threshold": 130,
+            "memory_threshold": 180,
             "timeout": 3600
         },
         {
@@ -1984,7 +1990,6 @@
                 "Lastline v2",
                 "WildFire-v2",
                 "SNDBOX",
-                "VxStream",
                 "McAfee Advanced Threat Defense"
             ],
             "playbookID": "Detonate File - Generic Test",
@@ -2026,6 +2031,16 @@
             "playbookID": "search_endpoints_by_hash_-_generic_-_test",
             "timeout": 500,
             "toversion": "4.4.9"
+        },
+        {
+            "integrations": [
+                "carbonblack-v2",
+                "carbonblackliveresponse",
+                "Cylance Protect v2"
+
+            ],
+            "playbookID": "Retrieve File from Endpoint - Generic V2 Test",
+            "fromversion": "5.0.0"
         },
         {
             "integrations": "Zscaler",
@@ -2613,21 +2628,6 @@
             "instance_names": "virus_total_general"
         },
         {
-            "playbookID": "PANW - Hunting and threat detection by indicator type Test",
-            "fromversion": "5.0.0",
-            "timeout": 1200,
-            "integrations": [
-                "Panorama",
-                "Palo Alto Networks Cortex",
-                "AutoFocus V2",
-                "VirusTotal"
-            ],
-            "instance_names": [
-                "palo_alto_panorama",
-                "virus_total_general"
-            ]
-        },
-        {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
             "fromversion": "5.5.0",
             "timeout": 1500,
@@ -3176,6 +3176,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "BitcoinAbuse",
+            "playbookID": "BitcoinAbuse-test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "ExpanseV2",
             "playbookID": "ExpanseV2 Test",
             "fromversion": "6.0.0"
@@ -3267,7 +3272,6 @@
         "Test-BPA_Integration": "Issue 28236",
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
-        "VxStream Test": "Issue 29280",
         "PhishLabsIOC TestPlaybook": "Issue 30874",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
@@ -3276,12 +3280,11 @@
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Akamai_WAF-Test": "Issue 31900",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 27846",
         "Archer-Test-Playbook": "Issue 26851",
         "Carbon Black Live Response Test": "Issue 28237"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
@@ -3310,7 +3313,6 @@
         "Vectra v2": "No instance",
         "Awake Security": "Issue 23376",
         "ExtraHop": "No license, issue 23731",
-        "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
@@ -3366,12 +3368,12 @@
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "Infoblox": "Unstable instance, issue 25651",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
@@ -3379,7 +3381,7 @@
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3472,7 +3474,6 @@
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "'proxy' parameter not working",
-        "Palo Alto Networks Cortex": "SDK",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "RedLock": "SSL Issues",
@@ -3571,7 +3572,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {

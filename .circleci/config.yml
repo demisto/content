@@ -48,6 +48,8 @@ references:
     environment:
       CONTENT_VERSION: "20.12.1"
       SERVER_VERSION: "6.0.0"
+      # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
+      DONT_CACHE_LAST_RESPONSE: "true"
       GIT_SHA1: "758aee8a0dc3e5c905ebbab94a91bb4bf7931cf5" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
