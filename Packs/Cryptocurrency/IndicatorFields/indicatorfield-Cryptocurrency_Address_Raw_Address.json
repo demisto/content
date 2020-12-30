@@ -3,8 +3,6 @@
     "version": -1,
     "modified": "2020-12-24T16:15:04.441355Z",
     "name": "Raw Address",
-    "primaryTerm": 1,
-    "runScriptAfterUpdate": false,
     "ownerOnly": false,
     "cliName": "rawaddress",
     "type": "shortText",
