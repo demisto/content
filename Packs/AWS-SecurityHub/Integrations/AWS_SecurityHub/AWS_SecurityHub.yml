@@ -3734,7 +3734,7 @@ script:
     description: Deprecated, use aws-securityhub-batch-update-findings instead.
     execution: false
     name: aws-securityhub-update-findings
-  dockerimage: demisto/boto3py3:1.0.0.13191
+  dockerimage: demisto/boto3py3:1.0.0.14934
   feed: false
   isfetch: true
   longRunning: false
