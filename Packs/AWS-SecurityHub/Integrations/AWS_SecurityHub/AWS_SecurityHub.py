@@ -744,7 +744,7 @@ def update_findings_command(client, args):
                 },
             ]
         },
-        'RecordState': args.get('recordState'),
+        'RecordState': args.get('record_state'),
     }
     if args.get('note') and args.get('updatedBy'):
         kwargs.update({'Note': {'Text': args.get('note'), 'UpdatedBy': args.get('updatedBy')}})
