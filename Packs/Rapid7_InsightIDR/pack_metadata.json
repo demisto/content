@@ -1,14 +1,14 @@
 {
-    "name": "IAM Scim",
-    "description": "Classifiers for IAM integrations that use scim",
+    "name": "Rapid7 InsightIDR",
+    "description": "Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security incidents.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-12-01T08:15:27Z",
+    "created": "2020-11-19T07:22:30Z",
     "categories": [
-        "Identity and Access Management"
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],
