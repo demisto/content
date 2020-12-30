@@ -14,11 +14,5 @@
         "Incident Mirroring"
     ],
     "useCases": [],
-    "dependencies": {
-        "IAM": {
-            "mandatory": false,
-            "display_name": "IAM"
-        }
-    },
     "keywords": []
 }
