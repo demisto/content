@@ -32,7 +32,7 @@ API_SUPPORT_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000-00:00'
 API_VERSION = 'v1'
 MAX_WORKERS = 5
 TOKEN_TIME_DIFF = 60
-
+INTEGRATION_VERSION = 'v1.0'
 
 URL_SUFFIX: Dict[str, str] = {
     'GET_TOKEN': '/token',
@@ -125,7 +125,7 @@ class Client(BaseClient):
                     if int(time.time() + TOKEN_TIME_DIFF) >= self.api_token_valid_until:
                         self.api_token, self.api_token_valid_until = self.get_api_token()
             # pylint: disable=E1101
-            headers['User-Agent'] = "AgariDemisto APDIntegration/v1.0 DemistoServer/" + \
+            headers['User-Agent'] = "AgariDemisto APDIntegration/" + INTEGRATION_VERSION + " DemistoServer/" + \
                                     demisto.demistoVersion()['version']  # type: ignore[attr-defined]
             # pylint: enable=E1101
             resp = super()._http_request(method=method, url_suffix=url_suffix, json_data=json_data, params=params,
