@@ -27,6 +27,36 @@ outputs:
 - contextPath: ZipFile.ZippedFile
   description: The zipped file
   type: string
+- contextPath: File.Name
+  description: The full file name (including file extension).
+  type: String
+- contextPath: File.EntryID
+  description: The ID for locating the file in the War Room.
+  type: String
+- contextPath: File.Size
+  description: The size of the file in bytes.
+  type: Number
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: String
+- contextPath: File.SSDeep
+  description: The ssdeep hash of the file (same as displayed in file entries).
+  type: String
+- contextPath: File.Extension
+  description: "The file extension, for example: 'xls'."
+  type: String
+- contextPath: File.Type
+  description: The file type, as determined by libmagic (same as displayed in file entries).
+  type: String
 script: '-'
 system: false
 tags:
