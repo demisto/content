@@ -14,6 +14,7 @@ tasks:
     taskid: 47dd3fe8-c292-42a5-8401-253c591df573
     type: start
     task:
+      description: ""
       id: 47dd3fe8-c292-42a5-8401-253c591df573
       version: -1
       name: ""
@@ -40,6 +41,7 @@ tasks:
     taskid: 51f18e52-b8fd-4523-850e-ccec64f70d71
     type: condition
     task:
+      description: ""
       id: 51f18e52-b8fd-4523-850e-ccec64f70d71
       version: -1
       name: Check if Sophos Firewall Enabled
@@ -98,6 +100,7 @@ tasks:
     task:
       id: d1a15b59-9684-4095-883f-8f43154201c9
       version: -1
+      description: ""
       name: Done
       type: title
       iscommand: false
@@ -292,6 +295,7 @@ tasks:
     task:
       id: e1d5038f-dcd1-4eac-855a-84719edf3bcc
       version: -1
+      description: ""
       name: Is there any IP recieved?
       type: condition
       iscommand: false
@@ -460,6 +464,7 @@ tasks:
     task:
       id: a3f8a8d8-43da-46e8-83a5-9936152b1811
       version: -1
+      description: ""
       name: Done
       type: title
       iscommand: false
@@ -649,6 +654,7 @@ tasks:
     task:
       id: f1b7318c-9627-4291-8241-7bc1f135fed4
       version: -1
+      description: ""
       name: Check if Sophos Firewall Enabled
       type: condition
       iscommand: false
@@ -705,6 +711,7 @@ tasks:
     task:
       id: 38d2e0e9-b553-4e9a-8bde-f4b554311898
       version: -1
+      description: ""
       name: Done
       type: title
       iscommand: false
