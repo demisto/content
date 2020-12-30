@@ -238,8 +238,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "2"
       "yes":
       - "21"
     scriptarguments:
@@ -798,3 +796,5 @@ inputs:
 outputs: []
 sourceplaybookid: 8463857c-c101-4aba-8f5a-27e133494ed9
 fromversion: 5.0.0
+tests:
+ -  No tests
