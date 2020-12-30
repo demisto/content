@@ -578,4 +578,3 @@ def run_with_mock(proxy_instance: MITMProxy,
                 proxy_instance.successful_tests_count += 1
             else:
                 proxy_instance.failed_tests_count += 1
-                proxy_instance.get_mitmdump_service_status()
