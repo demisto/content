@@ -44,6 +44,21 @@ configuration:
   name: secret_key
   required: false
   type: 4
+- display: Timeout
+  name: timeout
+  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or 
+    also the connect timeout followed after a comma (for example 60,1). If a connect timeout is not specified a default of 1 second
+    will be used. You may also override the value  the aws-lambda-invoke command.
+  defaultvalue: 60,1
+  required: false
+  type: 0
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries.
+    You may also override the value when executing the aws-lambda-invoke command.
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -539,6 +554,21 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      description: The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries.
+        If not specified will use the instances configured default timeout.
+      isArray: false
+      name: retries
+      required: false
+      secret: false
+    - default: false
+      description: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or 
+        also the connect timeout followed after a comma (for example 60,1). If not specified 
+        will use the instances configured default timeout.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
     description: Invokes a Lambda function. Specify just a function name to invoke
       the latest version of the function. To invoke a published version, use the Qualifier
@@ -655,7 +685,7 @@ script:
     - contextPath: AWS.Lambda.AccountUsage. FunctionCount
       description: The number of Lambda functions.
       type: number
-  dockerimage: demisto/boto3py3:1.0.0.13191
+  dockerimage: demisto/boto3py3:1.0.0.14934
   isfetch: false
   runonce: false
   subtype: python3
