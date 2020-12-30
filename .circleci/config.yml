@@ -306,21 +306,26 @@ references:
       name: Create ID Set
       when: always
       command: |
+        demisto-sdk create-id-set -o ./Tests/id_set.json
+        cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
+
+  merge_public_and_private_id_sets: &merge_public_and_private_id_sets
+    run:
+      name: Create ID Set
+      when: always
+      command: |
         GCS_PATH=$(mktemp)
         echo "$GCS_MARKET_KEY" > "$GCS_PATH"
         gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
 
-        # Create ID set
-        demisto-sdk create-id-set -o ./Tests/id_set.json
-
         # Download private ID set
-        gsutil -m cp -r gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/private_id_set.json
+        gsutil -m cp -r gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
 
         # Merge public and private ID sets
-        demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/private_id_set.json -o ./Tests/id_set.json
+        demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
 
-        cp "./Tests/id_set.json" "$CIRCLE_ARTIFACTS/id_set.json"
         rm $GCS_PATH
+
   build_content_descriptor: &build_content_descriptor
     run:
       name: Build Content Descriptor
@@ -361,7 +366,7 @@ references:
       name: Calculate Packs Dependencies
       when: always
       command: |
-        python3 ./Tests/Marketplace/packs_dependencies.py -i $CIRCLE_ARTIFACTS/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
+        python3 ./Tests/Marketplace/packs_dependencies.py -i ./Tests/id_set.json -o $CIRCLE_ARTIFACTS/packs_dependencies.json
 
   update_tests_step: &update_tests_step
     run:
@@ -550,11 +555,12 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - *restore_cache
+#      - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
       - *secrets
       - *create_id_set
+      - *merge_public_and_private_id_sets
       - *update_tests_step
       - *validate_files_and_yaml
       - run:
