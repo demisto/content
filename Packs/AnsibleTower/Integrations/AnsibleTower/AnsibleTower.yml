@@ -3,7 +3,8 @@ commonfields:
   id: AnsibleTower
   version: -1
 configuration:
-- display: Ansible URL
+- additionalinfo: Tower server URL
+  display: Ansible URL
   name: url
   required: true
   type: 0
@@ -23,7 +24,7 @@ configuration:
 - hidden: false
   name: password
   required: true
-  type: 0
+  type: 4
 description: n Scale IT automation, manage complex deployments and speed productivity
 display: AnsibleTower
 name: AnsibleTower
@@ -31,32 +32,43 @@ script:
   commands:
   - arguments:
     - default: false
+      description: If given an inventory id, will retrieve the specific inventory
       isArray: false
       name: id
       required: false
       secret: false
     - default: true
       defaultValue: '1'
+      description: Number of page to retrieve. Default page number is 1
       isArray: false
       name: page
       required: false
       secret: false
     - default: true
       defaultValue: '50'
+      description: Default page size is 50
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
+      description: |-
+        Use the search query string parameter to perform a case-insensitive search
+        within all designated text fields of a model.
       isArray: false
       name: search
       required: false
       secret: false
     deprecated: false
+    description: Retrieve the list of inventories
     execution: false
-    name: ansible-awx-inventories-list
+    name: ansible-tower-inventories-list
+    outputs:
+    - contextPath: AnsibleAWX.Inventory
+      type: Unknown
   - arguments:
     - default: false
+      description: Host id
       isArray: false
       name: id
       required: false
@@ -84,13 +96,15 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Retrieve the list of hosts. If an inventory id is given, retrieve
+      the host under the specific inventory
     execution: false
-    name: ansible-awx-hosts-list
+    name: ansible-tower-hosts-list
   - arguments:
     - default: false
       isArray: false
       name: inventory_id
-      required: false
+      required: true
       secret: false
     - default: false
       isArray: false
@@ -109,17 +123,298 @@ script:
       required: false
       secret: false
     deprecated: false
+    description: Create a host under the given inventory id and with the given name
     execution: false
-    name: ansible-awx-host-create
+    name: ansible-tower-host-create
+  - arguments:
+    - default: false
+      isArray: false
+      name: host_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete host
+    execution: false
+    name: ansible-tower-host-delete
+  - arguments:
+    - default: false
+      description: Job template id
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Inventory id to list all jobs that are managed with hosts under
+        this inventory
+      isArray: false
+      name: inventory_id
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve the list of job templates
+    execution: false
+    name: ansible-tower-job-templates-list
+  - arguments:
+    - default: false
+      description: id of a specific credential.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve the list of credentials. If an id is given, retrive the
+      specific one
+    execution: false
+    name: ansible-tower-credentials-list
+  - arguments:
+    - default: false
+      isArray: false
+      name: job_template_id
+      required: true
+      secret: false
+    - default: false
+      description: If the job template do not have an inventory to start,  select
+        the inventory containing the host you want this job to manage
+      isArray: false
+      name: inventory_id
+      required: false
+      secret: false
+    - default: false
+      description: Credentials that allow Tower to access the node this job will be
+        ran against
+      isArray: false
+      name: credentials_id
+      required: false
+      secret: false
+    - default: false
+      description: Command line variables pass to the playbook (json format)
+      isArray: false
+      name: extra_variables
+      required: false
+      secret: false
+    deprecated: false
+    description: Launch job template
+    execution: false
+    name: ansible-tower-job-launch
+  - arguments:
+    - default: false
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: Which hosts to relaunch the job. Can be all the host or only the
+        ones where the job failed
+      isArray: false
+      name: relaunch_hosts
+      predefined:
+      - all
+      - failed
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: credentials_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Relaunch a job
+    execution: false
+    name: ansible-tower-job-relaunch
+  - arguments:
+    - default: false
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Cancel a pending or running job
+    execution: false
+    name: ansible-tower-job-cancel
+  - arguments:
+    - default: false
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the stdout from running the given job
+    execution: false
+    name: ansible-tower-job-stdout
+  - arguments:
+    - default: false
+      isArray: false
+      name: job_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: ansible-tower-job-status
+  - arguments:
+    - default: false
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '50'
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve the list of job events.
+    execution: false
+    name: ansible-tower-job-events-list
+  - arguments:
+    - default: false
+      isArray: false
+      name: inventory_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: credential_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Modules are discrete units of code that can be used from the command
+        line or in a playbook task. Ansible ships with a number of modules that can
+        be executed directly on remote hosts or through Playbooks.
+      isArray: false
+      name: module_name
+      predefined:
+      - command
+      - shell
+      - yum
+      - apt
+      - apt_key
+      - apt_repository
+      - apt_rpm
+      - service
+      - group
+      - user
+      - mount
+      - ping
+      - selinux
+      - setup
+      - win_ping
+      - win_service
+      - win_updates
+      - win_group
+      - win_user
+      required: true
+      secret: false
+    - default: false
+      description: Module arguments
+      isArray: false
+      name: module_args
+      required: false
+      secret: false
+    deprecated: false
+    description: Create new ad hoc command
+    execution: false
+    name: ansible-tower-adhoc-command-launch
+  - arguments:
+    - default: false
+      isArray: false
+      name: command_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Launch a new job to run the ad hoc command
+    execution: false
+    name: ansible-tower-adhoc-command-relaunch
+  - arguments:
+    - default: false
+      isArray: false
+      name: command_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Cancel a job of the given ad hoc command
+    execution: false
+    name: ansible-tower-adhoc-command-cancel
+  - arguments:
+    - default: false
+      isArray: false
+      name: command_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the stdout from running this ad hoc command.
+    execution: false
+    name: ansible-tower-adhoc-command-stdout
+  - arguments:
+    - default: false
+      isArray: false
+      name: command_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve a single ad hoc command status
+    execution: false
+    name: ansible-tower-adhoc-command-status
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   subtype: python3
   type: python
-defaultmapperin: HelloWorld-mapper
-defaultclassifier: HelloWorld
 fromversion: 5.0.0
