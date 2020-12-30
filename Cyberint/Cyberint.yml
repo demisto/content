@@ -8,6 +8,10 @@ configuration:
   name: access_token
   required: true
   type: 4
+- additionalinfo: "Cyberint environment on which the services run (i.e http://{environment}.cyberint.io/...)"
+  display: Cyberint API Environment
+  name: environment
+  required: true
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -123,14 +127,43 @@ script:
     - default: false
       description: ISO-Formatted creation date. Get alerts created since this date.
       isArray: false
-      name: created_date
+      name: created_date_from
+      required: false
+      secret: false
+    - default: false
+      description: ISO-Formatted creation date. Get alerts created before this date.
+      isArray: false
+      name: created_date_to
+      required: false
+      secret: false
+    - default: false
+      description: You can specify a date range to search for from the current time.
+        (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time.
+        created_date_range will overwrite created_date
+      isArray: false
+      name: created_date_range
       required: false
       secret: false
     - default: false
       description: ISO-Formatted modification date. Get alerts modified since this
         date.
       isArray: false
-      name: modification_date
+      name: modification_date_from
+      required: false
+      secret: false
+    - default: false
+      description: ISO-Formatted modification date. Get alerts modified before this
+        date.
+      isArray: false
+      name: modification_date_to
+      required: false
+      secret: false
+    - default: false
+      description: You can specify a date range to search for from the current time.
+        (<number> <time unit>, e.g., 12 hours, 7 days) instead of a start/end time.
+        modified_date_range will overwrite modified_date
+      isArray: false
+      name: modified_date_range
       required: false
       secret: false
     - default: false
@@ -144,7 +177,7 @@ script:
       default: false
       description: Status of the alert. Can be more than one.
       isArray: true
-      name: status
+      name: statuses
       predefined:
       - open
       - acknowledged
@@ -155,7 +188,7 @@ script:
       default: false
       description: Severity of the alert. Can be more than one.
       isArray: true
-      name: severity
+      name: severities
       predefined:
       - low
       - medium
@@ -167,7 +200,7 @@ script:
       default: false
       description: Type of the alert, can be more than one.
       isArray: true
-      name: type
+      name: types
       predefined:
       - refund_fraud
       - carding
@@ -218,6 +251,7 @@ script:
     name: cyberint-list-alerts
     outputs:
     - contextPath: Cyberint.Alert.ref_id
+      description: Reference ID of the alert.
       type: String
     - contextPath: Cyberint.Alert.confidence
       description: Confidence score of the alert.
@@ -227,6 +261,9 @@ script:
       type: String
     - contextPath: Cyberint.Alert.severity
       description: Severity of the alert
+      type: String
+    - contextPath: Cyberint.Alert.created_by.email
+      description: User which has created the alert.
       type: String
     - contextPath: Cyberint.Alert.created_date
       description: Date in which the alert was created.
@@ -258,7 +295,7 @@ script:
     - contextPath: Cyberint.Alert.acknowledged_date
       description: Date in which the alert was acknowledged.
       type: String
-    - contextPath: Cyberint.Alert.acknowledged_by
+    - contextPath: Cyberint.Alert.acknowledged_by.email
       description: User which has acknowledged the alert.
       type: String
     - contextPath: Cyberint.Alert.publish_date
@@ -267,17 +304,74 @@ script:
     - contextPath: Cyberint.Alert.title
       description: Title of the alert.
       type: String
-    - contextPath: Cyberint.Alert.alert_data
-      description: Data contained inside the alert.
+    - contextPath: Cyberint.Alert.alert_data.url
+      description: URL impacted by the event.
       type: String
-    - contextPath: Cyberint.Alert.iocs
-      description: IOCs related to the alert.
+    - contextPath: Cyberint.Alert.alert_data.detection_reasons
+      description: Reasons why a phishing event has been detected.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.tool_name
+      description: Name of a tool used for an exploit if available.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.application
+      description: Application affected by an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.source
+      description: Source of an event if available.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.domain
+      description: Domain related to an event if available.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.subdomian
+      description: Subdomain related to an event if available.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.misconfiguration_type
+      description: Type of misconfiguration for a misconfigured domain.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.ip
+      description: IP related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.port
+      description: Port related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.service
+      description: Service related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.access_token
+      description: Access token exposed in an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.access_token_type
+      description: Access token exposed in an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.username
+      description: Username of an account related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.email
+      description: Email of an account related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.author_email_address
+      description: Email of an author related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.repository_name
+      description: Repository name related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.mail_server
+      description: Mail server related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.blacklist_repository
+      description: Blacklist repository name related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.ioc.type
+      description: Type of IOC related to the alert.
+      type: String
+    - contextPath: Cyberint.Alert.ioc.value
+      description: Value of the IOC related to the alert.
       type: String
     - contextPath: Cyberint.Alert.ticket_id
       description: Ticket ID of the alert.
       type: String
     - contextPath: Cyberint.Alert.threat_actor
-      description: Actor to the threat related to the alertr.
+      description: Actor to the threat related to the alert.
       type: String
     - contextPath: Cyberint.Alert.modification_date
       description: Date the alert was last modified.
@@ -285,7 +379,7 @@ script:
     - contextPath: Cyberint.Alert.closure_date
       description: Date the alert was closed.
       type: String
-    - contextPath: Cyberint.Alert.closed_by
+    - contextPath: Cyberint.Alert.closed_by.email
       description: User which has closed the alert.
       type: String
     - contextPath: Cyberint.Alert.closure_reason

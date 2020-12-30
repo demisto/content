@@ -1,11 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+
 ''' IMPORTS '''
 
 import json
 import requests
 import dateparser
+from typing import Dict, List, Optional, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -16,79 +18,133 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 class Client(BaseClient):
     """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
+    API Client to communicate with Cyberint and get alerts.
     """
+
+    def __init__(self, base_url: str, access_token: str, verify_ssl: bool, proxy: bool):
+        """
+        API Client constructor.
+
+        Args:
+            base_url (str): URL to access when getting alerts.
+            access_token (str): Access token for authentication.
+            verify_ssl (bool): Whether or not to verify SSL.
+            proxy (bool): Whether or not to use proxy
+        """
+        headers = {'Content-Type': 'application/json'}
+        self._cookies = {'access_token': access_token}
+        super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy, headers=headers)
+
+    def list_alerts(self, page: Optional[str], page_size: Optional[str],
+                    created_date_from: Optional[str], created_date_to: Optional[str],
+                    modification_date_from: Optional[str], modification_date_to: Optional[str],
+                    environments: Optional[List[str]], statuses: Optional[List[str]],
+                    severities: Optional[List[str]], types: Optional[List[str]]) -> Dict:
+        """
+        List alerts according to parameters.
+
+        Args:
+            page (str): N. of page to return.
+            page_size (str): Size of the page to return.
+            created_date_from (str): ISO-Formatted creation date minimum.
+            created_date_to (str): ISO-Formatted creation date maximum.
+            modification_date_from (str): ISO-Formatted modification date minimum.:
+            modification_date_to (str): ISO-Formatted modification date maximum.:
+            environments (list(str)): Environments in which the alerts were created
+            statuses (list(str)): Statuses of the alerts
+            severities (list(str)): Severities of the alerts.
+            types (list(str)): Types of the alerts,
+
+        Returns:
+            response (Response): API response from Cyberint.
+        """
+        body = {'page': page, 'size': page_size, 'filters': {
+            'created_date': {'from': created_date_from, 'to': created_date_to},
+            'modification_date': {'from': modification_date_from, 'to': modification_date_to},
+            'environments': environments, 'status': statuses, 'severity': severities,
+            'type': types
+        }}
+        body = remove_empty_elements(body)
+        response = self._http_request(method='POST', json_data=body, cookies=self._cookies,
+                                      url_suffix='api/v1/alerts')
+        return response
 
 
 def test_module(client):
     """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+    Test the connection to the API by sending a normal request.
 
     Args:
-        client: HelloWorld client
+        client: Cyberint API  client
 
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
 
-    result = client.say_hello('DBot')
-    if 'Hello DBot' == result:
-        return 'ok'
-    else:
-        return 'Test failed because ......'
+    try:
+        result = client.list_alerts(*([None] * 10))
+        if result:
+            return 'ok'
+        return f'Unidentified error in retrieving test response: {str(result)}'
+    except DemistoException as exception:
+        if 'Invalid token or token expired' in str(exception):
+            return 'Error verifying access token and / or environment, make sure the ' \
+                   'configuration parameters are correct.'
+        return str(exception)
 
 
-def say_hello_command(client, args):
+def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
+                  date_range_arg: Optional[str]) -> Tuple[str, str]:
     """
-    Returns Hello {somename}
+    Calculate the date range to send to the API based on the arguments from the user.
 
     Args:
-        client (Client): HelloWorld client.
-        args (dict): all command arguments.
+        start_date_arg (str): Optional start_date from the user.
+        end_date_arg (str): Optional end_date from the user.
+        date_range_arg (str): Optional date range from the user.
 
     Returns:
-        Hello {someone}
-
-        readable_output (str): This will be presented in the war room - should be in markdown syntax - human readable
-        outputs (dict): Dictionary/JSON - saved in the incident context in order to be used as inputs for other tasks in the
-                 playbook
-        raw_response (dict): Used for debugging/troubleshooting purposes - will be shown only if the command executed with
-                      raw-response=true
+        start_date (str): Start date to send to the API.
+        end_date (str): End date to send to the API.
     """
-    name = args.get('name')
-
-    result = client.say_hello(name)
-
-    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = f'## {result}'
-    outputs = {
-        'hello': result
-    }
-
-    return (
-        readable_output,
-        outputs,
-        result  # raw response - the original response
-    )
+    if date_range_arg:
+        start_date, end_date = parse_date_range(date_range=date_range_arg,
+                                                date_format=DATE_FORMAT)
+        return start_date, end_date
+    return start_date_arg, end_date_arg
 
 
-def say_hello_over_http_command(client, args):
-    name = args.get('name')
+def cyberint_list_alerts_command(client: Client, args: dict) -> CommandResults:
+    """
+    List alerts on cyberint according to parameters.
 
-    result = client.say_hello_http_request(name)
+    Args:
+        client (Client): Cyberint API client.
+        args (dict): Command arguments from XSOAR.
 
-    # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
-    readable_output = f'## {result}'
-    outputs = {
-        'hello': result
-    }
-
-    return (
-        readable_output,
-        outputs,
-        result  # raw response - the original response
-    )
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    created_date_from, created_date_to = set_date_pair(args.get('created_date_start'),
+                                                       args.get('created_date_end'),
+                                                       args.get('created_date_range'))
+    modify_date_from, modify_date_to = set_date_pair(args.get('modification_date_start'),
+                                                     args.get('modification_date_end'),
+                                                     args.get('modification_date_range'))
+    result = client.list_alerts(args.get('page'), args.get('page_size'), created_date_from,
+                                created_date_to, modify_date_from, modify_date_to,
+                                args.get('environments'), args.get('statuses'),
+                                args.get('severities'), args.get('types'))
+    alerts = result.get('alerts')
+    total_alerts = result.get('total')
+    table_headers = ['ref_id', 'title', 'status', 'severity', 'publish_date', 'type',
+                     'environment']
+    readable_output = tableToMarkdown(name='Found alerts:', t=alerts, headers=table_headers,
+                                      removeNull=True)
+    readable_output += f'Total alerts: {total_alerts}\nCurrent page: {args.get("page", 1)}'
+    return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
+                          readable_output=readable_output, raw_response=result,
+                          outputs=alerts)
 
 
 def fetch_incidents(client, last_run, first_fetch_time):
@@ -138,14 +194,12 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
+    access_token = demisto.params().get('access_token')
+    environment = demisto.params().get('environment')
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1/suffix')
-
+    base_url = f'https://{environment}.cyberint.io/alert/'
     verify_certificate = not demisto.params().get('insecure', False)
-
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
 
@@ -155,10 +209,9 @@ def main():
     try:
         client = Client(
             base_url=base_url,
-            verify=verify_certificate,
-            auth=(username, password),
+            verify_ssl=verify_certificate,
+            access_token=access_token,
             proxy=proxy)
-
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
@@ -174,8 +227,9 @@ def main():
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'helloworld-say-hello':
-            return_outputs(*say_hello_command(client, demisto.args()))
+        elif demisto.command() == 'cyberint-list-alerts':
+            return_results(cyberint_list_alerts_command(client, demisto.args()))
+
 
     # Log exceptions
     except Exception as e:
