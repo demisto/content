@@ -1,0 +1,528 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: cyberint
+  version: -1
+configuration:
+- additionalinfo: Cyberint API access token.
+  display: Cyberint Access Token
+  name: access_token
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: Choose the severity(s) (not minimum) to fetch. If none is chosen,
+    all severity levels will be returned.
+  display: Fetch Severity
+  name: fetch_severity
+  options:
+  - low
+  - medium
+  - high
+  - very_high
+  required: false
+  type: 16
+- additionalinfo: Choose one or more categories to fetch if wanted. If none is chosen,
+    all categories will be returned.
+  display: Fetch Category
+  name: fetch_category
+  options:
+  - refund_fraud
+  - carding
+  - coupon_fraud
+  - money_laundering
+  - victim_report
+  - malicious_insider
+  - extortion
+  - phishing_email
+  - phishing_kit
+  - phishing_website
+  - lookalike_domain
+  - phishing_target_list
+  - malicious_file
+  - reconnaissance
+  - automated_attack_tools
+  - business_logic_bypass
+  - target_list
+  - official_social_media_profile
+  - impersonation
+  - intellectual_property_infringement
+  - unauthorized_trading
+  - negative_sentiment
+  - fake_job_posting
+  - defacement
+  - compromised_pii
+  - internal_information_disclosure
+  - compromised_payment_cards
+  - compromised_employee_credentials
+  - compromised_customer_credentials
+  - compromised_access_token
+  - ransomware
+  - exposed_web_interfaces
+  - hijackable_subdomains
+  - website_vulnerabilities
+  - exposed_cloud_storage
+  - exploitable_ports
+  - mail_servers_in_blacklist
+  - server_connected_to_botnet
+  - email_security_issues
+  - certificate_authority_issues
+  - other
+  required: false
+  type: 16
+- additionalinfo: Choose one or more statuses to fetch if wanted. If none is chosen,
+    all categories will be returned.
+  display: Fetch Status
+  name: fetch_status
+  options:
+  - open
+  - acknowledged
+  - closed
+  required: false
+  type: 16
+- additionalinfo: Max number of alerts per fetch. Defaults to  the minimum 10, max
+    is 100.
+  defaultvalue: '10'
+  display: Fetch Limit
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days.
+  defaultvalue: 7 days
+  display: First Fetch Time
+  name: fetch_time
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Intelligence-Driven Digital Risk Protection
+detaileddescription: ''
+display: Cyberint
+name: cyberint
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: '1'
+      description: Page number to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '1'
+      description: Number of results in a page. Must be between 10 and 100.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: ISO-Formatted creation date. Get alerts created since this date.
+      isArray: false
+      name: created_date
+      required: false
+      secret: false
+    - default: false
+      description: ISO-Formatted modification date. Get alerts modified since this
+        date.
+      isArray: false
+      name: modification_date
+      required: false
+      secret: false
+    - default: false
+      description: Environment in which the alerts were created. Can be more than
+        one.
+      isArray: true
+      name: environments
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the alert. Can be more than one.
+      isArray: true
+      name: status
+      predefined:
+      - open
+      - acknowledged
+      - closed
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Severity of the alert. Can be more than one.
+      isArray: true
+      name: severity
+      predefined:
+      - low
+      - medium
+      - high
+      - very_high
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the alert, can be more than one.
+      isArray: true
+      name: type
+      predefined:
+      - refund_fraud
+      - carding
+      - coupon_fraud
+      - money_laundering
+      - victim_report
+      - malicious_insider
+      - extortion
+      - phishing_email
+      - phishing_kit
+      - phishing_website
+      - lookalike_domain
+      - phishing_target_list
+      - malicious_file
+      - reconnaissance
+      - automated_attack_tools
+      - business_logic_bypass
+      - target_list
+      - official_social_media_profile
+      - impersonation
+      - intellectual_property_infringement
+      - unauthorized_trading
+      - negative_sentiment
+      - fake_job_posting
+      - defacement
+      - compromised_pii
+      - internal_information_disclosure
+      - compromised_payment_cards
+      - compromised_employee_credentials
+      - compromised_customer_credentials
+      - compromised_access_token
+      - ransomware
+      - exposed_web_interfaces
+      - hijackable_subdomains
+      - website_vulnerabilities
+      - exposed_cloud_storage
+      - exploitable_ports
+      - mail_servers_in_blacklist
+      - server_connected_to_botnet
+      - email_security_issues
+      - certificate_authority_issues
+      - other
+      required: false
+      secret: false
+    deprecated: false
+    description: List alerts according to parameters
+    execution: false
+    name: cyberint-list-alerts
+    outputs:
+    - contextPath: Cyberint.Alert.ref_id
+      type: String
+    - contextPath: Cyberint.Alert.confidence
+      description: Confidence score of the alert.
+      type: Number
+    - contextPath: Cyberint.Alert.status
+      description: Status of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.severity
+      description: Severity of the alert
+      type: String
+    - contextPath: Cyberint.Alert.created_date
+      description: Date in which the alert was created.
+      type: Date
+    - contextPath: Cyberint.Alert.category
+      description: Category of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.type
+      description: Type of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.source_category
+      description: Source category of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.source
+      description: Source of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.targeted_vectors
+      description: Vectors targeted by the threat.
+      type: String
+    - contextPath: Cyberint.Alert.targeted_brands
+      description: Brands targeted by the threat.
+      type: String
+    - contextPath: Cyberint.Alert.related_entities
+      description: Entities related to the alert.
+      type: String
+    - contextPath: Cyberint.Alert.impacts
+      description: Impacts made by the threat.
+      type: String
+    - contextPath: Cyberint.Alert.acknowledged_date
+      description: Date in which the alert was acknowledged.
+      type: String
+    - contextPath: Cyberint.Alert.acknowledged_by
+      description: User which has acknowledged the alert.
+      type: String
+    - contextPath: Cyberint.Alert.publish_date
+      description: Date in which the alert was published.
+      type: String
+    - contextPath: Cyberint.Alert.title
+      description: Title of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data
+      description: Data contained inside the alert.
+      type: String
+    - contextPath: Cyberint.Alert.iocs
+      description: IOCs related to the alert.
+      type: String
+    - contextPath: Cyberint.Alert.ticket_id
+      description: Ticket ID of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.threat_actor
+      description: Actor to the threat related to the alertr.
+      type: String
+    - contextPath: Cyberint.Alert.modification_date
+      description: Date the alert was last modified.
+      type: String
+    - contextPath: Cyberint.Alert.closure_date
+      description: Date the alert was closed.
+      type: String
+    - contextPath: Cyberint.Alert.closed_by
+      description: User which has closed the alert.
+      type: String
+    - contextPath: Cyberint.Alert.closure_reason
+      description: Reason for closing the alert.
+      type: String
+    - contextPath: Cyberint.Alert.description
+      description: Description of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.recommendation
+      description: Recommendation for the alert
+      type: String
+    - contextPath: Cyberint.Alert.tags
+      description: Tags related to the alert
+      type: String
+  dockerimage: demisto/python3:3.8.3.8715
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: |-
+    ''' IMPORTS '''
+
+    import json
+    import requests
+    import dateparser
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' CONSTANTS '''
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+
+
+    class Client(BaseClient):
+        """
+        Client will implement the service API, and should not contain any Demisto logic.
+        Should only do requests and return data.
+        """
+
+        def say_hello(self, name):
+            return f'Hello {name}'
+
+        def say_hello_http_request(self, name):
+            """
+            initiates a http request to a test url
+            """
+            data = self._http_request(
+                method='GET',
+                url_suffix='/hello/' + name
+            )
+            return data.get('result')
+
+        def list_incidents(self):
+            """
+            returns dummy incident data, just for the example.
+            """
+            return [
+                {
+                    'incident_id': 1,
+                    'description': 'Hello incident 1',
+                    'created_time': datetime.utcnow().strftime(DATE_FORMAT)
+                },
+                {
+                    'incident_id': 2,
+                    'description': 'Hello incident 2',
+                    'created_time': datetime.utcnow().strftime(DATE_FORMAT)
+                }
+            ]
+
+
+    def test_module(client):
+        """
+        Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
+
+        Args:
+            client: HelloWorld client
+
+        Returns:
+            'ok' if test passed, anything else will fail the test.
+        """
+
+        result = client.say_hello('DBot')
+        if 'Hello DBot' == result:
+            return 'ok'
+        else:
+            return 'Test failed because ......'
+
+
+    def say_hello_command(client, args):
+        """
+        Returns Hello {somename}
+
+        Args:
+            client (Client): HelloWorld client.
+            args (dict): all command arguments.
+
+        Returns:
+            Hello {someone}
+
+            readable_output (str): This will be presented in the war room - should be in markdown syntax - human readable
+            outputs (dict): Dictionary/JSON - saved in the incident context in order to be used as inputs for other tasks in the
+                     playbook
+            raw_response (dict): Used for debugging/troubleshooting purposes - will be shown only if the command executed with
+                          raw-response=true
+        """
+        name = args.get('name')
+
+        result = client.say_hello(name)
+
+        # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
+        readable_output = f'## {result}'
+        outputs = {
+            'hello': result
+        }
+
+        return (
+            readable_output,
+            outputs,
+            result  # raw response - the original response
+        )
+
+
+    def say_hello_over_http_command(client, args):
+        name = args.get('name')
+
+        result = client.say_hello_http_request(name)
+
+        # readable output will be in markdown format - https://www.markdownguide.org/basic-syntax/
+        readable_output = f'## {result}'
+        outputs = {
+            'hello': result
+        }
+
+        return (
+            readable_output,
+            outputs,
+            result  # raw response - the original response
+        )
+
+
+    def fetch_incidents(client, last_run, first_fetch_time):
+        """
+        This function will execute each interval (default is 1 minute).
+
+        Args:
+            client (Client): HelloWorld client
+            last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
+            first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
+
+        Returns:
+            next_run: This will be last_run in the next fetch-incidents
+            incidents: Incidents that will be created in Demisto
+        """
+        # Get the last fetch time, if exists
+        last_fetch = last_run.get('last_fetch')
+
+        # Handle first time fetch
+        if last_fetch is None:
+            last_fetch, _ = dateparser.parse(first_fetch_time)
+        else:
+            last_fetch = dateparser.parse(last_fetch)
+
+        latest_created_time = last_fetch
+        incidents = []
+        items = client.list_incidents()
+        for item in items:
+            incident_created_time = dateparser.parse(item['created_time'])
+            incident = {
+                'name': item['description'],
+                'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                'rawJSON': json.dumps(item)
+            }
+
+            incidents.append(incident)
+
+            # Update last run and add incident if the incident is newer than last fetch
+            if incident_created_time > latest_created_time:
+                latest_created_time = incident_created_time
+
+        next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
+        return next_run, incidents
+
+
+    def main():
+        """
+            PARSE AND VALIDATE INTEGRATION PARAMS
+        """
+        username = demisto.params().get('credentials').get('identifier')
+        password = demisto.params().get('credentials').get('password')
+
+        # get the service API url
+        base_url = urljoin(demisto.params()['url'], '/api/v1/suffix')
+
+        verify_certificate = not demisto.params().get('insecure', False)
+
+        # How much time before the first fetch to retrieve incidents
+        first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
+
+        proxy = demisto.params().get('proxy', False)
+
+        LOG(f'Command being called is {demisto.command()}')
+        try:
+            client = Client(
+                base_url=base_url,
+                verify=verify_certificate,
+                auth=(username, password),
+                proxy=proxy)
+
+            if demisto.command() == 'test-module':
+                # This is the call made when pressing the integration Test button.
+                result = test_module(client)
+                demisto.results(result)
+
+            elif demisto.command() == 'fetch-incidents':
+                # Set and define the fetch incidents command to run after activated via integration settings.
+                next_run, incidents = fetch_incidents(
+                    client=client,
+                    last_run=demisto.getLastRun(),
+                    first_fetch_time=first_fetch_time)
+
+                demisto.setLastRun(next_run)
+                demisto.incidents(incidents)
+
+            elif demisto.command() == 'helloworld-say-hello':
+                return_outputs(*say_hello_command(client, demisto.args()))
+
+        # Log exceptions
+        except Exception as e:
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+  subtype: python3
+  type: python
+image: data:image/png;base64,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

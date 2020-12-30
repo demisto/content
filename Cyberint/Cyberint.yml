@@ -1,0 +1,311 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: cyberint
+  version: -1
+configuration:
+- additionalinfo: Cyberint API access token.
+  display: Cyberint Access Token
+  name: access_token
+  required: true
+  type: 4
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: Choose the severity(s) (not minimum) to fetch. If none is chosen,
+    all severity levels will be returned.
+  display: Fetch Severity
+  name: fetch_severity
+  options:
+  - low
+  - medium
+  - high
+  - very_high
+  required: false
+  type: 16
+- additionalinfo: Choose one or more categories to fetch if wanted. If none is chosen,
+    all categories will be returned.
+  display: Fetch Category
+  name: fetch_category
+  options:
+  - refund_fraud
+  - carding
+  - coupon_fraud
+  - money_laundering
+  - victim_report
+  - malicious_insider
+  - extortion
+  - phishing_email
+  - phishing_kit
+  - phishing_website
+  - lookalike_domain
+  - phishing_target_list
+  - malicious_file
+  - reconnaissance
+  - automated_attack_tools
+  - business_logic_bypass
+  - target_list
+  - official_social_media_profile
+  - impersonation
+  - intellectual_property_infringement
+  - unauthorized_trading
+  - negative_sentiment
+  - fake_job_posting
+  - defacement
+  - compromised_pii
+  - internal_information_disclosure
+  - compromised_payment_cards
+  - compromised_employee_credentials
+  - compromised_customer_credentials
+  - compromised_access_token
+  - ransomware
+  - exposed_web_interfaces
+  - hijackable_subdomains
+  - website_vulnerabilities
+  - exposed_cloud_storage
+  - exploitable_ports
+  - mail_servers_in_blacklist
+  - server_connected_to_botnet
+  - email_security_issues
+  - certificate_authority_issues
+  - other
+  required: false
+  type: 16
+- additionalinfo: Choose one or more statuses to fetch if wanted. If none is chosen,
+    all categories will be returned.
+  display: Fetch Status
+  name: fetch_status
+  options:
+  - open
+  - acknowledged
+  - closed
+  required: false
+  type: 16
+- additionalinfo: "Max number of alerts per fetch. Defaults to  the minimum 10, max\
+    \ is 100."
+  defaultvalue: '10'
+  display: Fetch Limit
+  name: max_fetch
+  required: false
+- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days.
+  defaultvalue: 7 days
+  display: First Fetch Time
+  name: fetch_time
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Intelligence-Driven Digital Risk Protection
+display: Cyberint
+name: cyberint
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: '1'
+      description: Page number to return.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '10'
+      description: Number of results in a page. Must be between 10 and 100.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: ISO-Formatted creation date. Get alerts created since this date.
+      isArray: false
+      name: created_date
+      required: false
+      secret: false
+    - default: false
+      description: ISO-Formatted modification date. Get alerts modified since this
+        date.
+      isArray: false
+      name: modification_date
+      required: false
+      secret: false
+    - default: false
+      description: Environment in which the alerts were created. Can be more than
+        one.
+      isArray: true
+      name: environments
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Status of the alert. Can be more than one.
+      isArray: true
+      name: status
+      predefined:
+      - open
+      - acknowledged
+      - closed
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Severity of the alert. Can be more than one.
+      isArray: true
+      name: severity
+      predefined:
+      - low
+      - medium
+      - high
+      - very_high
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of the alert, can be more than one.
+      isArray: true
+      name: type
+      predefined:
+      - refund_fraud
+      - carding
+      - coupon_fraud
+      - money_laundering
+      - victim_report
+      - malicious_insider
+      - extortion
+      - phishing_email
+      - phishing_kit
+      - phishing_website
+      - lookalike_domain
+      - phishing_target_list
+      - malicious_file
+      - reconnaissance
+      - automated_attack_tools
+      - business_logic_bypass
+      - target_list
+      - official_social_media_profile
+      - impersonation
+      - intellectual_property_infringement
+      - unauthorized_trading
+      - negative_sentiment
+      - fake_job_posting
+      - defacement
+      - compromised_pii
+      - internal_information_disclosure
+      - compromised_payment_cards
+      - compromised_employee_credentials
+      - compromised_customer_credentials
+      - compromised_access_token
+      - ransomware
+      - exposed_web_interfaces
+      - hijackable_subdomains
+      - website_vulnerabilities
+      - exposed_cloud_storage
+      - exploitable_ports
+      - mail_servers_in_blacklist
+      - server_connected_to_botnet
+      - email_security_issues
+      - certificate_authority_issues
+      - other
+      required: false
+      secret: false
+    deprecated: false
+    description: List alerts according to parameters
+    execution: false
+    name: cyberint-list-alerts
+    outputs:
+    - contextPath: Cyberint.Alert.ref_id
+      type: String
+    - contextPath: Cyberint.Alert.confidence
+      description: Confidence score of the alert.
+      type: Number
+    - contextPath: Cyberint.Alert.status
+      description: Status of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.severity
+      description: Severity of the alert
+      type: String
+    - contextPath: Cyberint.Alert.created_date
+      description: Date in which the alert was created.
+      type: Date
+    - contextPath: Cyberint.Alert.category
+      description: Category of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.type
+      description: Type of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.source_category
+      description: Source category of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.source
+      description: Source of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.targeted_vectors
+      description: Vectors targeted by the threat.
+      type: String
+    - contextPath: Cyberint.Alert.targeted_brands
+      description: Brands targeted by the threat.
+      type: String
+    - contextPath: Cyberint.Alert.related_entities
+      description: Entities related to the alert.
+      type: String
+    - contextPath: Cyberint.Alert.impacts
+      description: Impacts made by the threat.
+      type: String
+    - contextPath: Cyberint.Alert.acknowledged_date
+      description: Date in which the alert was acknowledged.
+      type: String
+    - contextPath: Cyberint.Alert.acknowledged_by
+      description: User which has acknowledged the alert.
+      type: String
+    - contextPath: Cyberint.Alert.publish_date
+      description: Date in which the alert was published.
+      type: String
+    - contextPath: Cyberint.Alert.title
+      description: Title of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data
+      description: Data contained inside the alert.
+      type: String
+    - contextPath: Cyberint.Alert.iocs
+      description: IOCs related to the alert.
+      type: String
+    - contextPath: Cyberint.Alert.ticket_id
+      description: Ticket ID of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.threat_actor
+      description: Actor to the threat related to the alertr.
+      type: String
+    - contextPath: Cyberint.Alert.modification_date
+      description: Date the alert was last modified.
+      type: String
+    - contextPath: Cyberint.Alert.closure_date
+      description: Date the alert was closed.
+      type: String
+    - contextPath: Cyberint.Alert.closed_by
+      description: User which has closed the alert.
+      type: String
+    - contextPath: Cyberint.Alert.closure_reason
+      description: Reason for closing the alert.
+      type: String
+    - contextPath: Cyberint.Alert.description
+      description: Description of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.recommendation
+      description: Recommendation for the alert
+      type: String
+    - contextPath: Cyberint.Alert.tags
+      description: Tags related to the alert
+      type: String
+  dockerimage: demisto/python3:3.8.3.8715
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
