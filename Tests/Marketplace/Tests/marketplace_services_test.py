@@ -10,7 +10,7 @@ from distutils.version import LooseVersion
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
-    store_successful_and_failed_packs_in_ci_artifacts
+    store_successful_and_failed_packs_in_ci_artifacts, PACKS_FOLDER
 
 
 @pytest.fixture(scope="module")
@@ -624,7 +624,8 @@ class TestImagesUpload:
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
                                            'image_path': f'/path/{temp_image_name}'}]
-        mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
+        mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=(search_for_images_return_value,
+                                                                                        search_for_images_return_value))
         mocker.patch('builtins.open', mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
@@ -633,6 +634,7 @@ class TestImagesUpload:
         dummy_content_repo.commit.return_value = dummy_commit
         dummy_file = mocker.MagicMock()
         dummy_commit.diff.return_value = [dummy_file]
+        dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
         fake_hash = 'fake_hash'
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
@@ -662,7 +664,8 @@ class TestImagesUpload:
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
                                            'image_path': f'/path/{temp_image_name}'}]
-        mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
+        mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=(search_for_images_return_value,
+                                                                                        search_for_images_return_value))
         mocker.patch("builtins.open", mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
@@ -671,6 +674,7 @@ class TestImagesUpload:
         dummy_content_repo.commit.return_value = dummy_commit
         dummy_file = mocker.MagicMock()
         dummy_commit.diff.return_value = [dummy_file]
+        dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
         fake_hash = 'fake_hash'
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
