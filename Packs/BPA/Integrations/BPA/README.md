@@ -54,6 +54,7 @@ Gets the documentation of all BPA checks.
 | PAN-OS-BPA.Documentation.Document.ControlCategory | Unknown | The control category of the document. | 
 | PAN-OS-BPA.Documentation.Document.Cscv6Control | Unknown | The cscv6 control of the document. | 
 | PAN-OS-BPA.Documentation.Document.Cscv7Control | Unknown | The cscv7 control of the document. | 
+| PAN-OS-BPA.Documentation | Unknown | The list of BPA checks. | 
 
 
 #### Command Example
@@ -63,103 +64,198 @@ Gets the documentation of all BPA checks.
 ```json
 {
     "PAN-OS-BPA": {
-        "Documentation": {
-            "Document": [
-                {
-                    "Active": true,
-                    "CapabilityLabel": [
-                        "Preventative",
-                        "Corrective"
-                    ],
-                    "ClassLabel": [
-                        "Technical"
-                    ],
-                    "Complexity": "Advanced",
-                    "ControlCategory": [
-                        "Access Control"
-                    ],
-                    "Cscv6Control": [
-                        "11.1",
-                        "12.1"
-                    ],
-                    "Cscv7Control": [
-                        "11.1",
-                        "12.3"
-                    ],
-                    "Description": "Do not specify both the source and destination zones as \"any\" on the rule.",
-                    "DocId": 4,
-                    "DocType": "Warning",
-                    "Effort": 60,
-                    "LastUpdatedDate": "2020-10-05T22:46:57.585179Z",
-                    "LeftNav": "Security",
-                    "Rationale": "Use Security policy settings to create rules that exactly define the traffic to which the rules apply (zones, IP addresses, users, applications). Policies that are too general may match traffic you don\u2019t want the policy to match and either permit undesirable traffic or deny legitimate traffic. Defining the source, destination, or both zones prevents potentially malicious traffic that uses evasive or deceptive techniques to avoid detection or appear benign from traversing the entire network, which reduces the attack surface and the threat scope. The exception to this best practice is when the Security policy needs to protect the entire network. For example, a rule that blocks traffic to malware or phishing URL categories can apply to all zones (and all traffic) because the URL Category clearly defines the traffic to block. Another example is blocking all unknown traffic with a block rule that applies to all traffic in all zones and defining the blocked applications as \u201cunknown-tcp\u201d, \u201cunknown-udp\u201d, and \u201cunknown-p2p\u201d.",
-                    "References": "['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-internet-gateway/best-practice-internet-gateway-security-policy/define-the-initial-internet-gateway-security-policy']",
-                    "Title": "Source/Destination = any/any",
-                    "TopNav": "Policies"
-                },
-                {
-                    "Active": true,
-                    "CapabilityLabel": [
-                        "Performance"
-                    ],
-                    "ClassLabel": [
-                        "Technical"
-                    ],
-                    "Complexity": "Advanced",
-                    "ControlCategory": [
-                        "Audit and Accountability"
-                    ],
-                    "Cscv6Control": [],
-                    "Cscv7Control": [],
-                    "Description": "Don't enable \"Log at Session Start\" in a rule except for troubleshooting purposes.",
-                    "DocId": 6,
-                    "DocType": "Warning",
-                    "Effort": 60,
-                    "LastUpdatedDate": "2020-10-05T22:46:57.596239Z",
-                    "LeftNav": "Security",
-                    "Rationale": "By default, the firewall creates logs at the end of the session for all sessions that match a Security policy rule because the application identification is likely to change as the firewall identifies the specific application and because logging at the session end consumes fewer resources than logging the session start. For example, at the start of a session, the firewall identifies Facebook traffic as web-browsing traffic, but after examining a few packets, the firewall refines the application to Facebook-base. Use \u201cLog at Session Start\u201d only to troubleshoot packet flow and related issues, or for tunnel session logs (only logging at session start shows active GRE tunnels in the Application Command Center).",
-                    "References": "['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-data-center/data-center-best-practice-security-policy/log-and-monitor-data-center-traffic/what-data-center-traffic-to-log-and-monitor']",
-                    "Title": "Log at Start of Session",
-                    "TopNav": "Policies"
-                },
-                {
-                    "Active": true,
-                    "CapabilityLabel": [
-                        "Recovery",
-                        "Detective"
-                    ],
-                    "ClassLabel": [
-                        "Operational",
-                        "Technical"
-                    ],
-                    "Complexity": "Advanced",
-                    "ControlCategory": [
-                        "Contingency Planning",
-                        "Audit and Accountability"
-                    ],
-                    "Cscv6Control": [
-                        "6.2",
-                        "6.6",
-                        "10.1"
-                    ],
-                    "Cscv7Control": [
-                        "6.3",
-                        "6.6",
-                        "10.1"
-                    ],
-                    "Description": "Create and enable a Log Forwarding profile on the rule.",
-                    "DocId": 7,
-                    "DocType": "Warning",
-                    "Effort": 60,
-                    "LastUpdatedDate": "2020-10-05T22:46:57.601517Z",
-                    "LeftNav": "Security",
-                    "Rationale": "The firewall has limited log storage space and when the space fills up, the firewall purges the oldest logs. Configure Log Forwarding for the traffic that matches each Security policy rule. You can create profiles that send logs to a dedicated storage device such as Panorama in Log Collector mode, a syslog or SNMP server, or to an email profile, to provide redundant storage for the logs on the firewall and a long-term repository for older logs. You can create profiles to forward logs to one or more external storage devices to remain in compliance, run analytics, and review abnormal activity, threat behaviors, and long-term patterns.",
-                    "References": "['https://www.paloaltonetworks.com/documentation/81/pan-os/pan-os/monitoring/configure-log-forwarding']",
-                    "Title": "Log Forwarding",
-                    "TopNav": "Policies"
-                }
-            ]
-        }
+        "Documentation": [
+            {
+                "Document": [
+                    {
+                        "Active": true,
+                        "CapabilityLabel": [
+                            "Preventative",
+                            "Corrective"
+                        ],
+                        "ClassLabel": [
+                            "Technical"
+                        ],
+                        "Complexity": "Advanced",
+                        "ControlCategory": [
+                            "Access Control"
+                        ],
+                        "Cscv6Control": [
+                            "11.1",
+                            "12.1"
+                        ],
+                        "Cscv7Control": [
+                            "11.1",
+                            "12.3"
+                        ],
+                        "Description": "Do not specify both the source and destination zones as \"any\" on the rule.",
+                        "DocId": 4,
+                        "DocType": "Warning",
+                        "Effort": 60,
+                        "LastUpdatedDate": "2020-10-05T22:46:57.585179Z",
+                        "LeftNav": "Security",
+                        "Rationale": "Use Security policy settings to create rules that exactly define the traffic to which the rules apply (zones, IP addresses, users, applications). Policies that are too general may match traffic you don\u2019t want the policy to match and either permit undesirable traffic or deny legitimate traffic. Defining the source, destination, or both zones prevents potentially malicious traffic that uses evasive or deceptive techniques to avoid detection or appear benign from traversing the entire network, which reduces the attack surface and the threat scope. The exception to this best practice is when the Security policy needs to protect the entire network. For example, a rule that blocks traffic to malware or phishing URL categories can apply to all zones (and all traffic) because the URL Category clearly defines the traffic to block. Another example is blocking all unknown traffic with a block rule that applies to all traffic in all zones and defining the blocked applications as \u201cunknown-tcp\u201d, \u201cunknown-udp\u201d, and \u201cunknown-p2p\u201d.",
+                        "References": "['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-internet-gateway/best-practice-internet-gateway-security-policy/define-the-initial-internet-gateway-security-policy']",
+                        "Title": "Source/Destination = any/any",
+                        "TopNav": "Policies"
+                    },
+                    {
+                        "Active": true,
+                        "CapabilityLabel": [
+                            "Performance"
+                        ],
+                        "ClassLabel": [
+                            "Technical"
+                        ],
+                        "Complexity": "Advanced",
+                        "ControlCategory": [
+                            "Audit and Accountability"
+                        ],
+                        "Cscv6Control": [],
+                        "Cscv7Control": [],
+                        "Description": "Don't enable \"Log at Session Start\" in a rule except for troubleshooting purposes.",
+                        "DocId": 6,
+                        "DocType": "Warning",
+                        "Effort": 60,
+                        "LastUpdatedDate": "2020-10-05T22:46:57.596239Z",
+                        "LeftNav": "Security",
+                        "Rationale": "By default, the firewall creates logs at the end of the session for all sessions that match a Security policy rule because the application identification is likely to change as the firewall identifies the specific application and because logging at the session end consumes fewer resources than logging the session start. For example, at the start of a session, the firewall identifies Facebook traffic as web-browsing traffic, but after examining a few packets, the firewall refines the application to Facebook-base. Use \u201cLog at Session Start\u201d only to troubleshoot packet flow and related issues, or for tunnel session logs (only logging at session start shows active GRE tunnels in the Application Command Center).",
+                        "References": "['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-data-center/data-center-best-practice-security-policy/log-and-monitor-data-center-traffic/what-data-center-traffic-to-log-and-monitor']",
+                        "Title": "Log at Start of Session",
+                        "TopNav": "Policies"
+                    },
+                    {
+                        "Active": true,
+                        "CapabilityLabel": [
+                            "Recovery",
+                            "Detective"
+                        ],
+                        "ClassLabel": [
+                            "Operational",
+                            "Technical"
+                        ],
+                        "Complexity": "Advanced",
+                        "ControlCategory": [
+                            "Contingency Planning",
+                            "Audit and Accountability"
+                        ],
+                        "Cscv6Control": [
+                            "6.2",
+                            "6.6",
+                            "10.1"
+                        ],
+                        "Cscv7Control": [
+                            "6.3",
+                            "6.6",
+                            "10.1"
+                        ],
+                        "Description": "Create and enable a Log Forwarding profile on the rule.",
+                        "DocId": 7,
+                        "DocType": "Warning",
+                        "Effort": 60,
+                        "LastUpdatedDate": "2020-10-05T22:46:57.601517Z",
+                        "LeftNav": "Security",
+                        "Rationale": "The firewall has limited log storage space and when the space fills up, the firewall purges the oldest logs. Configure Log Forwarding for the traffic that matches each Security policy rule. You can create profiles that send logs to a dedicated storage device such as Panorama in Log Collector mode, a syslog or SNMP server, or to an email profile, to provide redundant storage for the logs on the firewall and a long-term repository for older logs. You can create profiles to forward logs to one or more external storage devices to remain in compliance, run analytics, and review abnormal activity, threat behaviors, and long-term patterns.",
+                        "References": "['https://www.paloaltonetworks.com/documentation/81/pan-os/pan-os/monitoring/configure-log-forwarding']",
+                        "Title": "Log Forwarding",
+                        "TopNav": "Policies"
+                    }
+                ]
+            },
+            {
+                "active": true,
+                "capability_label": [
+                    "Preventative",
+                    "Corrective"
+                ],
+                "class_label": [
+                    "Technical"
+                ],
+                "complexity": "Advanced",
+                "control_category": [
+                    "Access Control"
+                ],
+                "cscv6_control": [
+                    "11.1",
+                    "12.1"
+                ],
+                "cscv7_control": [
+                    "11.1",
+                    "12.3"
+                ],
+                "description": "Do not specify both the source and destination zones as \"any\" on the rule.",
+                "doc_id": 4,
+                "doc_type": "Warning",
+                "effort": 60,
+                "last_updated_date": "2020-10-05T22:46:57.585179Z",
+                "left_nav": "Security",
+                "rationale": "Use Security policy settings to create rules that exactly define the traffic to which the rules apply (zones, IP addresses, users, applications). Policies that are too general may match traffic you don\u2019t want the policy to match and either permit undesirable traffic or deny legitimate traffic. Defining the source, destination, or both zones prevents potentially malicious traffic that uses evasive or deceptive techniques to avoid detection or appear benign from traversing the entire network, which reduces the attack surface and the threat scope. The exception to this best practice is when the Security policy needs to protect the entire network. For example, a rule that blocks traffic to malware or phishing URL categories can apply to all zones (and all traffic) because the URL Category clearly defines the traffic to block. Another example is blocking all unknown traffic with a block rule that applies to all traffic in all zones and defining the blocked applications as \u201cunknown-tcp\u201d, \u201cunknown-udp\u201d, and \u201cunknown-p2p\u201d.",
+                "references": "['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-internet-gateway/best-practice-internet-gateway-security-policy/define-the-initial-internet-gateway-security-policy']",
+                "title": "Source/Destination = any/any",
+                "top_nav": "Policies"
+            },
+            {
+                "active": true,
+                "capability_label": [
+                    "Performance"
+                ],
+                "class_label": [
+                    "Technical"
+                ],
+                "complexity": "Advanced",
+                "control_category": [
+                    "Audit and Accountability"
+                ],
+                "cscv6_control": [],
+                "cscv7_control": [],
+                "description": "Don't enable \"Log at Session Start\" in a rule except for troubleshooting purposes.",
+                "doc_id": 6,
+                "doc_type": "Warning",
+                "effort": 60,
+                "last_updated_date": "2020-10-05T22:46:57.596239Z",
+                "left_nav": "Security",
+                "rationale": "By default, the firewall creates logs at the end of the session for all sessions that match a Security policy rule because the application identification is likely to change as the firewall identifies the specific application and because logging at the session end consumes fewer resources than logging the session start. For example, at the start of a session, the firewall identifies Facebook traffic as web-browsing traffic, but after examining a few packets, the firewall refines the application to Facebook-base. Use \u201cLog at Session Start\u201d only to troubleshoot packet flow and related issues, or for tunnel session logs (only logging at session start shows active GRE tunnels in the Application Command Center).",
+                "references": "['https://www.paloaltonetworks.com/documentation/81/best-practices/best-practices-data-center/data-center-best-practice-security-policy/log-and-monitor-data-center-traffic/what-data-center-traffic-to-log-and-monitor']",
+                "title": "Log at Start of Session",
+                "top_nav": "Policies"
+            },
+            {
+                "active": true,
+                "capability_label": [
+                    "Recovery",
+                    "Detective"
+                ],
+                "class_label": [
+                    "Operational",
+                    "Technical"
+                ],
+                "complexity": "Advanced",
+                "control_category": [
+                    "Contingency Planning",
+                    "Audit and Accountability"
+                ],
+                "cscv6_control": [
+                    "6.2",
+                    "6.6",
+                    "10.1"
+                ],
+                "cscv7_control": [
+                    "6.3",
+                    "6.6",
+                    "10.1"
+                ],
+                "description": "Create and enable a Log Forwarding profile on the rule.",
+                "doc_id": 7,
+                "doc_type": "Warning",
+                "effort": 60,
+                "last_updated_date": "2020-10-05T22:46:57.601517Z",
+                "left_nav": "Security",
+                "rationale": "The firewall has limited log storage space and when the space fills up, the firewall purges the oldest logs. Configure Log Forwarding for the traffic that matches each Security policy rule. You can create profiles that send logs to a dedicated storage device such as Panorama in Log Collector mode, a syslog or SNMP server, or to an email profile, to provide redundant storage for the logs on the firewall and a long-term repository for older logs. You can create profiles to forward logs to one or more external storage devices to remain in compliance, run analytics, and review abnormal activity, threat behaviors, and long-term patterns.",
+                "references": "['https://www.paloaltonetworks.com/documentation/81/pan-os/pan-os/monitoring/configure-log-forwarding']",
+                "title": "Log Forwarding",
+                "top_nav": "Policies"
+            }
+        ]
     }
 }
 ```
@@ -204,7 +300,7 @@ Submits a job to the BPA job queue.
 {
     "PAN-OS-BPA": {
         "SubmittedJob": {
-            "JobID": "4ad21582-4e7d-4b08-866d-45bef41963d6"
+            "JobID": "ca5dc5a7-c3e5-474a-8d04-e3129c1b0edf"
         }
     }
 }
@@ -212,7 +308,7 @@ Submits a job to the BPA job queue.
 
 #### Human Readable Output
 
->Submitted BPA job ID: 4ad21582-4e7d-4b08-866d-45bef41963d6
+>Submitted BPA job ID: ca5dc5a7-c3e5-474a-8d04-e3129c1b0edf
 
 ### pan-os-bpa-get-job-results
 ***
@@ -228,7 +324,7 @@ Returns results of BPA job.
 | --- | --- | --- |
 | task_id | The job ID for which to return results. | Required | 
 | exclude_passed_checks | Whether to exclude passed checks. Can be "true" or "false". Default is "false". Possible values are: true, false. Default is false. | Optional | 
-| check_id | A comma-separated list of the ids of the results to return. | Optional | 
+| check_id | A comma-separated list of the BPA ids of the results to return. | Optional | 
 | check_name | A comma-separated list of name of the results to return. | Optional | 
 
 
