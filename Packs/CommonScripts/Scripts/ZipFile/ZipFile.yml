@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: CSV list of entry ids of the files we want to zip.
+  description: CSV list of entry ids for the files to zip.
   isArray: true
   name: entryID
   required: true
