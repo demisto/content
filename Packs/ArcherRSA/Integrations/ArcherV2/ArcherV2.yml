@@ -40,11 +40,6 @@ configuration:
   name: applicationDateField
   required: true
   type: 0
-- display: Use European Time format (DD/MM/YYYY) instead of the American one
-  name: useEuropeanTime
-  defaultvalue: "false"
-  type: 8
-  required: false
 - defaultvalue: '10'
   display: Maximum number of incidents to pull per fetch
   hidden: false
@@ -66,13 +61,6 @@ configuration:
 - display: Specific filters for fetching in the form of an xml string
   hidden: false
   name: fetch_filter
-  required: false
-  type: 0
-- defaultvalue: '0'
-  display: Timezone offset in minutes of the RSA Archer server machine (+60, -60,
-    in minutes)
-  hidden: false
-  name: time_zone
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -371,41 +359,42 @@ script:
       name: fileId
       required: true
       secret: false
-    outputs:
-      - contextPath: File
-        description: The file details command results.
-      - contextPath: File.Name
-        description: The full file name (including the file extension).
-        type: String
-      - contextPath: File.EntryID
-        description: The ID for locating the file in the War Room.
-        type: String
-      - contextPath: File.Size
-        description: The size of the file in bytes.
-        type: Number
-      - contextPath: File.MD5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: File.SHA1
-        description: The SHA1 hash of the file.
-        type: String
-      - contextPath: File.SHA256
-        description: The SHA256 hash of the file.
-        type: String
-      - contextPath: File.SHA512
-        description: The SHA512 hash of the file.
-        type: String
-      - contextPath: File.Extension
-        description: 'The file extension. For example: "xls".'
-        type: String
-      - contextPath: File.Type
-        description: The file type, as determined by libmagic (same as displayed in
-          file entries).
-        type: String
     deprecated: false
     description: Downloads a file from Archer to Cortex XSOAR context.
     execution: false
     name: archer-get-file
+    outputs:
+    - contextPath: File
+      description: The file details command results.
+      type: Unknown
+    - contextPath: File.Name
+      description: The full file name (including the file extension).
+      type: String
+    - contextPath: File.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: 'The file extension. For example: "xls".'
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
   - arguments:
     - default: false
       description: The ID of the user for which to get details. Leave empty to get
@@ -558,7 +547,7 @@ script:
     description: prints Archer's integration cache.
     execution: false
     name: archer-print-cache
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: true
   longRunning: false
