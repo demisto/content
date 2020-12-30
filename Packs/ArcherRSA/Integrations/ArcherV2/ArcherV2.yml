@@ -58,11 +58,6 @@ configuration:
   name: fields_to_fetch
   required: false
   type: 0
-- display: Specific filters for fetching in the form of an xml string
-  hidden: false
-  name: fetch_filter
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
