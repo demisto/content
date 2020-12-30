@@ -38,11 +38,11 @@ READER_CONFIG = {
     'indicator_type': 'Cryptocurrency Address',
     'mapping': {
         'Value': ('address', None, 'bitcoin-{}'),
-        'Raw Address': 'address',
-        'Country Name': 'from_country',
-        'Creation Date': 'created_at',
-        'Description': 'description',
-        'Abuse Type': ('abuse_type_id', lambda abuse_type_id: abuse_type_id_to_name.get(abuse_type_id))
+        'rawaddress': 'address',
+        'countryname': 'from_country',
+        'creationdate': 'created_at',
+        'description': 'description',
+        'abusetype': ('abuse_type_id', lambda abuse_type_id: abuse_type_id_to_name.get(abuse_type_id))
     }
 }
 
@@ -232,7 +232,7 @@ def fetch_indicators(params: Dict, test_module: bool):
     # in every fetch apart from first fetch, we are only fetching one csv file, so we know there aren't any duplicates
     if have_fetched_first_time:
         for indicator in indicators:
-            indicator['fields']['Cryptocurrency Address Type'] = 'bitcoin'
+            indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
         indicators_without_duplicates = indicators
 
     # in first fetch according to configurations, we might fetch more than one csv file, so we need to remove duplicates
@@ -242,7 +242,7 @@ def fetch_indicators(params: Dict, test_module: bool):
             try:
                 indicator_id = int(indicator['rawJSON']['id'])
                 if indicator_id not in indicators_ids:
-                    indicator['fields']['Cryptocurrency Address Type'] = 'bitcoin'
+                    indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
                     indicators_without_duplicates.append(indicator)
                     indicators_ids.add(indicator_id)
             except ValueError:
