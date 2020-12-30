@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from minio import Minio
@@ -137,7 +136,7 @@ def stat_object_command(client, args):
     extra_query_params = args.get('extra_query_params', None)
 
     object_stats = client.stat_object(bucket_name=bucket_name, object_name=object_name,
-                                 extra_query_params=extra_query_params)
+                                      extra_query_params=extra_query_params)
 
     response.append({
         'bucket': bucket_name,

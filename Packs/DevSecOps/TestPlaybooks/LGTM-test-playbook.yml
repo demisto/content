@@ -1,0 +1,1121 @@
+id: LGTM-test-playbook
+name: LGTM-test-playbook
+version: -1
+fromversion: 4.5.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: lgtm-add-project
+      description: ''
+      script: '|||lgtm-add-project'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: 3
+    taskid: '3'
+    type: regular
+    task:
+      id: '3'
+      version: -1
+      name: lgtm-get-alerts
+      description: ''
+      script: '|||lgtm-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: '4'
+    taskid: '4'
+    type: condition
+    task:
+      id: '4'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.alerts.runs.results.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.alerts.runs.results.partialFingerprints.primaryLocationLineHash
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: 5
+    taskid: '5'
+    type: regular
+    task:
+      id: '5'
+      version: -1
+      name: lgtm-get-analysis
+      description: ''
+      script: '|||lgtm-get-analysis'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: '6'
+    taskid: '6'
+    type: condition
+    task:
+      id: '6'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.commit-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.language
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.lines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.commit-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.commit-date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.analysis-date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.log-url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.results-url
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: 7
+    taskid: '7'
+    type: regular
+    task:
+      id: '7'
+      version: -1
+      name: lgtm-get-analysis-for-commit
+      description: ''
+      script: '|||lgtm-get-analysis-for-commit'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: '8'
+    taskid: '8'
+    type: condition
+    task:
+      id: '8'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.commit-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.language
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.alerts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.lines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.commit-id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.commit-date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.languages.analysis-date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.log-url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_summary.results-url
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: 9
+    taskid: '9'
+    type: regular
+    task:
+      id: '9'
+      version: -1
+      name: lgtm-get-code-review
+      description: ''
+      script: '|||lgtm-get-code-review'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: '10'
+    taskid: '10'
+    type: condition
+    task:
+      id: '10'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.results-url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.status-message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.language
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.status-message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.new
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.fixed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.alerts.new
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.alerts.fixed
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_result.languages.alerts.query.properties.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: 11
+    taskid: '11'
+    type: regular
+    task:
+      id: '11'
+      version: -1
+      name: lgtm-get-project
+      description: ''
+      script: '|||lgtm-get-project'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: '12'
+    taskid: '12'
+    type: condition
+    task:
+      id: '12'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.languages.grade
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.name
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: 13
+    taskid: '13'
+    type: regular
+    task:
+      id: '13'
+      version: -1
+      name: lgtm-get-project-by-url-identifier
+      description: ''
+      script: '|||lgtm-get-project-by-url-identifier'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: '14'
+    taskid: '14'
+    type: condition
+    task:
+      id: '14'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.languages.grade
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project_details.name
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: 15
+    taskid: '15'
+    type: regular
+    task:
+      id: '15'
+      version: -1
+      name: lgtm-get-project-config
+      description: ''
+      script: '|||lgtm-get-project-config'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: lgtm-get-projects
+      description: ''
+      script: '|||lgtm-get-projects'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '17'
+    type: condition
+    task:
+      id: '17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project-list.data.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project-list.data.url-identifier
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project-list.data.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project-list.data.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.project-list.nextPageUrl
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '18'
+    type: regular
+    task:
+      id: '18'
+      version: -1
+      name: lgtm-get-version
+      description: ''
+      script: '|||lgtm-get-version'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '19'
+    type: condition
+    task:
+      id: '19'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.version.apiVersion
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: lgtm-request-analysis
+      description: ''
+      script: '|||lgtm-request-analysis'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '21'
+    type: condition
+    task:
+      id: '21'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_request.task-result.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.analysis_request.task-result.commit-id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: lgtm-request-review
+      description: ''
+      script: '|||lgtm-request-review'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '23'
+    type: condition
+    task:
+      id: '23'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_request.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_request.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.code_review_request.task-result.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '24'
+    type: regular
+    task:
+      id: '24'
+      version: -1
+      name: lgtm-create-query-job
+      description: ''
+      script: '|||lgtm-create-query-job'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '25'
+    type: condition
+    task:
+      id: '25'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.Queries.task-result.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '26'
+    type: regular
+    task:
+      id: '26'
+      version: -1
+      name: lgtm-get-query-job
+      description: ''
+      script: '|||lgtm-get-query-job'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: '27'
+    taskid: '27'
+    type: condition
+    task:
+      id: '27'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: '28'
+    type: regular
+    task:
+      id: '28'
+      version: -1
+      name: lgtm-get-query-job-results-for-project
+      description: ''
+      script: '|||lgtm-get-query-job-results-for-project'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: '29'
+    taskid: '29'
+    type: condition
+    task:
+      id: '29'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-project-results.data.line
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-project-results.data.file
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-project-results.data.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-project-results.data.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-project-results.next
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob_project_results.project.id
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: 30
+    taskid: '30'
+    type: regular
+    task:
+      id: '30'
+      version: -1
+      name: lgtm-get-query-job-results-overview
+      description: ''
+      script: '|||lgtm-get-query-job-results-overview'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '31':
+    id: '31'
+    taskid: '31'
+    type: condition
+    task:
+      id: '31'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.data.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.data.total
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.data.internal
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.data.external
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.data.error
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LGTM.queryjob-results-overview.next
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 6200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '32':
+    id: '32'
+    taskid: '32'
+    type: title
+    task:
+      id: '32'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []

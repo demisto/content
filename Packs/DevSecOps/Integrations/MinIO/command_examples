@@ -5,3 +5,5 @@
 !minio-make-bucket name="test20"
 !minio-remove-bucket name="test20"
 !minio-put-object bucket_name="test10" data="'test100'" name="test.txt"
+!minio-stat-object bucket_name="test10" name="test.txt"
+!minio-remove-object bucket_name="test10" name="test.txt"
