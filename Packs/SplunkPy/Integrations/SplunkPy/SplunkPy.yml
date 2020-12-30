@@ -656,7 +656,7 @@ script:
   dockerimage: demisto/splunksdk:1.0.0.11989
   isfetch: true
   runonce: false
-  script: ''
+  script: '-'
   type: python
 tests:
 - SplunkPy-Test-V2
