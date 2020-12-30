@@ -7,7 +7,6 @@ description: |-
   Pre-Requisite :
   1) Create an IP Host Group.
   2) Create a firewall rule which refers to the IP Host Group created on the previous step.
-fromversion: 5.0.0
 starttaskid: "0"
 tasks:
   "0":
@@ -818,3 +817,4 @@ inputs:
   playbookInputQuery: null
 outputs: []
 sourceplaybookid: 8463857c-c101-4aba-8f5a-27e133494ed9
+fromversion: 5.0.0
