@@ -487,6 +487,8 @@ def get_latest_incident_time(incidents):
 
 def get_next_start_time(last_run, fetches_with_same_start_time_count):
     last_run_datetime = occurred_to_datetime(last_run)
+    # Decreasing one minute to avoid missing incidents that were indexed late
+    last_run_datetime = last_run_datetime - timedelta(minutes=1)
     last_run_milliseconds_and_tz = last_run.split('.')[1]
 
     # keep last time max 20 mins before current time, to avoid timeout
