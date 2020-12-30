@@ -870,7 +870,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+      - "43"
     scriptarguments:
       entryID:
         complex:
@@ -894,55 +894,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "42":
-    id: "42"
-    taskid: 9dbf7bca-52ab-4cec-81be-a43eedc36a40
-    type: regular
-    task:
-      id: 9dbf7bca-52ab-4cec-81be-a43eedc36a40
-      version: -1
-      name: Unzip
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
-      scriptName: UnzipFile
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "43"
-    scriptarguments:
-      entryID:
-        complex:
-          root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.Name
-                iscontext: true
-              right:
-                value:
-                  simple: output.zip
-          accessor: EntryID
-      fileName: {}
-      lastZipFileInWarroom: {}
-      password:
-        simple: '{TOMMED}U4sZK2aYfbx0zQQ4FwAUt7eYNy/Uy7wJfME3T1bDxbhFvmyUJ70mxQETfjtcrs40eKCOVhYpmBWeAGfZllERaw=='
-      zipTool: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3955
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "43":
     id: "43"
     taskid: cb98c985-b1fc-4d29-8ba8-01ae7b7a2d3f
@@ -959,7 +910,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4130
+          "y": 3955
         }
       }
     note: false
@@ -972,7 +923,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4145,
+        "height": 3970,
         "width": 380,
         "x": 50,
         "y": 50
