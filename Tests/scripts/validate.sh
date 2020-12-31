@@ -9,9 +9,3 @@ if [[ $CIRCLE_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPL
 else
   demisto-sdk validate -g --post-commit --id-set-path $CIRCLE_ARTIFACTS/unified_id_set.json
 fi
-
-
-
-
-
-

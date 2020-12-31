@@ -557,7 +557,7 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-#      - *restore_cache
+      - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
       - *secrets
@@ -629,7 +629,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-#      - *restore_cache
+      - *restore_cache
       - *prepare_environment
       - *get_contribution_pack
       - *add_ssh_keys
