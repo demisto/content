@@ -1,0 +1,36 @@
+{
+  "success": true,
+  "incidents": [
+    {
+      "id": "5af12974007da85b99a3230b",
+      "status": "unresolved",
+      "username": "5a466e9dd8aaa4748d3977c7",
+      "description": "",
+      "repos": [
+        "127.0.0.1:5504"
+      ],
+      "loginspect_ip_dns": "10.45.3.131",
+      "visible_to": [
+        "5a466e9dd8aaa4748d3977c3"
+      ],
+      "time_range": [
+        1525750500,
+        1525754100
+      ],
+      "logpoint_name": "LogPoint",
+      "rows_count": 1,
+      "detection_timestamp": 1525754228.171028,
+      "user_id": null,
+      "commentscount": 0,
+      "incident_id": "347b897e1f752cab7ae380918690b11e",
+      "risk_level": "critical",
+      "name": "Potential SQL Injection attack",
+      "alert_obj_id": "5aec2129007da86613122e8f",
+      "comments": [],
+      "query": "| chart count() as \"Count\"",
+      "assigned_to": "5aec1fd2007da84f8efaabfd",
+      "tid": "",
+      "type": "Alert"
+    }
+  ]
+}

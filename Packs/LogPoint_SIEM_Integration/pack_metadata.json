@@ -1,0 +1,17 @@
+{
+    "name": "LogPoint SIEM Integration",
+    "description": "Use this Content Pack to fetch incident logs from LogPoint, analyze them for underlying threats, and respond to these threats in real-time.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "LogPoint",
+    "url": "https://servicedesk.logpoint.com",
+    "email": "support@logpoint.com",
+    "created": "2020-12-31T10:10:17Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": ["Incident Handling", "Incident Response"],
+    "useCases": ["Case Management"],
+    "keywords": ["Siem", "incident", "alert", "logpoint"],
+    "githubUser": ["Subash-at-LogPoint"]
+}

@@ -1,0 +1,839 @@
+id: LogPoint Playbook
+version: -1
+name: LogPoint Playbook
+description: LogPoint Playbook consists of general actions that can be used to investigate the incidents. Different sample actions have been mapped in the playbook, which will help the analyst create their own playbook based on their requirements.s
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 86baa1b9-5fe8-43b7-8bbd-f779ac940a93
+    type: start
+    task:
+      id: 86baa1b9-5fe8-43b7-8bbd-f779ac940a93
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 313fdef8-d2df-4420-8ea1-6dcdf37ad084
+    type: regular
+    task:
+      id: 313fdef8-d2df-4420-8ea1-6dcdf37ad084
+      version: -1
+      name: lp-get-incident-data
+      description: Retrieves a Particular Incident's Data
+      script: '|||lp-get-incident-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      date:
+        simple: ${incident.logpointdetectiontimestamp}
+      incident_id:
+        simple: ${incident.logpointincidentid}
+      incident_obj_id:
+        simple: ${incident.logpointobjectid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a1092fe4-9f90-4c9f-8fe6-d9315dd0a204
+    type: condition
+    task:
+      id: a1092fe4-9f90-4c9f-8fe6-d9315dd0a204
+      version: -1
+      name: Is there a Source/Destination Address field?
+      description: Check if a source or destination field exist.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "9"
+    scriptarguments:
+      value:
+        simple: ${incident.destination_address} OR ${incident.source_address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -750,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d9abf36e-92b6-4852-864a-8b1ead15b0ed
+    type: condition
+    task:
+      id: d9abf36e-92b6-4852-864a-8b1ead15b0ed
+      version: -1
+      name: Is there a Domain field?
+      description: Check if there is a domain field in the incident data.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "9"
+    scriptarguments:
+      value:
+        simple: $(incident.domain)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 8e32a42e-51f4-4af9-85fa-32ee9a416b00
+    type: condition
+    task:
+      id: 8e32a42e-51f4-4af9-85fa-32ee9a416b00
+      version: -1
+      name: Is there a Workstation field?
+      description: Check if there is a workstation field present in incident data.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "18"
+    scriptarguments:
+      value:
+        simple: ${incident.workstation}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 8f7ee2b6-cde4-4415-86c8-fa01a2080214
+    type: condition
+    task:
+      id: 8f7ee2b6-cde4-4415-86c8-fa01a2080214
+      version: -1
+      name: Is there a User field?
+      description: Check if there is a user field present in incident data.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "28"
+      "yes":
+      - "22"
+    scriptarguments:
+      value:
+        simple: ${incident.user}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4d415e2a-6290-4f30-8f3d-b197f1a2e1a6
+    type: condition
+    task:
+      id: 4d415e2a-6290-4f30-8f3d-b197f1a2e1a6
+      version: -1
+      name: Is there a field necessary for investigation?
+      description: Check if there are necessary fields present for action.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "27"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${incident.destination_address} OR ${incident.source_address} OR ${incident.workstation}
+          OR ${incident.domain} OR ${incident.user}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: f9fde6a8-f596-447d-8f83-0d7d75c584d7
+    type: condition
+    task:
+      id: f9fde6a8-f596-447d-8f83-0d7d75c584d7
+      version: -1
+      name: Is there any field associated with known malware attribute?
+      description: Check if there is a field present in incident data that is associated
+        with any known malware.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "10"
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 965e15b4-d6fa-4b21-8153-ba5809a5f49d
+    type: regular
+    task:
+      id: 965e15b4-d6fa-4b21-8153-ba5809a5f49d
+      version: -1
+      name: Block the malware IP or Domain
+      description: Block the malware IP or Domain to remediate the issue temporarily.
+      scriptName: IsTrue
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1110,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: d465b85b-aef5-42db-8531-3764ac6b578c
+    type: condition
+    task:
+      id: d465b85b-aef5-42db-8531-3764ac6b578c
+      version: -1
+      name: Is the blocking procedure completed?
+      description: Check if the blocking procedure has successfully completed.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "12"
+      "Yes":
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1120,
+          "y": 1865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator
+      subject:
+        simple: Are those Malware IP blocked?
+      body:
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 08229fbb-7230-4fbc-8622-8494b1020857
+    type: regular
+    task:
+      id: 08229fbb-7230-4fbc-8622-8494b1020857
+      version: -1
+      name: lp-assign-incidents
+      description: Assigning/Re-assigning Incidents
+      script: '|||lp-assign-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      incident_ids:
+        simple: ${incident.logpointobjectid}
+      new_assignee:
+        simple: ${incident.logpointassignedto}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 3b9e8649-079b-4629-8ab6-c7db1317712a
+    type: regular
+    task:
+      id: 3b9e8649-079b-4629-8ab6-c7db1317712a
+      version: -1
+      name: lp-add-incident-comment
+      description: Add comments to the incidents
+      script: '|||lp-add-incident-comment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      comment:
+        simple: Comment added by "LogPoint SIEM Integration - LogPoint Sample Playbook"
+      id:
+        simple: ${incident.logpointobjectid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: e5d1b84c-24d9-4ee9-8c29-2ae8e11427ff
+    type: condition
+    task:
+      id: e5d1b84c-24d9-4ee9-8c29-2ae8e11427ff
+      version: -1
+      name: Is there an Host to IP address enrichment?
+      description: Check if there is any enrichment of IP address using host.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "20"
+      "yes":
+      - "19"
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: ae660fcc-56af-43fd-868c-a9a5dd288d82
+    type: condition
+    task:
+      id: ae660fcc-56af-43fd-868c-a9a5dd288d82
+      version: -1
+      name: Is there any suspicious traffic from/to the IP address?
+      description: Check if there is any suspicious traffic from/to the given address.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "9"
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 0015b45c-b9bc-414e-8d39-2101661743dd
+    type: condition
+    task:
+      id: 0015b45c-b9bc-414e-8d39-2101661743dd
+      version: -1
+      name: Is there a Host to User enrichment?
+      description: Check if there is a host to user enrichment available.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "21"
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: b803a53b-49e1-4cfb-8940-0838179b0dde
+    type: playbook
+    task:
+      id: b803a53b-49e1-4cfb-8940-0838179b0dde
+      version: -1
+      name: Active Directory - Get User Manager Details
+      playbookName: Active Directory - Get User Manager Details
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: a8c15e50-4d26-48ab-8f01-f8db4698c096
+    type: condition
+    task:
+      id: a8c15e50-4d26-48ab-8f01-f8db4698c096
+      version: -1
+      name: Is there a User to Host enrichment?
+      description: Check if there is a user to host name enrichment available.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "23"
+      "yes":
+      - "18"
+    scriptarguments:
+      value:
+        simple: ${incident.user}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 13fc8841-d296-48c5-82c5-094cbe39e6c7
+    type: condition
+    task:
+      id: 13fc8841-d296-48c5-82c5-094cbe39e6c7
+      version: -1
+      name: Is there a User to IP address enrichment?
+      description: Check if there is a user to ip address enrichment available.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "21"
+      "yes":
+      - "19"
+    scriptarguments:
+      value:
+        simple: ${incident.user}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1950,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: e8025e76-4977-4f09-8eae-2e9ac9b8bb84
+    type: playbook
+    task:
+      id: e8025e76-4977-4f09-8eae-2e9ac9b8bb84
+      version: -1
+      name: Block Account - Generic
+      playbookName: Block Account - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: a953bab9-3cff-4fd1-8f16-d360359581fb
+    type: condition
+    task:
+      id: a953bab9-3cff-4fd1-8f16-d360359581fb
+      version: -1
+      name: Is the user blocking approved?
+      description: Checking if the user in the incident is approved to be blocked.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "12"
+      "Yes":
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator
+      subject:
+        simple: can we block the ${incident.user}?
+      body:
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 645239c3-9006-41ff-8830-094498c7dd68
+    type: regular
+    task:
+      id: 645239c3-9006-41ff-8830-094498c7dd68
+      version: -1
+      name: Begin Triage
+      description: ""
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: bd7c2c37-3d2f-44d3-81e9-cf3938b49444
+    type: regular
+    task:
+      id: bd7c2c37-3d2f-44d3-81e9-cf3938b49444
+      version: -1
+      name: General Fields
+      description: Check if a given value is true. Will return 'no' otherwise
+      scriptName: IsTrue
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2510,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 785d07fe-3e7b-446a-8478-9b564a6e3f3f
+    type: condition
+    task:
+      id: 785d07fe-3e7b-446a-8478-9b564a6e3f3f
+      version: -1
+      name: Is the incident deemed investigation worthy?
+      description: Check if the incident seems needing further investigation.
+      scriptName: IsTrue
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "12"
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2450,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 89e52f67-2441-429c-8bad-6b2197257e13
+    type: title
+    task:
+      id: 89e52f67-2441-429c-8bad-6b2197257e13
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_12_No": 0.17,
+      "20_12_no": 0.29,
+      "20_21_yes": 0.53,
+      "25_12_No": 0.1,
+      "28_12_yes": 0.1,
+      "5_9_yes": 0.44,
+      "7_28_no": 0.48,
+      "8_3_yes": 0.1,
+      "9_12_no": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2885,
+        "width": 4010,
+        "x": -1120,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- LogPoint SIEM Integration - Test Playbook 2
+- LogPoint SIEM Integration - Test Playbook 1
+fromversion: 6.0.0

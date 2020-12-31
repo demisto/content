@@ -1,0 +1,310 @@
+id: LogPoint SIEM Integration - Test Playbook 2
+version: -1
+name: LogPoint SIEM Integration - Test Playbook 2
+description: This is a test playbook that contains 3 commands.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8def63b3-c67e-4cbd-8cb2-d1d50e68ee87
+    type: start
+    task:
+      id: 8def63b3-c67e-4cbd-8cb2-d1d50e68ee87
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 562df1c0-b3d6-4b2f-865f-a3692bbe335a
+    type: regular
+    task:
+      id: 562df1c0-b3d6-4b2f-865f-a3692bbe335a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: bcc339e5-c6aa-45da-8f81-a35f6c6c25d3
+    type: regular
+    task:
+      id: bcc339e5-c6aa-45da-8f81-a35f6c6c25d3
+      version: -1
+      name: lp-get-incidents
+      description: Gets all incidents between the provided two Timestamps. If ts_from
+        and ts_to is not provided, this command will display incident data of the
+        past 24 hours.
+      script: '|||lp-get-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ts_from: {}
+      ts_to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f6a02dcb-3c88-4c08-83a1-6fd9d6525102
+    type: condition
+    task:
+      id: f6a02dcb-3c88-4c08-83a1-6fd9d6525102
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.Incidents.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 635affef-e2d7-4007-8d75-0db215b2c6f8
+    type: regular
+    task:
+      id: 635affef-e2d7-4007-8d75-0db215b2c6f8
+      version: -1
+      name: lp-get-users
+      description: Gets Incident users and user groups.
+      script: '|||lp-get-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e348fee0-fda7-4f5a-881b-94aa8655d0c3
+    type: condition
+    task:
+      id: e348fee0-fda7-4f5a-881b-94aa8655d0c3
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.Incidents.users.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 65f40965-c655-4cba-847f-7704bef5a7ea
+    type: title
+    task:
+      id: 65f40965-c655-4cba-847f-7704bef5a7ea
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 1799fd2d-ee2a-468b-86ec-26c0173cecc5
+    type: regular
+    task:
+      id: 1799fd2d-ee2a-468b-86ec-26c0173cecc5
+      version: -1
+      name: lp-get-incident-states
+      description: Gets the Incident States. Arguments are optional. If ts_from and
+        ts_to arguments are not provided, it will get incidents of the past 24 hours.
+      script: '|||lp-get-incident-states'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ts_from: {}
+      ts_to: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: b7e7e49b-5088-426b-8cd9-4065783f855c
+    type: condition
+    task:
+      id: b7e7e49b-5088-426b-8cd9-4065783f855c
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.Incidents.states
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

@@ -1,0 +1,408 @@
+category: Utilities
+commonfields:
+  id: LogPoint SIEM Integration
+  version: -1
+configuration:
+- display: LogPoint URL
+  name: url
+  required: true
+  type: 0
+- display: LogPoint Username
+  name: username
+  required: true
+  type: 0
+- additionalinfo: User's secret key
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- additionalinfo: Whether to allow connections without verifying SSL certificates
+    validity.
+  display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Whether to use XSOAR’s system proxy settings to connect to the API
+  display: Use system proxy settings
+  hidden: false
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: If it is not provided, incidents from past 24 hours will be fetched
+    by default.
+  display: First fetch timestamp in UTC (e.g., 1608189921)
+  name: first_fetch
+  required: false
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: Use this Content Pack to fetch incident logs from LogPoint, analyze them
+  for underlying threats, and respond to these threats in real-time.
+display: LogPoint SIEM Integration
+name: LogPoint SIEM Integration
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: From Timestamp
+      isArray: false
+      name: ts_from
+      required: false
+      secret: false
+    - default: false
+      description: To Timestamp
+      isArray: false
+      name: ts_to
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all incidents between the provided two Timestamps. If ts_from
+      and ts_to is not provided, this command will display incident data of the past
+      24 hours.
+    execution: false
+    name: lp-get-incidents
+    outputs:
+    - contextPath: LogPoint.Incidents.name
+      description: LogPoint Incident Name
+      type: String
+    - contextPath: LogPoint.Incidents.type
+      description: LogPoint Incident Type
+      type: String
+    - contextPath: LogPoint.Incidents.incident_id
+      description: LogPoint Incident ID
+      type: String
+    - contextPath: LogPoint.Incidents.assigned_to
+      description: LogPoint Incidents Assigned To
+      type: String
+    - contextPath: LogPoint.Incidents.status
+      description: LogPoint Incidents Status
+      type: String
+    - contextPath: LogPoint.Incidents.id
+      description: LogPoint Incident Object ID
+      type: String
+    - contextPath: LogPoint.Incidents.detection_timestamp
+      description: LogPoint Incidents Detection Timestamp
+      type: Number
+    - contextPath: LogPoint.Incidents.username
+      description: LogPoint Incident Username
+      type: String
+    - contextPath: LogPoint.Incidents.user_id
+      description: LogPoint Incidents User ID
+      type: String
+    - contextPath: LogPoint.Incidents.assigned_to
+      description: LogPoint Incidents Assigned To
+      type: String
+    - contextPath: LogPoint.Incidents.visible_to
+      description: LogPoint Incidents Visible To
+      type: String
+    - contextPath: LogPoint.Incidents.tid
+      description: LogPoint Incidents Tid
+      type: String
+    - contextPath: LogPoint.Incidents.rows_count
+      description: LogPoint Incidents Rows Count
+      type: String
+    - contextPath: LogPoint.Incidents.risk_level
+      description: LogPoint Incidents Risk Level
+      type: String
+    - contextPath: LogPoint.Incidents.detection_timestamp
+      description: LogPoint Incidents Detection Timestamp
+      type: String
+    - contextPath: LogPoint.Incidents.loginspect_ip_dns
+      description: LogPoint Incidents Loginspect IP DNS
+      type: String
+    - contextPath: LogPoint.Incidents.status
+      description: LogPoint Incidents Status
+      type: String
+    - contextPath: LogPoint.Incidents.comments
+      description: LogPoint Incidents Comments
+      type: String
+    - contextPath: LogPoint.Incidents.commentscount
+      description: LogPoint Incidents Comments Count
+      type: Number
+    - contextPath: LogPoint.Incidents.query
+      description: LogPoint Incidents Query
+      type: String
+    - contextPath: LogPoint.Incidents.repos
+      description: LogPoint Incidents Repos
+      type: String
+    - contextPath: LogPoint.Incidents.time_range
+      description: LogPoint Incidents Time Range
+      type: String
+    - contextPath: LogPoint.Incidents.alert_obj_id
+      description: LogPoint Incidents Alert Obj Id
+      type: String
+    - contextPath: LogPoint.Incidents.throttle_enabled
+      description: LogPoint Incidents Throttle Enabled
+      type: Boolean
+    - contextPath: LogPoint.Incidents.lastaction
+      description: LogPoint Incidents Last Action
+      type: String
+    - contextPath: LogPoint.Incidents.description
+      description: LogPoint Incidents Description
+      type: String
+  - arguments:
+    - default: false
+      description: Object ID of a particular incident. It is the value contained in
+        'id' key of the incidents obtained from 'lp-get-incidents' command.
+      isArray: false
+      name: incident_obj_id
+      required: true
+      secret: false
+    - default: false
+      description: Incident Id of a particular incident. It is the value contained
+        in 'incident_id' key of the incidents obtained from 'lp-get-incidents' command.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: Incident Detection TImestamp. It is the value contained in 'detection_timestamp'
+        key of the incidents obtained from 'lp-get-incidents' command.
+      isArray: false
+      name: date
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves a Particular Incident's Data
+    execution: false
+    name: lp-get-incident-data
+    outputs:
+    - contextPath: LogPoint.Incidents.data.use
+      description: LogPoint Incidents Data Use
+      type: String
+    - contextPath: LogPoint.Incidents.data.used
+      description: LogPoint Incidents Data Used
+      type: String
+    - contextPath: LogPoint.Incidents.data.log_ts
+      description: LogPoint Incidents Data Log Ts
+      type: Number
+    - contextPath: LogPoint.Incidents.data._type_str
+      description: LogPoint Incidents Data Type Str
+      type: String
+    - contextPath: LogPoint.Incidents.data.msg
+      description: LogPoint Incidents Data Msg
+      type: String
+    - contextPath: LogPoint.Incidents.data.total
+      description: LogPoint Incidents Data Total
+      type: String
+    - contextPath: LogPoint.Incidents.data.device_name
+      description: LogPoint Incidents Data Device Name
+      type: String
+    - contextPath: LogPoint.Incidents.data._offset
+      description: LogPoint Incidents Data Offset
+      type: String
+    - contextPath: LogPoint.Incidents.data.logpoint_name
+      description: LogPoint Incidents Data LogPoint Name
+      type: String
+    - contextPath: LogPoint.Incidents.data.repo_name
+      description: LogPoint Incidents Data Repo Name
+      type: String
+    - contextPath: LogPoint.Incidents.data.free
+      description: LogPoint Incidents Data Free
+      type: String
+    - contextPath: LogPoint.Incidents.data.source_name
+      description: LogPoint Incidents Data Source Name
+      type: String
+    - contextPath: LogPoint.Incidents.data.col_ts
+      description: LogPoint Incidents Data Col Ts
+      type: Number
+    - contextPath: LogPoint.Incidents.data._tz
+      description: LogPoint Incidents Data Tz
+      type: String
+    - contextPath: LogPoint.Incidents.data.norm_id
+      description: LogPoint Incidents Data Norm Id
+      type: String
+    - contextPath: LogPoint.Incidents.data._identifier
+      description: LogPoint Incidents Data Identifier
+      type: String
+    - contextPath: LogPoint.Incidents.data.collected_at
+      description: LogPoint Incidents Data Collected At
+      type: String
+    - contextPath: LogPoint.Incidents.data.device_ip
+      description: LogPoint Incidents Data Device IP
+      type: String
+    - contextPath: LogPoint.Incidents.data._fromV550
+      description: LogPoint Incidents Data From V550
+      type: String
+    - contextPath: LogPoint.Incidents.data._enrich_policy
+      description: LogPoint Incidents Data Enrich Policy
+      type: String
+    - contextPath: LogPoint.Incidents.data._type_num
+      description: LogPoint Incidents Data Type Num
+      type: String
+    - contextPath: LogPoint.Incidents.data._type_ip
+      description: LogPoint Incidents Data Type IP
+      type: String
+    - contextPath: LogPoint.Incidents.data.sig_id
+      description: LogPoint Incidents Data Sig Id
+      type: String
+    - contextPath: LogPoint.Incidents.data.col_type
+      description: LogPoint Incidents Data Col Type
+      type: String
+    - contextPath: LogPoint.Incidents.data.object
+      description: LogPoint Incidents Data Object
+      type: String
+    - contextPath: LogPoint.Incidents.data._labels
+      description: LogPoint Incidents Data Labels
+      type: String
+  - arguments:
+    - default: false
+      description: From Timestamp
+      isArray: false
+      name: ts_from
+      required: false
+      secret: false
+    - default: false
+      description: To Timestamp
+      isArray: false
+      name: ts_to
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the Incident States. Arguments are optional. If ts_from and
+      ts_to arguments are not provided, it will get incidents of the past 24 hours.
+    execution: false
+    name: lp-get-incident-states
+    outputs:
+    - contextPath: LogPoint.Incidents.states.id
+      description: LogPoint Incidents States Id
+      type: String
+    - contextPath: LogPoint.Incidents.states.status
+      description: LogPoint Incidents States Status
+      type: String
+    - contextPath: LogPoint.Incidents.states.assigned_to
+      description: LogPoint Incidents States Assigned To
+      type: String
+    - contextPath: LogPoint.Incidents.states.comments
+      description: LogPoint Incidents States Comments
+      type: String
+  - arguments:
+    - default: false
+      description: Object ID of a particular incident. It is the value contained in
+        'id' key of the incidents obtained from 'lp-get-incidents' command.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Comment to be added to the incidents.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Add comments to the incidents
+    execution: false
+    name: lp-add-incident-comment
+    outputs:
+    - contextPath: LogPoint.Incidents.comment
+      description: LogPoint Incidents Comment
+      type: String
+  - arguments:
+    - default: false
+      description: Object ID of a particular incident. It is the value contained in
+        'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
+        id can be provided by separating them using comma.
+      isArray: false
+      name: incident_ids
+      required: true
+      secret: false
+    - default: false
+      description: Id of the user whom the incidents are assigned.  It can be displayed
+        using 'lp-get-users' command.
+      isArray: false
+      name: new_assignee
+      required: true
+      secret: false
+    deprecated: false
+    description: Assigning/Re-assigning Incidents
+    execution: false
+    name: lp-assign-incidents
+    outputs:
+    - contextPath: LogPoint.Incidents.assign
+      description: LogPoint Incidents Assign
+      type: String
+  - arguments:
+    - default: false
+      description: Object ID of a particular incident. It is the value contained in
+        'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
+        id can be provided by separating them using comma.
+      isArray: false
+      name: incident_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Resolves the Incidents.
+    execution: false
+    name: lp-resolve-incidents
+    outputs:
+    - contextPath: LogPoint.Incidents.resolve
+      description: LogPoint Incidents Resolve
+      type: String
+  - arguments:
+    - default: false
+      description: Object ID of a particular incident. It is the value contained in
+        'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
+        id can be provided by separating them using comma.
+      isArray: false
+      name: incident_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Closes the Incidents.
+    execution: false
+    name: lp-close-incidents
+    outputs:
+    - contextPath: LogPoint.Incidents.close
+      description: LogPoint Incidents Close
+      type: String
+  - arguments:
+    - default: false
+      description: Object ID of a particular incident. It is the value contained in
+        'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
+        id can be provided by separating them using comma.
+      isArray: false
+      name: incident_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Re-opens the closed incidents
+    execution: false
+    name: lp-reopen-incidents
+    outputs:
+    - contextPath: LogPoint.Incidents.reopen
+      description: LogPoint Incidents Reopen
+      type: String
+  - deprecated: false
+    description: Gets Incident users and user groups.
+    execution: false
+    name: lp-get-users
+    outputs:
+    - contextPath: LogPoint.Incidents.users.id
+      description: LogPoint Incidents Users Id
+      type: String
+    - contextPath: LogPoint.Incidents.users.name
+      description: LogPoint Incidents Users Name
+      type: String
+    - contextPath: LogPoint.Incidents.users.usergroups
+      description: LogPoint Incidents Users Usergroups
+      type: String
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: LogPoint-mapper
+defaultclassifier: null
+fromversion: 6.0.0

@@ -1,0 +1,524 @@
+id: LogPoint SIEM Integration - Test Playbook 1
+version: -1
+name: LogPoint SIEM Integration - Test Playbook 1
+description: This is a test playbook that contains six commands.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ed5ef1b8-1160-4a67-8498-b3119456b0c9
+    type: start
+    task:
+      id: ed5ef1b8-1160-4a67-8498-b3119456b0c9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 9daae3d3-80ec-47df-84dd-dd2394d590b6
+    type: regular
+    task:
+      id: 9daae3d3-80ec-47df-84dd-dd2394d590b6
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c77ae98f-ff79-4eb0-80ec-863837fd60bd
+    type: title
+    task:
+      id: c77ae98f-ff79-4eb0-80ec-863837fd60bd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 43c6651a-3855-4777-8a62-8d94578fa358
+    type: regular
+    task:
+      id: 43c6651a-3855-4777-8a62-8d94578fa358
+      version: -1
+      name: lp-get-incident-data
+      description: Retrieves a Particular Incident's Data
+      script: '|||lp-get-incident-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      date:
+        simple: ${incident.logpointdetectiontimestamp}
+      incident_id:
+        simple: ${incident.logpointincidentid}
+      incident_obj_id:
+        simple: ${incident.logpointobjectid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 39f10c45-cfdc-4520-85e2-64899e2f2b0b
+    type: condition
+    task:
+      id: 39f10c45-cfdc-4520-85e2-64899e2f2b0b
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.data.log_ts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 97bb7f28-6a86-452f-84c0-eef90b3d3107
+    type: regular
+    task:
+      id: 97bb7f28-6a86-452f-84c0-eef90b3d3107
+      version: -1
+      name: lp-add-incident-comment
+      description: Add comments to the incidents
+      script: '|||lp-add-incident-comment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      comment:
+        simple: This is example comment done using Test Playbook.
+      id:
+        simple: ${incident.logpointobjectid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 53d77afc-4b5a-4ae6-89ef-6712d2fe840c
+    type: regular
+    task:
+      id: 53d77afc-4b5a-4ae6-89ef-6712d2fe840c
+      version: -1
+      name: lp-assign-incidents
+      description: Assigning/Re-assigning Incidents
+      script: '|||lp-assign-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      incident_ids:
+        simple: ${incident.logpointobjectid}
+      new_assignee:
+        simple: ${incident.logpointassignedto}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 1e71b017-c6ab-4911-88c5-5818a4609135
+    type: condition
+    task:
+      id: 1e71b017-c6ab-4911-88c5-5818a4609135
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.assign
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 8e3123db-7ded-4df1-8add-cacdec442192
+    type: regular
+    task:
+      id: 8e3123db-7ded-4df1-8add-cacdec442192
+      version: -1
+      name: lp-resolve-incidents
+      description: Resolves the Incidents.
+      script: '|||lp-resolve-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      incident_ids:
+        simple: ${incident.logpointobjectid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 024de9ad-0f76-403a-8bac-11da56941a17
+    type: condition
+    task:
+      id: 024de9ad-0f76-403a-8bac-11da56941a17
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.resolve
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: d78e484b-5fd9-4b57-8cff-d9e5d0df492e
+    type: regular
+    task:
+      id: d78e484b-5fd9-4b57-8cff-d9e5d0df492e
+      version: -1
+      name: lp-close-incidents
+      description: Closes the Incidents.
+      script: '|||lp-close-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      incident_ids:
+        simple: ${incident.logpointobjectid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b0f60ba8-6d17-4c65-811c-4d5e9054984c
+    type: condition
+    task:
+      id: b0f60ba8-6d17-4c65-811c-4d5e9054984c
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.close
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 2847ae24-f612-4e96-89d6-3d15cebca561
+    type: regular
+    task:
+      id: 2847ae24-f612-4e96-89d6-3d15cebca561
+      version: -1
+      name: lp-reopen-incidents
+      description: Re-opens the closed incidents
+      script: '|||lp-reopen-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      incident_ids:
+        simple: ${incident.logpointobjectid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 47f96f1b-735c-4a6c-8b26-cbf1bf8feff5
+    type: condition
+    task:
+      id: 47f96f1b-735c-4a6c-8b26-cbf1bf8feff5
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: LogPoint.Incidents.reopen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 87240f36-b728-4ab4-8303-725fd4a72038
+    type: condition
+    task:
+      id: 87240f36-b728-4ab4-8303-725fd4a72038
+      version: -1
+      name: Verify
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogPoint.Incidents.comment
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
