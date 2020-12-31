@@ -794,6 +794,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 1071226a-0453-43bd-8ff1-5f5f29c0226f
       iscommand: false
       name: Email report?
