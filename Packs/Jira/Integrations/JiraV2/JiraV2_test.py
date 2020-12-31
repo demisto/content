@@ -57,13 +57,14 @@ def test_create_issue_command_after_fix_mandatory_args_issue(mocker, args):
 def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, args):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     from JiraV2 import create_issue_command
-    with pytest.raises(SystemExit) as e:
+    try:
         # when there are missing arguments, an Exception is raised to the user
         create_issue_command()
-    assert e
-    assert demisto.results.call_args[0][0]['Contents'] == \
-           'You must provide at least one of the following: project_key or project_name'
+    except Exception as e:
+        assert str(e) == 'You must provide at least one of the following: project_key or project_name'
 
 
 def test_issue_query_command_no_issues(mocker):
@@ -347,7 +348,7 @@ def test_get_incident_entries(mocker):
     assert res['attachments'] == 'here there is attachment'
 
 
-def test_create_update_incident_from_ticket():
+def test_create_update_incident_from_ticket(mocker):
     """
     Given:
         - incident
@@ -359,6 +360,8 @@ def test_create_update_incident_from_ticket():
     from JiraV2 import create_update_incident_from_ticket
     from test_data.expected_results import GET_JIRA_ISSUE_RES
     res = create_update_incident_from_ticket(GET_JIRA_ISSUE_RES)
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     assert res['id'] == '17757'
     assert res['issue']
     assert list(res['fields'].keys()) == ['assignee', 'priority', 'status', 'project', 'reporter', 'summary', 'description', 'duedate', 'labels', 'updated', 'created', 'lastViewed']
@@ -385,6 +388,10 @@ def test_update_remote_system(mocker):
     )
     mocker.patch(
         'JiraV2.upload_file',
+        return_value=''
+    )
+    mocker.patch(
+        'JiraV2.add_comment',
         return_value=''
     )
     res = update_remote_system_command(ARGS_FROM_UPDATE_REMOTE_SYS)
