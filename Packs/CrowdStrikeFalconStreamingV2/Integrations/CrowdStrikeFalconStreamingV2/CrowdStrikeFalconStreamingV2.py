@@ -500,11 +500,15 @@ async def long_running_loop(
                 integration_context['offset'] = offset_to_store
                 if store_samples:
                     try:
-                        sample_events_to_store.append(event)
-                        demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
-                        sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
-                        sample_events += sample_events_to_store
-                        integration_context['sample_events'] = list(sample_events)
+                        event_obj_size = sys.getsizeof(event)
+                        if event_obj_size <= 1000000:  # storing events of size up to 1MB
+                            sample_events_to_store.append(event)
+                            demisto.debug(f'Storing new {len(sample_events_to_store)} sample events')
+                            sample_events = deque(json.loads(integration_context.get('sample_events', '[]')), maxlen=20)
+                            sample_events += sample_events_to_store
+                            integration_context['sample_events'] = list(sample_events)
+                        else:
+                            demisto.debug(f'Skipping event {event_offset} storage due to size {event_obj_size}')
                     except Exception as e:
                         demisto.error(f'Failed storing sample events - {e}')
                 demisto.debug(f'Storing offset {offset_to_store}')
