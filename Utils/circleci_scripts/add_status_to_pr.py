@@ -1,25 +1,23 @@
 #!/usr/bin/env python3
-import argparse
+import urllib3
 from github import Github
+
+from utils import get_env_var, timestamped_print
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+print = timestamped_print
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Add a status to a PR')
-    parser.add_argument('-p', '--pr_number', help='PR number')
-    parser.add_argument('-b', '--branch', help='The branch')
-    parser.add_argument('-r', '--repo', help='The repo')
-    parser.add_argument('-t', '--github_token', help='Admin GitHub token')
-    args = parser.parse_args()
-
-    pr_number = args.pr_number
-    repo_arg = args.repo
-    branch_arg = args.branch
-    token = args.github_token
-    print(f"{pr_number = }\n{repo_arg = }\n{branch_arg = }\n{token = }")
+    pr_number = get_env_var("PULL_REQUEST_NUMBER")
+    repo_name = get_env_var("REPO")
+    branch_name = get_env_var("BRANCH")
+    token = get_env_var("GITHUB_TOKEN")
+    print(f"{pr_number = }\n{repo_name = }\n{branch_name = }")
     try:
         gh = Github(token, verify=False)
-        repo = gh.get_repo(repo_arg)
-        branch = repo.get_branch(branch=branch_arg)
+        repo = gh.get_repo(repo_name)
+        branch = repo.get_branch(branch=branch_name)
         status = repo.get_commit(sha=branch.commit.sha).create_status(
             state="pending",
             description="ready-for-dev-instance was not added",
