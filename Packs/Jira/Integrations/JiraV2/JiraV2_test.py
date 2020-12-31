@@ -57,8 +57,6 @@ def test_create_issue_command_after_fix_mandatory_args_issue(mocker, args):
 def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, args):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, "results")
-    mocker.patch.object(demisto, 'info')
-    mocker.patch.object(demisto, 'debug')
     from JiraV2 import create_issue_command
     with pytest.raises(SystemExit) as e:
         # when there are missing arguments, an Exception is raised to the user
@@ -120,7 +118,9 @@ def test_fetch_incidents_no_incidents(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
     mocker.patch('JiraV2.run_query', return_value={})
-    incidents = fetch_incidents('status=Open AND labels=lies', id_offset=1)
+    incidents = fetch_incidents('status=Open AND labels=lies', id_offset=1, should_get_attachments=False,
+                                should_get_comments=False, should_mirror_in=False, should_mirror_out=False,
+                                comment_tag='', attachment_tag='')
     assert incidents == []
 
 
@@ -392,7 +392,19 @@ def test_update_remote_system(mocker):
 
 
 def test_fetch_incident_with_getting_attachments_and_comments(mocker):
+    """
+    Given:
+        - Fetch parameters
+    When
+        - Incidents needs to include both attachments and comments.
+    Then
+        - Returned all fetched incidents with their attachments and comments.
+    """
     from JiraV2 import fetch_incidents
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE
+    from test_data.expected_results import GET_JIRA_ISSUE_RES
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
     mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
     mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
     mocker.patch(
@@ -401,6 +413,217 @@ def test_fetch_incident_with_getting_attachments_and_comments(mocker):
     )
     mocker.patch(
         'JiraV2.get_attachments',
-        return_value='here there is attachment'
+        return_value=[{'FileID': 1, 'File': 'name', 'Type': 'file'}]
     )
-    res = fetch_incidents()
+    mocker.patch(
+        'JiraV2.get_issue',
+        return_value=('', '', GET_JIRA_ISSUE_RES)
+    )
+    res = fetch_incidents('status!=done', id_offset=1, should_get_attachments=True,
+                                should_get_comments=True, should_mirror_in=False, should_mirror_out=False,
+                                comment_tag='', attachment_tag='')
+    assert list(res[0]['attachment'][0].keys()) == ['path', 'name']
+    assert len(res[0]['labels'][12]['value']) > 0
+
+
+def test_fetch_incident_with_getting_attachments(mocker):
+    """
+    Given:
+        - Fetch parameters
+    When
+        - Incidents needs to include attachments.
+    Then
+        - Returned all fetched incidents with their attachments.
+    """
+    from JiraV2 import fetch_incidents
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE
+    from test_data.expected_results import GET_JIRA_ISSUE_RES
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
+    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
+    mocker.patch(
+        'JiraV2.get_attachments',
+        return_value=[{'FileID': 1, 'File': 'name', 'Type': 'file'}]
+    )
+    mocker.patch(
+        'JiraV2.get_issue',
+        return_value=('', '', GET_JIRA_ISSUE_RES)
+    )
+    res = fetch_incidents('status!=done', id_offset=1, should_get_attachments=True,
+                                should_get_comments=False, should_mirror_in=False, should_mirror_out=False,
+                                comment_tag='', attachment_tag='')
+    assert list(res[0]['attachment'][0].keys()) == ['path', 'name']
+    assert res[0]['labels'][12]['value'] == '[]'
+
+
+def test_fetch_incident_with_getting_comments(mocker):
+    """
+    Given:
+        - Fetch parameters
+    When
+        - Incidents needs to include comments.
+    Then
+        - Returned all fetched incidents with their comments.
+    """
+    from JiraV2 import fetch_incidents
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE
+    from test_data.expected_results import GET_JIRA_ISSUE_RES
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
+    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
+    mocker.patch(
+        'JiraV2.get_comments_command',
+        return_value=('', '', {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00'}]})
+    )
+    mocker.patch(
+        'JiraV2.get_issue',
+        return_value=('', '', GET_JIRA_ISSUE_RES)
+    )
+    res = fetch_incidents('status!=done', id_offset=1, should_get_attachments=False,
+                                should_get_comments=True, should_mirror_in=False, should_mirror_out=False,
+                                comment_tag='', attachment_tag='')
+    assert res[0]['attachment'] == []
+    assert len(res[0]['labels'][12]['value']) > 0
+
+
+def test_fetch_incident_with_comments_when_exception_is_raised(mocker):
+    """
+    Given:
+        - Fetch parameters
+    When
+        - Incidents needs to include comments and there is an exception raised.
+    Then
+        - Returned all fetched incidents without their comments.
+    """
+    from JiraV2 import fetch_incidents
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
+    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
+    mocker.patch(
+        'JiraV2.get_comments_command',
+        return_value=('', '', {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00'}]})
+    )
+    mocker.patch(
+        'JiraV2.get_issue',
+        return_value=TimeoutError,
+    )
+    res = fetch_incidents('status!=done', id_offset=1, should_get_attachments=False,
+                                should_get_comments=True, should_mirror_in=False, should_mirror_out=False,
+                                comment_tag='', attachment_tag='')
+    assert res[0]['labels'][12]['value'] == '[]'
+
+
+def test_fetch_incident_mirror_direction(mocker):
+    """
+    Given:
+        - Fetch parameters
+    When
+        - Incidents needs to include Which direction to mirror its data- test 'Both' in this case.
+    Then
+        - Returned all fetched incidents without 'mirror_direction' set to 'Both'.
+    """
+    from JiraV2 import fetch_incidents
+    from test_data.raw_response import QUERY_ISSUE_RESPONSE
+    from test_data.expected_results import GET_JIRA_ISSUE_RES
+    import json
+
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
+    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
+    mocker.patch(
+        'JiraV2.get_comments_command',
+        return_value=('', '', {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00'}]})
+    )
+    mocker.patch(
+        'JiraV2.get_issue',
+        return_value=('', '', GET_JIRA_ISSUE_RES)
+    )
+    res = fetch_incidents('status!=done', id_offset=1, should_get_attachments=False,
+                                should_get_comments=True, should_mirror_in=True, should_mirror_out=True,
+                                comment_tag='', attachment_tag='')
+    assert json.loads(res[0]['rawJSON'])['mirror_direction'] == 'Both'
+
+
+def test_handle_incoming_closing_incident(mocker):
+    """
+    Given:
+        - Issue with status 'Done'
+    When
+        - Mirror in Data from Jira to Demisto
+    Then
+        - Returned an object for close its incident
+    """
+    from JiraV2 import handle_incoming_closing_incident, fetch_incidents
+    from test_data.expected_results import GET_JIRA_ISSUE_RES
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+
+    GET_JIRA_ISSUE_RES['fields']['status']['name'] = 'Done'
+    res = handle_incoming_closing_incident(GET_JIRA_ISSUE_RES)
+    assert res['Contents']['dbotIncidentClose'] is True
+    assert res['Contents']['closeReason'] == 'Issue was marked as "Done"'
+
+
+def test_get_mirror_type_both():
+    """
+    Given:
+        - Mirror out is 'True' and mirror in 'True'
+    When
+        - Need to map mirror_in and mirror_out into 'Both'
+    Then
+        - Returned the correct mirror direction
+    """
+    from JiraV2 import get_mirror_type
+
+    res = get_mirror_type(True, True)
+    assert res == 'Both'
+
+
+def test_get_mirror_type_out():
+    """
+    Given:
+        - Mirror out is 'True' and mirror in 'False'
+    When
+        - Need to map mirror_in and mirror_out input to 'Out'
+    Then
+        - Returned the correct mirror direction
+    """
+    from JiraV2 import get_mirror_type
+
+    res = get_mirror_type(False, True)
+    assert res == 'Out'
+
+
+def test_get_mirror_type_in():
+    """
+    Given:
+        - Mirror out is 'False' and mirror in 'True'
+    When
+        - Need to map mirror_in and mirror_out input to 'In'
+    Then
+        - Returned the correct mirror direction
+    """
+    from JiraV2 import get_mirror_type
+
+    res = get_mirror_type(True, False)
+    assert res == 'In'
+
+
+def test_get_mirror_type_none():
+    """
+    Given:
+        - Mirror out is 'False' and mirror in 'False'
+    When
+        - Need to map mirror_in and mirror_out input to None
+    Then
+        - Returned the correct mirror direction
+    """
+    from JiraV2 import get_mirror_type
+
+    res = get_mirror_type(False, False)
+    assert res is None
