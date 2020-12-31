@@ -1,7 +1,10 @@
 {
-    "associatedToAll": true,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Cortex XDR Disconnected endpoints"
+    ],
     "caseInsensitive": true,
-    "cliName": "unhealthyendpoints",
+    "cliName": "xdrdisconnectedendpoints",
     "closeForm": false,
     "columns": [
         {
@@ -62,13 +65,13 @@
             "script": "",
             "selectValues": null,
             "type": "shortText",
-            "width": 150
+            "width": 125
         }
     ],
     "content": true,
     "defaultRows": [
         {
-            "columnheader1": ""
+
         },
         {
 
@@ -80,10 +83,10 @@
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_unhealthyendpoints",
+    "id": "incident_xdrdisconnectedendpoints",
     "isReadOnly": false,
     "locked": false,
-    "name": "Unhealthy endpoints ",
+    "name": "XDR Disconnected endpoints",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
@@ -95,5 +98,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.0.0"
 }

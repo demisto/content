@@ -9,7 +9,7 @@
             {
                 "hidden": false,
                 "id": "zmjvpqxkcs",
-                "name": "XDR unhealthy endpoints",
+                "name": "XDR disconnected endpoints",
                 "sections": [
                     {
                         "displayType": "ROW",
@@ -248,6 +248,7 @@
                         "y": 0
                     },
                     {
+                        "description": "",
                         "h": 4,
                         "i": "zmjvpqxkcs-93bb4a30-42de-11eb-90c6-9596ff5a2455",
                         "items": [
@@ -258,7 +259,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Unhealthy endpoints report",
+                        "name": "Disconnected endpoints report",
                         "query": {
                             "categories": [
 
@@ -281,14 +282,14 @@
                     {
                         "displayType": "ROW",
                         "h": 4,
-                        "hideName": false,
+                        "hideName": true,
                         "i": "zmjvpqxkcs-d6aaba80-42e1-11eb-90c6-9596ff5a2455",
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "unhealthyendpoints",
+                                "fieldId": "xdrdisconnectedendpoints",
                                 "height": 22,
-                                "id": "d96100e0-42e1-11eb-90c6-9596ff5a2455",
+                                "id": "f2c86c00-4b9a-11eb-b3b8-d95c96e0a89a",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -299,7 +300,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "New Section",
+                        "name": "Disconnected endpoints",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -337,7 +338,7 @@
     },
     "group": "incident",
     "id": "294c4eca-caf4-429d-8277-56676b7bee9d",
-    "name": "Cotrex XDR endpoints health check",
+    "name": "Cortex XDR Disconnected endpoints",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
