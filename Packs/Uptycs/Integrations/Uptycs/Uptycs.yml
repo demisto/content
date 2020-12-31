@@ -1800,7 +1800,7 @@ script:
     - contextPath: Uptycs.PostedQuery.name
       description: name of query
       type: string
-  dockerimage: demisto/uptycs:1.0.0.10664
+  dockerimage: demisto/uptycs:1.0.0.12410
   isfetch: true
   runonce: true
   script: '-'
