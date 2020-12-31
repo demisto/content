@@ -40,13 +40,6 @@ script:
       name: threshold
       required: false
       secret: false
-    - default: false
-      defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results. It is advised that you do not set to "true" in playbooks. The default value is "false".
-      isArray: false
-      name: fullResponse
-      required: false
-      secret: false
     deprecated: false
     description: Checks the reputation of an IP address.
     execution: false
@@ -115,13 +108,6 @@ script:
       description: If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
-      required: false
-      secret: false
-    - default: true
-      defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results. It is advised that you do not set to "true" in playbooks. The default value is "false".
-      isArray: false
-      name: fullResponse
       required: false
       secret: false
     deprecated: false
@@ -212,13 +198,6 @@ script:
       name: threshold
       required: false
       secret: false
-    - default: true
-      defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results. It is advised that you do not set to "true" in playbooks. The default value is "false".
-      isArray: false
-      name: fullResponse
-      required: false
-      secret: false
     deprecated: false
     description: Checks the reputation of an URL.
     execution: false
@@ -302,13 +281,6 @@ script:
       description: If the number of positives AV detection is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
-      required: false
-      secret: false
-    - default: true
-      defaultValue: 'false'
-      description: Whether to return all results. Note that there can be thousands of results. It is advised that you do not set to "true" in playbooks. The default value is "false".
-      isArray: false
-      name: fullResponse
       required: false
       secret: false
     deprecated: false
