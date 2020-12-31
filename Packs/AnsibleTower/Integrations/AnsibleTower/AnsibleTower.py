@@ -26,7 +26,7 @@ class Client(BaseClient):
                                      proxy=proxy)
 
     def api_request(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None,
-                    empty_valid_codes: list = None, return_empty_response: bool = False, ok_codes=None) -> dict:
+                    empty_valid_codes: list = None, return_empty_response: bool = False, ok_codes: list = None) -> dict:
         return self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
                                   empty_valid_codes=empty_valid_codes, return_empty_response=return_empty_response,
                                   ok_codes=ok_codes)
@@ -350,10 +350,12 @@ def cancel_ad_hoc_command(client: Client, args: dict) -> CommandResults:
     try:
         client.api_request(method='POST', url_suffix=url_suffix, empty_valid_codes=[202], return_empty_response=True)
         return ad_hoc_command_status(client, args)
-    except Exception as e:
-        response = client.api_request(method='GET', url_suffix=url_suffix)
-        error_msg = f"{response}. Error: {e.message}"
-        raise DemistoException(error_msg, e)
+    except DemistoException as e:
+        if e.res.status_code == 405:
+            response = client.api_request(method='GET', url_suffix=url_suffix)
+            error_msg = f"{response}. Error: {e.message}"
+            raise DemistoException(error_msg, e)
+        raise DemistoException(e)
 
 
 def ad_hoc_command_stdout(client: Client, args: dict) -> CommandResults:

@@ -52,9 +52,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Use the search query string parameter to perform a case-insensitive search
-        within all designated text fields of a model.
+      description: Use the search query string parameter to perform a case-insensitive
+        search within all designated text fields of a model.
       isArray: false
       name: search
       required: false
@@ -63,9 +62,6 @@ script:
     description: Retrieve the list of inventories
     execution: false
     name: ansible-tower-inventories-list
-    outputs:
-    - contextPath: AnsibleAWX.Inventory
-      type: Unknown
   - arguments:
     - default: false
       description: Host id
@@ -74,20 +70,27 @@ script:
       required: false
       secret: false
     - default: false
+      description: inventory id
       isArray: false
       name: inventory_id
       required: false
       secret: false
     - default: true
       defaultValue: '1'
+      description: page number
       isArray: false
       name: page
       required: false
       secret: false
-    - default: true
+    - auto: PREDEFINED
+      default: true
       defaultValue: '50'
+      description: page size
       isArray: false
       name: page_size
+      predefined:
+      - Use the search query string parameter to perform a case-insensitive search
+        within all designated text fields of a model.
       required: false
       secret: false
     - default: false
