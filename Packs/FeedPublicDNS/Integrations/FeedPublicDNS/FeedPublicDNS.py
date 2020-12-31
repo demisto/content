@@ -80,17 +80,21 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
         iterator = iterator[:limit]
 
     for item in iterator:
-        type_ = 'Ip'
+        type_ = FeedIndicatorType.IP
 
         ip = IPAddress(item)
         if ip.version == 6:
-            type_ = 'IPv6'
+            type_ = FeedIndicatorType.IPv6
+
+        fields = {'tags': client.Tags}
+        if client.Tlp_color:
+            fields['trafficlightprotocol'] = client.Tlp_color
 
         indicators.append({
             'value': item,
             'type': type_,
             'rawJSON': {'value': item, 'type': type_},
-            'fields': {'tags': client.Tags, 'trafficlightprotocol': client.Tlp_color}
+            'fields': fields
         })
 
     return indicators
