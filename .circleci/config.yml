@@ -388,7 +388,10 @@ references:
       name: Add ready-for-dev-instance pending status
       when: always
       command: |
-              python3 ./Utils/add_status_to_pr.py -p $PULL_REQUEST_NUMBER -b $BRANCH -r $REPO --github_token $GITHUB_TOKEN
+              pip3 install pipenv
+              cd ./Utils/circleci_scripts
+              pipenv install --dev
+              pipenv run ./add_status_to_pr.py -p $PULL_REQUEST_NUMBER -b $BRANCH -r $REPO --github_token $GITHUB_TOKEN
 
   upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
     run:
