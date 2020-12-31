@@ -553,6 +553,7 @@ jobs:
       - *create_id_set
       - *update_tests_step
       - *validate_files_and_yaml
+      - *add_pending_contrib_pr_status
       - run:
           name: Content Docs Site
           when: always
@@ -970,7 +971,6 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
           when: always
       - *comment_on_contrib_pr
-      - *add_pending_contrib_pr_status
       - *destroy_instances
       - *store_artifacts
 
