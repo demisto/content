@@ -2,7 +2,6 @@ import json
 import os
 import argparse
 import shutil
-import subprocess
 import uuid
 import glob
 import logging
