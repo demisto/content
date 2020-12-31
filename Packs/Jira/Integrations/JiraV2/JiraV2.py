@@ -955,46 +955,66 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
     incident_update = {}
     parsed_entries = []
     parsed_args = GetRemoteDataArgs(args)
-    # Get raw response on issue ID
+    try:
+        # Get raw response on issue ID
+        _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
 
-    _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
+        # Timestamp - Issue last modified in jira server side
+        jira_modified_date: datetime = parse(
+            str(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
+        ).replace(tzinfo=pytz.UTC)
+        # Timestamp - Issue last sync in demisto server side
+        incident_modified_date: datetime = parse(parsed_args.last_update).replace(tzinfo=pytz.UTC)
 
-    # Timestamp - Issue last modified in jira server side
-    jira_modified_date: datetime = parse(
-        str(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
-    ).replace(tzinfo=pytz.UTC)
-    # Timestamp - Issue last sync in demisto server side
-    incident_modified_date: datetime = parse(parsed_args.last_update).replace(tzinfo=pytz.UTC)
+        # Update incident only if issue modified in Jira server-side after the last sync
+        if jira_modified_date > incident_modified_date:
+            incident_update = create_update_incident_from_ticket(
+                issue_raw_response)  # Getting labels to be updated in incident
 
-    # Update incident only if issue modified in Jira server-side after the last sync
-    if jira_modified_date > incident_modified_date:
-        incident_update = create_update_incident_from_ticket(
-            issue_raw_response)  # Getting labels to be updated in incident
+            demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
+                          f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
+                          f"\n\tRemote last updated time: {jira_modified_date}\n")
 
-        demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
-                      f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
-                      f"\n\tRemote last updated time: {jira_modified_date}\n")
+            closed_issue = handle_incoming_closing_incident(incident_update)
+            if closed_issue:
+                demisto.debug(f'Close incident with ID: {parsed_args.remote_incident_id} this issue was marked as "Done"')
+                return GetRemoteDataResponse(incident_update, [closed_issue])
 
-        closed_issue = handle_incoming_closing_incident(incident_update)
-        if closed_issue:
-            demisto.debug(f'Close incident with ID: {parsed_args.remote_incident_id} this issue was marked as "Done"')
-            return GetRemoteDataResponse(incident_update, [closed_issue])
+            entries = get_incident_entries(issue_raw_response, incident_modified_date)
 
-        entries = get_incident_entries(issue_raw_response, incident_modified_date)
+            for comment in entries['comments']:
+                parsed_entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': comment.get('body', ''),
+                    'ContentsFormat': EntryFormat.TEXT,
+                    'Tags': ['comment'],  # the list of tags to add to the entry
+                    'Note': True
+                })
+            for attachment in entries['attachments']:
+                parsed_entries.append(attachment)
+        if parsed_entries:
+            demisto.debug(f'Update the next entries: {parsed_entries}')
+        return GetRemoteDataResponse(incident_update, parsed_entries)
 
-        for comment in entries['comments']:
-            parsed_entries.append({
-                'Type': EntryType.NOTE,
-                'Contents': comment.get('body', ''),
-                'ContentsFormat': EntryFormat.TEXT,
-                'Tags': ['comment'],  # the list of tags to add to the entry
-                'Note': True
-            })
-        for attachment in entries['attachments']:
-            parsed_entries.append(attachment)
-    if parsed_entries:
-        demisto.debug(f'Update the next entries: {parsed_entries}')
-    return GetRemoteDataResponse(incident_update, parsed_entries)
+    except Exception as e:
+        demisto.debug(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id} \n"
+                      f"Error message: {str(e)}")
+
+        if "Rate limit exceeded" in str(e):
+            return_error("API rate limit")
+
+        if incident_update:
+            incident_update['in_mirror_error'] = str(e)
+
+        else:
+            incident_update = {
+                'id': parsed_args.remote_incident_id,
+                'in_mirror_error': str(e)
+            }
+        return GetRemoteDataResponse(
+            mirrored_object=incident_update,
+            entries=[]
+        )
 
 
 def main():
