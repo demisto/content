@@ -146,6 +146,7 @@ class PackStatus(enum.Enum):
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
+    FAILED_DECRYPT_PACK = "Failed to decrypt pack, which means pack was not encrypted in the first place"
 
 
 class Pack(object):
@@ -749,6 +750,39 @@ class Pack(object):
             os.chdir(current_working_dir)
         except subprocess.CalledProcessError as error:
             print(f"Error while trying to encrypt pack. {error}")
+
+    def decrypt_pack(self, encrypted_zip_pack_path, encryption_key):
+        try:
+            current_working_dir = os.getcwd()
+            extract_destination_path = f'{current_working_dir}/decrypt_pack'
+            os.mkdir(extract_destination_path)
+
+            shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
+            os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
+            os.chdir(extract_destination_path)
+            output_file = encrypted_zip_pack_path.replace(".zip", "_decrypted.zip")
+            subprocess.call('chmod +x ./decryptor', shell=True)
+            full_command = f'./decryptor ./{encrypted_zip_pack_path} {output_file} {encryption_key}'
+            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = process.communicate()
+            print("\nstdout:\n")
+            print(str(stdout))
+            shutil.rmtree(extract_destination_path)
+            os.chdir(current_working_dir)
+
+            if stderr:
+                print("Error while trying to decrypt pack.")
+                return False
+            return True
+
+        except subprocess.CalledProcessError as error:
+            print(f"Error while trying to decrypt pack. {error}")
+
+    def is_pack_encrypted(self, encrypted_zip_pack_path, encryption_key):
+        task_status = False
+        if self.decrypt_pack(encrypted_zip_pack_path, encryption_key):
+            task_status = True
+        return task_status
 
     def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
         """ Zips pack folder.
