@@ -1318,7 +1318,7 @@
         },
         {
             "integrations": "Okta IAM",
-            "playbookID": "IAM - Test Playbook",
+            "playbookID": "Okta IAM - Test Playbook",
             "fromversion": "6.0.0"
         },
         {
@@ -1543,7 +1543,7 @@
         },
         {
             "integrations": "ServiceNow IAM",
-            "playbookID": "IAM - Test Playbook",
+            "playbookID": "ServiceNow IAM - Test Playbook",
             "instance_name": "snow_basic_auth",
             "fromversion": "6.0.0"
         },

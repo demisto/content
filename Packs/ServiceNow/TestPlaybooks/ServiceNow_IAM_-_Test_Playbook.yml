@@ -1,6 +1,6 @@
-id: IAM - Test Playbook
+id: ServiceNow IAM - Test Playbook
 version: -1
-name: IAM - Test Playbook
+name: ServiceNow IAM - Test Playbook
 starttaskid: "0"
 tasks:
   "0":
