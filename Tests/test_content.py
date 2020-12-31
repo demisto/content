@@ -383,10 +383,21 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_use
     # Mock recording - no mock file or playback failure.
     c = demisto_client.configure(base_url=c.api_client.configuration.host,
                                  api_key=c.api_client.configuration.api_key, verify_ssl=False)
-    run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user,
-                   demisto_pass, proxy, failed_playbooks, integrations, playbook_id,
-                   succeed_playbooks, test_message, test_options, slack, circle_ci,
-                   build_number, server_url, build_name)
+    succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user,
+                             demisto_pass, proxy, failed_playbooks, integrations, playbook_id,
+                             succeed_playbooks, test_message, test_options, slack, circle_ci,
+                             build_number, server_url, build_name)
+    if succeed:
+        logging_manager.info('Running another playback attempt on the new record to verify that the record is valid')
+        with run_with_mock(proxy, playbook_id) as result_holder:
+            status, _ = check_integration(c, server_url, demisto_user, demisto_pass, integrations,
+                                          playbook_id, logging_manager, test_options,
+                                          is_mock_run=True)
+            result_holder[RESULT] = status == PB_Status.COMPLETED
+        if status != PB_Status.COMPLETED:
+            logging_manager.warning(
+                'Playback on newly created record has failed, see the following link for help\n'
+                'https://confluence.paloaltonetworks.com/display/DemistoContent/Debug+Proxy-Related+Test+Failures')
     logging_manager.info(f'------ Test {test_message} end ------\n')
 
 
