@@ -815,7 +815,7 @@ def get_comments(comments, incident_modified_date,  only_new=True):
 
 def get_incident_entries(issue, incident_modified_date, only_new=True, should_get_comments=True, should_get_attachments=True):
     """
-    This function get for incident entries
+    This function get comments and attachments from Jira Ticket, if specified, for a Jira incident.
     :param issue: the incident to get its entries
     :param incident_modified_date: when the incident was last modified
     :param only_new: if 'True' it gets only entries that were added after the incident was last modified
