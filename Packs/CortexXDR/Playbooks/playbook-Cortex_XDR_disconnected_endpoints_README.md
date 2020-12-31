@@ -12,8 +12,6 @@ To set the job correctly, you will need to.
 The scheduled run time and the timestamp relative date should be identical,
 If the job is recurring every 7 days, the time range should be 7 days as well.
 
-Supported Cortex XSOAR versions: 5.5.0 and later.
-
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -28,19 +26,19 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any scripts.
 
 ### Commands
-* send-mail
 * setIncident
-* closeInvestigation
+* send-mail
 * xdr-get-endpoints
+* closeInvestigation
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| LastSeenStartDate | Last seen start date, in relative timestamp - "1 Day" or  "7 days"  | 290 days | Optional |
-| LastSeenEndDate | Last seen end date, in relative timestamp - "1 Day" or  "7 days" <br/>For the current day use "0 days" | 1 days | Optional |
-| Email | Email addresses to send the disconnected endpoints report. | ekedar@outlook.com | Optional |
+| LastSeenStartDate | Last seen start date, in relative timestamp - "1 Day" or  "7 days"  | None | Optional |
+| LastSeenEndDate | Last seen end date, in relative timestamp - "1 Day" or  "7 days" <br/>For the current day use "0 days" | None | Optional |
+| Email | Email addresses to send the disconnected endpoints report. | None | Optional |
 | MessageBody | Body for the report email message.  | This message contains an automatically generated report by Cortex XSOAR, including a list of  disconnected Cortex XDR endpoints.<br/>Please investigate and remediate according to the organization's policy. | Optional |
 
 ## Playbook Outputs
@@ -49,4 +47,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR disconnected endpoints](Insert the link to your image here)
+![Cortex XDR disconnected endpoints](https://raw.githubusercontent.com/demisto/content/eef4d1c2706bf41afa522d6cec8d092bc2e3e562/Packs/CortexXDR/doc_files/Cortex_XDR_disconnected_endpoints.png)
