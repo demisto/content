@@ -25,9 +25,7 @@ import warnings
 
 
 class WarningsHandler(object):
-    """
-        Wrapper to handle warnings. We use a class to cleanup after execution
-    """
+    #    Wrapper to handle warnings. We use a class to cleanup after execution
 
     @staticmethod
     def handle_warning(message, category, filename, lineno, file=None, line=None):
