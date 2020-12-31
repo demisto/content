@@ -23,6 +23,7 @@
  "fromVersion": "6.1.",
  "layout": "Phishing",
  "extractSettings": {
+ "mode": "Specific",
   "fieldCliNameToExtractSettings": {
    "agentid": {
     "extractAsIsIndicatorTypeId": "",
