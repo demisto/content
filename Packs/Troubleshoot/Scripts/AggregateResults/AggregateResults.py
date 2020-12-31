@@ -45,7 +45,7 @@ Instance name : {instance_name}
         configuration_name = f'{instance_name}_configuration.md'
         demisto.results(fileResult(
             configuration_name,
-            raw_instance
+            json.dumps(raw_instance, indent=4)
         ))
 
         doc_file_name = f'{instance_name}_summary.md'

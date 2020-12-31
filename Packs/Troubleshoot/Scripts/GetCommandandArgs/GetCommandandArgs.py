@@ -36,12 +36,12 @@ def create_args(command_entry: dict, args: List[str]) -> dict:
             key, value = cmd_arg[0], cmd_arg[1]
             if not isinstance(value, str):
                 value = json.dumps(value)
-            new_args[key] = str(value)  # type: ignore[assignment]
+            new_args[key] = str(value)
     new_args = set_default_arg(command_entry, new_args)
     return new_args
 
 
-def get_required_args(arguments_entry: list) -> list:
+def get_required_args(arguments_entry: dict) -> list:
     return [entry['name'] for entry in arguments_entry if entry.get('required') is True]
 
 
@@ -56,7 +56,7 @@ def are_args_available(arguments_entry: dict, given_args: dict) -> dict:
         raise DemistoException(
             f'Found the following arguments that does not exists in the command: {", ".join(non_existing_args)}'
         )
-    required_args = set(get_required_args(arguments_list))
+    required_args = set(get_required_args(arguments_entry))
 
     if missing_args := required_args - set(args):
         raise DemistoException(
