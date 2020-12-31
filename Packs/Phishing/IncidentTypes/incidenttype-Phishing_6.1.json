@@ -20,7 +20,7 @@
  "disabled": false,
  "reputationCalc": 1,
  "onChangeRepAlg": 2,
- "fromVersion": "6.1.",
+ "fromVersion": "6.1.0",
  "layout": "Phishing",
  "extractSettings": {
  "mode": "Specific",
