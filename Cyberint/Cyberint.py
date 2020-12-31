@@ -64,7 +64,6 @@ class Client(BaseClient):
             'type': types
         }}
         body = remove_empty_elements(body)
-        print(body)
         response = self._http_request(method='POST', json_data=body, cookies=self._cookies,
                                       url_suffix='api/v1/alerts')
         return response
@@ -111,7 +110,7 @@ def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
         start_date, end_date = parse_date_range(date_range=date_range_arg,
                                                 date_format=DATE_FORMAT, utc=False)
         return start_date, end_date
-    min_date = datetime.fromisocalendar(2020, 12, 1)
+    min_date = datetime.fromisocalendar(2020, 1, 1)
     if start_date_arg and not end_date_arg:
         return start_date_arg, datetime.strftime(datetime.now(), DATE_FORMAT)
     if end_date_arg and not start_date_arg:
@@ -242,6 +241,9 @@ def main():
         elif demisto.command() == 'cyberint-list-alerts':
             return_results(cyberint_list_alerts_command(client, demisto.args()))
     except Exception as e:
+        if 'Datetime not in range' in str(e):
+            return 'A date was picked that is either too early or too late, check created ' \
+                   'and modification date arguments.'
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
