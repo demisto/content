@@ -1,0 +1,119 @@
+id: Cortex XDR disconnected endpoints Test
+version: -1
+name: Cortex XDR disconnected endpoints Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: adb31146-1451-4a71-89d9-a3cdd69cddaa
+    type: start
+    task:
+      id: adb31146-1451-4a71-89d9-a3cdd69cddaa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 35998676-daa9-4ee1-847d-88d68d065943
+    type: title
+    task:
+      id: 35998676-daa9-4ee1-847d-88d68d065943
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3c52dece-b760-4787-8b61-d18afd68048c
+    type: playbook
+    task:
+      id: 3c52dece-b760-4787-8b61-d18afd68048c
+      version: -1
+      name: 'Cortex XDR disconnected endpoints '
+      playbookName: 'Cortex XDR disconnected endpoints '
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Email: {}
+      LastSeenEndDate:
+        simple: 1 days
+      LastSeenStartDate:
+        simple: 290 days
+      MessageBody:
+        simple: |-
+          This message contains an automatically generated report by Cortex XSOAR, including a list of  disconnected Cortex XDR endpoints.
+          Please investigate and remediate according to the organization's policy.
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 445,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
+description: Test playbook for XDR disconnected endpoints

@@ -19,20 +19,20 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: 290 days
+    simple: 
 - description: "Last seen end date, in relative timestamp - \"1 Day\" or  \"7 days\"\
     \ \nFor the current day use \"0 days\""
   key: LastSeenEndDate
   playbookInputQuery:
   required: false
   value:
-    simple: 1 days
+    simple: 
 - description: Email addresses to send the disconnected endpoints report.
   key: Email
   playbookInputQuery:
   required: false
   value:
-    simple: ekedar@outlook.com
+    simple: 
 - description: 'Body for the report email message. '
   key: MessageBody
   playbookInputQuery:
@@ -864,5 +864,5 @@ view: |-
     }
   }
 tests:
-- Cortex XDR endpoints health check test
+- Cortex XDR disconnected endpoints Test
 fromversion: 5.5.0

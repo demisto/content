@@ -501,7 +501,7 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Cortex XDR endpoints health check test",
+            "playbookID": "Cortex XDR disconnected endpoints Test",
             "fromversion": "5.5.0"
         },
         {
