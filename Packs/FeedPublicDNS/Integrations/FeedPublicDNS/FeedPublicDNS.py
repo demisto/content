@@ -86,16 +86,17 @@ def fetch_indicators(client: Client, limit: int = -1) -> List[Dict]:
         if ip.version == 6:
             type_ = FeedIndicatorType.IPv6
 
-        fields = {'tags': client.Tags}
-        if client.Tlp_color:
-            fields['trafficlightprotocol'] = client.Tlp_color
-
-        indicators.append({
+        indicator_obj = {
             'value': item,
             'type': type_,
             'rawJSON': {'value': item, 'type': type_},
-            'fields': fields
-        })
+            'fields': {'tags': client.Tags}
+        }
+
+        if client.Tlp_color:
+            indicator_obj['fields']['trafficlightprotocol'] = client.Tlp_color
+
+        indicators.append(indicator_obj)
 
     return indicators
 
