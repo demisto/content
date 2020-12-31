@@ -563,6 +563,7 @@ jobs:
       - *secrets
       - *create_id_set
       - *merge_public_and_private_id_sets
+      - *create_artifact
       - *update_tests_step
       - *validate_files_and_yaml
       - run:
