@@ -267,5 +267,5 @@ script:
   ismappable: true
   isremotesyncout: true
 tests:
-- No tests
+- ServiceNow IAM - Test Playbook
 fromversion: 6.0.0

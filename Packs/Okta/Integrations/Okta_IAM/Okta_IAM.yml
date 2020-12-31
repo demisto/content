@@ -398,7 +398,7 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- Okta IAM - Test Playbook
 defaultmapperin: Okta IAM - App Sync (mapper)
 defaultclassifier: Okta IAM - App Sync (classifier)
 fromversion: 6.0.0
