@@ -391,6 +391,7 @@ references:
               pip3 install pipenv
               cd ./Utils/circleci_scripts
               pipenv install --dev
+              echo "p='${PULL_REQUEST_NUMBER}' b='{$BRANCH}' r='{$REPO}'"
               pipenv run ./add_status_to_pr.py -p $PULL_REQUEST_NUMBER -b $BRANCH -r $REPO --github_token $GITHUB_TOKEN
 
   upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
