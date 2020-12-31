@@ -1990,7 +1990,6 @@
                 "Lastline v2",
                 "WildFire-v2",
                 "SNDBOX",
-                "VxStream",
                 "McAfee Advanced Threat Defense"
             ],
             "playbookID": "Detonate File - Generic Test",
@@ -3177,6 +3176,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "BitcoinAbuse",
+            "playbookID": "BitcoinAbuse-test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "ExpanseV2",
             "playbookID": "ExpanseV2 Test",
             "fromversion": "6.0.0"
@@ -3268,7 +3272,6 @@
         "Test-BPA_Integration": "Issue 28236",
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
-        "VxStream Test": "Issue 29280",
         "PhishLabsIOC TestPlaybook": "Issue 30874",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
@@ -3276,7 +3279,6 @@
         "CuckooTest": "Issue 25601",
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
-        "Akamai_WAF-Test": "Issue 31900",
         "Archer-Test-Playbook": "Issue 26851",
         "Carbon Black Live Response Test": "Issue 28237"
     },
