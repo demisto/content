@@ -1,7 +1,7 @@
 {
  "description": "Jira V2 mirror in classifier.",
  "feed": false,
- "id": "d892884d-4fc7-420e-8992-c6e502c871da",
+ "id": "classifier-mapper-incoming-JiraV2",
  "mapping": {
   "dbot_classification_incident_type_all": {
    "dontMapEventToLabels": false,
