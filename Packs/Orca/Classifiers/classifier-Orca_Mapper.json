@@ -1,82 +1,78 @@
 {
-	"brands": null,
-	"defaultIncidentType": "",
-	"description": "Maps Orca fields for use in Integration Playbooks.",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "Orca Mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 4,
-	"mapping": {
-		"Orca Alert": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Orca Reason": {
-					"complex": null,
-					"simple": "type_string"
-				},
-				"Orca_Asset_Unique_ID": {
-					"complex": null,
-					"simple": "asset_unique_id"
-				},
-				"cloudaccount": {
-					"complex": null,
-					"simple": "account_name"
-				},
-				"details": {
-					"complex": null,
-					"simple": "description"
-				},
-				"severity": {
-					"complex": null,
-					"simple": "state.score"
-				}
-			}
-		},
-		"Vulnerability": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Vulnerability Category": {
-					"complex": null,
-					"simple": "category"
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"details": {
-					"complex": null,
-					"simple": "description"
-				},
-				"name": {
-					"complex": null,
-					"simple": "type_string"
-				},
-				"severity": {
-					"complex": null,
-					"simple": "demisto_score"
-				}
-			}
-		}
-	},
-	"name": "Orca Mapper",
-	"nameRaw": "Orca Mapper",
-	"packID": "",
-	"sortValues": null,
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": null,
-		"simple": ""
-	},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "Maps Orca fields for use in Integration Playbooks.",
+    "feed": false,
+    "id": "Orca Mapper",
+    "mapping": {
+        "Orca Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cloud Acccount": {
+                    "complex": null,
+                    "simple": "cloud_provider_id"
+                },
+                "Orca Alert ID": {
+                    "complex": null,
+                    "simple": "state.alert_id"
+                },
+                "Orca Alert Id": {
+                    "complex": null,
+                    "simple": "state.alert_id"
+                },
+                "Orca Asset Unique ID": {
+                    "complex": null,
+                    "simple": "asset_unique_id"
+                },
+                "Orca Reason": {
+                    "complex": null,
+                    "simple": "type_string"
+                },
+                "Orca_Asset_Unique_ID": {
+                    "complex": null,
+                    "simple": "asset_unique_id"
+                },
+                "cloudaccount": {
+                    "complex": null,
+                    "simple": "account_name"
+                },
+                "details": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "demisto_score"
+                }
+            }
+        },
+        "Vulnerability": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Vulnerability Category": {
+                    "complex": null,
+                    "simple": "category"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "details": {
+                    "complex": null,
+                    "simple": "description"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "type_string"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "demisto_score"
+                }
+            }
+        }
+    },
+    "name": "Orca Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

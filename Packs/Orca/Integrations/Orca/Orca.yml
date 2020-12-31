@@ -9,7 +9,6 @@ configuration:
   type: 4
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  hidden: false
   name: first_fetch
   required: false
   type: 0
@@ -21,7 +20,8 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: '50'
+- defaultvalue: "50"
+  display: ""
   name: max_fetch
   required: false
   type: 0
@@ -40,63 +40,43 @@ name: Orca
 script:
   commands:
   - arguments:
-    - default: false
-      description: Type of alert to get
-      isArray: false
+    - description: Type of alert to get
       name: alert_type
-      required: false
-      secret: false
-    deprecated: false
     description: Get the alerts on cloud assets
-    execution: false
     name: get-alerts
     outputs:
     - contextPath: Orca.AlertManager.Alerts
       description: All alerts
       type: String
   - arguments:
-    - default: false
-      description: Asset unique id
-      isArray: false
+    - description: Asset unique id
       name: asset_unique_id
       required: true
-      secret: false
-    deprecated: false
     description: Get Description of An asset
-    execution: false
     name: get-asset
     outputs:
     - contextPath: Orca.Manager.Asset
       description: Asset description
       type: String
   - arguments:
-    - default: false
-      description: Orca Asset Unique Identifier
-      isArray: false
+    - description: Orca Asset Unique Identifier
       name: asset_unique_id
       required: true
-      secret: false
-    deprecated: false
     description: Get CVEs of an asset
-    execution: false
     name: get-cves
     outputs:
     - contextPath: Orca.Manager.Cve
       description: CVEs of asset
       type: String
-  - deprecated: false
+  - arguments: []
     description: fetches orca alerts
-    execution: false
     name: fetch-incidents
   dockerimage: demisto/python3:3.8.6.14516
-  feed: false
   isfetch: true
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - No tests
-fromversion: 5.0.0
