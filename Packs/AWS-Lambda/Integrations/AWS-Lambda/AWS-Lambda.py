@@ -17,10 +17,10 @@ urllib3.disable_warnings()
 
 def get_timeout(timeout: str) -> Tuple[int, int]:
     if not timeout:
-        timeout = "60,1"  # default values
+        timeout = "60,10"  # default values
     timeout_vals = timeout.split(',')
     read_timeout = int(timeout_vals[0])
-    connect_timeout = 1 if len(timeout_vals) == 1 else int(timeout_vals[1])
+    connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
     return (read_timeout, connect_timeout)
 
 
@@ -322,7 +322,7 @@ def invoke(args):
         'Region': obj['_user_provided_options']['region_name'],
     })
     if 'LogResult' in response:
-        data.update({'LogResult': base64.b64decode(response['LogResult'])})  # type:ignore
+        data.update({'LogResult': base64.b64decode(response['LogResult']).decode("utf-8")})  # type:ignore
     if 'Payload' in response:
         data.update({'Payload': response['Payload'].read().decode("utf-8")})  # type:ignore
     if 'ExecutedVersion' in response:
