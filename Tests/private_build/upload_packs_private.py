@@ -120,12 +120,6 @@ def add_private_packs_to_index(index_folder_path: str, private_index_path: str):
     for d in os.scandir(private_index_path):
         if os.path.isdir(d.path):
             update_index_folder(index_folder_path, d.name, d.path)
-    try:
-        print('\n\n\n trying to ls index_folder_path after addition of private packs \n\n\n')
-        subprocess.call(f'ls {index_folder_path}', shell=True)
-    except Exception as e:
-        print(f'\n\n\n path {index_folder_path} does not exist')
-
 
 
 def update_index_with_priced_packs(private_storage_bucket: Any, extract_destination_path: str,
@@ -155,7 +149,6 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         logging.info("get_private_packs")
         private_packs = get_private_packs(private_index_path, pack_names,
                                           extract_destination_path)
-        print(f'\n\n\n private packs are: {private_packs} \n\n\n')
         logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
         logging.info("Finished updating index with priced packs")
@@ -233,12 +226,6 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    print(f'\n\n\nindex folder path is; {index_folder_path}\n\n\n')
-    try:
-        subprocess.call(f'ls {index_folder_path}', shell=True)
-    except Exception as e:
-        print(f'\n\n\n path {index_folder_path} does not exist.\n {e}')
-
     task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                        integration_images=integration_images, author_image=author_image,
                                        index_folder_path=index_folder_path,
@@ -250,11 +237,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.status = PackStatus.FAILED_METADATA_PARSING.name
         pack.cleanup()
         return
-    print(f'\n\n\nprinting index after folder metadata\n\n\n')
-    try:
-        subprocess.call(f'ls {index_folder_path}', shell=True)
-    except Exception as e:
-        print(f'\n\n\n path {index_folder_path} does not exist\n {e}')
+
     task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number)
     if not task_status:
         pack.status = PackStatus.FAILED_RELEASE_NOTES.name
@@ -422,8 +405,6 @@ def main():
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.is_private
 
-    print(f"Packs artifact path is: {packs_artifacts_path}")
-
     prepare_test_directories(packs_artifacts_path)
 
     # google cloud storage client initialized
@@ -435,8 +416,6 @@ def main():
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
-    print(f'\n\n\n index_folder_path:{index_folder_path} \n\n\n')
-
     # content repo client initialized
     if not is_private_build:
         content_repo = get_content_git_client(CONTENT_ROOT_PATH)
@@ -466,13 +445,6 @@ def main():
                                                                                                index_folder_path,
                                                                                                pack_names,
                                                                                                is_private_build)
-        print(f'\n\n\n private_packs:{private_packs},\n\n\n private_index_path:{private_index_path} \n\n\n')
-        try:
-            print('\n\n\n ls to private_index_path \n\n\n')
-            subprocess.call(f'ls {private_index_path}', shell=True)
-        except Exception as e:
-            print('\n\n was not able to ls to private_index_path \n\n')
-
     else:  # skipping private packs
         logging.info("Skipping index update of priced packs")
         private_packs = []
@@ -486,7 +458,6 @@ def main():
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, default_storage_bucket)
     # starting iteration over packs
-    print(f'\n\n packs_list is:{packs_list}\n\n')
     for pack in packs_list:
         create_and_upload_marketplace_pack(upload_config, pack, storage_bucket, index_folder_path,
                                            packs_dependencies_mapping, private_bucket_name,
