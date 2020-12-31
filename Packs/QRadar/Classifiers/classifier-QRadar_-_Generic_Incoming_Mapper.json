@@ -514,17 +514,8 @@
      "simple": ""
     },
     "Events": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "events",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
+     "complex": null,
+     "simple": "events"
     },
     "Events High Level Category": {
      "complex": {

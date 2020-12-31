@@ -1,10 +1,11 @@
 import unittest
 import os
 import json
+
 import requests_mock
 from RecordedFuture import lookup_command, Client, enrich_command, \
     get_alert_rules_command, get_alerts_command, triage_command
-from mock_samples import IP_LOOKUP, IP_REP, TRIAGE, ALERT_RULES, ALERTS
+from test_data.mock_samples import IP_LOOKUP, IP_REP, TRIAGE, ALERT_RULES, ALERTS
 from CommonServerPython import CommandResults
 
 
@@ -44,9 +45,9 @@ class RFTest(unittest.TestCase):
                        'metrics,location,relatedEntities,riskyCIDRIPs',
                        text=json.dumps(IP_LOOKUP))
         resp = enrich_command(self.client, '1.2.3.4', 'ip', True, True)
-        self.assertIsInstance(resp, CommandResults)
+        self.assertIsInstance(resp[0], CommandResults)
         self.assertEqual('1.2.3.4',
-                         resp.to_context()['Contents']['data']['name'])
+                         resp[0].to_context()['Contents']['data']['name'])
 
     def test_threat_assessment(self, m) -> None:
         m.register_uri('POST',
@@ -61,9 +62,9 @@ class RFTest(unittest.TestCase):
                     'url': ['https://sites.google.com/site/unblockingnotice/'],
                     'vulnerability': ['CVE-2020-8813', 'CVE-2011-3874']}
         resp = triage_command(self.client, entities, context)
-        self.assertIsInstance(resp, CommandResults)
-        self.assertFalse(resp.to_context()['Contents']['verdict'])
-        self.assertEqual('phishing', resp.to_context()['Contents']['context'])
+        self.assertIsInstance(resp[len(resp) - 1], CommandResults)
+        self.assertFalse(resp[len(resp) - 1].to_context()['Contents']['verdict'])
+        self.assertEqual('phishing', resp[len(resp) - 1].to_context()['Contents']['context'])
 
     def test_get_alerting_rules(self, m) -> None:
         m.register_uri('GET',
