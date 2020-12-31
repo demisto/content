@@ -1,267 +1,242 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
-import json
-import urllib3
-import dateparser
 import traceback
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Dict, List, Optional
+
+import urllib3
+
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 ''' CONSTANTS '''
-vm_power_status_change_transition = {"ON", "OFF", "POWERCYCLE", "RESET", "PAUSE", "SUSPEND", "RESUME", "SAVE",
-                                     "ACPI_SHUTDOWN", "ACPI_REBOOT"}
+
+DEFAULT_HEADERS = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Connection': 'keep_alive',
+}
+# maybe useless
+VM_POWER_STATUS_CHANGE_TRANSITIONS = {'ON', 'OFF', 'POWERCYCLE', 'RESET', 'PAUSE', 'SUSPEND', 'RESUME', 'SAVE',
+                                      'ACPI_SHUTDOWN', 'ACPI_REBOOT'}
+
+# maybe useless
+SEVERITY_OPTIONS = {'CRITICAL', 'WARNING', 'INFO', 'AUDIT'}
+
+accept_json_response = {'Accept': 'application/json'}
+
+CONTENT_JSON = {'Content-Type': 'application/json'}
+
+''' LOWER AND UPPER BOUNDS FOR INTEGER ARGUMENTS '''
+MINIMUM_PAGE_VALUE = 1
+
+MINIMUM_COUNT_VALUE = 1
+MAXIMUM_COUNT_VALUE = 1000
+
+MINIMUM_OFFSET_VALUE = 0
+
+MINIMUM_LENGTH_VALUE = 1
+
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
 
+    def __init__(self, base_url, verify, proxy, headers, auth):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+        pass
 
-# def get_ip_reputation(self, ip: str) -> Dict[str, Any]:
-#     """Gets the IP reputation using the '/ip' API endpoint
-#
-#     :type ip: ``str``
-#     :param ip: IP address to get the reputation for
-#
-#     :return: dict containing the IP reputation as returned from the API
-#     :rtype: ``Dict[str, Any]``
-#     """
-#
-#     return self._http_request(
-#         method='GET',
-#         url_suffix='/ip',
-#         params={
-#             'ip': ip
-#         }
-#     )
+    def test_module(self):
+        raise NotImplementedError
+
+    def fetch_incidents(self):
+        raise NotImplementedError
+
+    # limit - maybe or maybe count
+    def get_nutanix_hypervisor_hosts_list(self, filter_: str, limit: str, page: str):
+        return self._http_request(
+            method='GET',
+            url_suffix='hosts',
+            params=assign_params(
+                filter_criteria=filter_,
+                count=limit,
+                page=page
+            )
+        )
+
+    def get_nutanix_hypervisor_vms_list(self, filter_: str, offset: int, length: int):
+        return self._http_request(
+            method='GET',
+            url_suffix='vms',
+            params=assign_params(
+                filter_criteria=filter_,
+                offset=offset,
+                length=length
+            )
+        )
+
+    def nutanix_hypervisor_vm_power_status_change(self, uuid: str, host_uuid: str, transition: str):
+        return self._http_request(
+            method='POST',
+            url_suffix=f'vms/{uuid}/set_power_state',
+            headers=CONTENT_JSON,
+            data=assign_params(
+                host_uuid=host_uuid,
+                transition=transition,
+                uuid=uuid
+            )
+        )
+
+    def nutanix_hypervisor_task_poll(self, completed_tasks: List[str]):
+        return self._http_request(
+            method='POST',
+            url_suffix='tasks/poll',
+            headers=CONTENT_JSON,
+            data=assign_params(
+                completed_tasks=completed_tasks
+            )
+        )
+
+    def get_nutanix_alerts_list(self, start_time: int, end_time: int, resolved: bool, auto_resolved: bool,
+                                acknowledged: bool, severity: str, alert_type_uuid, entity_ids: str, impact_types: str,
+                                classifications: str, entity_type: str, page: int, limit: int):
+        return self._http_request(
+            method='GET',
+            url_suffix='alerts',
+            params=assign_params(
+                start_time_in_usecs=start_time,
+                end_time_in_usecs=end_time,
+                resolved=resolved,
+                auto_resolved=auto_resolved,
+                acknowledged=acknowledged,
+                severity=severity,
+                alert_type_uuid=alert_type_uuid,
+                entity_ids=entity_ids,
+                impact_types=impact_types,
+                classification=classifications,
+                entity_type=entity_type,
+                page=page,
+                count=limit
+            )
+        )
+
+    def post_nutanix_alert_acknowledge(self, alert_id: str):
+        return self._http_request(
+            method='POST',
+            url_suffix=f'alerts/{alert_id}/acknowledge',
+        )
+
+    def post_nutanix_alert_resolve(self, alert_id: str):
+        return self._http_request(
+            method='POST',
+            url_suffix=f'alerts/{alert_id}/resolve',
+        )
+
+    def post_nutanix_alerts_acknowledge_by_filter(self, start_time: int, end_time: int, severity: str,
+                                                  impact_types: str, classifications: str, entity_type: str,
+                                                  entity_type_ids: str, limit: int):
+        return self._http_request(
+            method='POST',
+            url_suffix='alerts/acknowledge',
+            params=assign_params(
+                start_time_in_usecs=start_time,
+                end_time_in_usecs=end_time,
+                severity=severity,
+                impact_types=impact_types,
+                classification=classifications,
+                entity_type=entity_type,
+                entity_type_ids=entity_type_ids,
+                count=limit
+            )
+        )
+
+    def post_nutanix_alerts_resolve_by_filter(self, start_time: int, end_time: int, severity: str,
+                                              impact_types: str, classifications: str, entity_type: str,
+                                              entity_type_ids: str, limit: int):
+        return self._http_request(
+            method='POST',
+            url_suffix='alerts/resolve',
+            params=assign_params(
+                start_time_in_usecs=start_time,
+                end_time_in_usecs=end_time,
+                severity=severity,
+                impact_types=impact_types,
+                classification=classifications,
+                entity_type=entity_type,
+                entity_type_ids=entity_type_ids,
+                count=limit
+            )
+        )
 
 
 ''' HELPER FUNCTIONS '''
 
+
+def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optional[int] = None,
+                                  maximum: Optional[int] = None) -> Optional[int]:
+    """
+    Extracts int argument from demisto arguments, and in case argument exists,
+    validates that:
+    - If min is not None, min <= argument
+    - If max is not None, argument <= max
+
+    Args:
+        args (Dict): Demisto arguments.
+        argument_name (str): The name of the argument to extract
+        minimum (int): If specified, the minimum value the argument can have
+        maximum (int): If specified, the maximum value the argument can have
+
+    Returns:
+        - If argument is None, returns None
+        - If argument is not None and is not between min to max, raises DemistoException
+        - If argument is not None and is between min to max, returns argument
+    """
+    argument_value = arg_to_number(args.get(argument_name), arg_name=argument_name)
+
+    if argument_value and minimum and not minimum <= argument_value:
+        raise DemistoException(f'{argument_name} should be equal or bigger than {minimum}')
+
+    if argument_value and maximum and not argument_value <= maximum:
+        raise DemistoException(f'{argument_name} should be equal or less than {maximum}')
+
+    return argument_value
+
+
+def get_page_argument(args: Dict) -> Optional[str]:
+    """
+    Extracts the 'page' argument from demisto arguments, and in case 'page'' exists,
+    validates that argument 'count' exists.
+    This validation is needed because Nutanix service returns an error when page argument
+    is given but count argument is missing.
+    (Nutanix error code 1202 - 'Page number cannot be specified without count').
+    Args:
+        args: Demisto arguments
+
+    Returns:
+        - If 'page' argument has value and 'count' argument has value, returns 'page' argument value
+        - If 'page' argument has value and 'count' argument does not have  value, raises DemistoException
+        - If 'page' argument does not have value, returns None
+    """
+    page_value = get_and_validate_int_argument(args, 'page', minimum=MINIMUM_PAGE_VALUE)
+    if page_value and args.get('count') is None:
+        raise DemistoException('Page argument cannot be specified without count argument')
+    return page_value
+
+
+# def encode_username_and_password(username, password):
+#     sample_string = username + ":" + password
+#     sample_string_bytes = sample_string.encode("ascii")
+#     base64_bytes = base64.b64encode(sample_string_bytes)
+#     encoded_value = base64_bytes.decode("ascii")
+#     return encoded_value
+
+
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, first_fetch_time: int) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: HelloWorld client to use
-
-    :type name: ``str``
-    :param name: name to append to the 'Hello' string
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-    try:
-        client.search_alerts(max_results=1, start_time=first_fetch_time, alert_status=None, alert_type=None,
-                             severity=None)
-    except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return 'ok'
-
-
-# def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-#     """helloworld-say-hello command: Returns Hello {somename}
-#
-#     :type client: ``Client``
-#     :param Client: HelloWorld client to use
-#
-#     :type args: ``str``
-#     :param args:
-#         all command arguments, usually passed from ``demisto.args()``.
-#         ``args['name']`` is used as input name
-#
-#     :return:
-#         A ``CommandResults`` object that is then passed to ``return_results``,
-#         that contains the hello world message
-#
-#     :rtype: ``CommandResults``
-#     """
-#
-#     # INTEGRATION DEVELOPER TIP
-#     # In this case 'name' is an argument set in the HelloWorld.yml file as mandatory,
-#     # so the null check here as XSOAR will always check it before your code is called.
-#     # Although it's not mandatory to check, you are welcome to do so.
-#
-#     name = args.get('name', None)
-#     if not name:
-#         raise ValueError('name not specified')
-#
-#     # Call the Client function and get the raw response
-#     result = client.say_hello(name)
-#
-#     # Create the human readable output.
-#     # It will  be in markdown format - https://www.markdownguide.org/basic-syntax/
-#     # More complex output can be formatted using ``tableToMarkDown()`` defined
-#     # in ``CommonServerPython.py``
-#     readable_output = f'## {result}'
-#
-#     # More information about Context:
-#     # https://xsoar.pan.dev/docs/integrations/context-and-outputs
-#     # We return a ``CommandResults`` object, and we want to pass a custom
-#     # markdown here, so the argument ``readable_output`` is explicit. If not
-#     # passed, ``CommandResults``` will do a ``tableToMarkdown()`` do the data
-#     # to generate the readable output.
-#     return CommandResults(
-#         readable_output=readable_output,
-#         outputs_prefix='hello',
-#         outputs_key_field='',
-#         outputs=result
-#     )
-
-
-# def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
-#                     first_fetch_time: Optional[int], alert_status: Optional[str],
-#                     min_severity: str, alert_type: Optional[str]
-#                     ) -> Tuple[Dict[str, int], List[dict]]:
-#     """This function retrieves new alerts every interval (default is 1 minute).
-#
-#     This function has to implement the logic of making sure that incidents are
-#     fetched only onces and no incidents are missed. By default it's invoked by
-#     XSOAR every minute. It will use last_run to save the timestamp of the last
-#     incident it processed. If last_run is not provided, it should use the
-#     integration parameter first_fetch_time to determine when to start fetching
-#     the first time.
-#
-#     :type client: ``Client``
-#     :param Client: HelloWorld client to use
-#
-#     :type max_results: ``int``
-#     :param max_results: Maximum numbers of incidents per fetch
-#
-#     :type last_run: ``Optional[Dict[str, int]]``
-#     :param last_run:
-#         A dict with a key containing the latest incident created time we got
-#         from last fetch
-#
-#     :type first_fetch_time: ``Optional[int]``
-#     :param first_fetch_time:
-#         If last_run is None (first time we are fetching), it contains
-#         the timestamp in milliseconds on when to start fetching incidents
-#
-#     :type alert_status: ``Optional[str]``
-#     :param alert_status:
-#         status of the alert to search for. Options are: 'ACTIVE'
-#         or 'CLOSED'
-#
-#     :type min_severity: ``str``
-#     :param min_severity:
-#         minimum severity of the alert to search for.
-#         Options are: "Low", "Medium", "High", "Critical"
-#
-#     :type alert_type: ``Optional[str]``
-#     :param alert_type:
-#         type of alerts to search for. There is no list of predefined types
-#
-#     :return:
-#         A tuple containing two elements:
-#             next_run (``Dict[str, int]``): Contains the timestamp that will be
-#                     used in ``last_run`` on the next fetch.
-#             incidents (``List[dict]``): List of incidents that will be created in XSOAR
-#
-#     :rtype: ``Tuple[Dict[str, int], List[dict]]``
-#     """
-#
-#     # Get the last fetch time, if exists
-#     # last_run is a dict with a single key, called last_fetch
-#     last_fetch = last_run.get('last_fetch', None)
-#     # Handle first fetch time
-#     if last_fetch is None:
-#         # if missing, use what provided via first_fetch_time
-#         last_fetch = first_fetch_time
-#     else:
-#         # otherwise use the stored last fetch
-#         last_fetch = int(last_fetch)
-#
-#     # for type checking, making sure that latest_created_time is int
-#     latest_created_time = cast(int, last_fetch)
-#
-#     # Initialize an empty list of incidents to return
-#     # Each incident is a dict with a string as a key
-#     incidents: List[Dict[str, Any]] = []
-#
-#     # Get the CSV list of severities from min_severity
-#     severity = ','.join(HELLOWORLD_SEVERITIES[HELLOWORLD_SEVERITIES.index(min_severity):])
-#
-#     alerts = client.search_alerts(
-#         alert_type=alert_type,
-#         alert_status=alert_status,
-#         max_results=max_results,
-#         start_time=last_fetch,
-#         severity=severity
-#     )
-#
-#     for alert in alerts:
-#         # If no created_time set is as epoch (0). We use time in ms so we must
-#         # convert it from the HelloWorld API response
-#         incident_created_time = int(alert.get('created', '0'))
-#         incident_created_time_ms = incident_created_time * 1000
-#
-#         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-#         if last_fetch:
-#             if incident_created_time <= last_fetch:
-#                 continue
-#
-#         # If no name is present it will throw an exception
-#         incident_name = alert['name']
-#
-#         # INTEGRATION DEVELOPER TIP
-#         # The incident dict is initialized with a few mandatory fields:
-#         # name: the incident name
-#         # occurred: the time on when the incident occurred, in ISO8601 format
-#         # we use timestamp_to_datestring() from CommonServerPython.py to
-#         # handle the conversion.
-#         # rawJSON: everything else is packed in a string via json.dumps()
-#         # and is included in rawJSON. It will be used later for classification
-#         # and mapping inside XSOAR.
-#         # severity: it's not mandatory, but is recommended. It must be
-#         # converted to XSOAR specific severity (int 1 to 4)
-#         # Note that there are other fields commented out here. You can do some
-#         # mapping of fields (either out of the box fields, like "details" and
-#         # "type") or custom fields (like "helloworldid") directly here in the
-#         # code, or they can be handled in the classification and mapping phase.
-#         # In either case customers can override them. We leave the values
-#         # commented out here, but you can use them if you want.
-#         incident = {
-#             'name': incident_name,
-#             # 'details': alert['name'],
-#             'occurred': timestamp_to_datestring(incident_created_time_ms),
-#             'rawJSON': json.dumps(alert),
-#             # 'type': 'Hello World Alert',  # Map to a specific XSOAR incident Type
-#             'severity': convert_to_demisto_severity(alert.get('severity', 'Low')),
-#             # 'CustomFields': {  # Map specific XSOAR Custom Fields
-#             #     'helloworldid': alert.get('alert_id'),
-#             #     'helloworldstatus': alert.get('alert_status'),
-#             #     'helloworldtype': alert.get('alert_type')
-#             # }
-#         }
-#
-#         incidents.append(incident)
-#
-#         # Update last run and add incident if the incident is newer than last fetch
-#         if incident_created_time > latest_created_time:
-#             latest_created_time = incident_created_time
-#
-#     # Save the next_run as a dict with the last_fetch key to be stored
-#     next_run = {'last_fetch': latest_created_time}
-#     return next_run, incidents
 def test_module_command():
     raise NotImplementedError
 
 
 def fetch_incidents_command(args: Dict):
-
     resolved = argToBoolean(args.get('resolved'))
     auto_resolved = argToBoolean(args.get('auto_resolved'))
     acknowledged = argToBoolean(args.get('acknowledged'))
@@ -278,8 +253,8 @@ def nutanix_hypervisor_hosts_list_command(args: Dict):
     context_path = 'NutanixHypervisor.Host'
 
     filter_ = args.get('filter')
-    page = args.get('page')
-    count = args.get('count')
+    page = get_page_argument(args)
+    count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
 
     raise NotImplementedError
 
@@ -288,8 +263,8 @@ def nutanix_hypervisor_vms_list_command(args: Dict):
     context_path = 'NutanixHypervisor.VM'
 
     filter_ = args.get('filter')
-    offset = args.get('offset')
-    length = args.get('length')
+    offset = get_and_validate_int_argument(args, 'offset', minimum=MINIMUM_OFFSET_VALUE)
+    length = get_and_validate_int_argument(args, 'length', minimum=MINIMUM_LENGTH_VALUE)
 
     raise NotImplementedError
 
@@ -300,9 +275,6 @@ def nutanix_hypervisor_vm_power_status_change_command(args: Dict):
     vm_uuid = args.get('vm_uuid')
     host_uuid = args.get('host_uuid')
     transition = args.get('transition')
-
-    if transition not in vm_power_status_change_transition:
-        raise DemistoException('invalid type of transition')
 
     raise NotImplementedError
 
@@ -329,8 +301,8 @@ def nutanix_alerts_list_command(args: Dict):
     impact_types = args.get('impact_types')  # maybe split ,
     classifications = args.get('classifications')  # maybe split ,
     entity_type_ids = args.get('entity_type_ids')  # maybe split ,
-    page = args.get('page')
-    count = args.get('count')
+    page = get_page_argument(args)
+    count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
 
     raise NotImplementedError
 
@@ -361,7 +333,7 @@ def nutanix_alerts_acknowledge_by_filter_command(args: Dict):
     impact_types = args.get('impact_types')  # maybe split ,
     classifications = args.get('classifications')  # maybe split ,
     entity_type_ids = args.get('entity_type_ids')  # maybe split ,
-    count = args.get('count')
+    count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
 
     raise NotImplementedError
 
@@ -375,10 +347,11 @@ def nutanix_alerts_resolve_by_filter_command(args: Dict):
     impact_types = args.get('impact_types')  # maybe split ,
     classifications = args.get('classifications')  # maybe split ,
     entity_type_ids = args.get('entity_type_ids')  # maybe split ,
-    page = args.get('page')
-    count = args.get('count')
+    page = get_page_argument(args)
+    count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
 
     raise NotImplementedError
+
 
 ''' MAIN FUNCTION '''
 
@@ -388,7 +361,10 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
 
-    api_key = params.get('apikey')
+    username = params.get('username')
+    password = params.get('password')
+
+    base_url = params.get('baseurl')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -397,13 +373,14 @@ def main() -> None:
         client = Client(
             base_url="TODO",
             verify=verify_certificate,
-            proxy=proxy)
+            proxy=proxy,
+            auth=(username, password))
 
         if command == 'test-module':
             test_module_command()
 
         elif command == 'fetch-incidents':
-            fetch_incidents_command()
+            fetch_incidents_command(args)
 
         elif command == 'nutanix-hypervisor-hosts-list':
             nutanix_hypervisor_hosts_list_command(args)
@@ -436,6 +413,7 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
 
 ''' ENTRY POINT '''
 
