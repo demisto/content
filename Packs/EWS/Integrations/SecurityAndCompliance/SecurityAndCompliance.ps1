@@ -501,7 +501,7 @@ class OAuth2DeviceCodeClient {
                 "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
                 "Method" = "Post"
                 "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
-                "Body" = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&code=$($this.device_code)&client_id=$($this.application_id)"
+                "Body" = "grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code&device_code=$($this.device_code)&client_id=$($this.application_id)"
                 "NoProxy" = !$this.proxy
                 "SkipCertificateCheck" = $this.insecure
             }
