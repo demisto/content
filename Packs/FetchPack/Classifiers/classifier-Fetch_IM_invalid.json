@@ -1,0 +1,57 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "ad09dda1-b131-4a22-8f16-d426dd42ea4d",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 8,
+	"mapping": {
+		"Fetch_IT": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {}
+		},
+		"Long Fetch Events IT": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Events": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "events",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		},
+		"Qradar Generic": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {}
+		}
+	},
+	"name": "Fetch_IM_invalid",
+	"nameRaw": "Fetch_IM_invalid",
+	"packID": "",
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

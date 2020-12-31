@@ -1,0 +1,14 @@
+{
+    "name": "## FILL MANDATORY FIELD ##",
+    "description": "## FILL MANDATORY FIELD ##",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-12-31T15:12:08Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

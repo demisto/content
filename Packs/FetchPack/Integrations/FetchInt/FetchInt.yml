@@ -1,0 +1,36 @@
+category: Utilities
+commonfields:
+  id: Fetch_Int
+  version: -1
+configuration:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: ""
+  name: num_of_events
+  options:
+  - "1"
+  - "20"
+  required: true
+  type: 15
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: Fetch integration
+display: Fetch_Int
+name: Fetch_Int
+script:
+  dockerimage: demisto/python3:3.8.6.13358
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python

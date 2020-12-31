@@ -1,0 +1,383 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#536DFE",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {
+			"agentid": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"alertid": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"alertname": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"app": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"assigneduser": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"assignmentgroup": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"attachment": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"caller": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"category": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"closenotes": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"closinguserid": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"commandline": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"country": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"dbotmirrorid": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"dbotprediction": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"destinationhostname": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"destinationip": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"destinationnetwork": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"destinationport": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"details": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"detectionurl": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"deviceexternalip": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"devicehash": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"deviceid": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"devicelocalip": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"devicemodel": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"devicename": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"droppedcount": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"escalation": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"eventid": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"eventtype": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"feedbased": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"filehash": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"filename": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"filepath": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"filesize": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"firstname": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"incomingmirrorerror": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"investigationstage": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"labels": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"lastname": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"linkedcount": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"logsource": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"macaddress": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"md5": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"mobiledevicemodel": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"name": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"os": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"osversion": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"outgoingmirrorerror": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"phonenumber": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"pid": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"protocol": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"runstatus": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"sha1": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"sha256": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"sha512": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"sourcebrand": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"sourcehostname": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"sourceinstance": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"sourceip": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"sourcenetwork": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"sourceport": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"sourceusername": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"state": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"subcategory": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"tenantname": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"ticketnumber": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"urlsslverification": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			},
+			"useraccountcontrol": {
+				"extractAsIsIndicatorTypeId": "",
+				"extractIndicatorTypesIDs": null,
+				"isExtractingAllIndicatorTypes": true
+			}
+		}
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Fetch_IT",
+	"itemVersion": "",
+	"layout": "",
+	"locked": false,
+	"name": "Fetch_IT",
+	"onChangeRepAlg": 1,
+	"packID": "",
+	"preProcessingScript": "",
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
