@@ -283,7 +283,26 @@ def generate_md_upload_issue(data, issue_id):
     return upload_md
 
 
-def create_incident_from_ticket(issue):
+def get_mirror_type(should_mirror_in, should_mirror_out):
+    """
+    This function return the type of mirror to perform on a Jira incident.
+    NOTE: in order to not mirror an incident, the type should be None.
+    :param should_mirror_in: demisto.params().get("incoming_mirror")
+    :param should_mirror_out: demisto.params().get('outgoing_mirror')
+    :return: The mirror type
+    """
+    # Adding mirroring details
+    mirror_type = None
+    if should_mirror_in and should_mirror_out:
+        mirror_type = 'Both'
+    elif should_mirror_in:
+        mirror_type = 'In'
+    elif should_mirror_out:
+        mirror_type = 'Out'
+    return mirror_type
+
+
+def create_incident_from_ticket(issue, should_get_attachments, should_get_comments, should_mirror_in, should_mirror_out, comment_tag, attachment_tag):
     labels = [
         {'type': 'issue', 'value': json.dumps(issue)}, {'type': 'id', 'value': str(issue.get('id'))},
         {'type': 'lastViewed', 'value': str(demisto.get(issue, 'fields.lastViewed'))},
@@ -315,31 +334,25 @@ def create_incident_from_ticket(issue):
             severity = 1
 
     file_names = []
-    if demisto.params().get('fetch_attachments'):
+    if should_get_attachments:
         for file_result in get_entries_for_fetched_incident(issue.get('id'), False, True)['attachments']:
             if file_result['Type'] != entryTypes['error']:
                 file_names.append({
                     'path': file_result.get('FileID', ''),
                     'name': file_result.get('File', '')
                 })
-    if demisto.params().get('fetch_comments'):
+
+    if should_get_comments:
         labels.append({'type': 'comments', 'value': str(get_entries_for_fetched_incident(issue.get('id'), True, False)
                                                         ['comments'])})
     else:
         labels.append({'type': 'comments', 'value': '[]'})
-    # Adding mirroring details
-    if demisto.params().get("incoming_mirror") and demisto.params().get("outgoing_mirror"):
-        issue['mirror_direction'] = 'Both'
-    elif demisto.params().get("incoming_mirror"):
-        issue['mirror_direction'] = 'In'
-    elif demisto.params().get('outgoing_mirror'):
-        issue['mirror_direction'] = 'Out'
-    else:
-        issue['mirror_direction'] = None
+
+    issue['mirror_direction'] = get_mirror_type(should_mirror_in, should_mirror_out)
 
     issue['mirror_tags'] = [
-        demisto.params().get('comment_tag'),
-        demisto.params().get('file_tag'),
+        comment_tag,
+        attachment_tag
     ]
     issue['mirror_instance'] = demisto.integrationInstance()
 
@@ -726,7 +739,8 @@ def get_entries_for_fetched_incident(ticket_id, should_get_comments, should_get_
         return entries
 
 
-def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
+def fetch_incidents(query, id_offset, should_get_attachments, should_get_comments, should_mirror_in, should_mirror_out,
+                    comment_tag, attachment_tag, fetch_by_created=None):
     last_run = demisto.getLastRun()
     demisto.debug(f"last_run: {last_run}" if last_run else 'last_run is empty')
     if last_run and last_run.get("idOffset"):
@@ -748,7 +762,8 @@ def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
             if ticket_id == curr_id:
                 continue
             id_offset = max(int(id_offset), ticket_id)
-            incidents.append(create_incident_from_ticket(ticket))
+            incidents.append(create_incident_from_ticket(ticket, should_get_attachments, should_get_comments,
+                                                         should_mirror_in, should_mirror_out, comment_tag, attachment_tag))
 
     demisto.setLastRun({"idOffset": id_offset})
     return incidents
@@ -984,6 +999,15 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
 
 def main():
     demisto.debug(f'Command being called is {demisto.command()}')
+    fetch_query = demisto.params().get('query')
+    id_offset = demisto.params().get('idOffset')
+    fetch_attachments = demisto.params().get('fetch_attachments')
+    fetch_comments = demisto.params().get('fetch_comments')
+    incoming_mirror = demisto.params().get("incoming_mirror")
+    outgoing_mirror = demisto.params().get('outgoing_mirror')
+    comment_tag = demisto.params().get('comment_tag'),
+    attachment_tag = demisto.params().get('file_tag'),
+    fetch_by_created = demisto.params().get('fetchByCreated')
     try:
         # Remove proxy if not set to true in params
         handle_proxy()
@@ -994,7 +1018,8 @@ def main():
 
         elif demisto.command() == 'fetch-incidents':
             # Set and define the fetch incidents command to run after activated via integration settings.
-            incidents = fetch_incidents(**snakify(demisto.params()))
+            incidents = fetch_incidents(fetch_query, id_offset, fetch_attachments, fetch_comments, incoming_mirror,
+                                        outgoing_mirror, comment_tag, attachment_tag, fetch_by_created)
             demisto.incidents(incidents)
         elif demisto.command() == 'jira-get-issue':
             human_readable, outputs, raw_response = get_issue(**snakify(demisto.args()))
