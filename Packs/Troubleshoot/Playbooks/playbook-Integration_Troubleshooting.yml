@@ -1,141 +1,121 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 id: Integration Troubleshooting
-inputs:
-- description: ""
-  key: instancename
-  playbookInputQuery:
-  required: true
-  value:
-    complex:
-      accessor: instancename
-      root: incident
-- description: ""
-  key: troubleshoottype
-  playbookInputQuery:
-  required: true
-  value:
-    complex:
-      accessor: troubleshoottype
-      root: incident
-- description: ""
-  key: commandline
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: commandline
-      root: incident
+version: -1
 name: Integration Troubleshooting
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: e78de301-27cc-4bf6-898b-0a7e7bb3e843
+    type: start
+    task:
+      id: e78de301-27cc-4bf6-898b-0a7e7bb3e843
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
-    note: false
-    quietmode: 0
+      - "34"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: e78de301-27cc-4bf6-898b-0a7e7bb3e843
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: e78de301-27cc-4bf6-898b-0a7e7bb3e843
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
-          "x": 1820,
-          "y": 65
+          "x": 2035,
+          "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    ignoreworker: false
+    taskid: 24a9004b-b285-4ae1-8641-092ea123fdd7
+    type: regular
+    task:
+      id: 24a9004b-b285-4ae1-8641-092ea123fdd7
+      version: -1
+      name: Get Instance Parameters
+      description: Gets an integration's parameters
+      scriptName: GetInstanceParameters
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
-    note: false
-    quietmode: 0
     scriptarguments:
       instance_name:
         complex:
           root: inputs.instancename
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Gets an integration's parameters
-      id: 24a9004b-b285-4ae1-8641-092ea123fdd7
-      iscommand: false
-      name: Get Instance Parameters
-      scriptName: GetInstanceParameters
-      type: regular
-      version: -1
-    taskid: 24a9004b-b285-4ae1-8641-092ea123fdd7
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 1820,
-          "y": 225
+          "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: dab7450a-642f-45c3-8d99-619d353f25ad
+    type: regular
+    task:
+      id: dab7450a-642f-45c3-8d99-619d353f25ad
+      version: -1
+      name: Run command
+      description: ExecuteCommand
+      scriptName: ExecuteCommand
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "26"
-    note: false
-    quietmode: 0
     scriptarguments:
       arguments:
         complex:
-          accessor: Arguments
           root: CommandArgs
+          accessor: Arguments
       command:
         complex:
-          accessor: command
           root: CommandArgs
+          accessor: command
       instance_name:
         complex:
           root: inputs.instancename
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ExecuteCommand
-      id: dab7450a-642f-45c3-8d99-619d353f25ad
-      iscommand: false
-      name: Run command
-      scriptName: ExecuteCommand
-      type: regular
-      version: -1
-    taskid: dab7450a-642f-45c3-8d99-619d353f25ad
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1482.5,
-          "y": 2090
+          "x": 1257.5,
+          "y": 2235
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    ignoreworker: false
+    taskid: 6246182b-8009-4f79-8e39-f9f18e7e6c87
+    type: title
+    task:
+      id: 6246182b-8009-4f79-8e39-f9f18e7e6c87
+      version: -1
+      name: Troubleshoot instance configuration
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -143,822 +123,262 @@ tasks:
       - "17"
       - "18"
       - "20"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 6246182b-8009-4f79-8e39-f9f18e7e6c87
-      iscommand: false
-      name: Troubleshoot instance configuration
-      type: title
-      version: -1
-      description: ''
-    taskid: 6246182b-8009-4f79-8e39-f9f18e7e6c87
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
           "x": 1155,
-          "y": 750
+          "y": 895
         }
       }
-  "10":
-    continueonerror: true
-    id: "10"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: b48db9bf-27e2-4114-81ee-cd605f869a33
+    type: regular
+    task:
+      id: b48db9bf-27e2-4114-81ee-cd605f869a33
+      version: -1
+      name: Run Test button to check configuration
+      description: Check Instance Parameters
+      scriptName: TestInstance
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "28"
-    note: false
-    quietmode: 0
     scriptarguments:
       keys: {}
       parameters:
         complex:
-          accessor: RawInstance
           root: InstanceParameters
+          accessor: RawInstance
+    continueonerror: true
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check Instance Parameters
-      id: b48db9bf-27e2-4114-81ee-cd605f869a33
-      iscommand: false
-      name: Run Test button to check configuration
-      scriptName: TestInstance
-      type: regular
-      version: -1
-    taskid: b48db9bf-27e2-4114-81ee-cd605f869a33
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 1820,
-          "y": 400
+          "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    ignoreworker: false
+    taskid: ba589254-3bb2-4f05-80b0-510ca0ddcbc4
+    type: regular
+    task:
+      id: ba589254-3bb2-4f05-80b0-510ca0ddcbc4
+      version: -1
+      name: Run with insecure
+      description: Check Instance Parameters
+      scriptName: TestInstance
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "29"
-    note: false
-    quietmode: 0
     scriptarguments:
       keys:
         complex:
-          accessor: insecure_key
           root: InstanceParameters
+          accessor: insecure_key
       parameters:
         complex:
-          accessor: RawInstance
           root: InstanceParameters
+          accessor: RawInstance
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check Instance Parameters
-      id: ba589254-3bb2-4f05-80b0-510ca0ddcbc4
-      iscommand: false
-      name: Run with insecure
-      scriptName: TestInstance
-      type: regular
-      version: -1
-    taskid: ba589254-3bb2-4f05-80b0-510ca0ddcbc4
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1215
         }
       }
-  "15":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: deprecated
-                root: InstanceParameters
-          operator: isTrue
-      label: "yes"
-    id: "15"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 912d2673-dab4-4353-8bb3-8cd3eacee8f4
+    type: condition
+    task:
+      description: Is deprecated integration?
+      id: 912d2673-dab4-4353-8bb3-8cd3eacee8f4
+      version: -1
+      name: Is deprecated integration?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "19"
       "yes":
       - "24"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      description: Check if integration is deprecated
-      brand: ""
-      id: 912d2673-dab4-4353-8bb3-8cd3eacee8f4
-      iscommand: false
-      name: Is deprecated integration?
-      type: condition
-      version: -1
-    taskid: 912d2673-dab4-4353-8bb3-8cd3eacee8f4
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: InstanceParameters
+                accessor: deprecated
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 500,
-          "y": 1245
+          "y": 1390
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    ignoreworker: false
+    taskid: 51c633fd-c331-46bf-8dab-8c2c490a5517
+    type: regular
+    task:
+      id: 51c633fd-c331-46bf-8dab-8c2c490a5517
+      version: -1
+      name: Is Docker Image Exists?
+      description: Is Docker Image Exists
+      scriptName: IsDockerImageExists
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "27"
-    note: false
-    quietmode: 0
     scriptarguments:
       docker_image:
         complex:
-          accessor: dockerImage
           root: InstanceParameters
+          accessor: dockerImage
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Is Docker Image Exists
-      id: 51c633fd-c331-46bf-8dab-8c2c490a5517
-      iscommand: false
-      name: Is Docker Image Exists?
-      scriptName: IsDockerImageExists
-      type: regular
-      version: -1
-    taskid: 51c633fd-c331-46bf-8dab-8c2c490a5517
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 2260,
-          "y": 1070
+          "y": 1215
         }
       }
-  "17":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: system
-                root: InstanceParameters
-          operator: isTrue
-      label: "yes"
-    id: "17"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 7692f154-63e9-4d94-8d21-87fcbde6ab9c
+    type: condition
+    task:
+      description: Is system integration?
+      id: 7692f154-63e9-4d94-8d21-87fcbde6ab9c
+      version: -1
+      name: Is system integration?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "23"
       "yes":
       - "19"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      description: Check if integration is system
-      brand: ""
-      id: 7692f154-63e9-4d94-8d21-87fcbde6ab9c
-      iscommand: false
-      name: Is system integration?
-      type: condition
-      version: -1
-    taskid: 7692f154-63e9-4d94-8d21-87fcbde6ab9c
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: InstanceParameters
+                accessor: system
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 1155,
-          "y": 1245
+          "y": 1390
         }
       }
-  "18":
-    continueonerror: true
-    id: "18"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 41575ac0-1548-4129-8c87-ba229bfea675
+    type: regular
+    task:
+      id: 41575ac0-1548-4129-8c87-ba229bfea675
+      version: -1
+      name: Run with proxy
+      description: Check Instance Parameters
+      scriptName: TestInstance
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "30"
-    note: false
-    quietmode: 0
     scriptarguments:
       keys:
         complex:
-          accessor: proxy_key
           root: InstanceParameters
+          accessor: proxy_key
       parameters:
         complex:
-          accessor: RawInstance
           root: InstanceParameters
+          accessor: RawInstance
+    continueonerror: true
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check Instance Parameters
-      id: 41575ac0-1548-4129-8c87-ba229bfea675
-      iscommand: false
-      name: Run with proxy
-      scriptName: TestInstance
-      type: regular
-      version: -1
-    taskid: 41575ac0-1548-4129-8c87-ba229bfea675
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 1585,
-          "y": 1070
+          "y": 1215
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "19":
     id: "19"
-    ignoreworker: false
+    taskid: 9a39de39-7265-4183-87c8-2323f12a4a15
+    type: title
+    task:
+      id: 9a39de39-7265-4183-87c8-2323f12a4a15
+      version: -1
+      name: Should I run a command?
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "32"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 9a39de39-7265-4183-87c8-2323f12a4a15
-      iscommand: false
-      name: Should I run a command?
-      type: title
-      version: -1
-      description: ''
-    taskid: 9a39de39-7265-4183-87c8-2323f12a4a15
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 1370,
-          "y": 1595
-        }
-      }
-  "20":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: type
-                root: InstanceParameters
-          operator: isEqualString
-          right:
-            value:
-              simple: python
-      label: "yes"
-    id: "20"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "16"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      description: Check if integration is of type python
-      brand: ""
-      id: faa95efb-7a49-43be-891b-38dda79a52ff
-      iscommand: false
-      name: Is Python Integration?
-      type: condition
-      version: -1
-    taskid: faa95efb-7a49-43be-891b-38dda79a52ff
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 2147.5,
-          "y": 895
-        }
-      }
-  "21":
-    continueonerror: true
-    id: "21"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "19"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      message:
-        simple: 'Could not find the docker image. Try to manually download it. '
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints an error entry with a given message
-      id: 6abe5a30-b38d-4767-83af-be63748a6320
-      iscommand: false
-      name: Print error on missing docker image.
-      scriptName: PrintErrorEntry
-      type: regular
-      version: -1
-    taskid: 6abe5a30-b38d-4767-83af-be63748a6320
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 2147.5,
-          "y": 1420
-        }
-      }
-  "22":
-    id: "22"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "19"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      value:
-        simple: The command succeed when changing the 'Proxy' value. Try to change
-          it and see if the problem persists.
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 97b8d4d4-b62b-4140-8513-22e8819d3ee6
-      iscommand: false
-      name: Print success
-      scriptName: Print
-      type: regular
-      version: -1
-    taskid: 97b8d4d4-b62b-4140-8513-22e8819d3ee6
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1697.5,
-          "y": 1420
-        }
-      }
-  "23":
-    continueonerror: true
-    id: "23"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "19"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      message:
-        simple: This is not a verified XSOAR integration. Try to use an official integration
-          instead.
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints an error entry with a given message
-      id: b6e2bee6-61be-46f8-896e-ebc15b576b77
-      iscommand: false
-      name: Print error on a custom integration
-      scriptName: PrintErrorEntry
-      type: regular
-      version: -1
-    taskid: b6e2bee6-61be-46f8-896e-ebc15b576b77
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1042.5,
-          "y": 1420
-        }
-      }
-  "24":
-    continueonerror: true
-    id: "24"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "19"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      message:
-        simple: This is a deprecated integration. Try to get a supported integration
-          integration.
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints an error entry with a given message
-      id: 8e923722-53b8-4d8c-8047-32e34c57682a
-      iscommand: false
-      name: Print error on unsupported integration
-      scriptName: PrintErrorEntry
-      type: regular
-      version: -1
-    taskid: 8e923722-53b8-4d8c-8047-32e34c57682a
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 612.5,
-          "y": 1420
-        }
-      }
-  "25":
-    id: "25"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "19"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      value:
-        simple: The command succeed when changing the 'Insecure' (Trust any certificate,
-          not secure) value. Try to change it and see if the problem persists.
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Prints text to war room (Markdown supported)
-      id: 450833db-3d6b-48e5-8b6c-3ecefb0dc2a5
-      iscommand: false
-      name: Print Success
-      scriptName: Print
-      type: regular
-      version: -1
-    taskid: 450833db-3d6b-48e5-8b6c-3ecefb0dc2a5
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 162.5,
-          "y": 1420
-        }
-      }
-  "26":
-    id: "26"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "31"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      configuration:
-        complex:
-          root: InstanceParameters
-      errors:
-        complex:
-          accessor: Errors
-          filters:
-          - - left:
-                iscontext: true
-                value:
-                  simple: TestInstance.changed_keys
-              operator: isEmpty
-          root: TestInstance
-      execute_command_errors:
-        complex:
-          accessor: Error
-          root: ExecuteCommand
-      file_entry_id:
-        complex:
-          accessor: EntryID
-          root: File
-      succeeded_changed_params:
-        complex:
-          accessor: changed_keys
-          filters:
-          - - left:
-                iscontext: true
-                value:
-                  simple: TestInstance.succeed
-              operator: isTrue
-          root: TestInstance
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Aggregate Results
-      id: 56e2327c-a321-4c5a-88eb-a19102fc421c
-      iscommand: false
-      name: Generate Summary
-      scriptName: AggregateResults
-      type: regular
-      version: -1
-    taskid: 56e2327c-a321-4c5a-88eb-a19102fc421c
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1370,
-          "y": 2265
-        }
-      }
-  "27":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: exists
-                root: IsDockerImageExists
-          operator: isTrue
-      label: "yes"
-    id: "27"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "21"
-      "yes":
-      - "19"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      description: ""
-      brand: ""
-      id: 3e3d476f-1d34-4fc7-8ea7-8d22a1b2f847
-      iscommand: false
-      name: Check if it exists
-      type: condition
-      version: -1
-    taskid: 3e3d476f-1d34-4fc7-8ea7-8d22a1b2f847
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 2260,
-          "y": 1245
-        }
-      }
-  "28":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: succeed
-                root: TestInstance
-          operator: isTrue
-      label: "yes"
-    id: "28"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "9"
-      "yes":
-      - "19"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      description: Check if the test button succeded.
-      brand: ""
-      id: c0aed8f8-1867-4034-8cde-1bf62d0ed213
-      iscommand: false
-      name: Is Test succeed?
-      type: condition
-      version: -1
-    taskid: c0aed8f8-1867-4034-8cde-1bf62d0ed213
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 1820,
-          "y": 575
-        }
-      }
-  "29":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: succeed
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: TestInstance.changed_keys
-                    operator: isEqualString
-                    right:
-                      iscontext: true
-                      value:
-                        simple: InstanceParameters.insecure_key
-                root: TestInstance
-          operator: isTrue
-      label: "yes"
-    id: "29"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "25"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      description: Check if changing the insecure flag worked
-      brand: ""
-      id: 5e581b7c-a6fd-4605-83b8-c719d2d288e9
-      iscommand: false
-      name: Is insecure change worked?
-      type: condition
-      version: -1
-    taskid: 5e581b7c-a6fd-4605-83b8-c719d2d288e9
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-  "30":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: succeed
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: TestInstance.changed_keys
-                    operator: isEqualString
-                    right:
-                      iscontext: true
-                      value:
-                        simple: InstanceParameters.proxy_key
-                root: TestInstance
-          operator: isTrue
-      label: "yes"
-    id: "30"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "22"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      description: Check if changing the insecure flag worked
-      brand: ""
-      id: 97d4de29-8e7c-410f-89e6-c9632d47fd4c
-      iscommand: false
-      name: Is insecure change worked?
-      type: condition
-      version: -1
-    taskid: 97d4de29-8e7c-410f-89e6-c9632d47fd4c
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 1585,
-          "y": 1245
-        }
-      }
-  "31":
-    id: "31"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    scriptarguments:
-      entryID:
-        complex:
-          accessor: EntryID
-          root: File
-      password: {}
-      zipName:
-        complex:
-          root: inputs.instancename
-          transformers:
-          - args:
-              prefix: {}
-              suffix:
-                value:
-                  simple: _collected
-            operator: concat
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Zip a file and upload to war room
-      id: 870863ac-62da-4f22-8faf-b442d8fc33d7
-      iscommand: false
-      name: Zip all files
-      scriptName: ZipFile
-      type: regular
-      version: -1
-    taskid: 870863ac-62da-4f22-8faf-b442d8fc33d7
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1370,
-          "y": 2440
-        }
-      }
-  "32":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.troubleshoottype
-          operator: isEqualString
-          right:
-            value:
-              simple: command
-      label: command
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.troubleshoottype
-          operator: isEqualString
-          right:
-            value:
-              simple: configuration
-      label: configuration
-    id: "32"
-    ignoreworker: false
-    nexttasks:
-      command:
-      - "33"
-      configuration:
-      - "26"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      description: Go to the appropriate troubleshoot type flow
-      brand: ""
-      id: d651a5e1-468a-4384-8dea-d160331e2575
-      iscommand: false
-      name: What is the troubleshoot type?
-      type: condition
-      version: -1
-    taskid: d651a5e1-468a-4384-8dea-d160331e2575
-    timertriggers: []
-    type: condition
     view: |-
       {
         "position": {
@@ -966,14 +386,576 @@ tasks:
           "y": 1740
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: faa95efb-7a49-43be-891b-38dda79a52ff
+    type: condition
+    task:
+      description: Is Python Integration?
+      id: faa95efb-7a49-43be-891b-38dda79a52ff
+      version: -1
+      name: Is Python Integration?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: InstanceParameters
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: python
+    view: |-
+      {
+        "position": {
+          "x": 2147.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 6abe5a30-b38d-4767-83af-be63748a6320
+    type: regular
+    task:
+      id: 6abe5a30-b38d-4767-83af-be63748a6320
+      version: -1
+      name: Print error on missing docker image.
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      message:
+        simple: 'Could not find the docker image. Try to manually download it. '
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2147.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 97b8d4d4-b62b-4140-8513-22e8819d3ee6
+    type: regular
+    task:
+      id: 97b8d4d4-b62b-4140-8513-22e8819d3ee6
+      version: -1
+      name: Print success
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      value:
+        simple: The command succeed when changing the 'Proxy' value. Try to change
+          it and see if the problem persists.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1697.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: b6e2bee6-61be-46f8-896e-ebc15b576b77
+    type: regular
+    task:
+      id: b6e2bee6-61be-46f8-896e-ebc15b576b77
+      version: -1
+      name: Print error on a custom integration
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      message:
+        simple: This is not a verified XSOAR integration. Try to use an official integration
+          instead.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 8e923722-53b8-4d8c-8047-32e34c57682a
+    type: regular
+    task:
+      id: 8e923722-53b8-4d8c-8047-32e34c57682a
+      version: -1
+      name: Print error on unsupported integration
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      message:
+        simple: This is a deprecated integration. Try to get a supported integration
+          integration.
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 450833db-3d6b-48e5-8b6c-3ecefb0dc2a5
+    type: regular
+    task:
+      id: 450833db-3d6b-48e5-8b6c-3ecefb0dc2a5
+      version: -1
+      name: Print Success
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      value:
+        simple: The command succeed when changing the 'Insecure' (Trust any certificate,
+          not secure) value. Try to change it and see if the problem persists.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 56e2327c-a321-4c5a-88eb-a19102fc421c
+    type: regular
+    task:
+      id: 56e2327c-a321-4c5a-88eb-a19102fc421c
+      version: -1
+      name: Generate Summary
+      description: Aggregate Results
+      scriptName: AggregateResults
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      configuration:
+        complex:
+          root: InstanceParameters
+      errors:
+        complex:
+          root: TestInstance
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: TestInstance.changed_keys
+                iscontext: true
+          accessor: Errors
+      execute_command_errors:
+        complex:
+          root: ExecuteCommand
+          accessor: Error
+      file_entry_id:
+        complex:
+          root: File
+          accessor: EntryID
+      succeeded_changed_params:
+        complex:
+          root: TestInstance
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: TestInstance.succeed
+                iscontext: true
+          accessor: changed_keys
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 3e3d476f-1d34-4fc7-8ea7-8d22a1b2f847
+    type: condition
+    task:
+      description: Check if it exists
+      id: 3e3d476f-1d34-4fc7-8ea7-8d22a1b2f847
+      version: -1
+      name: Check if it exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: IsDockerImageExists
+                accessor: exists
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: c0aed8f8-1867-4034-8cde-1bf62d0ed213
+    type: condition
+    task:
+      description: Is Test succeed?
+      id: c0aed8f8-1867-4034-8cde-1bf62d0ed213
+      version: -1
+      name: Is Test succeed?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: TestInstance
+                accessor: succeed
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 5e581b7c-a6fd-4605-83b8-c719d2d288e9
+    type: condition
+    task:
+      description: Is insecure change worked?
+      id: 5e581b7c-a6fd-4605-83b8-c719d2d288e9
+      version: -1
+      name: Is insecure change worked?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: TestInstance
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: TestInstance.changed_keys
+                      iscontext: true
+                    right:
+                      value:
+                        simple: InstanceParameters.insecure_key
+                      iscontext: true
+                accessor: succeed
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 97d4de29-8e7c-410f-89e6-c9632d47fd4c
+    type: condition
+    task:
+      description: Is insecure change worked?
+      id: 97d4de29-8e7c-410f-89e6-c9632d47fd4c
+      version: -1
+      name: Is insecure change worked?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: TestInstance
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: TestInstance.changed_keys
+                      iscontext: true
+                    right:
+                      value:
+                        simple: InstanceParameters.proxy_key
+                      iscontext: true
+                accessor: succeed
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1585,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 870863ac-62da-4f22-8faf-b442d8fc33d7
+    type: regular
+    task:
+      id: 870863ac-62da-4f22-8faf-b442d8fc33d7
+      version: -1
+      name: Zip all files
+      description: Zip a file and upload to war room
+      scriptName: ZipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          accessor: EntryID
+      password: {}
+      zipName:
+        complex:
+          root: inputs.instancename
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: _collected
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: d651a5e1-468a-4384-8dea-d160331e2575
+    type: condition
+    task:
+      description: What is the troubleshoot type?
+      id: d651a5e1-468a-4384-8dea-d160331e2575
+      version: -1
+      name: What is the troubleshoot type?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      command:
+      - "33"
+      configuration:
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: command
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.troubleshoottype
+            iscontext: true
+          right:
+            value:
+              simple: command
+    - label: configuration
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.troubleshoottype
+            iscontext: true
+          right:
+            value:
+              simple: configuration
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
-    ignoreworker: false
+    taskid: 98939033-f13f-4940-8bb0-48df3cfb6633
+    type: regular
+    task:
+      id: 98939033-f13f-4940-8bb0-48df3cfb6633
+      version: -1
+      name: Is command available?
+      description: Get Command and Args
+      scriptName: GetCommandandArgs
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     scriptarguments:
       command_line:
         complex:
@@ -982,39 +964,163 @@ tasks:
         complex:
           root: inputs.instancename
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Get Command and Args
-      id: 98939033-f13f-4940-8bb0-48df3cfb6633
-      iscommand: false
-      name: Is command available?
-      scriptName: GetCommandandArgs
-      type: regular
-      version: -1
-    taskid: 98939033-f13f-4940-8bb0-48df3cfb6633
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1482.5,
-          "y": 1915
+          "x": 1257.5,
+          "y": 2060
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 9fc42734-449a-4dd8-8be5-a11435839ed3
+    type: condition
+    task:
+      description: Is Demisto REST API integration is configured?
+      id: 9fc42734-449a-4dd8-8be5-a11435839ed3
+      version: -1
+      name: Is Demisto REST API integration is configured?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Demisto REST API
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 2035,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 19c5f2a4-e4f6-4b5e-8b8b-55bc57372a66
+    type: regular
+    task:
+      id: 19c5f2a4-e4f6-4b5e-8b8b-55bc57372a66
+      version: -1
+      name: Print error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Demisto REST API integration is not configured. Please configure the
+          integration to use this playbook.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: e93e7957-04a7-4f34-8285-7d71031d8e6e
+    type: title
+    task:
+      id: e93e7957-04a7-4f34-8285-7d71031d8e6e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2470,
+        "height": 2775,
         "width": 2590,
         "x": 50,
-        "y": 65
+        "y": 50
       }
     }
   }
+inputs:
+- key: instancename
+  value:
+    complex:
+      root: incident
+      accessor: instancename
+  required: true
+  description: ""
+  playbookInputQuery:
+- key: troubleshoottype
+  value:
+    complex:
+      root: incident
+      accessor: troubleshoottype
+  required: true
+  description: ""
+  playbookInputQuery:
+- key: commandline
+  value:
+    complex:
+      root: incident
+      accessor: commandline
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

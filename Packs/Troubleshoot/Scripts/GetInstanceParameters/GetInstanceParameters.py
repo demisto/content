@@ -25,7 +25,7 @@ def get_conf(name: str) -> Tuple[dict, dict]:
     return configuration, instance_config
 
 
-def get_proxy_key(instance):
+def get_proxy_key(instance: dict) -> Optional[str]:
     proxy_key = None
     if 'proxy' in instance:
         proxy_key = 'proxy'
@@ -35,7 +35,7 @@ def get_proxy_key(instance):
     return proxy_key
 
 
-def get_proxy_key_value(instance) -> Tuple[Optional[str], Optional[bool]]:
+def get_proxy_key_value(instance: dict) -> Tuple[Optional[str], Optional[bool]]:
     # Try to find any param named proxy
     if (proxy_key := get_proxy_key(instance)) is not None:
         return proxy_key, bool(instance[proxy_key])
@@ -91,8 +91,9 @@ def build_parameters(integration_config: dict, instance_config: dict) -> dict:
     return instance
 
 
-def main(instance_name: str):
+def main():
     try:
+        instance_name = demisto.args().get('instance_name')
         config, instance = get_conf(instance_name)
         parameters = build_parameters(config, instance)
         parameters['instance_name'] = instance_name
@@ -110,4 +111,4 @@ def main(instance_name: str):
 
 
 if __name__ in ("__main__", "builtin", "builtins"):
-    main(demisto.args().get('instance_name'))
+    main()
