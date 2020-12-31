@@ -9,16 +9,16 @@ DEFAULT_OUTGOING_MAPPER = "User Profile - Salesforce (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - Salesforce (Incoming)"
 URI_PREFIX = '/services/data/v44.0/'
 GENERATE_TOKEN_URL = 'https://login.salesforce.com/services/oauth2/token'
-LIMIT_ERROR = "LICENSE_LIMIT_EXCEEDED"
+
 # setting defaults for mandatory fields
 MANDATORY_FIELDS = {
-    "LastName": "",
-    "Alias": "",
-    "TimeZoneSidKey": "",
-    "LocaleSidKey": "en_US",
-    "EmailEncodingKey": "ISO-8859-1",
-    "LanguageLocaleKey": "en_US",
-    "ProfileId": "",
+    "lastname": "",
+    "alias": "",
+    "timezonesidkey": "",
+    "localesidkey": "en_US",
+    "emailencodingkey": "ISO-8859-1",
+    "languagelocalekey": "en_US",
+    "profileid": "",
 }
 
 
@@ -311,15 +311,9 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
 
 
 def check_and_set_manndatory_fields(salesforce_user):
-    for field, default_value in MANDATORY_FIELDS:
+    for field, default_value in MANDATORY_FIELDS.items():
         if not salesforce_user.get(field):
             salesforce_user[field] = default_value
-
-    if not salesforce_user.get("Alias"):
-        email = salesforce_user.get("Email")
-        if email:
-            # default value for alias can be taken from email
-            salesforce_user["Alias"] = email[:7]
 
     return salesforce_user
 

@@ -1,25 +1,28 @@
+> <i>Note:</i> This integration should be used along with our IAM premium pack. For further details, visit our IAM pack documentation.
+
 Integrate with Salesforce's services to perform Identity Lifecycle Management operations.
-This integration was integrated and tested with version xx of Salesforce IAM
+For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
+
 ## Configure Salesforce IAM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Salesforce IAM.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | url | Salesforce url \(Eg: https://&amp;lt;domain&amp;gt;.salesforce.com/\) | True |
-    | credentials | User name | True |
-    | consumer_key | Consumer Key | True |
-    | consumer_secret | Consumer Secret | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
-    | create_user_enabled | Create User Command Enabled | False |
-    | update_user_enabled | Update User Command Enabled | False |
-    | disable_user_enabled | Disable User Commands Enabled | False |
-    | create_if_not_exists | Automatically create user if not found in update and enable commands | False |
-    | mapper_in | Incoming Mapper | True |
-    | mapper_out | Outgoing Mapper | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| url | Salesforce url \(Eg: https://&amp;lt;domain&amp;gt;.salesforce.com/\) | True |
+| credentials | User name | True |
+| consumer_key | Consumer Key | True |
+| consumer_secret | Consumer Secret | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+| create_user_enabled | Create User Command Enabled | False |
+| update_user_enabled | Update User Command Enabled | False |
+| disable_user_enabled | Disable User Commands Enabled | False |
+| create_if_not_exists | Automatically create user if not found in update and enable commands | False |
+| mapper_in | Incoming Mapper | True |
+| mapper_out | Outgoing Mapper | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -58,9 +61,11 @@ Creates a user.
 
 
 #### Command Example
-``` ```
-
+``` !iam-create-user user-profile=`{"email":"testdemisto2@paloaltonetworks.com", "givenname":"Test","surname":"Demisto”,”timezonesidkey": "Asia/Tokyo",“localesidkey": "en_US",“profileid": “012345678912345”}` ```
 #### Human Readable Output
+|brand|instanceName|success|active|id|email|details|
+|---|---|---|---|---|---|---|
+| Salesforce IAM | Salesforce IAM_instance_1 | true | true | edab746f1b142410042611b4bd4bcb23 | testdemisto2@paloaltonetworks.com | 
 
 
 
@@ -97,9 +102,12 @@ Updates an existing user with the data passed in the user-profile argument.
 
 
 #### Command Example
-``` ```
+``` !iam-update-user user-profile=`{"email":"testdemisto2@paloaltonetworks.com", "givenname":"Test","surname":"Demisto_updated"}` ```
 
 #### Human Readable Output
+|brand|instanceName|success|active|id|email|details|
+|---|---|---|---|---|---|---|
+| Salesforce IAM | Salesforce IAM_instance_1 | true | true | edab746f1b142410042611b4bd4bcb23 | testdemisto2@paloaltonetworks.com | 
 
 
 
@@ -135,9 +143,12 @@ Retrieves a single user resource.
 
 
 #### Command Example
-``` ```
+``` !iam-get-user user-profile=`{"email":"testdemisto2@paloaltonetworks.com"}` ```
 
 #### Human Readable Output
+|brand|instanceName|success|active|id|email|details|
+|---|---|---|---|---|---|---|
+| Salesforce IAM | Salesforce IAM_instance_1 | true | true | 
 
 
 
@@ -173,9 +184,13 @@ Enables a deprovisioned user.
 
 
 #### Command Example
-``` ```
+``` !iam-disable-user user-profile=`{"email":"testdemisto2@paloaltonetworks.com"}` ```
 
 #### Human Readable Output
+|brand|instanceName|success|active|id|email|details|
+|---|---|---|---|---|---|---|
+| Salesforce IAM | Salesforce IAM_instance_1 | true | false | edab746f1b142410042611b4bd4bcb23 | testdemisto2@paloaltonetworks.com | 
+
 
 
 

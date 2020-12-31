@@ -10,13 +10,17 @@
      "complex": null,
      "simple": "username"
     },
+    "name": {
+     "complex": null,
+     "simple": "displayname"
+    },
     "city": {
      "complex": null,
      "simple": "city"
     },
     "country": {
      "complex": null,
-     "simple": "country name"
+     "simple": "countryname"
     },
     "email": {
      "complex": null,
@@ -24,7 +28,7 @@
     },
     "firstname": {
      "complex": null,
-     "simple": "given name"
+     "simple": "givenname"
     },
     "lastname": {
      "complex": null,
@@ -32,28 +36,65 @@
     },
     "mobilephone": {
      "complex": null,
-     "simple": "mobile phone"
+     "simple": "mobilephone"
     },
     "state": {
      "complex": null,
-     "simple": "state name"
+     "simple": "state"
     },
     "street address": {
      "complex": null,
-     "simple": "street"
+     "simple": "streetaddress"
     },
     "title": {
      "complex": null,
      "simple": "title"
     },
-    "phone": {
-     "complex": null,
-     "simple": "work phone"
-    },
     "postalcode": {
      "complex": null,
-     "simple": "zip code"
-    }
+     "simple": "zipcode"
+    },
+    "profileid": {
+     "complex": null,
+     "simple": "profileid"
+    },
+     "timezonesidkey": {
+     "complex": null,
+     "simple": "timezonesidkey"
+    },
+    "localesidkey": {
+     "complex": null,
+     "simple": "localesidkey"
+    },
+    "alias": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "email",
+						"transformers": [
+							{
+								"args": {
+									"from": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "0"
+										}
+									},
+									"to": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "8"
+										}
+									}
+								},
+								"operator": "substring"
+							}
+						]
+					},
+					"simple": ""
+				}
    }
   }
  },
