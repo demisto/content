@@ -9,9 +9,12 @@ print = timestamped_print
 
 
 def main():
-    pr_number = get_env_var("PULL_REQUEST_NUMBER")
-    repo_name = get_env_var("REPO")
-    branch_name = get_env_var("BRANCH")
+    # pr_number = get_env_var("PULL_REQUEST_NUMBER")
+    pr_number = '10535'
+    # repo_name = get_env_var("REPO")
+    repo_name = 'DeanArbel/content'
+    # branch_name = get_env_var("BRANCH")
+    branch_name = 'master'
     token = get_env_var("GITHUB_TOKEN")
     print(f"{pr_number = }\n{repo_name = }\n{branch_name = }")
     try:
