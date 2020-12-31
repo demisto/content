@@ -1059,9 +1059,6 @@ class Pack(object):
         try:
             # load changelog from downloaded index
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
-
-            pack_path = os.path.join(index_folder_path, self._pack_name)
-
             if os.path.exists(changelog_index_path):
                 changelog, changelog_latest_rn_version = self.get_changelog_latest_rn(changelog_index_path)
                 release_notes_dir = os.path.join(self._pack_path, Pack.RELEASE_NOTES)

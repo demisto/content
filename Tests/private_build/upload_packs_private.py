@@ -404,6 +404,8 @@ def main():
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.is_private
 
+    print(f"Packs artifact path is: {packs_artifacts_path}")
+
     prepare_test_directories(packs_artifacts_path)
 
     # google cloud storage client initialized
@@ -415,6 +417,7 @@ def main():
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
+
     # content repo client initialized
     if not is_private_build:
         content_repo = get_content_git_client(CONTENT_ROOT_PATH)
