@@ -383,6 +383,16 @@ references:
               SERVER_URL=$(jq -r 'select(.[].Role == "Server Master") | .[].InstanceDNS' ./env_results.json)
               python3 ./Utils/comment_on_pr.py -p $PULL_REQUEST_NUMBER -c "Instance is ready. Server link: https://$SERVER_URL, Build link: $CIRCLE_BUILD_URL"
 
+  add_pending_contrib_pr_status: &add_pending_contrib_pr_status
+    when: always
+#      condition: << pipeline.parameters.contrib_branch >>
+      steps:
+        - run:
+            name: Add ready-for-dev-instance pending status
+            when: always
+            command: |
+              python3 ./Utils/add_status_to_pr.py -p $PULL_REQUEST_NUMBER -b $BRANCH -r $REPO --github_token $GITHUB_TOKEN
+
   upload_entities_to_cortex_xsoar: &upload_entities_to_cortex_xsoar
     run:
         name: Upload entities to Cortex XSOAR
@@ -963,6 +973,7 @@ jobs:
             ./Tests/scripts/slack_notifier.sh 'test_playbooks' ./env_results.json
           when: always
       - *comment_on_contrib_pr
+      - *add_pending_contrib_pr_status
       - *destroy_instances
       - *store_artifacts
 
