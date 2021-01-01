@@ -45,6 +45,8 @@ class WarningsHandler(object):
 
 
 _warnings_handler = WarningsHandler()
+# ignore warnings from logging as a result of not being setup
+logging.raiseExceptions = False
 
 # imports something that can be missed from docker image
 try:
@@ -4902,8 +4904,7 @@ class DebugLogger(object):
         Is used when `debug-mode=True`.
     """
 
-    def __init__(self):
-        logging.raiseExceptions = False
+    def __init__(self):        
         self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         self.int_logger = IntegrationLogger()
         self.int_logger.set_buffering(False)
