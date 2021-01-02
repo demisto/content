@@ -559,7 +559,7 @@ script:
       secret: false
     - default: false
       description: The maximum retry attempts when connection or throttling errors
-        are encountered. Set to 0 to disable retries. If not specified will use the
+        are encountered. Set to 0 to disable retries. If not, specified will use the
         instances configured default timeout.
       isArray: false
       name: retries
