@@ -690,7 +690,7 @@ script:
     - contextPath: AWS.Lambda.AccountUsage. FunctionCount
       description: The number of Lambda functions.
       type: number
-  dockerimage: demisto/boto3py3:1.0.0.14959
+  dockerimage: demisto/boto3py3:1.0.0.14975
   isfetch: false
   runonce: false
   subtype: python3
