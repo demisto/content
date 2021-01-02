@@ -568,7 +568,7 @@ script:
     - default: false
       description: The time in seconds till a timeout exception is reached. You can
         specify just the read timeout (for example 60) or also the connect timeout
-        followed after a comma (for example 60,10). If not specified will use the
+        followed after a comma (for example 60,10). If not specified, will use the
         instances configured default timeout.
       isArray: false
       name: timeout
