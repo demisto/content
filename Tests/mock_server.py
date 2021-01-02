@@ -177,13 +177,14 @@ class MITMProxy:
                  repo_folder=MOCKS_GIT_PATH,
                  tmp_folder=MOCKS_TMP_PATH,
                  ):
+        is_branch_master = branch_name == 'master'
         self.public_ip = public_ip
         self.current_folder = self.repo_folder = repo_folder
         self.tmp_folder = tmp_folder
         self.logging_module = logging_module
         self.build_number = build_number
         self.ami = AMIConnection(self.public_ip)
-        self.should_update_mock_repo = branch_name == 'master'
+        self.should_update_mock_repo = is_branch_master
         self.empty_files = []
         self.failed_tests_count = 0
         self.successful_tests_count = 0
