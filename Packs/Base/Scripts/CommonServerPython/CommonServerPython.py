@@ -4904,7 +4904,7 @@ class DebugLogger(object):
         Is used when `debug-mode=True`.
     """
 
-    def __init__(self):        
+    def __init__(self):
         self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         self.int_logger = IntegrationLogger()
         self.int_logger.set_buffering(False)
