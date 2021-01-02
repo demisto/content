@@ -48,7 +48,7 @@ configuration:
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can
     specify just the read timeout (for example 60) or also the connect timeout followed
-    after a comma (for example 60,10). If a connect timeout is not specified a default
+    after a comma (for example 60,10). If a connect timeout is not specified, a default
     of 10 second will be used. You may also override the value at the aws-lambda-invoke
     command.
   defaultvalue: 60,10
