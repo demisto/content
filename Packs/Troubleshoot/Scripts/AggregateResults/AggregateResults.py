@@ -6,7 +6,7 @@ from CommonServerPython import *
 
 def find_entry_id_by_name(doc_file_name: str) -> str:
     context = demisto.context()
-    file_context = context.get('File')
+    file_context = context.get('File', {})
     if not file_context:
         return ''
     if isinstance(file_context, dict) and file_context['Name'] == doc_file_name:
@@ -40,7 +40,7 @@ Instance name : {instance_name}
 {tableToMarkdown('Errors encountered in test-module (Test button)', errors, ['Errors'])}
 {tableToMarkdown('Parameters changed resulted in test succeeded', changed_succeeded, ['Changed keys'])}
 {tableToMarkdown('Errors encountered in command running:', execute_command_errors, ['Errors'])}
-{tableToMarkdown('Files found in the investigation:',file_entry_ids,['Entry ID'])}
+{tableToMarkdown('Files found in the investigation:', file_entry_ids, ['Entry ID'])}
 """
         configuration_name = f'{instance_name}_configuration.md'
         demisto.results(fileResult(
@@ -53,8 +53,13 @@ Instance name : {instance_name}
             doc_file_name,
             doc
         ))
-        return_outputs(doc)
-
+        context = {
+            'AggregatedResults': {
+                'configuration_file_name': configuration_name,
+                'summary_file_name': doc_file_name
+            }
+        }
+        return_outputs(doc, context)
     except Exception as exc:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(exc))
