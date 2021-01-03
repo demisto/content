@@ -48,86 +48,86 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Cognni Integration
+description: Autonomous detection and investigation of information security incidents and other potential threats.
 display: Cognni
 name: Cognni
 script:
   commands:
   - arguments:
     - default: false
-      description: The event ID
+      description: The ID of the event to fetch.
       isArray: false
       name: event_id
       required: true
       secret: false
     deprecated: false
-    description: Fetch a single event by ID
+    description: Fetches a single event by ID.
     execution: false
     name: cognni-get-event
     outputs:
     - contextPath: Cognni.Event.id
-      description: id
+      description: Event ID.
       type: String
     - contextPath: Cognni.Event.date
-      description: date
+      description: The date when the event occurred.
       type: Date
     - contextPath: Cognni.Event.description
-      description: description
+      description: Description of the event.
       type: String
     - contextPath: Cognni.Event.severity
-      description: severity
+      description: Severity of the event.
       type: Number
     - contextPath: Cognni.Event.sourceApplication
-      description: The source of the event
+      description: The ID of the application which initiated the event.
       type: String
   - arguments:
     - default: false
-      description: The insight ID
+      description: The ID of the insight to fetch.
       isArray: false
       name: insight_id
       required: true
       secret: false
     deprecated: false
-    description: Fetch a single insight by ID
+    description: Fetches a single insight by ID.
     execution: false
     name: cognni-get-insight
     outputs:
     - contextPath: Cognni.insight.id
-      description: ID
+      description: Insight ID.
       type: String
     - contextPath: Cognni.insight.name
-      description: name
+      description: Name of the insight.
       type: String
     - contextPath: Cognni.insight.description
-      description: description
+      description: Description of the insight.
       type: String
     - contextPath: Cognni.insight.severity
-      description: severity
+      description: Severity of the insight.
       type: Number
   - arguments:
     - default: false
       defaultValue: '2'
-      description: Minimum severity of insights to fetch
+      description: Minimum severity of insights to fetch.
       isArray: false
       name: min_severity
       required: true
       secret: false
     deprecated: false
-    description: Fetch insights
+    description: Fetches insights according to severity.
     execution: false
     name: cognni-fetch-insights
     outputs:
     - contextPath: Cognni.insights.id
-      description: id
+      description: List of insight IDs.
       type: String
     - contextPath: Cognni.insights.name
-      description: name
+      description: List of insight names.
       type: String
     - contextPath: Cognni.insights.description
-      description: description
+      description: List of insight descriptions.
       type: String
     - contextPath: Cognni.insights.severity
-      description: severity
+      description: List of insight severities.
       type: Number
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
