@@ -254,10 +254,9 @@ def test_module_command(client: Client):
 
 
 def fetch_incidents_command(client: Client, args: Dict):
-    auto_resolved = argToBoolean(args.get('auto_resolved'))
-    auto_resolved = argToBoolean(args.get('auto_resolved'))
-    resolved = True if auto_resolved else argToBoolean(args.get('resolved'))
-    acknowledged = argToBoolean(args.get('acknowledged'))
+    auto_resolved = get_optional_boolean_param(args, 'auto_resolved')
+    resolved = True if auto_resolved else get_optional_boolean_param(args, 'resolved')
+    acknowledged = get_optional_boolean_param(args, 'acknowledged')
     alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
     entity_ids = args.get('entity_ids')  # maybe split , in doc entity_id probably mistake
     impact_types = args.get('impact_types')  # maybe split ,
@@ -325,9 +324,9 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
 
     start_time = args.get('start_time')
     end_time = args.get('end_time')
-    auto_resolved = argToBoolean(args.get('auto_resolved'))
-    resolved = True if auto_resolved else argToBoolean(args.get('resolved'))
-    acknowledged = argToBoolean(args.get('acknowledged'))
+    auto_resolved = get_optional_boolean_param(args, 'auto_resolved')
+    resolved = True if auto_resolved else get_optional_boolean_param(args, 'resolved')
+    acknowledged = get_optional_boolean_param(args, 'acknowledged')
     severity = args.get('severity')
     alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
     entity_ids = args.get('entity_ids')  # maybe split ,
