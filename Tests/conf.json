@@ -3285,7 +3285,8 @@
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Archer-Test-Playbook": "Issue 26851",
-        "Carbon Black Live Response Test": "Issue 28237"
+        "Carbon Black Live Response Test": "Issue 28237",
+        "Carbon Black Enterprise Protection V2 Test": "Issue 32322"
     },
     "skipped_integrations": {
 
@@ -3372,6 +3373,7 @@
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
+        "Akamai WAF": "Issue 32318",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
