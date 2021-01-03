@@ -1,6 +1,6 @@
 {
     "name": "Ansible Tower",
-    "description": "Ansible tower ",
+    "description": "Scale IT automation, manage complex deployments and speed productivity.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -10,7 +10,7 @@
     "categories": [
         "IT Services"
     ],
-    "tags": [],
+    "tags": ["IT"],
     "useCases": [],
     "keywords": []
 }

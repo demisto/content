@@ -1,6 +1,4 @@
 JOB_TEMPLATE_LAUNCH_RES = {
-    "related": {"all_groups": "/api/v2/hosts/4/all_groups/"},
-    "summary_fields": {"groups": {"count": 0, "results": []}},
     "id": 1,
     "type": "job",
     "url": "/api/example",
@@ -113,11 +111,7 @@ ADHOC_COMMAND_LAUNCH_RES = {
     "id": 1,
     "type": "ad_hoc_command",
     "url": "/api/v2/ad_hoc_commands/1/",
-    "related": {
-        "created_by": "/api/v2/users/1/",
-        "modified_by": "/api/v2/users/1/",
-    },
-    "summary_fields": {},
+
     "created": "2020-12-23T11:41:26.600084Z",
     "modified": "2020-12-23T11:41:26.636218Z",
     "name": "ping",

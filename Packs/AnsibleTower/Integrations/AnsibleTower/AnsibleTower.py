@@ -3,7 +3,6 @@ from CommonServerPython import *
 import json
 import urllib3
 import traceback
-from typing import List
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -27,59 +26,70 @@ class Client(BaseClient):
 
     def api_request(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None,
                     empty_valid_codes: list = None, return_empty_response: bool = False, ok_codes: list = None) -> dict:
-        return self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
-                                  empty_valid_codes=empty_valid_codes, return_empty_response=return_empty_response,
-                                  ok_codes=ok_codes)
+        response = self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
+                                      empty_valid_codes=empty_valid_codes, return_empty_response=return_empty_response,
+                                      ok_codes=ok_codes)
+        if not return_empty_response:
+            results = response.get('results', [])
+            if results:
+                for res in results:
+                    res.pop('related', None)
+                    res.pop('summary_fields', None)
+            else:
+                response.pop('related', None)
+                response.pop('summary_fields', None)
+        return response
 
 
-def inventories_list(client: Client, args: dict) -> List[CommandResults]:
-    command_results = []
+def output_data(response: dict) -> dict:
+    remove_fields = {'ask_diff_mode_on_launch', 'ask_variables_on_launch', 'ask_limit_on_launch',
+                     'ask_tags_on_launch', 'ask_skip_tags_on_launch', 'ask_job_type_on_launch',
+                     'ask_verbosity_on_launch', 'ask_inventory_on_launch', 'ask_credential_on_launch'}
+    context_data = {}
+    for key in response:
+        if key not in remove_fields:
+            context_data[key] = response[key]
+    return context_data
+
+
+def inventories_list(client: Client, args: dict) -> CommandResults:
+    args['page'] = args.pop('page_number', 1)
     response = client.api_request(method='GET', url_suffix='inventories/', params=args)
     results = response.get('results', [])
-    if not len(results):
-        command_results.append(CommandResults(
+    if not results:
+        return CommandResults(
             readable_output=f"No results were found for the following arguments {str(args)}",
             raw_response=response
-        ))
-    for res in results:
-        res.pop('related', None)  # remove irrelevant fields from output
-        res.pop('summary_fields', None)
-        command_results.append(CommandResults(
-            outputs_prefix='AnsibleAWX.Inventory',
-            outputs_key_field='id',
-            outputs=res,
-            readable_output=tableToMarkdown(name='Results', t=res, removeNull=True),
-            raw_response=res
-        ))
-    return command_results
+        )
+    return CommandResults(
+        outputs_prefix='AnsibleAWX.Inventory',
+        outputs_key_field='id',
+        outputs=results,
+        readable_output=tableToMarkdown(name='Results', t=results, removeNull=True),
+        raw_response=results
+    )
 
 
-def hosts_list(client: Client, args: dict) -> List[CommandResults]:
+def hosts_list(client: Client, args: dict) -> CommandResults:
     inventory_id = args.pop('inventory_id', None)
     if inventory_id:
         url_suffix = f'inventories/{inventory_id}/hosts/'
     else:
         url_suffix = 'hosts/'
-
-    command_results = []
+    args = {"id" if k == 'host_id' else k: v for k, v in args.items()}  # Rename key name of host id to match api params
     response = client.api_request(method='GET', url_suffix=url_suffix, params=args)
     results = response.get('results', [])
-    if not len(results):
-        command_results.append(CommandResults(
+    if not results:
+        return CommandResults(
             readable_output=f"No results were found for the following argument {str(args)}",
             raw_response=response
-        ))
-    for res in results:
-        res.pop('related', None)  # remove irrelevant fields from output
-        res.pop('summary_fields', None)
-        command_results.append(CommandResults(
-            outputs_prefix='AnsibleAWX.Host',
-            outputs_key_field='id',
-            outputs=res,
-            readable_output=tableToMarkdown(name='Results', t=res, removeNull=True),
-            raw_response=response
-        ))
-    return command_results
+        )
+    return CommandResults(
+        outputs_prefix='AnsibleAWX.Host',
+        outputs_key_field='id',
+        outputs=results,
+        readable_output=tableToMarkdown(name='Results', t=results, removeNull=True),
+        raw_response=response)
 
 
 def create_host(client: Client, args: dict) -> CommandResults:
@@ -91,8 +101,6 @@ def create_host(client: Client, args: dict) -> CommandResults:
             'enabled': bool(args.get('enabled', 'True')),
             }
     response = client.api_request(method='POST', url_suffix=url_suffix, json_data=body)
-    response.pop('related', None)  # remove irrelevant fields from output
-    response.pop('summary_fields', None)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Host',
         outputs_key_field='id',
@@ -115,61 +123,47 @@ def delete_host(client: Client, args: dict) -> CommandResults:
     )
 
 
-def templates_list(client: Client, args: dict) -> List[CommandResults]:
+def templates_list(client: Client, args: dict) -> CommandResults:
     inventory_id = args.pop('inventory_id', None)
     if inventory_id:
         url_suffix = f'inventories/{inventory_id}/job_templates/'
     else:
         url_suffix = 'job_templates/'
 
-    command_results = []
     response = client.api_request(method='GET', url_suffix=url_suffix, params=args)
 
     results = response.get('results', [])
-    if not len(results):
-        command_results.append(CommandResults(
+    if not results:
+        return CommandResults(
             readable_output=f"No results were found for the following argument {str(args)}",
             raw_response=response
-        ))
-    for res in results:
-        res.pop('related', None)  # remove irrelevant fields from output
-        res.pop('summary_fields', None)
-        command_results.append(CommandResults(
-            outputs_prefix='AnsibleAWX.JobTemplate',
-            outputs_key_field='id',
-            outputs=res,
-            readable_output=tableToMarkdown(name='Results', t=res),
-            raw_response=response
-        ))
+        )
 
-    return command_results
+    return CommandResults(
+        outputs_prefix='AnsibleAWX.JobTemplate',
+        outputs_key_field='id',
+        outputs=results,
+        readable_output=tableToMarkdown(name='Results', t=results),
+        raw_response=response)
 
 
-def credentials_list(client: Client, args: dict) -> List[CommandResults]:
+def credentials_list(client: Client, args: dict) -> CommandResults:
     url_suffix = 'credentials/'
 
-    command_results = []
-
     response = client.api_request(method='GET', url_suffix=url_suffix, params=args)
 
     results = response.get('results', [])
-    if not len(results):
-        command_results.append(CommandResults(
+    if not results:
+        return CommandResults(
             readable_output=f"No results were found for the following argument {str(args)}",
             raw_response=response
-        ))
-    for res in results:
-        res.pop('related', None)  # remove irrelevant fields from output
-        res.pop('summary_fields', None)
-        command_results.append(CommandResults(
-            outputs_prefix='AnsibleAWX.Credential',
-            outputs_key_field='id',
-            outputs=res,
-            readable_output=tableToMarkdown(name='Results', t=res),
-            raw_response=response
-        ))
-
-    return command_results
+        )
+    return CommandResults(
+        outputs_prefix='AnsibleAWX.Credential',
+        outputs_key_field='id',
+        outputs=results,
+        readable_output=tableToMarkdown(name='Results', t=results),
+        raw_response=response)
 
 
 def job_template_launch(client: Client, args: dict) -> CommandResults:
@@ -184,14 +178,7 @@ def job_template_launch(client: Client, args: dict) -> CommandResults:
     body = {key: data[key] for key in data if data[key]}
     demisto.debug(f"Request body is: {str(body)}")
     response = client.api_request(method='POST', url_suffix=url_suffix, json_data=body, ok_codes=[201])
-    remove_fields = {'ask_diff_mode_on_launch', 'ask_variables_on_launch', 'ask_limit_on_launch',
-                     'ask_tags_on_launch',
-                     'ask_skip_tags_on_launch', 'ask_job_type_on_launch', 'ask_verbosity_on_launch',
-                     'ask_inventory_on_launch', 'ask_credential_on_launch', 'related', 'summary_fields'}
-    context_data = {}
-    for key in response:
-        if key not in remove_fields:
-            context_data[key] = response[key]
+    context_data = output_data(response)
     job_id = context_data.get('id', '')
     job_id_status = context_data.get('status', '')
     return CommandResults(
@@ -212,13 +199,7 @@ def job_relaunch(client: Client, args: dict):
     body = {key: data[key] for key in data if data[key]}
     demisto.debug(f"Request body is: {str(body)}")
     response = client.api_request(method='POST', url_suffix=url_suffix, json_data=body, ok_codes=[201])
-    remove_fields = {'ask_diff_mode_on_launch', 'ask_variables_on_launch', 'ask_limit_on_launch', 'ask_tags_on_launch',
-                     'ask_skip_tags_on_launch', 'ask_job_type_on_launch', 'ask_verbosity_on_launch',
-                     'ask_inventory_on_launch', 'ask_credential_on_launch', 'related', 'summary_fields'}
-    context_data = {}
-    for key in response:
-        if key not in remove_fields:
-            context_data[key] = response[key]
+    context_data = output_data(response)
     job_id = context_data.get('id', '')
     job_id_status = context_data.get('status', '')
     return CommandResults(
@@ -257,13 +238,7 @@ def job_status(client: Client, args: dict) -> CommandResults:
     job_id = args.pop('job_id', None)
     url_suffix = f'jobs/{job_id}/'
     response = client.api_request(method='GET', url_suffix=url_suffix, params=args)
-    remove_fields = {'ask_diff_mode_on_launch', 'ask_variables_on_launch', 'ask_limit_on_launch', 'ask_tags_on_launch',
-                     'ask_skip_tags_on_launch', 'ask_job_type_on_launch', 'ask_verbosity_on_launch',
-                     'ask_inventory_on_launch', 'ask_credential_on_launch', 'related', 'summary_fields'}
-    context_data = {}
-    for key in response:
-        if key not in remove_fields:
-            context_data[key] = response[key]
+    context_data = output_data(response)
     job_id = context_data.get('id', '')
     job_id_status = context_data.get('status', '')
     return CommandResults(
@@ -275,30 +250,24 @@ def job_status(client: Client, args: dict) -> CommandResults:
     )
 
 
-def list_job_events(client: Client, args: dict) -> List[CommandResults]:
+def list_job_events(client: Client, args: dict) -> CommandResults:
     url_suffix = 'job_events/'
 
-    command_results = []
     response = client.api_request(method='GET', url_suffix=url_suffix, params=args)
 
     results = response.get('results', [])
-    if not len(results):
-        command_results.append(CommandResults(
+    if not results:
+        return CommandResults(
             readable_output=f"No results were found for the following arguments {str(args)}",
             raw_response=response
-        ))
-    for res in results:
-        res.pop('related', None)  # remove irrelevant fields from output
-        res.pop('summary_fields', None)
-        command_results.append(CommandResults(
-            outputs_prefix='AnsibleAWX.JobEvents',
-            outputs_key_field='id',
-            outputs=res,
-            readable_output=tableToMarkdown(name='Results', t=res, removeNull=True),
-            raw_response=response
-        ))
-
-    return command_results
+        )
+    return CommandResults(
+        outputs_prefix='AnsibleAWX.JobEvents',
+        outputs_key_field='id',
+        outputs=results,
+        readable_output=tableToMarkdown(name='Results', t=results, removeNull=True),
+        raw_response=response
+    )
 
 
 def create_ad_hoc_command(client: Client, args: dict) -> CommandResults:
@@ -312,8 +281,6 @@ def create_ad_hoc_command(client: Client, args: dict) -> CommandResults:
             "module_args": module_args}
     url_suffix = 'ad_hoc_commands/'
     response = client.api_request(method='POST', url_suffix=url_suffix, json_data=body, ok_codes=[201])
-    response.pop('related', None)  # remove irrelevant fields from output
-    response.pop('summary_fields', None)
     command_id = response.get('id', '')
     command_status = response.get('status', '')
     return CommandResults(
@@ -330,8 +297,6 @@ def relaunch_ad_hoc_command(client: Client, args: dict) -> CommandResults:
     command_id = args.get("command_id")
     url_suffix = f'ad_hoc_commands/{command_id}/relaunch/'
     response = client.api_request(method='POST', url_suffix=url_suffix, ok_codes=[201])
-    response.pop('related', None)  # remove irrelevant fields from output
-    response.pop('summary_fields', None)
     command_id = response.get('id', '')
     command_status = response.get('status', '')
     return CommandResults(
@@ -379,8 +344,6 @@ def ad_hoc_command_status(client: Client, args: dict) -> CommandResults:
     command_id = args.get("command_id")
     url_suffix = f'ad_hoc_commands/{command_id}/'
     response = client.api_request(method='GET', url_suffix=url_suffix)
-    response.pop('related', None)  # remove irrelevant fields from output
-    response.pop('summary_fields', None)
     response.pop('job_env', None)
     command_id = response.get('id', '')
     command_status = response.get('status', '')
@@ -428,15 +391,13 @@ def main() -> None:
     }
 
     base_url = params.get("url")
+    username = demisto.params().get('credentials').get('identifier')
+    password = demisto.params().get('credentials').get('password')
 
     verify_certificate = not params.get('insecure', False)
-
     proxy = params.get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
-
-    username = params.get("username")
-    password = params.get("password")
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
 
     try:
 
@@ -446,8 +407,6 @@ def main() -> None:
             password=password,
             verify_certificate=verify_certificate,
             proxy=proxy)
-
-        command = demisto.command()
 
         if command == 'test-module':
             return_results(test_module(client))

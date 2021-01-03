@@ -3,11 +3,14 @@ commonfields:
   id: AnsibleTower
   version: -1
 configuration:
-- additionalinfo: Tower server URL
-  display: Ansible URL
+- display: Server URL
   name: url
   required: true
   type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -16,16 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Username
-  hidden: false
-  name: username
-  required: true
-  type: 0
-- hidden: false
-  name: password
-  required: true
-  type: 4
-description: n Scale IT automation, manage complex deployments and speed productivity
+description: Scale IT automation, manage complex deployments and speed productivity.
 display: AnsibleTower
 name: AnsibleTower
 script:
@@ -41,7 +35,7 @@ script:
       defaultValue: '1'
       description: Number of page to retrieve. Default page number is 1
       isArray: false
-      name: page
+      name: page_number
       required: false
       secret: false
     - default: true
@@ -64,9 +58,9 @@ script:
     name: ansible-tower-inventories-list
   - arguments:
     - default: false
-      description: Host id
+      description: Host id, to retrieve a specific host
       isArray: false
-      name: id
+      name: host_id
       required: false
       secret: false
     - default: false
@@ -94,6 +88,8 @@ script:
       required: false
       secret: false
     - default: false
+      description: Use the search query string parameter to perform a case-insensitive
+        search within all designated text fields of a model.
       isArray: false
       name: search
       required: false
@@ -105,22 +101,27 @@ script:
     name: ansible-tower-hosts-list
   - arguments:
     - default: false
+      description: The value used by the remote inventory source to uniquely identify
+        the host
       isArray: false
       name: inventory_id
       required: true
       secret: false
     - default: false
+      description: Name of this host, must be a unique name
       isArray: false
       name: host_name
       required: true
       secret: false
     - default: false
+      description: Optional description of this host.
       isArray: false
       name: description
       required: false
       secret: false
     - default: true
       defaultValue: 'True'
+      description: ' Is this host online and available for running jobs? '
       isArray: false
       name: enabled
       required: false
@@ -131,6 +132,7 @@ script:
     name: ansible-tower-host-create
   - arguments:
     - default: false
+      description: host is to delete
       isArray: false
       name: host_id
       required: true
@@ -141,12 +143,6 @@ script:
     name: ansible-tower-host-delete
   - arguments:
     - default: false
-      description: Job template id
-      isArray: false
-      name: id
-      required: false
-      secret: false
-    - default: false
       description: Inventory id to list all jobs that are managed with hosts under
         this inventory
       isArray: false
@@ -155,19 +151,29 @@ script:
       secret: false
     - default: true
       defaultValue: '1'
+      description: Number of page to retrieve. Default page number is 1
       isArray: false
       name: page
       required: false
       secret: false
     - default: true
       defaultValue: '50'
+      description: Default page size is 50
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
+      description: Use the search query string parameter to perform a case-insensitive
+        search within all designated text fields of a model.
       isArray: false
       name: query
+      required: false
+      secret: false
+    - default: false
+      description: job template id
+      isArray: false
+      name: id
       required: false
       secret: false
     deprecated: false
@@ -183,17 +189,21 @@ script:
       secret: false
     - default: true
       defaultValue: '1'
+      description: Number of page to retrieve. Default page number is 1
       isArray: false
       name: page
       required: false
       secret: false
     - default: true
       defaultValue: '50'
+      description: Default page size is 50
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
+      description: Use the search query string parameter to perform a case-insensitive
+        search within all designated text fields of a model.
       isArray: false
       name: search
       required: false
@@ -205,6 +215,7 @@ script:
     name: ansible-tower-credentials-list
   - arguments:
     - default: false
+      description: job template id  to launch
       isArray: false
       name: job_template_id
       required: true
@@ -235,6 +246,7 @@ script:
     name: ansible-tower-job-launch
   - arguments:
     - default: false
+      description: job id to relaunch
       isArray: false
       name: job_id
       required: true
@@ -252,6 +264,7 @@ script:
       required: false
       secret: false
     - default: false
+      description: credential id
       isArray: false
       name: credentials_id
       required: false
@@ -262,6 +275,7 @@ script:
     name: ansible-tower-job-relaunch
   - arguments:
     - default: false
+      description: job id tp cancel
       isArray: false
       name: job_id
       required: true
@@ -272,6 +286,7 @@ script:
     name: ansible-tower-job-cancel
   - arguments:
     - default: false
+      description: job id
       isArray: false
       name: job_id
       required: true
@@ -282,37 +297,46 @@ script:
     name: ansible-tower-job-stdout
   - arguments:
     - default: false
+      description: job id status
       isArray: false
       name: job_id
       required: true
       secret: false
     - default: false
+      description: Use the search query string parameter to perform a case-insensitive
+        search within all designated text fields of a model.
       isArray: false
       name: search
       required: false
       secret: false
     deprecated: false
+    description: Retrieve job status
     execution: false
     name: ansible-tower-job-status
   - arguments:
     - default: false
+      description: job event id
       isArray: false
       name: id
       required: false
       secret: false
     - default: true
       defaultValue: '1'
+      description: Number of page to retrieve. Default page number is 1
       isArray: false
       name: page
       required: false
       secret: false
     - default: true
       defaultValue: '50'
+      description: Default size is 50
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
+      description: Use the search query string parameter to perform a case-insensitive
+        search within all designated text fields of a model.
       isArray: false
       name: search
       required: false
@@ -323,11 +347,13 @@ script:
     name: ansible-tower-job-events-list
   - arguments:
     - default: false
+      description: inventory id
       isArray: false
       name: inventory_id
       required: true
       secret: false
     - default: false
+      description: credential id
       isArray: false
       name: credential_id
       required: true
@@ -373,6 +399,7 @@ script:
     name: ansible-tower-adhoc-command-launch
   - arguments:
     - default: false
+      description: command id
       isArray: false
       name: command_id
       required: true
@@ -383,6 +410,7 @@ script:
     name: ansible-tower-adhoc-command-relaunch
   - arguments:
     - default: false
+      description: command id to cancel
       isArray: false
       name: command_id
       required: true
@@ -393,6 +421,7 @@ script:
     name: ansible-tower-adhoc-command-cancel
   - arguments:
     - default: false
+      description: command id
       isArray: false
       name: command_id
       required: true
@@ -403,6 +432,7 @@ script:
     name: ansible-tower-adhoc-command-stdout
   - arguments:
     - default: false
+      description: Command id
       isArray: false
       name: command_id
       required: true
@@ -411,7 +441,7 @@ script:
     description: Retrieve a single ad hoc command status
     execution: false
     name: ansible-tower-adhoc-command-status
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false
@@ -421,3 +451,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests
