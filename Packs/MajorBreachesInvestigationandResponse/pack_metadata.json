@@ -20,7 +20,28 @@
     "keywords": [
         "SolarStorm",
         "SunBurst",
-        "SolarWinds",
-        "FireEye"
-    ]
+        "SolarWinds"
+    ],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "PANWComprehensiveInvestigation": {
+            "mandatory": false,
+            "display_name": "PANW Comprehensive Investigation"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "ExpanseV2": {
+            "mandatory": false,
+            "display_name": "Expanse v2"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
+        }
+    }
 }
