@@ -389,7 +389,7 @@ script:
     - contextPath: Okta.IAMConfiguration.Instance
       description: An XSOAR IAM integration instance name.
       type: String
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.8.6.14969
   isfetch: true
   longRunning: false
   longRunningPort: false
