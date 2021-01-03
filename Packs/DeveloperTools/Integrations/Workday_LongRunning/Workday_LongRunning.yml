@@ -43,6 +43,10 @@ script:
     description: Generate workday event.
     execution: false
     name: generate-event
+  - deprecated: false
+    description: Reset the integration context to fetch the first run reports.
+    execution: false
+    name: initialize-context
   dockerimage: demisto/teams:1.0.0.14902
   feed: false
   isfetch: false

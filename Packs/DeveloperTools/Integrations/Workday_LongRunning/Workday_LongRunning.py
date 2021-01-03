@@ -1024,53 +1024,64 @@ def generate_event():
 
 
 def get_new_hire_reports(user_email):
-    integration_context = get_integration_context()
-    reports = NEW_HIRE_REPORT['Report_Entry']
-    for report in reports:
-        email = report.get('Email_Address')
-        if email == user_email:
-            integration_context['Report_Entry'].append(report)
-            set_integration_context(integration_context)
+    if not user_email:
+        set_integration_context(NEW_HIRE_REPORT)
+    else:
+        integration_context = get_integration_context()
+        reports = NEW_HIRE_REPORT['Report_Entry']
+        for report in reports:
+            email = report.get('Email_Address')
+            if email == user_email:
+                integration_context['Report_Entry'].append(report)
+                set_integration_context(integration_context)
 
 
 def get_terminate_report(user_email):
-    integration_context = get_integration_context()
-    reports = TERMINATE_USER_REPORT['Report_Entry']
-    for report in reports:
-        email = report.get('Email_Address')
-        if email == user_email:
-            users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
-            users.append(report)
-            integration_context['Report_Entry'] = users
-            set_integration_context(integration_context)
+    if not user_email:
+        set_integration_context(TERMINATE_USER_REPORT)
+    else:
+        integration_context = get_integration_context()
+        reports = TERMINATE_USER_REPORT['Report_Entry']
+        for report in reports:
+            email = report.get('Email_Address')
+            if email == user_email:
+                users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
+                users.append(report)
+                integration_context['Report_Entry'] = users
+                set_integration_context(integration_context)
 
 
 def get_update_report(user_email):
-    integration_context = get_integration_context()
-    reports = UPDATE_REPORT['Report_Entry']
-    for report in reports:
-        email = report.get('Email_Address')
-        if email == user_email:
-            users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
-            users.append(report)
-            integration_context['Report_Entry'] = users
-            set_integration_context(integration_context)
+    if not user_email:
+        set_integration_context(UPDATE_REPORT)
+    else:
+        integration_context = get_integration_context()
+        reports = UPDATE_REPORT['Report_Entry']
+        for report in reports:
+            email = report.get('Email_Address')
+            if email == user_email:
+                users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
+                users.append(report)
+                integration_context['Report_Entry'] = users
+                set_integration_context(integration_context)
 
 
 def get_rehire_report(user_email):
-    integration_context = get_integration_context()
-    reports = REHIRE_USER_REPORT['Report_Entry']
-    for report in reports:
-        email = report.get('Email_Address')
-        if email == user_email:
-            users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
-            users.append(report)
-            integration_context['Report_Entry'] = users
-            set_integration_context(integration_context)
+    if not user_email:
+        set_integration_context(REHIRE_USER_REPORT)
+    else:
+        integration_context = get_integration_context()
+        reports = REHIRE_USER_REPORT['Report_Entry']
+        for report in reports:
+            email = report.get('Email_Address')
+            if email == user_email:
+                users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
+                users.append(report)
+                integration_context['Report_Entry'] = users
+                set_integration_context(integration_context)
 
 
 if demisto.command() == 'long-running-execution':
-    # set_integration_context({})
     integration_context = get_integration_context()
     if not integration_context:
         set_integration_context(FIRST_RUN_REPORT)
@@ -1082,3 +1093,7 @@ if demisto.command() == 'long-running-execution':
 
 elif demisto.command() == 'generate-event':
     generate_event()
+
+elif demisto.command() == 'initialize-context':
+    set_integration_context(FIRST_RUN_REPORT)
+    return_results('The integration context has been initialized.')
