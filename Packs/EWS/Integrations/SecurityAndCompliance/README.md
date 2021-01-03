@@ -63,8 +63,7 @@ To access the Security & Compliance Center, you need to be a global administrato
          2. Open playground -  War-room:
 
             1. Run the ***!o365-sc-auth-start*** command and follow the instructions. Expected output is:
-
-
+    
             >## Security And Compliance - Authorize instructions
             >
             >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
