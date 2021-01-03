@@ -95,7 +95,7 @@ class Client(BaseClient):
         if len(search_records) > 0:
             for search_record in search_records:
                 user_id = search_record.get('Id')
-                active = True if search_record.get('IsActive') == 'true' else False,
+                active = search_record.get('IsActive') == 'true'
 
         return user_id, active
 
@@ -119,6 +119,18 @@ class Client(BaseClient):
         )
 
 
+def handle_exception(e):
+    if e.__class__ is DemistoException and hasattr(e, 'res') and e.res is not None:
+        error_code = e.res.status_code
+        error_message = e.res.text
+    else:
+        error_code = ''
+        error_message = str(e)
+
+    demisto.error(traceback.format_exc())
+    return error_message, error_code
+
+
 def test_module(client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -140,7 +152,7 @@ def get_user_command(client, args, mapper_in):
         iam_user_profile = IAMUserProfile(user_profile=user_profile)
 
         email = iam_user_profile.get_attribute('email')
-        user_id,_ = client.get_user_id_and_activity_by_mail(email)
+        user_id, _ = client.get_user_id_and_activity_by_mail(email)
 
         if not user_id:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -164,9 +176,10 @@ def get_user_command(client, args, mapper_in):
         return iam_user_profile
 
     except Exception as e:
+        message, code = handle_exception(e)
         iam_user_profile.set_result(success=False,
-                                    error_message=e.res.text,
-                                    error_code=e.res.status_code,
+                                    error_message=message,
+                                    error_code=code,
                                     action=IAMActions.GET_USER
                                     )
         return iam_user_profile
@@ -184,7 +197,7 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
 
         else:
             email = iam_user_profile.get_attribute('email')
-            user_id,_ = client.get_user_id_and_activity_by_mail(email)
+            user_id, _ = client.get_user_id_and_activity_by_mail(email)
 
             if user_id:
                 create_if_not_exists = False
@@ -208,9 +221,10 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
         return iam_user_profile
 
     except Exception as e:
+        message, code = handle_exception(e)
         iam_user_profile.set_result(success=False,
-                                    error_message=e.res.text,
-                                    error_code=e.res.status_code,
+                                    error_message=message,
+                                    error_code=code,
                                     action=IAMActions.CREATE_USER
                                     )
         return iam_user_profile
@@ -244,13 +258,12 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
                 if allow_enable:
                     salesforce_user['IsActive'] = True
-                    active = True
 
                 res = client.update_user(user_term=user_id, data=salesforce_user)
 
                 iam_user_profile.set_result(success=True,
                                             iden=user_id,
-                                            active=active,
+                                            active=True,
                                             action=IAMActions.UPDATE_USER,
                                             details=res
                                             )
@@ -258,9 +271,10 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_create_
         return iam_user_profile
 
     except Exception as e:
+        message, code = handle_exception(e)
         iam_user_profile.set_result(success=False,
-                                    error_message=e.res.text,
-                                    error_code=e.res.status_code,
+                                    error_message=message,
+                                    error_code=code,
                                     action=IAMActions.UPDATE_USER
                                     )
         return iam_user_profile
@@ -278,7 +292,7 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
 
         else:
             email = iam_user_profile.get_attribute('email')
-            user_id,_ = client.get_user_id_and_activity_by_mail(email)
+            user_id, _ = client.get_user_id_and_activity_by_mail(email)
 
             if not user_id:
                 error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
@@ -302,9 +316,10 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
         return iam_user_profile
 
     except Exception as e:
+        message, code = handle_exception(e)
         iam_user_profile.set_result(success=False,
-                                    error_message=e.res.text,
-                                    error_code=e.res.status_code,
+                                    error_message=message,
+                                    error_code=code,
                                     action=IAMActions.DISABLE_USER
                                     )
         return iam_user_profile

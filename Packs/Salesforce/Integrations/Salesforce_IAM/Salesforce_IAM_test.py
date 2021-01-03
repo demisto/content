@@ -20,8 +20,8 @@ def mock_client():
 
 
 create_inp_schme = {
-    "username": "orel@palo.com",
-    "Email": "orel@palo.com",
+    "username": "test@palo.com",
+    "Email": "test@palo.com",
     "LastName": "haim",
     "FirstName": "test",
     "Alias": "a",
