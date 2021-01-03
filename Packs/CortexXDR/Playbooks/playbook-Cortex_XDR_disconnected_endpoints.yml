@@ -1,3 +1,6 @@
+id: Cortex XDR disconnected endpoints
+version: -1
+name: Cortex XDR disconnected endpoints
 description: |
   A Job to periodically query disconnected Cortex XDR endpoints with a provided last seen time range playbook input.
   The Collected data, if found will be generated to a CSV report, including a detailed list of the disconnected endpoints.
@@ -12,74 +15,55 @@ description: |
 
   The scheduled run time and the timestamp relative date should be identical,
   If the job is recurring every 7 days, the time range should be 7 days as well.
-id: 'Cortex XDR disconnected endpoints'
-inputs:
-- description: 'Last seen start date, in relative timestamp - "1 Day" or  "7 days" '
-  key: LastSeenStartDate
-  playbookInputQuery:
-  required: false
-  value:
-    simple: 
-- description: "Last seen end date, in relative timestamp - \"1 Day\" or  \"7 days\"\
-    \ \nFor the current day use \"0 days\""
-  key: LastSeenEndDate
-  playbookInputQuery:
-  required: false
-  value:
-    simple: 
-- description: Email addresses to send the disconnected endpoints report.
-  key: Email
-  playbookInputQuery:
-  required: false
-  value:
-    simple: 
-- description: 'Body for the report email message. '
-  key: MessageBody
-  playbookInputQuery:
-  required: false
-  value:
-    simple: |-
-      This message contains an automatically generated report by Cortex XSOAR, including a list of  disconnected Cortex XDR endpoints.
-      Please investigate and remediate according to the organization's policy.
-name: 'Cortex XDR disconnected endpoints'
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: a7e4284c-c498-4306-8cfd-89a9072a8cd8
+    type: start
+    task:
+      id: a7e4284c-c498-4306-8cfd-89a9072a8cd8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: a7e4284c-c498-4306-8cfd-89a9072a8cd8
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: a7e4284c-c498-4306-8cfd-89a9072a8cd8
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 40
+          "y": 20
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: d8e239ed-2461-42d6-8691-b724318df91f
+    type: regular
+    task:
+      id: d8e239ed-2461-42d6-8691-b724318df91f
+      version: -1
+      name: 'Get XDR disconnected endpoints '
+      description: Gets a list of endpoints, according to the passed filters. If there
+        are no filters, all endpoints are returned. Filtering by multiple fields will
+        be concatenated using the AND condition (OR is not supported). The maximum
+        result set size is 100. Offset is the zero-based number of the endpoint from
+        the start of the result set (start by counting from 0).
+      script: '|||xdr-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       alias_name: {}
       dist_name: {}
@@ -102,92 +86,88 @@ tasks:
       sort_by: {}
       sort_order: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Gets a list of endpoints, according to the passed filters. If there
-        are no filters, all endpoints are returned. Filtering by multiple fields will
-        be concatenated using the AND condition (OR is not supported). The maximum
-        result set size is 100. Offset is the zero-based number of the endpoint from
-        the start of the result set (start by counting from 0).
-      id: d8e239ed-2461-42d6-8691-b724318df91f
-      iscommand: true
-      name: 'Get XDR disconnected endpoints '
-      script: '|||xdr-get-endpoints'
-      type: regular
-      version: -1
-    taskid: d8e239ed-2461-42d6-8691-b724318df91f
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 205
+          "y": 145
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    ignoreworker: false
+    taskid: a1e2abeb-82cb-44c7-8889-bad92bf8635b
+    type: regular
+    task:
+      id: a1e2abeb-82cb-44c7-8889-bad92bf8635b
+      version: -1
+      name: Generate a CSV report for disconnected XDR endpoints
+      description: Export the given array to a CSV file.
+      tags:
+      - Endpoint report
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
-    note: false
-    quietmode: 0
     scriptarguments:
       csvArray:
         complex:
+          root: PaloAltoNetworksXDR.Endpoint
           filters:
-          - - left:
-                iscontext: true
+          - - operator: isEqualString
+              left:
                 value:
                   simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
-              operator: isEqualString
+                iscontext: true
               right:
                 value:
                   simple: LOST
-          root: PaloAltoNetworksXDR.Endpoint
       fileName:
         simple: Disconnected XDR endpoints.csv
       headers: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Export the given array to a CSV file.
-      id: a1e2abeb-82cb-44c7-8889-bad92bf8635b
-      iscommand: false
-      name: Generate a CSV report for disconnected XDR endpoints
-      script: ExportToCSV
-      tags:
-      - Endpoint report
-      type: regular
-      version: -1
-    taskid: a1e2abeb-82cb-44c7-8889-bad92bf8635b
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 645
+          "y": 605
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    ignoreworker: false
+    taskid: 0a1cdfc8-c773-4a9e-88ae-38daba14eef4
+    type: regular
+    task:
+      id: 0a1cdfc8-c773-4a9e-88ae-38daba14eef4
+      version: -1
+      name: Mail disconnected endpoints report
+      description: Sends an mail using Gmail/EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
       attachIDs:
         complex:
-          accessor: EntryID
           root: File
+          accessor: EntryID
       attachNames: {}
       bcc: {}
       body: {}
@@ -207,105 +187,106 @@ tasks:
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sends an mail using Gmail/EWS.
-      id: beca6477-7914-43b2-8643-4b1450aeb9ad
-      iscommand: true
-      name: Mail disconnected endpoints report
-      script: '|||send-mail'
-      type: regular
-      version: -1
-    taskid: beca6477-7914-43b2-8643-4b1450aeb9ad
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 995
+          "y": 1000
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 6daa6400-3c03-4285-8c7a-672e14d9bf8c
+    type: title
     task:
-      brand: ""
-      id: 2bd03c57-4ef2-4e6f-8c19-70d296029122
-      iscommand: false
+      id: 6daa6400-3c03-4285-8c7a-672e14d9bf8c
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 2bd03c57-4ef2-4e6f-8c19-70d296029122
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1860
+          "y": 1840
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
+    id: "5"
+    taskid: 2383bf6b-0fb1-49cf-8993-2063413aa608
+    type: condition
+    task:
+      id: 2383bf6b-0fb1-49cf-8993-2063413aa608
+      version: -1
+      name: Was an disconnected endpoint found?
+      description: ''''''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    separatecontext: false
     conditions:
-    - condition:
-      - - left:
-            iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
             value:
               simple: PaloAltoNetworksXDR.Endpoint
-          operator: isNotEmpty
-      - - left:
             iscontext: true
+      - - operator: isEqualString
+          left:
             value:
               simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
-          operator: isEqualString
+            iscontext: true
           right:
             value:
               simple: LOST
-      label: "yes"
-    id: "5"
-    ignoreworker: false
-    nexttasks:
-      '#default#':
-      - "4"
-      "yes":
-      - "2"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''''''
-      id: 2383bf6b-0fb1-49cf-8993-2063413aa608
-      iscommand: false
-      name: Was an disconnected endpoint found?
-      type: condition
-      version: -1
-    taskid: 2383bf6b-0fb1-49cf-8993-2063413aa608
-    timertriggers: []
-    type: condition
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 390
+          "y": 330
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    ignoreworker: false
+    taskid: ee4edfa9-92e4-423a-8944-61b0fec7d80d
+    type: regular
+    task:
+      id: ee4edfa9-92e4-423a-8944-61b0fec7d80d
+      version: -1
+      name: Count involved users and hosts
+      description: Count the users and hosts involved in the incidents and insert
+        the amount in the incident field,
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountid: {}
       accountname: {}
@@ -621,17 +602,17 @@ tasks:
       xdrhighseverityalertcount: {}
       xdrhostcount:
         complex:
-          accessor: endpoint_name
+          root: PaloAltoNetworksXDR.Endpoint
           filters:
-          - - left:
-                iscontext: true
+          - - operator: isEqualString
+              left:
                 value:
                   simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
-              operator: isEqualString
+                iscontext: true
               right:
                 value:
                   simple: LOST
-          root: PaloAltoNetworksXDR.Endpoint
+          accessor: endpoint_name
           transformers:
           - operator: count
       xdrincidentid: {}
@@ -647,35 +628,21 @@ tasks:
       xdrurl: {}
       xdrusercount:
         complex:
-          accessor: users
+          root: PaloAltoNetworksXDR.Endpoint
           filters:
-          - - left:
-                iscontext: true
+          - - operator: isEqualString
+              left:
                 value:
                   simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
-              operator: isEqualString
+                iscontext: true
               right:
                 value:
                   simple: LOST
-          root: PaloAltoNetworksXDR.Endpoint
+          accessor: users
           transformers:
           - operator: count
       zipcode: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Count the users and hosts involved in the incidents and insert
-        the amount in the incident field,
-      id: ee4edfa9-92e4-423a-8944-61b0fec7d80d
-      iscommand: true
-      name: Count involved users and hosts
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: ee4edfa9-92e4-423a-8944-61b0fec7d80d
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -683,14 +650,27 @@ tasks:
           "y": 1190
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: 4b2098f0-5a1a-453b-8456-606622f2bf11
+    type: regular
+    task:
+      id: 4b2098f0-5a1a-453b-8456-606622f2bf11
+      version: -1
+      name: Set endpoints grid
+      description: Creates a grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
-    note: false
-    quietmode: 0
     scriptarguments:
       columns:
         simple: Endpoint Name,Endpoint Status,Endpoint OS,Endpoint ID,Endpoint Last
@@ -705,19 +685,6 @@ tasks:
       sort_by: {}
       unpack_nested_elements: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Creates a grid table from items or key-value pairs.
-      id: fd9d22ad-f557-46a5-83a9-8f5e9747acd9
-      iscommand: false
-      name: Set endpoints grid
-      script: SetGridField
-      type: regular
-      version: -1
-    taskid: fd9d22ad-f557-46a5-83a9-8f5e9747acd9
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -725,14 +692,27 @@ tasks:
           "y": 1510
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    ignoreworker: false
+    taskid: 5019c256-d87d-4adc-8ad2-c25eb79df1e4
+    type: regular
+    task:
+      id: 5019c256-d87d-4adc-8ad2-c25eb79df1e4
+      version: -1
+      name: Set disconnected endpoints
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     scriptarguments:
       append: {}
       key:
@@ -740,30 +720,17 @@ tasks:
       stringify: {}
       value:
         complex:
+          root: PaloAltoNetworksXDR.Endpoint
           filters:
-          - - left:
-                iscontext: true
+          - - operator: isEqualString
+              left:
                 value:
                   simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
-              operator: isEqualString
+                iscontext: true
               right:
                 value:
                   simple: LOST
-          root: PaloAltoNetworksXDR.Endpoint
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: 13f7548d-d5c5-4195-81ba-6ad754007635
-      iscommand: false
-      name: Set disconnected endpoints
-      script: Set
-      type: regular
-      version: -1
-    taskid: 13f7548d-d5c5-4195-81ba-6ad754007635
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -771,53 +738,66 @@ tasks:
           "y": 1345
         }
       }
-  "9":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                root: inputs.Email
-          operator: isNotEmpty
-      label: "yes"
-    id: "9"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 25a1efd4-8409-466f-80fb-d89d76b9049e
+    type: condition
+    task:
+      id: 25a1efd4-8409-466f-80fb-d89d76b9049e
+      version: -1
+      name: Email report?
+      description: ''''''
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "6"
       "yes":
       - "3"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: 1071226a-0453-43bd-8ff1-5f5f29c0226f
-      iscommand: false
-      name: Email report?
-      type: condition
-      version: -1
-    taskid: 1071226a-0453-43bd-8ff1-5f5f29c0226f
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Email
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 780
+          "y": 770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    ignoreworker: false
+    taskid: bbb69d07-d941-417b-8369-604838e476cc
+    type: regular
+    task:
+      id: bbb69d07-d941-417b-8369-604838e476cc
+      version: -1
+      name: Close job
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       assetid: {}
       closeNotes: {}
@@ -828,42 +808,60 @@ tasks:
       outgoingmirrorerror: {}
       phishingsubtype: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.close.inv
-      id: bbb69d07-d941-417b-8369-604838e476cc
-      iscommand: true
-      name: Close job
-      script: Builtin|||closeInvestigation
-      type: regular
-      version: -1
-    taskid: bbb69d07-d941-417b-8369-604838e476cc
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 162.5,
-          "y": 1670
+          "y": 1680
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
-      "5_2_yes": 0.55,
-      "5_4_#default#": 0.1
+      "5_10_#default#": 0.1,
+      "5_2_yes": 0.62,
+      "9_6_#default#": 0.21
     },
     "paper": {
       "dimensions": {
         "height": 1885,
         "width": 380,
         "x": 162.5,
-        "y": 40
+        "y": 20
       }
     }
   }
+inputs:
+- key: LastSeenStartDate
+  value: {}
+  required: false
+  description: 'Last seen start date, in relative timestamp - "1 Day" or  "7 days" '
+  playbookInputQuery:
+- key: LastSeenEndDate
+  value: {}
+  required: false
+  description: "Last seen end date, in relative timestamp - \"1 Day\" or  \"7 days\"\
+    \ \nFor the current day use \"0 days\""
+  playbookInputQuery:
+- key: Email
+  value: {}
+  required: false
+  description: Email addresses to send the disconnected endpoints report.
+  playbookInputQuery:
+- key: MessageBody
+  value:
+    simple: |-
+      This message contains an automatically generated report by Cortex XSOAR, including a list of  disconnected Cortex XDR endpoints.
+      Please investigate and remediate according to the organization's policy.
+  required: false
+  description: 'Body for the report email message. '
+  playbookInputQuery:
+outputs: []
 tests:
-- No test
+- No tests
 fromversion: 5.5.0
