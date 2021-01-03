@@ -1,11 +1,7 @@
 ## Overview
 ---
-
 Use the Cisco Adaptive Security Appliance Software integration to manage interfaces, rules, and network objects.
 This integration was integrated and tested with version 9.12(3) of Cisco ASA
-
-## Use Cases
----
 
 ## Configure Cisco ASA on Demisto
 ---

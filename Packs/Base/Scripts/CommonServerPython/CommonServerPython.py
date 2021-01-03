@@ -27,7 +27,10 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, List, Any
+    from typing import Optional, Dict, List, Any, Union, Set
+
+    import dateparser
+    from datetime import timezone  # type: ignore
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
@@ -39,14 +42,19 @@ CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 
 # pylint: disable=undefined-variable
+
+ZERO = timedelta(0)
+HOUR = timedelta(hours=1)
+
+
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
+
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
-
 
 # DEPRECATED - use EntryType enum instead
 entryTypes = {
@@ -95,6 +103,20 @@ class IncidentStatus(object):
     ACTIVE = 1
     DONE = 2
     ARCHIVE = 3
+
+
+class IncidentSeverity(object):
+    """
+    Enum: contains all the incident severity types
+    :return: None
+    :rtype: ``None``
+    """
+    UNKNOWN = 0
+    INFO = 0.5
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
 
 
 # DEPRECATED - use EntryFormat enum instead
@@ -162,6 +184,7 @@ class DBotScoreType(object):
     DBotScoreType.URL
     DBotScoreType.CVE
     DBotScoreType.ACCOUNT
+    DBotScoreType.CRYPTOCURRENCY
     :return: None
     :rtype: ``None``
     """
@@ -171,6 +194,10 @@ class DBotScoreType(object):
     URL = 'url'
     CVE = 'cve'
     ACCOUNT = 'account'
+    CIDR = 'cidr',
+    DOMAINGLOB = 'domainglob'
+    CERTIFICATE = 'certificate'
+    CRYPTOCURRENCY = 'cryptocurrency'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -186,7 +213,11 @@ class DBotScoreType(object):
             DBotScoreType.DOMAIN,
             DBotScoreType.URL,
             DBotScoreType.CVE,
-            DBotScoreType.ACCOUNT
+            DBotScoreType.ACCOUNT,
+            DBotScoreType.CIDR,
+            DBotScoreType.DOMAINGLOB,
+            DBotScoreType.CERTIFICATE,
+            DBotScoreType.CRYPTOCURRENCY,
         )
 
 
@@ -275,6 +306,16 @@ class FeedIndicatorType(object):
 
         else:
             return None
+
+
+def is_debug_mode():
+    """Return if this script/command was passed debug-mode=true option
+
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
+    """
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return hasattr(demisto, 'is_debug') and demisto.is_debug
 
 
 def auto_detect_indicator_type(indicator_value):
@@ -934,7 +975,9 @@ def aws_table_to_markdown(response, table_header):
                     response[list(response.keys())[0]], list):
                 if isinstance(response[list(response.keys())[0]], list):
                     list_response = response[list(response.keys())[0]]
-                    if isinstance(list_response[0], str):
+                    if not list_response:
+                        human_readable = tableToMarkdown(table_header, list_response)
+                    elif isinstance(list_response[0], str):
                         human_readable = tableToMarkdown(
                             table_header, response)
                     else:
@@ -992,11 +1035,13 @@ class IntegrationLogger(object):
       :rtype: ``None``
     """
 
-    def __init__(self):
+    def __init__(self, debug_logging=False):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
+        self.curl = []  # type: list
         self.buffering = True
+        self.debug_logging = debug_logging
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
@@ -1036,6 +1081,8 @@ class IntegrationLogger(object):
         text = self.encode(message)
         if self.buffering:
             self.messages.append(text)
+            if self.debug_logging:
+                demisto.debug(text)
         else:
             demisto.info(text)
 
@@ -1068,8 +1115,56 @@ class IntegrationLogger(object):
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
                 demisto.log(text)
-            demisto.info(text)
+            if not self.debug_logging:  # we don't print out if in debug_logging as already all message where printed
+                demisto.info(text)
             self.messages = []
+
+    def build_curl(self, text):
+        """
+        Parses the HTTP client "send" log messages and generates cURL queries out of them.
+
+        :type text: ``str``
+        :param text: The HTTP client log message.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+        data = text.split("send: b'")[1]
+        if data.startswith('{'):
+            # it is the request url query params/post body - will always come after we already have the url and headers
+            self.curl[-1] += "-d '{}".format(data)
+        elif any(http_method in data for http_method in http_methods):
+            method = ''
+            url = ''
+            headers = []
+            headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
+            request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
+            for line, part in enumerate(request_parts):
+                if line == 0:
+                    method, url, _ = part[1:].split()  # ignoring " at first char
+                elif line != len(request_parts) - 1:  # ignoring the last line which is empty
+                    if part.startswith('Host:'):
+                        _, host = part.split('Host: ')
+                        url = 'https://{}{}'.format(host, url)
+                    else:
+                        if any(header_to_skip in part for header_to_skip in headers_to_skip):
+                            continue
+                        headers.append(part)
+            curl_headers = ''
+            for header in headers:
+                if header:
+                    curl_headers += '-H "{}" '.format(header)
+            curl = 'curl -X {} {} {}'.format(method, url, curl_headers)
+            if demisto.params().get('proxy'):
+                proxy_address = os.environ.get('https_proxy')
+                if proxy_address:
+                    curl += '--proxy {} '.format(proxy_address)
+            else:
+                curl += '--noproxy '
+            if demisto.params().get('insecure'):
+                curl += '-k '
+            self.curl.append(curl)
 
     def write(self, msg):
         # same as __call__ but allows IntegrationLogger to act as a File like object.
@@ -1087,6 +1182,11 @@ class IntegrationLogger(object):
                 self.messages.append(text)
             else:
                 demisto.info(text)
+                if is_debug_mode() and text.startswith('send:'):
+                    try:
+                        self.build_curl(text)
+                    except Exception as e:  # should fail silently
+                        demisto.debug('Failed generating curl - {}'.format(str(e)))
             self.write_buf = []
 
     def print_override(self, *args, **kwargs):
@@ -1108,7 +1208,7 @@ a logger for python integrations:
 use LOG(<message>) to add a record to the logger (message can be any object with __str__)
 use LOG.print_log() to display all records in War-Room and server log.
 """
-LOG = IntegrationLogger()
+LOG = IntegrationLogger(debug_logging=is_debug_mode())
 
 
 def formatAllArgs(args, kwds):
@@ -1312,7 +1412,49 @@ def appendContext(key, data, dedup=False):
         demisto.setContext(key, data)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
+def url_to_clickable_markdown(data, url_keys):
+    """
+    Turn the given urls fields in to clickable url, used for the markdown table.
+
+    :type data: ``[Union[str, List[Any], Dict[str, Any]]]``
+    :param data: a dictionary or a list containing data with some values that are urls
+
+    :type url_keys: ``List[str]``
+    :param url_keys: the keys of the url's wished to turn clickable
+
+    :return: markdown format for clickable url
+    :rtype: ``[Union[str, List[Any], Dict[str, Any]]]``
+    """
+
+    if isinstance(data, list):
+        data = [url_to_clickable_markdown(item, url_keys) for item in data]
+
+    elif isinstance(data, dict):
+        data = {key: create_clickable_url(value) if key in url_keys else url_to_clickable_markdown(data[key], url_keys)
+                for key, value in data.items()}
+
+    return data
+
+
+def create_clickable_url(url):
+    """
+    Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
+
+    :type url: ``Union[List[str], str]``
+    :param url: the url of interest or a list of urls
+
+    :return: markdown format for clickable url
+    :rtype: ``str``
+
+    """
+    if not url:
+        return None
+    elif isinstance(url, list):
+        return ['[{}]({})'.format(item, item) for item in url]
+    return '[{}]({})'.format(url, url)
+
+
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1335,9 +1477,15 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
 
+       :type url_keys: ``list``
+       :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
+
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
+    # Turning the urls in the table to clickable
+    if url_keys:
+        t = url_to_clickable_markdown(t, url_keys)
 
     mdResult = ''
     if name:
@@ -1357,7 +1505,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = [headers]
 
     if not isinstance(t[0], dict):
-        # the table cotains only simple objects (strings, numbers)
+        # the table contains only simple objects (strings, numbers)
         # should be only one header
         if headers and len(headers) > 0:
             header = headers[0]
@@ -1998,7 +2146,7 @@ class Common(object):
 
     class IP(Indicator):
         """
-        IP indicator class - https://xsoar.pan.dev/docs/context-standards#ip
+        IP indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#ip
 
         :type ip: ``str``
         :param ip: IP address
@@ -2135,7 +2283,7 @@ class Common(object):
 
     class File(Indicator):
         """
-        File indicator class - https://xsoar.pan.dev/docs/context-standards#file
+        File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
         :type name: ``str``
         :param name: The full file name (including file extension).
 
@@ -2285,7 +2433,7 @@ class Common(object):
 
     class CVE(Indicator):
         """
-        CVE indicator class - https://xsoar.pan.dev/docs/context-standards#cve
+        CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cve
         :type id: ``str``
         :param id: The ID of the CVE, for example: "CVE-2015-1653".
         :type cvss: ``str``
@@ -2344,7 +2492,7 @@ class Common(object):
 
     class URL(Indicator):
         """
-        URL indicator - https://xsoar.pan.dev/docs/context-standards#url
+        URL indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#url
         :type url: ``str``
         :param url: The URL
 
@@ -2404,7 +2552,7 @@ class Common(object):
 
     class Domain(Indicator):
         """ ignore docstring
-        Domain indicator - https://xsoar.pan.dev/docs/context-standards#domain
+        Domain indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#domain
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
@@ -2413,7 +2561,7 @@ class Common(object):
                      domain_status=None, name_servers=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2437,6 +2585,7 @@ class Common(object):
             self.admin_email = admin_email
             self.admin_phone = admin_phone
             self.admin_country = admin_country
+            self.tags = tags
 
             self.domain_status = domain_status
             self.name_servers = name_servers
@@ -2510,6 +2659,9 @@ class Common(object):
                 domain_context['NameServers'] = self.name_servers
                 whois_context['NameServers'] = domain_context['NameServers']
 
+            if self.tags:
+                domain_context['Tags'] = self.tags
+
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {
                     'Vendor': self.dbot_score.integration_name,
@@ -2530,7 +2682,7 @@ class Common(object):
 
     class Endpoint(Indicator):
         """ ignore docstring
-        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards#endpoint
+        Endpoint indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#endpoint
         """
         CONTEXT_PATH = 'Endpoint(val.ID && val.ID == obj.ID)'
 
@@ -2600,7 +2752,7 @@ class Common(object):
 
     class Account(Indicator):
         """
-        Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards#account
+        Account indicator - https://xsoar.pan.dev/docs/integrations/context-standards-recommended#account
 
         :type dbot_score: ``DBotScore``
         :param dbot_score: If account has reputation then create DBotScore object
@@ -2671,6 +2823,1091 @@ class Common(object):
 
             return ret_value
 
+    class Cryptocurrency(Indicator):
+        """
+        Cryptocurrency indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cryptocurrency
+        :type address: ``str``
+        :param address: The Cryptocurrency address
+
+        :type address_type: ``str``
+        :param address_type: The Cryptocurrency type - e.g. `bitcoin`.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Cryptocurrency(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, address, address_type, dbot_score):
+            self.address = address
+            self.address_type = address_type
+
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            crypto_context = {
+                'Address': self.address,
+                'AddressType': self.address_type
+            }
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                crypto_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.Cryptocurrency.CONTEXT_PATH: crypto_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class CertificatePublicKey(object):
+        """
+        CertificatePublicKey class
+        Defines an X509  PublicKey used in Common.Certificate
+
+        :type algorithm: ``str``
+        :param algorithm: The encryption algorithm: DSA, RSA, EC or UNKNOWN (Common.CertificatePublicKey.Algorithm enum)
+
+        :type length: ``int``
+        :param length: The length of the public key
+
+        :type publickey: ``Optional[str]``
+        :param publickey: publickey
+
+        :type p: ``Optional[str]``
+        :param p: P parameter used in DSA algorithm
+
+        :type q: ``Optional[str]``
+        :param q: Q parameter used in DSA algorithm
+
+        :type g: ``Optional[str]``
+        :param g: G parameter used in DSA algorithm
+
+        :type modulus: ``Optional[str]``
+        :param modulus: modulus parameter used in RSA algorithm
+
+        :type modulus: ``Optional[int]``
+        :param modulus: exponent parameter used in RSA algorithm
+
+        :type x: ``Optional[str]``
+        :param x: X parameter used in EC algorithm
+
+        :type y: ``Optional[str]``
+        :param y: Y parameter used in EC algorithm
+
+        :type curve: ``Optional[str]``
+        :param curve: curve parameter used in EC algorithm
+
+        :return: None
+        :rtype: ``None``
+        """
+        class Algorithm(object):
+            """
+            Algorithm class to enumerate available algorithms
+
+            :return: None
+            :rtype: ``None``
+            """
+            DSA = "DSA"
+            RSA = "RSA"
+            EC = "EC"
+            UNKNOWN = "Unknown Algorithm"
+
+            @staticmethod
+            def is_valid_type(_type):
+                return _type in (
+                    Common.CertificatePublicKey.Algorithm.DSA,
+                    Common.CertificatePublicKey.Algorithm.RSA,
+                    Common.CertificatePublicKey.Algorithm.EC,
+                    Common.CertificatePublicKey.Algorithm.UNKNOWN
+                )
+
+        def __init__(
+            self,
+            algorithm,  # type: str
+            length,  # type: int
+            publickey=None,  # type: str
+            p=None,  # type: str
+            q=None,  # type: str
+            g=None,  # type: str
+            modulus=None,  # type: str
+            exponent=None,  # type: int
+            x=None,  # type: str
+            y=None,  # type: str
+            curve=None  # type: str
+        ):
+
+            if not Common.CertificatePublicKey.Algorithm.is_valid_type(algorithm):
+                raise TypeError('algorithm must be of type Common.CertificatePublicKey.Algorithm enum')
+
+            self.algorithm = algorithm
+            self.length = length
+            self.publickey = publickey
+            self.p = p
+            self.q = q
+            self.g = g
+            self.modulus = modulus
+            self.exponent = exponent
+            self.x = x
+            self.y = y
+            self.curve = curve
+
+        def to_context(self):
+            publickey_context = {
+                'Algorithm': self.algorithm,
+                'Length': self.length
+            }
+
+            if self.publickey:
+                publickey_context['PublicKey'] = self.publickey
+
+            if self.algorithm == Common.CertificatePublicKey.Algorithm.DSA:
+                if self.p:
+                    publickey_context['P'] = self.p
+                if self.q:
+                    publickey_context['Q'] = self.q
+                if self.g:
+                    publickey_context['G'] = self.g
+
+            elif self.algorithm == Common.CertificatePublicKey.Algorithm.RSA:
+                if self.modulus:
+                    publickey_context['Modulus'] = self.modulus
+                if self.exponent:
+                    publickey_context['Exponent'] = self.exponent
+
+            elif self.algorithm == Common.CertificatePublicKey.Algorithm.EC:
+                if self.x:
+                    publickey_context['X'] = self.x
+                if self.y:
+                    publickey_context['Y'] = self.y
+                if self.curve:
+                    publickey_context['Curve'] = self.curve
+
+            elif self.algorithm == Common.CertificatePublicKey.Algorithm.UNKNOWN:
+                pass
+
+            return publickey_context
+
+    class GeneralName(object):
+        """
+        GeneralName class
+        Implements GeneralName interface from rfc5280
+        Enumerates the available General Name Types
+
+        :type gn_type: ``str``
+        :param gn_type: General Name Type
+
+        :type gn_value: ``str``
+        :param gn_value: General Name Value
+
+        :return: None
+        :rtype: ``None``
+        """
+        OTHERNAME = 'otherName'
+        RFC822NAME = 'rfc822Name'
+        DNSNAME = 'dNSName'
+        DIRECTORYNAME = 'directoryName'
+        UNIFORMRESOURCEIDENTIFIER = 'uniformResourceIdentifier'
+        IPADDRESS = 'iPAddress'
+        REGISTEREDID = 'registeredID'
+
+        @staticmethod
+        def is_valid_type(_type):
+            return _type in (
+                Common.GeneralName.OTHERNAME,
+                Common.GeneralName.RFC822NAME,
+                Common.GeneralName.DNSNAME,
+                Common.GeneralName.DIRECTORYNAME,
+                Common.GeneralName.UNIFORMRESOURCEIDENTIFIER,
+                Common.GeneralName.IPADDRESS,
+                Common.GeneralName.REGISTEREDID
+            )
+
+        def __init__(
+            self,
+            gn_value,  # type: str
+            gn_type  # type: str
+        ):
+            if not Common.GeneralName.is_valid_type(gn_type):
+                raise TypeError(
+                    'gn_type must be of type Common.GeneralName enum'
+                )
+            self.gn_type = gn_type
+            self.gn_value = gn_value
+
+        def to_context(self):
+            return {
+                'Type': self.gn_type,
+                'Value': self.gn_value
+            }
+
+        def get_value(self):
+            return self.gn_value
+
+    class CertificateExtension(object):
+        """
+        CertificateExtension class
+        Defines an X509 Certificate Extensions used in Common.Certificate
+
+
+        :type extension_type: ``str``
+        :param extension_type: The type of Extension (from Common.CertificateExtension.ExtensionType enum, or "Other)
+
+        :type critical: ``bool``
+        :param critical: Whether the extension is marked as critical
+
+        :type extension_name: ``Optional[str]``
+        :param extension_name: Name of the extension
+
+        :type oid: ``Optional[str]``
+        :param oid: OID of the extension
+
+        :type subject_alternative_names: ``Optional[List[Common.CertificateExtension.SubjectAlternativeName]]``
+        :param subject_alternative_names: Subject Alternative Names
+
+        :type authority_key_identifier: ``Optional[Common.CertificateExtension.AuthorityKeyIdentifier]``
+        :param authority_key_identifier: Authority Key Identifier
+
+        :type digest: ``Optional[str]``
+        :param digest: digest for Subject Key Identifier extension
+
+        :type digital_signature: ``Optional[bool]``
+        :param digital_signature: Digital Signature usage for Key Usage extension
+
+        :type content_commitment: ``Optional[bool]``
+        :param content_commitment: Content Commitment usage for Key Usage extension
+
+        :type key_encipherment: ``Optional[bool]``
+        :param key_encipherment: Key Encipherment usage for Key Usage extension
+
+        :type data_encipherment: ``Optional[bool]``
+        :param data_encipherment: Data Encipherment usage for Key Usage extension
+
+        :type key_agreement: ``Optional[bool]``
+        :param key_agreement: Key Agreement usage for Key Usage extension
+
+        :type key_cert_sign: ``Optional[bool]``
+        :param key_cert_sign: Key Cert Sign usage for Key Usage extension
+
+        :type usages: ``Optional[List[str]]``
+        :param usages: Usages for Extended Key Usage extension
+
+        :type distribution_points: ``Optional[List[Common.CertificateExtension.DistributionPoint]]``
+        :param distribution_points: Distribution Points
+
+        :type certificate_policies: ``Optional[List[Common.CertificateExtension.CertificatePolicy]]``
+        :param certificate_policies: Certificate Policies
+
+        :type authority_information_access: ``Optional[List[Common.CertificateExtension.AuthorityInformationAccess]]``
+        :param authority_information_access: Authority Information Access
+
+        :type basic_constraints: ``Optional[Common.CertificateExtension.BasicConstraints]``
+        :param basic_constraints: Basic Constraints
+
+        :type signed_certificate_timestamps: ``Optional[List[Common.CertificateExtension.SignedCertificateTimestamp]]``
+        :param signed_certificate_timestamps: (PreCertificate)Signed Certificate Timestamps
+
+        :type value: ``Optional[Union[str, List[Any], Dict[str, Any]]]``
+        :param value: Raw value of the Extension (used for "Other" type)
+
+        :return: None
+        :rtype: ``None``
+        """
+        class SubjectAlternativeName(object):
+            """
+            SubjectAlternativeName class
+            Implements Subject Alternative Name extension interface
+
+            :type gn: ``Optional[Common.GeneralName]``
+            :param gn: General Name Type provided as Common.GeneralName
+
+            :type gn_type: ``Optional[str]``
+            :param gn_type: General Name Type provided as string
+
+            :type gn_value: ``Optional[str]``
+            :param gn_value: General Name Value provided as string
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                gn=None,  # type: Optional[Common.GeneralName]
+                gn_type=None,  # type: Optional[str]
+                gn_value=None  # type: Optional[str]
+            ):
+                if gn:
+                    self.gn = gn
+                elif gn_type and gn_value:
+                    self.gn = Common.GeneralName(
+                        gn_value=gn_value,
+                        gn_type=gn_type
+                    )
+                else:
+                    raise ValueError('either GeneralName or gn_type/gn_value required to inizialize SubjectAlternativeName')
+
+            def to_context(self):
+                return self.gn.to_context()
+
+            def get_value(self):
+                return self.gn.get_value()
+
+        class AuthorityKeyIdentifier(object):
+            """
+            AuthorityKeyIdentifier class
+            Implements Authority Key Identifier extension interface
+
+            :type issuer: ``Optional[List[Common.GeneralName]]``
+            :param issuer: Issuer list
+
+            :type serial_number: ``Optional[str]``
+            :param serial_number: Serial Number
+
+            :type key_identifier: ``Optional[str]``
+            :param key_identifier: Key Identifier
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                issuer=None,  # type: Optional[List[Common.GeneralName]]
+                serial_number=None,  # type: Optional[str]
+                key_identifier=None  # type: Optional[str]
+            ):
+                self.issuer = issuer
+                self.serial_number = serial_number
+                self.key_identifier = key_identifier
+
+            def to_context(self):
+                authority_key_identifier_context = {}  # type: Dict[str, Any]
+
+                if self.issuer:
+                    authority_key_identifier_context['Issuer'] = self.issuer,
+
+                if self.serial_number:
+                    authority_key_identifier_context["SerialNumber"] = self.serial_number
+                if self.key_identifier:
+                    authority_key_identifier_context["KeyIdentifier"] = self.key_identifier
+
+                return authority_key_identifier_context
+
+        class DistributionPoint(object):
+            """
+            DistributionPoint class
+            Implements Distribution Point extension interface
+
+            :type full_name: ``Optional[List[Common.GeneralName]]``
+            :param full_name: Full Name list
+
+            :type relative_name: ``Optional[str]``
+            :param relative_name: Relative Name
+
+            :type crl_issuer: ``Optional[List[Common.GeneralName]]``
+            :param crl_issuer: CRL Issuer
+
+            :type reasons: ``Optional[List[str]]``
+            :param reasons: Reason list
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                full_name=None,  # type: Optional[List[Common.GeneralName]]
+                relative_name=None,  # type:  Optional[str]
+                crl_issuer=None,  # type: Optional[List[Common.GeneralName]]
+                reasons=None  # type: Optional[List[str]]
+            ):
+                self.full_name = full_name
+                self.relative_name = relative_name
+                self.crl_issuer = crl_issuer
+                self.reasons = reasons
+
+            def to_context(self):
+                distribution_point_context = {}  # type: Dict[str, Union[List, str]]
+                if self.full_name:
+                    distribution_point_context["FullName"] = [fn.to_context() for fn in self.full_name]
+                if self.relative_name:
+                    distribution_point_context["RelativeName"] = self.relative_name
+                if self.crl_issuer:
+                    distribution_point_context["CRLIssuer"] = [ci.to_context() for ci in self.crl_issuer]
+                if self.reasons:
+                    distribution_point_context["Reasons"] = self.reasons
+
+                return distribution_point_context
+
+        class CertificatePolicy(object):
+            """
+            CertificatePolicy class
+            Implements Certificate Policy extension interface
+
+            :type policy_identifier: ``str``
+            :param policy_identifier: Policy Identifier
+
+            :type policy_qualifiers: ``Optional[List[str]]``
+            :param policy_qualifiers: Policy Qualifier list
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                policy_identifier,  # type: str
+                policy_qualifiers=None  # type: Optional[List[str]]
+            ):
+                self.policy_identifier = policy_identifier
+                self.policy_qualifiers = policy_qualifiers
+
+            def to_context(self):
+                certificate_policies_context = {
+                    "PolicyIdentifier": self.policy_identifier
+                }  # type: Dict[str, Union[List, str]]
+
+                if self.policy_qualifiers:
+                    certificate_policies_context["PolicyQualifiers"] = self.policy_qualifiers
+
+                return certificate_policies_context
+
+        class AuthorityInformationAccess(object):
+            """
+            AuthorityInformationAccess class
+            Implements Authority Information Access extension interface
+
+            :type access_method: ``str``
+            :param access_method: Access Method
+
+            :type access_location: ``Common.GeneralName``
+            :param access_location: Access Location
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                access_method,  # type: str
+                access_location  # type: Common.GeneralName
+            ):
+                self.access_method = access_method
+                self.access_location = access_location
+
+            def to_context(self):
+                return {
+                    "AccessMethod": self.access_method,
+                    "AccessLocation": self.access_location.to_context()
+                }
+
+        class BasicConstraints(object):
+            """
+            BasicConstraints class
+            Implements Basic Constraints extension interface
+
+            :type ca: ``bool``
+            :param ca: Certificate Authority
+
+            :type path_length: ``int``
+            :param path_length: Path Length
+
+            :return: None
+            :rtype: ``None``
+            """
+            def __init__(
+                self,
+                ca,  # type: bool
+                path_length=None  # type: int
+            ):
+                self.ca = ca
+                self.path_length = path_length
+
+            def to_context(self):
+                basic_constraints_context = {
+                    "CA": self.ca
+                }  # type: Dict[str, Union[str, int]]
+
+                if self.path_length:
+                    basic_constraints_context["PathLength"] = self.path_length
+
+                return basic_constraints_context
+
+        class SignedCertificateTimestamp(object):
+            """
+            SignedCertificateTimestamp class
+            Implementsinterface for  "SignedCertificateTimestamp" extensions
+
+            :type entry_type: ``str``
+            :param entry_type: Entry Type (from Common.CertificateExtension.SignedCertificateTimestamp.EntryType enum)
+
+            :type version: ``str``
+            :param version: Version
+
+            :type log_id: ``str``
+            :param log_id: Log ID
+
+            :type timestamp: ``str``
+            :param timestamp: Timestamp (ISO8601 string representation in UTC)
+
+            :return: None
+            :rtype: ``None``
+            """
+            class EntryType(object):
+                """
+                EntryType class
+                Enumerates Entry Types for SignedCertificateTimestamp class
+
+                :return: None
+                :rtype: ``None``
+                """
+                PRECERTIFICATE = "PreCertificate"
+                X509CERTIFICATE = "X509Certificate"
+
+                @staticmethod
+                def is_valid_type(_type):
+                    return _type in (
+                        Common.CertificateExtension.SignedCertificateTimestamp.EntryType.PRECERTIFICATE,
+                        Common.CertificateExtension.SignedCertificateTimestamp.EntryType.X509CERTIFICATE
+                    )
+
+            def __init__(
+                self,
+                entry_type,  # type: str
+                version,  # type: int
+                log_id,  # type: str
+                timestamp  # type: str
+            ):
+
+                if not Common.CertificateExtension.SignedCertificateTimestamp.EntryType.is_valid_type(entry_type):
+                    raise TypeError(
+                        'entry_type must be of type Common.CertificateExtension.SignedCertificateTimestamp.EntryType enum'
+                    )
+
+                self.entry_type = entry_type
+                self.version = version
+                self.log_id = log_id
+                self.timestamp = timestamp
+
+            def to_context(self):
+                timestamps_context = {}  # type: Dict[str, Any]
+
+                timestamps_context['Version'] = self.version
+                timestamps_context["LogId"] = self.log_id
+                timestamps_context["Timestamp"] = self.timestamp
+                timestamps_context["EntryType"] = self.entry_type
+
+                return timestamps_context
+
+        class ExtensionType(object):
+            """
+            ExtensionType class
+            Enumerates Extension Types for Common.CertificatExtension class
+
+            :return: None
+            :rtype: ``None``
+            """
+            SUBJECTALTERNATIVENAME = "SubjectAlternativeName"
+            AUTHORITYKEYIDENTIFIER = "AuthorityKeyIdentifier"
+            SUBJECTKEYIDENTIFIER = "SubjectKeyIdentifier"
+            KEYUSAGE = "KeyUsage"
+            EXTENDEDKEYUSAGE = "ExtendedKeyUsage"
+            CRLDISTRIBUTIONPOINTS = "CRLDistributionPoints"
+            CERTIFICATEPOLICIES = "CertificatePolicies"
+            AUTHORITYINFORMATIONACCESS = "AuthorityInformationAccess"
+            BASICCONSTRAINTS = "BasicConstraints"
+            SIGNEDCERTIFICATETIMESTAMPS = "SignedCertificateTimestamps"
+            PRESIGNEDCERTIFICATETIMESTAMPS = "PreCertSignedCertificateTimestamps"
+            OTHER = "Other"
+
+            @staticmethod
+            def is_valid_type(_type):
+                return _type in (
+                    Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME,
+                    Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER,
+                    Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER,
+                    Common.CertificateExtension.ExtensionType.KEYUSAGE,
+                    Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE,
+                    Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS,
+                    Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES,
+                    Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS,
+                    Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS,
+                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.OTHER  # for extensions that are not handled explicitly
+                )
+
+        def __init__(
+            self,
+            extension_type,  # type: str
+            critical,  # type: bool
+            oid=None,  # type: Optional[str]
+            extension_name=None,  # type: Optional[str]
+            subject_alternative_names=None,  # type: Optional[List[Common.CertificateExtension.SubjectAlternativeName]]
+            authority_key_identifier=None,  # type: Optional[Common.CertificateExtension.AuthorityKeyIdentifier]
+            digest=None,  # type: str
+            digital_signature=None,  # type: Optional[bool]
+            content_commitment=None,  # type: Optional[bool]
+            key_encipherment=None,  # type: Optional[bool]
+            data_encipherment=None,  # type: Optional[bool]
+            key_agreement=None,  # type: Optional[bool]
+            key_cert_sign=None,  # type: Optional[bool]
+            crl_sign=None,  # type: Optional[bool]
+            usages=None,  # type: Optional[List[str]]
+            distribution_points=None,  # type: Optional[List[Common.CertificateExtension.DistributionPoint]]
+            certificate_policies=None,  # type: Optional[List[Common.CertificateExtension.CertificatePolicy]]
+            authority_information_access=None,  # type: Optional[List[Common.CertificateExtension.AuthorityInformationAccess]]
+            basic_constraints=None,  # type: Optional[Common.CertificateExtension.BasicConstraints]
+            signed_certificate_timestamps=None,  # type: Optional[List[Common.CertificateExtension.SignedCertificateTimestamp]]
+            value=None  # type: Optional[Union[str, List[Any], Dict[str, Any]]]
+        ):
+            if not Common.CertificateExtension.ExtensionType.is_valid_type(extension_type):
+                raise TypeError('algorithm must be of type Common.CertificateExtension.ExtensionType enum')
+
+            self.extension_type = extension_type
+            self.critical = critical
+
+            if self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME:
+                self.subject_alternative_names = subject_alternative_names
+                self.oid = "2.5.29.17"
+                self.extension_name = "subjectAltName"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER:
+                if not digest:
+                    raise ValueError('digest is mandatory for SubjectKeyIdentifier extension')
+                self.digest = digest
+                self.oid = "2.5.29.14"
+                self.extension_name = "subjectKeyIdentifier"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.KEYUSAGE:
+                self.digital_signature = digital_signature
+                self.content_commitment = content_commitment
+                self.key_encipherment = key_encipherment
+                self.data_encipherment = data_encipherment
+                self.key_agreement = key_agreement
+                self.key_cert_sign = key_cert_sign
+                self.crl_sign = crl_sign
+                self.oid = "2.5.29.15"
+                self.extension_name = "keyUsage"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE:
+                if not usages:
+                    raise ValueError('usages is mandatory for ExtendedKeyUsage extension')
+                self.usages = usages
+                self.oid = "2.5.29.37"
+                self.extension_name = "extendedKeyUsage"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER:
+                self.authority_key_identifier = authority_key_identifier
+                self.oid = "2.5.29.35"
+                self.extension_name = "authorityKeyIdentifier"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS:
+                self.distribution_points = distribution_points
+                self.oid = "2.5.29.31"
+                self.extension_name = "cRLDistributionPoints"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES:
+                self.certificate_policies = certificate_policies
+                self.oid = "2.5.29.32"
+                self.extension_name = "certificatePolicies"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS:
+                self.authority_information_access = authority_information_access
+                self.oid = "1.3.6.1.5.5.7.1.1"
+                self.extension_name = "authorityInfoAccess"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS:
+                self.basic_constraints = basic_constraints
+                self.oid = "2.5.29.19"
+                self.extension_name = "basicConstraints"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS:
+                self.signed_certificate_timestamps = signed_certificate_timestamps
+                self.oid = "1.3.6.1.4.1.11129.2.4.2"
+                self.extension_name = "signedCertificateTimestampList"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS:
+                self.signed_certificate_timestamps = signed_certificate_timestamps
+                self.oid = "1.3.6.1.4.1.11129.2.4.5"
+                self.extension_name = "signedCertificateTimestampList"
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.OTHER:
+                self.value = value
+
+            # override oid, extension_name if provided as inputs
+            if oid:
+                self.oid = oid
+            if extension_name:
+                self.extension_name = extension_name
+
+        def to_context(self):
+            extension_context = {
+                "OID": self.oid,
+                "Name": self.extension_name,
+                "Critical": self.critical
+            }  # type: Dict[str, Any]
+
+            if (
+                self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME
+                and self.subject_alternative_names is not None
+            ):
+                extension_context["Value"] = [san.to_context() for san in self.subject_alternative_names]
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYKEYIDENTIFIER
+                and self.authority_key_identifier is not None
+            ):
+                extension_context["Value"] = self.authority_key_identifier.to_context()
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTKEYIDENTIFIER
+                and self.digest is not None
+            ):
+                extension_context["Value"] = {
+                    "Digest": self.digest
+                }
+
+            elif self.extension_type == Common.CertificateExtension.ExtensionType.KEYUSAGE:
+                key_usage = {}  # type: Dict[str, bool]
+                if self.digital_signature:
+                    key_usage["DigitalSignature"] = self.digital_signature
+                if self.content_commitment:
+                    key_usage["ContentCommitment"] = self.content_commitment
+                if self.key_encipherment:
+                    key_usage["KeyEncipherment"] = self.key_encipherment
+                if self.data_encipherment:
+                    key_usage["DataEncipherment"] = self.data_encipherment
+                if self.key_agreement:
+                    key_usage["KeyAgreement"] = self.key_agreement
+                if self.key_cert_sign:
+                    key_usage["KeyCertSign"] = self.key_cert_sign
+                if self.crl_sign:
+                    key_usage["CrlSign"] = self.crl_sign
+
+                if key_usage:
+                    extension_context["Value"] = key_usage
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.EXTENDEDKEYUSAGE
+                and self.usages is not None
+            ):
+                extension_context["Value"] = {
+                    "Usages": [u for u in self.usages]
+                }
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.CRLDISTRIBUTIONPOINTS
+                and self.distribution_points is not None
+            ):
+                extension_context["Value"] = [dp.to_context() for dp in self.distribution_points]
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.CERTIFICATEPOLICIES
+                and self.certificate_policies is not None
+            ):
+                extension_context["Value"] = [cp.to_context() for cp in self.certificate_policies]
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.AUTHORITYINFORMATIONACCESS
+                and self.authority_information_access is not None
+            ):
+                extension_context["Value"] = [aia.to_context() for aia in self.authority_information_access]
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.BASICCONSTRAINTS
+                and self.basic_constraints is not None
+            ):
+                extension_context["Value"] = self.basic_constraints.to_context()
+
+            elif (
+                self.extension_type in [
+                    Common.CertificateExtension.ExtensionType.SIGNEDCERTIFICATETIMESTAMPS,
+                    Common.CertificateExtension.ExtensionType.PRESIGNEDCERTIFICATETIMESTAMPS
+                ]
+                and self.signed_certificate_timestamps is not None
+            ):
+                extension_context["Value"] = [sct.to_context() for sct in self.signed_certificate_timestamps]
+
+            elif (
+                self.extension_type == Common.CertificateExtension.ExtensionType.OTHER
+                and self.value is not None
+            ):
+                extension_context["Value"] = self.value
+
+            return extension_context
+
+    class Certificate(Indicator):
+        """
+        Implements the X509 Certificate interface
+        Certificate indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#certificate
+
+        :type subject_dn: ``str``
+        :param subject_dn: Subject Distinguished Name
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score: If Certificate has a score then create and set a DBotScore object.
+
+        :type name: ``Optional[Union[str, List[str]]]``
+        :param name: Name (if not provided output is calculated from SubjectDN and SAN)
+
+        :type issuer_dn: ``Optional[str]``
+        :param issuer_dn: Issuer Distinguished Name
+
+        :type serial_number: ``Optional[str]``
+        :param serial_number: Serial Number
+
+        :type validity_not_after: ``Optional[str]``
+        :param validity_not_after: Certificate Expiration Timestamp (ISO8601 string representation)
+
+        :type validity_not_before: ``Optional[str]``
+        :param validity_not_before: Initial Certificate Validity Timestamp (ISO8601 string representation)
+
+        :type sha512: ``Optional[str]``
+        :param sha512: The SHA-512 hash of the certificate in binary encoded format (DER)
+
+        :type sha256: ``Optional[str]``
+        :param sha256: The SHA-256 hash of the certificate in binary encoded format (DER)
+
+        :type sha1: ``Optional[str]``
+        :param sha1: The SHA-1 hash of the certificate in binary encoded format (DER)
+
+        :type md5: ``Optional[str]``
+        :param md5: The MD5 hash of the certificate in binary encoded format (DER)
+
+        :type publickey: ``Optional[Common.CertificatePublicKey]``
+        :param publickey: Certificate Public Key
+
+        :type spki_sha256: ``Optional[str]``
+        :param sha1: The SHA-256 hash of the SPKI
+
+        :type signature_algorithm: ``Optional[str]``
+        :param signature_algorithm: Signature Algorithm
+
+        :type signature: ``Optional[str]``
+        :param signature: Certificate Signature
+
+        :type subject_alternative_name: \
+        ``Optional[List[Union[str,Dict[str, str],Common.CertificateExtension.SubjectAlternativeName]]]``
+        :param subject_alternative_name: Subject Alternative Name list
+
+        :type extensions: ``Optional[List[Common.CertificateExtension]]`
+        :param extensions: Certificate Extension List
+
+        :type pem: ``Optional[str]``
+        :param pem: PEM encoded certificate
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Certificate(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || ' \
+                       'val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512)'
+
+        def __init__(
+            self,
+            subject_dn,  # type: str
+            dbot_score=None,  # type: Optional[Common.DBotScore]
+            name=None,  # type: Optional[Union[str, List[str]]]
+            issuer_dn=None,  # type: Optional[str]
+            serial_number=None,  # type: Optional[str]
+            validity_not_after=None,  # type: Optional[str]
+            validity_not_before=None,  # type: Optional[str]
+            sha512=None,  # type: Optional[str]
+            sha256=None,  # type: Optional[str]
+            sha1=None,  # type: Optional[str]
+            md5=None,  # type: Optional[str]
+            publickey=None,  # type: Optional[Common.CertificatePublicKey]
+            spki_sha256=None,  # type: Optional[str]
+            signature_algorithm=None,  # type: Optional[str]
+            signature=None,  # type: Optional[str]
+            subject_alternative_name=None, \
+            # type: Optional[List[Union[str,Dict[str, str],Common.CertificateExtension.SubjectAlternativeName]]]
+            extensions=None,  # type: Optional[List[Common.CertificateExtension]]
+            pem=None  # type: Optional[str]
+
+        ):
+
+            self.subject_dn = subject_dn
+            self.dbot_score = dbot_score
+
+            self.name = None
+            if name:
+                if isinstance(name, str):
+                    self.name = [name]
+                elif isinstance(name, list):
+                    self.name = name
+                else:
+                    raise TypeError('certificate name must be of type str or List[str]')
+
+            self.issuer_dn = issuer_dn
+            self.serial_number = serial_number
+            self.validity_not_after = validity_not_after
+            self.validity_not_before = validity_not_before
+
+            self.sha512 = sha512
+            self.sha256 = sha256
+            self.sha1 = sha1
+            self.md5 = md5
+
+            if publickey and not isinstance(publickey, Common.CertificatePublicKey):
+                raise TypeError('publickey must be of type Common.CertificatePublicKey')
+            self.publickey = publickey
+
+            self.spki_sha256 = spki_sha256
+
+            self.signature_algorithm = signature_algorithm
+            self.signature = signature
+
+            # if subject_alternative_name is set and is a list
+            # make sure it is a list of strings, dicts of strings or SAN Extensions
+            if (
+                subject_alternative_name
+                and isinstance(subject_alternative_name, list)
+                and not all(
+                    isinstance(san, str)
+                    or isinstance(san, dict)
+                    or isinstance(san, Common.CertificateExtension.SubjectAlternativeName)
+                    for san in subject_alternative_name)
+            ):
+                raise TypeError(
+                    'subject_alternative_name must be list of str or Common.CertificateExtension.SubjectAlternativeName'
+                )
+            self.subject_alternative_name = subject_alternative_name
+
+            if (
+                extensions
+                and not isinstance(extensions, list)
+                and any(isinstance(e, Common.CertificateExtension) for e in extensions)
+            ):
+                raise TypeError('extensions must be of type List[Common.CertificateExtension]')
+            self.extensions = extensions
+
+            self.pem = pem
+
+            if not isinstance(dbot_score, Common.DBotScore):
+                raise ValueError('dbot_score must be of type DBotScore')
+
+        def to_context(self):
+            certificate_context = {
+                "SubjectDN": self.subject_dn
+            }  # type: Dict[str, Any]
+
+            san_list = []  # type: List[Dict[str, str]]
+            if self.subject_alternative_name:
+                for san in self.subject_alternative_name:
+                    if isinstance(san, str):
+                        san_list.append({
+                            'Value': san
+                        })
+                    elif isinstance(san, dict):
+                        san_list.append(san)
+                    elif(isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
+                        san_list.append(san.to_context())
+
+            elif self.extensions:  # autogenerate it from extensions
+                for ext in self.extensions:
+                    if (
+                        ext.extension_type == Common.CertificateExtension.ExtensionType.SUBJECTALTERNATIVENAME
+                        and ext.subject_alternative_names is not None
+                    ):
+                        for san in ext.subject_alternative_names:
+                            san_list.append(san.to_context())
+
+            if san_list:
+                certificate_context['SubjectAlternativeName'] = san_list
+
+            if self.name:
+                certificate_context["Name"] = self.name
+            else:  # autogenerate it
+                name = set()  # type: Set[str]
+                # add subject alternative names
+                if san_list:
+                    name = set([
+                        sn['Value'] for sn in san_list
+                        if (
+                            'Value' in sn
+                            and (
+                                'Type' not in sn
+                                or sn['Type'] in (Common.GeneralName.DNSNAME, Common.GeneralName.IPADDRESS)
+                            )
+                        )
+                    ])
+
+                # subject_dn is RFC4515 escaped
+                # replace \, and \+ with the long escaping \2c and \2b
+                long_escaped_subject_dn = self.subject_dn.replace("\\,", "\\2c")
+                long_escaped_subject_dn = long_escaped_subject_dn.replace("\\+", "\\2b")
+                # we then split RDN (separated by ,) and multi-valued RDN (sep by +)
+                rdns = long_escaped_subject_dn.replace('+', ',').split(',')
+                cn = next((rdn for rdn in rdns if rdn.startswith('CN=')), None)
+                if cn:
+                    name.add(cn.split('=', 1)[-1])
+
+                if name:
+                    certificate_context["Name"] = sorted(list(name))
+
+            if self.issuer_dn:
+                certificate_context["IssuerDN"] = self.issuer_dn
+
+            if self.serial_number:
+                certificate_context["SerialNumber"] = self.serial_number
+
+            if self.validity_not_before:
+                certificate_context["ValidityNotBefore"] = self.validity_not_before
+
+            if self.validity_not_after:
+                certificate_context["ValidityNotAfter"] = self.validity_not_after
+
+            if self.sha512:
+                certificate_context["SHA512"] = self.sha512
+
+            if self.sha256:
+                certificate_context["SHA256"] = self.sha256
+
+            if self.sha1:
+                certificate_context["SHA1"] = self.sha1
+
+            if self.md5:
+                certificate_context["MD5"] = self.md5
+
+            if self.publickey and isinstance(self.publickey, Common.CertificatePublicKey):
+                certificate_context["PublicKey"] = self.publickey.to_context()
+
+            if self.spki_sha256:
+                certificate_context["SPKISHA256"] = self.spki_sha256
+
+            sig = {}  # type: Dict[str, str]
+            if self.signature_algorithm:
+                sig["Algorithm"] = self.signature_algorithm
+            if self.signature:
+                sig["Signature"] = self.signature
+            if sig:
+                certificate_context["Signature"] = sig
+
+            if self.extensions:
+                certificate_context["Extension"] = [e.to_context() for e in self.extensions]
+
+            if self.pem:
+                certificate_context["PEM"] = self.pem
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                certificate_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.Certificate.CONTEXT_PATH: certificate_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
 
 def camelize_string(src_str, delim='_'):
     """
@@ -2733,6 +3970,137 @@ class IndicatorsTimeline:
             timelines.append(timeline)
 
         self.indicators_timeline = timelines
+
+
+def arg_to_number(arg, arg_name=None, required=False):
+    # type: (Any, Optional[str], bool) -> Optional[int]
+
+    """Converts an XSOAR argument to a Python int
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
+    if the input is invalid. If the input is None, it will throw a ValueError
+    if required is ``True``, or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :return:
+        returns an ``int`` if arg can be converted
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[int]``
+    """
+
+    if arg is None or arg == '':
+        if required is True:
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
+
+        return None
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+
+        try:
+            return int(float(arg))
+        except Exception:
+            if arg_name:
+                raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid number'.format(arg))
+    if isinstance(arg, int):
+        return arg
+
+    if arg_name:
+        raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid number'.format(arg))
+
+
+def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
+    # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
+
+    """Converts an XSOAR argument to a datetime
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``datetime``. It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type is_utc: ``bool``
+    :param is_utc: if True then date converted as utc timezone, otherwise will convert with local timezone.
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :type settings: ``dict``
+    :param settings: If provided, passed to dateparser.parse function.
+
+    :return:
+        returns an ``datetime`` if conversion works
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[datetime]``
+    """
+
+    if arg is None:
+        if required is True:
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit() or isinstance(arg, (int, float)):
+        # timestamp is a str containing digits - we just convert it to int
+        ms = float(arg)
+        if ms > 2000000000.0:
+            # in case timestamp was provided as unix time (in milliseconds)
+            ms = ms / 1000.0
+
+        if is_utc:
+            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
+        else:
+            return datetime.fromtimestamp(ms)
+    if isinstance(arg, str):
+        # we use dateparser to handle strings either in ISO8601 format, or
+        # relative time stamps.
+        # For example: format 2019-10-23T00:00:00 or "3 days", etc
+        if settings:
+            date = dateparser.parse(arg, settings=settings)
+        else:
+            date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            if arg_name:
+                raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid date'.format(arg))
+
+        return date
+
+    if arg_name:
+        raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid date'.format(arg))
 
 
 class CommandResults:
@@ -2839,7 +4207,7 @@ class CommandResults:
         if self.indicators_timeline:
             indicators_timeline = self.indicators_timeline.indicators_timeline
 
-        if self.outputs is not None:
+        if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
@@ -2909,6 +4277,10 @@ def return_results(results):
         return
 
     if isinstance(results, IAMUserProfile):
+        demisto.results(results.to_entry())
+        return
+
+    if isinstance(results, GetModifiedRemoteDataResponse):
         demisto.results(results.to_entry())
         return
 
@@ -3244,6 +4616,8 @@ def string_to_context_key(string):
 
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
+        THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
+
       Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
       Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
 
@@ -3478,16 +4852,6 @@ def is_demisto_version_ge(version, build_number=''):
         raise
 
 
-def is_debug_mode():
-    """Return if this script/command was passed debug-mode=true option
-
-    :return: true if debug-mode is enabled
-    :rtype: ``bool``
-    """
-    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-    return hasattr(demisto, 'is_debug') and demisto.is_debug
-
-
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
@@ -3501,7 +4865,7 @@ class DemistoHandler(logging.Handler):
         msg = self.format(record)
         try:
             if self.int_logger:
-                self.int_logger.write(msg)
+                self.int_logger(msg)
             else:
                 demisto.debug(msg)
         except Exception:
@@ -3529,8 +4893,8 @@ class DebugLogger(object):
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
-        self.handler = DemistoHandler()
-        demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
+        self.handler = DemistoHandler(self.int_logger)
+        demisto_formatter = logging.Formatter(fmt='python logging: %(levelname)s [%(name)s] - %(message)s', datefmt=None)
         self.handler.setFormatter(demisto_formatter)
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
@@ -3557,6 +4921,9 @@ class DebugLogger(object):
                 setattr(self.http_client, 'print', self.http_client_print)
             else:
                 delattr(self.http_client, 'print')
+            if self.int_logger.curl:
+                for curl in self.int_logger.curl:
+                    demisto.info('cURL:\n' + curl)
 
     def log_start_debug(self):
         """
@@ -3878,7 +5245,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -3969,6 +5336,11 @@ if 'requests' in sys.modules:
             :type error_handler ``callable``
             :param error_handler: Given an error entery, the error handler outputs the
                 new formatted error message.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
             """
             try:
                 # Replace params if supplied
@@ -4006,7 +5378,9 @@ if 'requests' in sys.modules:
                             err_msg += '\n{}'.format(res.text)
                             raise DemistoException(err_msg, res=res)
 
-                is_response_empty_and_successful = (res.status_code == 204)
+                if not empty_valid_codes:
+                    empty_valid_codes = [204]
+                is_response_empty_and_successful = (res.status_code in empty_valid_codes)
                 if is_response_empty_and_successful and return_empty_response:
                     return res
 
@@ -4360,7 +5734,7 @@ class DemistoException(Exception):
 class GetRemoteDataArgs:
     """get-remote-data args parser
     :type args: ``dict``
-    :param args: arguments for the command of the command.
+    :param args: arguments for the command.
 
     :return: No data returned
     :rtype: ``None``
@@ -4368,6 +5742,19 @@ class GetRemoteDataArgs:
 
     def __init__(self, args):
         self.remote_incident_id = args['id']
+        self.last_update = args['lastUpdate']
+
+
+class GetModifiedRemoteDataArgs:
+    """get-modified-remote-data args parser
+    :type args: ``dict``
+    :param args: arguments for the command.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, args):
         self.last_update = args['lastUpdate']
 
 
@@ -4414,6 +5801,28 @@ class GetRemoteDataResponse:
         if self.mirrored_object:
             demisto.info('Updating object {}'.format(self.mirrored_object["id"]))
             return [self.mirrored_object] + self.entries
+
+
+class GetModifiedRemoteDataResponse:
+    """get-modified-remote-data response parser
+    :type modified_incident_ids: ``list``
+    :param modified_incident_ids: The incidents that were modified since the last check.
+
+    :return: No data returned
+    :rtype: ``None``
+    """
+
+    def __init__(self, modified_incident_ids):
+        self.modified_incident_ids = modified_incident_ids
+
+    def to_entry(self):
+        """Extracts the response
+
+        :return: List of incidents to run the get-remote-data command on.
+        :rtype: ``list``
+        """
+        demisto.info('Modified incidents: {}'.format(self.modified_incident_ids))
+        return {'Contents': self.modified_incident_ids, 'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON}
 
 
 class SchemeTypeMapping:
@@ -4827,13 +6236,17 @@ class IAMVendorActionResult:
 
 
 class IAMUserProfile:
-    """
-        A User Profile object class for IAM integrations.
+    """ A User Profile object class for IAM integrations.
 
-        Attributes:
-            _user_profile (str): The user profile information.
-            _user_profile_delta (str): The user profile delta.
-            _vendor_action_results (list): A List of data returned from the vendor.
+    :type _user_profile: ``str``
+    :param _user_profile: The user profile information.
+
+    :type _user_profile_delta: ``str``
+    :param _user_profile_delta: The user profile delta.
+
+    :type _vendor_action_results: ``list``
+    :param _vendor_action_results: A List of data returned from the vendor.
+
     :return: None
     :rtype: ``None``
     """
@@ -4841,11 +6254,6 @@ class IAMUserProfile:
     INDICATOR_TYPE = 'User Profile'
 
     def __init__(self, user_profile, user_profile_delta=None):
-        """ IAMUserProfile c'tor.
-
-        :param user_profile: (dict) the user-profile argument.
-        :param user_profile_delta: (dict) the user-profile argument.
-        """
         self._user_profile = safe_load_json(user_profile)
         self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
         self._vendor_action_results = []
@@ -4857,7 +6265,8 @@ class IAMUserProfile:
         """ Generates a XSOAR IAM entry from the data in _vendor_action_results.
         Note: Currently we are using only the first element of the list, in the future we will support multiple results.
 
-        :return: (dict) A XSOAR entry.
+        :return: A XSOAR entry.
+        :rtype: ``dict``
         """
 
         outputs = self._vendor_action_results[0].create_outputs()
@@ -4923,9 +6332,14 @@ class IAMUserProfile:
     def map_object(self, mapper_name, mapping_type=None):
         """ Returns the user data, in an application data format.
 
-        :param mapper_name: (str) The outgoing mapper from XSOAR to the application.
-        :param mapping_type: (str) The mapping type of the mapper (optional).
-        :return: (dict) the user data, in the app data format.
+        :type mapper_name: ``str``
+        :param mapper_name: The outgoing mapper from XSOAR to the application.
+
+        :type mapping_type: ``str``
+        :param mapping_type: The mapping type of the mapper (optional).
+
+        :return: the user data, in the app data format.
+        :rtype: ``dict``
         """
         if not mapping_type:
             mapping_type = IAMUserProfile.INDICATOR_TYPE
@@ -4937,12 +6351,243 @@ class IAMUserProfile:
     def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
         """ updates the user_profile attribute according to the given app_data
 
-        :param app_data: (dict) The user data in app
-        :param mapper_name: (str) incoming mapper name
-        :param mapping_type: (str) Optional - mapping type
+        :type app_data: ``dict``
+        :param app_data: The user data in app
+
+        :type mapper_name: ``str``
+        :param mapper_name: Incoming mapper name
+
+        :type mapping_type: ``str``
+        :param mapping_type: Optional - mapping type
         """
         if not mapping_type:
             mapping_type = IAMUserProfile.INDICATOR_TYPE
         if not isinstance(app_data, dict):
             app_data = safe_load_json(app_data)
         self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
+
+
+class IAMUserAppData:
+    """ Holds user attributes retrieved from an application.
+
+    :type id: ``str``
+    :param id: The ID of the user.
+
+    :type username: ``str``
+    :param username: The username of the user.
+
+    :type is_active: ``bool``
+    :param is_active: Whether or not the user is active in the application.
+
+    :type full_data: ``dict``
+    :param full_data: The full data of the user in the application.
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, user_id, username, is_active, app_data):
+        self.id = user_id
+        self.username = username
+        self.is_active = is_active
+        self.full_data = app_data
+
+
+class IAMCommand:
+    """ A class that implements the IAM CRUD commands - should bbe used.
+
+    :type id: ``str``
+    :param id: The ID of the user.
+
+    :type username: ``str``
+    :param username: The username of the user.
+
+    :type is_active: ``bool``
+    :param is_active: Whether or not the user is active in the application.
+
+    :type full_data: ``dict``
+    :param full_data: The full data of the user in the application.
+
+    :return: None
+    :rtype: ``None``
+    """
+    def __init__(self, is_create_enabled=True, is_disable_enabled=True, is_update_enabled=True,
+                 create_if_not_exists=True, mapper_in=None, mapper_out=None):
+        """ The IAMCommand c'tor
+
+        :param is_create_enabled: (bool) Whether or not the `iam-create-user` command is enabled in the instance
+        :param is_disable_enabled: (bool) Whether or not the `iam-disable-user` command is enabled in the instance
+        :param is_update_enabled: (bool) Whether or not the `iam-update-user` command is enabled in the instance
+        :param create_if_not_exists: (bool) Whether or not to create a user if does not exist in the application
+        :param mapper_in: (str) Incoming mapper from the application to Cortex XSOAR
+        :param mapper_out: (str) Outgoing mapper from the Cortex XSOAR to the application
+        """
+        self.is_create_enabled = is_create_enabled
+        self.is_disable_enabled = is_disable_enabled
+        self.is_update_enabled = is_update_enabled
+        self.create_if_not_exists = create_if_not_exists
+        self.mapper_in = mapper_in
+        self.mapper_out = mapper_out
+
+    def get_user(self, client, args):
+        """ Searches a user in the application and updates the user profile object with the data.
+            If not found, the error details will be resulted instead.
+
+        :param client: (Client) The integration Client object that implements a get_user() method
+        :param args: (dict) The `iam-get-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        try:
+            email = user_profile.get_attribute('email')
+            user_app_data = client.get_user(email)
+            if not user_app_data:
+                error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                user_profile.set_result(action=IAMActions.GET_USER,
+                                        success=False,
+                                        error_code=error_code,
+                                        error_message=error_message)
+            else:
+                user_profile.update_with_app_data(user_app_data.full_data, self.mapper_in)
+                user_profile.set_result(
+                    action=IAMActions.GET_USER,
+                    active=user_app_data.is_active,
+                    iden=user_app_data.id,
+                    email=email,
+                    username=user_app_data.username,
+                    details=user_app_data.full_data
+                )
+
+        except Exception as e:
+            client.handle_exception(user_profile, e, IAMActions.GET_USER)
+
+        return user_profile
+
+    def disable_user(self, client, args):
+        """ Disables a user in the application and updates the user profile object with the updated data.
+            If not found, the command will be skipped.
+
+        :param client: (Client) The integration Client object that implements get_user() and disable_user() methods
+        :param args: (dict) The `iam-disable-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        if not self.is_disable_enabled:
+            user_profile.set_result(action=IAMActions.DISABLE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                email = user_profile.get_attribute('email')
+                user_app_data = client.get_user(email)
+                if not user_app_data:
+                    _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                    user_profile.set_result(action=IAMActions.DISABLE_USER,
+                                            skip=True,
+                                            skip_reason=error_message)
+                else:
+                    if user_app_data.is_active:
+                        user_app_data = client.disable_user(user_app_data.id)
+                    user_profile.set_result(
+                        action=IAMActions.DISABLE_USER,
+                        active=False,
+                        iden=user_app_data.id,
+                        email=email,
+                        username=user_app_data.username,
+                        details=user_app_data.full_data
+                    )
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.DISABLE_USER)
+
+        return user_profile
+
+    def create_user(self, client, args):
+        """ Creates a user in the application and updates the user profile object with the data.
+            If a user in the app already holds the email in the given user profile, updates
+            its data with the given data.
+
+        :param client: (Client) A Client object that implements get_user(), create_user() and update_user() methods
+        :param args: (dict) The `iam-create-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+
+        if not self.is_create_enabled:
+            user_profile.set_result(action=IAMActions.CREATE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                email = user_profile.get_attribute('email')
+                user_app_data = client.get_user(email)
+                if user_app_data:
+                    # if user exists, update it
+                    user_profile = self.update_user(client, args)
+
+                else:
+                    app_profile = user_profile.map_object(self.mapper_out)
+                    created_user = client.create_user(app_profile)
+                    user_profile.set_result(
+                        action=IAMActions.CREATE_USER,
+                        active=created_user.is_active,
+                        iden=created_user.id,
+                        email=email,
+                        username=created_user.username,
+                        details=created_user.full_data
+                    )
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.CREATE_USER)
+
+        return user_profile
+
+    def update_user(self, client, args):
+        """ Creates a user in the application and updates the user profile object with the data.
+            If the user is disabled and `allow-enable` argument is `true`, also enables the user.
+            If the user does not exist in the app and the `create-if-not-exist` parameter is checked, creates the user.
+
+        :param client: (Client) A Client object that implements get_user(), create_user() and update_user() methods
+        :param args: (dict) The `iam-update-user` command arguments
+        :return: (IAMUserProfile) The user profile object.
+        """
+
+        user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+        allow_enable = args.get('allow-enable') == 'true'
+        if not self.is_update_enabled:
+            user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                    skip=True,
+                                    skip_reason='Command is disabled.')
+        else:
+            try:
+                email = user_profile.get_attribute('email')
+                user_app_data = client.get_user(email)
+                if user_app_data:
+                    app_profile = user_profile.map_object(self.mapper_out)
+
+                    if allow_enable and not user_app_data.is_active:
+                        client.enable_user(user_app_data.id)
+
+                    updated_user = client.update_user(user_app_data.id, app_profile)
+                    user_profile.set_result(
+                        action=IAMActions.UPDATE_USER,
+                        active=updated_user.is_active,
+                        iden=updated_user.id,
+                        email=email,
+                        username=updated_user.username,
+                        details=updated_user.full_data
+                    )
+                else:
+                    if self.create_if_not_exists:
+                        user_profile = self.create_user(client, args)
+                    else:
+                        _, error_message = IAMErrors.USER_DOES_NOT_EXIST
+                        user_profile.set_result(action=IAMActions.UPDATE_USER,
+                                                skip=True,
+                                                skip_reason=error_message)
+
+            except Exception as e:
+                client.handle_exception(user_profile, e, IAMActions.UPDATE_USER)
+
+        return user_profile

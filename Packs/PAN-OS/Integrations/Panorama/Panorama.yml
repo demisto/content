@@ -3212,6 +3212,9 @@ script:
     - contextPath: Panorama.Monitor.Logs.BytesSent
       description: Log bytes sent.
       type: String
+    - contextPath: Panorama.Monitor.Logs.Vsys
+      description: Vsys on the firewall that generated the log.
+      type: String
   - arguments:
     - default: false
       description: The application name.
@@ -4397,7 +4400,7 @@ script:
     description: Creates a WildFire analysis best practice profile.
     execution: false
     name: panorama-create-wildfire-best-practice-profile
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
   longRunning: false

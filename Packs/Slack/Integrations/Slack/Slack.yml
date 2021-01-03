@@ -77,6 +77,12 @@ configuration:
   name: proxy_url
   required: false
   type: 0
+- display: Comma separated list of tags To filter the messages sent from demisto.
+  hidden: false
+  name: filtered_tags
+  required: false
+  type: 0
+  additionalinfo: Only supported in Demisto V6.1 and above.
 description: Send messages and notifications to your Slack team.
 display: Slack v2
 name: SlackV2
