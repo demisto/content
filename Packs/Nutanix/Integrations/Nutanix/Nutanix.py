@@ -1,5 +1,4 @@
-import traceback
-from typing import Dict, List, Optional
+from typing import Dict
 
 import urllib3
 
@@ -40,8 +39,8 @@ MINIMUM_LENGTH_VALUE = 1
 
 class Client(BaseClient):
 
-    def __init__(self, base_url, verify, proxy, headers, auth):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
+    def __init__(self, base_url, verify, proxy, auth):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
         pass
 
     def test_module(self):
@@ -51,7 +50,7 @@ class Client(BaseClient):
         raise NotImplementedError
 
     # limit - maybe or maybe count
-    def get_nutanix_hypervisor_hosts_list(self, filter_: str, limit: str, page: str):
+    def get_nutanix_hypervisor_hosts_list(self, filter_: Optional[str], limit: Optional[str], page: Optional[str]):
         return self._http_request(
             method='GET',
             url_suffix='hosts',
@@ -62,7 +61,7 @@ class Client(BaseClient):
             )
         )
 
-    def get_nutanix_hypervisor_vms_list(self, filter_: str, offset: int, length: int):
+    def get_nutanix_hypervisor_vms_list(self, filter_: Optional[str], offset: Optional[int], length: Optional[int]):
         return self._http_request(
             method='GET',
             url_suffix='vms',
@@ -73,6 +72,7 @@ class Client(BaseClient):
             )
         )
 
+    # TODO TOM : figure real signature (Optionals or not)
     def nutanix_hypervisor_vm_power_status_change(self, uuid: str, host_uuid: str, transition: str):
         return self._http_request(
             method='POST',
@@ -95,9 +95,10 @@ class Client(BaseClient):
             )
         )
 
+    # TODO TOM : figure real signature (Optionals or not)
     def get_nutanix_alerts_list(self, start_time: int, end_time: int, resolved: bool, auto_resolved: bool,
                                 acknowledged: bool, severity: str, alert_type_uuid, entity_ids: str, impact_types: str,
-                                classifications: str, entity_type: str, page: int, limit: int):
+                                classification: str, entity_type: str, page: int, limit: int):
         return self._http_request(
             method='GET',
             url_suffix='alerts',
@@ -111,7 +112,7 @@ class Client(BaseClient):
                 alert_type_uuid=alert_type_uuid,
                 entity_ids=entity_ids,
                 impact_types=impact_types,
-                classification=classifications,
+                classification=classification,
                 entity_type=entity_type,
                 page=page,
                 count=limit
@@ -130,8 +131,9 @@ class Client(BaseClient):
             url_suffix=f'alerts/{alert_id}/resolve',
         )
 
+    # TODO TOM : figure real signature (Optionals or not)
     def post_nutanix_alerts_acknowledge_by_filter(self, start_time: int, end_time: int, severity: str,
-                                                  impact_types: str, classifications: str, entity_type: str,
+                                                  impact_types: str, classification: str, entity_type: str,
                                                   entity_type_ids: str, limit: int):
         return self._http_request(
             method='POST',
@@ -141,16 +143,17 @@ class Client(BaseClient):
                 end_time_in_usecs=end_time,
                 severity=severity,
                 impact_types=impact_types,
-                classification=classifications,
+                classification=classification,
                 entity_type=entity_type,
                 entity_type_ids=entity_type_ids,
                 count=limit
             )
         )
 
+    # TODO TOM : figure real signature (Optionals or not)
     def post_nutanix_alerts_resolve_by_filter(self, start_time: int, end_time: int, severity: str,
-                                              impact_types: str, classifications: str, entity_type: str,
-                                              entity_type_ids: str, limit: int):
+                                              impact_types: str, classification: str, entity_type: str,
+                                              entity_type_ids: str, page: int, limit: int):
         return self._http_request(
             method='POST',
             url_suffix='alerts/resolve',
@@ -159,9 +162,10 @@ class Client(BaseClient):
                 end_time_in_usecs=end_time,
                 severity=severity,
                 impact_types=impact_types,
-                classification=classifications,
+                classification=classification,
                 entity_type=entity_type,
                 entity_type_ids=entity_type_ids,
+                page=page,
                 count=limit
             )
         )
@@ -186,13 +190,15 @@ def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optio
 
     Returns:
         - If argument is None, returns None
-        - If argument is not None and is not between min to max, raises DemistoException
         - If argument is not None and is between min to max, returns argument
+        - If argument is not None and is not between min to max, raises DemistoException
+
     """
+    assert(minimum <= maximum if minimum and maximum else True)
     argument_value = arg_to_number(args.get(argument_name), arg_name=argument_name)
 
     if argument_value and minimum and not minimum <= argument_value:
-        raise DemistoException(f'{argument_name} should be equal or bigger than {minimum}')
+        raise DemistoException(f'{argument_name} should be equal or higher than {minimum}')
 
     if argument_value and maximum and not argument_value <= maximum:
         raise DemistoException(f'{argument_name} should be equal or less than {maximum}')
@@ -200,7 +206,7 @@ def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optio
     return argument_value
 
 
-def get_page_argument(args: Dict) -> Optional[str]:
+def get_page_argument(args: Dict) -> Optional[int]:
     """
     Extracts the 'page' argument from demisto arguments, and in case 'page'' exists,
     validates that argument 'count' exists.
@@ -217,26 +223,19 @@ def get_page_argument(args: Dict) -> Optional[str]:
     """
     page_value = get_and_validate_int_argument(args, 'page', minimum=MINIMUM_PAGE_VALUE)
     if page_value and args.get('count') is None:
+        # TODO TOM : maybe limit
         raise DemistoException('Page argument cannot be specified without count argument')
     return page_value
-
-
-# def encode_username_and_password(username, password):
-#     sample_string = username + ":" + password
-#     sample_string_bytes = sample_string.encode("ascii")
-#     base64_bytes = base64.b64encode(sample_string_bytes)
-#     encoded_value = base64_bytes.decode("ascii")
-#     return encoded_value
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module_command():
+def test_module_command(client: Client):
     raise NotImplementedError
 
 
-def fetch_incidents_command(args: Dict):
+def fetch_incidents_command(client: Client, args: Dict):
     resolved = argToBoolean(args.get('resolved'))
     auto_resolved = argToBoolean(args.get('auto_resolved'))
     acknowledged = argToBoolean(args.get('acknowledged'))
@@ -249,45 +248,61 @@ def fetch_incidents_command(args: Dict):
     raise NotImplementedError
 
 
-def nutanix_hypervisor_hosts_list_command(args: Dict):
-    context_path = 'NutanixHypervisor.Host'
-
+def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     filter_ = args.get('filter')
+    # maybe call it count and not limit
+    limit = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
     page = get_page_argument(args)
-    count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
 
-    raise NotImplementedError
+    response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
+
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.Host',
+        outputs_key_field='entities.id',
+        outputs=response,
+        readable_output=""
+    )
 
 
-def nutanix_hypervisor_vms_list_command(args: Dict):
-    context_path = 'NutanixHypervisor.VM'
-
+def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
     filter_ = args.get('filter')
     offset = get_and_validate_int_argument(args, 'offset', minimum=MINIMUM_OFFSET_VALUE)
     length = get_and_validate_int_argument(args, 'length', minimum=MINIMUM_LENGTH_VALUE)
 
-    raise NotImplementedError
+    response = client.get_nutanix_hypervisor_vms_list(filter_, offset, length)
+
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.VM',
+        outputs_key_field='entities.uuid',
+        outputs=response,
+        readable_output=""
+    )
 
 
-def nutanix_hypervisor_vm_power_status_change_command(args: Dict):
+def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict):
     context_path = 'NutanixHypervisor.VMPowerStatus'
 
     vm_uuid = args.get('vm_uuid')
     host_uuid = args.get('host_uuid')
     transition = args.get('transition')
 
+    # TODO : are they required? optional?
+    response = client.nutanix_hypervisor_vm_power_status_change(vm_uuid, host_uuid, transition)
+    # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
 
-def nutanix_hypervisor_task_poll_command(args: Dict):
+def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     context_path = 'NutanixHypervisor.Task'
 
     task_ids = args.get('task_ids')
 
+    response = client.nutanix_hypervisor_task_poll(task_ids)
+    # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
 
-def nutanix_alerts_list_command(args: Dict):
+def nutanix_alerts_list_command(client: Client, args: Dict):
     context_path = 'NutanixHypervisor.Alerts'
 
     start_time = args.get('start_time')
@@ -299,57 +314,75 @@ def nutanix_alerts_list_command(args: Dict):
     alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
     entity_ids = args.get('entity_ids')  # maybe split ,
     impact_types = args.get('impact_types')  # maybe split ,
-    classifications = args.get('classifications')  # maybe split ,
-    entity_type_ids = args.get('entity_type_ids')  # maybe split ,
+    classification = args.get('classifications')  # maybe split ,
+    entity_type = args.get('entity_type')  # maybe split ,
     page = get_page_argument(args)
     count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
 
+    # TODO : are they required? optional?
+    response = client.get_nutanix_alerts_list(start_time, end_time, resolved, auto_resolved, acknowledged, severity,
+                                              alert_type_id, entity_ids, impact_types, classification, entity_type,
+                                              page, count)
+    # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
 
-def nutanix_alert_acknowledge_command(args: Dict):
+def nutanix_alert_acknowledge_command(client: Client, args: Dict):
     context_path = 'NutanixHypervisor.Alert'
 
     alert_id = args.get('alert_id')
 
+    response = client.post_nutanix_alert_acknowledge(alert_id)
+
     raise NotImplementedError
 
 
-def nutanix_alert_resolve_command(args: Dict):
+def nutanix_alert_resolve_command(client: Client, args: Dict):
     context_path = 'NutanixHypervisor.Alert'
 
     alert_id = args.get('alert_id')
 
+    client.post_nutanix_alert_resolve(alert_id)
     raise NotImplementedError
 
 
-def nutanix_alerts_acknowledge_by_filter_command(args: Dict):
-    context_path = 'NutanixHypervisor.Alert'
-
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
-    severity = args.get('severity')
-    entity_ids = args.get('entity_ids')  # maybe split , currently entity_id in design but probably mistake
-    impact_types = args.get('impact_types')  # maybe split ,
-    classifications = args.get('classifications')  # maybe split ,
-    entity_type_ids = args.get('entity_type_ids')  # maybe split ,
-    count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
-
-    raise NotImplementedError
-
-
-def nutanix_alerts_resolve_by_filter_command(args: Dict):
+def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     context_path = 'NutanixHypervisor.Alert'
 
     start_time = args.get('start_time')
     end_time = args.get('end_time')
     severity = args.get('severity')
     impact_types = args.get('impact_types')  # maybe split ,
-    classifications = args.get('classifications')  # maybe split ,
+    classification = args.get('classifications')  # maybe split ,
+    entity_type = args.get('entity_type')
     entity_type_ids = args.get('entity_type_ids')  # maybe split ,
-    page = get_page_argument(args)
+    # TODO TOM : maybe change to limit
     count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
 
+    # TODO : are they required? optional?
+    response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
+                                                                classification, entity_type, entity_type_ids, count)
+    # TODO : what to return? whats the return value (currently cant reach the endpoint)
+    raise NotImplementedError
+
+
+def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
+    context_path = 'NutanixHypervisor.Alert'
+
+    start_time = args.get('start_time')
+    end_time = args.get('end_time')
+    severity = args.get('severity')
+    impact_types = args.get('impact_types')  # maybe split ,
+    classification = args.get('classifications')  # maybe split ,
+    entity_type = args.get('entity_type')
+    entity_type_ids = args.get('entity_type_ids')  # maybe split ,
+    page = get_page_argument(args)
+    # TODO TOM : maybe change to limit
+    count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
+
+    # TODO : are they required? optional?
+    client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity, impact_types, classification, entity_type, entity_type_ids, page, count)
+    # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
 
@@ -364,50 +397,50 @@ def main() -> None:
     username = params.get('username')
     password = params.get('password')
 
-    base_url = params.get('baseurl')
+    base_url = params.get('base url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
-            base_url="TODO",
+            base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
             auth=(username, password))
 
         if command == 'test-module':
-            test_module_command()
+            test_module_command(client)
 
         elif command == 'fetch-incidents':
-            fetch_incidents_command(args)
+            fetch_incidents_command(client, args)
 
         elif command == 'nutanix-hypervisor-hosts-list':
-            nutanix_hypervisor_hosts_list_command(args)
+            return_results(nutanix_hypervisor_hosts_list_command(client, args))
 
         elif command == 'nutanix-hypervisor-vms-list':
-            nutanix_hypervisor_vms_list_command(args)
+            nutanix_hypervisor_vms_list_command(client, args)
 
         elif command == 'nutanix-hypervisor-vm-powerstatus-change':
-            nutanix_hypervisor_vm_power_status_change_command(args)
+            nutanix_hypervisor_vm_power_status_change_command(client, args)
 
         elif command == 'nutanix-alerts-list':
-            nutanix_alerts_list_command(args)
+            nutanix_alerts_list_command(client, args)
 
         elif command == 'nutanix-alert-acknowledge':
-            nutanix_alert_acknowledge_command(args)
+            nutanix_alert_acknowledge_command(client, args)
 
         elif command == 'nutanix-alert-acknowledge':
-            nutanix_alert_resolve_command(args)
+            nutanix_alert_resolve_command(client, args)
 
         elif command == 'nutanix-alert-acknowledge':
-            nutanix_alert_resolve_command(args)
+            nutanix_alert_resolve_command(client, args)
 
         elif command == 'nutanix-alerts-acknowledge-by-filter':
-            nutanix_alerts_acknowledge_by_filter_command(args)
+            nutanix_alerts_acknowledge_by_filter_command(client, args)
 
         elif command == 'nutanix-alerts-resolve-by-filter':
-            nutanix_alerts_resolve_by_filter_command(args)
+            nutanix_alerts_resolve_by_filter_command(client, args)
 
     # Log exceptions and return errors
     except Exception as e:
