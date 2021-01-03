@@ -17,4 +17,4 @@ We appreciate your feedback on the quality and usability of the pack to help us 
 
 
 
-![SolarStorm and SUNBURST Hunting and Response Playbook](https://raw.githubusercontent.com/demisto/content/9d5ace6b2b1c3e6d40d8a36613d83217c62ef8b6/Packs/MajorBreachesInvestigationandResponse/doc_files/SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook.png)
+![SolarStorm and SUNBURST Hunting and Response Playbook](https://raw.githubusercontent.com/demisto/content/bb46740bed0452cd1c9e673e07567efa8236d76b/Packs/MajorBreachesInvestigationandResponse/doc_files/SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_V6.png)
