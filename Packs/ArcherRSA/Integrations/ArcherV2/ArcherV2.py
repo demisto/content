@@ -1034,7 +1034,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
     search_value = args.get('searchValue')
     max_results = args.get('maxResults', 10)
     date_operator = args.get('dateOperator')
-    numeric_operator = args.get('numeric-operator')
+    numeric_operator = args.get('numericOperator')
     fields_to_display = argToList(args.get('fieldsToDisplay'))
     fields_to_get = argToList(args.get('fieldsToGet'))
     full_data = args.get('fullData', 'true') == 'true'
