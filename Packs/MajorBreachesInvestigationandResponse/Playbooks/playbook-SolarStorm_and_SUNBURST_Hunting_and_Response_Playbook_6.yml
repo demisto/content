@@ -2341,7 +2341,7 @@ tasks:
     task:
       id: 5f091703-1630-4781-839b-77c8b525cc6e
       version: -1
-      name: Manual block SolarWinds server
+      name: Manually block SolarWinds server
       description: To protect your network, block the internet facing SolarWinds server
         until patch.
       type: regular
