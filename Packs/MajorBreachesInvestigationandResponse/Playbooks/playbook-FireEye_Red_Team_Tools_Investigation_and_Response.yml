@@ -4,17 +4,17 @@ name: FireEye Red Team Tools Investigation and Response
 description: |-
   This playbook does the following:
 
-  Collect indicators to aid in your threat hunting process
-  - Retrieve IOCs of FireEye red team tools
-  - Discover IOCs of associated activity related to the infection - Generate an indicator list to block indicators with SUNBURST tags
+  Collect indicators to aid in your threat hunting process.
+  - Retrieve IOCs of FireEye red team tools.
+  - Discover IOCs of associated activity related to the infection.
+  - Generate an indicator list to block indicators with SUNBURST tags.
 
-  Hunt for the Indicators
-  - Search endpoint with the FireEye red team tools CVEs
-  - Search endpoint logs for FireEye red team tools hashes
+  Hunt for the indicators
+  - Search endpoints with the FireEye red team tools CVEs.
+  - Search endpoint logs for FireEye red team tools hashes.
   - Search and link previous incidents with the FireEye hashes.
 
-  If compromised hosts are found then:
-  - Fire off sub-playbooks to isolate/quarantine infected hosts/endpoints and await further actions from the security team.
+  If compromised hosts are found, fire off sub-playbooks to isolate/quarantine infected hosts/endpoints and await further actions from the security team.
 
   Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 starttaskid: "0"
@@ -54,8 +54,8 @@ tasks:
     task:
       id: 162bc6c7-5645-4605-8cbb-7dfd2a606898
       version: -1
-      name: Are there CVE's?
-      description: Checks if there CVEs in the playbook input
+      name: Are there CVEs?
+      description: Check if there are CVEs in the playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -151,7 +151,7 @@ tasks:
       id: a0e945ba-77a0-4c73-8550-049a7aebc605
       version: -1
       name: Create indicators
-      description: Create indicators for the Fireeye red team tools CVEs
+      description: Create indicators for the FireEye red team tools CVEs.
       script: Builtin|||createNewIndicator
       type: regular
       iscommand: true
@@ -372,7 +372,7 @@ tasks:
       id: 47b437f5-2ce3-4750-8278-81c5778e6048
       version: -1
       name: Enrich indicators
-      description: Enrich the Fireeye red team tools CVEs indicators
+      description: Enrich the FireEye red team tools CVEs indicators.
       script: Builtin|||enrichIndicators
       type: regular
       iscommand: true
@@ -435,7 +435,7 @@ tasks:
       id: 759f3b17-9d21-4d35-8f03-8c5f4bc8dad3
       version: -1
       name: Search Endpoint by CVE - Generic
-      description: Hunt for assets with a given CVE using available tools
+      description: Hunt for assets with a given CVE using available tools.
       playbookName: Search Endpoint by CVE - Generic
       type: playbook
       iscommand: false
@@ -501,8 +501,7 @@ tasks:
       id: d52123f4-4fe0-4aaf-8fe7-a2f0246b8511
       version: -1
       name: Collect Hashes from FireEye for red team tools
-      description: Get with HTTP request the hash relates to FireEye for red team
-        tools
+      description: Use an HTTP request to get the hash related to FireEye for the red team tools.
       scriptName: http
       type: regular
       iscommand: false
@@ -547,7 +546,7 @@ tasks:
       id: 05c06fe1-2148-4887-8028-94568fb43df5
       version: -1
       name: Create red team tools hash indicators
-      description: Extract and create FireEye red team tools hash indicators
+      description: Extract and create FireEye red team tools hash indicators.
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -585,8 +584,7 @@ tasks:
       id: ec32410b-bd2d-4b71-8419-a31a7b7b9037
       version: -1
       name: Add red team tools tag
-      description: Add the tag "FireEye Red Team Tools" for the FireEye red team tools
-        hashes
+      description: Add the tag "FireEye Red Team Tools" for the FireEye red team tools hashes.
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -661,7 +659,7 @@ tasks:
       id: 7548454a-bd21-4be4-81a4-f55d0619fe2e
       version: -1
       name: Search Endpoints By Hash - Generic V2
-      description: Hunt using available tools
+      description: Hunt using available tools.
       playbookName: Search Endpoints By Hash - Generic V2
       type: playbook
       iscommand: false
@@ -737,7 +735,7 @@ tasks:
       version: -1
       name: Any compromised hosts found?
       description: |
-        Checks whether there was a compromised hosts found.
+        Check whether compromised hosts were found.
       type: condition
       iscommand: false
       brand: ""
@@ -777,7 +775,7 @@ tasks:
       version: -1
       name: Should isolate automatically compromised hosts?
       description: |
-        Checks whether files associated with the incident can be blocked automatically using various EDR integrations.
+        Check whether files associated with the incident can be blocked automatically using various EDR integrations.
       type: condition
       iscommand: false
       brand: ""
@@ -896,7 +894,7 @@ tasks:
       id: dd67ba41-5a3d-48f9-8039-7c8c60386478
       version: -1
       name: Manually isolate endpoints
-      description: Manually Isolate the compromised hosts.
+      description: Manually isolate the compromised hosts.
       type: regular
       iscommand: false
       brand: ""
@@ -924,7 +922,7 @@ tasks:
       id: 1b3be322-7b30-4ce5-8e7c-3c87eefe170f
       version: -1
       name: Investigate further
-      description: Further investigate the incident (endpoints, the entry point, etc’).
+      description: Further investigate the incident (endpoints, the entry point, etc.).
       type: regular
       iscommand: false
       brand: ""
@@ -952,7 +950,7 @@ tasks:
       id: c8f2f7ad-774c-427f-8f18-57204609b146
       version: -1
       name: Close investigation
-      description: Close the current incident
+      description: Close the current incident.
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1013,7 +1011,7 @@ tasks:
       id: 22aa5735-fd45-4f63-82e3-9a18a5ca66ce
       version: -1
       name: Find incidents with indicators
-      description: Find existing incidents with the FireEye red team tools indicators
+      description: Find existing incidents with the FireEye red team tools indicators.
       scriptName: findIncidentsWithIndicator
       type: regular
       iscommand: false
@@ -1047,7 +1045,7 @@ tasks:
       id: d8962d7d-dd1b-4650-8864-1e26aaa8940b
       version: -1
       name: Found incident with indicators?
-      description: Checks if found incidents with the FireEye red team tools indicators
+      description: Check if incidents were found with the FireEye red team tools indicators.
       type: condition
       iscommand: false
       brand: ""
@@ -1089,8 +1087,7 @@ tasks:
       id: 4376bcab-c688-49e7-8a20-076ece1222b2
       version: -1
       name: Link incidents
-      description: Link existing incidents with the FireEye red team tools indicators
-        to this incident
+      description: Link existing incidents with the FireEye red team tools indicators to this incident.
       script: Builtin|||linkIncidents
       type: regular
       iscommand: true
@@ -1137,7 +1134,7 @@ tasks:
       id: ee194d26-05e6-468b-8312-f6f4416936bf
       version: -1
       name: Enrich FireEye red team tools CVEs
-      description: Returns CVE information by CVE ID.
+      description: Returns CVE information by the CVE ID.
       script: '|||cve'
       type: regular
       iscommand: true
