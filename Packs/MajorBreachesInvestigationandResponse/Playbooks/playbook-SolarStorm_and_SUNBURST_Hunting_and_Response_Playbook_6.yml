@@ -2259,7 +2259,7 @@ tasks:
       id: 9d66b70c-9ac8-4f0b-8d30-786e6fbd1a2c
       version: -1
       name: Was a vulnerable SolarWinds server found?
-      description: CChecks if vulnerable SolarWinds server was found
+      description: Checks if vulnerable SolarWinds server was found
       type: condition
       iscommand: false
       brand: ""
