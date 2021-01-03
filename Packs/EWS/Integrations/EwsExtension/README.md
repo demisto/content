@@ -43,9 +43,9 @@ For more [info](https://docs.microsoft.com/en-us/powershell/exchange/disable-acc
 2. Basic authentication (Not recommended):
 
     1. Click **Add an instance** to create and configure a new integration instance.
-
+       
        | **Parameter** | **Description** | **Required** |
-                | --- | --- | --- |
+       | ------------- | --------------- | ------------ |
        | url | Search and Compliance URL | True |
        | credentials | Fill Email (aka UPN) and password | False |
        | insecure | Trust any certificate \(not secure\) | False |
