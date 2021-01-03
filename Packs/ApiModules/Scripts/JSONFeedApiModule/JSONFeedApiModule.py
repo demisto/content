@@ -3,7 +3,7 @@ from CommonServerPython import *
 ''' IMPORTS '''
 import urllib3
 import jmespath
-from typing import List, Dict, Union, Optional
+from typing import List, Dict, Union, Optional, Callable
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -116,7 +116,7 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
     :param auto_detect: a boolean indicates if we should automatically detect the indicator_type
     :param limit: given only when get-indicators command is running. function will return number indicators as the limit
     """
-    indicators = []
+    indicators: List[dict] = []
     feeds_results = {}
     for feed_name, feed in client.feed_name_to_config.items():
         custom_build_iterator = feed.get('custom_build_iterator')
@@ -133,57 +133,75 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
         indicator_field = str(feed_config.get('indicator') if feed_config.get('indicator') else 'indicator')
         indicator_type = str(feed_config.get('indicator_type', indicator_type))
         use_prefix_flat = bool(feed_config.get('flat_json_with_prefix', False))
-        use_with_flatten = False
+        mapping_function = feed_config.get('mapping_function', indicator_mapping)
+        handle_indicator_function = feed_config.get('handle_indicator_function', handle_indicator)
 
         for item in items:
-            mapping = feed_config.get('mapping')
             if isinstance(item, str):
                 item = {indicator_field: item}
-            indicator_value = item.get(indicator_field)
-            if not indicator_value:
-                use_with_flatten = True
-            current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
-            if not current_indicator_type:
-                continue
-            indicator = {
-                'type': current_indicator_type,
-                'fields': {
-                    'tags': feedTags,
-                }
-            }
 
-            if client.tlp_color:
-                indicator['fields']['trafficlightprotocol'] = client.tlp_color
+            handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
+                                      use_prefix_flat, feedTags, auto_detect, indicators, mapping_function)
 
-            attributes = {'source_name': service_name, 'type': current_indicator_type}
-            attributes.update(extract_all_fields_from_indicator(item, indicator_field,
-                                                                flat_with_prefix=use_prefix_flat))
-
-            if use_with_flatten:
-                indicator_value = attributes.get(indicator_field)
-            indicator['value'] = indicator_value
-            attributes['value'] = indicator_value
-
-            if mapping:
-                for map_key in mapping:
-                    if map_key in attributes:
-                        fields = mapping[map_key].split(".")
-                        if len(fields) > 1:
-                            if indicator['fields'].get(fields[0]):
-                                indicator['fields'][fields[0]][0].update({fields[1]: attributes.get(map_key)})
-                            else:
-                                indicator['fields'][fields[0]] = [{fields[1]: attributes.get(map_key)}]
-                        else:
-                            indicator['fields'][mapping[map_key]] = attributes.get(map_key)  # type: ignore
-
-            indicator['rawJSON'] = item
-
-            indicators.append(indicator)
             if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
                 break
-
     return indicators
+
+
+def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
+    for map_key in mapping:
+        if map_key in attributes:
+            fields = mapping[map_key].split(".")
+            if len(fields) > 1:
+                if indicator['fields'].get(fields[0]):
+                    indicator['fields'][fields[0]][0].update({fields[1]: attributes.get(map_key)})
+                else:
+                    indicator['fields'][fields[0]] = [{fields[1]: attributes.get(map_key)}]
+            else:
+                indicator['fields'][mapping[map_key]] = attributes.get(map_key)  # type: ignore
+
+
+def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
+                     indicator_type: str, indicator_field: str, use_prefix_flat: bool,
+                     feedTags: list, auto_detect: bool, indicator_list: list,
+                     mapping_function: Callable = indicator_mapping) -> None:
+
+    mapping = feed_config.get('mapping')
+    take_value_from_flatten = False
+    indicator_value = item.get(indicator_field)
+    if not indicator_value:
+        take_value_from_flatten = True
+    current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
+
+    if not current_indicator_type:
+        return
+
+    indicator = {
+        'type': current_indicator_type,
+        'fields': {
+            'tags': feedTags,
+        }
+    }
+
+    if client.tlp_color:
+        indicator['fields']['trafficlightprotocol'] = client.tlp_color
+
+    attributes = {'source_name': service_name, 'type': current_indicator_type}
+    attributes.update(extract_all_fields_from_indicator(item, indicator_field,
+                                                        flat_with_prefix=use_prefix_flat))
+
+    if take_value_from_flatten:
+        indicator_value = attributes.get(indicator_field)
+    indicator['value'] = indicator_value
+    attributes['value'] = indicator_value
+
+    if mapping:
+        mapping_function(mapping, indicator, attributes)
+
+    indicator['rawJSON'] = item
+
+    indicator_list.append(indicator)
 
 
 def determine_indicator_type(indicator_type, auto_detect, value):

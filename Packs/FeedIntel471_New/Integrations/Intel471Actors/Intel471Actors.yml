@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Intel471 Malware Feed
+  id: Intel471 Actors Feed
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -8,8 +8,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -68,37 +67,9 @@ configuration:
   name: indicator_type
   required: false
   type: 0
-- additionalinfo: Search indicators by threat type (e.g. malware, bulletproof_hosting, proxy_service)
-  display: Search by Threat Type
-  name: threat_type
-  required: false
-  type: 0
-- additionalinfo: Type of the indicator in the feed.
-  display: Search by Indicator Type
-  name: search_indicator_type
-  required: false
-  type: 15
-  options:
-  - File
-  - ipv4
-  - URL
-- additionalinfo: Search indicators by malware family (e.g. gozi_isfb, smokeloader, trickbot)
-  display: Malware Family
-  name: malware_family
-  required: false
-  type: 0
-- additionalinfo: Search indicators by confidence. See detailed description of confidence levels below.
-  options:
-  - high
-  - medium
-  - low
-  display: Search by confidence
-  name: confidence
-  required: false
-  type: 15
-- additionalinfo: Free text indicator search (all fields included).
-  display: Indicator
-  name: indicator
+- additionalinfo: Free text actor search (all fields included).
+  display: Actor
+  name: actor
   required: false
   type: 0
 - additionalinfo: How far back in time to go when performing the first fetch
@@ -156,8 +127,8 @@ configuration:
   required: false
   type: 0
 description: Fetches indicators from a JSON feed.
-display: Intel471 Malware Feed
-name: Intel471 Malware Feed
+display: Intel471 Actors Feed
+name: Intel471 Actors Feed
 script:
   commands:
   - arguments:
