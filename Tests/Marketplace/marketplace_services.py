@@ -760,7 +760,7 @@ class Pack(object):
             shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
             os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
             os.chdir(extract_destination_path)
-            output_file = open("{extract_destination_path}/decrypt_pack", "w")
+            output_file = open(f"{extract_destination_path}/decrypt_pack", "w")
             subprocess.call('chmod +x ./decryptor', shell=True)
 
             full_command = f'./decryptor {encrypted_zip_pack_path} {output_file} {encryption_key}'
