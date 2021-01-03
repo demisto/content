@@ -3367,6 +3367,7 @@
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
+        "Akamai WAF": "Issue 32318",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -3374,7 +3375,6 @@
         "Infoblox": "Unstable instance, issue 25651",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
@@ -3406,6 +3406,7 @@
         "urlscan.io"
     ],
     "unmockable_integrations": {
+        "HashiCorp Vault": "Has a command that sends parameters in the path",
         "urlscan.io": "Uses data that comes in the headers",
         "QRadar_v2": "Test playbook 'test playbook - QRadarCorrelations' has multiple branches",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
