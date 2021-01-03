@@ -13,8 +13,8 @@ class OrcaClient:
     def __init__(self, client: BaseClient):
         self.client = client
 
-    def get_alerts(self, alert_type: Optional[str] = None) -> Union[List[Dict[str, Any]], str]:
-        demisto.debug("get_alerts, enter")
+    def get_alerts_by_type(self, alert_type: Optional[str] = None) -> Union[List[Dict[str, Any]], str]:
+        demisto.info("get_alerts, enter")
         url_suffix = "/alerts"
         if alert_type:
             url_suffix = f"{url_suffix}?type={alert_type}"
@@ -24,6 +24,33 @@ class OrcaClient:
 
         asset = response["data"]
         return asset
+
+    def get_all_alerts(self)->List[Dict[str,Any]]:
+        demisto.info("get_all_alerts, enter")
+
+        alerts = []
+        params = {}
+        next_page_token = None
+
+        while True:
+            if next_page_token:
+                params = {"next_page_token":next_page_token}
+
+            response = self.client._http_request(method="GET", url_suffix="/query/alerts",params=params)
+            if response['status'] != 'success':
+                demisto.info(f"got bad response, {response['error']}")
+                return response['error']
+
+            alerts = alerts + response["data"]
+
+            if "next_page_token" not in response:
+                # that was the last chunk
+                break
+            else:
+                next_page_token = response.get("next_page_token")
+
+        demisto.info(f"done fetching orca alerts, fetched {len(alerts)} alerts")
+        return alerts
 
     def get_asset(self, asset_unique_id: str) -> Union[List[Dict[str, Any]], str]:
         demisto.debug("get_asset, enter")
@@ -75,7 +102,7 @@ def main() -> None:
 
     orca_client = OrcaClient(client=client)
     if command == "get-alerts":
-        alerts = orca_client.get_alerts(alert_type=demisto.args().get('alert_type'))
+        alerts = orca_client.get_alerts_by_type(alert_type=demisto.args().get('alert_type'))
         return_results(alerts)
 
     if command == "get-asset":
@@ -94,7 +121,7 @@ def main() -> None:
             demisto.incidents([])
             return
 
-        alerts = orca_client.get_alerts()
+        alerts = orca_client.get_all_alerts()
         if not alerts:
             demisto.incidents([])
             return
