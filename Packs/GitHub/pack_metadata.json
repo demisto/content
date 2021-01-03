@@ -2,7 +2,7 @@
     "name": "GitHub",
     "description": "Integration to GitHub API",
     "support": "xsoar",
-    "currentVersion": "1.1.4",
+    "currentVersion": "1.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
