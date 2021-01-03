@@ -253,10 +253,12 @@ def analyse_sample_file_request(file_entry, should_wait, internet_access, commen
     if systems != '':
         data['systems[]'] = [s.strip() for s in systems.split(',')]  # type: ignore
 
-    shutil.copy(demisto.getFilePath(file_entry)['path'], demisto.getFilePath(file_entry)['name'])
+    # removing backslashes from filename as the API does not like it
+    # if given filename such as dir\file.xlsx - the sample will end with the name file.xlsx
+    filename = demisto.getFilePath(file_entry)['name'].replace('\\', '/')
 
-    with open(demisto.getFilePath(file_entry)['name'], 'rb') as f:
-        res = http_post('v2/analysis/submit', data=data, files={'sample': f})
+    with open(demisto.getFilePath(file_entry)['path'], 'rb') as f:
+        res = http_post('v2/analysis/submit', data=data, files={'sample': (filename, f)})
 
     if res == 'nothing_to_analyze':
         return nothing_to_analyze_output

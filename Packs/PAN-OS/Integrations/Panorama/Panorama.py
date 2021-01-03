@@ -2174,6 +2174,9 @@ def panorama_get_url_category(url_cmd: str, url: str):
         body=params,
     )
     result = raw_result['response']['result']
+    if 'Failed to query the cloud' in result:
+        raise Exception('Failed to query the cloud. Please check your URL Filtering license.')
+
     if url_cmd == 'url-info-host':
         # The result in this case looks like so: "Ancestors info:\nBM:\nURL.com,1,5,search-engines,, {some more info
         # here...}" - The 4th element is the url category.
