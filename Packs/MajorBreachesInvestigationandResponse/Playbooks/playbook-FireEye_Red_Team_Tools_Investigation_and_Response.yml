@@ -49,12 +49,12 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: e32d2c90-ec6b-4e07-8943-944df5ae8d2f
+    taskid: 162bc6c7-5645-4605-8cbb-7dfd2a606898
     type: condition
     task:
-      id: e32d2c90-ec6b-4e07-8943-944df5ae8d2f
+      id: 162bc6c7-5645-4605-8cbb-7dfd2a606898
       version: -1
-      name: Is there CVE's?
+      name: Are there CVE's?
       description: Checks if there CVEs in the playbook input
       type: condition
       iscommand: false
@@ -86,48 +86,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: 1d91c88b-d42c-445e-8a9a-2d232f2233f0
-    type: playbook
-    task:
-      id: 1d91c88b-d42c-445e-8a9a-2d232f2233f0
-      version: -1
-      name: CVE Enrichment - Generic v2
-      description: |-
-        This playbook performs CVE Enrichment using the following integrations:
-        - VulnDB
-        - CVE Search
-        - IBM X-Force Exchange
-      playbookName: CVE Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      cve_id:
-        complex:
-          root: 'inputs.FireEyeToolsCVE '
-    separatecontext: false
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 130,
-          "y": 450
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
     taskid: 45cbc029-69ba-4945-8e90-382efc7072a9
@@ -142,7 +100,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "27"
     separatecontext: false
     view: |-
       {
@@ -187,13 +145,13 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: f6a177d9-455b-4601-8971-6b4a86835318
+    taskid: a0e945ba-77a0-4c73-8550-049a7aebc605
     type: regular
     task:
-      id: f6a177d9-455b-4601-8971-6b4a86835318
+      id: a0e945ba-77a0-4c73-8550-049a7aebc605
       version: -1
       name: Create indicators
-      description: commands.local.cmd.new.indicator
+      description: Create indicators for the Fireeye red team tools CVEs
       script: Builtin|||createNewIndicator
       type: regular
       iscommand: true
@@ -216,6 +174,9 @@ tasks:
       biosversion: {}
       campaign: {}
       category: {}
+      certificatenames: {}
+      certificatesignature: {}
+      certificatevalidationchecks: {}
       city: {}
       costcenter: {}
       costcentercode: {}
@@ -250,7 +211,23 @@ tasks:
       email: {}
       emailaddress: {}
       entryid: {}
+      expanseassettype: {}
+      expansebusinessunits: {}
+      expansecertificateadvertisementstatus: {}
+      expansedateadded: {}
+      expansednsresolutionstatus: {}
+      expansedomain: {}
+      expansefirstobserved: {}
+      expanselastobserved: {}
+      expanseproperties: {}
+      expanseprovidername: {}
+      expanseservicestatus: {}
+      expansesourcedomain: {}
+      expansetags: {}
+      expansetenantname: {}
+      expansetype: {}
       expirationdate: {}
+      extension: {}
       feedrelatedindicators: {}
       fileextension: {}
       filetype: {}
@@ -267,6 +244,7 @@ tasks:
       indicatoridentification: {}
       internal: {}
       ipaddress: {}
+      issuerdn: {}
       jobcode: {}
       jobfamily: {}
       jobfunction: {}
@@ -276,6 +254,7 @@ tasks:
       locationregion: {}
       macaddress: {}
       malwarefamily: {}
+      malwaretypes: {}
       manageremailaddress: {}
       managername: {}
       md5: {}
@@ -294,11 +273,14 @@ tasks:
       organizationalunitou: {}
       osversion: {}
       path: {}
+      pem: {}
       personalemail: {}
       port: {}
       positivedetections: {}
+      primarymotivation: {}
       processor: {}
       processors: {}
+      publickey: {}
       published: {}
       quarantined: {}
       region: {}
@@ -314,6 +296,7 @@ tasks:
       reportedby: {}
       reputation: {}
       seenNow: {}
+      serialnumber: {}
       service: {}
       sha1: {}
       sha256: {}
@@ -328,6 +311,7 @@ tasks:
       source: {}
       sourceTimeStamp: {}
       sourceoriginalseverity: {}
+      spkisha256: {}
       ssdeep: {}
       state: {}
       stixaliases: {}
@@ -347,6 +331,8 @@ tasks:
       stixtoolversion: {}
       streetaddress: {}
       subdomains: {}
+      subjectalternativenames: {}
+      subjectdn: {}
       surname: {}
       tags: {}
       threattypes: {}
@@ -356,6 +342,8 @@ tasks:
         simple: CVE
       updateddate: {}
       username: {}
+      validitynotafter: {}
+      validitynotbefore: {}
       value:
         complex:
           root: CVE
@@ -378,13 +366,13 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 981b47a6-1d11-429c-8d6c-5c28ef41cefb
+    taskid: 47b437f5-2ce3-4750-8278-81c5778e6048
     type: regular
     task:
-      id: 981b47a6-1d11-429c-8d6c-5c28ef41cefb
+      id: 47b437f5-2ce3-4750-8278-81c5778e6048
       version: -1
       name: Enrich indicators
-      description: commands.local.cmd.enrich.indicators
+      description: Enrich the Fireeye red team tools CVEs indicators
       script: Builtin|||enrichIndicators
       type: regular
       iscommand: true
@@ -507,13 +495,14 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: ee1e889b-799b-447b-8597-9cbb1dc7b34a
+    taskid: d52123f4-4fe0-4aaf-8fe7-a2f0246b8511
     type: regular
     task:
-      id: ee1e889b-799b-447b-8597-9cbb1dc7b34a
+      id: d52123f4-4fe0-4aaf-8fe7-a2f0246b8511
       version: -1
       name: Collect Hashes from FireEye for red team tools
-      description: Sends http request. Returns the response as json.
+      description: Get with HTTP request the hash relates to FireEye for red team
+        tools
       scriptName: http
       type: regular
       iscommand: false
@@ -534,7 +523,8 @@ tasks:
       saveAsFile: {}
       unsecure: {}
       url:
-        simple: https://github.com/fireeye/red_team_tool_countermeasures/blob/master/all-hashes.csv
+        complex:
+          root: inputs.FireEyeRedTeamToolsCVEsURL
       username: {}
     separatecontext: false
     view: |-
@@ -551,13 +541,13 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 0e06f1ff-0724-4828-8c31-e77881235c52
+    taskid: 05c06fe1-2148-4887-8028-94568fb43df5
     type: regular
     task:
-      id: 0e06f1ff-0724-4828-8c31-e77881235c52
+      id: 05c06fe1-2148-4887-8028-94568fb43df5
       version: -1
       name: Create red team tools hash indicators
-      description: commands.local.cmd.extract.indicators
+      description: Extract and create FireEye red team tools hash indicators
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
@@ -589,13 +579,14 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 88f79214-0a33-4842-8714-2894d9103581
+    taskid: ec32410b-bd2d-4b71-8419-a31a7b7b9037
     type: regular
     task:
-      id: 88f79214-0a33-4842-8714-2894d9103581
+      id: ec32410b-bd2d-4b71-8419-a31a7b7b9037
       version: -1
       name: Add red team tools tag
-      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      description: Add the tag "FireEye Red Team Tools" for the FireEye red team tools
+        hashes
       script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
@@ -729,7 +720,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 1920
+          "y": 1800
         }
       }
     note: false
@@ -769,7 +760,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 2060
+          "y": 1960
         }
       }
     note: false
@@ -812,8 +803,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 2230
+          "x": 1350,
+          "y": 2130
         }
       }
     note: false
@@ -860,8 +851,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1610,
-          "y": 2410
+          "x": 1620,
+          "y": 2315
         }
       }
     note: false
@@ -889,7 +880,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 2580
+          "y": 2510
         }
       }
     note: false
@@ -916,8 +907,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 2410
+          "x": 1140,
+          "y": 2315
         }
       }
     note: false
@@ -945,7 +936,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 2720
+          "y": 2680
         }
       }
     note: false
@@ -955,13 +946,13 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 1f6548cc-a780-4119-8847-03f212e7b3f3
+    taskid: c8f2f7ad-774c-427f-8f18-57204609b146
     type: regular
     task:
-      id: 1f6548cc-a780-4119-8847-03f212e7b3f3
+      id: c8f2f7ad-774c-427f-8f18-57204609b146
       version: -1
       name: Close investigation
-      description: commands.local.cmd.close.inv
+      description: Close the current incident
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1016,34 +1007,25 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: cd3440dc-2bdb-47cf-8175-a4968f93727e
+    taskid: 22aa5735-fd45-4f63-82e3-9a18a5ca66ce
     type: regular
     task:
-      id: cd3440dc-2bdb-47cf-8175-a4968f93727e
+      id: 22aa5735-fd45-4f63-82e3-9a18a5ca66ce
       version: -1
       name: Find incidents with indicators
-      description: commands.local.cmd.find.indicators
-      script: Builtin|||findIndicators
+      description: Find existing incidents with the FireEye red team tools indicators
+      scriptName: findIncidentsWithIndicator
       type: regular
-      iscommand: true
+      iscommand: false
       brand: Builtin
     nexttasks:
       '#none#':
       - "25"
     scriptarguments:
-      extend-context:
-        simple: indicatorsIncidentcontent=
-      fromdate: {}
-      page: {}
-      query:
+      indicator:
         complex:
           root: ExtractedIndicators
           accessor: File
-          transformers:
-          - operator: uniq
-      size: {}
-      todate: {}
-      value: {}
     separatecontext: false
     view: |-
       {
@@ -1059,13 +1041,13 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: cac1d694-fe59-4f31-8bef-8d19366f5576
+    taskid: d8962d7d-dd1b-4650-8864-1e26aaa8940b
     type: condition
     task:
-      id: cac1d694-fe59-4f31-8bef-8d19366f5576
+      id: d8962d7d-dd1b-4650-8864-1e26aaa8940b
       version: -1
       name: Found incident with indicators?
-      description: Checks if found indicators
+      description: Checks if found incidents with the FireEye red team tools indicators
       type: condition
       iscommand: false
       brand: ""
@@ -1073,7 +1055,7 @@ tasks:
       '#default#':
       - "15"
       "yes":
-      - "27"
+      - "26"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1082,17 +1064,8 @@ tasks:
           left:
             value:
               complex:
-                root: indicatorsIncidentcontent.investigationIDs
-                filters:
-                - - operator: isNotEqualString
-                    left:
-                      value:
-                        simple: indicatorsIncidentcontent.investigationIDs
-                      iscontext: true
-                    right:
-                      value:
-                        simple: incident.id
-                      iscontext: true
+                root: IncidentsWithIndicator
+                accessor: incidentIDs
                 transformers:
                 - operator: uniq
             iscontext: true
@@ -1110,13 +1083,14 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: d97c645a-6035-42a7-845c-f72a9f3a0874
+    taskid: 4376bcab-c688-49e7-8a20-076ece1222b2
     type: regular
     task:
-      id: d97c645a-6035-42a7-845c-f72a9f3a0874
+      id: 4376bcab-c688-49e7-8a20-076ece1222b2
       version: -1
       name: Link incidents
-      description: commands.local.cmd.linkIncidents
+      description: Link existing incidents with the FireEye red team tools indicators
+        to this incident
       script: Builtin|||linkIncidents
       type: regular
       iscommand: true
@@ -1133,19 +1107,21 @@ tasks:
           accessor: id
       linkedIncidentIDs:
         complex:
-          root: indicatorsincidentIDs
+          root: IncidentsWithIndicator
+          accessor: incidentIDs
           transformers:
           - operator: join
             args:
               separator:
                 value:
                   simple: ','
+          - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1610,
-          "y": 1750
+          "x": 1600,
+          "y": 1620
         }
       }
     note: false
@@ -1155,46 +1131,30 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 490d9cd1-608d-4e59-8562-d27105f12239
+    taskid: ee194d26-05e6-468b-8312-f6f4416936bf
     type: regular
     task:
-      id: 490d9cd1-608d-4e59-8562-d27105f12239
+      id: ee194d26-05e6-468b-8312-f6f4416936bf
       version: -1
-      name: Set incidents to context
-      description: Set a value in context under the key you entered.
-      scriptName: Set
+      name: Enrich FireEye red team tools CVEs
+      description: Returns CVE information by CVE ID.
+      script: '|||cve'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "26"
+      - "5"
     scriptarguments:
-      append: {}
-      key:
-        simple: indicatorsincidentIDs
-      stringify: {}
-      value:
+      cve_id:
         complex:
-          root: indicatorsIncidentcontent.investigationIDs
-          filters:
-          - - operator: isNotEqualString
-              left:
-                value:
-                  simple: indicatorsIncidentcontent.investigationIDs
-                iscontext: true
-              right:
-                value:
-                  simple: incident.id
-                iscontext: true
-          transformers:
-          - operator: uniq
+          root: 'inputs.FireEyeToolsCVE '
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1610,
-          "y": 1580
+          "x": 130,
+          "y": 450
         }
       }
     note: false
@@ -1214,7 +1174,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 3125,
-        "width": 1860,
+        "width": 1870,
         "x": 130,
         "y": 0
       }
@@ -1227,7 +1187,13 @@ inputs:
       ,CVE-2019-11510,CVE-2019-0604\t,CVE-2020-10189,CVE-2019-8394\t,CVE-2020-1472,CVE-2018-8581\t\
       ,CVE-2016-0167,CVE-2014-1812"
   required: false
-  description: FireEye red team Tools CVEs
+  description: "CVE-2019-0708\t,CVE-2017-11774"
+  playbookInputQuery:
+- key: FireEyeRedTeamToolsCVEsURL
+  value:
+    simple: https://github.com/fireeye/red_team_tool_countermeasures/blob/master/all-hashes.csv
+  required: false
+  description: The URL of FireEye red team tools CVEs
   playbookInputQuery:
 - key: IsolateEndpointAutomatically
   value:

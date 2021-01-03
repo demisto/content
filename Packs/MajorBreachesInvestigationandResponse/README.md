@@ -2,6 +2,7 @@ This pack has a collection of playbooks to rapidly respond to high profile breac
 The playbooks in this pack can also be used as a template to hunt and block these indicators using additional tools in your environment.
 This pack contains the response playbooks for the following breaches:
 - Sunburst and SolarStorm hunting
+- FireEye Red Team Tools Investigation and Response
 
 ##### How to enable it?
 
