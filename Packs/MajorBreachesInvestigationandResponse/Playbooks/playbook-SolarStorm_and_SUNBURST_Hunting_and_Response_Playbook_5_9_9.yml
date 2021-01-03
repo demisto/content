@@ -16,10 +16,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: df7502eb-2e4b-4de4-8ef1-697b83012f1b
+    taskid: 319747d6-6325-4ae4-8383-ff7889aee93e
     type: start
     task:
-      id: df7502eb-2e4b-4de4-8ef1-697b83012f1b
+      id: 319747d6-6325-4ae4-8383-ff7889aee93e
       version: -1
       name: ""
       iscommand: false
@@ -43,10 +43,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 82d4e0f5-6e3a-42cb-8887-764cf9e8eb8e
+    taskid: c6f5f7cd-b887-4d67-870e-117dd760254b
     type: title
     task:
-      id: 82d4e0f5-6e3a-42cb-8887-764cf9e8eb8e
+      id: c6f5f7cd-b887-4d67-870e-117dd760254b
       version: -1
       name: Collect  and retrieve indicators to hunt
       type: title
@@ -73,10 +73,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: f6dc8e72-4e53-495f-80c8-57260deac55d
+    taskid: 2d603d60-fc34-40c0-8f4e-0faa843a5a94
     type: regular
     task:
-      id: f6dc8e72-4e53-495f-80c8-57260deac55d
+      id: 2d603d60-fc34-40c0-8f4e-0faa843a5a94
       version: -1
       name: Collect Hashes from FireEye for installed SUNBURST backdoor
       description: Sends http request. Returns the response as json.
@@ -118,10 +118,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: d3bb2cfc-d4d3-45ac-8d51-6d176397f96c
+    taskid: 17ee5f73-ea71-4fc8-8300-609b42bdc154
     type: regular
     task:
-      id: d3bb2cfc-d4d3-45ac-8d51-6d176397f96c
+      id: 17ee5f73-ea71-4fc8-8300-609b42bdc154
       version: -1
       name: Close investigation
       description: commands.local.cmd.close.inv
@@ -154,10 +154,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 23e1215c-26fe-4bb2-8a6a-cf5d0c558ca5
+    taskid: a9968aad-853d-40bd-85d4-8694194cc9ee
     type: title
     task:
-      id: 23e1215c-26fe-4bb2-8a6a-cf5d0c558ca5
+      id: a9968aad-853d-40bd-85d4-8694194cc9ee
       version: -1
       name: Done
       type: title
@@ -179,12 +179,12 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 1b0e1396-52f7-4145-84d7-ea0b3ab16770
+    taskid: 7fe8e8d9-5d69-40e1-862d-46c6422b28e0
     type: playbook
     task:
-      id: 1b0e1396-52f7-4145-84d7-ea0b3ab16770
+      id: 7fe8e8d9-5d69-40e1-862d-46c6422b28e0
       version: -1
-      name: Panorama Query Logs
+      name: Panorama search thread-ids in threat logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs
@@ -234,10 +234,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 3b3ec1af-3ba3-4347-83cb-8358f68d94c0
+    taskid: 19f16738-3bfc-4508-815f-5c5b880a9a5f
     type: title
     task:
-      id: 3b3ec1af-3ba3-4347-83cb-8358f68d94c0
+      id: 19f16738-3bfc-4508-815f-5c5b880a9a5f
       version: -1
       name: 'Remediation '
       type: title
@@ -264,10 +264,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 1b3f1aa9-8a28-4fba-8554-e3381dee3420
+    taskid: d5337f2b-2c22-4302-88ce-9c2658b3eb1b
     type: regular
     task:
-      id: 1b3f1aa9-8a28-4fba-8554-e3381dee3420
+      id: d5337f2b-2c22-4302-88ce-9c2658b3eb1b
       version: -1
       name: Investigate further
       description: Further investigate the incident (endpoints, the entry point, etc')
@@ -292,10 +292,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 40d9215a-00c5-4ae7-8f3e-4bd3688e5608
+    taskid: a8e731fe-e467-4857-8505-3b17ac2c8d1c
     type: title
     task:
-      id: 40d9215a-00c5-4ae7-8f3e-4bd3688e5608
+      id: a8e731fe-e467-4857-8505-3b17ac2c8d1c
       version: -1
       name: Remediation Complete
       description: commands.local.cmd.close.inv
@@ -320,10 +320,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 250497c1-30af-46c8-8335-e700e5a36318
+    taskid: 037adf93-941c-4eb2-8854-a07e1c9f10ac
     type: regular
     task:
-      id: 250497c1-30af-46c8-8335-e700e5a36318
+      id: 037adf93-941c-4eb2-8854-a07e1c9f10ac
       version: -1
       name: Mark hashes indicators with SolarStorm tag
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
@@ -360,10 +360,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 48472983-7092-4dfe-89f6-ceb26703829b
+    taskid: d2365c41-ec6f-4a70-8fda-39b2b65caaec
     type: playbook
     task:
-      id: 48472983-7092-4dfe-89f6-ceb26703829b
+      id: d2365c41-ec6f-4a70-8fda-39b2b65caaec
       version: -1
       name: Search Endpoints By Hash - Generic V2
       description: Hunt using available tools
@@ -413,10 +413,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 55ace1d4-8de9-45ea-8ebe-6365b73836e6
+    taskid: 96f47aeb-1be3-459b-8c1c-be00877ff844
     type: title
     task:
-      id: 55ace1d4-8de9-45ea-8ebe-6365b73836e6
+      id: 96f47aeb-1be3-459b-8c1c-be00877ff844
       version: -1
       name: Hunt SolarStorm and SunBurst in Network Activity
       type: title
@@ -443,10 +443,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: cd98aba6-c495-4a50-8875-83640d95f2f0
+    taskid: ef1d7172-c986-4752-84ec-a26f697607e6
     type: title
     task:
-      id: cd98aba6-c495-4a50-8875-83640d95f2f0
+      id: ef1d7172-c986-4752-84ec-a26f697607e6
       version: -1
       name: Hunt Backdoored SolarWinds and SunBurst in Endpoints
       type: title
@@ -472,10 +472,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: fc976106-3685-4df9-8e2c-7bbd57a0c515
+    taskid: 8ffa0259-dad8-4ae4-8035-70208c9b8c1d
     type: title
     task:
-      id: fc976106-3685-4df9-8e2c-7bbd57a0c515
+      id: 8ffa0259-dad8-4ae4-8035-70208c9b8c1d
       version: -1
       name: No Infections Found
       type: title
@@ -500,10 +500,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: ff78093a-70f4-4b4b-85d0-295d38234445
+    taskid: 7029025a-cb1e-496b-84bc-caf6f4406073
     type: playbook
     task:
-      id: ff78093a-70f4-4b4b-85d0-295d38234445
+      id: 7029025a-cb1e-496b-84bc-caf6f4406073
       version: -1
       name: Isolate Endpoint - Generic
       description: |-
@@ -564,12 +564,12 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: a1fdc1ec-7589-4c93-8af0-649bb04b4406
+    taskid: 5fa9428b-c2ed-4954-8ee1-8865bc1cbd9e
     type: playbook
     task:
-      id: a1fdc1ec-7589-4c93-8af0-649bb04b4406
+      id: 5fa9428b-c2ed-4954-8ee1-8865bc1cbd9e
       version: -1
-      name: Panorama Query Logs
+      name: Panorama search SolarWinds App-IDs traffic logs
       description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering
         and wildfire.'
       playbookName: Panorama Query Logs
@@ -617,10 +617,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 8d8e955b-0570-45b2-8846-5fb49ddd92d5
+    taskid: 11d75c44-4495-46f0-8a49-8dc2bcc88d27
     type: title
     task:
-      id: 8d8e955b-0570-45b2-8846-5fb49ddd92d5
+      id: 11d75c44-4495-46f0-8a49-8dc2bcc88d27
       version: -1
       name: Block Indicators
       type: title
@@ -645,10 +645,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 20c12bed-6e5d-470e-8472-bc04e8d65808
+    taskid: 18bac474-e7bd-40c4-89aa-6e4be8fb8d35
     type: condition
     task:
-      id: 20c12bed-6e5d-470e-8472-bc04e8d65808
+      id: 18bac474-e7bd-40c4-89aa-6e4be8fb8d35
       version: -1
       name: Any compromised hosts found?
       description: |
@@ -699,10 +699,10 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 15014fdf-4f81-4f58-8b7b-2c76e10e9c06
+    taskid: 78200eea-bcbd-4b74-8783-5511856dc62b
     type: title
     task:
-      id: 15014fdf-4f81-4f58-8b7b-2c76e10e9c06
+      id: 78200eea-bcbd-4b74-8783-5511856dc62b
       version: -1
       name: Hunt IOC's
       type: title
@@ -729,10 +729,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: 838bb5a8-c5b1-42f7-814b-cdc8a9fb786b
+    taskid: 76411642-db96-4902-85d3-0cd77d1708bb
     type: playbook
     task:
-      id: 838bb5a8-c5b1-42f7-814b-cdc8a9fb786b
+      id: 76411642-db96-4902-85d3-0cd77d1708bb
       version: -1
       name: Palo Alto Networks - Hunting And Threat Detection
       playbookName: Palo Alto Networks - Hunting And Threat Detection
@@ -787,10 +787,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: ae3c46c9-ff8a-4458-83ba-abe76e20b4ee
+    taskid: e19f2864-1985-4639-8703-479edc459d56
     type: regular
     task:
-      id: ae3c46c9-ff8a-4458-83ba-abe76e20b4ee
+      id: e19f2864-1985-4639-8703-479edc459d56
       version: -1
       name: Collect Domains and IPs from FireEye for installed SUNBURST backdoor
       description: Sends http request. Returns the response as json.
@@ -831,10 +831,10 @@ tasks:
     quietmode: 0
   "48":
     id: "48"
-    taskid: 559abe5c-5326-4b75-8682-7e6aa4c3a6d3
+    taskid: 36c30013-17cb-48d9-8e95-e2ac8cb7eeda
     type: regular
     task:
-      id: 559abe5c-5326-4b75-8682-7e6aa4c3a6d3
+      id: 36c30013-17cb-48d9-8e95-e2ac8cb7eeda
       version: -1
       name: UnEescape IPs from result to indicators
       description: |-
@@ -874,10 +874,10 @@ tasks:
     quietmode: 0
   "49":
     id: "49"
-    taskid: dcf9c17e-1de1-464e-8f79-45b45f4e6f37
+    taskid: 1571cacb-c8f5-4a5a-8a7f-94dbc5e9cb1b
     type: regular
     task:
-      id: dcf9c17e-1de1-464e-8f79-45b45f4e6f37
+      id: 1571cacb-c8f5-4a5a-8a7f-94dbc5e9cb1b
       version: -1
       name: UnEescape URLs from result to indicators
       description: |-
@@ -918,10 +918,10 @@ tasks:
     quietmode: 0
   "50":
     id: "50"
-    taskid: 4a3d415c-8f04-4028-857b-d6d39b7a2c14
+    taskid: 5450f5a6-33cf-4b1c-8a80-6d3479261f31
     type: condition
     task:
-      id: 4a3d415c-8f04-4028-857b-d6d39b7a2c14
+      id: 5450f5a6-33cf-4b1c-8a80-6d3479261f31
       version: -1
       name: Should isolate automatically compromised hosts?
       description: |
@@ -962,10 +962,10 @@ tasks:
     quietmode: 0
   "51":
     id: "51"
-    taskid: 109ea258-a3fe-4e0b-89ea-ded7ae7c6845
+    taskid: c3d1a334-6703-4583-87a8-1bf563f750b3
     type: playbook
     task:
-      id: 109ea258-a3fe-4e0b-89ea-ded7ae7c6845
+      id: c3d1a334-6703-4583-87a8-1bf563f750b3
       version: -1
       name: Block Indicators - Generic v2
       description: |+
@@ -1046,10 +1046,10 @@ tasks:
     quietmode: 0
   "52":
     id: "52"
-    taskid: f5255969-e3b5-4dbb-808d-28d7093ac2be
+    taskid: 1b50bc3a-dafd-4f08-8a39-9be6e66a2753
     type: title
     task:
-      id: f5255969-e3b5-4dbb-808d-28d7093ac2be
+      id: 1b50bc3a-dafd-4f08-8a39-9be6e66a2753
       version: -1
       name: Isolate Compromised Hosts
       type: title
@@ -1074,10 +1074,10 @@ tasks:
     quietmode: 0
   "53":
     id: "53"
-    taskid: 11e03119-eb81-4efb-8f4d-32b7805d8999
+    taskid: b803cfb8-4bf1-4ef8-8195-9c8d2860b2ae
     type: regular
     task:
-      id: 11e03119-eb81-4efb-8f4d-32b7805d8999
+      id: b803cfb8-4bf1-4ef8-8195-9c8d2860b2ae
       version: -1
       name: Mark IP's indicators with SolarStorm tag
       description: commands.local.cmd.new.indicator
@@ -1258,10 +1258,10 @@ tasks:
     quietmode: 0
   "54":
     id: "54"
-    taskid: 7fd76e93-b362-4e9a-8ca9-86912e60e82e
+    taskid: d2eeb627-9274-42da-811d-d5fe5487810a
     type: regular
     task:
-      id: 7fd76e93-b362-4e9a-8ca9-86912e60e82e
+      id: d2eeb627-9274-42da-811d-d5fe5487810a
       version: -1
       name: Mark URLs indicators with SolarStorm tag
       description: commands.local.cmd.new.indicator
@@ -1442,10 +1442,10 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: 9d6d6b1d-9742-461d-86b1-cd8e5e9fbfa2
+    taskid: 3dd19ad1-601f-4293-883e-05a107480975
     type: condition
     task:
-      id: 9d6d6b1d-9742-461d-86b1-cd8e5e9fbfa2
+      id: 3dd19ad1-601f-4293-883e-05a107480975
       version: -1
       name: Should block indicators automatically?
       description: Checks whether IOC's associated with the incident can be blocked
@@ -1486,10 +1486,10 @@ tasks:
     quietmode: 0
   "56":
     id: "56"
-    taskid: 511ceecb-ce1d-4060-8f4d-5e96475ebb41
+    taskid: e379d21b-f1c8-4c31-80f0-d46427ab2590
     type: regular
     task:
-      id: 511ceecb-ce1d-4060-8f4d-5e96475ebb41
+      id: e379d21b-f1c8-4c31-80f0-d46427ab2590
       version: -1
       name: Manually block indicators
       description: Manually block the IOCs in the relevant systems.
@@ -1514,10 +1514,10 @@ tasks:
     quietmode: 0
   "57":
     id: "57"
-    taskid: cc2310e2-051f-46d1-8a1d-83b3a3fcb4ad
+    taskid: b98c8f6b-01ec-413a-8a54-c2a2aa47b8ed
     type: regular
     task:
-      id: cc2310e2-051f-46d1-8a1d-83b3a3fcb4ad
+      id: b98c8f6b-01ec-413a-8a54-c2a2aa47b8ed
       version: -1
       name: Manually isolate endpoints
       description: Manually Isolate the compromised hosts.
@@ -1542,10 +1542,10 @@ tasks:
     quietmode: 0
   "58":
     id: "58"
-    taskid: d4973066-0d77-40e4-8104-9324bd5a09cf
+    taskid: 622fe6ff-4448-4eab-88ba-5e0d53d41d55
     type: title
     task:
-      id: d4973066-0d77-40e4-8104-9324bd5a09cf
+      id: 622fe6ff-4448-4eab-88ba-5e0d53d41d55
       version: -1
       name: Tag SolarStorm and SUNBURST Indicators
       type: title
@@ -1570,10 +1570,10 @@ tasks:
     quietmode: 0
   "59":
     id: "59"
-    taskid: 86f09a3f-2404-448a-865c-d450cdfc100c
+    taskid: 5642a311-3320-48f9-8e77-179c45e6605d
     type: regular
     task:
-      id: 86f09a3f-2404-448a-865c-d450cdfc100c
+      id: 5642a311-3320-48f9-8e77-179c45e6605d
       version: -1
       name: Collect IOCs from UNIT42 git
       description: Sends http request. Returns the response as json.
@@ -1614,10 +1614,10 @@ tasks:
     quietmode: 0
   "60":
     id: "60"
-    taskid: 899900ab-c1d5-4b7c-80d5-3bab3cbe7ecd
+    taskid: a897b3fb-5aab-47c4-89ef-8e8d4f706994
     type: title
     task:
-      id: 899900ab-c1d5-4b7c-80d5-3bab3cbe7ecd
+      id: a897b3fb-5aab-47c4-89ef-8e8d4f706994
       version: -1
       name: Indicators from GIT Sources
       type: title
@@ -1644,10 +1644,10 @@ tasks:
     quietmode: 0
   "61":
     id: "61"
-    taskid: 185d4a76-851d-45e1-897a-dee9956f38ba
+    taskid: 66488407-fed5-41b6-8db6-e704799ee3d0
     type: title
     task:
-      id: 185d4a76-851d-45e1-897a-dee9956f38ba
+      id: 66488407-fed5-41b6-8db6-e704799ee3d0
       version: -1
       name: Indicators from STIX File
       type: title
@@ -1672,10 +1672,10 @@ tasks:
     quietmode: 0
   "62":
     id: "62"
-    taskid: fcb7d370-ad48-4f01-8f49-ebd6f8e732dd
+    taskid: 0f357e4b-0360-4494-8b90-4cb8281112c3
     type: title
     task:
-      id: fcb7d370-ad48-4f01-8f49-ebd6f8e732dd
+      id: 0f357e4b-0360-4494-8b90-4cb8281112c3
       version: -1
       name: CVE Indicators
       type: title
@@ -1700,10 +1700,10 @@ tasks:
     quietmode: 0
   "64":
     id: "64"
-    taskid: a2b00860-013f-4ea8-867a-3eceb0f79006
+    taskid: b4c493bc-142f-4c10-8742-eb20fac5a8b8
     type: regular
     task:
-      id: a2b00860-013f-4ea8-867a-3eceb0f79006
+      id: b4c493bc-142f-4c10-8742-eb20fac5a8b8
       version: -1
       name: Create STIX file
       description: |
@@ -1737,10 +1737,10 @@ tasks:
     quietmode: 0
   "65":
     id: "65"
-    taskid: a1297631-2ac8-4963-873d-8c1710d5b19e
+    taskid: 6bfad12f-26a4-4417-8566-5dd49b8d77e7
     type: regular
     task:
-      id: a1297631-2ac8-4963-873d-8c1710d5b19e
+      id: 6bfad12f-26a4-4417-8566-5dd49b8d77e7
       version: -1
       name: Create indicators from STIX
       description: Creates indicators from the submitted STIX file. Supports STIX
@@ -1778,10 +1778,10 @@ tasks:
     quietmode: 0
   "66":
     id: "66"
-    taskid: 16b0b0b3-851c-4072-814a-673eb1f7b6b4
+    taskid: 27f4abad-3cf2-4edf-874c-606625cae247
     type: playbook
     task:
-      id: 16b0b0b3-851c-4072-814a-673eb1f7b6b4
+      id: 27f4abad-3cf2-4edf-874c-606625cae247
       version: -1
       name: CVE Enrichment - Generic v2
       description: |-
@@ -1820,10 +1820,10 @@ tasks:
     quietmode: 0
   "67":
     id: "67"
-    taskid: 266b5bd4-3db5-463e-86e1-00829e09df3e
+    taskid: 137545b5-e948-46bc-819f-81984090c81d
     type: title
     task:
-      id: 266b5bd4-3db5-463e-86e1-00829e09df3e
+      id: 137545b5-e948-46bc-819f-81984090c81d
       version: -1
       name: CVEs Hunt
       type: title
@@ -1848,10 +1848,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: a89635fa-cc4b-4ef3-8637-2440274c72da
+    taskid: 3ef61c04-0f6a-480b-83b2-5911a0527236
     type: playbook
     task:
-      id: a89635fa-cc4b-4ef3-8637-2440274c72da
+      id: 3ef61c04-0f6a-480b-83b2-5911a0527236
       version: -1
       name: Search Endpoint by CVE - Generic
       playbookName: Search Endpoint by CVE - Generic
@@ -1888,10 +1888,10 @@ tasks:
     quietmode: 0
   "70":
     id: "70"
-    taskid: fd76588d-5cb6-4c66-8743-e69483d25fbc
+    taskid: 9ae4b3f8-998d-487f-8797-4cde4ecddf9b
     type: regular
     task:
-      id: fd76588d-5cb6-4c66-8743-e69483d25fbc
+      id: 9ae4b3f8-998d-487f-8797-4cde4ecddf9b
       version: -1
       name: Set hash indicators from playbook inputs
       description: commands.local.cmd.extract.indicators
@@ -1928,20 +1928,20 @@ tasks:
     quietmode: 0
   "74":
     id: "74"
-    taskid: 1cd43e81-11ba-4720-8652-bed6ad0519de
+    taskid: f7b9ef98-d3c2-4f7f-8e3a-d0a77d7a85fb
     type: regular
     task:
-      id: 1cd43e81-11ba-4720-8652-bed6ad0519de
+      id: f7b9ef98-d3c2-4f7f-8e3a-d0a77d7a85fb
       version: -1
       name: Search XDR incidents for SolarStorm SUNBURST
-      description: Searches Demisto incidents
+      description: Search XDR incidents for SUNBURST
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "19"
+      - "76"
     scriptarguments:
       details: {}
       fromclosedate: {}
@@ -1979,13 +1979,13 @@ tasks:
     quietmode: 0
   "75":
     id: "75"
-    taskid: 6416c957-edd6-4d51-8bf3-eda76fb0e774
+    taskid: 4c0adce6-512a-4b48-8b81-03a6a4466946
     type: condition
     task:
-      id: 6416c957-edd6-4d51-8bf3-eda76fb0e774
+      id: 4c0adce6-512a-4b48-8b81-03a6a4466946
       version: -1
-      name: 'Is there additional IOCs? '
-      description: "Checks if there are additional IOCs from the playbook input."
+      name: 'Are there additional IOCs? '
+      description: Checks if there are additional IOCs from the playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -2016,7 +2016,90 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+  "76":
+    id: "76"
+    taskid: 8225e063-7013-47e5-83da-72e3b188b833
+    type: title
+    task:
+      id: 8225e063-7013-47e5-83da-72e3b188b833
+      version: -1
+      name: 'Hunt SolarStorm Behavior '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "77"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "77":
+    id: "77"
+    taskid: 0a1b5930-708e-4c6b-870e-d2adafdce0cf
+    type: regular
+    task:
+      id: 0a1b5930-708e-4c6b-870e-d2adafdce0cf
+      version: -1
+      name: Search XDR incidents for suspicious SolarStorm behavior
+      description: Search for XDR incident relates to suspicious SolarStorm behavior
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      details: {}
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id: {}
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query:
+        simple: 'xdralerts.name:"Malicious NetSetupSvc.dll loaded into svchost.exe"
+          or xdralerts.name:"ADFind queries Active Directory for Exchange groups"
+          or xdralerts.name:"Virtual Directory configuration access via PowerShell"
+          or xdralerts.name:"PowerShell dumps users and roles from Exchange server"
+          or xdralerts.name:"Unverified domain added to Azure AD" or xdralerts.name:"Domain
+          federation settings have been modified" or xdralerts.name:"Uncommon PowerShell
+          commands used to create or alter scheduled task parameters" '
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
