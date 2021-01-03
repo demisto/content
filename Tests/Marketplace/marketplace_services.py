@@ -762,7 +762,7 @@ class Pack(object):
             os.chdir(extract_destination_path)
             output_file = encrypted_zip_pack_path.replace(".zip", "_decrypted.zip")
             subprocess.call('chmod +x ./decryptor', shell=True)
-            full_command = f'./decryptor ./{encrypted_zip_pack_path} {output_file} {encryption_key}'
+            full_command = f'./decryptor {encrypted_zip_pack_path} {output_file} {encryption_key}'
             process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = process.communicate()
             print("\nstdout:\n")
