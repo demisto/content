@@ -865,5 +865,5 @@ view: |-
     }
   }
 tests:
-- Cortex XDR disconnected endpoints Test
+- No test
 fromversion: 5.5.0
