@@ -80,6 +80,31 @@ class Client:
         return self.http_request('GET', f'resourceGroups/{self.resource_group_name}/providers/Microsoft.Sql/servers/'
                                         f'{server_name}/databases/{db_name}/securityAlertPolicies/default')
 
+    @logger
+    def azure_sql_db_audit_policy_create_update(self, server_name: str, db_name: str,
+                                                policy_name: str,
+                                                state: str, audit_actions_groups: str,
+                                                is_azure_monitor_target_enabled: str,
+                                                is_storage_secondary_key_in_use: str,
+                                                queue_delay_ms: str, retention_days: str,
+                                                storage_account_access_key: str,
+                                                storage_account_subscription_id: str,
+                                                storage_endpoint: str):
+        arg_list = {
+
+        }
+        properties = {}
+        for arg_key, arg_val in arg_list.items():
+            if arg_val:
+                properties[arg_key] = arg_val
+
+        request_body = {'properties': properties} if properties else {}
+
+        return self.http_request(method='PUT', url_suffix=f'resourceGroups/{self.resource_group_name}/providers'
+                                                          f'/Microsoft.Sql/servers/{server_name}/databases/'
+                                                          f'{db_name}/securityAlertPolicies/default',
+                                 data=request_body)
+
 
 @logger
 def azure_sql_servers_list_command(client: Client) -> CommandResults:
@@ -191,8 +216,63 @@ def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_
 
 
 @logger
-def azure_sql_db_audit_policy_create_update_command(client: Client) -> CommandResults:
-    return CommandResults(readable_output='TODO')
+def azure_sql_db_audit_policy_create_update_command(client: Client, server_name: str, db_name: str, policy_name: str,
+                                                    state: str, audit_actions_groups: str,
+                                                    is_azure_monitor_target_enabled: str,
+                                                    isStorageSecondaryKeyInUse: str, queueDelayMs: str,
+                                                    retentionDays: str, storageAccountAccessKey: str,
+                                                    storageAccountSubscriptionId: str,
+                                                    storageEndpoint: str) -> CommandResults:
+    """azure_sql_db_audit_policy_list command: Returns a list of auditing settings of a database
+
+    :type client: ``Client``
+    :param client: AzureSQLManagement client to use
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains a scan status
+
+    :rtype: ``CommandResults``
+
+    Args:
+        server_name: server name for which we want to receive list of auditing settings
+        db_name: database for which we want to receive list of auditing settings
+        policy_name:
+        state:
+        audit_actions_groups:
+        is_azure_monitor_target_enabled:
+        isStorageSecondaryKeyInUse:
+        queueDelayMs:
+        retentionDays:
+        storageAccountAccessKey:
+        storageAccountSubscriptionId:
+        storageEndpoint:
+    """
+
+    audit_actions_groups = audit_actions_groups if not audit_actions_groups else argToList(audit_actions_groups)
+
+    response = client.azure_sql_db_audit_policy_create_update(server_name, db_name, policy_name, state,
+                                                              audit_actions_groups, is_azure_monitor_target_enabled,
+                                                              isStorageSecondaryKeyInUse, queueDelayMs, retentionDays,
+                                                              storageAccountAccessKey, storageAccountSubscriptionId,
+                                                              storageEndpoint)
+    response_hr = copy.deepcopy(response)
+    for db in response_hr:
+        properties = db.get('properties', {})
+        if properties:
+            db.update(properties)
+            del db['properties']
+
+    human_readable = tableToMarkdown(name='Create Or Update Database Auditing Settings', t=response_hr,
+                                     headerTransform=pascalToSpace, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='AzureSQL.DbAuditPolicy',
+        outputs_key_field='id',
+        outputs=response_hr,
+        raw_response=response
+    )
 
 
 @logger

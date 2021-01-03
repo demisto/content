@@ -1,0 +1,20 @@
+{
+    "value": [
+        {
+            "kind": "v12.0",
+            "properties": {
+                "administratorLogin": "admin",
+                "version": "12.0",
+                "state": "Ready",
+                "fullyQualifiedDomainName": "sql.database.windows.net",
+                "privateEndpointConnections": [],
+                "publicNetworkAccess": "Enabled"
+            },
+            "location": "eastus",
+            "tags": {},
+            "id": "/subscriptions/1234567890/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration",
+            "name": "sqlintegration",
+            "type": "Microsoft.Sql/servers"
+        }
+    ]
+}

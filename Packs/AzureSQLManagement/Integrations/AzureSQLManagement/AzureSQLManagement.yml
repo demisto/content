@@ -265,7 +265,8 @@ script:
       description: Number of days to keep in the Threat Detection audit logs.
       type: Number
     - contextPath: AzureSQL.DBThreatPolicy.storageAccountAccessKey
-      description: Specifies the identifier key of the Threat Detection audit storage account.
+      description: Specifies the identifier key of the Threat Detection audit storage
+        account.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.storageEndpoint
       description: Threat Detection audit storage account.
@@ -277,12 +278,146 @@ script:
       description: list of e-mail addresses to which the alert is sent.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.disabledAlerts
-      description:  list of alerts that are disabled, or empty string to disable no alerts.
+      description: list of alerts that are disabled, or empty string to disable no
+        alerts.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.useServerDefault
       description: whether to use the default server policy.
       type: Unknown
-dockerimage: demisto/crypto:1.0.0.14297
+  - arguments:
+    - default: false
+      description: Server name
+      isArray: false
+      name: server_name
+      required: true
+      secret: false
+    - default: false
+      description: Database name
+      isArray: false
+      name: db_name
+      required: true
+      secret: false
+    - default: false
+      description: Policy name
+      isArray: false
+      name: policy_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: set state 'Enable' or 'Disable'
+      isArray: false
+      name: state
+      predefined:
+      - Enable
+      - Disable
+      required: false
+      secret: false
+    - default: false
+      description: Actions-Groups and Actions to audit.
+      isArray: true
+      name: audit_actions_groups
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is audit events are sent to Azure Monitor
+      isArray: false
+      name: isAzureMonitorTargetEnabled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Is storageAccountAccessKey value is the storage's secondary key
+      isArray: false
+      name: isStorageSecondaryKeyInUse
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Time in milliseconds that can elapse before audit actions are forced
+        to be processed. The default minimum value is 1000 (1 second).
+      isArray: false
+      name: queueDelayMs
+      required: false
+      secret: false
+    - default: false
+      description: Number of days to keep in the audit logs.
+      isArray: false
+      name: retentionDays
+      required: false
+      secret: false
+    - default: false
+      description: identifier key of the auditing storage account
+      isArray: false
+      name: storageAccountAccessKey
+      required: false
+      secret: false
+    - default: false
+      description: storage subscription Id
+      isArray: false
+      name: storageAccountSubscriptionId
+      required: false
+      secret: false
+    - default: false
+      description: Storage endpoint. If state is Enabled, storageEndpoint or isAzureMonitorTargetEnabled
+        is required.
+      isArray: false
+      name: storageEndpoint
+      required: false
+      secret: false
+    deprecated: false
+    description: Create or update database's auditing policy.
+    execution: false
+    name: azure-sql-db-audit-policy-create-update
+    outputs:
+    - contextPath: AzureSQL.DbAuditPolicy.kind
+      description: Kind of audit policy.
+      type: String
+    - contextPath: AzureSQL.DbAuditPolicy.id
+      description: Audit policy id
+      type: String
+    - contextPath: AzureSQL.DbAuditPolicy.name
+      description: Audit policy name
+      type: String
+    - contextPath: AzureSQL.DbAuditPolicy.type
+      description: Database type.
+      type: String
+    - contextPath: AzureSQL.DbAuditPolicy.isAzureMonitorTargetEnabled
+      description: Whether audit events are sent to Azure Monitor. the value is "
+        Enabled" or "Disabled".
+      type: Boolean
+    - contextPath: AzureSQL.DbAuditPolicy.retentionDays
+      description: Number of days to keep in the audit logs in the storage account
+      type: Number
+    - contextPath: AzureSQL.DbAuditPolicy.state
+      description: Policy state
+      type: String
+    - contextPath: AzureSQL.DbAuditPolicy.storageAccountSubscriptionId
+      description: storage subscription Id.
+      type: String
+    - contextPath: AzureSQL.DbAuditPolicy.auditActionsAndGroups
+      description: audit Actions And Groups to audit.
+      type: Unknown
+    - contextPath: AzureSQL.DbAuditPolicy.isStorageSecondaryKeyInUse
+      description: Is storageAccountAccessKey value is the storage's secondary key
+      type: String
+    - contextPath: AzureSQL.DbAuditPolicy.queueDelayMs
+      description: Time in milliseconds that can elapse before audit actions are forced
+        to be processed.
+      type: String
+    - contextPath: AzureSQL.DbAuditPolicy.storageAccountAccessKey
+      description: identifier key of the auditing storage account
+      type: String
+    - contextPath: AzureSQL.DbAuditPolicy.storageEndpoint
+      description: Storage endpoint.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false
   longRunning: false
