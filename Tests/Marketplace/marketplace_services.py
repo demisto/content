@@ -754,22 +754,16 @@ class Pack(object):
     def decrypt_pack(self, encrypted_zip_pack_path, encryption_key):
         try:
             current_working_dir = os.getcwd()
-            extract_destination_path = f'{current_working_dir}/decrypt_pack'
+            extract_destination_path = f'{current_working_dir}/decrypt_pack_dir'
             os.mkdir(extract_destination_path)
 
             shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
             os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
             os.chdir(extract_destination_path)
-            output_file = encrypted_zip_pack_path.replace(".zip", "_decrypted.zip")
             subprocess.call('chmod +x ./decryptor', shell=True)
-            if os.path.isfile(path="./decryptor"):
-                print("./decryptor is a file")
-            if os.path.isfile(path=encrypted_zip_pack_path):
-                print(f"encrypted_zip_pack_path is a file")
-            if os.path.isfile(path=output_file):
-                print(f"output file is a file")
 
-            full_command = f'./decryptor {encrypted_zip_pack_path} {output_file} {encryption_key}'
+            full_command = f'./decryptor {encrypted_zip_pack_path} {extract_destination_path}/decrypt_pack' \
+                           f' {encryption_key}'
             process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = process.communicate()
             print("\nstdout:\n")
