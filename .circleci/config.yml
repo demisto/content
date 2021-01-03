@@ -46,7 +46,7 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.12.1"
+      CONTENT_VERSION: "21.1.0"
       SERVER_VERSION: "6.0.0"
       # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
       DONT_CACHE_LAST_RESPONSE: "true"
