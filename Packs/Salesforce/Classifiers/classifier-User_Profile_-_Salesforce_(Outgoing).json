@@ -58,7 +58,7 @@
      "complex": null,
      "simple": "profileid"
     },
-     "timezonesidkey": {
+    "timezonesidkey": {
      "complex": null,
      "simple": "timezonesidkey"
     },
@@ -67,34 +67,36 @@
      "simple": "localesidkey"
     },
     "alias": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "email",
-						"transformers": [
-							{
-								"args": {
-									"from": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "0"
-										}
-									},
-									"to": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "8"
-										}
-									}
-								},
-								"operator": "substring"
-							}
-						]
-					},
-					"simple": ""
-				}
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "email",
+      "transformers": [
+       {
+        "args": {
+         "from": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0"
+          }
+         },
+         "to": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "8"
+          }
+         }
+        },
+        "operator": "substring"
+       }
+      ]
+     },
+     "simple": ""
+    }
    }
   }
  },
