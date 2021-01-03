@@ -62,8 +62,8 @@ tasks:
     task:
       id: 3c52dece-b760-4787-8b61-d18afd68048c
       version: -1
-      name: 'Cortex XDR disconnected endpoints '
-      playbookName: 'Cortex XDR disconnected endpoints '
+      name: 'Cortex XDR disconnected endpoints'
+      playbookName: 'Cortex XDR disconnected endpoints'
       type: playbook
       iscommand: false
       brand: ""
