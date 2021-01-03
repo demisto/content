@@ -1,0 +1,22 @@
+{
+    "autorun": false,
+    "color": "#6200EA",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "XDR Device Control Violations",
+    "layout": "75653ac3-f752-44f4-8b48-e55ca224ef55",
+    "locked": false,
+    "name": "XDR Device Control Violations",
+    "playbookId": "2805732f-8502-402e-8647-fbda08c756c5",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.0.0"
+}
