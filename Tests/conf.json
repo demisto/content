@@ -3280,7 +3280,8 @@
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Archer-Test-Playbook": "Issue 26851",
-        "Carbon Black Live Response Test": "Issue 28237"
+        "Carbon Black Live Response Test": "Issue 28237",
+        "Carbon Black Enterprise Protection V2 Test": "Issue 32322"
     },
     "skipped_integrations": {
 
