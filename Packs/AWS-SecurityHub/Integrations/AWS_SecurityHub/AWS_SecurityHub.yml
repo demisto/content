@@ -442,15 +442,6 @@ script:
       name: last_observed_at_end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
-      required: false
-      secret: false
     - default: false
       description: A start date for the date filter.
       isArray: false
@@ -463,15 +454,6 @@ script:
       name: created_at_end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
-      required: false
-      secret: false
     - default: false
       description: A start date for the date filter.
       isArray: false
@@ -482,15 +464,6 @@ script:
       description: An end date for the date filter.
       isArray: false
       name: updated_at_end
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
       required: false
       secret: false
     - default: false
@@ -879,15 +852,6 @@ script:
       name: process_launched_at_end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
-      required: false
-      secret: false
     - default: false
       description: A start date for the date filter.
       isArray: false
@@ -898,15 +862,6 @@ script:
       description: An end date for the date filter.
       isArray: false
       name: process_terminated_at_end
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
       required: false
       secret: false
     - default: false
@@ -970,15 +925,6 @@ script:
       description: An end date for the date filter.
       isArray: false
       name: threat_intel_indicator_last_observed_at_end
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
       required: false
       secret: false
     - default: false
@@ -1231,15 +1177,6 @@ script:
       name: resource_aws_ec2_instance_launched_at_end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
-      required: false
-      secret: false
     - default: false
       description: The string filter value.
       isArray: false
@@ -1320,15 +1257,6 @@ script:
       name: resource_aws_iam_access_key_created_at_end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
-      required: false
-      secret: false
     - default: false
       description: The string filter value.
       isArray: false
@@ -1390,15 +1318,6 @@ script:
       description: An end date for the date filter.
       isArray: false
       name: resource_container_launched_at_end
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
       required: false
       secret: false
     - default: false
@@ -1552,15 +1471,6 @@ script:
       description: An end date for the date filter.
       isArray: false
       name: note_updated_at_end
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
       required: false
       secret: false
     - default: false
@@ -2564,15 +2474,6 @@ script:
       name: last_observed_at_end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
-      required: false
-      secret: false
     - default: false
       description: A start date for the date filter.
       isArray: false
@@ -2585,15 +2486,6 @@ script:
       name: created_at_end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
-      required: false
-      secret: false
     - default: false
       description: A start date for the date filter.
       isArray: false
@@ -2604,15 +2496,6 @@ script:
       description: An end date for the date filter.
       isArray: false
       name: updated_at_end
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
       required: false
       secret: false
     - default: false
@@ -3001,15 +2884,6 @@ script:
       name: process_launched_at_end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
-      required: false
-      secret: false
     - default: false
       description: A start date for the date filter.
       isArray: false
@@ -3020,15 +2894,6 @@ script:
       description: An end date for the date filter.
       isArray: false
       name: process_terminated_at_end
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
       required: false
       secret: false
     - default: false
@@ -3092,15 +2957,6 @@ script:
       description: An end date for the date filter.
       isArray: false
       name: threat_intel_indicator_last_observed_at_end
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
       required: false
       secret: false
     - default: false
@@ -3353,15 +3209,6 @@ script:
       name: resource_aws_ec2_instance_launched_at_end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
-      required: false
-      secret: false
     - default: false
       description: The string filter value.
       isArray: false
@@ -3442,15 +3289,6 @@ script:
       name: resource_aws_iam_access_key_created_at_end
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
-      required: false
-      secret: false
     - default: false
       description: The string filter value.
       isArray: false
@@ -3512,15 +3350,6 @@ script:
       description: An end date for the date filter.
       isArray: false
       name: resource_container_launched_at_end
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
       required: false
       secret: false
     - default: false
@@ -3674,15 +3503,6 @@ script:
       description: An end date for the date filter.
       isArray: false
       name: note_updated_at_end
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: A date range unit for the date filter.
-      isArray: false
-      name: date_range_unit
-      predefined:
-      - DAYS
       required: false
       secret: false
     - default: false
