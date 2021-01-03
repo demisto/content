@@ -4,7 +4,7 @@ from AnsibleTower import Client, delete_host, job_template_launch, create_ad_hoc
 from test_data.test_responses import JOB_TEMPLATE_LAUNCH_RES, ADHOC_COMMAND_LAUNCH_RES, JOB_TEMPLATE_EXPECTED, \
     ADHOC_COMMAND_LAUNCH_EXPECTED
 
-API_URL = "https://test"
+API_URL = "https://example"
 
 test_data = [
     (
@@ -66,7 +66,7 @@ def test_api_request_remove_fields():
 
      """
     client = Client(API_URL, 'username', 'password', True, False)
-    url = "https://test/api/v2/inventories/"
+    url = "https://example/api/v2/inventories/"
     for response_mock in remove_fields_test_responses:
         with requests_mock.Mocker() as m:
             m.get(url, status_code=200, json=response_mock)
@@ -76,7 +76,7 @@ def test_api_request_remove_fields():
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, output_prefix', test_data)
-def test_create_host(command, args, response, expected_result, output_prefix, mocker):
+def test_check_command_result_output(command, args, response, expected_result, output_prefix, mocker):
     """
     Given:
         - parameters to launch

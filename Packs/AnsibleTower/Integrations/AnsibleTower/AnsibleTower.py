@@ -42,9 +42,17 @@ class Client(BaseClient):
 
 
 def output_data(response: dict) -> dict:
+    """
+
+    Args:
+        response: raw json api response
+
+    Returns:
+        the response without irrelevant fields
+    """
     remove_fields = {'ask_diff_mode_on_launch', 'ask_variables_on_launch', 'ask_limit_on_launch',
                      'ask_tags_on_launch', 'ask_skip_tags_on_launch', 'ask_job_type_on_launch',
-                     'ask_verbosity_on_launch', 'ask_inventory_on_launch', 'ask_credential_on_launch'}
+                     'ask_verbosity_on_launch', 'ask_inventory_on_launch', 'ask_credential_on_launch', 'job_env'}
     context_data = {}
     for key in response:
         if key not in remove_fields:
@@ -224,7 +232,7 @@ def job_stdout(client: Client, args: dict) -> CommandResults:
     params = {"format": "json"}
     response = client.api_request(method='GET', url_suffix=url_suffix, params=params)
     response['job_id'] = job_id
-    output_content = f'### Job {job_id} output ### \n\n' + response.pop('content') + '\n' + tableToMarkdown(name='', t=response)
+    output_content = f'### Job {job_id} output ### \n\n' + response.pop('content') + '\n'
     return CommandResults(
         outputs_prefix='AnsibleAWX.JobStdout',
         outputs_key_field='job_id',
@@ -329,8 +337,7 @@ def ad_hoc_command_stdout(client: Client, args: dict) -> CommandResults:
     params = {"format": "json"}
     response = client.api_request(method='GET', url_suffix=url_suffix, params=params)
     response['command_id'] = command_id
-    output_content = f'### Ad hoc command {command_id} output ### \n\n' + response.pop('content') + '\n' + \
-                     tableToMarkdown(name='', t=response)
+    output_content = f'### Ad hoc command {command_id} output ### \n\n' + response.pop('content') + '\n'
     return CommandResults(
         outputs_prefix='AnsibleAWX.AdhocCommandStdout',
         outputs_key_field='job_id',
