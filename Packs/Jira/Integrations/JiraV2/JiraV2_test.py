@@ -248,14 +248,16 @@ def test_update_remote_system_delta(mocker):
     )
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
-    res = update_remote_system_command({'incidentChanged': '17757', 'remoteId': '17757', 'delta': {'summary': 'changes'}})
+    res = update_remote_system_command(
+        {'incidentChanged': '17757', 'remoteId': '17757', 'delta': {'summary': 'changes'}})
     assert res == '17757'
 
 
 def test_get_mapping_fields():
     from JiraV2 import get_mapping_fields_command
     res = get_mapping_fields_command()
-    assert list(res.scheme_types_mappings[0].fields.keys()) == ['issueId', 'summary', 'description', 'labels', 'priority', 'dueDate', 'assignee', 'status']
+    assert list(res.scheme_types_mappings[0].fields.keys()) == ['issueId', 'summary', 'description', 'labels',
+                                                                'priority', 'dueDate', 'assignee', 'status']
 
 
 def test_get_new_attachment_return_result(mocker):
@@ -278,6 +280,7 @@ def test_get_new_attachment_return_result(mocker):
     class file:
         def __init__(self):
             self.content = b'content'
+
     file_content = file()
     mocker.patch(
         'JiraV2.jira_req',
@@ -307,6 +310,7 @@ def test_get_new_attachment_without_return_new_attachment(mocker):
     class file:
         def __init__(self):
             self.content = b'content'
+
     file_content = file()
     mocker.patch(
         'JiraV2.jira_req',
@@ -365,7 +369,8 @@ def test_create_update_incident_from_ticket(mocker):
     mocker.patch.object(demisto, 'debug')
     assert res['id'] == '17757'
     assert res['issue']
-    assert list(res['fields'].keys()) == ['assignee', 'priority', 'status', 'project', 'reporter', 'summary', 'description', 'duedate', 'labels', 'updated', 'created', 'lastViewed']
+    assert list(res['fields'].keys()) == ['assignee', 'priority', 'status', 'project', 'reporter', 'summary',
+                                          'description', 'duedate', 'labels', 'updated', 'created', 'lastViewed']
 
 
 def test_update_remote_system(mocker):
@@ -414,7 +419,8 @@ def test_fetch_incident_with_getting_attachments_and_comments(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
     mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
-    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
+    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True,
+                                                         'id_offset': '17803', 'query': 'status!=done'})
     mocker.patch(
         'JiraV2.get_comments_command',
         return_value=('', '', {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00'}]})
@@ -428,8 +434,8 @@ def test_fetch_incident_with_getting_attachments_and_comments(mocker):
         return_value=('', '', GET_JIRA_ISSUE_RES)
     )
     res = fetch_incidents('status!=done', id_offset=1, should_get_attachments=True,
-                                should_get_comments=True, should_mirror_in=False, should_mirror_out=False,
-                                comment_tag='', attachment_tag='')
+                          should_get_comments=True, should_mirror_in=False, should_mirror_out=False,
+                          comment_tag='', attachment_tag='')
     assert list(res[0]['attachment'][0].keys()) == ['path', 'name']
     assert len(res[0]['labels'][12]['value']) > 0
 
@@ -449,7 +455,9 @@ def test_fetch_incident_with_getting_attachments(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
     mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
-    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
+    mocker.patch.object(demisto, 'params',
+                        return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset': '17803',
+                                      'query': 'status!=done'})
     mocker.patch(
         'JiraV2.get_attachments',
         return_value=[{'FileID': 1, 'File': 'name', 'Type': 'file'}]
@@ -459,8 +467,8 @@ def test_fetch_incident_with_getting_attachments(mocker):
         return_value=('', '', GET_JIRA_ISSUE_RES)
     )
     res = fetch_incidents('status!=done', id_offset=1, should_get_attachments=True,
-                                should_get_comments=False, should_mirror_in=False, should_mirror_out=False,
-                                comment_tag='', attachment_tag='')
+                          should_get_comments=False, should_mirror_in=False, should_mirror_out=False,
+                          comment_tag='', attachment_tag='')
     assert list(res[0]['attachment'][0].keys()) == ['path', 'name']
     assert res[0]['labels'][12]['value'] == '[]'
 
@@ -480,7 +488,9 @@ def test_fetch_incident_with_getting_comments(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
     mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
-    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
+    mocker.patch.object(demisto, 'params',
+                        return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset': '17803',
+                                      'query': 'status!=done'})
     mocker.patch(
         'JiraV2.get_comments_command',
         return_value=('', '', {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00'}]})
@@ -490,8 +500,8 @@ def test_fetch_incident_with_getting_comments(mocker):
         return_value=('', '', GET_JIRA_ISSUE_RES)
     )
     res = fetch_incidents('status!=done', id_offset=1, should_get_attachments=False,
-                                should_get_comments=True, should_mirror_in=False, should_mirror_out=False,
-                                comment_tag='', attachment_tag='')
+                          should_get_comments=True, should_mirror_in=False, should_mirror_out=False,
+                          comment_tag='', attachment_tag='')
     assert res[0]['attachment'] == []
     assert len(res[0]['labels'][12]['value']) > 0
 
@@ -510,7 +520,9 @@ def test_fetch_incident_with_comments_when_exception_is_raised(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
     mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
-    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
+    mocker.patch.object(demisto, 'params',
+                        return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset': '17803',
+                                      'query': 'status!=done'})
     mocker.patch(
         'JiraV2.get_comments_command',
         return_value=('', '', {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00'}]})
@@ -520,8 +532,8 @@ def test_fetch_incident_with_comments_when_exception_is_raised(mocker):
         return_value=TimeoutError,
     )
     res = fetch_incidents('status!=done', id_offset=1, should_get_attachments=False,
-                                should_get_comments=True, should_mirror_in=False, should_mirror_out=False,
-                                comment_tag='', attachment_tag='')
+                          should_get_comments=True, should_mirror_in=False, should_mirror_out=False,
+                          comment_tag='', attachment_tag='')
     assert res[0]['labels'][12]['value'] == '[]'
 
 
@@ -542,7 +554,9 @@ def test_fetch_incident_mirror_direction(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
     mocker.patch('JiraV2.run_query', return_value=QUERY_ISSUE_RESPONSE)
-    mocker.patch.object(demisto, 'params', return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset':'17803', 'query': 'status!=done'})
+    mocker.patch.object(demisto, 'params',
+                        return_value={'fetch_attachments': True, 'fetch_comments': True, 'id_offset': '17803',
+                                      'query': 'status!=done'})
     mocker.patch(
         'JiraV2.get_comments_command',
         return_value=('', '', {'comments': [{'updated': '2071-12-21 12:29:05.529000+00:00'}]})
@@ -552,8 +566,8 @@ def test_fetch_incident_mirror_direction(mocker):
         return_value=('', '', GET_JIRA_ISSUE_RES)
     )
     res = fetch_incidents('status!=done', id_offset=1, should_get_attachments=False,
-                                should_get_comments=True, should_mirror_in=True, should_mirror_out=True,
-                                comment_tag='', attachment_tag='')
+                          should_get_comments=True, should_mirror_in=True, should_mirror_out=True,
+                          comment_tag='', attachment_tag='')
     assert json.loads(res[0]['rawJSON'])['mirror_direction'] == 'Both'
 
 
@@ -566,7 +580,7 @@ def test_handle_incoming_closing_incident(mocker):
     Then
         - Returned an object for close its incident
     """
-    from JiraV2 import handle_incoming_closing_incident, fetch_incidents
+    from JiraV2 import handle_incoming_closing_incident
     from test_data.expected_results import GET_JIRA_ISSUE_RES
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')

@@ -302,7 +302,8 @@ def get_mirror_type(should_mirror_in, should_mirror_out):
     return mirror_type
 
 
-def create_incident_from_ticket(issue, should_get_attachments, should_get_comments, should_mirror_in, should_mirror_out, comment_tag, attachment_tag):
+def create_incident_from_ticket(issue, should_get_attachments, should_get_comments, should_mirror_in, should_mirror_out,
+                                comment_tag, attachment_tag):
     labels = [
         {'type': 'issue', 'value': json.dumps(issue)}, {'type': 'id', 'value': str(issue.get('id'))},
         {'type': 'lastViewed', 'value': str(demisto.get(issue, 'fields.lastViewed'))},
@@ -384,7 +385,7 @@ def create_update_incident_from_ticket(issue: dict) -> dict:
             'status': {'name': str(demisto.get(issue, 'fields.status.name'))},
             'project': {'name': str(demisto.get(issue, 'fields.project.name'))},
             'reporter': {'displayName': str(demisto.get(issue, 'fields.reporter.displayName')),
-                        'emailAddress': str(issue['fields']['reporter'].get('emailAddress', ''))},
+                         'emailAddress': str(issue['fields']['reporter'].get('emailAddress', ''))},
             'summary': str(demisto.get(issue, 'fields.summary')),
             'description': str(demisto.get(issue, 'fields.description')),
             'duedate': str(demisto.get(issue, 'fields.duedate')),
@@ -607,7 +608,6 @@ def add_comment(issue_id, comment, visibility=''):
 
 
 def add_comment_command(issue_id, comment, visibility=''):
-
     data = add_comment(issue_id, comment, visibility)
     md_list = []
     if not isinstance(data, list):
@@ -729,7 +729,7 @@ def get_entries_for_fetched_incident(ticket_id, should_get_comments, should_get_
     :param should_get_attachments: if 'True', return ticket's attachments
     :return: incident's entries.
     """
-    entries = {'comments': [], 'attachments': []}
+    entries: dict = {'comments': [], 'attachments': []}
     try:
         _, _, raw_response = get_issue(issue_id=ticket_id)
         entries = get_incident_entries(raw_response, '', False, should_get_comments, should_get_attachments)
@@ -763,7 +763,8 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
                 continue
             id_offset = max(int(id_offset), ticket_id)
             incidents.append(create_incident_from_ticket(ticket, should_get_attachments, should_get_comments,
-                                                         should_mirror_in, should_mirror_out, comment_tag, attachment_tag))
+                                                         should_mirror_in, should_mirror_out, comment_tag,
+                                                         attachment_tag))
 
     demisto.setLastRun({"idOffset": id_offset})
     return incidents
@@ -807,7 +808,7 @@ def get_attachments(attachments, incident_modified_date, only_new=True):
     return file_results
 
 
-def get_comments(comments, incident_modified_date,  only_new=True):
+def get_comments(comments, incident_modified_date, only_new=True):
     """
     Get issue's comments
     :param comments: the issue's comments
@@ -828,7 +829,8 @@ def get_comments(comments, incident_modified_date,  only_new=True):
         return returned_comments
 
 
-def get_incident_entries(issue, incident_modified_date, only_new=True, should_get_comments=True, should_get_attachments=True):
+def get_incident_entries(issue, incident_modified_date, only_new=True, should_get_comments=True,
+                         should_get_attachments=True):
     """
     This function get comments and attachments from Jira Ticket, if specified, for a Jira incident.
     :param issue: the incident to get its entries
@@ -838,7 +840,7 @@ def get_incident_entries(issue, incident_modified_date, only_new=True, should_ge
     :param should_get_attachments: if 'True' the returned entries will contain attachments
     :return: the incident's comments and attachments
     """
-    entries = {'comments': [], 'attachments': []}
+    entries: dict = {'comments': [], 'attachments': []}
     if should_get_comments:
         _, _, comments_content = get_comments_command(issue['id'])
         if comments_content:
@@ -877,7 +879,7 @@ def handle_incoming_closing_incident(incident_data):
     :param incident_data: the data of an incident
     :return: the object using to close the incident in Demito
     """
-    closing_entry = {}  # type: Dict
+    closing_entry: dict = {}
     if incident_data.get('fields').get('status').get('name') == 'Done':
         demisto.debug(f"Closing Jira issue {incident_data.get('id')}")
         closing_entry = {
@@ -898,16 +900,18 @@ def update_remote_system_command(args):
         1. Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
 
     Args:
-        args: A dictionary contains the next data regarding a modified incident: data, entries, incident_changed, remote_incident_id, inc_status, delta
-
+        args: A dictionary contains the next data regarding a modified incident: data, entries, incident_changed,
+         remote_incident_id, inc_status, delta
 
     Returns: The incident id that was modified.
     """
     remote_args = UpdateRemoteSystemArgs(args)
     entries = remote_args.entries
     remote_id = remote_args.remote_incident_id
-    demisto.debug(f'Update remote system check if need to update: remoteId: {remote_id}, incidentChanged: {remote_args.incident_changed}, data:'
-                  f' {remote_args.data}, entries: {entries}')
+    demisto.debug(
+        f'Update remote system check if need to update: remoteId: {remote_id}, incidentChanged: '
+        f'{remote_args.incident_changed}, data:'
+        f' {remote_args.data}, entries: {entries}')
     try:
         if remote_args.delta and remote_args.incident_changed:
             demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update Jira '
@@ -977,7 +981,8 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
 
             closed_issue = handle_incoming_closing_incident(incident_update)
             if closed_issue:
-                demisto.debug(f'Close incident with ID: {parsed_args.remote_incident_id} this issue was marked as "Done"')
+                demisto.debug(
+                    f'Close incident with ID: {parsed_args.remote_incident_id} this issue was marked as "Done"')
                 return GetRemoteDataResponse(incident_update, [closed_issue])
 
             entries = get_incident_entries(issue_raw_response, incident_modified_date)
