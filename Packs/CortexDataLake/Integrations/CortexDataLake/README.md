@@ -14,7 +14,7 @@ This integration was integrated and tested with version 2 of Cortex Data Lake
 3. Go to __Settings__ > __ABOUT__ > __License__ to get the `Customer Name`.
 4. Insert the `license ID` and the `Customer Name` in the required fields and complete the authentication process in order to get the __Authentication Token__  __Registration ID__ __Encryption Key__
 5. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-6. Search for Palo Alto Networks Cortex v2.
+6. Search for Cortex Data Lake.
 7. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Authentication Token__: From the authentication process
