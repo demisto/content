@@ -1,8 +1,2 @@
 [file:IAM_-_Test_Playbook.yml]
 ignore=auto-test
-
-[file:classifier-mapper-outgoing-Okta-User-Profile.json]
-ignore=MP105
-
-[file:classifier-mapper-incoming-User-Profile-Okta.json]
-ignore=MP105

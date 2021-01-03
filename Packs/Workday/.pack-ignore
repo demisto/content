@@ -1,5 +1,2 @@
 [file:Workday_IAM.yml]
 ignore=IN126
-
-[file:classifier-IAM_Sync_User_-_Workday.json]
-ignore=MP105
