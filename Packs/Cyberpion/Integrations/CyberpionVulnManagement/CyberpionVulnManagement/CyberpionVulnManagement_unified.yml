@@ -25,17 +25,17 @@ configuration:
   name: apikey
   required: true
   type: 4
-- defaultvalue: '65'
-  display: Score threshold for IP reputation command
-  additionalinfo: Set this to determine the HelloWorld score that will determine if
+- additionalinfo: Set this to determine the HelloWorld score that will determine if
     an IP is malicious (0-100)
+  defaultvalue: '65'
+  display: Score threshold for IP reputation command
   name: threshold_ip
   required: false
   type: 0
-- defaultvalue: '65'
-  display: Score threshold for domain reputation command
-  additionalinfo: Set this to determine the HelloWorld score that will determine if
+- additionalinfo: Set this to determine the HelloWorld score that will determine if
     a domain is malicious (0-100)
+  defaultvalue: '65'
+  display: Score threshold for domain reputation command
   name: threshold_domain
   required: false
   type: 0
@@ -47,9 +47,9 @@ configuration:
   - CLOSED
   required: false
   type: 15
-- display: Fetch alerts with type
-  additionalinfo: Comma-separated list of types of alerts to fetch. Types might change
+- additionalinfo: Comma-separated list of types of alerts to fetch. Types might change
     over time. Some examples are 'Bug' and 'Vulnerability'
+  display: Fetch alerts with type
   name: alert_type
   required: false
   type: 0
@@ -77,6 +77,7 @@ configuration:
   required: false
   type: 8
 description: This is the Hello World integration for getting started.
+detaileddescription: ''
 display: CyberpionVulnManagement
 name: CyberpionVulnManagement
 script:
@@ -219,18 +220,26 @@ script:
     - contextPath: HelloWorld.Alert.alert_status
       description: Alert status. Can be 'ACTIVE' or 'CLOSED'.
       type: String
-  - name: ip
-    arguments:
-    - name: ip
-      default: true
+  - arguments:
+    - default: true
       description: List of IPs.
       isArray: true
+      name: ip
       required: true
-    - name: threshold
+      secret: false
+    - default: false
+      defaultValue: '65'
       description: If the IP has reputation above the threshold then the IP defined
         as malicious. If threshold not set, then threshold from instance configuration
         is used.
-      defaultValue: 65
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Return IP information and reputation
+    execution: false
+    name: ip
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -347,19 +356,26 @@ script:
     - contextPath: IP.ASN
       description: The autonomous system name for the IP address.
       type: String
-    description: Return IP information and reputation
-  - name: domain
-    arguments:
-    - name: domain
-      default: true
+  - arguments:
+    - default: true
       description: List of Domains.
       isArray: true
+      name: domain
       required: true
-    - name: threshold
+      secret: false
+    - default: false
+      defaultValue: '65'
       description: If the domain has reputation above the threshold then the domain
         defined as malicious. If threshold not set, then threshold from instance configuration
         is used.
-      defaultValue: 65
+      isArray: false
+      name: threshold
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns Domain information and reputation.
+    execution: false
+    name: domain
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -484,7 +500,6 @@ script:
     - contextPath: HelloWorld.Domain.zipcode
       description: Domain admin zipcode.
       type: Unknown
-    description: Returns Domain information and reputation.
   - arguments:
     - default: false
       description: Asset to start the scan against.
@@ -589,16 +604,18 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: string
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-defaultclassifier: HelloWorld
-defaultmapperin: HelloWorld-mapper
-fromversion: 5.0.0
+image: data:image/png;base64,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
 tests:
 - No tests (auto formatted)
+defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
+fromversion: 5.0.0

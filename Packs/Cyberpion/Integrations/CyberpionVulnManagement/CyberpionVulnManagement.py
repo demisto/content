@@ -22,7 +22,7 @@ HelloWorld API
 
 The HelloWorld API is a simple API that shows a realistic use case for an XSOAR
 integration. It's actually a real API that is available to the following URL:
-https://soar.mastersofhack.com - if you need an API Key to test it out please
+ - if you need an API Key to test it out please
 reach out to your Cortex XSOAR contacts.
 
 This API has a few basic functions:
