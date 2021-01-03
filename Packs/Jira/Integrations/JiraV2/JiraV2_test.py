@@ -57,14 +57,15 @@ def test_create_issue_command_after_fix_mandatory_args_issue(mocker, args):
 def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, args):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, "results")
-    mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(demisto, 'info')
     from JiraV2 import create_issue_command
-    try:
+    with pytest.raises(SystemExit) as e:
         # when there are missing arguments, an Exception is raised to the user
         create_issue_command()
-    except Exception as e:
-        assert str(e) == 'You must provide at least one of the following: project_key or project_name'
+    assert e
+    assert demisto.results.call_args[0][0]['Contents'] == \
+           'You must provide at least one of the following: project_key or project_name'
 
 
 def test_issue_query_command_no_issues(mocker):
