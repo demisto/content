@@ -2112,6 +2112,7 @@ tasks:
       id: efb2c07f-c31b-478d-8074-460011014ec8
       version: -1
       name: Found flows relate to SolarWinds?
+      description: Checks if found any risky flows relate to SolarWinds
       type: condition
       iscommand: false
       brand: ""
@@ -2259,6 +2260,7 @@ tasks:
       id: 9d66b70c-9ac8-4f0b-8d30-786e6fbd1a2c
       version: -1
       name: Found vulnerable SolarWinds server?
+      description: Checks if Found vulnerable SolarWinds server
       type: condition
       iscommand: false
       brand: ""
@@ -2297,7 +2299,8 @@ tasks:
     task:
       id: 19541626-dcaf-4f4a-89a2-45d193c85535
       version: -1
-      name: Block vulnerable SolarWinds Server Automatically?
+      name: Block vulnerable SolarWinds server automatically?
+      description: Checks if block the vulnerable SolarWinds server automatically according to playbook input
       type: condition
       iscommand: false
       brand: ""
@@ -2470,6 +2473,7 @@ tasks:
       id: 9b7aec71-0f58-4d7c-8d61-b85d8f52f681
       version: -1
       name: 'Is Expanse enabled? '
+      description: Checks if Expanse instance is enabled
       type: condition
       iscommand: false
       brand: ""
