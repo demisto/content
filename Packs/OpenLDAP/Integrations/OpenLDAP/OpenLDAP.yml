@@ -44,12 +44,12 @@ configuration:
   name: user_filter_class
   required: false
   type: 0
-- display: User Defined Attributes
+- additionalinfo: User attributes will be added to the user filter in `ad-authenticate-and-roles`.
+    Attributes should be in the format "attrA=valA,attrB=valB,...".
+  display: User Defined Attributes
   name: custom_attributes
   required: false
   type: 0
-  additionalinfo: User attributes will be added to the user filter in `ad-authenticate-and-roles`.
-    Attributes should be in the format "attrA=valA,attrB=valB,...".
 - defaultvalue: uid
   display: User Unique Identifier Attribute
   name: user_identifier_attribute
@@ -68,8 +68,7 @@ configuration:
   - SSL
   required: true
   type: 15
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -78,82 +77,93 @@ configuration:
   required: false
   type: 8
 description: Authenticate using Open LDAP
-display: OpenLDAP (Beta)
+display: OpenLDAP
 name: OpenLDAP
-beta: true
 script:
   commands:
   - arguments:
     - default: false
-      description: ''
+      description: The username for simple authentication.
       isArray: false
       name: username
       required: true
       secret: false
     - default: false
-      description: ''
+      description: The password for simple authentication.
       isArray: false
       name: password
       required: true
       secret: true
     deprecated: false
-    description: ''
+    description: Performs simple bind operation on the LDAP server.
     execution: false
     name: ad-authenticate
   - arguments:
     - default: false
+      description: Groups object name to fetch.
       isArray: false
       name: specific-groups
-      description: ''
       required: false
       secret: false
     deprecated: false
-    description: ''
+    description: Fetches LDAP groups under given base DN.
     execution: false
     name: ad-groups
   - arguments:
     - default: false
-      description: ''
+      description: The username for simple authentication.
       isArray: false
       name: username
       required: true
       secret: false
     - default: false
-      description: ''
+      description: The password for simple authentication.
       isArray: false
       name: password
       required: true
       secret: true
     - default: false
-      description: ''
       defaultValue: mail
+      description: Mail attribute to return in the response.
       isArray: false
       name: attribute-mail
       required: false
       secret: false
     - default: false
-      description: name
+      description: Name attribute to return in the response.
       isArray: false
       name: attribute-name
       required: false
       secret: false
-    - default: false
-      description: ''
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to return the name attribute.
       isArray: false
       name: attribute-name-pull
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
-    - default: false
-      description: ''
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to return the mail attribute.
       isArray: false
       name: attribute-mail-pull
+      predefined:
+      - 'true'
+      - 'false'
       required: false
       secret: false
     deprecated: false
-    description: ''
+    description: Performs simple bind operation on the LDAP server and return the
+      authenticated user's groups.
     execution: false
     name: ad-authenticate-and-roles
   dockerimage: demisto/ldap:1.0.0.8854
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
