@@ -1,0 +1,11 @@
+!azure-sql-auth-start
+!azure-sql-auth-complete
+!azure-sql-auth-test
+!azure-sql-servers-list
+!azure-sql-db-list server_name=sqlintegration
+!azure-sql-db-audit-policy-list server_name=sqlintegration db_name=sql-integration-db
+!azure-sql-db-threat-policy-get server_name=sqlintegration db_name=sql-integration-db
+
+
+
+!azure-sql-auth-reset

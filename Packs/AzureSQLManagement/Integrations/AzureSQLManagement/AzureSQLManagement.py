@@ -6,6 +6,7 @@ import json
 import urllib3
 import dateparser
 import traceback
+import copy
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 # Disable insecure warnings
@@ -64,6 +65,21 @@ class Client:
     def azure_sql_servers_list(self):
         return self.http_request('GET', '/providers/Microsoft.Sql/servers')
 
+    @logger
+    def azure_sql_db_list(self, server_name: str):
+        return self.http_request('GET', f'resourceGroups/{self.resource_group_name}/providers/Microsoft.Sql/servers/'
+                                        f'{server_name}/databases')
+
+    @logger
+    def azure_sql_db_audit_policy_list(self, server_name: str, db_name: str):
+        return self.http_request('GET', f'resourceGroups/{self.resource_group_name}/providers/Microsoft.Sql/servers/'
+                                        f'{server_name}/databases/{db_name}/auditingSettings')
+
+    @logger
+    def azure_sql_db_threat_policy_get(self, server_name: str, db_name: str):
+        return self.http_request('GET', f'resourceGroups/{self.resource_group_name}/providers/Microsoft.Sql/servers/'
+                                        f'{server_name}/databases/{db_name}/securityAlertPolicies/default')
+
 
 @logger
 def azure_sql_servers_list_command(client: Client) -> CommandResults:
@@ -80,26 +96,98 @@ def azure_sql_servers_list_command(client: Client) -> CommandResults:
     """
 
     server_list = client.azure_sql_servers_list()
+    server_list_values = copy.deepcopy(server_list.get('value', ''))
+    for server in server_list_values:
+        properties = server.get('properties', {})
+        if properties:
+            server.update(properties)
+            del server['properties']
 
-    readable_output = tableToMarkdown(name='Servers List', t=server_list.get('value', ''),
-                                      headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown(name='Servers List', t=server_list_values,
+                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
-        readable_output=readable_output,
+        readable_output=human_readable,
         outputs_prefix='AzureSQL.Server',
         outputs_key_field='id',
-        outputs=server_list
+        outputs=server_list_values,
+        raw_response=server_list
     )
 
 
 @logger
-def azure_sql_db_list_command(client: Client) -> CommandResults:
-    return CommandResults(readable_output='TODO')
+def azure_sql_db_list_command(client: Client, server_name: str) -> CommandResults:
+    """azure-sql-db-list command: Returns a list of all databases for server
+
+    :type client: ``Client``
+    :param client: AzureSQLManagement client to use
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains a scan status
+
+    :rtype: ``CommandResults``
+
+    Args:
+        server_name: server name for which we want to receive list of databases
+    """
+
+    database_list = client.azure_sql_db_list(server_name)
+    database_list_values = copy.deepcopy(database_list.get('value', ''))
+    for db in database_list_values:
+        properties = db.get('properties', {})
+        if properties:
+            db.update(properties)
+            del db['properties']
+
+    human_readable = tableToMarkdown(name='Database List', t=database_list_values,
+                                      headerTransform=pascalToSpace, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='AzureSQL.DB',
+        outputs_key_field='id',
+        outputs=database_list_values,
+        raw_response=database_list
+    )
 
 
 @logger
-def azure_sql_db_audit_policy_list_command(client: Client) -> CommandResults:
-    return CommandResults(readable_output='TODO')
+def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_name: str) -> CommandResults:
+    """azure_sql_db_audit_policy_list command: Returns a list of auditing settings of a database
+
+    :type client: ``Client``
+    :param client: AzureSQLManagement client to use
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains a scan status
+
+    :rtype: ``CommandResults``
+
+    Args:
+        server_name: server name for which we want to receive list of auditing settings
+        db_name: database for which we want to receive list of auditing settings
+    """
+
+    audit_list = client.azure_sql_db_audit_policy_list(server_name, db_name)
+    audit_list_values = copy.deepcopy(audit_list.get('value', ''))
+    for db in audit_list_values:
+        properties = db.get('properties', {})
+        if properties:
+            db.update(properties)
+            del db['properties']
+
+    human_readable = tableToMarkdown(name='Database Audit Settings', t=audit_list_values,
+                                     headerTransform=pascalToSpace, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='AzureSQL.DbAuditPolicy',
+        outputs_key_field='id',
+        outputs=audit_list_values,
+        raw_response=audit_list
+    )
 
 
 @logger
@@ -108,8 +196,41 @@ def azure_sql_db_audit_policy_create_update_command(client: Client) -> CommandRe
 
 
 @logger
-def azure_sql_db_threat_policy_get_command(client: Client) -> CommandResults:
-    return CommandResults(readable_output='TODO')
+def azure_sql_db_threat_policy_get_command(client: Client,  server_name: str, db_name: str) -> CommandResults:
+    """azure_sql_db_threat_policy_get command: Returns a threat detection policies of a database
+
+    :type client: ``Client``
+    :param client: AzureSQLManagement client to use
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains a scan status
+
+    :rtype: ``CommandResults``
+
+    Args:
+        server_name: server name for which we want to receive threat detection policies
+        db_name: database for which we want to receive threat detection policies
+    """
+
+    threat_list = client.azure_sql_db_threat_policy_get(server_name, db_name)
+    threat = copy.deepcopy(threat_list)
+
+    properties = threat.get('properties', {})
+    if properties:
+        threat.update(properties)
+        del threat['properties']
+
+    human_readable = tableToMarkdown(name='Database Threat Detection Policies', t=threat,
+                                     headerTransform=pascalToSpace, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='AzureSQL.DBThreatPolicy',
+        outputs_key_field='id',
+        outputs=threat,
+        raw_response=threat_list
+    )
 
 
 @logger
