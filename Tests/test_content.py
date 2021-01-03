@@ -37,7 +37,7 @@ try:
 except ModuleNotFoundError:
     from slackclient import SlackClient  # Old slack
 
-from Tests.mock_server import MITMProxy, AMIConnection, run_with_mock, RESULT
+from Tests.mock_server import MITMProxy, run_with_mock, RESULT
 from Tests.test_integration import Docker, check_integration
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
 from demisto_sdk.commands.common.constants import FILTER_CONF, PB_Status
@@ -383,10 +383,21 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_use
     # Mock recording - no mock file or playback failure.
     c = demisto_client.configure(base_url=c.api_client.configuration.host,
                                  api_key=c.api_client.configuration.api_key, verify_ssl=False)
-    run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user,
-                   demisto_pass, proxy, failed_playbooks, integrations, playbook_id,
-                   succeed_playbooks, test_message, test_options, slack, circle_ci,
-                   build_number, server_url, build_name)
+    succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user,
+                             demisto_pass, proxy, failed_playbooks, integrations, playbook_id,
+                             succeed_playbooks, test_message, test_options, slack, circle_ci,
+                             build_number, server_url, build_name)
+    if succeed:
+        logging_manager.info('Running another playback attempt on the new record to verify that the record is valid')
+        with run_with_mock(proxy, playbook_id) as result_holder:
+            status, _ = check_integration(c, server_url, demisto_user, demisto_pass, integrations,
+                                          playbook_id, logging_manager, test_options,
+                                          is_mock_run=True)
+            result_holder[RESULT] = status == PB_Status.COMPLETED
+        if status != PB_Status.COMPLETED:
+            logging_manager.warning(
+                'Playback on newly created record has failed, see the following link for help\n'
+                'https://confluence.paloaltonetworks.com/display/DemistoContent/Debug+Proxy-Related+Test+Failures')
     logging_manager.info(f'------ Test {test_message} end ------\n')
 
 
@@ -788,9 +799,7 @@ def execute_testing(tests_settings,
 
     proxy = None
     if is_ami:
-        ami = AMIConnection(server_ip)
-        ami.clone_mock_data()
-        proxy = MITMProxy(server_ip, logging_manager)
+        proxy = MITMProxy(server_ip, logging_manager, build_number=build_number, branch_name=build_name)
 
     failed_playbooks = []
     succeed_playbooks = []
@@ -855,10 +864,8 @@ def execute_testing(tests_settings,
                                          skipped_integration, unmockable_integrations)
         if is_ami:
             tests_data_keeper.add_proxy_related_test_data(proxy)
-
-            if build_name == 'master':
-                logging_manager.debug("Pushing new/updated mock files to mock git repo.", real_time=True)
-                ami.upload_mock_files(build_name, build_number)
+            if proxy.should_update_mock_repo:
+                proxy.push_mock_files()
 
         if playbook_skipped_integration and build_name == 'master':
             comment = 'The following integrations are skipped and critical for the test:\n {}'. \

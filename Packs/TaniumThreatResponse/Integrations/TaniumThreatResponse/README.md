@@ -1,5 +1,5 @@
 Tanium Threat Response
-This integration was integrated and tested with version xx of Tanium Threat Response
+
 ## Configure Tanium Threat Response on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
