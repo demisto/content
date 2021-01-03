@@ -27,8 +27,8 @@ CONTENT_JSON = {'Content-Type': 'application/json'}
 ''' LOWER AND UPPER BOUNDS FOR INTEGER ARGUMENTS '''
 MINIMUM_PAGE_VALUE = 1
 
-MINIMUM_COUNT_VALUE = 1
-MAXIMUM_COUNT_VALUE = 1000
+MINIMUM_LIMIT_VALUE = 1
+MAXIMUM_LIMIT_VALUE = 1000
 
 MINIMUM_OFFSET_VALUE = 0
 
@@ -49,7 +49,6 @@ class Client(BaseClient):
     def fetch_incidents(self):
         raise NotImplementedError
 
-    # limit - maybe or maybe count
     def get_nutanix_hypervisor_hosts_list(self, filter_: Optional[str], limit: Optional[str], page: Optional[str]):
         return self._http_request(
             method='GET',
@@ -194,7 +193,7 @@ def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optio
         - If argument is not None and is not between min to max, raises DemistoException
 
     """
-    assert(minimum <= maximum if minimum and maximum else True)
+    assert (minimum <= maximum if minimum and maximum else True)
     argument_value = arg_to_number(args.get(argument_name), arg_name=argument_name)
 
     if argument_value and minimum and not minimum <= argument_value:
@@ -206,25 +205,44 @@ def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optio
     return argument_value
 
 
-def get_page_argument(args: Dict) -> Optional[int]:
+def get_optional_boolean_param(args: Dict, argument_name: str) -> Optional[bool]:
     """
-    Extracts the 'page' argument from demisto arguments, and in case 'page'' exists,
-    validates that argument 'count' exists.
-    This validation is needed because Nutanix service returns an error when page argument
-    is given but count argument is missing.
-    (Nutanix error code 1202 - 'Page number cannot be specified without count').
+    Extracts the argument from demisto arguments, and in case argument exists,
+    returns the boolean value of the argument.
     Args:
-        args: Demisto arguments
+        args (Dict): Demisto arguments
+        argument_name (str): Name of the argument
 
     Returns:
-        - If 'page' argument has value and 'count' argument has value, returns 'page' argument value
-        - If 'page' argument has value and 'count' argument does not have  value, raises DemistoException
+        - If argument exists and is boolean, returns its boolean value
+        - If argument does not exist, returns None.
+        - If argument exists and is not boolean, raises DemistoException
+    """
+    argument = args.get(argument_name)
+    argument = argToBoolean(argument) if argument else None
+
+    return argument
+
+
+def get_page_argument(args: Dict) -> Optional[int]:
+    """
+    Extracts the 'page' argument from demisto arguments, and in case 'page' exists,
+    validates that argument 'limit' exists.
+    This validation is needed because Nutanix service returns an error when page argument
+    is given but limit(referred as count in Nutanix service) argument is missing.
+    (Nutanix error code 1202 - 'Page number cannot be specified without count').
+    Args:
+        args (Dict): Demisto arguments
+
+    Returns:
+        - If 'page' argument has value and 'limit' argument has value, returns 'page' argument value
+        - If 'page' argument has value and 'limit' argument does not have  value, raises DemistoException
         - If 'page' argument does not have value, returns None
     """
     page_value = get_and_validate_int_argument(args, 'page', minimum=MINIMUM_PAGE_VALUE)
-    if page_value and args.get('count') is None:
+    if page_value and args.get('limit') is None:
         # TODO TOM : maybe limit
-        raise DemistoException('Page argument cannot be specified without count argument')
+        raise DemistoException('Page argument cannot be specified without limit argument')
     return page_value
 
 
@@ -236,8 +254,9 @@ def test_module_command(client: Client):
 
 
 def fetch_incidents_command(client: Client, args: Dict):
-    resolved = argToBoolean(args.get('resolved'))
     auto_resolved = argToBoolean(args.get('auto_resolved'))
+    auto_resolved = argToBoolean(args.get('auto_resolved'))
+    resolved = True if auto_resolved else argToBoolean(args.get('resolved'))
     acknowledged = argToBoolean(args.get('acknowledged'))
     alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
     entity_ids = args.get('entity_ids')  # maybe split , in doc entity_id probably mistake
@@ -250,8 +269,7 @@ def fetch_incidents_command(client: Client, args: Dict):
 
 def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     filter_ = args.get('filter')
-    # maybe call it count and not limit
-    limit = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
     page = get_page_argument(args)
 
     response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
@@ -307,8 +325,8 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
 
     start_time = args.get('start_time')
     end_time = args.get('end_time')
-    resolved = argToBoolean(args.get('resolved'))
     auto_resolved = argToBoolean(args.get('auto_resolved'))
+    resolved = True if auto_resolved else argToBoolean(args.get('resolved'))
     acknowledged = argToBoolean(args.get('acknowledged'))
     severity = args.get('severity')
     alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
@@ -317,12 +335,12 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     classification = args.get('classifications')  # maybe split ,
     entity_type = args.get('entity_type')  # maybe split ,
     page = get_page_argument(args)
-    count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
 
     # TODO : are they required? optional?
     response = client.get_nutanix_alerts_list(start_time, end_time, resolved, auto_resolved, acknowledged, severity,
                                               alert_type_id, entity_ids, impact_types, classification, entity_type,
-                                              page, count)
+                                              page, limit)
     # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
@@ -356,12 +374,11 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     classification = args.get('classifications')  # maybe split ,
     entity_type = args.get('entity_type')
     entity_type_ids = args.get('entity_type_ids')  # maybe split ,
-    # TODO TOM : maybe change to limit
-    count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
 
     # TODO : are they required? optional?
     response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
-                                                                classification, entity_type, entity_type_ids, count)
+                                                                classification, entity_type, entity_type_ids, limit)
     # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
@@ -378,10 +395,12 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
     entity_type_ids = args.get('entity_type_ids')  # maybe split ,
     page = get_page_argument(args)
     # TODO TOM : maybe change to limit
-    count = get_and_validate_int_argument(args, 'count', minimum=MINIMUM_COUNT_VALUE, maximum=MAXIMUM_COUNT_VALUE)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
 
     # TODO : are they required? optional?
-    client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity, impact_types, classification, entity_type, entity_type_ids, page, count)
+    client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity,
+                                                 impact_types, classification, entity_type, entity_type_ids, page,
+                                                 limit)
     # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
