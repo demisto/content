@@ -5,7 +5,6 @@ Hunt for the SUNBURST backdoor
 - Query firewall logs to detect network activity - Search endpoint logs for Sunburst hashes to detect presence on hosts
 If compromised hosts are found then:
 - Notify security team to review and trigger remediation response actions - Fire off sub-playbooks to isolate/quarantine infected hosts/endpoints and await further actions from the security team.
-Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 Supported Cortex XSOAR versions: 6.0.0 and later.
 
 
