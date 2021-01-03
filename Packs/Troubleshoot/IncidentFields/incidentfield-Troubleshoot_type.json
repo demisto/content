@@ -4,7 +4,7 @@
  "cliName": "troubleshoottype",
  "closeForm": false,
  "content": true,
- "description": "Pick configuration if you have problem with configuring the integration. Pick fetch-incidents if you have problem the fetch-incidents. Pick command for troubleshooting running a command.",
+ "description": "Pick configuration if you have problem with configuring the integration. Pick command for troubleshooting running a command.",
  "editForm": true,
  "group": 0,
  "hidden": false,
@@ -21,7 +21,6 @@
  "selectValues": [
   "",
   "configuration",
-  "fetch-incidents",
   "command"
  ],
  "sla": 0,
