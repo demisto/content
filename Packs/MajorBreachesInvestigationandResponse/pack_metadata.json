@@ -2,7 +2,7 @@
     "name": "Rapid Breach Response",
     "description": "This content pack helps you collect, investigate, and remediate incident relate to major breaches.",
     "support": "xsoar",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.3.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -20,6 +20,7 @@
     "keywords": [
         "SolarStorm",
         "SunBurst",
-        "SolarWinds"
+        "SolarWinds",
+        "FireEye"
     ]
 }
