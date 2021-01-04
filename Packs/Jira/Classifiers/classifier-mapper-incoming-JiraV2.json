@@ -6,6 +6,10 @@
   "Jira Incident": {
    "dontMapEventToLabels": false,
    "internalMapping": {
+    "Created Time": {
+     "complex": null,
+     "simple": "fields.created"
+    },
     "Jira Attachments": {
      "complex": null,
      "simple": "fields.attachment"
@@ -41,6 +45,14 @@
     "Jira Summary": {
      "complex": null,
      "simple": "fields.summary"
+    },
+    "Last Seen": {
+     "complex": null,
+     "simple": "fields.lastViewed"
+    },
+    "Last Update Time": {
+     "complex": null,
+     "simple": "fields.updated"
     },
     "dbotMirrorDirection": {
      "complex": null,
