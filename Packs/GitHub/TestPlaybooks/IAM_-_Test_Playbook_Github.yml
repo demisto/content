@@ -474,8 +474,8 @@ view: |-
 inputs:
 - key: userprofile
   value:
-    simple: '{"email": "testdemisto2@paloaltonetworks.com", "username": "testdemisto2@paloaltonetworks.com",
-     "givenname": "test", "surname":"demisto", "locationregion": "Americas"}'
+    simple: '{"email": "TestID@paloaltonetworks.com", "username": "TestID@paloaltonetworks.com",
+     "givenname": "testgiven", "surname":"demisto", "locationregion": "Americas"}'
   required: true
   description: Test user profile data.
   playbookInputQuery:
