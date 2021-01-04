@@ -143,6 +143,7 @@ references:
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
         chmod +x ./Tests/Marketplace/*
+
         if [ ! -e "venv" ]; then
           echo "installing venv"
           NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
@@ -156,6 +157,7 @@ references:
             .hooks/bootstrap -u
           fi
         fi
+
         # store in bash env so we load our venv in each step
         echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
