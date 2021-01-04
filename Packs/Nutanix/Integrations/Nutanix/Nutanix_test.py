@@ -113,7 +113,7 @@ def test_get_page_argument_page_exists_limit_does_not():
 
 @pytest.mark.parametrize('args, argument_name, expected',
                          [({'resolved': 'true'}, 'resolved', True),
-                          ({'resolved': 'false'}, 'resolved', True),
+                          ({'resolved': 'false'}, 'resolved', False),
                           ({}, 'resolved', None),
                           ])
 def test_get_optional_boolean_param_valid(args, argument_name, expected):
@@ -159,7 +159,7 @@ def test_get_optional_boolean_param_invalid_argument(args, argument_name, expect
        is not bool or string that can be parsed.
     """
     from Nutanix import get_optional_boolean_param
-    with pytest.raises(DemistoException, match=expected_error_message):
+    with pytest.raises(ValueError, match=expected_error_message):
         get_optional_boolean_param(args, argument_name)
 
 
@@ -167,6 +167,7 @@ def test_get_optional_boolean_param_invalid_argument(args, argument_name, expect
                          [({'start_time': '2020-11-22T16:31:14'}, 'start_time', 1606055474000),
                           ({'start_time': '2020-11-22T16:31:14'}, 'end_time', None),
                           ])
+# TODO TOM : seems there is a problem with lint getting different results - probably because of time zones
 def test_get_optional_time_parameter_valid_time_argument(args, time_parameter, expected):
     """
     Given:
@@ -199,5 +200,5 @@ def test_get_optional_time_parameter_invalid_time_argument():
        expected time format.
     """
     from Nutanix import get_optional_time_parameter_as_epoch
-    with pytest.raises(DemistoException, match=f"""time data 'bla' does not match format '{TIME_FORMAT}'"""):
-        (get_optional_time_parameter_as_epoch({'start_time': 'bla'}, 'bla'))
+    with pytest.raises(ValueError, match=f"""time data 'bla' does not match format '{TIME_FORMAT}'"""):
+        (get_optional_time_parameter_as_epoch({'start_time': 'bla'}, 'start_time'))

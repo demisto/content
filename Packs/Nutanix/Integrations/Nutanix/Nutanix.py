@@ -39,7 +39,7 @@ class Client(BaseClient):
     def fetch_incidents(self):
         raise NotImplementedError
 
-    def get_nutanix_hypervisor_hosts_list(self, filter_: Optional[str], limit: Optional[str], page: Optional[str]):
+    def get_nutanix_hypervisor_hosts_list(self, filter_: Optional[str], limit: Optional[int], page: Optional[int]):
         return self._http_request(
             method='GET',
             url_suffix='hosts',
@@ -165,12 +165,25 @@ class Client(BaseClient):
 
 
 def get_optional_time_parameter_as_epoch(args: Dict, argument_name: str) -> Optional[int]:
+    """
+    Extracts time argument from Demisto arguments, expects that the time argument will be formatted
+    by TIME_FORMAT global variable.
+    Args:
+        args (Dict): Demisto arguments.
+        argument_name (str): The name of the argument to extract.
+
+    Returns:
+        - If argument is None, returns None.
+        - If argument is exists and is formatted by TIME_FORMAT, returns the epoch time of the argument.
+        - If argument exists and is not formatted by TIME_FORMAT, throws ValueError exception.
+
+    """
     argument_value = args.get(argument_name)
 
     if argument_value is None:
         return None
 
-    date_to_timestamp(argument_value, TIME_FORMAT)
+    return date_to_timestamp(argument_value, TIME_FORMAT)
 
 
 def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optional[int] = None,
@@ -188,9 +201,9 @@ def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optio
         maximum (int): If specified, the maximum value the argument can have.
 
     Returns:
-        - If argument is None, returns None.
-        - If argument is not None and is between min to max, returns argument.
-        - If argument is not None and is not between min to max, raises DemistoException.
+        - If argument is does not exist, returns None.
+        - If argument is exists and is between min to max, returns argument.
+        - If argument is exists and is not between min to max, raises DemistoException.
 
     """
     assert (minimum <= maximum if minimum and maximum else True)
@@ -218,8 +231,8 @@ def get_optional_boolean_param(args: Dict, argument_name: str) -> Optional[bool]
 
     Returns:
         - If argument exists and is boolean, returns its boolean value.
-        - If argument does not exist, returns None.
         - If argument exists and is not boolean, raises DemistoException.
+        - If argument does not exist, returns None.
     """
     argument = args.get(argument_name)
     argument = argToBoolean(argument) if argument else None
@@ -238,9 +251,9 @@ def get_page_argument(args: Dict) -> Optional[int]:
         args (Dict): Demisto arguments.
 
     Returns:
-        - If 'page' argument has value and 'limit' argument has value, returns 'page' argument value.
-        - If 'page' argument has value and 'limit' argument does not have  value, raises DemistoException.
-        - If 'page' argument does not have value, returns None.
+        - If 'page' argument exists and 'limit' argument exists, returns 'page' argument value.
+        - If 'page' argument exists and 'limit' argument does not exist, raises DemistoException.
+        - If 'page' argument does not exist, returns None.
     """
     page_value = get_and_validate_int_argument(args, 'page', minimum=MINIMUM_PAGE_VALUE)
     if page_value and args.get('limit') is None:
@@ -266,14 +279,14 @@ def test_module_command(client: Client):
 
 
 def fetch_incidents_command(client: Client, args: Dict):
-    auto_resolved = get_optional_boolean_param(args, 'auto_resolved')
-    resolved = True if auto_resolved else get_optional_boolean_param(args, 'resolved')
-    acknowledged = get_optional_boolean_param(args, 'acknowledged')
-    alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
-    entity_ids = args.get('entity_ids')  # maybe split , in doc entity_id probably mistake
-    impact_types = args.get('impact_types')  # maybe split ,
-    classifications = args.get('classifications')  # maybe split ,
-    entity_type_ids = args.get('entity_type_ids')  # maybe split ,
+    # auto_resolved = get_optional_boolean_param(args, 'auto_resolved')
+    # resolved = True if auto_resolved else get_optional_boolean_param(args, 'resolved')
+    # acknowledged = get_optional_boolean_param(args, 'acknowledged')
+    # alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
+    # entity_ids = args.get('entity_ids')  # maybe split , in doc entity_id probably mistake
+    # impact_types = args.get('impact_types')  # maybe split ,
+    # classifications = args.get('classifications')  # maybe split ,
+    # entity_type_ids = args.get('entity_type_ids')  # maybe split ,
 
     raise NotImplementedError
 
@@ -339,15 +352,15 @@ def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict
     Returns:
         CommandResults.
     """
-    context_path = 'NutanixHypervisor.VMPowerStatus'
-
-    vm_uuid = args.get('vm_uuid')
-    host_uuid = args.get('host_uuid')
-    transition = args.get('transition')
-
-    # TODO : are they required? optional?
-    response = client.nutanix_hypervisor_vm_power_status_change(vm_uuid, host_uuid, transition)
-    # TODO : what to return? whats the return value (currently cant reach the endpoint)
+    # context_path = 'NutanixHypervisor.VMPowerStatus'
+    #
+    # vm_uuid = args.get('vm_uuid')
+    # host_uuid = args.get('host_uuid')
+    # transition = args.get('transition')
+    #
+    # # TODO : are they required? optional?
+    # response = client.nutanix_hypervisor_vm_power_status_change(vm_uuid, host_uuid, transition)
+    # # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
 
@@ -361,12 +374,12 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    context_path = 'NutanixHypervisor.Task'
-
-    task_ids = args.get('task_ids')
-
-    response = client.nutanix_hypervisor_task_poll(task_ids)
-    # TODO : what to return? whats the return value (currently cant reach the endpoint)
+    # context_path = 'NutanixHypervisor.Task'
+    #
+    # task_ids = args.get('task_ids')
+    #
+    # response = client.nutanix_hypervisor_task_poll(task_ids)
+    # # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
 
@@ -407,12 +420,12 @@ def nutanix_alert_acknowledge_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    context_path = 'NutanixHypervisor.Alert'
-
-    alert_id = args.get('alert_id')
-
-    # TODO TOM : what output returned? is it useless or not
-    response = client.post_nutanix_alert_acknowledge(alert_id)
+    # context_path = 'NutanixHypervisor.Alert'
+    #
+    # alert_id = args.get('alert_id')
+    #
+    # # TODO TOM : what output returned? is it useless or not
+    # response = client.post_nutanix_alert_acknowledge(alert_id)
 
     raise NotImplementedError
 
@@ -427,52 +440,52 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    context_path = 'NutanixHypervisor.Alert'
-
-    alert_id = args.get('alert_id')
-
-    # TODO TOM : what output returned? is it useless or not
-    client.post_nutanix_alert_resolve(alert_id)
+    # context_path = 'NutanixHypervisor.Alert'
+    #
+    # alert_id = args.get('alert_id')
+    #
+    # # TODO TOM : what output returned? is it useless or not
+    # client.post_nutanix_alert_resolve(alert_id)
     raise NotImplementedError
 
 
 def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
-    context_path = 'NutanixHypervisor.Alert'
-
-    start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
-    end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
-    severity = args.get('severity')
-    impact_types = args.get('impact_types')  # maybe split ,
-    classification = args.get('classifications')  # maybe split ,
-    entity_type = args.get('entity_type')
-    entity_type_ids = args.get('entity_type_ids')  # maybe split ,
-    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
-
-    # TODO : are they required? optional?
-    response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
-                                                                classification, entity_type, entity_type_ids, limit)
-    # TODO : what to return? whats the return value (currently cant reach the endpoint)
+    # context_path = 'NutanixHypervisor.Alert'
+    #
+    # start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
+    # end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
+    # severity = args.get('severity')
+    # impact_types = args.get('impact_types')  # maybe split ,
+    # classification = args.get('classifications')  # maybe split ,
+    # entity_type = args.get('entity_type')
+    # entity_type_ids = args.get('entity_type_ids')  # maybe split ,
+    # limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
+    #
+    # # TODO : are they required? optional?
+    # response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
+    #                                                             classification, entity_type, entity_type_ids, limit)
+    # # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
 
 def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
-    context_path = 'NutanixHypervisor.Alert'
-
-    start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
-    end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
-    severity = args.get('severity')
-    impact_types = args.get('impact_types')  # maybe split ,
-    classification = args.get('classifications')  # maybe split ,
-    entity_type = args.get('entity_type')
-    entity_type_ids = args.get('entity_type_ids')  # maybe split ,
-    page = get_page_argument(args)
-    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
-
-    # TODO : are they required? optional?
-    client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity,
-                                                 impact_types, classification, entity_type, entity_type_ids, page,
-                                                 limit)
-    # TODO : what to return? whats the return value (currently cant reach the endpoint)
+    # # context_path = 'NutanixHypervisor.Alert'
+    #
+    # start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
+    # end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
+    # severity = args.get('severity')
+    # impact_types = args.get('impact_types')  # maybe split ,
+    # classification = args.get('classifications')  # maybe split ,
+    # entity_type = args.get('entity_type')
+    # entity_type_ids = args.get('entity_type_ids')  # maybe split ,
+    # page = get_page_argument(args)
+    # limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
+    #
+    # # TODO : are they required? optional?
+    # client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity,
+    #                                              impact_types, classification, entity_type, entity_type_ids, page,
+    #                                              limit)
+    # # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 
 
@@ -530,6 +543,4 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    a = date_to_timestamp('20aaaa1:14', TIME_FORMAT)
-    print(a)
     main()

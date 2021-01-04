@@ -37,6 +37,10 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
+- defaultvalue: '50'
+  name: max_fetch
+  required: false
+  type: 0
 description: This is the Hello World integration for getting started.
 display: Nutanix
 name: Nutanix
