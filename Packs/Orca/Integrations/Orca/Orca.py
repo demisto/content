@@ -1,9 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Any, Dict, Union
+from typing import Any, Dict, Union, Optional
 
-ORCA_API_DNS_NAME = "https://orcadeveden-internal-dev.orcasecurity.net/api"
+ORCA_API_DNS_NAME = "https://api.orcasecurity.io/api"
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
@@ -11,7 +11,7 @@ class OrcaClient:
     def __init__(self, client: BaseClient):
         self.client = client
 
-    def get_alerts_by_type(self, alert_type: Optional[str] = None) -> Union[List[Dict[str, Any]], str]:
+    def get_alerts_by_type(self, alert_type: Optional[str] = None) -> Union[List[Dict[str, Any]], str]:  # pylint: disable=E1136
         demisto.info("get_alerts, enter")
         url_suffix = "/alerts"
         if alert_type:
@@ -27,8 +27,8 @@ class OrcaClient:
     def get_all_alerts(self) -> List[Dict[str, Any]]:
         demisto.info("get_all_alerts, enter")
 
-        alerts = []
-        params = {}
+        alerts: List[Dict[str, Any]] = []
+        params: Dict[str, str] = {}
         next_page_token = None
 
         while True:
@@ -49,9 +49,10 @@ class OrcaClient:
                 next_page_token = response.get("next_page_token")
 
         demisto.info(f"done fetching orca alerts, fetched {len(alerts)} alerts")
+
         return alerts
 
-    def get_asset(self, asset_unique_id: str) -> Union[List[Dict[str, Any]], str]:
+    def get_asset(self, asset_unique_id: str) -> Union[List[Dict[str, Any]], str]:  # pylint: disable=E1136
         demisto.debug("get_asset, enter")
         try:
             response = self.client._http_request(method="GET", url_suffix=f"/assets/{asset_unique_id}")
@@ -64,13 +65,12 @@ class OrcaClient:
         return response
 
 
-
 def map_orca_score_to_demisto_score(orca_score: int) -> int:
     MAPPING = {1: 1, 2: 1, 3: 2, 4: 3}
     return MAPPING[orca_score]
 
 
-def fetch_incidents(orca_client: OrcaClient) -> List[Dict[str,Any]]:
+def fetch_incidents(orca_client: OrcaClient) -> List[Dict[str, Any]]:
     demisto.debug("fetch-incidents called")
     if demisto.getLastRun().get('lastRun'):
         demisto.info("not first run, returning")
@@ -85,13 +85,13 @@ def fetch_incidents(orca_client: OrcaClient) -> List[Dict[str,Any]]:
 
     incidents = []
     for alert in alerts:
-        alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state").get("score"))
+        alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state", {}).get("score", 1))
         incident = {
-            'name': f"Orca Cloud Incident: {alert.get('state').get('alert_id')}.",
+            'name': f"Orca Cloud Incident: {alert.get('state', {}).get('alert_id')}.",
             'occurred': datetime_to_string(
-                datetime.strptime(alert.get('state').get('last_seen'), "%Y-%m-%dT%H:%M:%S%z").isoformat()),
+                datetime.strptime(alert.get('state', {}).get('last_seen'), "%Y-%m-%dT%H:%M:%S%z").isoformat()),
             'rawJSON': json.dumps(alert),
-            'severity': map_orca_score_to_demisto_score(orca_score=alert.get('state').get('score'))
+            'severity': map_orca_score_to_demisto_score(orca_score=alert.get('state', {}).get('score'))
         }
         incidents.append(incident)
 
@@ -106,33 +106,35 @@ def main() -> None:
     :return:
     :rtype:
     """
-    command = demisto.command()
-    demisto.debug(f'Orca Command being called is {command}')
-    api_key = demisto.params().get('apikey')
+    try:
+        command = demisto.command()
+        demisto.debug(f'Orca Command being called is {command}')
+        api_key = demisto.params().get('apikey')
 
-    client = BaseClient(
-        base_url=ORCA_API_DNS_NAME,
-        verify=True,
-        headers={
-            'Authorization': f'Bearer {api_key}'
-        },
-        proxy=True)
+        client = BaseClient(
+            base_url=ORCA_API_DNS_NAME,
+            verify=True,
+            headers={
+                'Authorization': f'Bearer {api_key}'
+            },
+            proxy=True)
 
-    orca_client = OrcaClient(client=client)
-    if command == "get-alerts":
-        alerts = orca_client.get_alerts_by_type(alert_type=demisto.args().get('alert_type'))
-        return_results(alerts)
+        orca_client = OrcaClient(client=client)
+        if command == "get-alerts":
+            alerts = orca_client.get_alerts_by_type(alert_type=demisto.args().get('alert_type'))
+            return_results(alerts)
 
-    if command == "get-asset":
-        asset = orca_client.get_asset(asset_unique_id=demisto.args()['asset_unique_id'])
-        return_results(asset)
+        elif command == "get-asset":
+            asset = orca_client.get_asset(asset_unique_id=demisto.args()['asset_unique_id'])
+            return_results(asset)
 
-    if command == "get-cves":
-        asset = orca_client.get_cves(asset_unique_id=demisto.args()['asset_unique_id'])
-        return_results(asset)
+        elif command == "fetch-incidents":
+            fetch_incidents(orca_client)
 
-    if command == "fetch-incidents":
-        fetch_incidents(orca_client)
+        else:
+            raise NotImplementedError(f'{command} is not an existing Tripwire command')
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
