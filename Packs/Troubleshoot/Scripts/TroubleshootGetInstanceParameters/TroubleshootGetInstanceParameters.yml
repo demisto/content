@@ -7,10 +7,10 @@ args:
   description: The instane name to get its parameters
 comment: Gets an intance's configuration parameters in order to troubleshoot the instance.
 commonfields:
-  id: GetInstanceParameters
+  id: TroubleshootGetInstanceParameters
   version: -1
 enabled: false
-name: GetInstanceParameters
+name: TroubleshootGetInstanceParameters
 outputs:
 - contextPath: InstanceParameters.instance_name
   type: String

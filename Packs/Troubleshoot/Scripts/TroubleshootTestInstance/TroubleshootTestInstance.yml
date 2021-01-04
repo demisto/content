@@ -13,21 +13,21 @@ args:
   secret: false
 comment: Clicking on the "Test" button and return if the test failed.
 commonfields:
-  id: TestInstance
+  id: TroubleshootTestInstance
   version: -1
 enabled: false
-name: TestInstance
+name: TroubleshootTestInstance
 outputs:
-- contextPath: TestInstance.instance_name
+- contextPath: TroubleshootTestInstance.instance_name
   description: Name of the instance
   type: String
-- contextPath: TestInstance.Errors
+- contextPath: TroubleshootTestInstance.Errors
   description: Errors after changing all the wanted keys
   type: String
-- contextPath: TestInstance.changed_keys
+- contextPath: TroubleshootTestInstance.changed_keys
   description: Keys that changed in the test
   type: String
-- contextPath: TestInstance.succeed
+- contextPath: TroubleshootTestInstance.succeed
   description: Is the test passed
   type: Boolean
 script: '-'

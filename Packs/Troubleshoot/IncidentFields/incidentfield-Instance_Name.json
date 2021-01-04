@@ -9,7 +9,7 @@
  "content": true,
  "description": "Name of the instance to troubleshoot",
  "editForm": true,
- "fieldCalcScript": "096f78c3-e8a5-42ee-82e5-1540fc285d3f",
+ "fieldCalcScript": "TroubleshootInstanceField",
  "group": 0,
  "hidden": false,
  "id": "incident_instancename",
@@ -23,7 +23,6 @@
  ],
  "required": false,
  "selectValues": [
-  ""
  ],
  "sla": 0,
  "system": false,

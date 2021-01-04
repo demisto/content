@@ -71,7 +71,7 @@ def main(args):
     else:
         human_readable = f'No errors for command {command}!'
     context = {
-        'ExecuteCommand(obj.command === val.command && obj.instance_name === val.instance_name)': {
+        'TroubleshootExecuteCommand(obj.command === val.command && obj.instance_name === val.instance_name)': {
             'command': command,
             'instance_name': instance_name,
             'Error': errors

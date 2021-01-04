@@ -23,8 +23,8 @@
  "required": false,
  "selectValues": [
   "",
-  "configuration",
-  "command"
+  "I'm unable to configure an instance",
+  "I have a problem with running a command"
  ],
  "sla": 0,
  "system": false,

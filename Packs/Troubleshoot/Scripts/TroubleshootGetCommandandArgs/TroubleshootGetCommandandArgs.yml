@@ -14,10 +14,10 @@ args:
 comment: Gets a command with arguments, validates the command and the arguemnts and
   then parsing it to use in Cortex XSOAR context.
 commonfields:
-  id: GetCommandandArgs
+  id: TroubleshootGetCommandandArgs
   version: -1
 enabled: false
-name: GetCommandandArgs
+name: TroubleshootGetCommandandArgs
 outputs:
 - contextPath: CommandArgs.instance_name
   description: The instance name.

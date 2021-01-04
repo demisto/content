@@ -54,7 +54,7 @@ Instance name : {instance_name}
             doc
         ))
         context = {
-            'AggregatedResults': {
+            'TroubleshootAggregateResults': {
                 'configuration_file_name': configuration_name,
                 'summary_file_name': doc_file_name
             }

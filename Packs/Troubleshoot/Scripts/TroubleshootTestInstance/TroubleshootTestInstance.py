@@ -66,7 +66,7 @@ def main():
     try:
         errors = execute_test_module(instance)
         context = {
-            'TestInstance(obj.instance_name === val.instance_name and val.changed_keys === obj.changed_keys)': {
+            'TroubleshootTestInstance(obj.instance_name === val.instance_name and val.changed_keys === obj.changed_keys)': {
                 'instance_name': instance_name,
                 'Errors': errors,
                 'changed_keys': keys_in_instance,

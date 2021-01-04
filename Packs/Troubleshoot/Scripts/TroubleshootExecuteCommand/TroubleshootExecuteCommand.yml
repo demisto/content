@@ -20,18 +20,18 @@ args:
 comment: Executes a command in Cortex XSOAR with debug mode and pulls logs from the
   command execution.
 commonfields:
-  id: ExecuteCommand
+  id: TroubleshootExecuteCommand
   version: -1
 enabled: false
-name: ExecuteCommand
+name: TroubleshootExecuteCommand
 outputs:
-- contextPath: ExecuteCommand.command
+- contextPath: TroubleshootExecuteCommand.command
   description: The command executed
   type: String
-- contextPath: ExecuteCommand.instance_name
+- contextPath: TroubleshootExecuteCommand.instance_name
   description: On which instance the command executed
   type: String
-- contextPath: ExecuteCommand.Error
+- contextPath: TroubleshootExecuteCommand.Error
   description: The errors from the command
   type: String
 - contextPath: File.Name

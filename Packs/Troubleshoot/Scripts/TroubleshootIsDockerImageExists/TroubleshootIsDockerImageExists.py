@@ -30,7 +30,7 @@ def main():
         human_readable = f'Could not find docker image {docker_image}'
         exists = False
     context = {
-        'IsDockerImageExists(obj.docker_image === val.docker_image)': {
+        'TroubleshootIsDockerImageExists(obj.docker_image === val.docker_image)': {
             'docker_image': docker_image,
             'exists': exists
         }
