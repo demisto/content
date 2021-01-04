@@ -3296,8 +3296,7 @@
         "Archer-Test-Playbook": "Issue 26851",
         "Carbon Black Live Response Test": "Issue 28237",
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
-        "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
-        "PANW Threat Vault - Signature Search - Test": "Issue 30930"
+        "Google_Vault-Search_And_Display_Results_test": "Issue 24348"
     },
     "skipped_integrations": {
         
