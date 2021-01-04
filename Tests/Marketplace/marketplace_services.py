@@ -43,7 +43,7 @@ class BucketUploadFlow(object):
     AGGREGATED = "aggregated"
     IMAGES = 'images'
     AUTHOR = 'author'
-    INTEGRATION = 'integration'
+    INTEGRATIONS = 'integrations'
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
     BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
     UPLOAD_JOB_NAME = "Upload Packs To Marketplace"
@@ -1576,14 +1576,14 @@ class Pack(object):
         images_list_all = []
 
         if os.path.exists(integrations_folder_path):
-            for pack_item in os.scandir(integrations_folder_path):
-                image_data = self._get_image_data_from_yml(pack_item.path)
+            for integration in os.scandir(integrations_folder_path):
+                image_data = self._get_image_data_from_yml(integration.path)
 
                 if image_data and image_data not in images_list_all:
                     images_list_all.append(image_data)
 
-                if re.findall(BucketUploadFlow.INTEGRATION_DIR_REGEX, pack_item.name)[0] in integration_dirs or \
-                        pack_item.name in unified_integrations:
+                if re.findall(BucketUploadFlow.INTEGRATION_DIR_REGEX, integration.name)[0] in integration_dirs or \
+                        integration.name in unified_integrations:
                     if image_data and image_data not in images_list_to_upload:
                         images_list_to_upload.append(image_data)
 
@@ -1614,16 +1614,14 @@ class Pack(object):
         finally:
             return task_status, exists_in_index
 
-    def upload_integration_images(self, storage_bucket, current_commit_hash, previous_commit_hash, content_repo):
+    def upload_integration_images(self, storage_bucket, diff_files_list):
         """ Uploads pack integrations images to gcs.
 
         The returned result of integration section are defined in issue #19786.
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
-            current_commit_hash (str): The last commit hash of head.
-            previous_commit_hash (str): The previous commit to diff with.
-            content_repo (git.repo.base.Repo): content repo object.
+            diff_files_list (list): The list of all modified/added files found in the diff
 
         Returns:
             bool: whether the operation succeeded.
@@ -1637,9 +1635,7 @@ class Pack(object):
 
         try:
             # detect added/modified integration images
-            current_commit = content_repo.commit(current_commit_hash)
-            previous_commit = content_repo.commit(previous_commit_hash)
-            for file in current_commit.diff(previous_commit):
+            for file in diff_files_list:
                 if self.is_integration_image(file.a_path):
                     # the integration dir name will show up in the unified integration file path in content_packs.zip
                     integration_dirs.append(os.path.basename(os.path.dirname(file.a_path)))
@@ -1651,7 +1647,7 @@ class Pack(object):
                 integration_dirs, unified_integrations
             )
             if not pack_local_images_all:
-                return integration_images  # returned empty list if not images found
+                return integration_images  # return empty list if no images were found
 
             pack_storage_root_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name)
 
@@ -1666,7 +1662,8 @@ class Pack(object):
 
                 if image_data in pack_local_images_to_upload:
                     # upload the image if needed
-                    logging.info(f"Uploading {self._pack_name} pack integration image: {image_name}")
+                    logging.info(f"Uploading image: {image_name} of integration: {image_data.get('display_name')} "
+                                 f"from pack: {self._pack_name}")
                     with open(image_path, "rb") as image_file:
                         pack_image_blob.upload_from_file(image_file)
                     self._uploaded_integration_images.append(image_name)
@@ -1704,7 +1701,7 @@ class Pack(object):
         task_status = True
         num_copied_images = 0
         err_msg = f"Failed copying {self._pack_name} pack integrations images."
-        pc_uploaded_integration_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.INTEGRATION, [])
+        pc_uploaded_integration_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.INTEGRATIONS, [])
 
         for image_name in pc_uploaded_integration_images:
             build_bucket_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, image_name)
@@ -1742,7 +1739,7 @@ class Pack(object):
 
         return task_status
 
-    def upload_author_image(self, storage_bucket, current_commit_hash, previous_commit_hash, content_repo):
+    def upload_author_image(self, storage_bucket, diff_files_list):
         """ Uploads pack author image to gcs.
 
         Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
@@ -1750,9 +1747,7 @@ class Pack(object):
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
-            current_commit_hash (str): The last commit hash of head.
-            previous_commit_hash (str): The previous commit to diff with.
-            content_repo (git.repo.base.Repo): content repo object.
+            diff_files_list (list): The list of all modified/added files found in the diff
 
         Returns:
             bool: whether the operation succeeded.
@@ -1767,13 +1762,11 @@ class Pack(object):
 
             if os.path.exists(author_image_path):
                 # detect added/modified author image
-                current_commit = content_repo.commit(current_commit_hash)
-                previous_commit = content_repo.commit(previous_commit_hash)
                 image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,
                                                             Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
                 pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
 
-                if any(self.is_author_image(file.a_path) for file in current_commit.diff(previous_commit)):
+                if any(self.is_author_image(file.a_path) for file in diff_files_list):
                     # upload the image if needed
                     with open(author_image_path, "rb") as author_image_file:
                         pack_author_image_blob.upload_from_file(author_image_file)
@@ -1823,8 +1816,6 @@ class Pack(object):
             bool: Whether the operation succeeded.
 
         """
-        err_msg = f"Failed copying {self._pack_name} pack author image."
-
         if images_data.get(self._pack_name, {}).get(BucketUploadFlow.AUTHOR, False):
 
             build_author_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
@@ -1837,7 +1828,7 @@ class Pack(object):
                         new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
                     )
                     if not copied_blob.exists():
-                        logging.error(err_msg)
+                        logging.error(f"Failed copying {self._pack_name} pack author image.")
                         return False
                     else:
                         logging.success(f"Copied successfully {self._pack_name} pack author image.")
@@ -1932,7 +1923,7 @@ class Pack(object):
 
 
 def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) -> Tuple[dict, dict, dict]:
-    """ Loads the packs_results.json file to get the successful and failed packs dicts
+    """ Loads the packs_results.json file to get the successful and failed packs together with uploaded images dicts
 
     Args:
         packs_results_file_path (str): The path to the file
@@ -1965,7 +1956,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         successful_packs (list): The list of all successful packs
         failed_packs (list): The list of all failed packs
-        images_data (dict): The dict that contains the data of all the images that were uploaded
+        images_data (dict): A dict containing all images that were uploaded for each pack
 
     """
     packs_results = load_json(packs_results_file_path)

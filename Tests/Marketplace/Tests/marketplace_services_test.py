@@ -629,17 +629,11 @@ class TestImagesUpload:
         mocker.patch('builtins.open', mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
-        dummy_content_repo = mocker.MagicMock()
-        dummy_commit = mocker.MagicMock()
-        dummy_content_repo.commit.return_value = dummy_commit
         dummy_file = mocker.MagicMock()
-        dummy_commit.diff.return_value = [dummy_file]
         dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
-        fake_hash = 'fake_hash'
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
-        task_status, integration_images = dummy_pack.upload_integration_images(dummy_storage_bucket, fake_hash,
-                                                                               fake_hash, dummy_content_repo)
+        task_status, integration_images = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file])
 
         assert task_status
         assert len(expected_result) == len(integration_images)
@@ -669,17 +663,11 @@ class TestImagesUpload:
         mocker.patch("builtins.open", mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
-        dummy_content_repo = mocker.MagicMock()
-        dummy_commit = mocker.MagicMock()
-        dummy_content_repo.commit.return_value = dummy_commit
         dummy_file = mocker.MagicMock()
-        dummy_commit.diff.return_value = [dummy_file]
         dummy_file.a_path = os.path.join(PACKS_FOLDER, "TestPack", temp_image_name)
-        fake_hash = 'fake_hash'
         dummy_storage_bucket.blob.return_value.name = os.path.join(GCPConfig.STORAGE_BASE_PATH, "TestPack",
                                                                    temp_image_name)
-        task_status, integration_images = dummy_pack.upload_integration_images(dummy_storage_bucket, fake_hash,
-                                                                               fake_hash, dummy_content_repo)
+        task_status, integration_images = dummy_pack.upload_integration_images(dummy_storage_bucket, [dummy_file])
 
         assert task_status
         assert len(expected_result) == len(integration_images)
@@ -700,7 +688,7 @@ class TestImagesUpload:
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_build_bucket.copy_blob.return_value = Blob('copied_blob', dummy_prod_bucket)
-        images_data = {"TestPack": {BucketUploadFlow.INTEGRATION: [os.path.basename(blob_name)]}}
+        images_data = {"TestPack": {BucketUploadFlow.INTEGRATIONS: [os.path.basename(blob_name)]}}
         task_status = dummy_pack.copy_integration_images(dummy_prod_bucket, dummy_build_bucket, images_data)
         assert task_status
 
@@ -1405,7 +1393,7 @@ class TestGetSuccessfulAndFailedPacks:
                     f"{BucketUploadFlow.IMAGES}": {
                         "TestPack1": {
                             f"{BucketUploadFlow.AUTHOR}": True,
-                            f"{BucketUploadFlow.INTEGRATION}": ["integration_image.png"]
+                            f"{BucketUploadFlow.INTEGRATIONS}": ["integration_image.png"]
                         }
                     }
                 }
@@ -1429,8 +1417,8 @@ class TestGetSuccessfulAndFailedPacks:
         test_pack_images = images.get("TestPack1", {})
         assert BucketUploadFlow.AUTHOR in test_pack_images
         assert test_pack_images.get(BucketUploadFlow.AUTHOR, False)
-        assert BucketUploadFlow.INTEGRATION in test_pack_images
-        integration_images = test_pack_images.get(BucketUploadFlow.INTEGRATION, [])
+        assert BucketUploadFlow.INTEGRATIONS in test_pack_images
+        integration_images = test_pack_images.get(BucketUploadFlow.INTEGRATIONS, [])
         assert len(integration_images) == 1
         assert integration_images[0] == "integration_image.png"
 
