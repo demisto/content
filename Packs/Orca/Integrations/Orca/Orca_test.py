@@ -1,471 +1,553 @@
-"""HelloWorld Integration for Cortex XSOAR - Unit Tests file
+from datetime import datetime
 
-This file contains the Unit Tests for the HelloWorld Integration based
-on pytest. Cortex XSOAR contribution requirements mandate that every
-integration should have a proper set of unit tests to automatically
-verify that the integration is behaving as expected during CI/CD pipeline.
-
-Test Execution
---------------
-
-Unit tests can be checked in 3 ways:
-- Using the command `lint` of demisto-sdk. The command will build a dedicated
-  docker instance for your integration locally and use the docker instance to
-  execute your tests in a dedicated docker instance.
-- From the command line using `pytest -v` or `pytest -vv`
-- From PyCharm
-
-Example with demisto-sdk (from the content root directory):
-demisto-sdk lint -i Packs/HelloWorld/Integrations/HelloWorld
-
-Coverage
---------
-
-There should be at least one unit test per command function. In each unit
-test, the target command function is executed with specific parameters and the
-output of the command function is checked against an expected output.
-
-Unit tests should be self contained and should not interact with external
-resources like (API, devices, ...). To isolate the code from external resources
-you need to mock the API of the external resource using pytest-mock:
-https://github.com/pytest-dev/pytest-mock/
-
-In the following code we configure requests-mock (a mock of Python requests)
-before each test to simulate the API calls to the HelloWorld API. This way we
-can have full control of the API behavior and focus only on testing the logic
-inside the integration code.
-
-We recommend to use outputs from the API calls and use them to compare the
-results when possible. See the ``test_data`` directory that contains the data
-we use for comparison, in order to reduce the complexity of the unit tests and
-avoding to manually mock all the fields.
-
-NOTE: we do not have to import or build a requests-mock instance explicitly.
-requests-mock library uses a pytest specific mechanism to provide a
-requests_mock instance to any function with an argument named requests_mock.
-
-More Details
-------------
-
-More information about Unit Tests in Cortex XSOAR:
-https://xsoar.pan.dev/docs/integrations/unit-testing
-
-"""
-
+import pytest
 import json
-import io
+from Orca import OrcaClient, ORCA_API_DNS_NAME, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents
+
+import demistomock as demisto
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
-
-
-def test_say_hello():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from HelloWorld import Client, say_hello_command
-
-    client = Client(base_url='https://test.com/api/v1', verify=False, auth=('test', 'test'))
-    args = {
-        'name': 'Dbot'
-    }
-    response = say_hello_command(client, args)
-
-    assert response.outputs == 'Hello Dbot'
-
-
-def test_start_scan(requests_mock):
-    """Tests helloworld-scan-start command function.
-
-    Configures requests_mock instance to generate the appropriate start_scan
-    API response when the correct start_scan API request is performed. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, scan_start_command
-
-    mock_response = {
-        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
-        'status': 'RUNNING'
-    }
-    requests_mock.get('https://test.com/api/v1/start_scan?hostname=example.com', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
+@pytest.fixture
+def orca_client() -> OrcaClient:
+    api_key = "dummy api key"
+    client = BaseClient(
+        base_url=ORCA_API_DNS_NAME,
+        verify=True,
         headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'hostname': 'example.com'
-    }
-
-    response = scan_start_command(client, args)
-
-    assert response.outputs_prefix == 'HelloWorld.Scan'
-    assert response.outputs_key_field == 'scan_id'
-    assert response.outputs == {
-        'scan_id': '7a161a3f-8d53-42de-80cd-92fb017c5a12',
-        'status': 'RUNNING',
-        'hostname': 'example.com'
-    }
-
-
-def test_status_scan(requests_mock):
-    """Tests helloworld-scan-status command function.
-
-    Configures requests_mock instance to generate the appropriate check_scan
-    API responses based on the scan ID provided. For scan_id 100, 300 status
-    should be COMPLETE while for scan ID 200 is RUNNING. Checks the output of
-    the command function with the expected output.
-    """
-    from HelloWorld import Client, scan_status_command
-
-    mock_response = {
-        'scan_id': '100',
-        'status': 'COMPLETE'
-    }
-    requests_mock.get('https://test.com/api/v1/check_scan?scan_id=100', json=mock_response)
-
-    mock_response = {
-        'scan_id': '200',
-        'status': 'RUNNING'
-    }
-    requests_mock.get('https://test.com/api/v1/check_scan?scan_id=200', json=mock_response)
-
-    mock_response = {
-        'scan_id': '300',
-        'status': 'COMPLETE'
-    }
-    requests_mock.get('https://test.com/api/v1/check_scan?scan_id=300', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'scan_id': ['100', '200', '300']
-    }
-
-    response = scan_status_command(client, args)
-
-    assert response.outputs_prefix == 'HelloWorld.Scan'
-    assert response.outputs_key_field == 'scan_id'
-    assert response.outputs == [
-        {
-            'scan_id': '100',
-            'status': 'COMPLETE'
+            'Authorization': f'Bearer {api_key}'
         },
-        {
-            'scan_id': '200',
-            'status': 'RUNNING'
+        proxy=True)
+    return OrcaClient(client=client)
+
+
+def test_get_alerts_by_type_malware_should_succeed(requests_mock, orca_client: OrcaClient) -> None:
+    mock_response = {
+        "version": "0.1.0",
+        "status": "success",
+        "total_items": 6,
+        "total_ungrouped_items": 6,
+        "total_supported_items": 10000,
+        "data": [
+            {
+                "type": "malware",
+                "rule_id": "r1111ea1111",
+                "type_string": "Malware",
+                "type_key": "/test_eicar_file",
+                "category": "Malware",
+                "description": "Malware EICAR-Test-File found on asset",
+                "details": "We have detected a file infected with EICAR-Test-File on the asset.",
+                "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+                "alert_labels": [
+                    "malware_found"
+                ],
+                "asset_category": "Storage",
+                "cloud_provider_id": "111111111111",
+                "cloud_provider": "aws",
+                "cloud_account_id": "10b11111-1111-1111-91d5-11111de11111",
+                "cloud_vendor_id": "111111111111",
+                "account_name": "111111111111",
+                "asset_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                "asset_name": "scan-me-s3-bucket-s8rrr",
+                "asset_type": "storage",
+                "asset_type_string": "AWS S3 Bucket",
+                "group_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                "group_name": "scan-me-s3-bucket-s8rrr",
+                "group_type": "storage",
+                "group_type_string": "NonGroup",
+                "group_val": "nongroup",
+                "cluster_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                "cluster_name": "scan-me-s3-bucket-s8rrr",
+                "cluster_type": "storage",
+                "level": 0,
+                "asset_state": "enabled",
+                "asset_labels": [
+                    "internet_facing",
+                    "pii"
+                ],
+                "asset_vendor_id": "scan-me-s3-bucket-s8rrr",
+                "asset_regions": [
+                    "us-east-1"
+                ],
+                "asset_regions_names": [
+                    "N. Virginia"
+                ],
+                "source": "test_eicar_file",
+                "findings": {
+                    "malware": [
+                        {
+                            "type": "malware",
+                            "labels": [
+                                "malware_found"
+                            ],
+                            "virus_names": [
+                                "EICAR-Test-File"
+                            ],
+                            "modification_time": "2020-04-26T14:26:11+00:00",
+                            "file": "/test_eicar_file",
+                            "sha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
+                            "sha1": "3395856ce81f2b7382dee72602f798b642f14140",
+                            "md5": "44d88612fea8a8f36de82e1278abb02f",
+                            "has_macro": False
+                        }
+                    ]
+                },
+                "configuration": {
+                    "user_status": "closed",
+                    "jira_issue_link": "https://www.jira.com/myproject",
+                    "jira_issue": "TP-41"
+                },
+                "state": {
+                    "alert_id": "orca-59",
+                    "status": "in_progress",
+                    "status_time": "2020-12-30T09:57:33+00:00",
+                    "created_at": "2020-11-08T12:58:52+00:00",
+                    "last_seen": "2020-12-30T10:35:46+00:00",
+                    "score": 1,
+                    "severity": "compromised",
+                    "low_since": None,
+                    "high_since": "2020-12-15T15:33:49+00:00",
+                    "in_verification": None
+                },
+                "priv": {
+                    "key": "3ea22222274111114b011111bb311111",
+                    "score": 1,
+                    "orig_score": 1,
+                    "alert_id": "orca-59",
+                    "full_scan_time": "2020-12-30T10:35:46+00:00",
+                    "organization_id": "11111111-1111-1111-1111-c111881c1111",
+                    "organization_name": "Orca Security",
+                    "context": "data",
+                    "account_action_id_ctx": {
+                        "data": "11111111-1111-1111-1111-8a529a011111"
+                    },
+                    "scan_id_ctx": {
+                        "data": "11111111-1111-1111-1111-8a529a011111_111111111111_bucket-111111e11111-us-east-1"
+                    },
+                    "first_seen": "2020-11-08T13:03:37+00:00"
+                },
+                "hdr": {
+                    "asset_category": "Storage",
+                    "organization_id": "11111111-1111-1111-1111-c111881c1111",
+                    "organization_name": "Orca Security",
+                    "cloud_provider": "aws",
+                    "cloud_provider_id": "111111111111",
+                    "cloud_account_id": "10b11111-1111-1111-91d5-11111de11111",
+                    "context": "data",
+                    "asset_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                    "asset_type": "storage",
+                    "asset_type_string": "AWS S3 Bucket",
+                    "asset_name": "scan-me-s3-bucket-s8rrr",
+                    "group_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                    "group_name": "scan-me-s3-bucket-s8rrr",
+                    "group_type": "storage",
+                    "group_type_string": "NonGroup",
+                    "cluster_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                    "cluster_type": "storage",
+                    "cluster_name": "scan-me-s3-bucket-s8rrr",
+                    "level": 0,
+                    "group_val": "nongroup",
+                    "asset_vendor_id": "scan-me-s3-bucket-s8rrr",
+                    "cloud_vendor_id": "111111111111",
+                    "asset_state": "enabled",
+                    "account_name": "111111111111",
+                    "asset_labels": [
+                        "internet_facing"
+                    ]
+                },
+                "insert_time": "2020-12-30T10:45:21+00:00"
+            }
+        ]
+    }
+    requests_mock.get(f"{ORCA_API_DNS_NAME}/alerts?type=malware", json=mock_response)
+    res = orca_client.get_alerts_by_type(alert_type="malware")
+    assert res[0] == mock_response['data'][0]
+
+
+def test_get_alerts_by_non_existent_type_should_return_empty_list(requests_mock, orca_client: OrcaClient) -> None:
+    NON_EXISTENT_ALERT_TYPE = "non_existent_alert_type"
+    mock_response = {
+        "version": "0.1.0",
+        "status": "success",
+        "total_items": 0,
+        "total_ungrouped_items": 0,
+        "total_supported_items": 10000,
+        "data": []}
+
+    requests_mock.get(f"{ORCA_API_DNS_NAME}/alerts?type={NON_EXISTENT_ALERT_TYPE}", json=mock_response)
+    res = orca_client.get_alerts_by_type(alert_type=NON_EXISTENT_ALERT_TYPE)
+    assert res == []
+
+
+def test_fetch_incidents_first_run_should_succeed(mocker, requests_mock, orca_client: OrcaClient) -> None:
+    mock_response = {
+        "version": "0.1.0",
+        "status": "success",
+        "total_items": 58,
+        "total_ungrouped_items": 58,
+        "total_supported_items": 10000,
+        "data": [
+            {
+                "type": "malware",
+                "rule_id": "r1111ea1111",
+                "type_string": "Malware",
+                "type_key": "/test_eicar_file",
+                "category": "Malware",
+                "description": "Malware EICAR-Test-File found on asset",
+                "details": "We have detected a file infected with EICAR-Test-File on the asset.",
+                "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+                "alert_labels": [
+                    "malware_found"
+                ],
+                "asset_category": "Storage",
+                "cloud_provider_id": "111111111111",
+                "cloud_provider": "aws",
+                "cloud_account_id": "10b11111-1111-1111-91d5-11111de11111",
+                "cloud_vendor_id": "111111111111",
+                "account_name": "111111111111",
+                "asset_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                "asset_name": "scan-me-s3-bucket-s8rrr",
+                "asset_type": "storage",
+                "asset_type_string": "AWS S3 Bucket",
+                "group_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                "group_name": "scan-me-s3-bucket-s8rrr",
+                "group_type": "storage",
+                "group_type_string": "NonGroup",
+                "group_val": "nongroup",
+                "cluster_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                "cluster_name": "scan-me-s3-bucket-s8rrr",
+                "cluster_type": "storage",
+                "level": 0,
+                "asset_state": "enabled",
+                "asset_labels": [
+                    "internet_facing",
+                    "pii"
+                ],
+                "asset_vendor_id": "scan-me-s3-bucket-s8rrr",
+                "asset_regions": [
+                    "us-east-1"
+                ],
+                "asset_regions_names": [
+                    "N. Virginia"
+                ],
+                "source": "test_eicar_file",
+                "findings": {
+                    "malware": [
+                        {
+                            "type": "malware",
+                            "labels": [
+                                "malware_found"
+                            ],
+                            "virus_names": [
+                                "EICAR-Test-File"
+                            ],
+                            "modification_time": "2020-04-26T14:26:11+00:00",
+                            "file": "/test_eicar_file",
+                            "sha256": "275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f",
+                            "sha1": "3395856ce81f2b7382dee72602f798b642f14140",
+                            "md5": "44d88612fea8a8f36de82e1278abb02f",
+                            "has_macro": False
+                        }
+                    ]
+                },
+                "configuration": {
+                    "user_status": "closed",
+                    "jira_issue_link": "https://www.jira.com/myproject",
+                    "jira_issue": "TP-41"
+                },
+                "state": {
+                    "alert_id": "orca-59",
+                    "status": "in_progress",
+                    "status_time": "2020-12-30T09:57:33+00:00",
+                    "created_at": "2020-11-08T12:58:52+00:00",
+                    "last_seen": "2020-12-30T10:35:46+00:00",
+                    "score": 1,
+                    "severity": "compromised",
+                    "low_since": None,
+                    "high_since": "2020-12-15T15:33:49+00:00",
+                    "in_verification": None
+                },
+                "priv": {
+                    "key": "3ea22222274111114b011111bb311111",
+                    "score": 1,
+                    "orig_score": 1,
+                    "alert_id": "orca-59",
+                    "full_scan_time": "2020-12-30T10:35:46+00:00",
+                    "organization_id": "11111111-1111-1111-1111-c111881c1111",
+                    "organization_name": "Orca Security",
+                    "context": "data",
+                    "account_action_id_ctx": {
+                        "data": "11111111-1111-1111-1111-8a529a011111"
+                    },
+                    "scan_id_ctx": {
+                        "data": "11111111-1111-1111-1111-8a529a011111_111111111111_bucket-111111e11111-us-east-1"
+                    },
+                    "first_seen": "2020-11-08T13:03:37+00:00"
+                },
+                "hdr": {
+                    "asset_category": "Storage",
+                    "organization_id": "11111111-1111-1111-1111-c111881c1111",
+                    "organization_name": "Orca Security",
+                    "cloud_provider": "aws",
+                    "cloud_provider_id": "111111111111",
+                    "cloud_account_id": "10b11111-1111-1111-91d5-11111de11111",
+                    "context": "data",
+                    "asset_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                    "asset_type": "storage",
+                    "asset_type_string": "AWS S3 Bucket",
+                    "asset_name": "scan-me-s3-bucket-s8rrr",
+                    "group_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                    "group_name": "scan-me-s3-bucket-s8rrr",
+                    "group_type": "storage",
+                    "group_type_string": "NonGroup",
+                    "cluster_unique_id": "storage_111111e11111_scan-me-s3-bucket-s8rrr",
+                    "cluster_type": "storage",
+                    "cluster_name": "scan-me-s3-bucket-s8rrr",
+                    "level": 0,
+                    "group_val": "nongroup",
+                    "asset_vendor_id": "scan-me-s3-bucket-s8rrr",
+                    "cloud_vendor_id": "111111111111",
+                    "asset_state": "enabled",
+                    "account_name": "111111111111",
+                    "asset_labels": [
+                        "internet_facing"
+                    ]
+                },
+                "insert_time": "2020-12-30T10:45:21+00:00"
+            },
+            {
+                "type": "malware",
+                "rule_id": "r1111ea1111",
+                "type_string": "Malware",
+                "type_key": "/usr/local/bin/eicarcom2.zip",
+                "category": "Malware",
+                "description": "Malware EICAR-Test-File found on asset",
+                "details": "We have detected a file infected with EICAR-Test-File on the asset.",
+                "recommendation": "Remediate the host and attend additional alerts on the host to close the infection path.",
+                "alert_labels": [
+                    "malware_found"
+                ],
+                "asset_category": "Image",
+                "cloud_provider_id": "111111111111",
+                "cloud_provider": "aws",
+                "cloud_account_id": "10b11111-1111-1111-91d5-11111de11111",
+                "cloud_vendor_id": "111111111111",
+                "account_name": "111111111111",
+                "asset_unique_id": "vmimage_111111e11111_ami-11111c111111d7911",
+                "asset_name": "my_test_image-1231asdasjdn",
+                "asset_type": "vmimage",
+                "asset_type_string": "VM Image",
+                "group_unique_id": "vmimage_111111e11111_ami-11111c111111d7911",
+                "group_name": "my_test_image-1231asdasjdn",
+                "group_type": "vmimage",
+                "group_type_string": "NonGroup",
+                "group_val": "nongroup",
+                "cluster_unique_id": "vmimage_111111e11111_ami-11111c111111d7911",
+                "cluster_name": "my_test_image-1231asdasjdn",
+                "cluster_type": "vmimage",
+                "level": 0,
+                "asset_vendor_id": "ami-11111c111111d7911",
+                "asset_distribution_name": "Ubuntu",
+                "asset_distribution_version": "18.04",
+                "asset_role_names": [
+                    "mysql",
+                    "ssh",
+                    "haproxy",
+                    "postgresql"
+                ],
+                "source": "eicarcom2.zip",
+                "findings": {
+                    "malware": [
+                        {
+                            "type": "malware",
+                            "labels": [
+                                "malware_found"
+                            ],
+                            "virus_names": [
+                                "EICAR-Test-File"
+                            ],
+                            "modification_time": "2019-07-09T21:16:26+00:00",
+                            "file": "/usr/local/bin/eicarcom2.zip",
+                            "sha256": "e1105070ba828007508566e28a2b8d4c65d192e9eaf3b7868382b7cae747b397",
+                            "sha1": "bec1b52d350d721c7e22a6d4bb0a92909893a3ae",
+                            "md5": "e4968ef99266df7c9a1f0637d2389dab",
+                            "has_macro": False
+                        }
+                    ]
+                },
+                "configuration": {},
+                "state": {
+                    "alert_id": "orca-242",
+                    "status": "open",
+                    "status_time": "2020-11-08T12:58:54+00:00",
+                    "created_at": "2020-11-08T12:58:54+00:00",
+                    "last_seen": "2020-12-30T10:35:48+00:00",
+                    "score": 1,
+                    "severity": "compromised",
+                    "low_since": None,
+                    "high_since": "2020-11-08T13:04:32+00:00",
+                    "in_verification": None
+                },
+                "priv": {
+                    "key": "3696080647d937b881eee2cfdd6c3943",
+                    "score": 1,
+                    "orig_score": 1,
+                    "alert_id": "orca-242",
+                    "full_scan_time": "2020-12-30T10:35:48+00:00",
+                    "organization_id": "11111111-1111-1111-1111-c111881c1111",
+                    "organization_name": "Orca Security",
+                    "context": "data",
+                    "account_action_id_ctx": {
+                        "data": "11111111-1111-1111-1111-8a529a011111"
+                    },
+                    "scan_id_ctx": {
+                        "data": "11111111-1111-1111-1111-8a529a011111_111111111111_ami-11111c111111d7911"
+                    },
+                    "first_seen": "2020-11-08T13:04:32+00:00"
+                },
+                "hdr": {
+                    "asset_category": "Image",
+                    "organization_id": "11111111-1111-1111-1111-c111881c1111",
+                    "organization_name": "Orca Security",
+                    "cloud_provider": "aws",
+                    "cloud_provider_id": "111111111111",
+                    "cloud_account_id": "10b11111-1111-1111-91d5-11111de11111",
+                    "context": "data",
+                    "asset_unique_id": "vmimage_111111e11111_ami-11111c111111d7911",
+                    "asset_type": "vmimage",
+                    "asset_type_string": "VM Image",
+                    "asset_name": "my_test_image-1231asdasjdn",
+                    "group_unique_id": "vmimage_111111e11111_ami-11111c111111d7911",
+                    "group_name": "my_test_image-1231asdasjdn",
+                    "group_type": "vmimage",
+                    "group_type_string": "NonGroup",
+                    "cluster_unique_id": "vmimage_111111e11111_ami-11111c111111d7911",
+                    "cluster_type": "vmimage",
+                    "cluster_name": "my_test_image-1231asdasjdn",
+                    "level": 0,
+                    "group_val": "nongroup",
+                    "asset_vendor_id": "ami-11111c111111d7911",
+                    "cloud_vendor_id": "111111111111",
+                    "account_name": "111111111111"
+                },
+                "insert_time": "2020-12-30T10:44:11+00:00"
+            }
+        ]
+    }
+    mocker.patch.object(demisto, 'getLastRun', return_value={'lastRun': None})
+    requests_mock.get(f"{ORCA_API_DNS_NAME}/query/alerts", json=mock_response)
+    fetched_incidents = fetch_incidents(orca_client)
+    assert fetched_incidents[0]['name'] == 'Orca Cloud Incident: orca-59.'
+    loaded_raw_alert = json.loads(fetched_incidents[0]['rawJSON'])
+    assert loaded_raw_alert['demisto_score'] == 1
+    assert fetched_incidents[1]['name'] == 'Orca Cloud Incident: orca-242.'
+    loaded_raw_alert = json.loads(fetched_incidents[1]['rawJSON'])
+    assert loaded_raw_alert['demisto_score'] == 1
+
+
+def test_fetch_incidents_not_first_run_return_empty(mocker, orca_client: OrcaClient) -> None:
+    # validates that fetch-incidents is returning an a empty list when it is not the first run
+    mocker.patch.object(demisto, 'getLastRun',
+                        return_value={'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
+    fetched_incidents = fetch_incidents(orca_client)
+    assert fetched_incidents == []
+
+
+def test_get_asset_should_succeed(requests_mock, orca_client: OrcaClient) -> None:
+    mock_response = {
+        "type": "vmimage",
+        "asset_category": "Image",
+        "asset_subcategory": "VM Image",
+        "cloud_provider_id": "111111111111",
+        "cloud_provider": "aws",
+        "cloud_account_id": "10b11111-1111-1111-91d5-11111de11111",
+        "cloud_vendor_id": "111111111111",
+        "account_name": "111111111111",
+        "asset_unique_id": "vmimage_111111e11111_ami-11111c111111d7911",
+        "asset_name": "my_test_image-1231asdasjdn",
+        "asset_type": "vmimage",
+        "asset_type_string": "VM Image",
+        "group_unique_id": "vmimage_111111e11111_ami-11111c111111d7911",
+        "group_name": "my_test_image-1231asdasjdn",
+        "group_type": "vmimage",
+        "group_type_string": "NonGroup",
+        "cluster_unique_id": "vmimage_111111e11111_ami-11111c111111d7911",
+        "cluster_name": "my_test_image-1231asdasjdn",
+        "cluster_type": "vmimage",
+        "level": 0,
+        "asset_vendor_id": "ami-11111c111111d7911",
+        "internet_facing": False,
+        "internet_facing_new": False,
+        "create_time": "2020-07-28T09:10:01+00:00",
+        "container_id": "main",
+        "compute": {
+            "distribution_name": "Ubuntu",
+            "distribution_version": "18.04",
+            "disks": [
+                {
+                    "size": "7.75 GB",
+                    "used": "2.06 GB"
+                }
+            ],
+            "total_disks_bytes": 8326123520,
+            "roles": [
+                {
+                    "type": "database",
+                    "name": "mysql",
+                    "is_public": False,
+                    "detected_evidence": [
+                        "/var/lib/mysql/mysqldb2",
+                        "/var/lib/mysql/mysqldb1"
+                    ]
+                },
+                {
+                    "type": "ssh",
+                    "name": "ssh",
+                    "is_public": False
+                },
+                {
+                    "type": "web",
+                    "name": "haproxy",
+                    "is_public": False
+                },
+                {
+                    "type": "database",
+                    "name": "postgresql",
+                    "is_public": False,
+                    "detected_evidence": [
+                        "/var/lib/postgresql/10/main/base/1",
+                        "/var/lib/postgresql/10/main",
+                        "/var/lib/postgresql/10/main/base/13017",
+                        "/var/lib/postgresql/10/main/base/16384",
+                        "/var/lib/postgresql/10/main/base/13018"
+                    ]
+                }
+            ]
         },
-        {
-            'scan_id': '300',
-            'status': 'COMPLETE'
-        }
-    ]
-
-
-def test_scan_results(mocker, requests_mock):
-    """Tests helloworld-scan-results command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_scan_results API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, scan_results_command
-    from CommonServerPython import Common
-
-    mock_response = util_load_json('test_data/scan_results.json')
-    requests_mock.get('https://test.com/api/v1/get_scan_results?scan_id=100', json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'scan_id': '100',
-        'format': 'json'
-    }
-
-    response = scan_results_command(client, args)
-
-    assert response[0].outputs == mock_response
-    assert response[0].outputs_prefix == 'HelloWorld.Scan'
-    assert response[0].outputs_key_field == 'scan_id'
-
-    # This command also returns Common.CVE data
-    assert isinstance(response, list)
-    assert len(response) > 1
-    for i in range(1, len(response)):
-        assert isinstance(response[i].indicator, Common.CVE)
-
-
-def test_search_alerts(requests_mock):
-    """Tests helloworld-search-alerts command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, search_alerts_command
-
-    mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get(
-        'https://test.com/api/v1/get_alerts?alert_status=ACTIVE&severity=Critical&max_results=2&start_time=1581982463',
-        json=mock_response['alerts'])
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'severity': 'Critical',
-        'start_time': 1581982463,
-        'max_results': 2,
-        'status': 'ACTIVE'
-    }
-
-    response = search_alerts_command(client, args)
-
-    # We modify the timestamp from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['alerts'][0]['created'] = '2020-02-17T23:34:23.000Z'
-    mock_response['alerts'][1]['created'] = '2020-02-17T23:34:23.000Z'
-
-    assert response.outputs_prefix == 'HelloWorld.Alert'
-    assert response.outputs_key_field == 'alert_id'
-    assert response.outputs == mock_response['alerts']
-
-
-def test_get_alert(requests_mock):
-    """Tests helloworld-get-alert command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, get_alert_command
-
-    mock_response = util_load_json('test_data/get_alert.json')
-    requests_mock.get('https://test.com/api/v1/get_alert_details?alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0',
-                      json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'alert_id': '695b3238-05d6-4934-86f5-9fff3201aeb0',
-    }
-
-    response = get_alert_command(client, args)
-
-    # We modify the timestamp from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['created'] = '2020-04-17T14:43:59.000Z'
-
-    assert response.outputs == mock_response
-    assert response.outputs_prefix == 'HelloWorld.Alert'
-    assert response.outputs_key_field == 'alert_id'
-
-
-def test_update_alert_status(requests_mock):
-    """Tests helloworld-update-alert-status command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_alerts API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, update_alert_status_command
-
-    mock_response = util_load_json('test_data/update_alert_status.json')
-    requests_mock.get(
-        'https://test.com/api/v1/change_alert_status?alert_id=695b3238-05d6-4934-86f5-9fff3201aeb0&alert_status=CLOSED',
-        json=mock_response)
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'alert_id': '695b3238-05d6-4934-86f5-9fff3201aeb0',
-        'status': 'CLOSED'
-    }
-
-    response = update_alert_status_command(client, args)
-
-    # We modify the timestamp from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['updated'] = '2020-04-17T14:45:12.000Z'
-
-    assert response.outputs == mock_response
-    assert response.outputs_prefix == 'HelloWorld.Alert'
-    assert response.outputs_key_field == 'alert_id'
-
-
-def test_ip(requests_mock):
-    """Tests the ip reputation command function.
-
-    Configures requests_mock instance to generate the appropriate
-    ip reputation API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, ip_reputation_command
-    from CommonServerPython import Common
-
-    ip_to_check = '151.1.1.1'
-    mock_response = util_load_json('test_data/ip_reputation.json')
-    requests_mock.get(f'http://test.com/api/v1/ip?ip={ip_to_check}',
-                      json=mock_response)
-
-    client = Client(
-        base_url='http://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authorization': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'ip': ip_to_check,
-        'threshold': 65,
-    }
-
-    response = ip_reputation_command(client, args, 65)
-
-    assert response[0].outputs == mock_response
-    assert response[0].outputs_prefix == 'HelloWorld.IP'
-    assert response[0].outputs_key_field == 'ip'
-
-    # This command also returns Common.IP data
-    assert isinstance(response, list)
-    assert isinstance(response[0].indicator, Common.IP)
-    assert response[0].indicator.ip == ip_to_check
-
-
-def test_domain(requests_mock):
-    """Tests the domain reputation command function.
-
-    Configures requests_mock instance to generate the appropriate
-    domain reputation API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, domain_reputation_command
-    from CommonServerPython import Common
-
-    domain_to_check = 'google.com'
-    mock_response = util_load_json('test_data/domain_reputation.json')
-    requests_mock.get(f'http://test.com/api/v1/domain?domain={domain_to_check}',
-                      json=mock_response)
-
-    client = Client(
-        base_url='http://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authorization': 'Bearer some_api_key'
-        }
-    )
-
-    args = {
-        'domain': domain_to_check,
-        'threshold': 65,
-    }
-
-    response = domain_reputation_command(client, args, 65)
-
-    # We modify the timestamps from the raw mock_response of the API, because the
-    # integration changes the format from timestamp to ISO8601.
-    mock_response['expiration_date'] = '2028-09-14T04:00:00.000Z'
-    mock_response['creation_date'] = '1997-09-15T04:00:00.000Z'
-    mock_response['updated_date'] = '2019-09-09T15:39:04.000Z'
-
-    assert response[0].outputs == mock_response
-    assert response[0].outputs_prefix == 'HelloWorld.Domain'
-    assert response[0].outputs_key_field == 'domain'
-
-    # This command also returns Common.Domain data
-    assert isinstance(response, list)
-    assert isinstance(response[0].indicator, Common.Domain)
-    assert response[0].indicator.domain == domain_to_check
-
-
-def test_fetch_incidents(requests_mock):
-    """Tests the fetch-incidents command function.
-
-    Configures requests_mock instance to generate the appropriate
-    get_alert API response, loaded from a local JSON file. Checks
-    the output of the command function with the expected output.
-    """
-    from HelloWorld import Client, fetch_incidents
-
-    mock_response = util_load_json('test_data/search_alerts.json')
-    requests_mock.get(
-        'https://test.com/api/v1/get_alerts?alert_status=ACTIVE'
-        '&severity=Low%2CMedium%2CHigh%2CCritical&max_results=2'
-        '&start_time=1581944401', json=mock_response['alerts'])
-
-    client = Client(
-        base_url='https://test.com/api/v1',
-        verify=False,
-        headers={
-            'Authentication': 'Bearer some_api_key'
-        }
-    )
-
-    last_run = {
-        'last_fetch': 1581944401  # Mon Feb 17 2020
-    }
-
-    _, new_incidents = fetch_incidents(
-        client=client,
-        max_results=2,
-        last_run=last_run,
-        alert_status='ACTIVE',
-        min_severity='Low',
-        alert_type=None,
-        first_fetch_time='3 days',
-    )
-
-    assert new_incidents == [
-        {
-            'name': 'Hello World Alert 100',
-            'occurred': '2020-02-17T23:34:23.000Z',
-            'rawJSON': json.dumps(mock_response['alerts'][0]),
-            'severity': 4,  # critical, this is XSOAR severity (already converted)
+        "vmimage": {
+            "image_id": "ami-11111c111111d7911",
+            "image_owner_id": "111111111111",
+            "image_name": "my_test_image-1231asdasjdn",
+            "image_description": ""
         },
-        {
-            'name': 'Hello World Alert 200',
-            'occurred': '2020-02-17T23:34:23.000Z',
-            'rawJSON': json.dumps(mock_response['alerts'][1]),
-            'severity': 2,  # medium, this is XSOAR severity (already converted)
+        "configuration": {},
+        "state": {
+            "status": "exists",
+            "status_time": "2020-11-08T13:04:34+00:00",
+            "created_at": "2020-11-08T13:04:34+00:00",
+            "last_seen": "2020-12-30T10:44:11+00:00",
+            "score": 1,
+            "severity": "compromised",
+            "safe_since": None,
+            "unsafe_since": "2020-11-08T13:04:34+00:00"
         }
-    ]
+    }
+    requests_mock.get(f"{ORCA_API_DNS_NAME}/assets/vmimage_111111e11111_ami-11111c111111d7911", json=mock_response)
+    res = orca_client.get_asset(asset_unique_id="vmimage_111111e11111_ami-11111c111111d7911")
+    assert res == mock_response
+
+
+def test_get_asset_nonexistent(requests_mock, orca_client: OrcaClient) -> None:
+    mock_response = {"error": ""}
+    requests_mock.get(f"{ORCA_API_DNS_NAME}/assets/1234567", json=mock_response)
+    res = orca_client.get_asset(asset_unique_id="1234567")
+    assert res == "Asset Not Found"

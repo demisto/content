@@ -1,9 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 from typing import Any, Dict, Union
-
 
 ORCA_API_DNS_NAME = "https://orcadeveden-internal-dev.orcasecurity.net/api"
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -19,13 +17,14 @@ class OrcaClient:
         if alert_type:
             url_suffix = f"{url_suffix}?type={alert_type}"
         response = self.client._http_request(method="GET", url_suffix=url_suffix)
+
         if response['status'] != 'success':
             return response['error']
 
-        asset = response["data"]
-        return asset
+        alerts = response["data"]
+        return alerts
 
-    def get_all_alerts(self)->List[Dict[str,Any]]:
+    def get_all_alerts(self) -> List[Dict[str, Any]]:
         demisto.info("get_all_alerts, enter")
 
         alerts = []
@@ -34,9 +33,9 @@ class OrcaClient:
 
         while True:
             if next_page_token:
-                params = {"next_page_token":next_page_token}
+                params = {"next_page_token": next_page_token}
 
-            response = self.client._http_request(method="GET", url_suffix="/query/alerts",params=params)
+            response = self.client._http_request(method="GET", url_suffix="/query/alerts", params=params)
             if response['status'] != 'success':
                 demisto.info(f"got bad response, {response['error']}")
                 return response['error']
@@ -59,27 +58,46 @@ class OrcaClient:
         except DemistoException:
             return f"could not find {asset_unique_id}"
 
+        if 'error' in response:
+            return "Asset Not Found"
+
         return response
 
-    def get_cves(self, asset_unique_id: str) -> Union[List[Dict[str, Any]], str]:
-        demisto.debug("get_cves, enter")
-        try:
-            response = self.client._http_request(method="GET", url_suffix=f"/cves?asset_unique_id={asset_unique_id}")
-        except DemistoException:
-            return f"could extract CVEs for {asset_unique_id}"
-
-        if response['status'] != 'success':
-            return response['error']
-
-        cves = response['data']
-        if not cves:
-            return f"No CVE data for asset {asset_unique_id}"
-        return cves
 
 
 def map_orca_score_to_demisto_score(orca_score: int) -> int:
     MAPPING = {1: 1, 2: 1, 3: 2, 4: 3}
     return MAPPING[orca_score]
+
+
+def fetch_incidents(orca_client: OrcaClient) -> List[Dict[str,Any]]:
+    demisto.debug("fetch-incidents called")
+    if demisto.getLastRun().get('lastRun'):
+        demisto.info("not first run, returning")
+        # only first run is relevant, other incidents are dynamically pushed from Kafka
+        demisto.incidents([])
+        return []
+
+    alerts = orca_client.get_all_alerts()
+    if not alerts:
+        demisto.incidents([])
+        return []
+
+    incidents = []
+    for alert in alerts:
+        alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state").get("score"))
+        incident = {
+            'name': f"Orca Cloud Incident: {alert.get('state').get('alert_id')}.",
+            'occurred': datetime_to_string(
+                datetime.strptime(alert.get('state').get('last_seen'), "%Y-%m-%dT%H:%M:%S%z").isoformat()),
+            'rawJSON': json.dumps(alert),
+            'severity': map_orca_score_to_demisto_score(orca_score=alert.get('state').get('score'))
+        }
+        incidents.append(incident)
+
+    demisto.setLastRun({'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
+    demisto.incidents(incidents)
+    return incidents
 
 
 def main() -> None:
@@ -114,31 +132,7 @@ def main() -> None:
         return_results(asset)
 
     if command == "fetch-incidents":
-        demisto.debug("fetch-incidents called")
-        if demisto.getLastRun().get('lastRun'):
-            demisto.info("not first run, returning")
-            # only first run is relevant, other incidents are dynamically pushed from Kafka
-            demisto.incidents([])
-            return
-
-        alerts = orca_client.get_all_alerts()
-        if not alerts:
-            demisto.incidents([])
-            return
-
-        incidents = []
-        for alert in alerts:
-            alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state").get("score"))
-            incident = {
-                'name': f"Orca Cloud Incident: {alert.get('state').get('alert_id')}.",
-                'occurred': datetime_to_string(datetime.strptime(alert.get('state').get('last_seen'), "%Y-%m-%dT%H:%M:%S%z").isoformat()),
-                'rawJSON': json.dumps(alert),
-                'severity': map_orca_score_to_demisto_score(orca_score=alert.get('state').get('score'))
-            }
-            incidents.append(incident)
-
-        demisto.setLastRun({'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
-        demisto.incidents(incidents)
+        fetch_incidents(orca_client)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
