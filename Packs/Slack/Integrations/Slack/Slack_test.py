@@ -4245,7 +4245,7 @@ def test_unset_proxy_and_ssl(mocker):
     assert init_args['ssl'] is None
     assert init_args['proxy'] is None
 
-
+@pytest.mark.skip(reason="Test not stable, issue: 32385")
 def test_fail_connect_threads(mocker):
     import Slack
     mocker.patch.object(demisto, 'params', return_value={'unsecure': 'true', 'bot_token': '123'})
