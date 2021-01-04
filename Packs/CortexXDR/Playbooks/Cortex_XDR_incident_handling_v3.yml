@@ -6,13 +6,13 @@ name: Cortex XDR incident handling v3
 description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR\
   \ incident.\nThe playbook syncs and updates new XDR alerts that construct the incident\
   \ and triggers a sub-playbook to handle each alert by type.\nThen, the playbook\
-  \ performs enrichment on the incident's indicators and hunts for related IOCs.\n\
+  \ performs enrichment on the incident's indicators and hunting for related IOCs.\n\
   Based on the severity, it lets the analyst decide whether to continue to the remediation\
   \ stage or close the investigation as a false positive. \nAfter the remediation,\
   \ if there are no new alerts, the playbook stops the alert sync and closes the XDR\
   \ incident and investigation. For performing the bidirectional sync, the playbook\
   \ uses the incoming and outgoing mirroring feature added in XSOAR version 6.0.0.\
-  \ After the **Calculate Severity - Generic v2** sub-playbook’s run, Cortex XSOAR will\
+  \ After the `Calculate Severity - Generic v2` sub-playbook’s run Cortex XSOAR will\
   \ be treated as the single source of truth for the severity field, and it will sync\
   \ only from Cortex XSOAR to XDR, so manual changes for the severity field in XDR\
   \ will not update in the XSOAR incident."
@@ -93,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2135
+          "y": 2465
         }
       }
     note: false
@@ -139,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3150
+          "y": 3480
         }
       }
     note: false
@@ -149,18 +149,17 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 8764e9ac-4b02-42e1-8c01-d65dd5d8657e
+    taskid: f638b500-210c-4760-8767-c07b9db62308
     type: playbook
     task:
-      id: 8764e9ac-4b02-42e1-8c01-d65dd5d8657e
+      id: f638b500-210c-4760-8767-c07b9db62308
       version: -1
       name: Cortex XDR Alerts Handling
-      description: "This playbook is used to loop over every alert in a Cortex XDR\
-        \ incident. \nSupported alert categories:\n- Malware\n- Port Scan"
       playbookName: Cortex XDR Alerts Handling
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -173,9 +172,6 @@ tasks:
         complex:
           root: PaloAltoNetworksXDR
           accessor: Incident.incident_id
-      internalRanges:
-        complex:
-          root: inputs.InternalRange
     separatecontext: false
     loop:
       iscommand: false
@@ -187,7 +183,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 535
+          "y": 545
         }
       }
     note: false
@@ -212,7 +208,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4200
+          "y": 4530
         }
       }
     note: false
@@ -255,7 +251,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3840
+          "y": 4170
         }
       }
     note: false
@@ -295,7 +291,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4025
+          "y": 4355
         }
       }
     note: false
@@ -392,7 +388,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1740
+          "y": 2070
         }
       }
     note: false
@@ -420,7 +416,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1215
+          "y": 1545
         }
       }
     note: false
@@ -461,7 +457,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2300
+          "y": 2630
         }
       }
     note: false
@@ -489,7 +485,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 2470
+          "y": 2800
         }
       }
     note: false
@@ -519,7 +515,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 3320
+          "y": 3650
         }
       }
     note: false
@@ -547,7 +543,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 3490
+          "y": 3820
         }
       }
     note: false
@@ -715,7 +711,7 @@ tasks:
       {
         "position": {
           "x": 20,
-          "y": 2470
+          "y": 2800
         }
       }
     note: false
@@ -739,7 +735,7 @@ tasks:
       '#default#':
       - "23"
       "yes":
-      - "55"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -759,13 +755,131 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1400
+          "y": 1730
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: f548cabe-46a5-48ed-8c91-098bbef16b1a
+    type: playbook
+    task:
+      id: f548cabe-46a5-48ed-8c91-098bbef16b1a
+      version: -1
+      name: PANW - Hunting and threat detection by indicator type V2
+      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is\
+        \ a multipurpose playbook used for hunting and threat detection. The playbook\
+        \ receives inputs based on hashes, IP addresses, or domain names provided\
+        \ manually or from outputs by other playbooks. \nWith the received indicators,\
+        \ the playbook leverages Palo Alto Cortex data received by products such as\
+        \ Traps, Analytics and Pan-OS to search for IP addresses and hosts related\
+        \ to that specific hash. \nThe output provided by the playbook facilitates\
+        \ pivoting searches for possibly affected hosts, IP addresses, or users."
+      playbookName: PANW - Hunting and threat detection by indicator type V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      IPAddresses:
+        complex:
+          root: IP
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: IP.Malicious
+                iscontext: true
+          accessor: Address
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
+                iscontext: true
+          - operator: uniq
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      MD5:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
+                iscontext: true
+          - operator: uniq
+      URLDomain:
+        complex:
+          root: Domain
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Malicious
+                iscontext: true
+          accessor: Name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
+                iscontext: true
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
     quietmode: 0
   "35":
     id: "35"
@@ -852,7 +966,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1040
+          "y": 1350
         }
       }
     note: false
@@ -875,7 +989,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "35"
+      - "55"
     scriptarguments:
       append: {}
       key:
@@ -890,7 +1004,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 870
+          "y": 890
         }
       }
     note: false
@@ -920,7 +1034,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1930
+          "y": 2260
         }
       }
     note: false
@@ -960,7 +1074,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 3850
+          "y": 4180
         }
       }
     note: false
@@ -1207,7 +1321,7 @@ tasks:
       {
         "position": {
           "x": 1030,
-          "y": 3840
+          "y": 4170
         }
       }
     note: false
@@ -1263,7 +1377,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 2135
+          "y": 2465
         }
       }
     note: false
@@ -1303,7 +1417,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 4025
+          "y": 4355
         }
       }
     note: false
@@ -1343,7 +1457,7 @@ tasks:
       {
         "position": {
           "x": 1030,
-          "y": 4025
+          "y": 4355
         }
       }
     note: false
@@ -1371,7 +1485,7 @@ tasks:
       {
         "position": {
           "x": 740,
-          "y": 2980
+          "y": 3310
         }
       }
     note: false
@@ -1410,7 +1524,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2640
+          "y": 2970
         }
       }
     note: false
@@ -1453,7 +1567,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 2810
+          "y": 3140
         }
       }
     note: false
@@ -1498,100 +1612,32 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: c49060c1-f9ea-46bd-8882-334aa7e68f99
+    taskid: 27440553-7c35-4ee2-80ea-0ae9f2f845d6
     type: playbook
     task:
-      id: c49060c1-f9ea-46bd-8882-334aa7e68f99
+      id: 27440553-7c35-4ee2-80ea-0ae9f2f845d6
       version: -1
-      name: Palo Alto Networks - Hunting And Threat Detection
-      description: This is a multipurpose playbook used for hunting and threat detection.\
-        \ The playbook receives inputs based on hashes, IP addresses, or domain names\
-        \ provided manually or from outputs by other playbooks. \nWith the received\
-        \ indicators, the playbook leverages data received by PANW products including,\
-        \ Cortex Data Lake, Autofocus, and Pan-OS to search for IP addresses, host\
-        \ names, and users related to the provided indicators.\nThe output provided\
-        \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
-        \ or users.
-      playbookName: Palo Alto Networks - Hunting And Threat Detection
+      name: Cortex XDR device control violations
+      playbookName: Cortex XDR device control violations
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "23"
+      - "35"
     scriptarguments:
-      IPAddresses:
-        complex:
-          root: IP
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: 'IP.Malicious '
-                iscontext: true
-          accessor: Address
-      InternalDomainName:
-        complex:
-          root: inputs.InternalDomainName
-      InternalHostRegex:
-        complex:
-          root: inputs.InternalHostRegex
-      InternalRange:
-        complex:
-          root: inputs.InternalRange
-      MD5:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: MD5
-      SHA1:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: SHA1
-      SHA256:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: SHA256
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
-          - operator: uniq
-      URLDomain:
-        complex:
-          root: Domain
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: Domain.Malicious
-                iscontext: true
-          accessor: Name
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
+      EndpointID: {}
+      Hostname: {}
+      IPAddress: {}
+      MessageBody:
+        simple: |-
+          Hello,
+          Your user was involved with a device control violation. Please open the following link to fill in the needed information to understand the incident further.
+      MessageSubject:
+        simple: Device control violation
+      TimeStamp:
+        simple: 
     separatecontext: true
     loop:
       iscommand: false
@@ -1601,8 +1647,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 645,
-          "y": 1560
+          "x": 265,
+          "y": 1120
         }
       }
     note: false
@@ -1616,6 +1662,7 @@ view: |-
       "11_17_#default#": 0.43,
       "30_17_No": 0.39,
       "33_23_#default#": 0.53,
+      "33_34_yes": 0.44,
       "37_7_CONTINUE": 0.77,
       "43_2_#default#": 0.32,
       "44_2_no": 0.31,
@@ -1626,7 +1673,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5090,
+        "height": 5420,
         "width": 1650,
         "x": -240,
         "y": -825
@@ -1653,7 +1700,6 @@ inputs:
     simple: "Yes"
   required: false
   description: This input indicates whether the playbook will link similar incidents.
-    To link similar incidents you must enable Demisto REST API integration.
     Specify Yes/No.
   playbookInputQuery:
 - key: Hunting
@@ -1690,25 +1736,7 @@ inputs:
   description: CSV of DN names of critical Active Directory groups. This will affect
     the severity calculated for this incident.
   playbookInputQuery:
-- key: InternalHostRegex
-  value: {}
-  required: false
-  description: This is provided for the script IsInternalHostName that checks if the
-    detected host names are internal or external. If the hosts match the organization's
-    naming convention. For example the host testpc1 will have the following regex
-    \w{6}\d{1}
-  playbookInputQuery:
-- key: InternalDomainName
-  value: {}
-  required: false
-  description: The organizations internal domain name. This is provided for the script
-    IsInternalHostName that checks if the detected host names are internal or external
-    if the hosts contain the internal domains suffix. For example demisto.com. If
-    there is more than one domain, use the | character to separate values such as
-    (demisto.com|test.com)
-  playbookInputQuery:
 outputs: []
 tests:
 - No test
 fromversion: 6.0.0
-
