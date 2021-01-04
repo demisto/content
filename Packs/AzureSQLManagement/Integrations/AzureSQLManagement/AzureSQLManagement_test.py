@@ -33,7 +33,60 @@ def test_azure_sql_servers_list_command(mocker):
             - Assert the returned markdown and context data are as expected.
         """
     from AzureSQLManagement import azure_sql_servers_list_command
-    client = mock_client(mocker, util_load_json("test_data/azure_sql_servers_list_result.json"))
+    client = mock_client(mocker, util_load_json('test_data/azure_sql_servers_list_result.json'))
     results = azure_sql_servers_list_command(client)
     assert '### Servers List' in results.readable_output
-    assert results.outputs[0].get('name') == 'sqlintegration'
+    assert results.outputs[0].get('name') == 'integration'
+
+
+def test_azure_sql_db_list_command(mocker):
+    """
+        Given:
+            - azure_sql_db_list command
+            - server_name
+        When:
+            - Retrieving list of all databases related to the server
+        Then
+            - Assert the returned markdown and context data are as expected.
+        """
+    from AzureSQLManagement import azure_sql_db_list_command
+    client = mock_client(mocker, util_load_json('test_data/azure_sql_db_list_command_result.json'))
+    results = azure_sql_db_list_command(client, 'integration')
+    assert '### Database List' in results.readable_output
+    assert results.outputs[0].get('name') == 'integration-db'
+
+
+def test_azure_sql_db_audit_policy_list_command(mocker):
+    """
+        Given:
+            - azure_sql_db_audit_policy_list command
+            - server_name
+            - db_name
+        When:
+            - Retrieving list of all audit policies related to the server and database
+        Then
+            - Assert the returned markdown and context data are as expected.
+        """
+    from AzureSQLManagement import azure_sql_db_audit_policy_list_command
+    client = mock_client(mocker, util_load_json('test_data/azure_sql_db_audit_policy_list_command_result.json'))
+    results = azure_sql_db_audit_policy_list_command(client, 'integration', 'integration-db')
+    assert '### Database Audit Settings' in results.readable_output
+    assert results.outputs[0].get('type') == 'Microsoft.Sql/servers/databases/auditingSettings'
+
+
+def test_azure_sql_db_threat_policy_get_command(mocker):
+    """
+        Given:
+            - azure_sql_db_threat_policy_get command
+            - server_name
+            - db_name
+        When:
+            - Retrieving a threat detection policies of a database related to the server and database
+        Then
+            - Assert the returned markdown and context data are as expected.
+        """
+    from AzureSQLManagement import azure_sql_db_threat_policy_get_command
+    client = mock_client(mocker, util_load_json('test_data/azure_sql_db_threat_policy_get_command_result.json'))
+    results = azure_sql_db_threat_policy_get_command(client, 'integration', 'integration-db')
+    assert '### Database Threat Detection Policies' in results.readable_output
+    assert results.outputs.get('type') == 'Microsoft.Sql/servers/databases/securityAlertPolicies'

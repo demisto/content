@@ -12,8 +12,8 @@
             },
             "location": "eastus",
             "tags": {},
-            "id": "/subscriptions/1234567890/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration",
-            "name": "sqlintegration",
+            "id": "/subscriptions/1234567890/resourceGroups/integration/providers/Microsoft.Sql/servers/integration",
+            "name": "integration",
             "type": "Microsoft.Sql/servers"
         }
     ]

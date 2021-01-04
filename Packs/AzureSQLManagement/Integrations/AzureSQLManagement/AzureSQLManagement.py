@@ -2,16 +2,13 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import json
 import urllib3
-import dateparser
+
 import traceback
 import copy
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
 
 ''' CONSTANTS '''
 
@@ -23,6 +20,7 @@ API_VERSION = '2019-06-01-preview'
 class Client:
     """Client class to interact with the service API
     """
+
     @logger
     def __init__(self, app_id, subscription_id, resource_group_name, verify, proxy):
         self.resource_group_name = resource_group_name
@@ -34,15 +32,15 @@ class Client:
         base_url = f'https://management.azure.com/subscriptions/{subscription_id}'
         client_args = {
             'self_deployed': True,  # We always set the self_deployed key as True because when not using a self
-                                    # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
-                                    # flow and most of the same arguments should be set, as we're !not! using OProxy.
+            # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+            # flow and most of the same arguments should be set, as we're !not! using OProxy.
             'auth_id': app_id,
             'token_retrieval_url': 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             'grant_type': DEVICE_CODE,  # disable-secrets-detection
             'base_url': base_url,
             'verify': verify,
             'proxy': proxy,
-            'resource': 'https://management.core.windows.net',   # disable-secrets-detection
+            'resource': 'https://management.core.windows.net',  # disable-secrets-detection
             'scope': 'https://management.azure.com/user_impersonation offline_access user.read',
             'ok_codes': (200, 201, 202, 204),
         }
@@ -82,7 +80,6 @@ class Client:
 
     @logger
     def azure_sql_db_audit_policy_create_update(self, server_name: str, db_name: str,
-                                                policy_name: str,
                                                 state: str, audit_actions_groups: str,
                                                 is_azure_monitor_target_enabled: str,
                                                 is_storage_secondary_key_in_use: str,
@@ -91,7 +88,15 @@ class Client:
                                                 storage_account_subscription_id: str,
                                                 storage_endpoint: str):
         arg_list = {
-
+            "state": state,
+            "auditActionsAndGroups": audit_actions_groups,
+            "isAzureMonitorTargetEnabled": is_azure_monitor_target_enabled,
+            "isStorageSecondaryKeyInUse": is_storage_secondary_key_in_use,
+            "queueDelayMs": queue_delay_ms,
+            "retentionDays": retention_days,
+            "storageAccountAccessKey": storage_account_access_key,
+            "storageAccountSubscriptionId": storage_account_subscription_id,
+            "storageEndpoint": storage_endpoint
         }
         properties = {}
         for arg_key, arg_val in arg_list.items():
@@ -129,7 +134,7 @@ def azure_sql_servers_list_command(client: Client) -> CommandResults:
             del server['properties']
 
     human_readable = tableToMarkdown(name='Servers List', t=server_list_values,
-                                      headerTransform=pascalToSpace, removeNull=True)
+                                     headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
@@ -166,7 +171,7 @@ def azure_sql_db_list_command(client: Client, server_name: str) -> CommandResult
             del db['properties']
 
     human_readable = tableToMarkdown(name='Database List', t=database_list_values,
-                                      headerTransform=pascalToSpace, removeNull=True)
+                                     headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
@@ -216,14 +221,16 @@ def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_
 
 
 @logger
-def azure_sql_db_audit_policy_create_update_command(client: Client, server_name: str, db_name: str, policy_name: str,
-                                                    state: str, audit_actions_groups: str,
-                                                    is_azure_monitor_target_enabled: str,
-                                                    isStorageSecondaryKeyInUse: str, queueDelayMs: str,
-                                                    retentionDays: str, storageAccountAccessKey: str,
-                                                    storageAccountSubscriptionId: str,
-                                                    storageEndpoint: str) -> CommandResults:
-    """azure_sql_db_audit_policy_list command: Returns a list of auditing settings of a database
+def azure_sql_db_audit_policy_create_update_command(client: Client, server_name: str, db_name: str,
+                                                    state: str = None, audit_actions_groups: str = None,
+                                                    is_azure_monitor_target_enabled: str = None,
+                                                    is_storage_secondary_key_in_use: str = None,
+                                                    queue_delay_ms: str = None,
+                                                    retention_days: str = None, storage_account_access_key: str = None,
+                                                    storage_account_subscription_id: str = None,
+                                                    storage_endpoint: str = None) -> CommandResults:
+    """azure_sql_db_audit_policy_create_update command: Upadate and create audit policies related to the server
+    and database
 
     :type client: ``Client``
     :param client: AzureSQLManagement client to use
@@ -235,27 +242,36 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, server_name:
     :rtype: ``CommandResults``
 
     Args:
-        server_name: server name for which we want to receive list of auditing settings
-        db_name: database for which we want to receive list of auditing settings
-        policy_name:
-        state:
-        audit_actions_groups:
-        is_azure_monitor_target_enabled:
-        isStorageSecondaryKeyInUse:
-        queueDelayMs:
-        retentionDays:
-        storageAccountAccessKey:
-        storageAccountSubscriptionId:
-        storageEndpoint:
+        server_name: server name for which we want to create or update auditing settings
+        db_name: database for which we want to create or update auditing settings
+        state: satate of the policy
+        audit_actions_groups: Actions-Groups and Actions to audit.
+        is_azure_monitor_target_enabled: Is audit events are sent to Azure Monitor
+        is_storage_secondary_key_in_use: Is storageAccountAccessKey value is the storage's secondary key
+        queue_delay_ms: Time in milliseconds that can elapse before audit actions are forced
+        to be processed.
+        retention_days: Number of days to keep the policy in the audit logs.
+        storage_account_access_key: identifier key of the auditing storage account
+        storage_account_subscription_id: storage subscription Id
+        storage_endpoint: Storage endpoint.
+
     """
 
     audit_actions_groups = audit_actions_groups if not audit_actions_groups else argToList(audit_actions_groups)
+    is_azure_monitor_target_enabled = is_azure_monitor_target_enabled if not is_azure_monitor_target_enabled \
+        else argToBoolean(is_azure_monitor_target_enabled)
+    is_storage_secondary_key_in_use = is_storage_secondary_key_in_use if not is_storage_secondary_key_in_use \
+        else argToBoolean(is_storage_secondary_key_in_use)
 
-    response = client.azure_sql_db_audit_policy_create_update(server_name, db_name, policy_name, state,
-                                                              audit_actions_groups, is_azure_monitor_target_enabled,
-                                                              isStorageSecondaryKeyInUse, queueDelayMs, retentionDays,
-                                                              storageAccountAccessKey, storageAccountSubscriptionId,
-                                                              storageEndpoint)
+    response = client.azure_sql_db_audit_policy_create_update(server_name=server_name, db_name=db_name, state=state,
+                                                              audit_actions_groups=audit_actions_groups,
+                                                              is_azure_monitor_target_enabled=is_azure_monitor_target_enabled,
+                                                              is_storage_secondary_key_in_use=is_storage_secondary_key_in_use,
+                                                              queue_delay_ms=queue_delay_ms,
+                                                              retention_days=retention_days,
+                                                              storage_account_access_key=storage_account_access_key,
+                                                              storage_account_subscription_id=storage_account_subscription_id,
+                                                              storage_endpoint=storage_endpoint)
     response_hr = copy.deepcopy(response)
     for db in response_hr:
         properties = db.get('properties', {})
@@ -276,7 +292,7 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, server_name:
 
 
 @logger
-def azure_sql_db_threat_policy_get_command(client: Client,  server_name: str, db_name: str) -> CommandResults:
+def azure_sql_db_threat_policy_get_command(client: Client, server_name: str, db_name: str) -> CommandResults:
     """azure_sql_db_threat_policy_get command: Returns a threat detection policies of a database
 
     :type client: ``Client``

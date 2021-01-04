@@ -323,7 +323,7 @@ script:
       default: false
       description: Is audit events are sent to Azure Monitor
       isArray: false
-      name: isAzureMonitorTargetEnabled
+      name: is_azure_monitor_target_enabled
       predefined:
       - 'true'
       - 'false'
@@ -333,7 +333,7 @@ script:
       default: false
       description: Is storageAccountAccessKey value is the storage's secondary key
       isArray: false
-      name: isStorageSecondaryKeyInUse
+      name: is_storage_secondary_key_in_use
       predefined:
       - 'true'
       - 'false'
@@ -343,32 +343,32 @@ script:
       description: Time in milliseconds that can elapse before audit actions are forced
         to be processed. The default minimum value is 1000 (1 second).
       isArray: false
-      name: queueDelayMs
+      name: queue_delay_ms
       required: false
       secret: false
     - default: false
-      description: Number of days to keep in the audit logs.
+      description: Number of days to keep the policy in the audit logs.
       isArray: false
-      name: retentionDays
+      name: retention_days
       required: false
       secret: false
     - default: false
       description: identifier key of the auditing storage account
       isArray: false
-      name: storageAccountAccessKey
+      name: storage_account_access_key
       required: false
       secret: false
     - default: false
       description: storage subscription Id
       isArray: false
-      name: storageAccountSubscriptionId
+      name: storage_account_subscription_id
       required: false
       secret: false
     - default: false
       description: Storage endpoint. If state is Enabled, storageEndpoint or isAzureMonitorTargetEnabled
         is required.
       isArray: false
-      name: storageEndpoint
+      name: storage_endpoint
       required: false
       secret: false
     deprecated: false
