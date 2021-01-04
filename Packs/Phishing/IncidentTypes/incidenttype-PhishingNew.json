@@ -1,15 +1,15 @@
 {
-    "id": "Phishing",
+    "id": "PhishingNew",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Phishing",
-    "color": "#3AD1D6",
-    "sla": 240,
-    "playbookId": "playbook2",
+    "name": "PhishingNew",
+    "prevName": "PhishingNew",
+    "color": "#3F51B5",
+    "playbookId": "00f1241c-2d47-4bf0-8b45-5950f5468486",
     "hours": 0,
-    "days": 3,
-    "weeks": 1,
+    "days": 0,
+    "weeks": 0,
     "hoursR": 0,
     "daysR": 0,
     "weeksR": 0,
@@ -19,7 +19,5 @@
     "autorun": false,
     "disabled": false,
     "reputationCalc": 0,
-    "toVersion": "6.1.0",
-    "layout": "Phishing",
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.1.0"
 }
