@@ -467,7 +467,7 @@ Create or update database's auditing policy.
 | server_name | Server name. | Required | 
 | db_name | Database name. | Required | 
 | state | set state 'Enable' or 'Disable'. Possible values are: Enabled, Disabled. | Required | 
-| audit_actions_groups | Comma-separated Actions-Groups and Actions to audit. For all Possible values see documentation. | Optional | 
+| audit_actions_groups | Comma-separated Actions-Groups and Actions to audit. Possible values: APPLICATION_ROLE_CHANGE_PASSWORD_GROUP BACKUP_RESTORE_GROUP DATABASE_LOGOUT_GROUP DATABASE_OBJECT_CHANGE_GROUP DATABASE_OBJECT_OWNERSHIP_CHANGE_GROUP DATABASE_OBJECT_PERMISSION_CHANGE_GROUP DATABASE_OPERATION_GROUP DATABASE_PERMISSION_CHANGE_GROUP DATABASE_PRINCIPAL_CHANGE_GROUP DATABASE_PRINCIPAL_IMPERSONATION_GROUP DATABASE_ROLE_MEMBER_CHANGE_GROUP FAILED_DATABASE_AUTHENTICATION_GROUP SCHEMA_OBJECT_ACCESS_GROUP SCHEMA_OBJECT_CHANGE_GROUP SCHEMA_OBJECT_OWNERSHIP_CHANGE_GROUP SCHEMA_OBJECT_PERMISSION_CHANGE_GROUP SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP USER_CHANGE_PASSWORD_GROUP BATCH_STARTED_GROUP BATCH_COMPLETED_GROUP| Optional | 
 | is_azure_monitor_target_enabled | Is audit events are sent to Azure Monitor. Possible values are: true, false. | Optional | 
 | is_storage_secondary_key_in_use | Is storage Account Access Key value is the storage's secondary key. Possible values are: true, false. | Optional | 
 | queue_delay_ms | Time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second). | Optional | 
