@@ -220,13 +220,6 @@ def main():
         "Authorization": f"Bearer {api_key}"  # Replace ${token} with the token you have obtained
     }
 
-    demisto.debug(" ---- MAIN CALL -----")
-    demisto.debug(" ---- PARAMS -----")
-    demisto.debug(f"base_url: {base_url}")
-    demisto.debug(f"api_key: {api_key}")
-    demisto.debug(f"insecure: {insecure}")
-    demisto.debug(f"use_proxy: {use_proxy}")
-
     client = Client(base_url=base_url, headers=headers, proxy=use_proxy, verify=insecure)
 
     try:
