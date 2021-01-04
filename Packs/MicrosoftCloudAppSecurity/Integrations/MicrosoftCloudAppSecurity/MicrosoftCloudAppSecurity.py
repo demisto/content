@@ -555,6 +555,9 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     alerts = arrange_alerts_by_incident_type(alerts)
     incidents, fetch_start_time, last_fetch_id = alerts_to_incidents_and_fetch_start_from(
         alerts, fetch_start_time, last_run)
+    if incidents:
+        # since we use gte filter, we increase the latest event timestamp by 1 to avoid duplicates in the next fetch
+        fetch_start_time += 1
     next_run = {'last_fetch': fetch_start_time, 'last_fetch_id': last_fetch_id}
     return next_run, incidents
 

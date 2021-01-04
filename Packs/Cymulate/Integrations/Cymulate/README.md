@@ -1,12 +1,3 @@
-## Overview
----
-
-This integration was integrated and tested with version xx of Cymulate
-## Cymulate Playbook
----
-
-## Use Cases
----
 
 ## Configure Cymulate on Demisto
 ---
@@ -31,8 +22,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. cymulate_get_incident_info
 ---
 This commands return full cymulate's incidents information
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `cymulate_get_incident_info`
@@ -154,16 +143,4 @@ This commands return full cymulate's incidents information
 | 1595f452a74e5743fae63c8063eed9e6 | Chinese Hackers Use New Malware to Backdoor Microsoft SQL Servers | Penetrated | Antivirus | Endpoint Security | 25/12/2019 15:03:14 |
 | dc2a1e9b835b5caf685960bb7d9bdfea | Chinese Hackers Use New Malware to Backdoor Microsoft SQL Servers | Penetrated | Files | Web Gateway | 25/12/2019 15:01:29 |
 | b2aa30c32e06762d09bac485d7c490a5 | Chinese Hackers Use New Malware to Backdoor Microsoft SQL Servers | Penetrated | Files | Web Gateway | 25/12/2019 15:01:29 |
-
-
-## Additional Information
----
-
-## Known Limitations
----
-
-## Troubleshooting
----
-
-
 

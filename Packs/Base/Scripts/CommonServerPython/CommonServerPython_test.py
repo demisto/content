@@ -8,6 +8,7 @@ import sys
 import requests
 from pytest import raises, mark
 import pytest
+import warnings
 
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
@@ -16,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers,\
-    url_to_clickable_markdown
+    url_to_clickable_markdown, WarningsHandler
 
 try:
     from StringIO import StringIO
@@ -836,6 +837,104 @@ def test_debug_logger_replace_strs(mocker):
     assert 'Params:' in msg
     for s in ('cred_pass', 'ssh_key_secret', 'ssh_key_secret_pass', 'ident_pass', TEST_SSH_KEY, TEST_SSH_KEY_ESC):
         assert s not in msg
+
+
+def test_build_curl_post_noproxy():
+    """
+    Given:
+       - HTTP client log messages of POST query
+       - Proxy is not used and insecure is not checked
+    When
+       - Building curl query
+    Then
+       - Ensure curl is generated as expected
+    """
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'POST /api HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"data\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy -d \'{"data": "value"}\''
+    ]
+
+
+def test_build_curl_get_withproxy(mocker):
+    """
+    Given:
+       - HTTP client log messages of GET query
+       - Proxy used and insecure checked
+    When
+       - Building curl query
+    Then
+       - Ensure curl is generated as expected
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'proxy': True,
+        'insecure': True
+    })
+    os.environ['https_proxy'] = 'http://proxy'
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'GET /api HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"data\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X GET https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--proxy http://proxy -k -d \'{"data": "value"}\''
+    ]
+
+
+def test_build_curl_multiple_queries():
+    """
+    Given:
+       - HTTP client log messages of POST and GET queries
+       - Proxy is not used and insecure is not checked
+    When
+       - Building curl query
+    Then
+       - Ensure two curl queries are generated as expected
+    """
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'POST /api/post HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"postdata\": \"value\"}'")
+    ilog.build_curl("send: b'GET /api/get HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"getdata\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X POST https://demisto.com/api/post -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy -d \'{"postdata": "value"}\'',
+        'curl -X GET https://demisto.com/api/get -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy -d \'{"getdata": "value"}\''
+    ]
 
 
 def test_is_mac_address():
@@ -3527,3 +3626,14 @@ def test_arg_to_timestamp_invalid_inputs():
 
     except ValueError as e:
         assert '"2010-32-01" is not a valid date' in str(e)
+
+
+def test_warnings_handler(mocker):
+    mocker.patch.object(demisto, 'info')
+    # need to initialize WarningsHandler as pytest over-rides the handler
+    handler = WarningsHandler()  # noqa
+    warnings.warn("This is a test", RuntimeWarning)
+    # call_args is tuple (args list, kwargs). we only need the args
+    msg = demisto.info.call_args[0][0]
+    assert 'This is a test' in msg
+    assert 'python warning' in msg

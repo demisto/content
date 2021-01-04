@@ -33,13 +33,15 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Add a certificate file in text format to use to connect to the CyberArk AIM server.
+- additionalinfo: Add a certificate file in text format to use to connect to the CyberArk
+    AIM server.
   display: Certificate File as Text
   hidden: false
   name: cert_text
   required: false
   type: 12
-- additionalinfo: Add a key file in text format to use to connect to the CyberArk AIM server.
+- additionalinfo: Add a key file in text format to use to connect to the CyberArk
+    AIM server.
   display: Key File as Text
   hidden: false
   name: key_text
@@ -58,7 +60,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The CyberArk Application Identity Manager (AIM) provides a secure safe in which to store your account credentials. Use this integration to retrieve the account credentials in CyberArk AIM.
+description: The CyberArk Application Identity Manager (AIM) provides a secure safe
+  in which to store your account credentials. Use this integration to retrieve the
+  account credentials in CyberArk AIM.
 display: CyberArk AIM v2
 name: CyberArkAIM v2
 script:
@@ -83,7 +87,7 @@ script:
     - contextPath: CyberArkAIM.Name
       description: The credential name of the account.
       type: String
-  dockerimage: demisto/ntlm:1.0.0.10980
+  dockerimage: demisto/ntlm:1.0.0.14682
   feed: false
   isfetch: false
   longRunning: false

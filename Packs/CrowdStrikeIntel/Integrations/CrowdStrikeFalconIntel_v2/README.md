@@ -1,5 +1,5 @@
 Threat intelligence service by CrowdStrike focused on delivering a technical feed to help organizations better defend themselves against adversary activity.
-This integration was integrated and tested with version xx of CrowdStrike Falcon Intel v2
+
 ## Configure CrowdStrike Falcon Intel v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
