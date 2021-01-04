@@ -73,8 +73,7 @@ script:
     - description: Id of the virtual machine.
       name: uuid
       required: true
-    - auto: PREDEFINED
-      description: If virtual machine is being powered 'on', this host will be chosen
+    - description: If virtual machine is being powered 'on', this host will be chosen
         to run the virtual machine.
       name: host_uuid
     - auto: PREDEFINED
@@ -96,11 +95,11 @@ script:
     description: Set power state of a virtual machine.  If the virtual machine is
       being powered on and no host is specified, the scheduler will pick the one with
       the most available CPU and memory that can support the Virtual Machine. Note
-      that no such host may not be available. If the virtual machine
-      is being power cycled, a different host can be specified to start it on. This
-      is also an asynchronous operation that results in the creation of a task object.
-      The UUID of this task object is returned as the response of this operation.
-      This task can be monitored by using the nutanix-hypervisor-task-poll command.
+      that no such host may not be available. If the virtual machine is being power
+      cycled, a different host can be specified to start it on. This is also an asynchronous
+      operation that results in the creation of a task object. The UUID of this task
+      object is returned as the response of this operation. This task can be monitored
+      by using the nutanix-hypervisor-task-poll command.
     name: nutanix-hypervisor-vm-powerstatus-change
     outputs:
     - contextPath: NutanixHypervisor.VMPowerStatus
@@ -117,9 +116,11 @@ script:
       description: Task poll results
       type: string
   - arguments:
-    - description: TODO
+    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+        created on or after the specified date/time will be retrieved.
       name: start_time
-    - description: TODO
+    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+        created on or before the specified date/time will be retrieved.
       name: end_time
     - auto: PREDEFINED
       description: Get list of alerts which have been resolved.
@@ -197,9 +198,11 @@ script:
     - contextPath: NutanixHypervisor.Alert
       description: ADD DESCRIPTION
   - arguments:
-    - description: ADD DESCRIPTION
+    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+        created on or after the specified date/time will be retrieved.
       name: start_time
-    - description: ADD DESCRIPTION
+    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+        created on or before the specified date/time will be retrieved.
       name: end_time
     - auto: PREDEFINED
       description: Get list of alerts which have level of severity specified
@@ -229,9 +232,11 @@ script:
     - contextPath: NutanixHypervisor.Alert
       description: TODO
   - arguments:
-    - description: TODO
+    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+        created on or after the specified date/time will be retrieved.
       name: start_time
-    - description: TODO
+    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+        created on or before the specified date/time will be retrieved.
       name: end_time
     - auto: PREDEFINED
       description: Get list of alerts which have level of severity specified

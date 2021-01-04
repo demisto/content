@@ -8,6 +8,7 @@ import pytest
 from CommonServerPython import DemistoException
 from Nutanix import MINIMUM_LIMIT_VALUE
 from Nutanix import MINIMUM_PAGE_VALUE
+from Nutanix import TIME_FORMAT
 
 
 def util_load_json(path):
@@ -160,3 +161,43 @@ def test_get_optional_boolean_param_invalid_argument(args, argument_name, expect
     from Nutanix import get_optional_boolean_param
     with pytest.raises(DemistoException, match=expected_error_message):
         get_optional_boolean_param(args, argument_name)
+
+
+@pytest.mark.parametrize('args, time_parameter, expected',
+                         [({'start_time': '2020-11-22T16:31:14'}, 'start_time', 1606055474000),
+                          ({'start_time': '2020-11-22T16:31:14'}, 'end_time', None),
+                          ])
+def test_get_optional_time_parameter_valid_time_argument(args, time_parameter, expected):
+    """
+    Given:
+     - Demisto arguments.
+     - Argument of type time to extract from Demisto arguments as epoch time.
+
+    When:
+     - Case a: Argument exists, and has the expected date format.
+     - Case b: Argument does not exist.
+
+    Then:
+     - Case a: Ensure that the corresponding epoch time is returned.
+     - Case b: Ensure that None is returned.
+    """
+    from Nutanix import get_optional_time_parameter_as_epoch
+    assert (get_optional_time_parameter_as_epoch(args, time_parameter)) == expected
+
+
+def test_get_optional_time_parameter_invalid_time_argument():
+    """
+    Given:
+     - Demisto arguments.
+     - Argument of type time to extract from Demisto arguments as epoch time.
+
+    When:
+     - Argument is not formatted in the expected way
+
+    Then:
+     - Ensure that DemistoException is thrown with error message which indicates that time string does not match the
+       expected time format.
+    """
+    from Nutanix import get_optional_time_parameter_as_epoch
+    with pytest.raises(DemistoException, match=f"""time data 'bla' does not match format '{TIME_FORMAT}'"""):
+        (get_optional_time_parameter_as_epoch({'start_time': 'bla'}, 'bla'))

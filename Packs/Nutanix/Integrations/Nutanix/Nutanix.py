@@ -36,9 +36,6 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, auth):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
 
-    def test_module(self):
-        raise NotImplementedError
-
     def fetch_incidents(self):
         raise NotImplementedError
 
@@ -87,7 +84,6 @@ class Client(BaseClient):
             )
         )
 
-    # TODO TOM : figure real signature (Optionals or not)
     def get_nutanix_alerts_list(self, start_time: Optional[int], end_time: Optional[int], resolved: Optional[bool],
                                 auto_resolved: Optional[bool], acknowledged: Optional[bool], severity: Optional[str],
                                 alert_type_uuid: Optional[str], entity_ids: Optional[str], impact_types: Optional[str],
@@ -168,6 +164,15 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def get_optional_time_parameter_as_epoch(args: Dict, argument_name: str) -> Optional[int]:
+    argument_value = args.get(argument_name)
+
+    if argument_value is None:
+        return None
+
+    date_to_timestamp(argument_value, TIME_FORMAT)
+
+
 def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optional[int] = None,
                                   maximum: Optional[int] = None) -> Optional[int]:
     """
@@ -191,10 +196,13 @@ def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optio
     assert (minimum <= maximum if minimum and maximum else True)
     argument_value = arg_to_number(args.get(argument_name), arg_name=argument_name)
 
-    if argument_value and minimum and not minimum <= argument_value:
+    if argument_value is None:
+        return None
+
+    if minimum and not minimum <= argument_value:
         raise DemistoException(f'{argument_name} should be equal or higher than {minimum}')
 
-    if argument_value and maximum and not argument_value <= maximum:
+    if maximum and not argument_value <= maximum:
         raise DemistoException(f'{argument_name} should be equal or less than {maximum}')
 
     return argument_value
@@ -222,7 +230,7 @@ def get_optional_boolean_param(args: Dict, argument_name: str) -> Optional[bool]
 def get_page_argument(args: Dict) -> Optional[int]:
     """
     Extracts the 'page' argument from Demisto arguments, and in case 'page' exists,
-    validates that argument 'limit' exists.
+    validates that 'limit' argument exists.
     This validation is needed because Nutanix service returns an error when page argument
     is given but limit(referred as count in Nutanix service) argument is missing.
     (Nutanix error code 1202 - 'Page number cannot be specified without count').
@@ -236,7 +244,6 @@ def get_page_argument(args: Dict) -> Optional[int]:
     """
     page_value = get_and_validate_int_argument(args, 'page', minimum=MINIMUM_PAGE_VALUE)
     if page_value and args.get('limit') is None:
-        # TODO TOM : maybe limit
         raise DemistoException('Page argument cannot be specified without limit argument')
     return page_value
 
@@ -244,8 +251,18 @@ def get_page_argument(args: Dict) -> Optional[int]:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module_command(client: Client, *_):
-    raise NotImplementedError
+def test_module_command(client: Client):
+    """
+    Performs a basic GET request to check if the API is reachable and authentication is successful.
+
+    Args:
+        client (Client): Client object to perform request.
+
+    Returns:
+        CommandResults.
+    """
+    client.get_nutanix_hypervisor_hosts_list(None, None, None)
+    demisto.results('ok')
 
 
 def fetch_incidents_command(client: Client, args: Dict):
@@ -354,8 +371,8 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
 
 
 def nutanix_alerts_list_command(client: Client, args: Dict):
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
+    end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
     auto_resolved = get_optional_boolean_param(args, 'auto_resolved')
     resolved = True if auto_resolved else get_optional_boolean_param(args, 'resolved')
     acknowledged = get_optional_boolean_param(args, 'acknowledged')
@@ -422,8 +439,8 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
 def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     context_path = 'NutanixHypervisor.Alert'
 
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
+    end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
     severity = args.get('severity')
     impact_types = args.get('impact_types')  # maybe split ,
     classification = args.get('classifications')  # maybe split ,
@@ -441,15 +458,14 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
 def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
     context_path = 'NutanixHypervisor.Alert'
 
-    start_time = args.get('start_time')
-    end_time = args.get('end_time')
+    start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
+    end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
     severity = args.get('severity')
     impact_types = args.get('impact_types')  # maybe split ,
     classification = args.get('classifications')  # maybe split ,
     entity_type = args.get('entity_type')
     entity_type_ids = args.get('entity_type_ids')  # maybe split ,
     page = get_page_argument(args)
-    # TODO TOM : maybe change to limit
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
 
     # TODO : are they required? optional?
@@ -468,7 +484,6 @@ def main() -> None:
     params = demisto.params()
 
     commands = {
-        'test-module': test_module_command,
         'fetch-incidents': fetch_incidents_command,
         'nutanix-hypervisor-hosts-list': nutanix_hypervisor_hosts_list_command,
         'nutanix-hypervisor-vms-list': nutanix_hypervisor_vms_list_command,
@@ -497,7 +512,10 @@ def main() -> None:
             proxy=proxy,
             auth=(username, password))
 
-        if command in commands:
+        if command == 'test-module':
+            test_module_command(client)
+
+        elif command in commands:
             return_results(commands[command](client, demisto.args()))
 
         else:
@@ -512,4 +530,6 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    a = date_to_timestamp('20aaaa1:14', TIME_FORMAT)
+    print(a)
     main()
