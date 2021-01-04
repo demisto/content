@@ -52,7 +52,7 @@ def say_hello_command(args: Dict[str, Any]) -> CommandResults:
     :type args: ``str``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
-        ``args['name']`` is used as input name
+        ``args['name']`` is used as input name1
 
     :return:
         CommandResults with output context and human readable string.
