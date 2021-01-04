@@ -758,12 +758,14 @@ class Pack(object):
             os.mkdir(extract_destination_path)
 
             shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
+            shutil.copy(encrypted_zip_pack_path, os.path.join(extract_destination_path, 'encrypted_zip_pack.zip'))
+
             os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
             os.chdir(extract_destination_path)
-            output_file = open(f"{extract_destination_path}/decrypt_pack", "w")
+            output_file_path = f"{extract_destination_path}/decrypt_pack.zip"
             subprocess.call('chmod +x ./decryptor', shell=True)
 
-            full_command = f'./decryptor {encrypted_zip_pack_path} {output_file} {encryption_key}'
+            full_command = f'./decryptor {encrypted_zip_pack_path} {output_file_path} "{encryption_key}"'
             process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = process.communicate()
             print("\nstdout:\n")
