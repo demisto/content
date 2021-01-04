@@ -286,7 +286,7 @@ def test_get_new_attachment_return_result(mocker):
         'JiraV2.jira_req',
         return_value=file_content
     )
-    res = get_attachments(JIRA_ATTACHMENT, parse('1996-11-25T16:29:37.277764067Z').replace(tzinfo=pytz.UTC))
+    res = get_attachments(JIRA_ATTACHMENT, parse('1996-11-25T16:29:35.277764067Z'))
     assert res[0]['File'] == 'download.png'
 
 
