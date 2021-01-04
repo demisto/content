@@ -49,7 +49,7 @@ tasks:
     scriptarguments:
       user-profile:
         complex:
-          root: inputs.githubuserprofile
+          root: inputs.userprofile
           transformers:
           - operator: ParseJSON
     separatecontext: false
@@ -85,7 +85,7 @@ tasks:
       default_attribute: {}
       user-profile:
         complex:
-          root: inputs.githubuserprofile
+          root: inputs.userprofile
           transformers:
           - operator: ParseJSON
     separatecontext: false
@@ -121,7 +121,7 @@ tasks:
     scriptarguments:
       user-profile:
         complex:
-          root: inputs.githubuserprofile
+          root: inputs.userprofile
           transformers:
           - operator: ParseJSON
     separatecontext: false
@@ -156,7 +156,7 @@ tasks:
     scriptarguments:
       user-profile:
         complex:
-          root: inputs.githubuserprofile
+          root: inputs.userprofile
           transformers:
           - operator: ParseJSON
     separatecontext: false
@@ -194,7 +194,7 @@ tasks:
         simple: "true"
       user-profile:
         complex:
-          root: inputs.githubuserprofile
+          root: inputs.userprofile
           transformers:
           - operator: ParseJSON
     separatecontext: false
@@ -472,7 +472,7 @@ view: |-
     }
   }
 inputs:
-- key: githubuserprofile
+- key: userprofile
   value:
     simple: '{"email": "testdemisto2@paloaltonetworks.com", "username": "testdemisto2@paloaltonetworks.com",
      "givenname": "test", "surname":"demisto", "locationregion": "Americas"}'
