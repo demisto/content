@@ -384,8 +384,8 @@ Check IP location.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | unknown | The IP address. | 
-| IP.Geo.Country | unknown | The country of the IP address. | 
+| IP.Address | String | The IP address. | 
+| IP.Geo.Country | String | The country of the IP address. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
