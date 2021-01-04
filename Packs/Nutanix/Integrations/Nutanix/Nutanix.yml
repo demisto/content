@@ -24,14 +24,14 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: Password
-  name: password
-  required: false
-  type: 4
 - display: Username
   name: username
   required: false
   type: 0
+- display: Password
+  name: password
+  required: false
+  type: 4
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -96,8 +96,7 @@ script:
     description: Set power state of a virtual machine.  If the virtual machine is
       being powered on and no host is specified, the scheduler will pick the one with
       the most available CPU and memory that can support the Virtual Machine. Note
-      that no such host may not be available.  If the virtual machine is being power
-      cycled, a different host can be specified to start it on. If the virtual machine
+      that no such host may not be available. If the virtual machine
       is being power cycled, a different host can be specified to start it on. This
       is also an asynchronous operation that results in the creation of a task object.
       The UUID of this task object is returned as the response of this operation.
