@@ -756,7 +756,7 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
-    :param Client: HelloWorld client to use
+    :param Client: HelloWorld client to use1
 
     :type args: ``Dict[str, Any]``
     :param args:
