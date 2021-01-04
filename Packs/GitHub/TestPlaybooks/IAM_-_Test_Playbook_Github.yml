@@ -1,6 +1,6 @@
-id: Github IAM - Test Playbook
+id: Github IAM - Test Playbook2
 version: -1
-name: Github IAM - Test Playbook
+name: Github IAM - Test Playbook2
 starttaskid: "0"
 tasks:
   "0":
@@ -474,9 +474,8 @@ view: |-
 inputs:
 - key: githubuserprofile
   value:
-    simple: '{"emails": {"primary": true, "type": "work", "value": "TestID@paloaltonetworks.com"},
-      "name": {"familyName": "testlast", "givenName": "testgiven"}, "userName": "TestID@paloaltonetworks.com",
-      "email": "TestID@paloaltonetworks.com"}'
+    simple: '{"email": "testdemisto2@paloaltonetworks.com", "username": "testdemisto2@paloaltonetworks.com",
+     "givenname": "test", "surname":"demisto", "locationregion": "Americas"}'
   required: true
   description: Test user profile data.
   playbookInputQuery:
