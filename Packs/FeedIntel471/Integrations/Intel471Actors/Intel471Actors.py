@@ -4,8 +4,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
-# from Packs.ApiModules.Scripts.JSONFeedApiModule.JSONFeedApiModule import *
-
 SEARCH_PARAMS = {
     'from': 'from',
     'until': 'until',
