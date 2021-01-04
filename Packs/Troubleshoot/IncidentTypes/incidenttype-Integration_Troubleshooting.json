@@ -1,16 +1,24 @@
 {
  "autorun": true,
- "color": "#2979FF",
+ "color": "#2196F3",
  "days": 0,
  "daysR": 0,
  "default": false,
+ "detached": false,
  "disabled": false,
+ "extractSettings": {
+  "mode": "All",
+  "fieldCliNameToExtractSettings": {
+
+  }
+ },
  "hours": 0,
  "hoursR": 0,
  "id": "Integration Troubleshooting",
  "layout": "a5eb2fda-2f96-490d-856d-88940cd32eb3",
  "locked": false,
  "name": "Integration Troubleshooting",
+ "onChangeRepAlg": 0,
  "playbookId": "Integration Troubleshooting",
  "readonly": false,
  "reputationCalc": 0,

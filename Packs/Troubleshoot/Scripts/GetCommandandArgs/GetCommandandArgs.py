@@ -1,5 +1,5 @@
 """
-bla bla bla
+Gets a command, validates it and outputting it to context
 """
 from CommonServerPython import *
 

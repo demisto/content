@@ -8,7 +8,7 @@ args:
 - default: false
   description: All file entry IDs in the incident
   isArray: true
-  name: file_entry_id
+  name: file_names
   required: false
   secret: false
 - default: false
@@ -29,7 +29,7 @@ args:
   name: execute_command_errors
   required: false
   secret: false
-comment: Aggregate Results
+comment: Gets a command with arguments, validates the command and the arguments and then parsing it to use in CortexXSOAR context. (Available from Cortex XSOAR 5.0.0).
 commonfields:
   id: AggregateResults
   version: -1

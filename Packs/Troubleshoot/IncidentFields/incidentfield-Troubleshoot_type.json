@@ -1,5 +1,8 @@
 {
- "associatedToAll": true,
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Integration Troubleshooting"
+ ],
  "caseInsensitive": true,
  "cliName": "troubleshoottype",
  "closeForm": false,

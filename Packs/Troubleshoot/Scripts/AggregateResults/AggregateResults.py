@@ -22,7 +22,7 @@ def main():
     try:
         args = demisto.args()
         changed_succeeded = argToList(args.get('succeeded_changed_params'))
-        file_entry_ids = argToList(args.get('file_entry_id'))
+        file_names = argToList(args.get('file_names'))
         execute_command_errors = argToList(args.get('execute_command_errors'))
         configuration = args['configuration']
         if not isinstance(configuration, dict):
@@ -40,7 +40,7 @@ Instance name : {instance_name}
 {tableToMarkdown('Errors encountered in test-module (Test button)', errors, ['Errors'])}
 {tableToMarkdown('Parameters changed resulted in test succeeded', changed_succeeded, ['Changed keys'])}
 {tableToMarkdown('Errors encountered in command running:', execute_command_errors, ['Errors'])}
-{tableToMarkdown('Files found in the investigation:', file_entry_ids, ['Entry ID'])}
+{tableToMarkdown('Files found in the investigation:', file_names, ['File Names'])}
 """
         configuration_name = f'{instance_name}_configuration.md'
         demisto.results(fileResult(
