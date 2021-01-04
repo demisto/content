@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy
+  id: SplunkPy_dev
   version: -1
 configuration:
 - display: Host - ip (x.x.x.x)
@@ -110,9 +110,27 @@ configuration:
   name: type_field
   required: false
   type: 0
+- display: Enrichment Types
+  name: enabled_enrichments
+  type: 16
+  required: false
+  options:
+  - Drilldown
+  - Asset
+  - Identity
+- display: Enrichment Timeout (Minutes)
+  name: enrichment_timeout
+  defaultvalue: "5"
+  type: 0
+  required: false
+- display: Number of Events Per Enrichment Type
+  name: num_enrichment_events
+  defaultvalue: "20"
+  type: 0
+  required: false
 description: Run queries on Splunk servers.
-display: SplunkPy
-name: SplunkPy
+display: SplunkPy_dev
+name: SplunkPy_dev
 script:
   commands:
   - arguments:
@@ -613,6 +631,9 @@ script:
       for Mapping fetched incidents through the Get Schema option.
     execution: false
     name: get-mapping-fields
+  - name: splunk-reset-enriching-fetch-mechanism
+    arguments: []
+    description: Resets the enriching fetch mechanism.
   dockerimage: demisto/splunksdk:1.0.0.11989
   feed: false
   isfetch: true

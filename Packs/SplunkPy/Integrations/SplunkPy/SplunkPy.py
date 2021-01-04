@@ -13,6 +13,9 @@ import requests
 import urllib3
 import io
 import re
+import uuid
+import time
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 # Define utf8 as default encoding
@@ -30,6 +33,39 @@ FETCH_TIME = demisto.params().get('fetch_time')
 PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
+
+# ===== Enrichment Mechanism Constants =====
+DRILLDOWN_ENRICHMENT = 'Drilldown'
+ASSET_ENRICHMENT = 'Asset'
+IDENTITY_ENRICHMENT = 'Identity'
+ENRICHMENTS = 'enrichments'
+XSOAR_ID = 'xsoar_id'
+ENRICHMENT_JOBS = 'jobs'
+ENRICHMENT_NOTABLE = 'notable'
+JOB_TYPE = 'type'
+JOB_CREATION_TIME = 'creation_time'
+JOB_ID = 'id'
+SPLUNK_JOB = 'splunk_job'
+LAST_RUN_OVER_FETCH = 'over_fetch'
+LAST_RUN_REGULAR_FETCH = 'regular_fetch'
+NUM_FETCHED_INCIDENTS = 'num_fetched_incidents'
+SUCCESSFUL_ENRICHMENT = 'successful_enrichment'
+NOT_YET_ENRICHED_NOTABLES = 'not_yet_enriched_notables'
+INFO_MIN_TIME = "info_min_time"
+INFO_MAX_TIME = "info_max_time"
+SUCCESSFUL_DRILLDOWN_ENRICHMENT = 'successful_drilldown_enrichment'
+SUCCESSFUL_ASSET_ENRICHMENT = 'successful_asset_enrichment'
+SUCCESSFUL_IDENTITY_ENRICHMENT = 'successful_identity_enrichment'
+INCIDENTS = 'incidents'
+DUMMY = 'dummy'
+
+DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\$]+\$)|(\$[^\$]+\$)'
+
+JOB_TYPE_TO_ENRICHMENT_STATUS = {
+    DRILLDOWN_ENRICHMENT: SUCCESSFUL_DRILLDOWN_ENRICHMENT,
+    ASSET_ENRICHMENT: SUCCESSFUL_ASSET_ENRICHMENT,
+    IDENTITY_ENRICHMENT: SUCCESSFUL_IDENTITY_ENRICHMENT
+}
 
 
 class ResponseReaderWrapper(io.RawIOBase):
@@ -205,7 +241,7 @@ def notable_to_incident(event):
         # in the event, then splunk returns the field with the key as value (e.g. ("DNS Destination", "DNS Destination")
         # so we go over the fields, and check if the key equals the value and set the value to be empty string
         if key == val:
-            demisto.debug('Found notable event raw field [{}] with key that equals the value - replacing the value '
+            demisto.info('Found notable event raw field [{}] with key that equals the value - replacing the value '
                           'with empty string'.format(key))
             event[key] = ''
     incident["rawJSON"] = json.dumps(event)
@@ -270,7 +306,7 @@ def requests_handler(url, message, **kwargs):
     except requests.exceptions.HTTPError as e:
         # Propagate HTTP errors via the returned response message
         response = e.response
-        demisto.debug('Got exception while using requests handler - {}'.format(str(e)))
+        demisto.info('Got exception while using requests handler - {}'.format(str(e)))
     return {
         'status': response.status_code,
         'reason': response.reason,
@@ -383,6 +419,100 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
     return parsed_batch_results, batch_dbot_scores
 
 
+def fetch_notables(service, enrich_notables=False):
+    demisto.info("Fetching new notables")
+
+    last_run = demisto.getLastRun() and 'time' in demisto.getLastRun() and demisto.getLastRun()['time']
+    search_offset = demisto.getLastRun().get('offset', 0)
+
+    incidents = []
+    current_time_for_fetch = datetime.utcnow()
+    dem_params = demisto.params()
+    if demisto.get(dem_params, 'timezone'):
+        timezone = dem_params['timezone']
+        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
+
+    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+    if demisto.get(dem_params, 'useSplunkTime'):
+        now = get_current_splunk_time(service)
+        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
+        current_time_for_fetch = current_time_in_splunk
+
+    if not last_run:
+        fetch_time_in_minutes = parse_time_to_minutes()
+        start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
+        last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+
+    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
+    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
+
+    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
+                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
+
+    searchquery_oneshot = dem_params['fetchQuery']
+
+    if demisto.get(dem_params, 'extractFields'):
+        extractFields = dem_params['extractFields']
+        extra_raw_arr = extractFields.split(',')
+        for field in extra_raw_arr:
+            field_trimmed = field.strip()
+            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
+
+    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
+    reader = results.ResultsReader(oneshotsearch_results)
+
+    last_run_regular_fetch = {'time': now, 'offset': 0}
+    last_run_over_fetch = {'time': last_run, 'offset': search_offset + FETCH_LIMIT}
+
+    if not enrich_notables:
+        demisto.info("Creating incidents from fetched notables without enrichment")
+        for item in reader:
+            inc = notable_to_incident(item)
+            incidents.append(inc)
+
+        demisto.incidents(incidents)
+        if len(incidents) < FETCH_LIMIT:
+            demisto.setLastRun(last_run_regular_fetch)
+        else:
+            demisto.setLastRun(last_run_over_fetch)
+    else:
+        handle_enriched_fetch(reader, last_run_regular_fetch, last_run_over_fetch)
+
+
+def handle_enriched_fetch(reader, last_run_regular_fetch, last_run_over_fetch):
+    """
+
+    Args:
+        reader: The Splunk results reader
+        last_run_regular_fetch: The last run object in regular case (len(incident) < FETCH_LIMIT)
+        last_run_over_fetch: The last run object in over fetch case (len(incident) >= FETCH_LIMIT)
+
+    """
+
+    last_run = demisto.getLastRun()
+    if DUMMY not in last_run:
+        # We add dummy data to the last run to differentiate between the fetch-incidents triggered to the
+        # fetch-incidents running as part of "Pull from instance" in Classification & Mapping
+        last_run.update({DUMMY: DUMMY})
+        demisto.setLastRun(last_run)
+
+    integration_context = get_integration_context()
+
+    # maintaining all fetched notables in the integration context to avoid not handling notables later on
+    not_yet_enriched_notables = integration_context.get(NOT_YET_ENRICHED_NOTABLES, [])
+    for item in reader:
+        item[XSOAR_ID] = uuid.uuid4().hex
+        not_yet_enriched_notables.append(item)
+    integration_context[NOT_YET_ENRICHED_NOTABLES] = not_yet_enriched_notables  # assignment for fetch fetch
+
+    # maintaining last run metadata for handling open enrichments later on
+    integration_context[LAST_RUN_REGULAR_FETCH] = last_run_regular_fetch
+    integration_context[LAST_RUN_OVER_FETCH] = last_run_over_fetch
+
+    set_integration_context(integration_context)
+    demisto.info("Finished fetching {} notables.".format(len(not_yet_enriched_notables)))
+
+
 def splunk_search_command(service):
     args = demisto.args()
 
@@ -467,56 +597,6 @@ def splunk_results_command(service):
         demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(res)})
 
 
-def fetch_incidents(service):
-    last_run = demisto.getLastRun() and demisto.getLastRun()['time']
-    search_offset = demisto.getLastRun().get('offset', 0)
-
-    incidents = []
-    current_time_for_fetch = datetime.utcnow()
-    dem_params = demisto.params()
-    if demisto.get(dem_params, 'timezone'):
-        timezone = dem_params['timezone']
-        current_time_for_fetch = current_time_for_fetch + timedelta(minutes=int(timezone))
-
-    now = current_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-    if demisto.get(dem_params, 'useSplunkTime'):
-        now = get_current_splunk_time(service)
-        current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
-        current_time_for_fetch = current_time_in_splunk
-
-    if len(last_run) == 0:
-        fetch_time_in_minutes = parse_time_to_minutes()
-        start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
-        last_run = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-
-    earliest_fetch_time_fieldname = dem_params.get("earliest_fetch_time_fieldname", "earliest_time")
-    latest_fetch_time_fieldname = dem_params.get("latest_fetch_time_fieldname", "latest_time")
-
-    kwargs_oneshot = {earliest_fetch_time_fieldname: last_run,
-                      latest_fetch_time_fieldname: now, "count": FETCH_LIMIT, 'offset': search_offset}
-
-    searchquery_oneshot = dem_params['fetchQuery']
-
-    if demisto.get(dem_params, 'extractFields'):
-        extractFields = dem_params['extractFields']
-        extra_raw_arr = extractFields.split(',')
-        for field in extra_raw_arr:
-            field_trimmed = field.strip()
-            searchquery_oneshot = searchquery_oneshot + ' | eval ' + field_trimmed + '=' + field_trimmed
-
-    oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
-    reader = results.ResultsReader(oneshotsearch_results)
-    for item in reader:
-        inc = notable_to_incident(item)
-        incidents.append(inc)
-
-    demisto.incidents(incidents)
-    if len(incidents) < FETCH_LIMIT:
-        demisto.setLastRun({'time': now, 'offset': 0})
-    else:
-        demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT})
-
-
 def parse_time_to_minutes():
     """
     Calculate how much time to fetch back in minutes
@@ -564,7 +644,6 @@ def splunk_submit_event_command(service):
 
 
 def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_):
-
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
 
@@ -596,7 +675,6 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
 
 
 def splunk_submit_event_hec_command():
-
     hec_token = demisto.params().get('hec_token')
     baseurl = demisto.params().get('hec_url')
     if baseurl is None:
@@ -963,6 +1041,573 @@ def get_mapping_fields_command(service):
     demisto.results(types_map)
 
 
+def enrich_new_notables(service, enabled_enrichments, incidents, num_enrichment_events):
+    """ Enriches fetched notables. Three enrichments possible: Drilldown, Asset & Identity.
+    If all enrichment type executions were unsuccessful, creates a regular incident, Otherwise updates the
+    integration context for the next fetch to handle the open enrichment.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        enabled_enrichments (list): The Demisto parameter with the list of all enabled enrichments.
+        Possible values are: Drilldown, Asset & Identity.
+        incidents (list): The incident to be submitted at the end of the run.
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+
+    """
+    drilldown_status, asset_status, identity_status = False, False, False
+    num_enriched_notables = 0
+    num_inc = 0
+    not_yet_enriched_notables = get_integration_context().get(NOT_YET_ENRICHED_NOTABLES, [])
+    demisto.info('Starting to enrich {} fetched notables'.format(len(not_yet_enriched_notables)))
+
+    for notable in not_yet_enriched_notables:
+        enrichment = {XSOAR_ID: uuid.uuid4().hex, ENRICHMENT_JOBS: [], ENRICHMENT_NOTABLE: notable}
+        if DRILLDOWN_ENRICHMENT in enabled_enrichments:
+            pass
+            drilldown_status = drilldown_enrichment(service, notable, enrichment, num_enrichment_events)
+        if ASSET_ENRICHMENT in enabled_enrichments:
+            asset_status = asset_enrichment(service, notable, enrichment, num_enrichment_events)
+        if IDENTITY_ENRICHMENT in enabled_enrichments:
+            identity_status = identity_enrichment(service, notable, enrichment, num_enrichment_events)
+
+        # handling integration context on the go to avoid issues while fetch time limit is reached
+        integration_context = get_integration_context()
+
+        if any([drilldown_status, asset_status, identity_status]):
+            enrichments = integration_context.get(ENRICHMENTS, [])
+            enrichments.append(enrichment)
+            integration_context[ENRICHMENTS] = enrichments  # assignment for fetch fetch
+            num_enriched_notables += 1
+            demisto.info('Submitted enrichment request to Splunk for enrichment {}'.format(enrichment[XSOAR_ID]))
+        else:
+            notable[SUCCESSFUL_ENRICHMENT] = False
+            num_inc += 1
+            incidents.append(notable_to_incident(notable))
+
+        notables = remove_notable(integration_context.get(NOT_YET_ENRICHED_NOTABLES, []), notable)
+        integration_context[NOT_YET_ENRICHED_NOTABLES] = notables
+        set_integration_context(integration_context)
+
+    if num_enriched_notables:
+        demisto.info('Enriched {} notables successfully.'.format(num_enriched_notables))
+    if num_inc:
+        demisto.info('Detected {} failed enrichments, creating {} not enriched incidents.'.format(num_inc, num_inc))
+
+
+def get_fields_query_part(notable, prefix, fields, raw=None):
+    """ Given the fields to search for in the notables and the prefix, creates the query part for splunk search.
+    For example: if fields are ["user"], and the value of the "user" fields in the notable is ["u1", "u2"], and the
+    prefix is "identity", the function returns: (identity="u1" OR identity="u2")
+
+    Args:
+        notable (dict): The notable.
+        prefix (str): The prefix to attach to each value retruned in the query.
+        fields (list): The fields to search in the notable for.
+        raw (dict): The raw dict
+
+    Returns: The query part
+
+    """
+    if not raw:
+        raw = raw_to_dict(notable.get('_raw', ''))
+    raw_list = []
+    for field in fields:
+        raw_list += argToList(notable.get(field, "")) + argToList(raw.get(field, ""))
+    raw_list = ['{}="{}"'.format(prefix, item.strip('"')) for item in raw_list]
+
+    if not raw_list:
+        return ""
+    elif len(raw_list) == 1:
+        return raw_list[0]
+    else:
+        return "({})".format(" OR ".join(raw_list))
+
+
+def raw_to_dict(raw):
+    """ Transforms a notable raw value into a dict
+
+    Args:
+        raw: The raw value
+
+    Returns: The raw dict
+
+    """
+    raw_list = argToList(raw)
+    raw_dict = {}
+    for item in raw_list:
+        if '=' in item:
+            field, value = item.split('=')
+            raw_dict[field] = value
+    return raw_dict
+
+
+def drilldown_enrichment(service, notable, enrichment, num_enrichment_events):
+    """ Performs a drilldown enrichment.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object.
+        notable (dict): The notable.
+        enrichment (dict): The enrichment.
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+
+    Returns: True if the drilldown enrichment was successful, False otherwise
+
+    """
+    task_status = False
+    rule_name = notable.get("rule_name")
+    eid = enrichment[XSOAR_ID]
+
+    try:
+        if rule_name:
+            saved_search = service.saved_searches[rule_name].content
+            search = saved_search.get("action.notable.param.drilldown_search")
+            raw = raw_to_dict(notable.get("_raw", ""))
+            if search:
+                timeframe_status, earliest_offset, latest_offset = get_drilldown_timeframe(saved_search, raw)
+                if timeframe_status:
+                    search = build_drilldown_search(notable, search, raw)
+                    search += " earliest={} latest={}".format(earliest_offset, latest_offset)
+                    kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+                    query = build_search_query({"query": search})
+                    demisto.debug("Drilldown query for enrichment {}: {}".format(eid, query))
+                    job = service.jobs.create(query, **kwargs)
+                    add_job_to_enrichment(enrichment, job["sid"], DRILLDOWN_ENRICHMENT)
+                    task_status = True
+                else:
+                    demisto.info("Could not get timeframe for drilldown enrichment {}".format(eid))
+            else:
+                demisto.info("action.notable.param.drilldown_search field not found in saved search for "
+                             "enrichment {}".format(eid))
+        else:
+            demisto.info("Rule name not found for drilldown enrichment {}".format(eid))
+
+    except Exception as e:
+        demisto.info("Caught an exception in drilldown_enrichment function. Additional Info: {}".format(str(e)))
+        task_status = False
+    finally:
+        if not task_status:
+            notable[SUCCESSFUL_DRILLDOWN_ENRICHMENT] = False
+            demisto.info("Failed submitting drilldown enrichment request to Splunk for enrichment {}".format(eid))
+        return task_status
+
+
+def build_drilldown_search(notable, search, raw):
+    """ Replaces all needed fields in a drilldown search query
+
+    Args:
+        notable (dict): The notable
+        search (str): The drilldown search query
+        raw (dict): The raw dict
+
+    Returns: A searchable drilldown search query
+
+    """
+    searchable_search = []
+    start = 0
+
+    for match in re.finditer(DRILLDOWN_REGEX, search):
+        groups = match.groups()
+        prefix = groups[0]
+        raw_field = (groups[1] or groups[2]).strip('$')
+        field, replacement = get_notable_field_and_value(raw_field, notable, raw)
+        if prefix:
+            replacement = get_fields_query_part(notable, prefix, [field], raw)
+        end = match.start()
+        searchable_search.append(search[start:end])
+        searchable_search.append(str(replacement))
+        start = match.end()
+    searchable_search.append(search[start:])  # Handling the tail of the query
+
+    return ''.join(searchable_search)
+
+
+def get_notable_field_and_value(raw_field, notable, raw=None):
+    """ Gets the value by the name of the raw_field. We don't search for equivalence because raw field
+    can be "threat_match_field|s" while the field is "threat_match_field".
+
+    Args:
+        raw_field (str): The raw field
+        notable (dict): The notable
+        raw (dict): The raw dict
+
+    Returns: The value in the notable which is associated with raw_field
+
+    """
+    if not raw:
+        raw = raw_to_dict(notable.get('_raw', ''))
+    for field in notable:
+        if field in raw_field:
+            return field, notable[field]
+    for field in raw:
+        if field in raw_field:
+            return field, raw[field]
+
+
+def get_drilldown_timeframe(saved_search, raw):
+    """ Sets the drilldown search timeframe data.
+
+    Args:
+        saved_search (splunklib.client.SavedSearch): The saved search that triggered the notable.
+        raw (dict): The raw dict
+
+    Returns:
+        task_status: True if the timeframe was retrieved successfully, False otherwise.
+        earliest_offset: The earliest time to query from.
+        latest_offset: The latest time to query to.
+
+    """
+    task_status = True
+    earliest_offset = saved_search.get("action.notable.param.drilldown_earliest_offset")
+    latest_offset = saved_search.get("action.notable.param.drilldown_latest_offset")
+    info_min_time = raw.get(INFO_MIN_TIME, "")
+    info_max_time = raw.get(INFO_MAX_TIME, "")
+
+    if not earliest_offset or earliest_offset == "${}$".format(INFO_MIN_TIME):
+        if info_min_time:
+            earliest_offset = info_min_time
+        else:
+            demisto.info("Failed retrieving info min time")
+            task_status = False
+    if not latest_offset or latest_offset == "${}$".format(INFO_MAX_TIME):
+        if info_max_time:
+            latest_offset = info_max_time
+        else:
+            demisto.info("Failed retrieving info max time")
+            task_status = False
+
+    return task_status, earliest_offset, latest_offset
+
+
+def identity_enrichment(service, notable, enrichment, num_enrichment_events):
+    """ Performs an identity enrichment.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        notable (dict): The notable
+        enrichment (dict): The enrichment object
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+
+    Returns: True if the identity enrichment was successful, False otherwise
+
+    """
+    task_status = False
+    eid = enrichment[XSOAR_ID]
+    error_msg = "Failed submitting identity enrichment request to Splunk for enrichment {}".format(eid)
+
+    try:
+        users = get_fields_query_part(notable=notable, prefix="identity", fields=["user", "src_user"])
+
+        if users:
+            query = build_search_query({"query": '| inputlookup identity_lookup_expanded where {}'.format(users)})
+            demisto.debug("Identity query for enrichment {}: {}".format(eid, query))
+            kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+            job = service.jobs.create(query, **kwargs)
+            add_job_to_enrichment(enrichment, job["sid"], IDENTITY_ENRICHMENT)
+            task_status = True
+        else:
+            error_msg = 'No users were found in notable. {}'.format(error_msg)
+
+    except Exception as e:
+        demisto.info("Caught an exception in identity_enrichment function. Additional Info: {}".format(str(e)))
+        task_status = False
+    finally:
+        if not task_status:
+            notable[SUCCESSFUL_IDENTITY_ENRICHMENT] = False
+            demisto.info(error_msg)
+        return task_status
+
+
+def asset_enrichment(service, notable, enrichment, num_enrichment_events):
+    """ Performs an asset enrichment.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        notable (dict): The notable
+        enrichment (dict): The enrichment object
+        num_enrichment_events (int): The maximal number of events to return per enrichment type.
+
+    Returns: True if the asset enrichment was successful, False otherwise
+
+    """
+    task_status = False
+    eid = enrichment[XSOAR_ID]
+    error_msg = "Failed submitting asset enrichment request to Splunk for enrichment {}".format(eid)
+
+    try:
+        assets = get_fields_query_part(notable=notable, prefix="asset", fields=["src", "dest", "src_ip", "dst_ip"])
+
+        if assets:
+            query = '| inputlookup append=T asset_lookup_by_str where {} | inputlookup append=t asset_lookup_by_cidr ' \
+                    'where {} | rename _key as asset_id | stats values(*) as * by asset_id'.format(assets, assets)
+            query = build_search_query({"query": query})
+            demisto.debug("Asset query for enrichment {}: {}".format(eid, query))
+            kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+            job = service.jobs.create(query, **kwargs)
+            add_job_to_enrichment(enrichment, job["sid"], ASSET_ENRICHMENT)
+            task_status = True
+        else:
+            error_msg = 'No assets were found in notable. {}'.format(error_msg)
+
+    except Exception as e:
+        demisto.info("Caught an exception in asset_enrichment function. Additional Info: {}".format(str(e)))
+        task_status = False
+    finally:
+        if not task_status:
+            notable[SUCCESSFUL_ASSET_ENRICHMENT] = False
+            demisto.info(error_msg)
+        return task_status
+
+
+def add_job_to_enrichment(enrichment, job_id, job_type):
+    """ Adds Splunk job metadata to the enrichment
+
+    Args:
+        enrichment (dict): The enrichment.
+        job_id (str): The Splunk job's ID.
+        job_type (str): The job type - Can be Drilldown, Asset & Identity)
+
+    """
+    enrichment[ENRICHMENT_JOBS].append({
+        JOB_ID: job_id,
+        JOB_TYPE: job_type,
+        JOB_CREATION_TIME: time.time()
+    })
+
+
+def handle_open_enrichments(service, enrichment_timeout, incidents):
+    """ Handles open enrichments. For each open enrichment, tries to retrieve its results, if results aren't ready,
+    it moves to the next open enrichment.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object.
+        enrichment_timeout (int): The timeout for an enrichment.
+        incidents (list): The incident to be submitted at the end of the run.
+
+    Returns: True if we finished handling all open enrichments, False otherwise
+
+    """
+    done_handling = False
+    num_fetched_incidents = 0
+    open_enrichments = get_integration_context().get(ENRICHMENTS, [])
+    demisto.info("Trying to handle {} open enrichments".format(len(open_enrichments)))
+
+    for open_enrichment in open_enrichments:
+        enriched_notable = handle_open_enrichment(service, open_enrichment, enrichment_timeout)
+        if enriched_notable:
+            incident = notable_to_incident(enriched_notable)
+            incidents.append(incident)
+            num_fetched_incidents += 1
+
+    demisto.info("Handled {} enrichments successfully.".format(num_fetched_incidents))
+    update_num_fetched_incidents(num=num_fetched_incidents)
+    store_incident_in_ic(incidents)
+
+    if len(open_enrichments) == num_fetched_incidents:
+        demisto.info("No more open enrichments left to handle.")
+        handle_last_run()
+        update_num_fetched_incidents(num=0, reset=True)
+        done_handling = True
+
+    return done_handling
+
+
+def store_incident_in_ic(incidents):
+    """ Stores a ready incident in integration context to allow the mapping to pull the incidents from the instance.
+    We store the most "enriched" incident to allow best mapping experience.
+
+    Args:
+        incidents: The incidents
+
+    """
+    ic_incident = None
+    integration_context = get_integration_context()
+
+    for incident in incidents:
+        raw_json = json.loads(incident['rawJSON'])
+        drilldown = raw_json.get(DRILLDOWN_ENRICHMENT)
+        asset = raw_json.get(ASSET_ENRICHMENT)
+        identity = raw_json.get(IDENTITY_ENRICHMENT)
+        if all([drilldown, asset, identity]):
+            ic_incident = incident
+            break
+    if not ic_incident and incidents:
+        ic_incident = incidents[-1]
+
+    if ic_incident:
+        integration_context[INCIDENTS] = [ic_incident]
+        set_integration_context(integration_context)
+
+
+def update_num_fetched_incidents(num, reset=False):
+    """ Updates the NUM_FETCHED_INCIDENTS counter in the integration context.
+    If reset set to True, resets the NUM_FETCHED_INCIDENTS counter.
+
+    Args:
+        num: The number of incident to add to NUM_FETCHED_INCIDENTS counter.
+        reset: Whether to reset or not.
+
+    """
+    integration_context = get_integration_context()
+    if reset:
+        integration_context[NUM_FETCHED_INCIDENTS] = 0
+    else:
+        if NUM_FETCHED_INCIDENTS in integration_context:
+            integration_context[NUM_FETCHED_INCIDENTS] += num
+        else:
+            integration_context[NUM_FETCHED_INCIDENTS] = num
+    set_integration_context(integration_context)
+
+
+def handle_last_run():
+    """ Handles the last run by the same logic as in regular fetch """
+
+    integration_context = get_integration_context()
+    # first fetch check
+    if LAST_RUN_OVER_FETCH in integration_context and LAST_RUN_REGULAR_FETCH in integration_context:
+        last_run = demisto.getLastRun()
+        if integration_context[NUM_FETCHED_INCIDENTS] < FETCH_LIMIT:
+            last_run.update(integration_context[LAST_RUN_REGULAR_FETCH])
+        else:
+            last_run.update(integration_context[LAST_RUN_OVER_FETCH])
+        demisto.setLastRun(last_run)
+
+
+def handle_open_enrichment(service, open_enrichment, enrichment_timeout):
+    """ Handles open enrichment. If enrichment timeout has reached, creates an incident.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object
+        open_enrichment (dict): The open enrichment
+        enrichment_timeout (int): The timeout for an enrichment
+
+    Returns: The enriched/not enriched notable
+
+    """
+    eid = open_enrichment[XSOAR_ID]
+    if not is_enrichment_exceeding_timeout(open_enrichment, enrichment_timeout):
+        demisto.info("Trying to handle open enrichment {}".format(eid))
+        jobs = open_enrichment[ENRICHMENT_JOBS]
+        for job in jobs:
+            job.update({SPLUNK_JOB: client.Job(service=service, sid=job[JOB_ID])})
+
+        if all(job[SPLUNK_JOB].is_ready() for job in jobs):
+            demisto.info("Handling open enrichment {}".format(eid))
+            enriched_notable = open_enrichment[ENRICHMENT_NOTABLE]
+
+            for job in jobs:
+                splunk_job_results = job[SPLUNK_JOB].results()
+                results_reader = results.ResultsReader(splunk_job_results)
+                job_type = job[JOB_TYPE]
+                enriched_notable[job_type] = []
+                for item in results_reader:
+                    enriched_notable[job_type].append(item)
+                enriched_notable[JOB_TYPE_TO_ENRICHMENT_STATUS[job_type]] = True
+                demisto.debug("{} results for {} enrichment {}".format(len(enriched_notable[job_type]), job_type, eid))
+
+            remove_enrichment_from_integration_context(open_enrichment)
+            enriched_notable[SUCCESSFUL_ENRICHMENT] = True
+            demisto.info("Handled open enrichment {} successfully.".format(eid))
+            return enriched_notable
+
+        else:
+            demisto.info("Open enrichment {} is not ready".format(eid))
+            return {}
+
+    else:
+        demisto.info("Open enrichment {} has exceeded the enrichment timeout of {}. Submitting the notable without "
+                     "the enrichment.".format(eid, enrichment_timeout))
+        notable = open_enrichment[ENRICHMENT_NOTABLE]
+        notable[SUCCESSFUL_ENRICHMENT] = False
+        return notable
+
+
+def remove_enrichment_from_integration_context(enrichment):
+    """ Removes an enrichment from the integration context by its ID.
+
+    Args:
+        enrichment (dict): The enrichment
+
+    """
+    integration_context = get_integration_context()
+    enrichments = integration_context.get(ENRICHMENTS, [])
+    for e in enrichments:
+        if e[XSOAR_ID] == enrichment[XSOAR_ID]:
+            enrichments.remove(e)
+            break
+    integration_context[ENRICHMENTS] = enrichments
+    set_integration_context(integration_context)
+
+
+def remove_notable(notables, notable):
+    """ Removes a notable by its ID.
+
+    Args:
+        notables: The list of notables.
+        notable: The notable to be removed.
+
+    """
+    for n in notables:
+        if n[XSOAR_ID] == notable[XSOAR_ID]:
+            notables.remove(n)
+            break
+    return notables
+
+
+def is_enrichment_exceeding_timeout(enrichment, enrichment_timeout):
+    """ Checks whether an enrichment has exceeded timeout or not
+
+    Args:
+        enrichment (dict): The enrichment
+        enrichment_timeout (int): The timeout for an enrichment
+
+    Returns: True if the enrichment exceeded the given timeout, False otherwise
+
+    """
+    longest_job_datetime = max(datetime.fromtimestamp(job[JOB_CREATION_TIME]) for job in enrichment[ENRICHMENT_JOBS])
+    return datetime.utcnow() - longest_job_datetime > timedelta(minutes=enrichment_timeout)
+
+
+def reset_enriching_fetch_mechanism():
+    """ Resets all the fields regarding the enriching fetch mechanism & the last run object """
+
+    integration_context = get_integration_context()
+    for field in (ENRICHMENTS, LAST_RUN_REGULAR_FETCH, LAST_RUN_OVER_FETCH, NUM_FETCHED_INCIDENTS,
+                  NOT_YET_ENRICHED_NOTABLES, INCIDENTS):
+        if field in integration_context:
+            del integration_context[field]
+    set_integration_context(integration_context)
+    demisto.setLastRun({})
+    demisto.results("Enriching fetch mechanism was reset successfully.")
+
+
+def fetch_incidents(service, enabled_enrichments, enrichment_timeout, num_enrichment_events):
+    if enabled_enrichments:
+        if not demisto.getLastRun() and get_integration_context():
+            # In "Pull from instance" in Classification & Mapping the last run object is empty, integration context
+            # will not be empty because of the enrichment mechanism. In regular enriched fetch, we use dummy data
+            # in the last run object to avoid entering this case
+            incidents = get_incidents_for_mapping()
+        else:
+            incidents = []
+            done_handling = handle_open_enrichments(service, enrichment_timeout, incidents)
+            if done_handling:
+                fetch_notables(service=service, enrich_notables=True)
+                enrich_new_notables(service, enabled_enrichments, incidents, num_enrichment_events)
+        demisto.incidents(incidents)
+    else:
+        fetch_notables(service=service, enrich_notables=False)
+
+
+def get_incidents_for_mapping():
+    """ Gets the stored incidents to the "Pull from instance" in Classification & Mapping
+
+    Returns: The incidents
+
+    """
+    demisto.info('Retrieving incidents for "Pull from instance" in Classification & Mapping.')
+    return get_integration_context().get(INCIDENTS, [])
+
+
 def main():
     if demisto.command() == 'splunk-parse-raw':
         splunk_parse_raw_command()
@@ -1002,6 +1647,8 @@ def main():
     if demisto.command() == 'test-module':
         test_module(service)
         demisto.results('ok')
+    if demisto.command() == 'splunk-reset-enriching-fetch-mechanism':
+        reset_enriching_fetch_mechanism()
     if demisto.command() == 'splunk-search':
         splunk_search_command(service)
     if demisto.command() == 'splunk-job-create':
@@ -1009,7 +1656,11 @@ def main():
     if demisto.command() == 'splunk-results':
         splunk_results_command(service)
     if demisto.command() == 'fetch-incidents':
-        fetch_incidents(service)
+        demisto_params = demisto.params()
+        enabled_enrichments = demisto_params.get('enabled_enrichments', [])
+        enrichment_timeout = int(demisto_params.get('enrichment_timeout'))
+        num_enrichment_events = int(demisto_params.get('num_enrichment_events'))
+        fetch_incidents(service, enabled_enrichments, enrichment_timeout, num_enrichment_events)
     if demisto.command() == 'splunk-get-indexes':
         splunk_get_indexes_command(service)
     if demisto.command() == 'splunk-submit-event':

@@ -423,7 +423,7 @@ def test_get_kv_store_config(fields, expected_output, mocker):
     assert output == expected_output
 
 
-def test_fetch_incidents(mocker):
+def test_fetch_notables(mocker):
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -432,7 +432,7 @@ def test_fetch_incidents(mocker):
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
-    splunk.fetch_incidents(service)
+    splunk.fetch_notables(service, enrich_notables=True)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 1
