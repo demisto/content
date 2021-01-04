@@ -764,13 +764,10 @@ class Pack(object):
             os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
             output_file_path = f"{extract_destination_path}/decrypt_pack.zip"
             os.chdir(extract_destination_path)
-            print("\nALL ZIP FILES IN DIR\n")
-            for file in glob.glob("*.zip"):
-                print(file)
 
             subprocess.call('chmod +x ./decryptor', shell=True)
             full_command = f'./decryptor {new_encrypted_pack_path} {output_file_path} "{encryption_key}"'
-            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             stdout, stderr = process.communicate()
             print("\nstdout:\n")
             print(str(stdout))
