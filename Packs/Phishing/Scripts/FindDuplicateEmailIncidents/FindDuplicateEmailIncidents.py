@@ -219,20 +219,21 @@ def return_entry(message, duplicate_incidents_df=None, new_incident=None):
     if duplicate_incidents_df is None:
         duplicate_incident = {}
         all_duplicate_incidents = []
-        new_incident = [{}]
-        dupliacte_incidents_all_fields = []
+        full_incidents = []
     else:
         most_similar_incident = duplicate_incidents_df.iloc[0]
         duplicate_incident = format_incident_context(most_similar_incident)
         all_duplicate_incidents = [format_incident_context(row) for _, row in duplicate_incidents_df.iterrows()]
-        new_incident = new_incident.to_dict(orient='records')
-        dupliacte_incidents_all_fields = duplicate_incidents_df.to_dict(orient='records')
+        new_incident['created'] = new_incident['created'].astype(str)
+        duplicate_incidents_df['created'] = duplicate_incidents_df['created'].astype(str)
+        duplicate_incidents_df.drop('vector', axis=1, inplace=True)
+        full_incidents = new_incident.to_dict(orient='records') + duplicate_incidents_df.to_dict(orient='records')
     outputs = {
         'duplicateIncident': duplicate_incident,
         'isDuplicateIncidentFound': duplicate_incidents_df is not None,
         'allDuplicateIncidents': all_duplicate_incidents
     }
-    return_outputs(message, outputs, raw_response=new_incident + dupliacte_incidents_all_fields)
+    return_outputs(message, outputs, raw_response=json.dumps(full_incidents))
 
 
 def format_incident_context(df_row):
