@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings()
 
 class Client(BaseClient):
     """
-    ServiceNow IAM Client class that implements logic to authenticate with ServiceNow.1
+    ServiceNow IAM Client class that implements logic to authenticate with ServiceNow.
     """
 
     def test(self):
