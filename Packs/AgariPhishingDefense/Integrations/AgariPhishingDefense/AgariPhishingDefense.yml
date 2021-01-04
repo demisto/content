@@ -309,7 +309,7 @@ script:
       description: The Global message ID.
       type: String
     - contextPath: AgariPhishingDefense.Message.ptr_name
-      description: PTR name.
+      description: A Pointer Record to get the associated domain/hostname.
       type: String
     - contextPath: AgariPhishingDefense.Message.sbrs
       description: SBRS.

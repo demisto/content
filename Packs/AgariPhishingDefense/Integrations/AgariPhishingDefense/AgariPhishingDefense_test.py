@@ -5,7 +5,7 @@ import pytest
 from requests.exceptions import MissingSchema, InvalidSchema, SSLError, InvalidURL, HTTPError
 from CommonServerPython import *
 
-API_TOKEN = 'ed66e32c1ad6eed3e86ed2d7eedef1eb3594e6e2d682566294c700c1a5b2ad25'
+API_TOKEN = 'dummy_token'
 CONTENT_TYPE_JSON = 'application/json'
 SAMPLE_URL = 'https://sample.api.com'
 
@@ -16,8 +16,8 @@ AUTHENTICATION_RESP_HEADER = {
     "created_at": 1604920579
 }
 
-PAYLOAD = "client_id=d59a0b5a0a84e8f0ecb08fcba0e833bc0fd2a1d4084484d4bdea9bb706b742a0&client_secret" \
-          "=9aa3a7df94394f8a7a36202f0205657b3c6aa45dc73b7ba6ab2a35ec23da2ff8 "
+PAYLOAD = "client_id=client_dummy_id&client_secret" \
+          "=client_dummy_secret "
 
 MOCK_INTEGRATION_CONTEXT = {
     'api_token': API_TOKEN,
@@ -26,8 +26,8 @@ MOCK_INTEGRATION_CONTEXT = {
 
 PARAMS = {
     'url': SAMPLE_URL,
-    'apikey': 'd59a0b5a0a84e8f0ecb08fcba0e833bc0fd2a1d4084484d4bdea9bb706b742a0',
-    'apisecret': '9aa3a7df94394f8a7a36202f0205657b3c6aa45dc73b7ba6ab2a35ec23da2ff8',
+    'apikey': 'client_dummy_api_key',
+    'apisecret': 'client_dummy_api_secret',
     'isFetch': False,
     'incidentType': 'Agari Phishing Defense Policy Event',
     'max_fetch': 40,

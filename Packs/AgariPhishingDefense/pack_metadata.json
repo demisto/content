@@ -4,14 +4,14 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Agari",
-    "url": "",
+    "url": "https://www.agari.com/",
     "email": "support@agari.com",
     "created": "2020-11-06T08:37:53Z",
     "categories": [
         "Email Gateway"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": ["PhishingDefense","Phishing"],
+    "useCases": ["Phishing Defense"],
+    "keywords": ["phishing", "defense", "message", "policy"],
     "githubUser": ""
 }
