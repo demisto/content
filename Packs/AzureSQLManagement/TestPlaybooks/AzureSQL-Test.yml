@@ -1,6 +1,5 @@
-id: 490614d9-e8a3-4eec-8df0-b91703735e0f
-version: 4
-vcShouldKeepItemLegacyProdMachine: false
+id: Azure SQL - Test
+version: -1
 name: Azure SQL - Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -224,6 +224,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -815,3 +816,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: Test playbook for Azure SQL Management integration.
