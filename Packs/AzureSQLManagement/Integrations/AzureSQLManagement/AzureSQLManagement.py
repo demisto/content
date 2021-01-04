@@ -80,9 +80,9 @@ class Client:
 
     @logger
     def azure_sql_db_audit_policy_create_update(self, server_name: str, db_name: str,
-                                                state: str, audit_actions_groups: str,
-                                                is_azure_monitor_target_enabled: str,
-                                                is_storage_secondary_key_in_use: str,
+                                                state: str, audit_actions_groups: List[str],
+                                                is_azure_monitor_target_enabled: bool,
+                                                is_storage_secondary_key_in_use: bool,
                                                 queue_delay_ms: str, retention_days: str,
                                                 storage_account_access_key: str,
                                                 storage_account_subscription_id: str,
@@ -97,6 +97,33 @@ class Client:
             "storageAccountAccessKey": storage_account_access_key,
             "storageAccountSubscriptionId": storage_account_subscription_id,
             "storageEndpoint": storage_endpoint
+        }
+        properties = {}
+        for arg_key, arg_val in arg_list.items():
+            if arg_val:
+                properties[arg_key] = arg_val
+
+        request_body = {'properties': properties} if properties else {}
+
+        return self.http_request(method='PUT', url_suffix=f'resourceGroups/{self.resource_group_name}/providers'
+                                                          f'/Microsoft.Sql/servers/{server_name}/databases/'
+                                                          f'{db_name}/auditingSettings/default',
+                                 data=request_body)
+
+    def azure_sql_db_threat_policy_create_update(self, server_name: str, db_name: str, state: str,
+                                                 disabled_alerts: List[str], email_account_admins: str,
+                                                 email_addresses: List[str], retention_days: str,
+                                                 storage_account_access_key: str,
+                                                 use_server_default: str, storage_endpoint: str):
+        arg_list = {
+            "state": state,
+            "retentionDays": retention_days,
+            "storageAccountAccessKey": storage_account_access_key,
+            "storageEndpoint": storage_endpoint,
+            "disabledAlerts": disabled_alerts,
+            "emailAccountAdmins": email_account_admins,
+            "emailAddresses": email_addresses,
+            "useServerDefault": use_server_default
         }
         properties = {}
         for arg_key, arg_val in arg_list.items():
@@ -222,7 +249,7 @@ def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_
 
 @logger
 def azure_sql_db_audit_policy_create_update_command(client: Client, server_name: str, db_name: str,
-                                                    state: str = None, audit_actions_groups: str = None,
+                                                    state: str, audit_actions_groups: str = None,
                                                     is_azure_monitor_target_enabled: str = None,
                                                     is_storage_secondary_key_in_use: str = None,
                                                     queue_delay_ms: str = None,
@@ -273,11 +300,10 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, server_name:
                                                               storage_account_subscription_id=storage_account_subscription_id,
                                                               storage_endpoint=storage_endpoint)
     response_hr = copy.deepcopy(response)
-    for db in response_hr:
-        properties = db.get('properties', {})
-        if properties:
-            db.update(properties)
-            del db['properties']
+    properties = response_hr.get('properties', {})
+    if properties:
+        response_hr.update(properties)
+        del response_hr['properties']
 
     human_readable = tableToMarkdown(name='Create Or Update Database Auditing Settings', t=response_hr,
                                      headerTransform=pascalToSpace, removeNull=True)
@@ -330,8 +356,69 @@ def azure_sql_db_threat_policy_get_command(client: Client, server_name: str, db_
 
 
 @logger
-def azure_sql_db_threat_policy_create_update_command(client: Client) -> CommandResults:
-    return CommandResults(readable_output='TODO')
+def azure_sql_db_threat_policy_create_update_command(client: Client, server_name: str, db_name: str,
+                                                     state: str, disabled_alerts: str = '',
+                                                     email_account_admins: str = '',
+                                                     email_addresses: str = '',
+                                                     retention_days: str = '', storage_account_access_key: str = '',
+                                                     use_server_default: str = '',
+                                                     storage_endpoint: str = '') -> CommandResults:
+    """azure_sql_db_audit_policy_create_update command: Upadate and create audit policies related to the server
+        and database
+
+        :type client: ``Client``
+        :param client: AzureSQLManagement client to use
+
+        :return:
+            A ``CommandResults`` object that is then passed to ``return_results``,
+            that contains a scan status
+
+        :rtype: ``CommandResults``
+
+        Args:
+            server_name: server name for which we want to create or update auditing settings
+            db_name: database for which we want to create or update auditing settings
+            state: satate of the policy
+            disabled_alerts:
+            email_account_admins:
+            email_addresses:
+            retention_days: Number of days to keep the policy in the audit logs.
+            storage_account_access_key: identifier key of the auditing storage account
+            use_server_default:
+            storage_endpoint: Storage endpoint.
+
+        """
+    disabled_alerts_list: List[str] = []
+    if disabled_alerts:
+        disabled_alerts_list = argToList(disabled_alerts)
+        if disabled_alerts_list[0] == 'none':
+            disabled_alerts_list = [""]
+    email_addresses = email_addresses if not email_addresses else argToList(email_addresses)
+
+    response = client.azure_sql_db_threat_policy_create_update(server_name=server_name, db_name=db_name, state=state,
+                                                               disabled_alerts=disabled_alerts_list,
+                                                               email_account_admins=email_account_admins,
+                                                               email_addresses=email_addresses,
+                                                               retention_days=retention_days,
+                                                               storage_account_access_key=storage_account_access_key,
+                                                               use_server_default=use_server_default,
+                                                               storage_endpoint=storage_endpoint)
+    response_hr = copy.deepcopy(response)
+    properties = response_hr.get('properties', {})
+    if properties:
+        response_hr.update(properties)
+        del response_hr['properties']
+
+    human_readable = tableToMarkdown(name='Create Or Update Database Threat Detection Policies', t=response_hr,
+                                     headerTransform=pascalToSpace, removeNull=True)
+
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='AzureSQL.DBThreatPolicy',
+        outputs_key_field='id',
+        outputs=response_hr,
+        raw_response=response
+    )
 
 
 @logger

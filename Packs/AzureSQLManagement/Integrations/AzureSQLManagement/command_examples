@@ -5,7 +5,6 @@
 !azure-sql-db-list server_name=sqlintegration
 !azure-sql-db-audit-policy-list server_name=sqlintegration db_name=sql-integration-db
 !azure-sql-db-threat-policy-get server_name=sqlintegration db_name=sql-integration-db
-
-
-
+!azure-sql-db-audit-policy-create-update server_name=sqlintegration db_name=sql-integration-db state=Enabled is_azure_monitor_target_enabled=true retention_days=3 queue_delay_ms=123
+!azure-sql-db-threat-policy-create-update server_name=sqlintegration db_name=sql-integration-db state=Enabled disabled_alerts="Sql_Injection,Sql_Injection_Vulnerability" retention_days=5
 !azure-sql-auth-reset

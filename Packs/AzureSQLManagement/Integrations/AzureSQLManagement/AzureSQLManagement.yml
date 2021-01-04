@@ -297,21 +297,15 @@ script:
       name: db_name
       required: true
       secret: false
-    - default: false
-      description: Policy name
-      isArray: false
-      name: policy_name
-      required: false
-      secret: false
     - auto: PREDEFINED
       default: false
       description: set state 'Enable' or 'Disable'
       isArray: false
       name: state
       predefined:
-      - Enable
-      - Disable
-      required: false
+      - Enabled
+      - Disabled
+      required: true
       secret: false
     - default: false
       description: Actions-Groups and Actions to audit.
@@ -417,6 +411,132 @@ script:
     - contextPath: AzureSQL.DbAuditPolicy.storageEndpoint
       description: Storage endpoint.
       type: String
+  - arguments:
+    - default: false
+      description: Server name
+      isArray: false
+      name: server_name
+      required: true
+      secret: false
+    - default: false
+      description: Database name
+      isArray: false
+      name: db_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: set state 'Enable' or 'Disable'
+      isArray: false
+      name: state
+      predefined:
+      - Enabled
+      - Disabled
+      required: true
+      secret: false
+    - default: false
+      description: Number of days to keep the policy in the audit logs.
+      isArray: false
+      name: retention_days
+      required: false
+      secret: false
+    - default: false
+      description: identifier key of the auditing storage account
+      isArray: false
+      name: storage_account_access_key
+      required: false
+      secret: false
+    - default: false
+      description: Storage endpoint. If state is Enabled, storageEndpoint or isAzureMonitorTargetEnabled
+        is required.
+      isArray: false
+      name: storage_endpoint
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of alerts that are disabled, or "none" to
+        disable no alerts. Possible values: Sql_Injection, Sql_Injection_Vulnerability,
+        Access_Anomaly, Data_Exfiltration, Unsafe_Action'
+      isArray: true
+      name: disabled_alerts
+      required: false
+      secret: false
+    - default: false
+      description: 'Comma-separated list of e-mail addresses to which the alert is
+        sent.'
+      isArray: true
+      name: email_addresses
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The alert is sent to the account administrators.
+      isArray: false
+      name: email_account_admins
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to use the default server policy or not.
+      isArray: false
+      name: use_server_default
+      predefined:
+      - Enabled
+      - Disabled
+      required: false
+      secret: false
+    deprecated: false
+    description: Create or update database's threat detection policy.
+    execution: false
+    name: azure-sql-db-threat-policy-create-update
+    outputs:
+    - contextPath: AzureSQL.DBThreatPolicy.kind
+      description: Kind of Threat Policy.
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.location
+      description: Threat Policy location.
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.id
+      description: Threat Policy id
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.name
+      description: Threat Policy name
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.type
+      description: Threat Policy type.
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.state
+      description: Policy state
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.creationTime
+      description: Policy creation Time
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.retentionDays
+      description: Number of days to keep in the Threat Detection audit logs.
+      type: Number
+    - contextPath: AzureSQL.DBThreatPolicy.storageAccountAccessKey
+      description: Specifies the identifier key of the Threat Detection audit storage
+        account.
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.storageEndpoint
+      description: Threat Detection audit storage account.
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.emailAccountAdmins
+      description: Email account administrators that alert is sent to.
+      type: Boolean
+    - contextPath: AzureSQL.DBThreatPolicy.emailAddresses
+      description: list of e-mail addresses to which the alert is sent.
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.disabledAlerts
+      description: list of alerts that are disabled, or empty string to disable no
+        alerts.
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.useServerDefault
+      description: whether to use the default server policy.
+      type: Unknown
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false

@@ -90,3 +90,48 @@ def test_azure_sql_db_threat_policy_get_command(mocker):
     results = azure_sql_db_threat_policy_get_command(client, 'integration', 'integration-db')
     assert '### Database Threat Detection Policies' in results.readable_output
     assert results.outputs.get('type') == 'Microsoft.Sql/servers/databases/securityAlertPolicies'
+
+
+def test_azure_sql_db_audit_policy_create_update_command(mocker):
+    """
+        Given:
+            - azure_sql_db_audit_policy_create_update command
+            - server_name
+            - db_name
+        When:
+            - Creating or Updating an audi policies of a database related to the server and database
+        Then
+            - Assert the returned markdown and context data are as expected.
+        """
+    from AzureSQLManagement import azure_sql_db_audit_policy_create_update_command
+    client = mock_client(mocker,
+                         util_load_json('test_data/azure_sql_db_audit_policy_create_update_command_result.json'))
+    results = azure_sql_db_audit_policy_create_update_command(client=client, server_name='integration',
+                                                              db_name='integration-db', state='Enabled',
+                                                              retention_days='5',
+                                                              is_azure_monitor_target_enabled='true')
+    assert '### Create Or Update Database Auditing Settings' in results.readable_output
+    assert results.outputs.get('retentionDays') == 5
+    assert results.outputs.get('isAzureMonitorTargetEnabled') is True
+
+
+def test_azure_sql_db_threat_policy_create_update_command(mocker):
+    """
+        Given:
+            - azure_sql_db_threat_policy_create_update command
+            - server_name
+            - db_name
+        When:
+            - Creating or Updating a threat detection policies of a database related to the server and database
+        Then
+            - Assert the returned markdown and context data are as expected.
+        """
+    from AzureSQLManagement import azure_sql_db_threat_policy_create_update_command
+    client = mock_client(mocker,
+                         util_load_json('test_data/azure_sql_db_threat_policy_create_update_command_result.json'))
+    results = azure_sql_db_threat_policy_create_update_command(client=client, server_name='integration',
+                                                               db_name='integration-db', state='Enabled',
+                                                               retention_days='5', email_addresses='test1@test.com')
+    assert '### Create Or Update Database Threat Detection Policies' in results.readable_output
+    assert results.outputs.get('retentionDays') == 5
+    assert results.outputs.get('emailAddresses')[0] == 'test1@test.com'
