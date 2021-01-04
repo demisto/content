@@ -1767,7 +1767,7 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
         # if the arg is string of date format 2019-10-23T00:00:00 or "3 days", etc
         date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
         if date is None:
-            # if d is None it means dlte_creation_timeateparser failed to parse it
+            # if d is None it means dateparser failed to parse it
             raise ValueError(f'Invalid date: {arg_name}')
 
         return int(date.timestamp() * 1000)
