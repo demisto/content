@@ -119,9 +119,9 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        return self._http_request(method='GET',
-                                  url_suffix=f'/threatvault/{search_type}/search/result/{search_request_id}',
-                                  params=self._params)
+        self._http_request(method='GET',
+                           url_suffix=f'/threatvault/{search_type}/search/result/{search_request_id}',
+                           params=self._params)
 
 
 def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
@@ -180,7 +180,8 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 sha256=sha256,
                 dbot_score=dbot_score
             )
-            readable_output = tableToMarkdown(name=f"SHA256 {sha256} Antivirus reputation:", t=response, removeNull=True)
+            readable_output = tableToMarkdown(name=f"SHA256 {sha256} Antivirus reputation:", t=response,
+                                              removeNull=True)
         except Exception as err:
             if 'Error in API call [404] - Not Found' in str(err):
                 response = {}
@@ -466,27 +467,32 @@ def signature_search_results(client: Client, args: dict) -> CommandResults:
     search_request_id = str(args.get('search_request_id', ''))
     search_type = str(args.get('search_type', ''))
 
-    response = client.signature_search_results_request(search_type, search_request_id)
+    try:
+        response = client.signature_search_results_request(search_type, search_request_id)
 
-    outputs = response
-    outputs.update({'search_request_id': search_request_id})
-    if response.get('status') == 'submitted':  # search was not completed
-        readable_output = f'Search {search_request_id} is still in progress.'
-    else:
-        headers = ['signatureId', 'signatureName', 'domainName', 'cve', 'signatureType', 'status', 'category',
-                   'firstReleaseTime', 'latestReleaseTime']
-        outputs.update({'status': 'completed'})
-        title = f'Signature search are showing {outputs.get("page_count")} of {outputs.get("total_count")} results:'
-        readable_output = tableToMarkdown(name=title, t=outputs.get('signatures'),
-                                          headers=headers, removeNull=True)
-
-    return CommandResults(
-        outputs_prefix=f'{client.name}.Search',
-        outputs_key_field='search_request_id',
-        outputs=outputs,
-        readable_output=readable_output,
-        raw_response=response
-    )
+        outputs = response
+        outputs.update({'search_request_id': search_request_id})
+        if response.get('status') == 'submitted':  # search was not completed
+            readable_output = f'Search {search_request_id} is still in progress.'
+        else:
+            headers = ['signatureId', 'signatureName', 'domainName', 'cve', 'signatureType', 'status', 'category',
+                       'firstReleaseTime', 'latestReleaseTime']
+            outputs.update({'status': 'completed'})
+            title = f'Signature search are showing {outputs.get("page_count")} of {outputs.get("total_count")} results:'
+            readable_output = tableToMarkdown(name=title, t=outputs.get('signatures'),
+                                              headers=headers, removeNull=True)
+        return CommandResults(
+            outputs_prefix=f'{client.name}.Search',
+            outputs_key_field='search_request_id',
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=response
+        )
+    except Exception as err:
+        if 'Not Found' in str(err):
+            return_warning(f'Search request ID {search_request_id} was not found.')
+        else:
+            raise
 
 
 def test_module(client: Client, *_) -> str:
