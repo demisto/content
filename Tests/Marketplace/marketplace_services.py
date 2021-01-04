@@ -22,7 +22,6 @@ from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from typing import Tuple, Any, Union
-import glob
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
@@ -147,7 +146,7 @@ class PackStatus(enum.Enum):
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
-    FAILED_DECRYPT_PACK = "Failed to decrypt pack, which means pack was not encrypted in the first place"
+    FAILED_DECRYPT_PACK = "Failed to decrypt pack, which means the pack is not encrypted"
 
 
 class Pack(object):
@@ -752,7 +751,16 @@ class Pack(object):
         except subprocess.CalledProcessError as error:
             print(f"Error while trying to encrypt pack. {error}")
 
-    def decrypt_pack(self, encrypted_zip_pack_path, encryption_key):
+    def decrypt_pack(self, encrypted_zip_pack_path, decryption_key):
+        """ decrypt the pack in order to see that the pack was encrypted in the first place.
+
+        Args:
+            encrypted_zip_pack_path (str): The path for the encrypted zip pack.
+            decryption_key (str): The key which we can decrypt the pack with.
+
+        Returns:
+            bool: whether the decryption succeeded.
+        """
         try:
             current_working_dir = os.getcwd()
             extract_destination_path = f'{current_working_dir}/decrypt_pack_dir'
@@ -764,26 +772,22 @@ class Pack(object):
             os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
             output_file_path = f"{extract_destination_path}/decrypt_pack.zip"
             os.chdir(extract_destination_path)
-            print("\nALL ZIP FILES IN DIR\n")
-            for file in glob.glob("*.zip"):
-                print(file)
 
             subprocess.call('chmod +x ./decryptor', shell=True)
-            full_command = f'./decryptor {new_encrypted_pack_path} {output_file_path} "{encryption_key}"'
-            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            full_command = f'./decryptor {new_encrypted_pack_path} {output_file_path} "{decryption_key}"'
+            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             stdout, stderr = process.communicate()
-            print("\nstdout:\n")
-            print(str(stdout))
             shutil.rmtree(extract_destination_path)
             os.chdir(current_working_dir)
-
+            if stdout:
+                logging.info(str(stdout))
             if stderr:
-                print("Error while trying to decrypt pack.")
+                logging.error("Error while trying to decrypt pack.")
                 return False
             return True
 
         except subprocess.CalledProcessError as error:
-            print(f"Error while trying to decrypt pack. {error}")
+            logging.exception(f"Error while trying to decrypt pack. {error}")
 
     def is_pack_encrypted(self, encrypted_zip_pack_path, encryption_key):
         task_status = False
