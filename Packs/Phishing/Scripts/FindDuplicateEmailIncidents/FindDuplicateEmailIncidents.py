@@ -131,7 +131,7 @@ def preprocess_text_fields(incident):
         email_body = get_text_from_html(email_html)
     if isinstance(email_subject, float):
         email_subject = ''
-    text = eliminate_urls_extensions(email_subject + ' ' + email_body)
+    text = eliminate_urls_extensions(email_subject + '\n\n' + email_body)
     return text
 
 
@@ -215,20 +215,24 @@ def find_duplicate_incidents(new_incident, existing_incidents_df, max_incidents_
     return existing_incidents_df.head(max_incidents_to_return)
 
 
-def return_entry(message, duplicate_incidents_df=None):
+def return_entry(message, duplicate_incidents_df=None, new_incident=None):
     if duplicate_incidents_df is None:
         duplicate_incident = {}
         all_duplicate_incidents = []
+        new_incident = [{}]
+        dupliacte_incidents_all_fields = []
     else:
         most_similar_incident = duplicate_incidents_df.iloc[0]
         duplicate_incident = format_incident_context(most_similar_incident)
         all_duplicate_incidents = [format_incident_context(row) for _, row in duplicate_incidents_df.iterrows()]
+        new_incident = new_incident.to_dict(orient='records')
+        dupliacte_incidents_all_fields = duplicate_incidents_df.to_dict(orient='records')
     outputs = {
         'duplicateIncident': duplicate_incident,
         'isDuplicateIncidentFound': duplicate_incidents_df is not None,
         'allDuplicateIncidents': all_duplicate_incidents
     }
-    return_outputs(message, outputs)
+    return_outputs(message, outputs, raw_response=new_incident + dupliacte_incidents_all_fields)
 
 
 def format_incident_context(df_row):
@@ -261,9 +265,9 @@ def close_new_incident_and_link_to_existing(new_incident, duplicate_incidents_df
             'duplicateId': most_similar_incident['id']})
         if is_error(res):
             return_error(res)
-        message += 'This incident (#{}) will be closed and linked to #{}.'.format(new_incident['id'],
+        message += 'This incident (#{}) will be closed and linked to #{}.'.format(new_incident.iloc[0]['id'],
                                                                                   most_similar_incident['id'])
-    return_entry(message, duplicate_incidents_df)
+    return_entry(message, duplicate_incidents_df, new_incident)
 
 
 def create_new_incident():
@@ -279,7 +283,7 @@ def format_incident_hr(duplicate_incidents_df):
                            'Name': incident['name'],
                            'Status': status_map[str(incident.get('status'))],
                            'Time': str(incident['created']),
-                           'Email From': incident.get(demisto.args().get('emailFrom')),
+                           'Email From': incident.get(demisto.args().get(FROM_FIELD)),
                            'Text Similarity': "{:.1f}%".format(incident['similarity'] * 100),
                            })
     headers = ['Id', 'Name', 'Status', 'Time', 'Email From', 'Text Similarity']
@@ -354,7 +358,7 @@ def main():
     if duplicate_incidents_df.iloc[0]['similarity'] < SIMILARITY_THRESHOLD:
         create_new_incident_low_similarity(duplicate_incidents_df)
     else:
-        return close_new_incident_and_link_to_existing(new_incident_df.iloc[0], duplicate_incidents_df)
+        return close_new_incident_and_link_to_existing(new_incident_df, duplicate_incidents_df)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
