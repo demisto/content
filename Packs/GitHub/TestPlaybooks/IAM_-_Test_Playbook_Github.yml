@@ -1,6 +1,6 @@
-id: Github IAM - Test Playbook2
+id: Github IAM - Test Playbook
 version: -1
-name: Github IAM - Test Playbook2
+name: Github IAM - Test Playbook
 starttaskid: "0"
 tasks:
   "0":
