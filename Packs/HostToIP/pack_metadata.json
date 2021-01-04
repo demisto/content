@@ -1,0 +1,17 @@
+{
+    "name": "HostToIP",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "kumar-siddappa",
+    "url": "",
+    "email": "",
+    "created": "2021-01-04T05:53:16Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "kumar-siddappa"
+    ]
+}

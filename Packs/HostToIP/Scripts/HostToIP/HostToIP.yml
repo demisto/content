@@ -1,0 +1,21 @@
+args:
+- description: Provide the hostname to get converted to IP
+  name: hostname
+  required: true
+comment: It converts Hostname to IP given and stores the result under the list Hosts.
+commonfields:
+  id: HostToIP
+  version: -1
+dockerimage: demisto/python3:3.9.1.14969
+enabled: true
+name: HostToIP
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
