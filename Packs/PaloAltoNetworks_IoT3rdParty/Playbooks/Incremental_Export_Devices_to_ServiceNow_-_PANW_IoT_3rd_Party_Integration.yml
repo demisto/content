@@ -319,7 +319,7 @@ tasks:
         if one of the entries returned an error.
       id: 93c26bab-e2af-4612-82f2-fe1a0da1e3aa
       iscommand: false
-      name: Was there an error when generating table query
+      name: Was there an error when generating table query?
       script: isError
       type: condition
       version: -1
@@ -1212,7 +1212,7 @@ tasks:
         if one of the entries returned an error.
       id: 53baa9fd-9303-4742-8a7b-4d240d8c1705
       iscommand: false
-      name: isError
+      name: Was there an error when generating table query?
       script: isError
       type: condition
       version: -1
