@@ -82,7 +82,7 @@ PAGINATED_COUNT: int
 
 def get_bot_id() -> str:
     """
-    Gets the app bot ID1
+    Gets the app bot ID
 
     Returns:
         The app bot ID
