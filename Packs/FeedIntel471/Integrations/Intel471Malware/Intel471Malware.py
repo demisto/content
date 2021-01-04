@@ -2,7 +2,6 @@ import jmespath
 import demistomock as demisto
 from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
-# from Packs.ApiModules.Scripts.JSONFeedApiModule.JSONFeedApiModule import *
 from typing import Dict
 
 DEFAULT_COUNT = 100
