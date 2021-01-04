@@ -77,7 +77,6 @@ def humio_query(client, args, headers):
         data["start"] = int(args.get("start"))
     except ValueError:
         data["start"] = args.get("start")
-
     try:
         data["end"] = int(args.get("end"))
     except ValueError:
