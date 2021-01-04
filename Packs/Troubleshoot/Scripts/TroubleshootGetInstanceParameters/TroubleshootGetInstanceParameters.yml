@@ -5,7 +5,8 @@ args:
   required: true
   secret: false
   description: The instane name to get its parameters
-comment: Gets an instance's configuration parameters in order to troubleshoot the instance.
+comment: Gets an instance's configuration parameters in order to troubleshoot the
+  instance.
 commonfields:
   id: TroubleshootGetInstanceParameters
   version: -1
@@ -64,6 +65,6 @@ dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.0.0
 dependson:
   must:
-    - demisto-api-post
+  - demisto-api-post
 tests:
 - No tests (auto formatted)

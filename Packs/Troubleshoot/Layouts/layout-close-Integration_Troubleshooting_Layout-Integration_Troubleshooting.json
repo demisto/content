@@ -1,0 +1,36 @@
+{
+ "kind": "close",
+ "layout": {
+  "id": "Integration Troubleshooting Layout",
+  "name": "Integration Troubleshooting Layout",
+  "version": -1,
+  "kind": "close",
+  "typeId": "Integration Troubleshooting",
+  "sections": [
+   {
+    "description": "",
+    "fields": [
+     {
+      "fieldId": "incident_closereason",
+      "isVisible": true
+     },
+     {
+      "fieldId": "incident_closenotes",
+      "isVisible": true
+     }
+    ],
+    "isVisible": true,
+    "name": "Basic Information",
+    "query": null,
+    "queryType": "",
+    "readOnly": false,
+    "type": ""
+   }
+  ]
+ },
+ "fromVersion": "5.0.0",
+ "toVersion": "5.9.9",
+ "typeId": "Integration Troubleshooting",
+ "version": -1,
+ "description": ""
+}
