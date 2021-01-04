@@ -21,6 +21,32 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 
 import demistomock as demisto
+import warnings
+
+
+class WarningsHandler(object):
+    #    Wrapper to handle warnings. We use a class to cleanup after execution
+
+    @staticmethod
+    def handle_warning(message, category, filename, lineno, file=None, line=None):
+        try:
+            msg = warnings.formatwarning(message, category, filename, lineno, line)
+            demisto.info("python warning: " + msg)
+        except Exception:
+            # ignore the warning if it can't be handled for some reason
+            pass
+
+    def __init__(self):
+        self.org_handler = warnings.showwarning
+        warnings.showwarning = WarningsHandler.handle_warning
+
+    def __del__(self):
+        warnings.showwarning = self.org_handler
+
+
+_warnings_handler = WarningsHandler()
+# ignore warnings from logging as a result of not being setup
+logging.raiseExceptions = False
 
 # imports something that can be missed from docker image
 try:
@@ -4879,7 +4905,6 @@ class DebugLogger(object):
     """
 
     def __init__(self):
-        logging.raiseExceptions = False
         self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         self.int_logger = IntegrationLogger()
         self.int_logger.set_buffering(False)
