@@ -121,8 +121,8 @@ class TestMetadataParsing:
         Then: remove "New" tag
         """
         dummy_pack_metadata['created'] = (datetime.utcnow() - timedelta(35)).strftime(Metadata.DATE_FORMAT)
-        dummy_pack_metadata['tags'].append('New')
-        assert dummy_pack_metadata['tags'] == ["tag number one", "Tag number two", 'New']
+        if 'New' not in dummy_pack_metadata['tags']:
+            dummy_pack_metadata['tags'].append('New')
         parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
                                                     pack_id='test_pack_id', integration_images=[], author_image="",
                                                     dependencies_data={}, server_min_version="5.5.0",
@@ -163,7 +163,6 @@ class TestMetadataParsing:
                                                     downloads_count=10, is_feed_pack=True)
 
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case', 'TIM']
-
 
 
 class TestParsingInternalFunctions:
