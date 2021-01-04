@@ -10,6 +10,7 @@ import re
 import json
 import requests
 import socket
+import traceback
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -506,7 +507,7 @@ def get_data_from_coverage_sub_category(sub_category_name, sub_category_data):
 def parse_coverage_sub_categories(coverage_data):
     new_coverage = {}
     for sub_category_name, sub_category_data in coverage_data.items():
-        if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS:
+        if sub_category_name in SAMPLE_ANALYSIS_COVERAGE_KEYS and isinstance(sub_category_data, dict):
             new_sub_category_data = get_data_from_coverage_sub_category(sub_category_name, sub_category_data)
             new_sub_category_name = SAMPLE_ANALYSIS_COVERAGE_KEYS.get(sub_category_name).get(  # type: ignore
                 'display_name')  # type: ignore
@@ -1363,48 +1364,52 @@ def search_domain_command(args):
 
     for domain_name in domain_name_list:
         raw_res = search_indicator('domain', domain_name)
-        if not raw_res.get('indicator'):
-            raise ValueError('Invalid response for indicator')
-
         indicator = raw_res.get('indicator')
-        raw_tags = raw_res.get('tags')
 
-        score = calculate_dbot_score(indicator, indicator_type)
-
-        dbot_score = Common.DBotScore(
-            indicator=domain_name,
-            indicator_type=DBotScoreType.DOMAIN,
-            integration_name=VENDOR_NAME,
-            score=score
-        )
-
-        domain = Common.Domain(
-            domain=domain_name,
-            dbot_score=dbot_score,
-            creation_date=indicator.get('whoisDomainCreationDate'),
-            expiration_date=indicator.get('whoisDomainExpireDate'),
-            updated_date=indicator.get('whoisDomainUpdateDate'),
-
-            admin_email=indicator.get('whoisAdminEmail'),
-            admin_name=indicator.get('whoisAdminName'),
-
-            registrar_name=indicator.get('whoisRegistrar'),
-
-            registrant_name=indicator.get('whoisRegistrant')
-        )
-
-        autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
-
-        # create human readable markdown for ip
-        tags = autofocus_domain_output.get('Tags')
-        table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {domain_name}'
-        if tags:
-            indicators_data = autofocus_domain_output.copy()
-            del indicators_data['Tags']
-            md = tableToMarkdown(table_name, indicators_data)
-            md += tableToMarkdown('Indicator Tags:', tags)
+        if indicator:
+            raw_tags = raw_res.get('tags')
+            score = calculate_dbot_score(indicator, indicator_type)
+            dbot_score = Common.DBotScore(
+                indicator=domain_name,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=VENDOR_NAME,
+                score=score
+            )
+            domain = Common.Domain(
+                domain=domain_name,
+                dbot_score=dbot_score,
+                creation_date=indicator.get('whoisDomainCreationDate'),
+                expiration_date=indicator.get('whoisDomainExpireDate'),
+                updated_date=indicator.get('whoisDomainUpdateDate'),
+                admin_email=indicator.get('whoisAdminEmail'),
+                admin_name=indicator.get('whoisAdminName'),
+                registrar_name=indicator.get('whoisRegistrar'),
+                registrant_name=indicator.get('whoisRegistrant')
+            )
+            autofocus_domain_output = parse_indicator_response(indicator, raw_tags, indicator_type)
+            # create human readable markdown for ip
+            tags = autofocus_domain_output.get('Tags')
+            table_name = f'{VENDOR_NAME} {indicator_type} reputation for: {domain_name}'
+            if tags:
+                indicators_data = autofocus_domain_output.copy()
+                del indicators_data['Tags']
+                md = tableToMarkdown(table_name, indicators_data)
+                md += tableToMarkdown('Indicator Tags:', tags)
+            else:
+                md = tableToMarkdown(table_name, autofocus_domain_output)
         else:
-            md = tableToMarkdown(table_name, autofocus_domain_output)
+            dbot_score = Common.DBotScore(
+                indicator=domain_name,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=VENDOR_NAME,
+                score=0
+            )
+            domain = Common.Domain(
+                domain=domain_name,
+                dbot_score=dbot_score
+            )
+            md = f'### The Domain indicator: {domain_name} was not found in AutoFocus'
+            autofocus_domain_output = {'IndicatorValue': domain_name}
 
         command_results.append(CommandResults(
             outputs_prefix='AutoFocus.Domain',
@@ -1414,7 +1419,6 @@ def search_domain_command(args):
             raw_response=raw_res,
             indicator=domain
         ))
-
     return command_results
 
 
@@ -1479,7 +1483,7 @@ def search_file_command(file):
     command_results = []
 
     for sha256 in file_list:
-        raw_res = search_indicator('sha256', sha256.lower())
+        raw_res = search_indicator('filehash', sha256.lower())
         if not raw_res.get('indicator'):
             raise ValueError('Invalid response for indicator')
 
@@ -1653,7 +1657,7 @@ def main():
             return_results(search_file_command(**args))
 
     except Exception as e:
-        return_error(f'Unexpected error: {e}')
+        return_error(f'Unexpected error: {e}.\ntraceback: {traceback.format_exc()}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

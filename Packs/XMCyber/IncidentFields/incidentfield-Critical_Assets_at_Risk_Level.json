@@ -1,0 +1,32 @@
+{
+ "id": "incident_criticalassetsatrisklevel",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2020-10-15T17:57:55.562649578Z",
+ "name": "Critical Assets at Risk Level",
+ "ownerOnly": false,
+ "placeholder": "None",
+ "cliName": "criticalassetsatrisklevel",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "XM Cyber Critical Asset",
+  "XM Cyber Choke Point"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72
+}

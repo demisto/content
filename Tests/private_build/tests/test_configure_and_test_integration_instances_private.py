@@ -8,7 +8,6 @@ from Tests.private_build.configure_and_test_integration_instances_private import
     find_needed_test_playbook_paths, install_private_testing_pack, write_test_pack_zip,\
     install_packs_private
 import Tests.Marketplace.search_and_install_packs as script
-from Tests.test_content import ParallelPrintsManager
 
 
 class ServerMock:
@@ -64,6 +63,7 @@ class BuildMock:
         self.id_set = {}
         self.test_pack_path = ''
         self.pack_ids_to_install = []
+        self.service_account = None
 
 
 def test_find_needed_test_playbook_paths():
@@ -110,8 +110,6 @@ def test_create_install_private_testing_pack(mocker):
 
     """
 
-    prints_manager = ParallelPrintsManager(len(BuildMock().servers))
-
     def mocked_generic_request_func(self, path: str, method, body=None, accept=None,
                                     _request_timeout=None):
         if path == '/contentpacks/marketplace/install':
@@ -121,7 +119,7 @@ def test_create_install_private_testing_pack(mocker):
     mocker.patch.object(demisto_client, 'generic_request_func',
                         side_effect=mocked_generic_request_func)
     mock_build = BuildMock()
-    install_private_testing_pack(mock_build, prints_manager, 'testing/path/to/test_pack.zip')
+    install_private_testing_pack(mock_build, 'testing/path/to/test_pack.zip')
     assert script.SUCCESS_FLAG
 
 
@@ -171,7 +169,6 @@ def test_install_packs_private(mocker):
     Then: Collect the pack ID from the packs to install file, update the license, and upload the pack.
     """
 
-    prints_manager = ParallelPrintsManager(len(BuildMock().servers))
     mocker.patch('Tests.Marketplace.search_and_install_packs.open', return_value=StringIO('HelloWorld\nTEST'))
     mocker.patch('Tests.Marketplace.search_and_install_packs.search_pack_and_its_dependencies')
 
@@ -187,6 +184,5 @@ def test_install_packs_private(mocker):
     mock_build = BuildMock()
     mock_build.test_pack_path = 'content/artifacts/packs'
     mock_build.pack_ids_to_install = ['TestPack']
-    test_results = install_packs_private(build=mock_build, prints_manager=prints_manager,
-                                         pack_ids=['TEST'])
+    test_results = install_packs_private(build=mock_build, pack_ids=['TEST'])
     assert test_results is True

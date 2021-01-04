@@ -226,7 +226,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: download the analysis report files
+    description: Download the analysis report files. The `Sample Download Access` permission is required.
     execution: false
     name: atd-get-report
     outputs:

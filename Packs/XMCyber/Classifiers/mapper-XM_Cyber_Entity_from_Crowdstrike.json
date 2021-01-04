@@ -1,0 +1,50 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps Crowdstrike Falcon incident data to XM Cyber fields for automatic enrichment",
+	"feed": false,
+	"fromVersion": "6.0.0",
+	"id": "XM Cyber Entity from Crowdstrike",
+	"mapping": {
+		"XM Cyber Choke Point": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Device Local IP": {
+					"complex": null,
+					"simple": "device.local_ip"
+				},
+				"Entity Name": {
+					"complex": null,
+					"simple": "device.hostname"
+				},
+				"Entity IP Address": {
+					"complex": null,
+					"simple": "device.local_ip"
+				}
+			}
+		},
+		"XM Cyber Critical Asset": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Device Local IP": {
+					"complex": null,
+					"simple": "device.local_ip"
+				},
+				"Entity Name": {
+					"complex": null,
+					"simple": "device.hostname"
+				},
+				"Entity IP Address": {
+					"complex": null,
+					"simple": "device.local_ip"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {}
+		}
+	},
+	"name": "XM Cyber Entity from Crowdstrike",
+	"type": "mapping-incoming",
+	"version": -1
+}

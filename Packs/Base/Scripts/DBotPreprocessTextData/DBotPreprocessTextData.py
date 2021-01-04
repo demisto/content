@@ -76,9 +76,7 @@ class Tokenizer:
         self.spacy_count = 0
         self.spacy_reset_count = 500
 
-    def handle_long_text(self, t, input_length):
-        if input_length == 1:
-            demisto.log("Input text length ({}) exceeds the legal maximum length for preprocessing".format(len(t)))
+    def handle_long_text(self):
         return '', ''
 
     def map_indices_to_words(self, text):
@@ -194,7 +192,7 @@ class Tokenizer:
             if len(t) < self.max_text_length:
                 tokenized_text, original_words_to_tokens = self.handle_tokenizaion_method(t)
             else:
-                tokenized_text, original_words_to_tokens = self.handle_long_text(t, input_length=len(text))
+                tokenized_text, original_words_to_tokens = self.handle_long_text()
             text_result = create_text_result(original_text, tokenized_text, original_words_to_tokens,
                                              hash_seed=self.hash_seed)
             result.append(text_result)

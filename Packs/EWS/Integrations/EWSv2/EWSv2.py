@@ -1,35 +1,34 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import sys
-import traceback
-import json
-import os
-import hashlib
-from datetime import timedelta
-from cStringIO import StringIO
-import logging
-import warnings
-import subprocess
-import requests
 import email
-from requests.exceptions import ConnectionError
+import hashlib
+import subprocess
+import warnings
 from collections import deque
-
 from multiprocessing import Process
+
 import exchangelib
-from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
-    ErrorInvalidIdMalformed, \
-    ErrorFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
-    AutoDiscoverFailed, ErrorNameResolutionNoResults, ErrorInvalidPropertyRequest, ErrorIrresolvableConflict
-from exchangelib.items import Item, Message, Contact
-from exchangelib.services import EWSService, EWSAccountService
-from exchangelib.util import create_element, add_xml_child
-from exchangelib import IMPERSONATION, DELEGATE, Account, Credentials, \
-    EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, \
-    Version, Folder, HTMLBody, Body, Build, ItemAttachment
-from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
+from CommonServerPython import *
+from cStringIO import StringIO
+from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
+                         Body, Build, Configuration, Credentials, EWSDateTime,
+                         EWSTimeZone, FileAttachment, Folder, HTMLBody,
+                         ItemAttachment, Version)
+from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
+                                ErrorInvalidIdMalformed,
+                                ErrorInvalidPropertyRequest,
+                                ErrorIrresolvableConflict, ErrorItemNotFound,
+                                ErrorMailboxMoveInProgress,
+                                ErrorMailboxStoreUnavailable,
+                                ErrorNameResolutionNoResults, RateLimitError,
+                                ResponseMessageError, TransportError)
+from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from exchangelib.services import EWSAccountService, EWSService
+from exchangelib.util import add_xml_child, create_element
+from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
+                                 EXCHANGE_2010_SP2, EXCHANGE_2013,
+                                 EXCHANGE_2016)
+from future import utils as future_utils
+from requests.exceptions import ConnectionError
 
 # Define utf8 as default encoding
 reload(sys)
@@ -911,7 +910,13 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     qs = qs.filter().order_by('datetime_received')
 
     result = qs.all()
-    result = [x for x in result if isinstance(x, Message)]
+    try:
+        result = [item for item in result if isinstance(item, Message)]
+    except ValueError as exc:
+        future_utils.raise_from(ValueError(
+            'Got an error when pulling incidents. You might be using the wrong exchange version.'
+        ), exc)
+
     if exclude_ids and len(exclude_ids) > 0:
         exclude_ids = set(exclude_ids)
         result = [x for x in result if x.message_id not in exclude_ids]
@@ -1842,32 +1847,42 @@ def get_compliance_search(search_name, show_only_recipients):
     # Get search status
     stdout = stdout[len(PASSWORD):]
     stdout = stdout.split('\n', 1)  # type: ignore
+
     results = [get_cs_status(search_name, stdout[0])]
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
     if stdout[0] == 'Completed':
-        res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
-        res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
-        entry = {
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['text'],
-            'Contents': stdout,
-            'ReadableContentsFormat': formats['markdown'],
-        }
-        if show_only_recipients == 'True':
-            res = filter(lambda x: int(x['Item count']) > 0, res)
+        if stdout[1] and stdout[1] != '{}':
+            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
+            res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
+            entry = {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': stdout,
+                'ReadableContentsFormat': formats['markdown'],
+            }
+            if show_only_recipients == 'True':
+                res = filter(lambda x: int(x['Item count']) > 0, res)
 
-            entry['EntryContext'] = {
-                'EWS.ComplianceSearch(val.Name == obj.Name)': {
-                    'Name': search_name,
-                    'Results': res
+                entry['EntryContext'] = {
+                    'EWS.ComplianceSearch(val.Name == obj.Name)': {
+                        'Name': search_name,
+                        'Results': res
+                    }
                 }
+
+            entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
+                                                     ['Location', 'Item count', 'Total size'])
+        else:
+            entry = {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': stdout,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': "The compliance search didn't return any results."
             }
 
-        entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
-                                                 ['Location', 'Item count', 'Total size'])
         results.append(entry)
-
     return results
 
 
@@ -2187,21 +2202,24 @@ def process_main():
 
 
 def main():
-    handle_proxy()
-    # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
-    # collector. `separate_process` flag will run the integration on a separate process that will prevent
-    # memory leakage.
-    separate_process = demisto.params().get("separate_process", False)
-    demisto.debug("Running as separate_process: {}".format(separate_process))
-    if separate_process:
-        try:
-            p = Process(target=process_main)
-            p.start()
-            p.join()
-        except Exception as ex:
-            demisto.error("Failed starting Process: {}".format(ex))
-    else:
-        sub_main()
+    try:
+        handle_proxy()
+        # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
+        # collector. `separate_process` flag will run the integration on a separate process that will prevent
+        # memory leakage.
+        separate_process = demisto.params().get("separate_process", False)
+        demisto.debug("Running as separate_process: {}".format(separate_process))
+        if separate_process:
+            try:
+                p = Process(target=process_main)
+                p.start()
+                p.join()
+            except Exception as ex:
+                demisto.error("Failed starting Process: {}".format(ex))
+        else:
+            sub_main()
+    except Exception as exc:
+        return_error("Found error in EWSv2", exc)
 
 
 # python2 uses __builtin__ python3 uses builtins

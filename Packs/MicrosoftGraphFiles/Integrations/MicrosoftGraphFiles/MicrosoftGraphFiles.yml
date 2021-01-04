@@ -226,7 +226,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The Cortex XSOAR entry ID of the new file that will replace the current file.
+      description: The Cortex XSOAR entry ID of the new file that will replace the
+        current file.
       isArray: false
       name: entry_id
       required: true
@@ -693,7 +694,7 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.13059
+  dockerimage: demisto/python_pancloud:1.0.0.14303
   feed: false
   isfetch: false
   longRunning: false
