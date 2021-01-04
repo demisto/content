@@ -1317,6 +1317,11 @@
             "timeout": 300
         },
         {
+            "integrations": "Okta IAM",
+            "playbookID": "Okta IAM - Test Playbook",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Test filters & transformers scripts"
         },
         {
@@ -1535,6 +1540,12 @@
             "integrations": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
+        },
+        {
+            "integrations": "ServiceNow IAM",
+            "playbookID": "ServiceNow IAM - Test Playbook",
+            "instance_name": "snow_basic_auth",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "LanguageDetect-Test",
@@ -2527,6 +2538,11 @@
             "playbookID": "Git_Integration-Test"
         },
         {
+            "integrations": "GitHub IAM",
+            "playbookID": "Github IAM - Test Playbook",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "LogRhythmRest",
             "playbookID": "LogRhythm REST test"
         },
@@ -3260,7 +3276,6 @@
         "AttackIQ - Test": "Issue 29774",
         "AWS-securityhub Test": "Issue 29796",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
-        "IAM - Test Playbook": "Issue 30013",
         "Trend Micro Apex - Test": "Issue 27280",
         "Azure Compute - Test": "Issue 28056",
         "Test - CrowdStrike Falcon": "Issue 30068",
@@ -3279,9 +3294,9 @@
         "CuckooTest": "Issue 25601",
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
-        "Akamai_WAF-Test": "Issue 31900",
         "Archer-Test-Playbook": "Issue 26851",
-        "Carbon Black Live Response Test": "Issue 28237"
+        "Carbon Black Live Response Test": "Issue 28237",
+        "Carbon Black Enterprise Protection V2 Test": "Issue 32322"
     },
     "skipped_integrations": {
 
@@ -3368,6 +3383,7 @@
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
+        "Akamai WAF": "Issue 32318",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -3375,7 +3391,6 @@
         "Infoblox": "Unstable instance, issue 25651",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
@@ -3407,6 +3422,7 @@
         "urlscan.io"
     ],
     "unmockable_integrations": {
+        "HashiCorp Vault": "Has a command that sends parameters in the path",
         "urlscan.io": "Uses data that comes in the headers",
         "QRadar_v2": "Test playbook 'test playbook - QRadarCorrelations' has multiple branches",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
