@@ -1,5 +1,5 @@
 description: Playbook to handle incident triggered from PANW Iot (Zingbox) UI to quarantine
-  a device in ISE.
+  a device in Cisco ISE.
 id: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
 inputs: []
 name: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration

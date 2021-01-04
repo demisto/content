@@ -1,5 +1,5 @@
 description: Playbook to be run every 15 minutes via a job. Each run will get incremental
-  updates for devices, alerts and vulnerabilities and send syslogs to the configured
+  updates for devices, alerts and vulnerabilities and send CEF syslogs to the configured
   SIEM server.
 id: Incremental Export to SIEM - PANW IoT 3rd Party Integration
 inputs: []

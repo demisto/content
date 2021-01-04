@@ -1,2 +1,6 @@
 [file:Incremental_Export_to_Cisco_ISE_-_PANW_IoT_3rd_Party_Integration.yml]
 ignore=PB106
+[file:Quarantine_Device_in_Cisco_ISE_-_PANW_IoT_3rd_Party_Integration.yml]
+ignore=PB106
+[file:Incremental_Export_to_SIEM_-_PANW_IoT_3rd_Party_Integration.yml]
+ignore=PB106
