@@ -140,8 +140,9 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
             if isinstance(item, str):
                 item = {indicator_field: item}
 
-            handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
-                                      use_prefix_flat, feedTags, auto_detect, indicators, mapping_function)
+            indicators.extend(
+                handle_indicator_function(client, item, feed_config, service_name, indicator_type, indicator_field,
+                                          use_prefix_flat, feedTags, auto_detect, indicators, mapping_function))
 
             if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
                 # called, and then we return for each service_name "limit" of indicators
@@ -164,9 +165,9 @@ def indicator_mapping(mapping: Dict, indicator: Dict, attributes: Dict):
 
 def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
                      indicator_type: str, indicator_field: str, use_prefix_flat: bool,
-                     feedTags: list, auto_detect: bool, indicator_list: list,
-                     mapping_function: Callable = indicator_mapping) -> None:
-
+                     feedTags: list, auto_detect: bool,
+                     mapping_function: Callable = indicator_mapping) -> List[dict]:
+    indicator_list = []
     mapping = feed_config.get('mapping')
     take_value_from_flatten = False
     indicator_value = item.get(indicator_field)
@@ -202,7 +203,7 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     indicator['rawJSON'] = item
 
     indicator_list.append(indicator)
-
+    return indicator_list
 
 def determine_indicator_type(indicator_type, auto_detect, value):
     """

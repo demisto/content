@@ -88,8 +88,8 @@ def custom_build_iterator(client: Client, feed: Dict, limit: int = 0, **kwargs) 
 
 def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name: str,
                             indicator_type: str, indicator_field: str, use_prefix_flat: bool,
-                            feedTags: list, auto_detect: bool, indicator_list: list,
-                            mapping_function: Callable) -> None:
+                            feedTags: list, auto_detect: bool,
+                            mapping_function: Callable) -> List[dict]:
     """
     This function adds indicators to indicator lists after specific manipulation.
     :param client: Client (from JsonFeedApiModule
@@ -104,6 +104,7 @@ def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, servi
     :param indicator_list: list of indicators to add indicator created from item to.
     :param mapping_function: Callable function to match json fields to demisto fields.
     """
+    indicator_list = []
     mapping = feed_config.get('mapping')
     indicator_value = item.get(indicator_field)
     current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
@@ -137,7 +138,7 @@ def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, servi
         indicator_copy['rawJSON'] = item
 
         indicator_list.append(indicator_copy)
-
+    return indicator_list
 
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
@@ -145,7 +146,7 @@ def main():
     params['url'] = url
     params['indicator_type'] = 'Threat Actor'
     params['feed_name_to_config'] = {
-        url: {
+        'actors': {
             'extractor': 'actors[*]',
             'indicator_type': 'STIX Threat Actor',
             'indicator': 'links_forums',
