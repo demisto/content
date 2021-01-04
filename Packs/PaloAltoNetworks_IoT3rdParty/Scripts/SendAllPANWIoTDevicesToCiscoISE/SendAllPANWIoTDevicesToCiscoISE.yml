@@ -7,12 +7,12 @@ args:
   description: Name of the configured PANW Iot 3rd Party instance.
   name: panw_iot_3rd_party_instance
   required: true
-comment: Gets all available devices from the IoT cloud and updates or creates them if necessary.
-  new endpoint with custom attributes on Cisco ISE.
+comment: Gets all available devices from the IoT cloud and updates or creates them
+  if necessary. new endpoint with custom attributes on Cisco ISE.
 commonfields:
   id: SendAllPANWIoTDevicesToCiscoISE
   version: -1
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.9.1.14969
 enabled: true
 name: SendAllPANWIoTDevicesToCiscoISE
 runas: DBotWeakRole

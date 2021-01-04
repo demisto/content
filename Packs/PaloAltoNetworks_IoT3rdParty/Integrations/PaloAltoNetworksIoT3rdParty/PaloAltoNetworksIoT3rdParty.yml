@@ -147,7 +147,7 @@ script:
       description: Single SN formatted vulnerability string.
     - contextPath: PanwIot3rdParty.DeviceServiceNow
       description: List of upsert ready formatted device for SN.
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.14969
   runonce: false
   script: ''
   subtype: python3
