@@ -3539,7 +3539,7 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
-        "MISP V2": "Issue 26905"
+        "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [
         "SNDBOX",
