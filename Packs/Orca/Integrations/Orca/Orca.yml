@@ -20,8 +20,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- defaultvalue: "200"
-  display: ""
+- defaultvalue: '200'
   name: max_fetch
   required: false
   type: 0
@@ -40,43 +39,48 @@ name: Orca
 script:
   commands:
   - arguments:
-    - description: Type of alert to get
+    - default: false
+      description: Type of alert to get
+      isArray: false
       name: alert_type
+      required: false
+      secret: false
+    deprecated: false
     description: Get the alerts on cloud assets
+    execution: false
     name: get-alerts
     outputs:
     - contextPath: Orca.AlertManager.Alerts
       description: All alerts
       type: String
   - arguments:
-    - description: Asset unique id
+    - default: false
+      description: Asset unique id
+      isArray: false
       name: asset_unique_id
       required: true
+      secret: false
+    deprecated: false
     description: Get Description of An asset
+    execution: false
     name: get-asset
     outputs:
     - contextPath: Orca.Manager.Asset
       description: Asset description
       type: String
-  - arguments:
-    - description: Orca Asset Unique Identifier
-      name: asset_unique_id
-      required: true
-    description: Get CVEs of an asset
-    name: get-cves
-    outputs:
-    - contextPath: Orca.Manager.Cve
-      description: CVEs of asset
-      type: String
-  - arguments: []
+  - deprecated: false
     description: fetches orca alerts
+    execution: false
     name: fetch-incidents
   dockerimage: demisto/python3:3.9.1.14969
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests
+fromversion: 5.0.0
