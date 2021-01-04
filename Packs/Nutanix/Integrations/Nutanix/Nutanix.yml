@@ -265,10 +265,12 @@ script:
       name: limit
     description: Resolve alerts using a filters.
     name: nutanix-alerts-resolve-by-filter
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
