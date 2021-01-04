@@ -748,7 +748,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
     if not id_offset:
         id_offset = 0
 
-    incidents, max_results = [], 50
+    incidents, max_results = [], 1  #TODO:
     if id_offset:
         query = f'{query} AND id >= {id_offset}'
     if fetch_by_created:
@@ -799,10 +799,8 @@ def get_attachments(attachments, incident_modified_date, only_new=True):
                 file_results.append(fileResult(filename=filename, data=attachments_zip))
         else:
             for attachment in attachments:
-                attachment_modified_date: datetime = parse(
-                    str(dict_safe_get(attachment, ['created'], "", str))
-                ).replace(tzinfo=pytz.UTC)
-                if incident_modified_date <= attachment_modified_date:
+                attachment_modified_date: datetime = parse(dict_safe_get(attachment, ['created'], "", str))
+                if incident_modified_date < attachment_modified_date:
                     filename, attachments_zip = get_attachment_data(attachment)
                     file_results.append(fileResult(filename=filename, data=attachments_zip))
     return file_results
@@ -821,10 +819,8 @@ def get_comments(comments, incident_modified_date, only_new=True):
     else:
         returned_comments = []
         for comment in comments:
-            comment_modified_date: datetime = parse(
-                str(dict_safe_get(comment, ['updated'], "", str))
-            ).replace(tzinfo=pytz.UTC)
-            if incident_modified_date <= comment_modified_date:
+            comment_modified_date: datetime = parse(dict_safe_get(comment, ['updated'], "", str))
+            if incident_modified_date < comment_modified_date:
                 returned_comments.append(comment)
         return returned_comments
 
@@ -964,14 +960,12 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
 
         # Timestamp - Issue last modified in jira server side
-        jira_modified_date: datetime = parse(
-            str(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
-        ).replace(tzinfo=pytz.UTC)
+        jira_modified_date: datetime = parse(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
         # Timestamp - Issue last sync in demisto server side
-        incident_modified_date: datetime = parse(parsed_args.last_update).replace(tzinfo=pytz.UTC)
-
+        incident_modified_date: datetime = parse(parsed_args.last_update)
         # Update incident only if issue modified in Jira server-side after the last sync
         if jira_modified_date > incident_modified_date:
+
             incident_update = create_update_incident_from_ticket(
                 issue_raw_response)  # Getting labels to be updated in incident
 
