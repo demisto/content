@@ -119,9 +119,9 @@ class Client(BaseClient):
         Returns:
             Response from API.
         """
-        self._http_request(method='GET',
-                           url_suffix=f'/threatvault/{search_type}/search/result/{search_request_id}',
-                           params=self._params)
+        return self._http_request(method='GET',
+                                  url_suffix=f'/threatvault/{search_type}/search/result/{search_request_id}',
+                                  params=self._params)
 
 
 def antivirus_signature_get(client: Client, args: dict) -> CommandResults:
@@ -454,7 +454,7 @@ def antispyware_signature_search(client: Client, args: dict) -> CommandResults:
     )
 
 
-def signature_search_results(client: Client, args: dict) -> CommandResults:
+def signature_search_results(client: Client, args: dict):
     """Retrieve signature search results.
 
     Args:
