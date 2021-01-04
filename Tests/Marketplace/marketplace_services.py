@@ -22,6 +22,7 @@ from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from typing import Tuple, Any, Union
+import glob
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
@@ -758,14 +759,17 @@ class Pack(object):
             os.mkdir(extract_destination_path)
 
             shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
-            shutil.copy(encrypted_zip_pack_path, os.path.join(extract_destination_path, 'encrypted_zip_pack.zip'))
-
+            new_encrypted_pack_path = os.path.join(extract_destination_path, 'encrypted_zip_pack.zip')
+            shutil.copy(encrypted_zip_pack_path, new_encrypted_pack_path)
             os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
-            os.chdir(extract_destination_path)
             output_file_path = f"{extract_destination_path}/decrypt_pack.zip"
-            subprocess.call('chmod +x ./decryptor', shell=True)
+            os.chdir(extract_destination_path)
+            print("\nALL ZIP FILES IN DIR\n")
+            for file in glob.glob("*.zip"):
+                print(file)
 
-            full_command = f'./decryptor {encrypted_zip_pack_path} {output_file_path} "{encryption_key}"'
+            subprocess.call('chmod +x ./decryptor', shell=True)
+            full_command = f'./decryptor {new_encrypted_pack_path} {output_file_path} "{encryption_key}"'
             process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             stdout, stderr = process.communicate()
             print("\nstdout:\n")
