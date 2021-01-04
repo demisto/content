@@ -1093,16 +1093,14 @@ class Pack(object):
                             version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
-                                                                             new_version=False,
-                                                                             initial_release=False)
+                                                                             new_version=False)
 
                         else:
                             logging.info(f"Created new release notes for version: {latest_release_notes}")
                             version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
-                                                                             new_version=True,
-                                                                             initial_release=False)
+                                                                             new_version=True)
 
                         changelog[latest_release_notes] = version_changelog
                 else:  # will enter only on initial version and release notes folder still was not created
@@ -1116,8 +1114,7 @@ class Pack(object):
                         release_notes=self.description,
                         version_display_name=Pack.PACK_INITIAL_VERSION,
                         build_number=build_number,
-                        new_version=False,
-                        initial_release=False)
+                        new_version=False)
 
                     logging.info(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
                                  f"in the {self._pack_name} pack.")
@@ -1446,6 +1443,7 @@ class Pack(object):
             datetime: Pack created date.
 
         """
+
         # load changelog from downloaded index
         changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
         changelog = {}
@@ -1453,10 +1451,12 @@ class Pack(object):
             try:
                 with open(changelog_index_path, "r") as changelog_file:
                     changelog = json.load(changelog_file)
-            except json.JSONDecodeError:
+            except json.JSONDecodeError as e:
                 changelog = {}
-        return changelog.get(Pack.PACK_INITIAL_VERSION, {}).get('released', datetime.utcnow().
-                                                                strftime(Metadata.DATE_FORMAT))
+        init_changelog_version = changelog.get(Pack.PACK_INITIAL_VERSION, {})
+        init_changelog_released_date = init_changelog_version.get('released',
+                                                                  datetime.utcnow().strftime(Metadata.DATE_FORMAT))
+        return init_changelog_released_date
 
     def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
         pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})

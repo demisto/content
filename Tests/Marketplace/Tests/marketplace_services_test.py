@@ -4,14 +4,23 @@ import json
 import os
 import random
 from unittest.mock import mock_open
-from mock_open import MockOpen
+#from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 from freezegun import freeze_time
+import tempfile
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts
+
+CHANGELOG_DATA = {
+    "1.0.0": {
+        "releaseNotes": "Sample description",
+        "displayName": "1.0.0 - 62492",
+        "released": "2020-12-21T12:10:55Z"
+    }
+}
 
 
 @pytest.fixture(scope="module")
@@ -388,7 +397,6 @@ class TestChangelogCreation:
     """ Test class for changelog.json creation step.
 
     """
-
     @pytest.fixture(scope="class")
     def dummy_pack(self):
         """ dummy pack fixture
@@ -645,12 +653,23 @@ This is visible
         assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
 
     @staticmethod
-    def os_path_join(path, *paths):
+    def dummy_pack_changelog():
+        with tempfile.NamedTemporaryFile(mode='w+', delete=False) as temp_changelog_file:
+            temp_changelog_file.write(json.dumps(CHANGELOG_DATA))
+            temp_changelog_file.flush()
+        return temp_changelog_file.name
+
+    @staticmethod
+    def mock_os_path_join(path, *paths):
+        if not str(path).startswith('changelog'):
+            return path + '/'.join(paths)
+
+        path_to_non_existing_changelog = 'dummy_path'
 
         if path == 'changelog_exist':
-            return 'Tests/Marketplace/Tests/test_data/changelog_test_date.json'
+            return TestChangelogCreation.dummy_pack_changelog()
         if path == 'changelog_not_exist':
-            return 'test'
+            return path_to_non_existing_changelog
 
     @freeze_time("2020-11-04T13:34:14.75Z")
     @pytest.mark.parametrize('is_changelog_exist, expected_date', [
@@ -671,8 +690,9 @@ This is visible
            - return datetime.utcnow
        """
         from Tests.Marketplace.marketplace_services import os
-        mocker.patch.object(os.path, 'join', side_effect=self.os_path_join)
+        mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
         pack_created_date = dummy_pack._handle_pack_create_date(is_changelog_exist)
+
         assert pack_created_date == expected_date
 
 
