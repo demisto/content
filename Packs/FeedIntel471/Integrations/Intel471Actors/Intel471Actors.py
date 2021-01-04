@@ -105,7 +105,8 @@ def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, servi
     :param mapping_function: Callable function to match json fields to demisto fields.
     """
     mapping = feed_config.get('mapping')
-    current_indicator_type = indicator_type
+    indicator_value = item.get(indicator_field)
+    current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
 
     if not current_indicator_type:
         return
