@@ -3,7 +3,7 @@ comment: Determines which configured Cisco ISE instance is in active/primary sta
 commonfields:
   id: GetCiscoISEActiveInstance
   version: -1
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.9.1.14969
 enabled: true
 name: GetCiscoISEActiveInstance
 outputs:

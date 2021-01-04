@@ -379,9 +379,10 @@ script:
     - description: IP address to query in ISE platform.
       name: ip_address
       required: true
-    description: Queries an IP address and returns its session data from an active endpoint.
+    description: Queries an IP address and returns its session data from an active
+      endpoint.
     name: cisco-ise-get-session-data-by-ip
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: false
   runonce: false
   script: '-'

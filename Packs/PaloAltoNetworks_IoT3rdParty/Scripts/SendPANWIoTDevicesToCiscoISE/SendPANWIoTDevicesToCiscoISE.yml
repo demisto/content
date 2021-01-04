@@ -16,7 +16,7 @@ comment: This script takes in custom attributes from PANW IoT cloud as an argume
 commonfields:
   id: SendPANWIoTDevicesToCiscoISE
   version: -1
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.9.1.14969
 enabled: true
 name: SendPANWIoTDevicesToCiscoISE
 outputs:
