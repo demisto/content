@@ -198,8 +198,7 @@ def azure_sql_db_list_command(client: Client, server_name: str) -> CommandResult
             del db['properties']
 
     human_readable = tableToMarkdown(name='Database List', t=database_list_values,
-                                     headers=[key for key in database_list_values[0] if key != 'sku' and
-                                              key != 'currentSku'],
+                                     headers=[key for key in database_list_values[0] if key != 'sku' and key != 'currentSku'],
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
@@ -273,8 +272,8 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, server_name:
     Args:
         server_name: server name for which we want to create or update auditing settings
         db_name: database for which we want to create or update auditing settings
-        state: satate of the policy
-        audit_actions_groups: Actions-Groups and Actions to audit.
+        state: state of the policy
+        audit_actions_groups: Comma-separated Actions-Groups and Actions to audit.
         is_azure_monitor_target_enabled: Is audit events are sent to Azure Monitor
         is_storage_secondary_key_in_use: Is storageAccountAccessKey value is the storage's secondary key
         queue_delay_ms: Time in milliseconds that can elapse before audit actions are forced
@@ -381,12 +380,14 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, server_name
             server_name: server name for which we want to create or update auditing settings
             db_name: database for which we want to create or update auditing settings
             state: satate of the policy
-            disabled_alerts:
-            email_account_admins:
-            email_addresses:
+            disabled_alerts: Comma-separated list of alerts that are disabled, or "none" to
+            disable no alerts.
+            email_account_admins: The alert is sent to the account administrators.
+            email_addresses: Comma-separated list of e-mail addresses to which the alert is
+            sent.
             retention_days: Number of days to keep the policy in the audit logs.
             storage_account_access_key: identifier key of the auditing storage account
-            use_server_default:
+            use_server_default: Whether to use the default server policy or not.
             storage_endpoint: Storage endpoint.
 
         """
@@ -457,7 +458,6 @@ def reset_auth(client: Client) -> CommandResults:
 def main() -> None:
     """main function, parses params and runs command functions
     """
-    print(demisto.getIntegrationContext())
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()

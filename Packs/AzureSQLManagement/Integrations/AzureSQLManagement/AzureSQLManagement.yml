@@ -308,7 +308,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: Actions-Groups and Actions to audit.
+      description: Comma-separated Actions-Groups and Actions to audit. For all Possible
+        values see documentation.
       isArray: true
       name: audit_actions_groups
       required: false
@@ -325,7 +326,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is storageAccountAccessKey value is the storage's secondary key
+      description: Is storage Account Access Key value is the storage's secondary
+        key.
       isArray: false
       name: is_storage_secondary_key_in_use
       predefined:
