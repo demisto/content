@@ -1,0 +1,138 @@
+id: AnsibleTower_Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: AnsibleTower_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d473b290-fd7e-4b57-8f88-ec52eb1756c8
+    type: start
+    task:
+      id: d473b290-fd7e-4b57-8f88-ec52eb1756c8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 858c776e-b669-4e04-83be-ed140852829a
+    type: playbook
+    task:
+      id: 858c776e-b669-4e04-83be-ed140852829a
+      version: -1
+      name: Ansible Tower- job generic pooling
+      playbookName: Ansible Tower- job generic pooling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Inventory_id:
+        complex:
+          root: inputs.inventory_id
+      Timeout:
+        simple: "15"
+      credentials_id:
+        complex:
+          root: inputs.credentials_id
+      extra_variables: {}
+      job_template_id:
+        complex:
+          root: inputs.job_template_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 577e11b5-5eff-4db5-8226-4ef94d61e9b4
+    type: title
+    task:
+      id: 577e11b5-5eff-4db5-8226-4ef94d61e9b4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 555,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: job_template_id
+  value:
+    simple: "5"
+  required: false
+  description: Job template to launch
+  playbookInputQuery: null
+- key: credentials_id
+  value:
+    simple: "1"
+  required: false
+  description: 'Credentials that allows Tower to access the nodes this job will be
+    run against '
+  playbookInputQuery: null
+- key: inventory_id
+  value:
+    simple: "1"
+  required: false
+  description: Inventory containing the hosts you want this job to manage
+  playbookInputQuery: null
+outputs: []
+fromversion: 5.0.0

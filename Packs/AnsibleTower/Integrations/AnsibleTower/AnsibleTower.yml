@@ -244,6 +244,13 @@ script:
     description: Launch job template
     execution: false
     name: ansible-tower-job-launch
+    outputs:
+    - contextPath: AnsibleAWX.Job.id
+      description: Job id
+      type: Unknown
+    - contextPath: AnsibleAWX.Job.status
+      description: Job status
+      type: Unknown
   - arguments:
     - default: false
       description: job id to relaunch
@@ -295,6 +302,13 @@ script:
     description: Retrieve the stdout from running the given job
     execution: false
     name: ansible-tower-job-stdout
+    outputs:
+    - contextPath: AnsibleAWX.JobStdout.job_id
+      description: Job id
+      type: Unknown
+    - contextPath: AnsibleAWX.JobStdout.content
+      description: job content output
+      type: Unknown
   - arguments:
     - default: false
       description: job id status
@@ -313,6 +327,13 @@ script:
     description: Retrieve job status
     execution: false
     name: ansible-tower-job-status
+    outputs:
+    - contextPath: AnsibleAWX.Job.id
+      description: Job id
+      type: Unknown
+    - contextPath: AnsibleAWX.Job.status
+      description: Job status
+      type: Unknown
   - arguments:
     - default: false
       description: job event id
@@ -397,6 +418,13 @@ script:
     description: Create new ad hoc command
     execution: false
     name: ansible-tower-adhoc-command-launch
+    outputs:
+    - contextPath: AnsibleAWX.AdhocCommand.id
+      description: Ad hoc command id
+      type: Unknown
+    - contextPath: AnsibleAWX.AdhocCommand.status
+      description: 'Ad hoc command status '
+      type: Unknown
   - arguments:
     - default: false
       description: command id
@@ -450,6 +478,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
-- No tests
+- AnsibleTower_Test
+fromversion: 5.0.0

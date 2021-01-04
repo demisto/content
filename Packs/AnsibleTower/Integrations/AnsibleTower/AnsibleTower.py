@@ -181,7 +181,7 @@ def job_template_launch(client: Client, args: dict) -> CommandResults:
 
     extra_vars = json.loads(args.get('extra_variables', None)) if args.get('extra_variables', None) else None
     data = {"inventory": args.get("inventory_id", None),
-            "credential": args.get("credentials_id", None),
+            "credential": int(args.get("credentials_id", 0)) if args.get("credentials_id", None) else None,
             "extra_vars": extra_vars}
     body = {key: data[key] for key in data if data[key]}
     demisto.debug(f"Request body is: {str(body)}")
@@ -227,12 +227,12 @@ def cancel_job(client: Client, args: dict) -> CommandResults:
 
 
 def job_stdout(client: Client, args: dict) -> CommandResults:
-    job_id = args.get('job_id', None)
+    job_id = args.get('job_id', '')
     url_suffix = f'jobs/{job_id}/stdout/'
     params = {"format": "json"}
     response = client.api_request(method='GET', url_suffix=url_suffix, params=params)
     response['job_id'] = job_id
-    output_content = f'### Job {job_id} output ### \n\n' + response.pop('content') + '\n'
+    output_content = f'### Job {job_id} output ### \n\n' + response.get('content', '') + '\n'
     return CommandResults(
         outputs_prefix='AnsibleAWX.JobStdout',
         outputs_key_field='job_id',

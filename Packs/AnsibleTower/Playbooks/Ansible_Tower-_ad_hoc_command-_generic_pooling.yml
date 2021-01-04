@@ -1,0 +1,311 @@
+id: AnsibleTower_adhocCommand_generic
+version: -1
+name: AnsibleTower_adhocCommand_generic
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0f96cea5-6082-496c-8bb7-4645ff334ea2
+    type: start
+    task:
+      id: 0f96cea5-6082-496c-8bb7-4645ff334ea2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7630373a-14c4-483f-8ba6-838382463465
+    type: condition
+    task:
+      id: 7630373a-14c4-483f-8ba6-838382463465
+      version: -1
+      name: is Ansible Tower enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AnsibleTower
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b4c6dcf6-abe2-40c9-8687-353f84c27630
+    type: regular
+    task:
+      id: b4c6dcf6-abe2-40c9-8687-353f84c27630
+      version: -1
+      name: Ad hoc command launch
+      description: Create new ad hoc command
+      script: '|||ansible-tower-adhoc-command-launch'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      credential_id:
+        complex:
+          root: inputs.credentials_id
+      inventory_id:
+        complex:
+          root: inputs.Inventory_id
+      module_args:
+        complex:
+          root: inputs.module args
+      module_name:
+        complex:
+          root: inputs.module_name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6bc42dc3-b152-4d00-890d-c44d3760090b
+    type: title
+    task:
+      id: 6bc42dc3-b152-4d00-890d-c44d3760090b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 0a0d4945-27fb-4929-82f2-a26e6a8ab117
+    type: playbook
+    task:
+      id: 0a0d4945-27fb-4929-82f2-a26e6a8ab117
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: AnsibleAWX.AdhocCommand
+          accessor: id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: command_id
+      PollingCommandName:
+        simple: ansible-tower-adhoc-command-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: AnsibleAWX.AdhocCommand(val.AdhocCommand.status !== 'success' | val.AdhocCommand.status
+          !== 'failed' | val.AdhocCommand.status !== 'error' | val.AdhocCommand.status
+          !== 'canceled' ).id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: d60cdaad-e500-476c-8bc6-e6e0f672a52b
+    type: regular
+    task:
+      id: d60cdaad-e500-476c-8bc6-e6e0f672a52b
+      version: -1
+      name: Ad hoc command output
+      description: Retrieve the stdout from running this ad hoc command.
+      script: '|||ansible-tower-adhoc-command-stdout'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      command_id:
+        complex:
+          root: AnsibleAWX.AdhocCommand
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 740,
+        "x": 270,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: credentials_id
+  value: {}
+  required: true
+  description: Select credentials that allows Tower to access the nodes this job will
+    be run against (if needed)
+  playbookInputQuery:
+- key: Inventory_id
+  value: {}
+  required: true
+  description: Select the inventory containing the hosts you want this job to manage
+    (if needed)
+  playbookInputQuery:
+- key: module_name
+  value: {}
+  required: true
+  description: Modules are discrete units of code that can be used from the command
+    line or in a playbook task. Ansible ships with a number of modules that can be
+    executed directly on remote hosts or through Playbooks.
+  playbookInputQuery:
+- key: module_args
+  value: {}
+  required: false
+  description: Module arguments
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+  playbookInputQuery:
+outputs:
+- contextPath: AnsibleAWX.AdhocCommand.id
+  description: Ad hoc command id
+- contextPath: AnsibleAWX.AdhocCommand.status
+  description: 'Ad hoc command status '
+- contextPath: AnsibleAWX.JobStdout.content
+  description: job content output
+tests:
+- AnsibleTower_Test
+fromversion: 5.0.0
+description: Generic pooling playbook for run ad hoc commands, then check the job
+  status and the stdout

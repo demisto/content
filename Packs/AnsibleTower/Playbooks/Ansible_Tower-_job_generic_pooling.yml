@@ -1,0 +1,309 @@
+id: AnsibleTower_job_launch_generic
+version: -1
+name: AnsibleTower_job_launch_generic
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 95d002c4-3915-461a-8497-c73e7c4d6cd2
+    type: start
+    task:
+      id: 95d002c4-3915-461a-8497-c73e7c4d6cd2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ae67a29d-5668-4ede-858a-02cc63edd1e3
+    type: condition
+    task:
+      id: ae67a29d-5668-4ede-858a-02cc63edd1e3
+      version: -1
+      name: is Ansible Tower enabled?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AnsibleTower
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ba3c8ebd-da30-4543-8b4e-364cbd30f618
+    type: regular
+    task:
+      id: ba3c8ebd-da30-4543-8b4e-364cbd30f618
+      version: -1
+      name: Job template launch
+      description: Launch job template
+      script: '|||ansible-tower-job-launch'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      credentials_id:
+        complex:
+          root: inputs.credentials_id
+      extra_variables:
+        complex:
+          root: inputs.extra_variables
+      inventory_id:
+        complex:
+          root: inputs.Inventory_id
+      job_template_id:
+        complex:
+          root: inputs.job_template_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a790e3bd-498d-4c9a-8c4f-3cab436d6122
+    type: title
+    task:
+      id: a790e3bd-498d-4c9a-8c4f-3cab436d6122
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ab54f8f8-0e7c-492e-8c85-c44041738ba4
+    type: playbook
+    task:
+      id: ab54f8f8-0e7c-492e-8c85-c44041738ba4
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: AnsibleAWX.Job
+          accessor: id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: ansible-tower-job-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: AnsibleAWX.Job(val.Job.status !== 'success' | val.Job.status !== 'failed'
+          | val.Job.status !== 'error' | val.Job.status !== 'canceled' ).id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e2dc36ae-1838-4464-8f58-f422f2916d1a
+    type: regular
+    task:
+      id: e2dc36ae-1838-4464-8f58-f422f2916d1a
+      version: -1
+      name: Job output
+      description: Retrieve the stdout from running the given job
+      script: '|||ansible-tower-job-stdout'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      job_id:
+        complex:
+          root: AnsibleAWX.Job
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 740,
+        "x": 270,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: job_template_id
+  value:
+    simple: "5"
+  required: true
+  description: 'The job template id to launch. '
+  playbookInputQuery:
+- key: credentials_id
+  value: {}
+  required: false
+  description: Select credentials that allows Tower to access the nodes this job will
+    be run against (if needed)
+  playbookInputQuery:
+- key: Inventory_id
+  value: {}
+  required: false
+  description: Select the inventory containing the hosts you want this job to manage
+    (if needed)
+  playbookInputQuery:
+- key: extra_variables
+  value: {}
+  required: false
+  description: Pass extra command line variables to the playbook (if needed)
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+  playbookInputQuery:
+outputs:
+- contextPath: AnsibleAWX.Job.id
+  description: Job id
+- contextPath: AnsibleAWX.Job.status
+  description: Job status
+- contextPath: AnsibleAWX.JobStdout.content
+  description: job stdout
+tests:
+- AnsibleTower_Test
+fromversion: 5.0.0
+description: Generic pooling playbook to launch a specific job template, returns job
+  status when he finish running
