@@ -162,7 +162,7 @@ script:
       authenticated user's groups.
     execution: false
     name: ad-authenticate-and-roles
-  dockerimage: demisto/ldap:1.0.0.8854
+  dockerimage: demisto/ldap:1.0.0.12410
   feed: false
   isfetch: false
   longRunning: false
