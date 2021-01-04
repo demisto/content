@@ -174,7 +174,6 @@ def slack_post_message(client: WebClient, message_blocks: List, pr: PullRequest)
     """
     client.chat_postMessage(
         channel=SLACK_CHANNEL_TO_SEND_PR_TO,
-        url="https://google.coms",
         attachments=[
             {
                 "color": GREEN_COLOR,
@@ -186,8 +185,6 @@ def slack_post_message(client: WebClient, message_blocks: List, pr: PullRequest)
 def main():
     t = Terminal()
     payload_str = get_env_var('EVENT_PAYLOAD')
-    if not payload_str:
-        raise ValueError('EVENT_PAYLOAD env variable not set or empty')
     print(f'{t.cyan}Starting the slack notifier{t.normal}')
 
     payload = json.loads(payload_str)
