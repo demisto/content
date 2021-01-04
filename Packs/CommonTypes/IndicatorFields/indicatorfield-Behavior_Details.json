@@ -1,0 +1,29 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "File"
+ ],
+ "caseInsensitive": true,
+ "cliName": "behaviordetails",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 2,
+ "hidden": false,
+ "id": "indicator_behaviordetails",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Behavior Details",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}
