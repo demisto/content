@@ -10,8 +10,8 @@
     "categories": [
         "Email Gateway"
     ],
-    "tags": ["PhishingDefense","Phishing"],
-    "useCases": ["Phishing Defense"],
+    "tags": ["Email","Security"],
+    "useCases": ["Phishing"],
     "keywords": ["phishing", "defense", "message", "policy"],
     "githubUser": ""
 }
