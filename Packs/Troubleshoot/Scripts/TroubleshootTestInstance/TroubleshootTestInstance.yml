@@ -39,5 +39,8 @@ type: python
 subtype: python3
 dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.0.0
+dependson:
+  must:
+    - demisto-api-put
 tests:
 - No tests (auto formatted)

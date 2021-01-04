@@ -43,7 +43,8 @@ def get_log_file(response: Union[list, dict]):
     return logs
 
 
-def main(args):
+def main():
+    args = demisto.args()
     command = args.get('command')
     arguments = args.get('arguments')
     if not arguments:
@@ -81,4 +82,4 @@ def main(args):
 
 
 if __name__ in ("__main__", "builtin", "builtins"):
-    main(demisto.args())
+    main()
