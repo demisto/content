@@ -7,6 +7,7 @@ from CommonServerUserPython import *
 import urllib3
 import traceback
 from typing import Any, Dict, List, Optional
+from base64 import b64encode
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -21,9 +22,9 @@ INTEGRATION_NAME = 'TOPdesk'
 class Client(BaseClient):
     """Client class to interact with the TOPdesk service API"""
 
-    def get_users(self, users_type: str, start: Optional[int], page_size: Optional[int],
-                    query: Optional[str]) -> Dict[str, Any]:
-        """Get customers using the '/persons' API endpoint"""
+    def get_users(self, users_type: str, start: Optional[int] = None, page_size: Optional[int] = None,
+                    query: Optional[str] = None) -> Dict[str, Any]:
+        """Get users using the '/persons' or '/operators' API endpoint"""
 
         if users_type not in ["persons", "operators"]:
             raise ValueError(f"Cannot get users of type {users_type}.\n "
@@ -90,7 +91,7 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
 def test_module(client: Client) -> str:
     """Test API connectivity and authentication."""
     try:
-        client.get_persons()
+        client.get_users(users_type="persons")
     except DemistoException as e:
         if 'Error 401' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -105,17 +106,18 @@ def test_module(client: Client) -> str:
 def main() -> None:
     """main function, parses params and runs command functions."""
 
-    api_key = demisto.params().get('apikey')
-
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
+    base_url = urljoin(demisto.params()['url'], '/api')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        encoded_credentials = b64encode(bytes(f"{demisto.params().get('username')}:{demisto.params().get('password')}",
+                                              encoding='ascii')).decode('ascii')
+
         headers = {
-            'Authorization': f'Basic {api_key}'
+            'Authorization': f'Basic {encoded_credentials}'
         }
         client = Client(
             base_url=base_url,

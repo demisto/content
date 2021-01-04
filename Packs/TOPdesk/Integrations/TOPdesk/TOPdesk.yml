@@ -7,9 +7,12 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: API token obtained for XSOAR app.
-  display: API token
-  name: apikey
+- display: Username
+  name: username
+  required: true
+  type: 4
+- display: Password
+  name: password
   required: true
   type: 4
 - display: Trust any certificate (not secure)
