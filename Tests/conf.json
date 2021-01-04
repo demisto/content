@@ -3207,7 +3207,8 @@
         },
         {
             "integrations": "Azure SQL Management",
-            "playbookID": "Azure SQL - Test"
+            "playbookID": "Azure SQL - Test",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {

@@ -198,6 +198,8 @@ def azure_sql_db_list_command(client: Client, server_name: str) -> CommandResult
             del db['properties']
 
     human_readable = tableToMarkdown(name='Database List', t=database_list_values,
+                                     headers=[key for key in database_list_values[0] if key != 'sku' and
+                                              key != 'currentSku'],
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
@@ -455,6 +457,7 @@ def reset_auth(client: Client) -> CommandResults:
 def main() -> None:
     """main function, parses params and runs command functions
     """
+    print(demisto.getIntegrationContext())
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
