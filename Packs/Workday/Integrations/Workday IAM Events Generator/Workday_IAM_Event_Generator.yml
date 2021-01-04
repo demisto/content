@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Workday_long_running
+  id: Workday_IAM_Event_Generator
   version: -1
 configuration:
 - display: Long running instance
@@ -16,8 +16,8 @@ configuration:
   required: false
   type: 13
 description: IAM mock Workday full reports and events.
-display: Workday long running
-name: Workday_long_running
+display: Workday IAM Event Generator (Beta)
+name: Workday_IAM_Event_Generator
 script:
   commands:
   - arguments:
@@ -56,6 +56,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+beta: true
 tests:
 - No tests
 fromversion: 5.0.0
