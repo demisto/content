@@ -5,6 +5,34 @@ PANW_IOT_INSTANCE = demisto.args().get('panw_iot_3rd_party_instance')
 CISCO_ISE_ACTIVE_INSTANCE = demisto.args().get("active_ise_instance")
 GET_EP_ID_CMD = 'cisco-ise-get-endpoint-id-by-name'
 
+CISCO_ISE_FIELD_MAP = {
+    "ip": ["ZingboxIpAddress", "PanwIoTIpAddress"],
+    "ip address": ["ZingboxIP", "PanwIoTIP"],
+    "ip_address": ["ZingboxIP", "PanwIoTIP"],
+    "profile": ["ZingboxProfile", "PanwIoTProfile"],
+    "category": ["ZingboxCategory", "PanwIoTCategory"],
+    "risk_score": ["ZingboxRiskScore", "PanwIoTRiskScore"],
+    "risk score": ["ZingboxRiskScore", "PanwIoTRiskScore"],
+    "confidence": ["ZingboxConfidence", "PanwIoTConfidence"],
+    "confidence score": ["ZingboxConfidence", "PanwIoTConfidence"],
+    "confidence_score": ["ZingboxConfidence", "PanwIoTConfidence"],
+    "tag": ["ZingboxTag", "PanwIoTTag"],
+    "asset_tag": ["ZingboxTag", "PanwIoTTag"],
+    "Tags": ["ZingboxTag", "PanwIoTTag"],
+    "hostname": ["ZingboxHostname", "PanwIoTHostname"],
+    "osCombined": ["ZingboxOS", "PanwIoTOS"],
+    "model": ["ZingboxModel", "PanwIoTModel"],
+    "vendor": ["ZingboxVendor", "PanwIoTVendor"],
+    "Serial Number": ["ZingboxSerial", "PanwIoTSerial"],
+    "Serial_Number": ["ZingboxSerial", "PanwIoTSerial"],
+    "endpoint protection": ["ZingboxEPP", "PanwIoTEPP"],
+    "endpoint_protection": ["ZingboxEPP", "PanwIoTEPP"],
+    "AET": ["ZingboxAET", "PanwIoTAET"],
+    "External Network": ["ZingboxInternetAccess", "PanwIoTInternetAccess"],
+}
+
+INT_FIELDS = ["risk_score", "risk score", "confidence", "confidence score", "confidence_score"]
+
 
 def send_status_to_panw_iot_cloud(status, msg):
     """
@@ -82,22 +110,35 @@ def get_devices_from_panw_iot_cloud(offset, page_size):
     return resp[0]['Contents']
 
 
-def convert_device_list_to_cisco_ise_custom_attributes(device_list):
+def convert_device_map_to_cisco_ise_attributes(device_map):
     """
-    Converts a list of PANW IoT devices to Cisco ISE custom attributes maps.
-    param device_list: The list of PANW IoT devices to be converted.
+    Converts a PANW IoT device_map to Cisco ISE custom attributes map.
+    param device_map: Single PANW IoT device_map with device attributes .
     """
-    resp = demisto.executeCommand("panw-iot-3rd-party-convert-assets-to-external-format", {
-        "asset_type": 'device',
-        "output_format": "CiscoISECustomAttributes",
-        "asset_list": device_list,
-        "using": PANW_IOT_INSTANCE
-    })
-    if isError(resp[0]):
-        err_msg = f'Error, failed to convert PANW IoT devices to CiscoISECustomAttributes- {resp[0].get("Contents")}'
-        raise Exception(err_msg)
-
-    return resp[0]['Contents']
+    attribute_list = {}
+    if 'deviceid' in device_map:
+        if device_map['deviceid'] is None or device_map['deviceid'] == "":
+            return None
+        attribute_list['mac'] = device_map['deviceid']
+        if not is_mac_address(attribute_list['mac']):
+            return None
+        zb_attributes = {}
+        for field in device_map:
+            if device_map[field] is None or device_map[field] == "":
+                continue
+            if field in CISCO_ISE_FIELD_MAP:
+                if field in INT_FIELDS:
+                    try:
+                        int_val = int(device_map[field])
+                    except Exception:
+                        continue
+                    zb_attributes[CISCO_ISE_FIELD_MAP[field][0]] = int_val
+                    zb_attributes[CISCO_ISE_FIELD_MAP[field][1]] = int_val
+                else:
+                    zb_attributes[CISCO_ISE_FIELD_MAP[field][0]] = device_map[field]
+                    zb_attributes[CISCO_ISE_FIELD_MAP[field][1]] = device_map[field]
+        attribute_list['zb_attributes'] = zb_attributes
+    return attribute_list
 
 
 def update_existing_endpoint(mac, attr_map, ep_id, active_instance):
@@ -211,25 +252,30 @@ def get_all_panw_iot_devices_and_send_to_cisco_ise():
     count = 0
     offset = 0
     page_size = 1000
+    unique_macs = set()
 
     while True:
         device_list = get_devices_from_panw_iot_cloud(offset, page_size)
         size = len(device_list)
-        custom_attributes_list = convert_device_list_to_cisco_ise_custom_attributes(device_list)
-        for entry in custom_attributes_list:
-            mac = entry['mac']
-            attr_map = entry['zb_attributes']
-            create_or_update_ep(mac, attr_map)
-            count += 1
+        count += size
+        for device in device_list:
+            attrs = convert_device_map_to_cisco_ise_attributes(device)
+            if attrs is not None:
+                mac = attrs['mac']
+                attr_map = attrs['zb_attributes']
+                if mac not in unique_macs:
+                    create_or_update_ep(mac, attr_map)
+                    unique_macs.add(mac)
+                    time.sleep(0.5)
 
         if size == page_size:
             offset += page_size
             msg = f'Successfully exported {count} devices to Cisco ISE'
             send_status_to_panw_iot_cloud("success", msg,)
-            time.sleep(5)
         else:
             break
-    return(f'Successfully exported total {count} devices to Cisco ISE')
+    return(f'Total {count} devices pulled from PANW IoT Cloud.\n'
+           f'Exported {len(unique_macs)} devices (with available mac addresses) to Cisco ISE')
 
 
 def main():

@@ -205,27 +205,27 @@ def get_asset_list(args):
         one_call = True
 
     asset_list = []
-    poll_time = None  # Device API uses poll time
-    stime = None  # Alerts and Vulns use stime
 
     if page_length is None:
         page_length = DEFAULT_PAGE_SIZE
     if offset is None:
         offset = '0'
-    if increment_time is not None:
-        if asset_type == "device":
-            poll_time = int(round(time.time() * 1000)) - int(increment_time) * 60 * 1000
-        else:
-            stime = datetime.now() - timedelta(minutes=int(increment_time))
 
     params = {
         'offset': str(offset),
         'pagelength': str(page_length),
-        'stime': stime
     }
+
+    if increment_time is not None:
+        if asset_type == "device":
+            poll_time = int(round(time.time() * 1000)) - int(increment_time) * 60 * 1000
+            params['last_poll_time'] = str(poll_time)
+        else:
+            stime = datetime.now() - timedelta(minutes=int(increment_time))
+            params['stime'] = str(stime)
+
     if asset_type == "device":
         params['detail'] = 'true'
-        params['last_poll_time'] = str(poll_time)
     elif asset_type == "vulnerability":
         params['groupby'] = 'device'
 
@@ -448,11 +448,13 @@ def convert_device_list_to_ise_attributes(device_list=None):
     """
     data = []
     for device_map in device_list:
-        if 'mac_address' in device_map:
-            if device_map['mac_address'] is None or device_map['mac_address'] == "":
+        if 'deviceid' in device_map:
+            if device_map['deviceid'] is None or device_map['deviceid'] == "":
                 continue
             attribute_list = {}
-            attribute_list['mac'] = device_map['mac_address']
+            attribute_list['mac'] = device_map['deviceid']
+            if not is_mac_address(attribute_list['mac']):
+                continue
             zb_attributes = {}
             for field in device_map:
                 if device_map[field] is None or device_map[field] == "":
