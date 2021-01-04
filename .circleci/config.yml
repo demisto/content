@@ -143,10 +143,19 @@ references:
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
         chmod +x ./Tests/Marketplace/*
-        echo "installing venv"
-        NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
-        source ./venv/bin/activate
-        pip3 install -r .circleci/build-requirements.txt
+        if [ ! -e "venv" ]; then
+          echo "installing venv"
+          NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
+          source ./venv/bin/activate
+          pip3 install -r .circleci/build-requirements.txt
+        else
+          echo "venv exists (from cache). activating"
+          source ./venv/bin/activate
+          UPDATE_REQ=true  # move to a build parameter
+          if [ -n "${UPDATE_REQ}" ]; then
+            .hooks/bootstrap -u
+          fi
+        fi
         # store in bash env so we load our venv in each step
         echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
@@ -214,6 +223,10 @@ references:
       command: |
         demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
         python3 Utils/merge_content_new_zip.py -f "v4.5.0"
+
+  restore_cache: &restore_cache
+    restore_cache:
+      key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
 
   destroy_instances: &destroy_instances
     run:
@@ -488,6 +501,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
+      - *restore_cache
       - *prepare_environment
       - save_cache:
           paths:
@@ -505,6 +519,7 @@ jobs:
     steps:
       - *attach_workspace
       - setup_remote_docker
+      - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
       - *infrastructure_testing
@@ -529,6 +544,7 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
+      - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
       - *secrets
@@ -599,6 +615,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
+      - *restore_cache
       - *prepare_environment
       - *get_contribution_pack
       - *add_ssh_keys
@@ -682,6 +699,7 @@ jobs:
               - << pipeline.parameters.non_ami_run >>
           steps:
             - *attach_workspace
+            - *restore_cache
             - *add_ssh_keys
             - *prepare_environment
             - run:
@@ -1072,6 +1090,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - *restore_cache
       - *prepare_environment
       - *secrets
       - *update_tests_step
@@ -1099,6 +1118,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - *restore_cache
       - *prepare_environment
       - *download_configuration
       - *create_instance
