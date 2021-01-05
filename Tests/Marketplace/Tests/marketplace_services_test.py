@@ -9,7 +9,6 @@ from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 from freezegun import freeze_time
 import tempfile
-import stat
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
@@ -656,7 +655,7 @@ This is visible
     @staticmethod
     def dummy_pack_changelog():
         temp_changelog_file = tempfile.NamedTemporaryFile(mode='w+', delete=False)
-        os.chmod(temp_changelog_file.name, stat.S_IRWXU)
+        os.chmod(temp_changelog_file.name, 0o777)
         temp_changelog_file.write(json.dumps(CHANGELOG_DATA))
         temp_changelog_file.close()
         return temp_changelog_file.name
