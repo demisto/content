@@ -11,7 +11,7 @@ configuration:
   name: Customer ID
   required: true
   type: 0
-- display: Access Key.
+- display: Access Key
   name: Access Key
   required: true
   type: 4
