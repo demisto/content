@@ -128,7 +128,7 @@ def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, servi
     for forum_item in attributes.get(indicator_field, []):
         value = f"{forum_item.get('actorHandle', '')} ({forum_item.get('name', '')})"
         indicator_copy = indicator.copy()
-        indicator_copy['value'] = value
+        indicator_copy['value'] = forum_item.get('actorHandle', '')
         attributes['handles'].append(value)
 
         if mapping:
