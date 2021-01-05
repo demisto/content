@@ -1,9 +1,11 @@
-import sys
-import os
 import json
-import subprocess
 import logging
+import os
+import subprocess
+import sys
+
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
+
 from Tests.scripts.utils.log_util import install_logging
 
 
@@ -48,7 +50,7 @@ def main():
         try:
             logging.debug(f'logging out of docker on server for server {env["InstanceDNS"]}')
             subprocess.check_output(
-                f'ssh -o StrictHostKeyChecking=no {env["SSHuser"]}@{env["InstanceDNS"]} sudo docker logout'.split())
+                f'ssh -o StrictHostKeyChecking=no {env["SSHuser"]}@{env["InstanceDNS"]} sudo -u demisto docker logout'.split())
         except Exception:
             logging.exception(f'Could not log out of docker on {env["InstanceDNS"]}')
 
