@@ -39,6 +39,7 @@ tasks:
       version: -1
       name: AnsibleTower_job_launch_generic
       playbookName: AnsibleTower_job_launch_generic
+      playbookID: AnsibleTower_job_launch_generic
       type: playbook
       iscommand: false
       brand: ""
