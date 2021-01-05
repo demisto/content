@@ -27,6 +27,13 @@ class FeedName(str, Enum):
     MALWARE_FILES = "malware_files"
 
 
+class RelationshipIndicatorType(str, Enum):
+    IP = "IP"
+    URL = "URL"
+    SHA256 = "SHA-256"
+    UNKNOWN = "UNKNOWN"
+
+
 class FeedAction(str, Enum):
     ADD = "+"
     UPDATE = "="
@@ -44,6 +51,20 @@ class FeedCategory(str, Enum):
     CONFIRMED_CLEAN = "confirmed clean"
 
 
+class FeedSource(str, Enum):
+    PRIMARY = "primary"
+    RELATED = "related"
+
+
+def get_relationship_value_type(relationship: Dict) -> Tuple[RelationshipIndicatorType, str, str]:
+    if "sha256_hash" in relationship:
+        return RelationshipIndicatorType.SHA256, relationship["sha256_hash"], FeedIndicatorType.File
+    elif "ip" in relationship:
+        return RelationshipIndicatorType.IP, relationship["ip"], FeedIndicatorType.IP
+
+    return RelationshipIndicatorType.UNKNOWN, "", ""
+
+
 class FeedEntryBase(object):
     def __init__(self, entry: Dict, feed_name: str):
         self.entry = entry
@@ -55,23 +76,22 @@ class FeedEntryBase(object):
         self.action = FeedAction(self.payload.get("action"))
         self.relationships = self.payload.get("relationships", [])
 
-    def to_indicator_objects(self) -> Dict:
+    def to_indicator_objects(self) -> List[Dict]:
         fields = self.get_fields()
         if any(self.relationships):
             relationship_indicators = []
             for relationship in self.relationships:
-                relationship_value = None
-                relationship_type = "Indicator"
-                if "sha256_hash" in relationship:
-                    relationship_value = relationship["sha256_hash"]
-                elif "ip" in relationship:
-                    relationship_value = relationship["ip"]
-                else:
+                relationship_type, relationship_value, _ = get_relationship_value_type(relationship)
+                if not relationship_value:
                     continue
-                relationship_indicators.append(dict(type=relationship_type,
+
+                relationship_indicators.append(dict(indicatortype=relationship_type.value,
+                                                    relationshiptype=relationship.get("relationship_type", ""),
+                                                    timestamp=relationship.get("relationship_ts"),
+                                                    description=relationship.get("relationship_description", ""),
                                                     value=relationship_value,
-                                                    description=relationship.get("relationship_description", "")))
-            fields["feedrelatedindicators"] = relationship_indicators
+                                                    entitycategory=relationship.get("related_entity_category", "")))
+            fields["cyrenfeedrelationships"] = relationship_indicators
 
         primary = dict(value=self.get_value(), type=self.get_type(),
                        rawJSON=self.entry, score=self.get_score(),
@@ -81,8 +101,27 @@ class FeedEntryBase(object):
         indicators.append(primary)
         return indicators
 
-    def get_indicators_from_relationships(self, primary_indicator):
-        return []
+    def get_indicators_from_relationships(self, primary_indicator: Dict) -> List[Dict]:
+        indicators = []
+        for relationship in self.relationships:
+            relationship_type, relationship_value, indicator_type = get_relationship_value_type(relationship)
+            if not relationship_value:
+                continue
+
+            fields = dict(cyrensourcetags=[FeedSource.RELATED],
+                          cyrenfeedrelationships=[dict(indicatortype=self.get_relationship_indicator_type().value,
+                                                       relationshiptype=relationship.get("relationship_type"),
+                                                       timestamp=relationship.get("relationship_ts"),
+                                                       value=primary_indicator["value"],
+                                                       entitycategory=relationship.get("related_entity_category"),
+                                                       description=relationship.get("relationship_description"))])
+            indicators.append(dict(value=relationship_value,
+                                   type=indicator_type,
+                                   rawJSON=relationship,
+                                   score=self.get_relationship_score(primary_indicator, relationship),
+                                   fields=fields))
+
+        return indicators
 
     def get_score(self) -> int:
         if self.action in [FeedAction.ADD, FeedAction.UPDATE]:
@@ -96,24 +135,26 @@ class FeedEntryBase(object):
 
         return Common.DBotScore.BAD
 
+    def get_relationship_score(self, primary_indicator: Dict, relationship: Dict) -> int:
+        return Common.DBotScore.NONE
+
     def get_fields(self) -> Dict:
         detection_methods = self.payload.get("detection_methods", [])
         tags = self.categories + detection_methods
+        timestamp = self.entry.get("timestamp")
         fields = dict(tags=tags,
+                      updateddate=timestamp,
                       indicatoridentification=self.payload.get("identifier"),
                       firstseenbysource=self.payload.get("first_seen"),
                       lastseenbysource=self.payload.get("last_seen"),
                       cyrendetectiondate=self.detection.get("detection_ts"),
                       cyrenfeedaction=self.action.get_human_readable_name(),
                       cyrendetectioncategories=self.categories,
-                      cyrendetectionmethods=detection_methods)
+                      cyrendetectionmethods=detection_methods,
+                      cyrensourcetags=[FeedSource.PRIMARY])
 
-        timestamp = self.entry.get("timestamp")
         if self.action == FeedAction.ADD:
-            fields["creationdate"] = timestamp
             fields["published"] = timestamp
-        elif self.action == FeedAction.UPDATE:
-            fields["updateddate"] = timestamp
 
         return fields
 
@@ -128,6 +169,9 @@ class FeedEntryBase(object):
         raise NotImplementedError
 
     def get_value(self) -> str:
+        raise NotImplementedError
+
+    def get_relationship_indicator_type(self) -> RelationshipIndicatorType:
         raise NotImplementedError
 
 
@@ -154,22 +198,16 @@ class UrlFeedEntry(FeedEntryBase):
                            tags=tags))
         return fields
 
+    def get_relationship_indicator_type(self) -> RelationshipIndicatorType:
+        return RelationshipIndicatorType.URL
+
 
 class MalwareUrlFeedEntry(UrlFeedEntry):
-    def get_indicators_from_relationships(self, primary_indicator):
-        indicators = super().get_indicators_from_relationships(primary_indicator)
-        file_relationships = [r for r in self.relationships if "sha256_hash" in r]
-        if primary_indicator["score"] < 2:
-            return indicators
-        for file_relationship in file_relationships:
-            fields = dict(feedrelatedindicators=[dict(type="Indicator", value=primary_indicator["value"],
-                                                      description="served by malware URL")])
-            indicators.append(dict(value=file_relationship["sha256_hash"],
-                                   type=FeedIndicatorType.File,
-                                   rawJSON=file_relationship,
-                                   score=primary_indicator["score"],
-                                   fields=fields))
-        return indicators
+    def get_relationship_score(self, primary_indicator: Dict, relationship: Dict) -> int:
+        if primary_indicator["score"] < 2 or "sha256_hash" not in relationship:
+            return super().get_relationship_score(primary_indicator, relationship)
+
+        return primary_indicator["score"]
 
 
 class IpReputationFeedEntry(FeedEntryBase):
@@ -203,8 +241,13 @@ class IpReputationFeedEntry(FeedEntryBase):
                            cyrenprotocol=self.meta.get("protocol"),
                            cyrenobjecttype=self.meta.get("object_type"),
                            cyrenipclass=self.meta.get("ip_class"),
-                           cyrencountrycode=country_code))
+                           cyrencountrycode=country_code,
+                           cyreniprisk=self.detection.get("risk"),
+                           cyrenipintensity=self.detection.get("intensity")))
         return fields
+
+    def get_relationship_indicator_type(self) -> RelationshipIndicatorType:
+        return RelationshipIndicatorType.IP
 
 
 class MalwareFileFeedEntry(FeedEntryBase):
@@ -221,6 +264,9 @@ class MalwareFileFeedEntry(FeedEntryBase):
         fields.update(dict(malwarefamily=",".join(family_names),
                            tags=tags))
         return fields
+
+    def get_relationship_indicator_type(self) -> RelationshipIndicatorType:
+        return RelationshipIndicatorType.SHA256
 
 
 FEED_TO_ENTRY_CLASS: Dict[str, Callable] = {

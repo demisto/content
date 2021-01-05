@@ -1,0 +1,116 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "cyrenfeedrelationships",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Indicator Type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "indicatortype",
+            "required": false,
+            "script": "",
+            "selectValues": [
+                "",
+                "IP",
+                "URL",
+                "SHA-256"
+            ],
+            "type": "singleSelect",
+            "width": 150
+        },
+        {
+            "displayName": "Relationship Type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "relationshiptype",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Timestamp",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "timestamp",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "date",
+            "width": 150
+        },
+        {
+            "displayName": "Description",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "description",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Value",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "value",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Entity Category",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "entitycategory",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {
+
+        },
+        {
+
+        },
+        {
+
+        }
+    ],
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_cyrenfeedrelationships",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren Feed Relationships",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}
