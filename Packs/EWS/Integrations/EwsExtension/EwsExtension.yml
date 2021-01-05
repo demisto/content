@@ -186,7 +186,7 @@ script:
       required: false
       description: |
         The maximum number of entries per page.
-        Can be an integer between 1 and 5000. The default value is 100.
+        Can be an integer between 1 and 5000.
       isArray: false
       defaultValue: 100
     - name: start_date
