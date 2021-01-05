@@ -55,7 +55,6 @@ CISCO_ISE_FIELD_MAP = {
     "endpoint_protection": ["ZingboxEPP", "PanwIoTEPP"],
     "AET": ["ZingboxAET", "PanwIoTAET"],
     "External Network": ["ZingboxInternetAccess", "PanwIoTInternetAccess"],
-    # "last activity": "ZingboxLastActivity"
 }
 INT_FIELDS = ["risk_score", "risk score", "confidence", "confidence score", "confidence_score"]
 
