@@ -500,7 +500,7 @@ def get_updated_private_packs(private_index_path, index_folder_path):
         new_private_commit_hash = pack.get('contentCommitHash', "")
 
         old_private_commit_hash = [public_pack.get('contentCommitHash', "") for public_pack in public_packs
-                                   if public_pack.get('id') == private_pack_id]
+                                   if public_pack.get('id') == private_pack_id][0]
         print(f"new private pack commit hash : {new_private_commit_hash}, old commit: {old_private_commit_hash}")
         private_pack_was_updated = new_private_commit_hash != old_private_commit_hash
         if private_pack_was_updated:
