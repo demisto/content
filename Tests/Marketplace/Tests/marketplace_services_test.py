@@ -654,9 +654,9 @@ This is visible
 
     @staticmethod
     def dummy_pack_changelog():
-        with tempfile.NamedTemporaryFile(mode='w+', delete=False) as temp_changelog_file:
-            temp_changelog_file.write(json.dumps(CHANGELOG_DATA))
-            temp_changelog_file.close()
+        temp_changelog_file = tempfile.NamedTemporaryFile(mode='w+', delete=False)
+        temp_changelog_file.write(json.dumps(CHANGELOG_DATA))
+        temp_changelog_file.close()
         return temp_changelog_file.name
 
     @staticmethod
