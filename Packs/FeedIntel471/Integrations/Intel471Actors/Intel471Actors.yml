@@ -79,12 +79,12 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- additionalinfo: 'Long unix time. Search indicators with activity range overlapping given time (including). Object fields: activity.first and activity.last. Empty indicates unbounded'
+- additionalinfo: 'Long unix time. Search indicators with activity range overlapping given time (including). Object fields: activity.first and activity.last. Empty indicates unbounded. Examples: 1569314472407, 24hours, 1day'
   display: Start Time
   name: from
   required: false
   type: 0
-- additionalinfo: 'Long unix time. Search indicators with activity range overlapping given time (including). Object fields: activity.first and activity.last. Empty indicates unbounded'
+- additionalinfo: 'Long unix time. Search indicators with activity range overlapping given time (including). Object fields: activity.first and activity.last. Empty indicates unbounded. Examples: 1569314472407, 24hours, 1day'
   display: End Time
   name: until
   required: false
