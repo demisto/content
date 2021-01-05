@@ -20,6 +20,10 @@ def filter_OOO_users(get_users_response):
         try:
             if 'Item not found' in OOO_users_list[0].get('Contents'):
                 demisto.debug('The list `OOO List` does not exist. Returning all results without filtering.')
+            else:
+                demisto.error(
+                    'Error occurred while trying to load the `OOO List`, returning all users without filtering.')
+
         except Exception:
             demisto.error('Error occurred while trying to load the `OOO List`, returning all users without filtering.')
         return get_users_response.get('HumanReadable')
