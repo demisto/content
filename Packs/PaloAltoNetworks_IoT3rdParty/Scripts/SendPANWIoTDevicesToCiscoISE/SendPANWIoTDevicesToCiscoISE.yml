@@ -1,5 +1,5 @@
 args:
-- description: list of device maps.
+- description: List of device maps.
   isArray: true
   name: device_maps
   required: true
