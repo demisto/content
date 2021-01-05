@@ -31,7 +31,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### cognni-get-event
 ***
-Fetch a single event by ID
+Fetches a single event by ID.
 
 
 #### Base Command
@@ -41,18 +41,18 @@ Fetch a single event by ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | The event ID. | Required | 
+| event_id | The ID of the event to fetch. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cognni.Event.id | String | id | 
-| Cognni.Event.date | Date | date | 
-| Cognni.Event.description | String | description | 
-| Cognni.Event.severity | Number | severity | 
-| Cognni.Event.sourceApplication | String | The source of the event | 
+| Cognni.Event.id | String | Event ID. | 
+| Cognni.Event.date | Date | The date when the event occurred. | 
+| Cognni.Event.description | String | Description of the event. | 
+| Cognni.Event.severity | Number | Severity of the event. | 
+| Cognni.Event.sourceApplication | String | The ID of the application which initiated the event. | 
 
 
 #### Command Example
@@ -60,18 +60,28 @@ Fetch a single event by ID
 
 #### Context Example
 ```json
-{}
+{
+    "Cognni": {
+        "event": {
+            "id": "9ba7fb56-8ace-4b3d-a1e9-08c466668e57",
+            "description": "N/A",
+            "sourceApplication": "Exchange",
+            "date": "2020-11-25T00:46:14.000Z"
+        }
+    }
+}
 ```
 
 #### Human Readable Output
 
 >### Cognni event 9ba7fb56-8ace-4b3d-a1e9-08c466668e57
->**No entries.**
-
+>|date|description|id|sourceApplication|
+>|---|---|---|---|
+>| 2020-11-25T00:46:14.000Z | N/A | 9ba7fb56-8ace-4b3d-a1e9-08c466668e57 | Exchange |
 
 ### cognni-get-insight
 ***
-Fetch a single insight by ID
+Fetches a single insight by ID.
 
 
 #### Base Command
@@ -81,17 +91,17 @@ Fetch a single insight by ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| insight_id | The insight ID. | Required | 
+| insight_id | The ID of the insight to fetch. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cognni.insight.id | String | ID | 
-| Cognni.insight.name | String | name | 
-| Cognni.insight.description | String | description | 
-| Cognni.insight.severity | Number | severity | 
+| Cognni.insight.id | String | Insight ID. | 
+| Cognni.insight.name | String | Name of the insight. | 
+| Cognni.insight.description | String | Description of the insight. | 
+| Cognni.insight.severity | Number | Severity of the insight. | 
 
 
 #### Command Example
@@ -99,18 +109,28 @@ Fetch a single insight by ID
 
 #### Context Example
 ```json
-{}
+{
+    "Cognni": {
+        "insights": {
+            "id": "c24405d5-49f5-48b8-b15c-1a1aba540979",
+            "name": "Medium sensitivity content, Shared to private email address",
+            "description": null,
+            "severity": 2
+        }
+    }
+}
 ```
 
 #### Human Readable Output
 
->### Cognni event 74a53ab3-3e75-4444-9e7c-0be1e1bc26a9
->**No entries.**
-
+>### Cognni 1 insight
+>|description|id|name|severity|
+>|---|---|---|---|
+>|  | c24405d5-49f5-48b8-b15c-1a1aba540979 | Medium sensitivity content, Shared to private email address | 2 |
 
 ### cognni-fetch-insights
 ***
-Fetch insights
+Fetches insights according to severity.
 
 
 #### Base Command
@@ -127,10 +147,10 @@ Fetch insights
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Cognni.insights.id | String | id | 
-| Cognni.insights.name | String | name | 
-| Cognni.insights.description | String | description | 
-| Cognni.insights.severity | Number | severity | 
+| Cognni.insights.id | String | List of insight IDs. | 
+| Cognni.insights.name | String | List of insight names. | 
+| Cognni.insights.description | String | List of insight descriptions. | 
+| Cognni.insights.severity | Number | List of insight severities. | 
 
 
 #### Command Example
