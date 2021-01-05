@@ -485,11 +485,15 @@ def get_updated_private_packs(private_index_path, index_folder_path):
     """
     updated_private_packs = []
     # open public index
+    public_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
+    print(f"public path : {public_path}")
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as public_index_file:
         public_index_json = json.load(public_index_file)
     public_packs = public_index_json.get("packs", {})
 
     # open private index
+    private_path = os.path.join(private_index_path, f"{GCPConfig.INDEX_NAME}.json")
+    print(f"private path : {private_path}")
     with open(os.path.join(private_index_path, f"{GCPConfig.INDEX_NAME}.json")) as private_index_file:
         private_index_json = json.load(private_index_file)
     private_packs = private_index_json.get("packs", {})
