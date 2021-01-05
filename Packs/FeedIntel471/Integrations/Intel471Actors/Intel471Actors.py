@@ -157,7 +157,7 @@ def main():
             'handle_indicator_function': custom_handle_indicator
         },
     }
-    feed_main(params, 'Intel471 Actor Feed', 'intel471')
+    feed_main(params, 'Intel471 Actor Feed', 'intel471-actors')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
