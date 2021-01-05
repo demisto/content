@@ -130,13 +130,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: ISO-Formatted creation date. Get alerts created since this date.
+      description: ISO-Formatted creation date. Get alerts created since this date
+        (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_date_from
       required: false
       secret: false
     - default: false
-      description: ISO-Formatted creation date. Get alerts created before this date.
+      description: ISO-Formatted creation date. Get alerts created before this date
+        (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_date_to
       required: false
@@ -151,14 +153,14 @@ script:
       secret: false
     - default: false
       description: ISO-Formatted modification date. Get alerts modified since this
-        date.
+        date (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: modification_date_from
       required: false
       secret: false
     - default: false
       description: ISO-Formatted modification date. Get alerts modified before this
-        date.
+        date (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: modification_date_to
       required: false
@@ -398,6 +400,49 @@ script:
       type: String
     - contextPath: Cyberint.Alert.tags
       description: Tags related to the alert
+      type: String
+  - arguments:
+    - default: false
+      description: Reference IDs for the alert(s)
+      isArray: true
+      name: alert_ref_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Desired status to update for the alert(s)
+      isArray: false
+      name: status
+      predefined:
+      - open
+      - acknowledged
+      - closed
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Reason for updating the alerts status to closed.
+      isArray: false
+      name: closure_reason
+      predefined:
+      - resolved
+      - irrelevant
+      - false_positive
+      required: false
+      secret: false
+    deprecated: false
+    description: Update the status of one or more alerts.
+    execution: false
+    name: cyberint-update-alerts
+    outputs:
+    - contextPath: Cyberint.Alert.ref_id
+      description: Reference ID of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.status
+      description: Status of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.closure_reason
+      description: Reason for updating the alert to closed.
       type: String
   dockerimage: demisto/python3:3.8.3.8715
   feed: false

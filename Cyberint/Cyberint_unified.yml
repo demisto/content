@@ -135,13 +135,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: ISO-Formatted creation date. Get alerts created since this date.
+      description: ISO-Formatted creation date. Get alerts created since this date
+        (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_date_from
       required: false
       secret: false
     - default: false
-      description: ISO-Formatted creation date. Get alerts created before this date.
+      description: ISO-Formatted creation date. Get alerts created before this date
+        (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: created_date_to
       required: false
@@ -156,14 +158,14 @@ script:
       secret: false
     - default: false
       description: ISO-Formatted modification date. Get alerts modified since this
-        date.
+        date (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: modification_date_from
       required: false
       secret: false
     - default: false
       description: ISO-Formatted modification date. Get alerts modified before this
-        date.
+        date (YYYY-MM-DDTHH:MM:SSZ).
       isArray: false
       name: modification_date_to
       required: false
@@ -404,6 +406,49 @@ script:
     - contextPath: Cyberint.Alert.tags
       description: Tags related to the alert
       type: String
+  - arguments:
+    - default: false
+      description: Reference IDs for the alert(s)
+      isArray: true
+      name: alert_ref_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Desired status to update for the alert(s)
+      isArray: false
+      name: status
+      predefined:
+      - open
+      - acknowledged
+      - closed
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Reason for updating the alerts status to closed.
+      isArray: false
+      name: closure_reason
+      predefined:
+      - resolved
+      - irrelevant
+      - false_positive
+      required: false
+      secret: false
+    deprecated: false
+    description: Update the status of one or more alerts.
+    execution: false
+    name: cyberint-update-alerts
+    outputs:
+    - contextPath: Cyberint.Alert.ref_id
+      description: Reference ID of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.status
+      description: Status of the alert.
+      type: String
+    - contextPath: Cyberint.Alert.closure_reason
+      description: Reason for updating the alert to closed.
+      type: String
   dockerimage: demisto/python3:3.8.3.8715
   feed: false
   isfetch: true
@@ -477,6 +522,25 @@ script:
                                           url_suffix='api/v1/alerts')
             return response
 
+        def update_alerts(self, alerts: List[str], status: str, closure_reason: Optional[str]) -> Dict:
+            """
+            Update the status of one or more alerts
+
+            Args:
+                alerts (list(str)): Reference IDs for the alert(s)
+                status (str): Desired status to update for the alert(s)
+                closure_reason (str): Reason for updating the alerts status to closed.
+
+            Returns:
+                response (Response): API response from Cyberint.
+            """
+            body = {'alert_ref_ids': alerts,
+                    'data': {'status': status, 'closure_reason': closure_reason}}
+            body = remove_empty_elements(body)
+            response = self._http_request(method='PUT', json_data=body, cookies=self._cookies,
+                                          url_suffix='api/v1/alerts/status')
+            return response
+
 
     def test_module(client):
         """
@@ -519,7 +583,7 @@ script:
             start_date, end_date = parse_date_range(date_range=date_range_arg,
                                                     date_format=DATE_FORMAT, utc=False)
             return start_date, end_date
-        min_date = datetime.fromisocalendar(2020, 1, 1)
+        min_date = datetime.fromisocalendar(2020, 2, 1)
         if start_date_arg and not end_date_arg:
             return start_date_arg, datetime.strftime(datetime.now(), DATE_FORMAT)
         if end_date_arg and not start_date_arg:
@@ -559,6 +623,34 @@ script:
         return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
                               readable_output=readable_output, raw_response=result,
                               outputs=alerts)
+
+
+    def cyberint_update_alerts_command(client: Client, args: dict) -> CommandResults:
+        """
+            Update the status of one or more alerts
+
+            Args:
+            client (Client): Cyberint API client.
+            args (dict): Command arguments from XSOAR.
+
+        Returns:
+            CommandResults: outputs, readable outputs and raw response for XSOAR.
+        """
+        alert_ids = argToList(args.get('alert_ref_ids'))
+        status = args.get('status')
+        closure_reason = args.get('closure_reason')
+        response = client.update_alerts(alert_ids, status,
+                                        closure_reason)
+        table_headers = ['ref_id', 'status', 'closure_reason']
+        outputs = []
+        for alert_id in alert_ids:
+            outputs.append({'ref_id': alert_id, 'status': status, 'closure_reason': closure_reason})
+
+        readable_output = tableToMarkdown(name='Alerts Updated', t=outputs, headers=table_headers,
+                                          removeNull=True)
+        return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
+                              readable_output=readable_output, raw_response=response,
+                              outputs=outputs)
 
 
     def fetch_incidents(client: Client, last_run: Dict[str, int],
@@ -649,10 +741,10 @@ script:
 
             elif demisto.command() == 'cyberint-list-alerts':
                 return_results(cyberint_list_alerts_command(client, demisto.args()))
+
+            elif demisto.command() == 'cyberint-update-alerts':
+                return_results(cyberint_update_alerts_command(client, demisto.args()))
         except Exception as e:
-            if 'Datetime not in range' in str(e):
-                return 'A date was picked that is either too early or too late, check created ' \
-                       'and modification date arguments.'
             return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 

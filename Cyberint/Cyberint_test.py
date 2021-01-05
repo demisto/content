@@ -37,6 +37,35 @@ def test_cyberint_list_alerts_command(requests_mock):
     assert result.outputs[0].get('ref_id') == 'ARG-3'
 
 
+def test_cyberint_update_alerts_command(requests_mock):
+    """
+    Scenario: Update alert statuses.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - cyberint_alert_update is called.
+     - Fetch incidents - for each incident
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+    from Cyberint import Client, cyberint_update_alerts_command
+    mock_response = {}
+    requests_mock.put(f'{BASE_URL}/api/v1/alerts/status', json=mock_response)
+    client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
+    result = cyberint_update_alerts_command(client, {'alert_ref_ids': 'alert1',
+                                                     'status': 'acknowledged'})
+    assert len(result.outputs) == 1
+    assert result.outputs_prefix == 'Cyberint.Alert'
+    assert result.outputs[0].get('ref_id') == 'alert1'
+    result = cyberint_update_alerts_command(client, {'alert_ref_ids': 'alert1,alert2',
+                                                     'status': 'acknowledged'})
+    assert len(result.outputs) == 2
+    assert result.outputs_prefix == 'Cyberint.Alert'
+    assert result.outputs[1].get('ref_id') == 'alert2'
+
+
 def test_fetch_incidents(requests_mock) -> None:
     """
     Scenario: Fetch incidents.
@@ -132,5 +161,5 @@ def test_set_date_pair():
     assert set_date_pair(start_time, None, None) == (start_time, datetime.strftime(datetime.now(),
                                                                                    DATE_FORMAT))
     assert set_date_pair(None, end_time, None) == (datetime.strftime(datetime.
-                                                                     fromisocalendar(2020, 12, 1),
+                                                                     fromisocalendar(2020, 2, 1),
                                                                      DATE_FORMAT), end_time)

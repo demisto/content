@@ -68,6 +68,25 @@ class Client(BaseClient):
                                       url_suffix='api/v1/alerts')
         return response
 
+    def update_alerts(self, alerts: List[str], status: str, closure_reason: Optional[str]) -> Dict:
+        """
+        Update the status of one or more alerts
+
+        Args:
+            alerts (list(str)): Reference IDs for the alert(s)
+            status (str): Desired status to update for the alert(s)
+            closure_reason (str): Reason for updating the alerts status to closed.
+
+        Returns:
+            response (Response): API response from Cyberint.
+        """
+        body = {'alert_ref_ids': alerts,
+                'data': {'status': status, 'closure_reason': closure_reason}}
+        body = remove_empty_elements(body)
+        response = self._http_request(method='PUT', json_data=body, cookies=self._cookies,
+                                      url_suffix='api/v1/alerts/status')
+        return response
+
 
 def test_module(client):
     """
@@ -110,7 +129,7 @@ def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
         start_date, end_date = parse_date_range(date_range=date_range_arg,
                                                 date_format=DATE_FORMAT, utc=False)
         return start_date, end_date
-    min_date = datetime.fromisocalendar(2020, 1, 1)
+    min_date = datetime.fromisocalendar(2020, 2, 1)
     if start_date_arg and not end_date_arg:
         return start_date_arg, datetime.strftime(datetime.now(), DATE_FORMAT)
     if end_date_arg and not start_date_arg:
@@ -150,6 +169,34 @@ def cyberint_list_alerts_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
                           readable_output=readable_output, raw_response=result,
                           outputs=alerts)
+
+
+def cyberint_update_alerts_command(client: Client, args: dict) -> CommandResults:
+    """
+        Update the status of one or more alerts
+
+        Args:
+        client (Client): Cyberint API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    alert_ids = argToList(args.get('alert_ref_ids'))
+    status = args.get('status')
+    closure_reason = args.get('closure_reason')
+    response = client.update_alerts(alert_ids, status,
+                                    closure_reason)
+    table_headers = ['ref_id', 'status', 'closure_reason']
+    outputs = []
+    for alert_id in alert_ids:
+        outputs.append({'ref_id': alert_id, 'status': status, 'closure_reason': closure_reason})
+
+    readable_output = tableToMarkdown(name='Alerts Updated', t=outputs, headers=table_headers,
+                                      removeNull=True)
+    return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
+                          readable_output=readable_output, raw_response=response,
+                          outputs=outputs)
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, int],
@@ -240,10 +287,10 @@ def main():
 
         elif demisto.command() == 'cyberint-list-alerts':
             return_results(cyberint_list_alerts_command(client, demisto.args()))
+
+        elif demisto.command() == 'cyberint-update-alerts':
+            return_results(cyberint_update_alerts_command(client, demisto.args()))
     except Exception as e:
-        if 'Datetime not in range' in str(e):
-            return 'A date was picked that is either too early or too late, check created ' \
-                   'and modification date arguments.'
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
