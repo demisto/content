@@ -1,6 +1,6 @@
 id: Palo Alto Networks - Automatic SLR (Community)
 fromversion: "5.0.0"
-version: 2
+version: -1
 name: Palo Alto Networks - Automatic SLR (Community)
 description: Initial default playbook to run the Palo Alto Networks Automatic SLR
   (Community) integration
@@ -242,3 +242,5 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
