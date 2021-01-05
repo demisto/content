@@ -1023,8 +1023,8 @@ def main():
     fetch_comments = demisto.params().get('fetch_comments')
     incoming_mirror = demisto.params().get("incoming_mirror")
     outgoing_mirror = demisto.params().get('outgoing_mirror')
-    comment_tag = demisto.params().get('comment_tag'),
-    attachment_tag = demisto.params().get('file_tag'),
+    comment_tag = demisto.params().get('comment_tag')
+    attachment_tag = demisto.params().get('file_tag')
     fetch_by_created = demisto.params().get('fetchByCreated')
     try:
         # Remove proxy if not set to true in params
