@@ -16,7 +16,12 @@ def filter_OOO_users(get_users_response):
 
     OOO_users_list = demisto.executeCommand('getList', {'listName': 'OOO List'})
     if is_error(OOO_users_list):
-        demisto.error('Error occurred while trying to load the `OOO List`, returning all users without filtering.')
+        # check if the list `OOO List` exists:
+        try:
+            if 'Item not found' in OOO_users_list[0].get('Contents'):
+                demisto.debug('The list `OOO List` does not exist. Returning all results without filtering.')
+        except Exception:
+            demisto.error('Error occurred while trying to load the `OOO List`, returning all users without filtering.')
         return get_users_response.get('HumanReadable')
     try:
         OOO_users = ast.literal_eval(OOO_users_list[0].get('Contents'))
