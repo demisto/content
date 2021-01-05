@@ -3,7 +3,7 @@ commonfields:
   id: Palo Alto Networks IoT 3rd Party
   version: -1
 configuration:
-- display: URL.
+- display: Server URL
   name: url
   required: true
   type: 0
