@@ -654,15 +654,18 @@ This is visible
 
     @staticmethod
     def dummy_pack_changelog():
-        temp_changelog_file = os.path.join(tempfile.gettempdir(), os.urandom(24).hex())
-        with open(temp_changelog_file, 'w+') as changelog_file:
+        print(os.getcwd())
+        temp_changelog_file = os.path.join(os.getcwd(), 'dummy_changelog.json')
+        with open(temp_changelog_file, 'w',) as changelog_file:
             changelog_file.write(json.dumps(CHANGELOG_DATA))
         return str(temp_changelog_file)
 
     @staticmethod
     def mock_os_path_join(path, *paths):
         if not str(path).startswith('changelog'):
-            return path + '/'.join(paths)
+            if paths:
+                return path + '/' + '/'.join(paths)
+            return path
 
         path_to_non_existing_changelog = 'dummy_path'
 
@@ -692,7 +695,8 @@ This is visible
         from Tests.Marketplace.marketplace_services import os
         mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
         pack_created_date = dummy_pack._handle_pack_create_date(is_changelog_exist)
-
+        if is_changelog_exist == 'changelog_exist':
+            os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
         assert pack_created_date == expected_date
 
 
