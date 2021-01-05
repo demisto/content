@@ -301,11 +301,12 @@ outputs:
 - contextPath: AnsibleAWX.AdhocCommand.id
   description: Ad hoc command id
 - contextPath: AnsibleAWX.AdhocCommand.status
-  description: 'Ad hoc command status '
+  description: 'Ad hoc command status'
 - contextPath: AnsibleAWX.JobStdout.content
   description: job content output
-tests:
-- AnsibleTower_Test
 fromversion: 5.0.0
 description: Generic pooling playbook for run ad hoc commands, then check the job
   status and the stdout
+tests:
+  -  No tests
+

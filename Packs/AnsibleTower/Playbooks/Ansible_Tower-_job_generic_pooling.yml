@@ -302,8 +302,8 @@ outputs:
   description: Job status
 - contextPath: AnsibleAWX.JobStdout.content
   description: job stdout
-tests:
-- AnsibleTower_Test
 fromversion: 5.0.0
 description: Generic pooling playbook to launch a specific job template, returns job
   status when he finish running
+tests:
+ -  No tests
