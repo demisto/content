@@ -1451,7 +1451,7 @@ class Pack(object):
             try:
                 with open(changelog_index_path, "r") as changelog_file:
                     changelog = json.load(changelog_file)
-            except json.JSONDecodeError as e:
+            except json.JSONDecodeError:
                 changelog = {}
         init_changelog_version = changelog.get(Pack.PACK_INITIAL_VERSION, {})
         init_changelog_released_date = init_changelog_version.get('released',

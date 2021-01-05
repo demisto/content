@@ -4,7 +4,7 @@ import json
 import os
 import random
 from unittest.mock import mock_open
-from mock_open import MockOpen
+#from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 from freezegun import freeze_time
@@ -656,7 +656,7 @@ This is visible
     def dummy_pack_changelog():
         with tempfile.NamedTemporaryFile(mode='w+', delete=False) as temp_changelog_file:
             temp_changelog_file.write(json.dumps(CHANGELOG_DATA))
-            temp_changelog_file.flush()
+            temp_changelog_file.close()
         return temp_changelog_file.name
 
     @staticmethod
