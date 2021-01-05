@@ -8,7 +8,6 @@ from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
 from freezegun import freeze_time
-import tempfile
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
