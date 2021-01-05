@@ -1,6 +1,6 @@
 {
     "name": "HostToIP",
-    "description": "",
+    "description": "The internal Hostname is converted to the IP",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "kumar-siddappa",
