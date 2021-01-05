@@ -1,0 +1,12 @@
+{
+    "rejected_indicators": [
+      "blacklisted",
+      "invalid"
+    ],
+    "threat": {
+      "indicator_count": 2,
+      "name": "Threat",
+      "note": "Notes",
+      "published": true
+    }
+  }
