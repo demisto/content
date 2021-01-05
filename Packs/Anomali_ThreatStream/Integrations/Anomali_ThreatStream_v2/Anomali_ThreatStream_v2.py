@@ -447,7 +447,7 @@ def get_ip_reputation(ip, threshold=None, status="active,inactive"):
     }
     human_readable = tableToMarkdown(F"IP reputation for: {ip}", threat_ip_context)
 
-    return_outputs(human_readable, ec, indicator)
+    puts(human_readable, ec, indicator)
 
 
 def domains_reputation_command(domain, threshold=None, status="active,inactive"):
