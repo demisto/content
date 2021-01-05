@@ -654,10 +654,10 @@ This is visible
 
     @staticmethod
     def dummy_pack_changelog():
-        temp_changelog_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
-        temp_changelog_file.write(json.dumps(CHANGELOG_DATA))
-        temp_changelog_file.close()
-        return temp_changelog_file.name
+        temp_changelog_file = os.path.join(tempfile.gettempdir(), os.urandom(24).hex())
+        with open(temp_changelog_file, 'w+') as changelog_file:
+            changelog_file.write(json.dumps(CHANGELOG_DATA))
+        return str(temp_changelog_file)
 
     @staticmethod
     def mock_os_path_join(path, *paths):
