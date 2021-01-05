@@ -1,5 +1,7 @@
 from typing import Dict
 
+import dateutil.parser as dp
+import pytz
 import urllib3
 
 from CommonServerPython import *
@@ -7,16 +9,7 @@ from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 ''' CONSTANTS '''
-
-DEFAULT_HEADERS = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Connection': 'keep_alive',
-}
-
-CONTENT_JSON = {'Content-Type': 'application/json'}
-
-TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
+CONTENT_JSON = {'content-type': 'application/json'}
 
 ''' LOWER AND UPPER BOUNDS FOR INTEGER ARGUMENTS '''
 MINIMUM_PAGE_VALUE = 1
@@ -67,9 +60,9 @@ class Client(BaseClient):
             method='POST',
             url_suffix=f'vms/{uuid}/set_power_state',
             headers=CONTENT_JSON,
-            data=assign_params(
-                host_uuid=host_uuid,
-                transition=transition,
+            json_data=assign_params(
+                # host_uuid='ON',
+                transition='off',
                 uuid=uuid
             )
         )
@@ -183,7 +176,15 @@ def get_optional_time_parameter_as_epoch(args: Dict, argument_name: str) -> Opti
     if argument_value is None:
         return None
 
-    return date_to_timestamp(argument_value, TIME_FORMAT)
+    try:
+        unaware_timezone_date = dp.parse(argument_value)
+    except Exception:
+        raise DemistoException(
+            f'''date format of '{argument_name}' is not valid. Please enter a date format of YYYY-MM-DDTHH:MM:SS''')
+
+    time_zone = pytz.timezone('utc')
+    aware_timezone_date = time_zone.localize(unaware_timezone_date)
+    return int(aware_timezone_date.timestamp() * 1000)
 
 
 def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optional[int] = None,
@@ -354,12 +355,12 @@ def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict
     """
     # context_path = 'NutanixHypervisor.VMPowerStatus'
     #
-    # vm_uuid = args.get('vm_uuid')
-    # host_uuid = args.get('host_uuid')
-    # transition = args.get('transition')
+    vm_uuid = args.get('vm_uuid')
+    host_uuid = args.get('host_uuid')
+    transition = args.get('transition')
     #
     # # TODO : are they required? optional?
-    # response = client.nutanix_hypervisor_vm_power_status_change(vm_uuid, host_uuid, transition)
+    response = client.nutanix_hypervisor_vm_power_status_change(vm_uuid, host_uuid, transition)
     # # TODO : what to return? whats the return value (currently cant reach the endpoint)
     raise NotImplementedError
 

@@ -8,7 +8,6 @@ import pytest
 from CommonServerPython import DemistoException
 from Nutanix import MINIMUM_LIMIT_VALUE
 from Nutanix import MINIMUM_PAGE_VALUE
-from Nutanix import TIME_FORMAT
 
 
 def util_load_json(path):
@@ -164,7 +163,7 @@ def test_get_optional_boolean_param_invalid_argument(args, argument_name, expect
 
 
 @pytest.mark.parametrize('args, time_parameter, expected',
-                         [({'start_time': '2020-11-22T16:31:14'}, 'start_time', 1606055474000),
+                         [({'start_time': '2020-11-22T16:31:14'}, 'start_time', 1606062674000),
                           ({'start_time': '2020-11-22T16:31:14'}, 'end_time', None),
                           ])
 # TODO TOM : seems there is a problem with lint getting different results - probably because of time zones
@@ -200,5 +199,5 @@ def test_get_optional_time_parameter_invalid_time_argument():
        expected time format.
     """
     from Nutanix import get_optional_time_parameter_as_epoch
-    with pytest.raises(ValueError, match=f"""time data 'bla' does not match format '{TIME_FORMAT}'"""):
+    with pytest.raises(DemistoException, match='''date format of 'start_time' is not valid. Please enter a date format of YYYY-MM-DDTHH:MM:SS'''):
         (get_optional_time_parameter_as_epoch({'start_time': 'bla'}, 'start_time'))
