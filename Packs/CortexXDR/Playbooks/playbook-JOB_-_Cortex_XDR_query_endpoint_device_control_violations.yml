@@ -1,35 +1,35 @@
 description: |-
-  A Job to periodically query Cortex XDR device control violations by a given timestamp in a relative date playbook input.
-  The Collected data, if found will be generated for a new incident.
-  You can set the created new incident type in the playbook input, use XDR Device Control Violations incident type to associate it with the response playbook.
+  A job to periodically query Cortex XDR device control violations by a given timestamp in a relative date playbook input.
+  The collected data, if found, will be generated for a new incident.
+  You can configure the created new incident type in the playbook input and use the XDR Device Control Violations incident type to associate it with the response playbook.
   The job includes an incident type with a dedicated layout to visualize the collected data.
-  To set the job correctly, you will need to.
+  To configure the job correctly:
 
   1. Create a new recurring job.
-  2. Set the recurring schedule.
+  2. Configure the recurring schedule.
   3. Add a name.
-  4. Set type to XDR Device Control Violations.
-  5. Set this playbook as the job playbook.
+  4. Configure the type to XDR Device Control Violations.
+  5. Configure this playbook as the job playbook.
 
   The scheduled run time and the timestamp relative date should be identical.
-  If the job is recurring every 7 days, the timestamp should be 7 days as well.
+  If the job recurs every 7 days, the timestamp should be 7 days as well.
 id: JOB - Cortex XDR query endpoint device control violations
 inputs:
-- description: Timestamp in relative date format for fetching  device control events
-    from Cortex XDR
+- description: Timestamp in relative date format for fetching device control events
+    from Cortex XDR.
   key: TimeStamp
   playbookInputQuery:
   required: false
   value: {}
-- description: The severity of the created incident when device control events were
+- description: The severity of the created incident when the device control events were
     found.
   key: Severity
   playbookInputQuery:
   required: false
   value:
     simple: "1"
-- description: The desired incident type for the created incident when device control
-    violations are found.
+- description: The desired incident type for the created incident when the device control
+    violations were found.
   key: IncidentType
   playbookInputQuery:
   required: false
@@ -144,7 +144,7 @@ tasks:
       brand: ""
       id: c22ddb33-9841-4b87-8465-2c419515ccfb
       iscommand: false
-      name: Did device control violations found?
+      name: Were device control violations found?
       type: condition
       version: -1
     taskid: c22ddb33-9841-4b87-8465-2c419515ccfb
@@ -206,7 +206,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Creates a Grid table from items or key-value pairs.
+      description: Creates a grid table from items or key-value pairs.
       id: 5e9b5814-f99e-4c5b-861a-74412f8e63d5
       iscommand: false
       name: Set device control grid
@@ -291,7 +291,7 @@ tasks:
       destos: {}
       details:
         simple: An unwanted device connected to the corporate network Device Control
-          violation fetched from Cortex XDR with Fetch device control violation Job.
+          violation fetched from Cortex XDR with the Fetch device control violation Job.
       detectedexternalhosts: {}
       detectedexternalips: {}
       detectedinternalhosts: {}
@@ -558,7 +558,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.create.inc
+      description: Creates a new incident.
       id: 4d5a6c60-93fd-4ac0-88fa-b835c354c8d8
       iscommand: true
       name: Create New Incident
@@ -596,7 +596,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.close.inv
+      description: Closes the job.
       id: 46f64af5-3e6c-47e3-8fc7-0a2082e59825
       iscommand: true
       name: Close job
@@ -945,7 +945,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Counts the number of involved users and hosts.
       id: b584e77b-a638-416e-8eb7-0a83c82f0b0c
       iscommand: true
       name: Count involved users and hosts
