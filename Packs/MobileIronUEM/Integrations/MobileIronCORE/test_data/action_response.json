@@ -1,0 +1,7 @@
+{
+    "actionType": "WAKE_UP",
+    "deviceResults": {
+        "9b0da853-9f9b-483c-97ef-f4b5457299cf": "com.mobileiron.vsp.messages.device.action.successful"
+    },
+    "successful": true
+}
