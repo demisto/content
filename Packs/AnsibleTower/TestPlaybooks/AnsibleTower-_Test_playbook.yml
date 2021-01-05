@@ -37,8 +37,8 @@ tasks:
     task:
       id: 858c776e-b669-4e04-83be-ed140852829a
       version: -1
-      name: Ansible Tower- job generic pooling
-      playbookName: Ansible Tower- job generic pooling
+      name: AnsibleTower_job_launch_generic
+      playbookName: AnsibleTower_job_launch_generic
       type: playbook
       iscommand: false
       brand: ""
