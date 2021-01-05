@@ -3,7 +3,7 @@ fromversion: "5.0.0"
 version: -1
 name: Palo Alto Networks - Automatic SLR (Community)
 description: Initial default playbook to run the Palo Alto Networks Automatic SLR
-  (Community) integration
+  (Community) Integration
 starttaskid: "0"
 tasks:
   "0":
