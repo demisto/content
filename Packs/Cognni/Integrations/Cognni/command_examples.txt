@@ -1,0 +1,3 @@
+!cognni-get-event event_id="9ba7fb56-8ace-4b3d-a1e9-08c466668e57"
+!cognni-get-insight insight_id="74a53ab3-3e75-4444-9e7c-0be1e1bc26a9"
+!cognni-fetch-insights min_severity=2
