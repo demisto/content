@@ -306,6 +306,7 @@ def main() -> None:
     verify = not demisto.params().get('insecure')
     fetch_interval_hours = demisto.params().get('fetchIntervalHours')
 
+
     if not is_number(fetch_interval_hours):
         return_error("PhishTankV2 error: Please provide a numeric value (and bigger than 0) for Database refresh "
                      "interval (hours)")
