@@ -753,7 +753,7 @@ script:
       description: Anomaly Name
       type: string
     description: Retrieve Detailed Information for a Given User
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   runonce: false
   subtype: python3
