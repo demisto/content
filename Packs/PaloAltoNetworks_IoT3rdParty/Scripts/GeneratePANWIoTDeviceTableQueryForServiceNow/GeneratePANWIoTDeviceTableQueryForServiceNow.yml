@@ -1,5 +1,5 @@
 args:
-- description: device inventory list
+- description: Devices inventory list.
   isArray: true
   name: devices
   required: true
