@@ -1,8 +1,2 @@
 [file:Zimperium.yml]
 ignore=IN126
-
-[file:classifier-Zimperium_5_9_9.json]
-ignore=MP105
-
-[file:classifier-mapper-incoming-Zimperium.json]
-ignore=MP105

@@ -3,15 +3,3 @@ ignore=BA101
 
 [file:RedLock.yml]
 ignore=IN126
-
-[file:classifier-prismaCloud_app_5_9_9.json]
-ignore=MP105
-
-[file:classifier-mapper-incoming-Prisma_Cloud.json]
-ignore=MP105
-
-[file:classifier-Prisma_Cloud_5_9_9.json]
-ignore=MP105
-
-[file:classifier-mapper-incoming-prismaCloud_app.json]
-ignore=MP105

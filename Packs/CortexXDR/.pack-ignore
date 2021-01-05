@@ -4,11 +4,3 @@ ignore=PA116
 [file:CortexXDRIR.yml]
 ignore=IN126
 
-[file:classifier-mapper-outgoing-PaloAltoNetworks_CortexXDR.json]
-ignore=MP105
-
-[file:classifier-mapper-incoming-PaloAltoNetworks_CortexXDR.json]
-ignore=MP105
-
-[file:classifier-PaloAltoNetworks_CortexXDR_5_9_9.json]
-ignore=MP105

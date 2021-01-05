@@ -166,5 +166,3 @@ ignore=BA101
 [file:DeprecatedContent]
 ignore=PA116
 
-[file:classifier-PaloAltoNetworks_Cortex_5_9_9.json]
-ignore=MP105

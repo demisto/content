@@ -1,8 +1,3 @@
 [file:IllusiveNetworks.yml]
 ignore=IN126
 
-[file:classifier-mapper-incoming-IllusiveNetworks.json]
-ignore=MP105
-
-[file:classifier-IllusiveNetworks_5_9_9.json]
-ignore=MP105

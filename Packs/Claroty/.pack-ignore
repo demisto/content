@@ -1,8 +1,2 @@
 [file:Claroty.yml]
 ignore=IN126
-
-[file:classifier-mapper-incoming-Claroty.json]
-ignore=MP105
-
-[file:classifier-Claroty_5_9_9.json]
-ignore=MP105

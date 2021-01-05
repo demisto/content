@@ -150,9 +150,3 @@ ignore=IF107
 
 [file:CommonTypes]
 ignore=PA116
-
-[file:classifier-Mail-listener_5_9_9.json]
-ignore=MP105
-
-[file:classifier-mapper-incoming-Mail-listener.json]
-ignore=MP105

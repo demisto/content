@@ -1,8 +1,3 @@
 [file:PaloAltoNetworks_PrismaCloudCompute.yml]
 ignore=IN126
 
-[file:classifier-PrismaCloudCompute_5_9_9.json]
-ignore=MP105
-
-[file:classifier-mapper-incoming-PrismaCloudCompute.json]
-ignore=MP105
