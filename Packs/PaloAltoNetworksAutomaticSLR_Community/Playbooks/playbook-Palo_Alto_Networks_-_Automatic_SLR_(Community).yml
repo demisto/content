@@ -1,4 +1,5 @@
 id: Palo Alto Networks - Automatic SLR (Community)
+fromversion: "5.0.0"
 version: 2
 vcShouldKeepItemLegacyProdMachine: false
 name: Palo Alto Networks - Automatic SLR (Community)
