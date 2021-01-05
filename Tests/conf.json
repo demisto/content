@@ -3296,7 +3296,12 @@
         "Archer-Test-Playbook": "Issue 26851",
         "Carbon Black Live Response Test": "Issue 28237",
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
-        "Google_Vault-Search_And_Display_Results_test": "Issue 24348"
+        "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
+        "Microsoft Defender Advanced Threat Protection - Test": "Issue 27812",
+        "FeedThreatConnect-Test": "Issue 32317",
+        "VxStream Test": "Issue 29280",
+        "virusTotalPrivateAPI-test-playbook": "Issue 28751",
+        "PAN-OS Create Or Edit Rule Test": "Issue 26465"
     },
     "skipped_integrations": {
         
