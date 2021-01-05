@@ -409,7 +409,8 @@ def search_response_policy_by_domain(domain):
 
 try:
     CONF = get_configuration()
-except TokenException as e:
+#except TokenException as e:
+except Exception as e:
     return_error(str(e))
 
 
