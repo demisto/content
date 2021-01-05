@@ -40,6 +40,6 @@ tags:
 - siem
 timeout: 362.88ms
 type: python
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
