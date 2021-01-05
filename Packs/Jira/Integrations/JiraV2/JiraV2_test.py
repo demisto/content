@@ -275,7 +275,6 @@ def test_get_new_attachment_return_result(mocker):
     from JiraV2 import get_attachments
     from test_data.expected_results import JIRA_ATTACHMENT
     from dateparser import parse
-    import pytz
 
     class file:
         def __init__(self):

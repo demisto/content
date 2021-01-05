@@ -1,6 +1,5 @@
 from requests_oauthlib import OAuth1
 from dateparser import parse
-import pytz
 
 from CommonServerPython import *
 
@@ -748,7 +747,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
     if not id_offset:
         id_offset = 0
 
-    incidents, max_results = [], 1  #TODO:
+    incidents, max_results = [], 50
     if id_offset:
         query = f'{query} AND id >= {id_offset}'
     if fetch_by_created:
