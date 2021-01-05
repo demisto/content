@@ -1526,7 +1526,8 @@ class Pack(object):
             pack_file_path (str): full path to the target yml_path integration yml to search integration image.
 
         Returns:
-            dict: path to temporary integration image and display name of the integrations.
+            dict: path to temporary integration image, display name of the integrations and the basename of
+            the integration in content_pack.zip.
 
         """
         image_data = {}
@@ -1552,42 +1553,31 @@ class Pack(object):
 
             self._remove_files_list.append(temp_image_name)  # add temporary file to tracking list
             image_data['image_path'] = temp_image_path
+            image_data['integration_path_basename'] = os.path.basename(pack_file_path)
 
             logging.info(f"Created temporary integration {image_data['display_name']} image for {self._pack_name} pack")
 
         return image_data
 
-    def _search_for_images(self, integration_dirs: list, unified_integrations: list):
-        """ Searches for png files in Integrations folder.
-
+    def _search_for_images(self, target_folder):
+        """ Searches for png files in targeted folder.
         Args:
-            integration_dirs (list): The list of integrations to search in for images
-            unified_integrations (list): The list of unified integrations to upload their image
-
+            target_folder (str): full path to directory to search.
         Returns:
-            images_list_all (list): list of dictionaries that include image path and display name of integration for
-            all images, example: [{'image_path': image_path, 'display_name': integration_display_name},...]
-            images_list_to_upload (list): list of dictionaries that include image path and display name of integration
-            for the specific images to upload, example:
+            list: list of dictionaries that include image path and display name of integration, example:
             [{'image_path': image_path, 'display_name': integration_display_name},...]
         """
-        integrations_folder_path = os.path.join(self._pack_path, PackFolders.INTEGRATIONS.value)
-        images_list_to_upload = []
-        images_list_all = []
+        target_folder_path = os.path.join(self._pack_path, target_folder)
+        images_list = []
 
-        if os.path.exists(integrations_folder_path):
-            for integration in os.scandir(integrations_folder_path):
-                image_data = self._get_image_data_from_yml(integration.path)
+        if os.path.exists(target_folder_path):
+            for pack_item in os.scandir(target_folder_path):
+                image_data = self._get_image_data_from_yml(pack_item.path)
 
-                if image_data and image_data not in images_list_all:
-                    images_list_all.append(image_data)
+                if image_data and image_data not in images_list:
+                    images_list.append(image_data)
 
-                if re.findall(BucketUploadFlow.INTEGRATION_DIR_REGEX, integration.name)[0] in integration_dirs or \
-                        integration.name in unified_integrations:
-                    if image_data and image_data not in images_list_to_upload:
-                        images_list_to_upload.append(image_data)
-
-        return images_list_all, images_list_to_upload
+        return images_list
 
     def check_if_exists_in_index(self, index_folder_path):
         """ Checks if pack is sub-folder of downloaded index.
@@ -1613,6 +1603,28 @@ class Pack(object):
             logging.exception(f"Failed searching {self._pack_name} pack in {GCPConfig.INDEX_NAME}")
         finally:
             return task_status, exists_in_index
+
+    @staticmethod
+    def need_to_upload_integration_image(image_data: dict, integration_dirs: list, unified_integrations: list):
+        """ Checks whether needs to upload the integration image or not.
+        We upload in one of the two cases:
+        1. The integration_path_basename integration's name is one of the integration dirs detected
+        2. The integration_path_basename is one of the added/modified unified integrations
+
+        Args:
+            image_data (dict): path to temporary integration image, display name of the integrations and the basename of
+            the integration in content_pack.zip.
+            integration_dirs (list): The list of integrations to search in for images
+            unified_integrations (list): The list of unified integrations to upload their image
+
+        Returns:
+            bool: True if we need to upload the image or not
+        """
+        integration_path_basename = image_data['integration_path_basename']
+        return any([
+            re.findall(BucketUploadFlow.INTEGRATION_DIR_REGEX, integration_path_basename)[0] in integration_dirs,
+            integration_path_basename in unified_integrations
+        ])
 
     def upload_integration_images(self, storage_bucket, diff_files_list):
         """ Uploads pack integrations images to gcs.
@@ -1643,15 +1655,14 @@ class Pack(object):
                     # if the file found in the diff is a unified integration we upload its image
                     unified_integrations.append(os.path.basename(file.a_path))
 
-            pack_local_images_all, pack_local_images_to_upload = self._search_for_images(
-                integration_dirs, unified_integrations
-            )
-            if not pack_local_images_all:
+            pack_local_images = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
+
+            if not pack_local_images:
                 return integration_images  # return empty list if no images were found
 
             pack_storage_root_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name)
 
-            for image_data in pack_local_images_all:
+            for image_data in pack_local_images:
                 image_path = image_data.get('image_path')
                 if not image_path:
                     raise Exception(f"{self._pack_name} pack integration image was not found")
@@ -1660,7 +1671,7 @@ class Pack(object):
                 image_storage_path = os.path.join(pack_storage_root_path, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
 
-                if image_data in pack_local_images_to_upload:
+                if self.need_to_upload_integration_image(image_data, integration_dirs, unified_integrations):
                     # upload the image if needed
                     logging.info(f"Uploading image: {image_name} of integration: {image_data.get('display_name')} "
                                  f"from pack: {self._pack_name}")
@@ -1679,7 +1690,8 @@ class Pack(object):
                     'imagePath': image_gcs_path
                 })
 
-            logging.info(f"Uploaded {len(pack_local_images_to_upload)} images for {self._pack_name} pack.")
+            if self._uploaded_integration_images:
+                logging.info(f"Uploaded {len(self._uploaded_integration_images)} images for {self._pack_name} pack.")
         except Exception as e:
             task_status = False
             logging.exception(f"Failed to upload {self._pack_name} pack integration images. Additional Info: {str(e)}")
