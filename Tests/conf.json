@@ -3207,7 +3207,13 @@
         },
         {
             "integrations": "AnsibleTower",
-            "playbookID": "AnsibleTower_Test_playbook"
+            "playbookID": "AnsibleTower_Test_playbook",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AnsibleTower",
+            "playbookID": "AnsibleTower_job_launch_generic",
+            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {
