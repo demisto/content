@@ -6,13 +6,13 @@ name: Cortex XDR incident handling v3
 description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR\
   \ incident.\nThe playbook syncs and updates new XDR alerts that construct the incident\
   \ and triggers a sub-playbook to handle each alert by type.\nThen, the playbook\
-  \ performs enrichment on the incident's indicators and hunting for related IOCs.\n\
+  \ performs enrichment on the incident's indicators and hunts for related IOCs.\n\
   Based on the severity, it lets the analyst decide whether to continue to the remediation\
   \ stage or close the investigation as a false positive. \nAfter the remediation,\
   \ if there are no new alerts, the playbook stops the alert sync and closes the XDR\
   \ incident and investigation. For performing the bidirectional sync, the playbook\
   \ uses the incoming and outgoing mirroring feature added in XSOAR version 6.0.0.\
-  \ After the `Calculate Severity - Generic v2` sub-playbook’s run Cortex XSOAR will\
+  \ After the `Calculate Severity - Generic v2` sub-playbook’s run, Cortex XSOAR will\
   \ be treated as the single source of truth for the severity field, and it will sync\
   \ only from Cortex XSOAR to XDR, so manual changes for the severity field in XDR\
   \ will not update in the XSOAR incident."
@@ -432,7 +432,7 @@ tasks:
       id: 1a52d2f9-00df-4ac9-8df5-364ebb3c3bfb
       version: -1
       name: Auto remediation?
-      description: Should the playbook perform auto-remediation or manual remediation?
+      description: Should the playbook perform auto remediation or manual remediation?
       type: condition
       iscommand: false
       brand: ""
@@ -776,7 +776,7 @@ tasks:
         \ receives inputs based on hashes, IP addresses, or domain names provided\
         \ manually or from outputs by other playbooks. \nWith the received indicators,\
         \ the playbook leverages Palo Alto Cortex data received by products such as\
-        \ Traps, Analytics and Pan-OS to search for IP addresses and hosts related\
+        \ Traps, Analytics, and Pan-OS to search for IP addresses and hosts related\
         \ to that specific hash. \nThe output provided by the playbook facilitates\
         \ pivoting searches for possibly affected hosts, IP addresses, or users."
       playbookName: PANW - Hunting and threat detection by indicator type V2
@@ -1019,8 +1019,8 @@ tasks:
     task:
       id: b1d89a7b-6fb1-49bf-815c-1d87183bc192
       version: -1
-      name: Continue to Remediation or close as false positive?
-      description: Continue to Remediation or close the investigation as false positive?
+      name: Continue to remediation or close as false positive?
+      description: Continue to remediation or close the investigation as false positive?
       type: condition
       iscommand: false
       brand: ""
@@ -1091,7 +1091,7 @@ tasks:
       version: -1
       name: Find similar incidents
       description: |-
-        Finds similar incidents by common incident keys, labels, custom fields or context keys.
+        Finds similar incidents by common incident keys, labels, custom fields, or context keys.
         It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
         For best performance, it's recommended to avoid using context keys whenever possible (for example, if the value also appears in a label key, use label).
       scriptName: FindSimilarIncidents
@@ -1181,7 +1181,7 @@ tasks:
       id: 424508c4-04d7-48f4-86a5-6ffc14ad979c
       version: -1
       name: Link similar incidents
-      description: Link two or more incidents
+      description: Link two or more incidents.
       scriptName: DemistoLinkIncidents
       type: regular
       iscommand: false
@@ -1264,7 +1264,7 @@ tasks:
       id: 7b258004-dd56-40e1-8a0e-f3936bca8b8c
       version: -1
       name: Close as duplicate?
-      description: Close the incident as duplicate?
+      description: Close the incident as a duplicate?
       type: condition
       iscommand: false
       brand: ""
@@ -1693,7 +1693,7 @@ inputs:
   value:
     simple: xdrdescription
   required: false
-  description: A comma-separated list of similar incident fields keys.
+  description: A comma-separated list of similar incident field keys.
   playbookInputQuery:
 - key: LinkSimilarIncidents
   value:
@@ -1706,28 +1706,28 @@ inputs:
   value:
     simple: "Yes"
   required: false
-  description: Yes/No
+  description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
   playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list
-    should be provided in CIDR notation, separated by commas. An example of a list
+  description: 'A comma-separated list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR notation. An example of a list
     of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
-    If a list is not provided, will use default list provided in the IsIPInRanges
+    If a list is not provided, will use the default list provided in the IsIPInRanges
     script (the known IPv4 private address ranges).'
   playbookInputQuery:
 - key: CriticalUsernames
   value:
     simple: admin,administrator
   required: false
-  description: A list of comma-separated names of critical users in the organization.
+  description: A comma-separated list of names of critical users in the organization.
     This will affect the calculated severity of the incident.
   playbookInputQuery:
 - key: CriticalHostnames
   value: {}
   required: false
-  description: A list of comma-separated names of critical endpoints in the organization.
+  description: A comma-separated list of names of critical endpoints in the organization.
     This will affect the calculated severity of the incident.
   playbookInputQuery:
 - key: CriticalADGroups
