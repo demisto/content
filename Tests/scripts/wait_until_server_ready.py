@@ -69,7 +69,7 @@ def docker_login(ip: str) -> None:
     docker_password = os.environ.get('DOCKERHUB_PASSWORD')
     try:
         check_output(f'ssh -o StrictHostKeyChecking=no ec2-user@{ip} '
-                     f'sudo docker login --username {docker_username} --password-stdin'.split(),
+                     f'sudo -u demisto docker login --username {docker_username} --password-stdin'.split(),
                      input=docker_password.encode())
     except Exception:
         logging.exception(f'Could not login to docker on server {ip}')
