@@ -73,6 +73,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "EwsExtension",
+            "playbookID": "O365 - EWS - Extension - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
