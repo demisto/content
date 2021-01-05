@@ -155,6 +155,7 @@ class EventStream:
         self.data_feed_url: str
         self.session_token: str
         self.refresh_token: RefreshToken
+        self.client: Client
 
     def set_refresh_token(self, refresh_token) -> None:
         self.refresh_token = refresh_token
@@ -170,18 +171,17 @@ class EventStream:
         Yields:
             Iterator[Dict]: Event fetched from the stream.
         """
-        client = Client(base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy)
         while True:
             refreshed = True
-            if client.refresh_stream_url:
+            if self.client.refresh_stream_url:
                 # We already discovered an event stream, need to refresh it
                 demisto.debug('Starting stream refresh')
                 try:
-                    response = await client.refresh_stream_session(self.refresh_token)
+                    response = await self.client.refresh_stream_session(self.refresh_token)
                     if not response:
                         # Should get here in case we got 404 from the refresh stream query
                         demisto.debug('Clearing refresh stream URL to trigger stream discovery.')
-                        client.refresh_stream_url = ''
+                        self.client.refresh_stream_url = ''
                         raise RuntimeError()
                     else:
                         demisto.debug(f'Refresh stream response: {response}')
@@ -194,9 +194,9 @@ class EventStream:
                     demisto.debug('Finished stream refresh successfully')
             else:
                 # We have no event stream, need to discover
-                await client.set_access_token(self.refresh_token)
+                await self.client.set_access_token(self.refresh_token)
                 demisto.debug('Starting stream discovery')
-                discover_stream_response = await client.discover_stream(self.refresh_token)
+                discover_stream_response = await self.client.discover_stream(self.refresh_token)
                 demisto.debug('Finished stream discovery')
                 resources = discover_stream_response.get('resources', [])
                 if not resources:
@@ -213,7 +213,7 @@ class EventStream:
                 demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
                 self.session_token = resource.get('sessionToken', {}).get('token')
                 refresh_url = resource.get('refreshActiveSessionURL')
-                client.refresh_stream_url = refresh_url
+                self.client.refresh_stream_url = refresh_url
                 event.set()
             if refreshed:
                 demisto.debug('Discover/Refresh loop - going to sleep for 25 minutes')
@@ -238,6 +238,9 @@ class EventStream:
             AsyncGenerator[Dict, None]: Event fetched from the stream.
         """
         while True:
+            self.client = Client(
+                base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy
+            )
             demisto.debug('Fetching event')
             try:
                 event = Event()
