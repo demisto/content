@@ -1,40 +1,40 @@
 description: "Queries Cortex XDR for device control violations for the specified hosts,\
-  \ IP address, or XDR endpoint id. It then communicates via email with the involved\
+  \ IP address, or XDR endpoint ID. It then communicates via email with the involved\
   \ users to understand the nature of the incident and if the user connected the device.\
   \ \nAll the collected data will be displayed in the XDR device control incident\
   \ layout.\nThis playbook can also be associated with Cortex XDR device control violation\
-  \ job to periodically query and investigate XDR device control violations; in this\
+  \ job to periodically query and investigate XDR device control violations. In this\
   \ configuration, the playbook will only communicate with the involved users."
 id: Cortex XDR device control violations
 inputs:
-- description: Timestamp in relative date format for query  device control events
-    from Cortex XDR
+- description: Timestamp in relative date format for query device control events
+    from Cortex XDR.
   key: TimeStamp
   playbookInputQuery:
   required: false
   value: {}
-- description: XDR Endpoint ID to filter results for
+- description: XDR endpoint ID to filter results for.
   key: EndpointID
   playbookInputQuery:
   required: false
   value: {}
-- description: Hostname to filter results for
+- description: Hostname to filter results for.
   key: Hostname
   playbookInputQuery:
   required: false
   value: {}
-- description: IP address to filter results for
+- description: IP address to filter results for.
   key: IPAddress
   playbookInputQuery:
   required: false
   value: {}
-- description: A message subject for the communication with the involved users.
+- description: The subject of the message for communication with the involved users.
   key: MessageSubject
   playbookInputQuery:
   required: false
   value:
     simple: Device control violation
-- description: A message body for the communication with the involved users.
+- description: A body of the message for communication with the involved users.
   key: MessageBody
   playbookInputQuery:
   required: false
@@ -151,7 +151,7 @@ tasks:
       brand: ""
       id: 993b8c02-02df-4d6e-87c4-309f736550d6
       iscommand: false
-      name: Did device control violations found?
+      name: Were device control violations found?
       type: condition
       version: -1
     taskid: 993b8c02-02df-4d6e-87c4-309f736550d6
@@ -353,7 +353,7 @@ tasks:
       brand: ""
       id: 1a2e8d21-6e20-4035-8e0f-a8b6011ecab0
       iscommand: false
-      name: Ddi the involved user connect the device?
+      name: Did the involved user connect the device?
       type: condition
       version: -1
     taskid: 1a2e8d21-6e20-4035-8e0f-a8b6011ecab0
@@ -442,7 +442,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Creates a Grid table from items or key-value pairs.
+      description: Creates a grid table from items or key-value pairs.
       id: f31ad3e0-ea95-4eea-8910-1b91c825d0e0
       iscommand: false
       name: Set device control grid
@@ -485,7 +485,7 @@ tasks:
       brand: ""
       id: 69f94ca2-68f4-4831-83ac-0086f324d322
       iscommand: false
-      name: Did current violations found?
+      name: Were current violations found?
       type: condition
       version: -1
     taskid: 69f94ca2-68f4-4831-83ac-0086f324d322
