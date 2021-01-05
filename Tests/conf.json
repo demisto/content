@@ -3207,7 +3207,7 @@
         },
         {
             "integrations": "AnsibleTower",
-            "playbookID": "AnsibleTower_Test"
+            "playbookID": "AnsibleTower_Test_playbook"
         }
     ],
     "skipped_tests": {

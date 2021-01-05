@@ -479,5 +479,5 @@ script:
   subtype: python3
   type: python
 tests:
-- AnsibleTower_Test
+- AnsibleTower_Test_playbook
 fromversion: 5.0.0

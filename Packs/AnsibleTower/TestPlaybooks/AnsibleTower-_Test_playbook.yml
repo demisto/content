@@ -1,7 +1,7 @@
-id: AnsibleTower_Test
+id: AnsibleTower_Test_playbook
 version: -1
 vcShouldKeepItemLegacyProdMachine: false
-name: AnsibleTower_Test
+name: AnsibleTower_Test_playbook
 starttaskid: "0"
 tasks:
   "0":
