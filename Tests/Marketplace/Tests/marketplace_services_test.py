@@ -654,7 +654,6 @@ This is visible
 
     @staticmethod
     def dummy_pack_changelog():
-        print(os.getcwd())
         temp_changelog_file = os.path.join(os.getcwd(), 'dummy_changelog.json')
         with open(temp_changelog_file, 'w',) as changelog_file:
             changelog_file.write(json.dumps(CHANGELOG_DATA))
