@@ -777,6 +777,8 @@ class Pack(object):
             full_command = f'./decryptor {new_encrypted_pack_path} {output_file_path} "{decryption_key}"'
             process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             stdout, stderr = process.communicate()
+            print("\nstdout:\n")
+            print(str(stdout))
             shutil.rmtree(extract_destination_path)
             os.chdir(current_working_dir)
             if stdout:
