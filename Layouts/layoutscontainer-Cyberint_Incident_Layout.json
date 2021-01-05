@@ -1,5 +1,7 @@
 {
-	"description": "Event layout for Sophos Central",
+	"close": null,
+	"description": "",
+	"details": null,
 	"detailsV2": {
 		"TypeName": "",
 		"tabs": [
@@ -38,9 +40,9 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "owner",
+								"fieldId": "alertname",
 								"height": 22,
-								"id": "incident-owner-field",
+								"id": "8bd6ad60-4f67-11eb-8c2a-f7949bcd036b",
 								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -49,16 +51,25 @@
 								"endCol": 2,
 								"fieldId": "alertid",
 								"height": 22,
-								"id": "da0e8200-2992-11eb-a80b-a993cbfda661",
+								"id": "931c18d0-4f67-11eb-8c2a-f7949bcd036b",
 								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "alertname",
+								"fieldId": "state",
 								"height": 22,
-								"id": "db7d5440-2992-11eb-a80b-a993cbfda661",
+								"id": "29ea8300-4f68-11eb-8c2a-f7949bcd036b",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
 								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -83,18 +94,18 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "sourceinstance",
+								"fieldId": "playbookid",
 								"height": 22,
-								"id": "incident-sourceInstance-field",
+								"id": "incident-playbookId-field",
 								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "playbookid",
+								"fieldId": "sourceinstance",
 								"height": 22,
-								"id": "incident-playbookId-field",
+								"id": "incident-sourceInstance-field",
 								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -186,45 +197,45 @@
 							{
 								"endCol": 1,
 								"fieldId": "occurred",
-								"height": 22,
+								"height": 53,
 								"id": "incident-occurred-field",
-								"index": 0,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 1,
 								"fieldId": "dbotmodified",
-								"height": 22,
+								"height": 53,
 								"id": "incident-modified-field",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotduedate",
-								"height": 22,
-								"id": "incident-dueDate-field",
 								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 53,
+								"id": "incident-dueDate-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
 								"fieldId": "dbotcreated",
-								"height": 22,
+								"height": 53,
 								"id": "incident-created-field",
-								"index": 0,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 1
 							},
 							{
 								"endCol": 2,
 								"fieldId": "dbotclosed",
-								"height": 22,
+								"height": 53,
 								"id": "incident-closed-field",
-								"index": 1,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 1
 							}
@@ -324,12 +335,23 @@
 			}
 		]
 	},
-	"fromVersion": "6.0.0",
+	"edit": null,
+	"fromServerVersion": "",
 	"group": "incident",
-	"id": "Sophos Central Event Layout",
-	"name": "Sophos Central Event Layout",
+	"id": "5b4d0e12-2017-4047-8d68-210ba638bfc1",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Cyberint Incident Layout",
+	"packID": "",
 	"propagationLabels": [
 		"all"
 	],
+	"quickView": null,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
 	"version": -1
 }

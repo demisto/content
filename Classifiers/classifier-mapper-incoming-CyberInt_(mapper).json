@@ -1,0 +1,76 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "61135ae3-250d-4eea-8daa-aaa3657ceeec",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 3,
+	"mapping": {
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert ID": {
+					"complex": null,
+					"simple": "ref_id"
+				},
+				"Alert Name": {
+					"complex": null,
+					"simple": "title"
+				},
+				"State": {
+					"complex": null,
+					"simple": "status"
+				},
+				"Sub Category": {
+					"complex": null,
+					"simple": "type"
+				},
+				"name": {
+					"complex": null,
+					"simple": "title"
+				},
+				"occurred": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "created_date",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"severity": {
+					"complex": null,
+					"simple": "severity"
+				},
+				"source": {
+					"complex": null,
+					"simple": "source"
+				}
+			}
+		}
+	},
+	"name": "CyberInt (mapper)",
+	"nameRaw": "CyberInt (mapper)",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": ""
+	},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}

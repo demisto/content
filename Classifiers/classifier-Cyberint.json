@@ -1,0 +1,37 @@
+{
+	"brands": null,
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "c102e197-3851-4c76-8348-3dd8caed798c",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"acknowledged": "Cyberint Incident",
+		"closed": "Cyberint Incident",
+		"open": "Cyberint Incident"
+	},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": null,
+	"name": "Cyberint (classifier)",
+	"nameRaw": "Cyberint (classifier)",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sortValues": null,
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": null,
+		"simple": "status"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}
