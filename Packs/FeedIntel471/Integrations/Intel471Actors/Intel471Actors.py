@@ -108,7 +108,7 @@ def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, servi
     current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
 
     if not current_indicator_type:
-        return
+        return []
 
     indicator: dict = {
         'type': current_indicator_type,
@@ -137,6 +137,7 @@ def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, servi
 
         indicator_list.append(indicator_copy)
     return indicator_list
+
 
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}

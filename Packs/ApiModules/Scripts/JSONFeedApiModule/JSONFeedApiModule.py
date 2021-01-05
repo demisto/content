@@ -205,6 +205,7 @@ def handle_indicator(client: Client, item: Dict, feed_config: Dict, service_name
     indicator_list.append(indicator)
     return indicator_list
 
+
 def determine_indicator_type(indicator_type, auto_detect, value):
     """
     Detect the indicator type of the given value.
