@@ -1211,6 +1211,10 @@ function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
 }
 
 function CompleteAuthCommand ([OAuth2DeviceCodeClient]$client) {
+    # Verify that user run start before complete
+    if (!$client.device_code) {
+        throw "Please run !o365-sc-auth-start and follow the command instructions"
+    }
     $raw_response = $client.AccessTokenRequest()
     $human_readable = "Your account **successfully** authorized!"
     $entry_context = @{}

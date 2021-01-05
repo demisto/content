@@ -8,6 +8,7 @@ import sys
 import requests
 from pytest import raises, mark
 import pytest
+import warnings
 
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
@@ -16,7 +17,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers,\
-    url_to_clickable_markdown
+    url_to_clickable_markdown, WarningsHandler
 
 try:
     from StringIO import StringIO
@@ -3625,3 +3626,14 @@ def test_arg_to_timestamp_invalid_inputs():
 
     except ValueError as e:
         assert '"2010-32-01" is not a valid date' in str(e)
+
+
+def test_warnings_handler(mocker):
+    mocker.patch.object(demisto, 'info')
+    # need to initialize WarningsHandler as pytest over-rides the handler
+    handler = WarningsHandler()  # noqa
+    warnings.warn("This is a test", RuntimeWarning)
+    # call_args is tuple (args list, kwargs). we only need the args
+    msg = demisto.info.call_args[0][0]
+    assert 'This is a test' in msg
+    assert 'python warning' in msg
