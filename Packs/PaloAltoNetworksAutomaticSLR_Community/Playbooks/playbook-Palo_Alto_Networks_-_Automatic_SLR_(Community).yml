@@ -178,11 +178,10 @@ tasks:
       - "9"
       - "1"
     scriptarguments:
-      all:
-        simple: "yes"
-      index:
+      all: {}
+      index: {}
+      key:
         simple: ${AutoSLR}, ${InfoFile}
-      key: {}
       keysToKeep: {}
       subplaybook: {}
     separatecontext: false
