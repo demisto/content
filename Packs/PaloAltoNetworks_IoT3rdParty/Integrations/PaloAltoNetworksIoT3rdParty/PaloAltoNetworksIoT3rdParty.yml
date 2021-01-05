@@ -15,7 +15,7 @@ configuration:
   name: Access Key
   required: true
   type: 4
-- display: Key ID.
+- display: Key ID
   name: Key ID
   required: true
   type: 4
