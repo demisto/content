@@ -1,4 +1,4 @@
-comment: gets all available devices from the IoT cloud and sends it to the ServiceNow
+comment: Gets all available devices from the IoT cloud and sends it to the ServiceNow.
   server
 commonfields:
   id: SendAllPANWIoTDevicesToServiceNow
