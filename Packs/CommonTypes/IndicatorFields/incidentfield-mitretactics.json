@@ -3,7 +3,7 @@
  "cliName": "mitretactics",
  "neverSetAsRequired": false,
  "threshold": 72,
- "id": "indicator_mitre_tactics",
+ "id": "indicator_mitretactics",
  "group": 2,
  "isReadOnly": false,
  "system": false,
@@ -28,5 +28,5 @@
  "required": false,
  "modified": "2019-07-29T10:37:51.866939952Z",
  "sla": 0,
- "fromVersion": "5.0.0"
+ "fromVersion": "5.5.0"
 }

@@ -3,7 +3,7 @@
  "cliName": "downloadurl",
  "neverSetAsRequired": false,
  "threshold": 72,
- "id": "indicator_download_url",
+ "id": "indicator_downloadurl",
  "group": 2,
  "isReadOnly": false,
  "system": false,
