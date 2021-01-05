@@ -58,11 +58,6 @@ configuration:
   name: fields_to_fetch
   required: false
   type: 0
-- display: Specific filters for fetching in the form of an xml string
-  hidden: false
-  name: fetch_filter
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -547,7 +542,7 @@ script:
     description: prints Archer's integration cache.
     execution: false
     name: archer-print-cache
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false
