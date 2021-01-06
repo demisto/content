@@ -180,6 +180,11 @@ class QRadarClient:
     def __init__(
         self, server: str, proxies, credentials, offenses_per_fetch=50, insecure=False,
     ):
+        """
+
+        Returns:
+            object:
+        """
         self._server = server[:-1] if server.endswith("/") else server
         self._proxies = proxies
         self._auth_headers = {"Content-Type": "application/json"}
@@ -194,6 +199,10 @@ class QRadarClient:
         if not (self._username and self._password):
             raise Exception("Please provide a username/password or an API token.")
         self.lock = Lock()
+
+    @property
+    def server(self):
+        return self._server
 
     @property
     def offenses_per_fetch(self):
@@ -723,13 +732,23 @@ def test_module(client: QRadarClient):
     test_res = client.test_connection()
 
     params = demisto.params()
-    is_long_running = params.get('longRunning')
+    is_long_running = params.get("longRunning")
     if is_long_running:
         # check fetch incidents can fetch and search events
         raw_offenses = client.get_offenses(_range="0-0")
         fetch_mode = params.get("fetch_mode")
         if raw_offenses and fetch_mode != FetchMode.no_events:
             events_columns = params.get("events_columns")
+            if not events_columns:
+                raise DemistoException(
+                    f"Fetch mode is set to {fetch_mode} no Event fields provided.\n"
+                    f"Add Event fields to the integration parameters to fix it. \n"
+                    f"You can find all available fields by enabling this integration and clicking on:\n"
+                    f"Classification & Mapping -> New -> Incident Mapper (Incoming).\n"
+                    f"Then click on Get Data -> \"Select schema\"\n"
+                    f"Select Instance -> pick this QRadar instance\n. "
+                    f"Any field under Events: Builtin Fields or Events: Custom Fields is avaliable to use."
+                )
             events_limit = params.get("events_limit")
             offense = raw_offenses[0]
             offense_start_time = offense["start_time"]
@@ -776,7 +795,9 @@ def perform_offense_events_enrichment(
     if is_reset_triggered(client.lock):
         return offense
 
-    offense_start_time = offense["start_time"]
+    # decreasing 1 minute from the start_time to avoid the case where the minute queried in the start_time and the
+    # end_time is equal
+    offense_start_time = offense["start_time"] - 60 * 1000
     query_expression = (
         f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense["id"]})'
         f"{additional_where} limit {events_limit} START '{offense_start_time}'"
@@ -1127,6 +1148,7 @@ def enrich_offense_result(
     * Rule id -> name
     * IP id -> value
     * IP value -> Asset
+    * Add offense link
     """
     domain_ids = set()
     rule_ids = set()
@@ -1136,6 +1158,8 @@ def enrich_offense_result(
             include_deleted=True, include_reserved=True
         )
         for offense in response:
+            offense["LinkToOffense"] = f"{client.server}/console/do/sem/offensesummary?" \
+                                       f"appName=Sem&pageId=OffenseSummary&summaryId={offense.get('id')}"
             enrich_offense_timestamps_and_closing_reason(
                 client, offense, type_dict, closing_reason_dict
             )
@@ -1776,10 +1800,11 @@ def update_reference_set_value_command(
         values = [
             date_to_timestamp(v, date_format="%Y-%m-%dT%H:%M:%S.%f000Z") for v in values
         ]
-    if len(values) > 1:
+    if len(values) > 1 and not source:
         raw_ref = client.upload_indicators_list_request(ref_name, values)
-    elif len(values) == 1:
-        raw_ref = client.update_reference_set_value(ref_name, values[0], source)
+    elif len(values) >= 1:
+        for value in values:
+            raw_ref = client.update_reference_set_value(ref_name, value, source)
     else:
         raise DemistoException(
             "Expected at least a single value, cant create or update an empty value"

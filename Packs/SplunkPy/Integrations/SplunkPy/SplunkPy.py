@@ -200,6 +200,14 @@ def notable_to_incident(event):
     else:
         incident["occurred"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S.0+00:00')
     event = replace_keys(event) if REPLACE_FLAG else event
+    for key, val in event.items():
+        # if notable event raw fields were sent in double quotes (e.g. "DNS Destination") and the field does not exist
+        # in the event, then splunk returns the field with the key as value (e.g. ("DNS Destination", "DNS Destination")
+        # so we go over the fields, and check if the key equals the value and set the value to be empty string
+        if key == val:
+            demisto.debug('Found notable event raw field [{}] with key that equals the value - replacing the value '
+                          'with empty string'.format(key))
+            event[key] = ''
     incident["rawJSON"] = json.dumps(event)
     labels = []
     if demisto.get(demisto.params(), 'parseNotableEventsRaw'):

@@ -65,8 +65,8 @@ configuration:
   name: first_fetch_timestamp
   required: false
   type: 0
-description: Microsoft Defender Advanced Threat Protection (ATP) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
-display: Microsoft Defender Advanced Threat Protection
+description: Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.
+display: Microsoft Defender for Endpoint
 name: Microsoft Defender Advanced Threat Protection
 script:
   commands:
@@ -738,6 +738,14 @@ script:
       isArray: false
       name: query
       required: true
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The amount of time (in seconds) that a request will wait for the
+        query response before a timeout occurs.
+      isArray: false
+      name: timeout
+      required: false
       secret: false
     deprecated: false
     description: 'Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days, The results will include a maximum of 10,000 rows, The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
@@ -3462,7 +3470,7 @@ script:
     description: Deletes the specified indicator.
     execution: false
     name: microsoft-atp-indicator-delete
-  dockerimage: demisto/crypto:1.0.0.11287
+  dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: true
   longRunning: false

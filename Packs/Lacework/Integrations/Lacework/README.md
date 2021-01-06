@@ -1,4 +1,4 @@
-Lacework is focused on giving customers visibility and control over their cloud operations at cloud scale to the monitoring of all activities across all cloud components.
+Lacework provides end-to-end cloud security automation for AWS, Azure, and GCP with a comprehensive view of risks across cloud workloads and containers.
 This integration was integrated and tested with version 3.32 of Lacework
 ## Configure Lacework on Cortex XSOAR
 
@@ -8,7 +8,7 @@ This integration was integrated and tested with version 3.32 of Lacework
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| lacework_instance | Lacework Instance Name \(e.g. https://&amp;lt;Instance_Name&amp;gt;.lacework.net\) | True |
+| lacework_account | Lacework Account Name \(i.e. Subdomain of the URL: &amp;lt;ACCOUNT&amp;gt;.lacework.net\) | True |
 | lacework_api_key | Lacework API Key | True |
 | lacework_api_secret | Lacework API Secret | True |
 | lacework_event_severity | Lacework Event Severity Threshold | True |
@@ -32,7 +32,8 @@ Fetch the latest AWS compliance data from Lacework.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | The AWS Account ID to use when fetching compliance data. | Required | 
+| account_id | The AWS Account ID to use when fetching compliance data. | Required |
+| rec_id | Setting the 'rec_id' will filter compliance results for the specified Recommendation ID. | Optional | 
 | report_type | The Report Type to fetch from Lacework. | Optional | 
 
 
@@ -100,7 +101,8 @@ Fetch the latest Azure compliance data from Lacework.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tenant_id | The Azure Tenant ID to use when fetching compliance data. | Required | 
-| subscription_id | The Azure Subscription ID to use when fetching compliance data. | Required | 
+| subscription_id | The Azure Subscription ID to use when fetching compliance data. | Required |
+| rec_id | Setting the 'rec_id' will filter compliance results for the specified Recommendation ID. | Optional | 
 | report_type | The Report Type to fetch from Lacework. | Optional | 
 
 
@@ -169,6 +171,7 @@ Fetch the latest GCP compliance data from Lacework.
 | --- | --- | --- |
 | organization_id | The GCP Organization ID to use when fetching compliance data. | Required | 
 | project_id | The GCP Project ID to use when fetching compliance data. | Required | 
+| rec_id | Setting the 'rec_id' will filter compliance results for the specified Recommendation ID. | Optional | 
 | report_type | The Report Type to fetch from Lacework. | Optional | 
 
 

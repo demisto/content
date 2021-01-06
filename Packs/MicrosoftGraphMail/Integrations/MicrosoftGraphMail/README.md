@@ -135,15 +135,15 @@ Gets the properties of returned emails.
 
 ##### Human Readable Output
 ##### ### Total of 7 of mails received
-|Subject|From|SendTime|
-|---|---|---|
-| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z |
-| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z |
-| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z |
-| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z |
-| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z |
-| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z |
-| Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z |
+|Subject|From|SendTime|ID|
+|---|---|---|---|
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:37Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQBBBA== |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:56:18Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQCCAA== |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:59Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJDCAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:52:41Z | AQMkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEk-MxMBZHrT7QACY4VISQAAAA== |
+| RE: Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:51:06Z | AAAkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
+| Demo test send mail | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-29T09:06:54Z | ABKkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
+| Demo test | Name: demisto dev, Address: dev<span\>>@demistodev.onmicrosoft.com | 2020-03-26T09:21:14Z | AQKkADY0ZjMxZmMyLWU3MjgtNDNiOS04ZDZmLTYxZDVkYzk1MTg5MwBGAAADbTQIjNRTu0OcDJw7xPpreQcAdQ8OJfUvxEa-MxMBZHrT7QAAAgEJAAAAdQ8OJfUvxEa-MxMBZHrT7QACY4VISQAAAA== |
 
 
 
@@ -163,7 +163,7 @@ Returns the properties of an email.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_id | The user ID or principal ID (usually an email address in the format someuser<span\>>@example.com). | Required | 
-| message_id | The message ID. | Required | 
+| message_id | The message ID. This could be extracted from - msgraph-mail-list-emails command results. | Required | 
 | folder_id | The folder ID. | Optional | 
 | odata | The OData. | Optional | 
 | get_body | Whether to return the message body. Can be "true" or "false". | Optional | 

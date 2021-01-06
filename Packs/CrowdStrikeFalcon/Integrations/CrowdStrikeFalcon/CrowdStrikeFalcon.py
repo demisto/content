@@ -11,6 +11,7 @@ import hashlib
 from typing import List
 from dateutil.parser import parse
 from typing import Dict, Tuple, Any, Optional, Union
+from threading import Timer
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -64,7 +65,7 @@ DETECTIONS_BEHAVIORS_KEY_MAP = {
     'behavior_id': 'ID',
 }
 
-SEARCH_IOC_KEY_MAP = {
+IOC_KEY_MAP = {
     'type': 'Type',
     'value': 'Value',
     'policy': 'Policy',
@@ -76,6 +77,13 @@ SEARCH_IOC_KEY_MAP = {
     'created_by': 'CreatedBy',
     'modified_timestamp': 'ModifiedTime',
     'modified_by': 'ModifiedBy'
+}
+
+IOC_DEVICE_COUNT_MAP = {
+    'id': 'ID',
+    'type': 'Type',
+    'value': 'Value',
+    'device_count': 'DeviceCount'
 }
 
 SEARCH_DEVICE_KEY_MAP = {
@@ -125,9 +133,12 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
-                 get_token_flag=True, no_json=False):
+                 get_token_flag=True, no_json=False, json=None, status_code=None):
     """
         A wrapper for requests lib to send our requests and handle requests and responses better.
+
+        :param json: JSON body
+        :type json ``dict`` or ``list``
 
         :type method: ``str``
         :param method: HTTP method for the request.
@@ -151,7 +162,11 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         :param get_token_flag: If set to True will call get_token()
 
         :type no_json: ``bool``
-        :param no_json: If set to true will not parse the content and will return the raw response object for successful response
+        :param no_json: If set to true will not parse the content and will return the raw response object for successful
+        response
+
+        :type status_code: ``int``
+        :param: status_code: The request codes to accept as OK.
 
         :return: Returns the http request response json
         :rtype: ``dict``
@@ -168,12 +183,17 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             params=params,
             data=data,
             headers=headers,
-            files=files
+            files=files,
+            json=json
         )
     except requests.exceptions.RequestException:
         return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
     try:
-        if res.status_code not in {200, 201, 202, 204}:
+        valid_status_codes = {200, 201, 202, 204}
+        # Handling a case when we want to return an entry for 404 status code.
+        if status_code:
+            valid_status_codes.add(status_code)
+        if res.status_code not in valid_status_codes:
             res_json = res.json()
             reason = res.reason
             resources = res_json.get('resources', {})
@@ -196,7 +216,15 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 LOG(err_msg)
                 token = get_token(new_token=True)
                 headers['Authorization'] = 'Bearer {}'.format(token)
-                return http_request(method, url_suffix, params, data, headers, safe, get_token_flag=False)
+                return http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    data=data,
+                    headers=headers,
+                    safe=safe,
+                    get_token_flag=False
+                )
             elif safe:
                 return None
             return_error(err_msg)
@@ -263,10 +291,9 @@ def incident_to_incident_context(incident):
             :rtype ``dict``
         """
     incident_id = str(incident.get('incident_id'))
-    incident_hosts = incident.get('hosts')[0]
     incident_context = {
         'name': f'Incident ID: {incident_id}',
-        'occurred': incident_hosts.get('modified_timestamp'),
+        'occurred': str(incident.get('start')),
         'rawJSON': json.dumps(incident)
     }
     return incident_context
@@ -337,6 +364,19 @@ def get_passed_mins(start_time, end_time_str):
     return time_delta.seconds / 60
 
 
+def handle_response_errors(raw_res: dict, err_msg: str = None):
+    """
+    Raise exception if raw_res is empty or contains errors
+    """
+    if not err_msg:
+        err_msg = "The server was unable to return a result, please run the command again."
+    if not raw_res:
+        raise DemistoException(err_msg)
+    if raw_res.get('errors'):
+        raise DemistoException(raw_res.get('errors'))
+    return
+
+
 ''' COMMAND SPECIFIC FUNCTIONS '''
 
 
@@ -388,16 +428,32 @@ def refresh_session(host_id: str) -> Dict:
     return response
 
 
-def run_batch_read_cmd(host_ids: list, command_type: str, full_command: str) -> Dict:
+def batch_refresh_session(batch_id: str) -> None:
+    """
+        Batch refresh a RTR session on multiple hosts.
+        :param batch_id:  Batch ID to execute the command on.
+    """
+    demisto.debug('Starting session refresh')
+    endpoint_url = '/real-time-response/combined/batch-refresh-session/v1'
+
+    body = json.dumps({
+        'batch_id': batch_id
+    })
+    response = http_request('POST', endpoint_url, data=body)
+    demisto.debug(f'Refresh session response: {response}')
+    demisto.debug('Finished session refresh')
+
+
+def run_batch_read_cmd(batch_id: str, command_type: str, full_command: str) -> Dict:
     """
         Sends RTR command scope with read access
-        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+
     body = json.dumps({
         'base_command': command_type,
         'batch_id': batch_id,
@@ -407,16 +463,16 @@ def run_batch_read_cmd(host_ids: list, command_type: str, full_command: str) -> 
     return response
 
 
-def run_batch_write_cmd(host_ids: list, command_type: str, full_command: str) -> Dict:
+def run_batch_write_cmd(batch_id: str, command_type: str, full_command: str) -> Dict:
     """
         Sends RTR command scope with write access
-        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-active-responder-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+
     body = json.dumps({
         'base_command': command_type,
         'batch_id': batch_id,
@@ -426,23 +482,27 @@ def run_batch_write_cmd(host_ids: list, command_type: str, full_command: str) ->
     return response
 
 
-def run_batch_admin_cmd(host_ids: list, command_type: str, full_command: str) -> Dict:
+def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, timeout: int = 30) -> Dict:
     """
         Sends RTR command scope with write access
-        :param host_ids: List of host agent ID’s to run RTR command on.
+        :param batch_id:  Batch ID to execute the command on.
         :param command_type: Read-only command type we are going to execute, for example: ls or cd.
         :param full_command: Full command string for the command.
+        :param timeout: Timeout for how long to wait for the request in seconds.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-admin-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+
+    params = {
+        'timeout': timeout
+    }
 
     body = json.dumps({
         'base_command': command_type,
         'batch_id': batch_id,
         'command_string': full_command
     })
-    response = http_request('POST', endpoint_url, data=body)
+    response = http_request('POST', endpoint_url, data=body, params=params)
     return response
 
 
@@ -816,7 +876,7 @@ def get_token_request():
         'client_secret': SECRET
     }
     headers = {
-        'Authorization': HEADERS['Authorization']
+        'Content-Type': 'application/x-www-form-urlencoded'
     }
     token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True,
                              get_token_flag=False)
@@ -897,7 +957,7 @@ def get_detections_entities(detections_ids):
 def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int = 0):
     get_incidents_endpoint = '/incidents/queries/incidents/v1'
     params = {
-        'sort': 'modified_timestamp.asc',
+        'sort': 'start.asc',
         'offset': offset,
         'limit': INCIDENTS_PER_FETCH
     }
@@ -905,7 +965,7 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
         params['filter'] = filter_arg
 
     elif last_created_timestamp:
-        params['filter'] = "modified_timestamp:>'{0}'".format(last_created_timestamp)
+        params['filter'] = "start:>'{0}'".format(last_created_timestamp)
 
     response = http_request('GET', get_incidents_endpoint, params)
 
@@ -922,51 +982,76 @@ def get_incidents_entities(incidents_ids):
     return response
 
 
-def create_ioc():
+def upload_ioc(ioc_type, value, policy=None, expiration_days=None,
+               share_level=None, description=None, source=None):
     """
-        UNTESTED - Creates an IoC
-        :return: Response json of create IoC request
+    Create a new IOC (or replace an existing one)
     """
-    args = demisto.args()
-    input_args = {}
-    # req args:
-    input_args['type'] = args['ioc_type']
-    input_args['value'] = args['ioc_value']
-    input_args['policy'] = args['policy']
-    # opt args:
-    input_args['expiration_days'] = args.get('expiration_days')
-    input_args['source'] = args.get('source')
-    input_args['description'] = args.get('description')
+    payload = assign_params(
+        type=ioc_type,
+        value=value,
+        policy=policy,
+        share_level=share_level,
+        expiration_days=expiration_days,
+        source=source,
+        description=description,
+    )
 
-    payload = {k: str(v) for k, v in input_args.items() if v}
-    headers = {'Authorization': HEADERS['Authorization']}
-    return http_request('POST', '/indicators/entities/iocs/v1', params=payload, headers=headers)
+    return http_request('POST', '/indicators/entities/iocs/v1', json=[payload])
 
 
-def search_iocs():
+def update_ioc(ioc_type, value, policy=None, expiration_days=None,
+               share_level=None, description=None, source=None):
     """
-        UNTESTED IN OAUTH 2- Searches an IoC
-        :return: IoCs that were found in the search
+    Update an existing IOC
     """
-    args = demisto.args()
-    ids = args.get('ids')
+    body = assign_params(
+        type=ioc_type,
+        value=value,
+        policy=policy,
+        share_level=share_level,
+        expiration_days=expiration_days,
+        source=source,
+        description=description,
+    )
+    params = assign_params(
+        type=ioc_type,
+        value=value
+    )
+
+    return http_request('PATCH', '/indicators/entities/iocs/v1', json=body, params=params)
+
+
+def search_iocs(types=None, values=None, policies=None, sources=None, expiration_from=None,
+                expiration_to=None, limit=None, share_levels=None, ids=None, sort=None, offset=None):
+    """
+    :param types: A list of indicator types. Separate multiple types by comma.
+    :param values: Comma-separated list of indicator values
+    :param policies: Comma-separated list of indicator policies
+    :param sources: Comma-separated list of IOC sources
+    :param expiration_from: Start of date range to search (YYYY-MM-DD format).
+    :param expiration_to: End of date range to search (YYYY-MM-DD format).
+    :param share_levels: A list of share levels. Only red is supported.
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
+    """
     if not ids:
-        search_args = {
-            'types': str(args.get('ioc_types', '')).split(','),
-            'values': str(args.get('ioc_values', '')).split(','),
-            'policies': str(args.get('policy', '')),
-            'sources': str(args.get('sources', '')).split(','),
-            'from.expiration_timestamp': str(args.get('expiration_from', '')),
-            'to.expiration_timestamp': str(args.get('expiration_to', '')),
-            'limit': str(args.get('limit', 50))
-        }
-        payload = {}
-        for k, arg in search_args.items():
-            if type(arg) is list:
-                if arg[0]:
-                    payload[k] = arg
-            elif arg:
-                payload[k] = arg
+        payload = assign_params(
+            types=argToList(types),
+            values=argToList(values),
+            policies=argToList(policies),
+            sources=argToList(sources),
+            share_levels=argToList(share_levels),
+            sort=sort,
+            offset=offset,
+            limit=limit or '50',
+        )
+        if expiration_from:
+            payload['from.expiration_timestamp'] = expiration_from
+        if expiration_to:
+            payload['to.expiration_timestamp'] = expiration_to
+
         ids = http_request('GET', '/indicators/queries/iocs/v1', payload).get('resources')
         if not ids:
             return None
@@ -980,8 +1065,8 @@ def search_iocs():
 
 def enrich_ioc_dict_with_ids(ioc_dict):
     """
-        Enriches the provided ioc_dict with IoC ID
-        :param ioc_dict: IoC dict transformed using the SEARCH_IOC_KEY_MAP
+        Enriches the provided ioc_dict with IOC ID
+        :param ioc_dict: IOC dict transformed using the SEARCH_IOC_KEY_MAP
         :return: ioc_dict with its ID key:value updated
     """
     for ioc in ioc_dict:
@@ -989,34 +1074,51 @@ def enrich_ioc_dict_with_ids(ioc_dict):
     return ioc_dict
 
 
-def delete_ioc():
+def delete_ioc(ioc_type, value):
     """
-        UNTESTED - Sends a delete IoC request
-        :return: Response json of delete IoC
+    Delete an IOC
     """
-    ids = str(demisto.args().get('ids'))
-    payload = {
-        'ids': ids
-    }
+    payload = assign_params(
+        type=ioc_type,
+        value=value
+    )
     return http_request('DELETE', '/indicators/entities/iocs/v1', payload)
 
 
-def update_iocs():
+def get_ioc_device_count(ioc_type, value):
     """
-        UNTESTED - Updates the values one or more IoC
-        :return: Response json of update IoC request
+    Gets the devices that encountered the IOC
     """
-    args = demisto.args()
-    input_args = {
-        'ids': args.get('ids'),
-        'policy': args.get('policy', ''),
-        'expiration_days': args.get('expiration_days', ''),
-        'source': args.get('source'),
-        'description': args.get('description')
-    }
-    payload = {k: str(v) for k, v in input_args.items() if v}
-    headers = {'Authorization': HEADERS['Authorization']}
-    return http_request('PATCH', '/indicators/entities/iocs/v1', params=payload, headers=headers)
+    payload = assign_params(
+        type=ioc_type,
+        value=value
+    )
+    response = http_request('GET', '/indicators/aggregates/devices-count/v1', payload, status_code=404)
+    errors = response.get('errors', [])
+    for error in errors:
+        if error.get('code') == 404:
+            return f'No results found for {ioc_type} - {value}'
+    return response
+
+
+def get_process_details(ids):
+    """
+    Get given processes details
+    """
+    payload = assign_params(ids=ids)
+    return http_request('GET', '/processes/entities/processes/v1', payload)
+
+
+def get_proccesses_ran_on(ioc_type, value, device_id):
+    """
+    Get processes ids that ran on the given device_id that encountered the ioc
+    """
+    payload = assign_params(
+        type=ioc_type,
+        value=value,
+        device_id=device_id
+    )
+    return http_request('GET', '/indicators/queries/processes/v1', payload)
 
 
 def search_device():
@@ -1181,12 +1283,8 @@ def get_fetch_times_and_offset(incident_type):
 
 
 def fetch_incidents():
-    """
-        Fetches incident using the detections API
-        :return: Fetched detections in incident format
-    """
     incidents = []  # type:List
-
+    current_fetch_info = demisto.getLastRun()
     fetch_incidents_or_detections = demisto.params().get('fetch_incidents_or_detections')
 
     if 'Detections' in fetch_incidents_or_detections:
@@ -1225,20 +1323,24 @@ def fetch_incidents():
                     incidents.append(incident)
 
             if len(incidents) == INCIDENTS_PER_FETCH:
-                demisto.setLastRun({'first_behavior_detection_time': prev_fetch,
-                                    'detection_offset': offset + INCIDENTS_PER_FETCH})
+                current_fetch_info['first_behavior_detection_time'] = prev_fetch
+                current_fetch_info['detection_offset'] = offset + INCIDENTS_PER_FETCH
             else:
-                demisto.setLastRun({'first_behavior_detection_time': last_fetch_time})
+                current_fetch_info['first_behavior_detection_time'] = last_fetch_time
+                current_fetch_info['detection_offset'] = 0
 
     if 'Incidents' in fetch_incidents_or_detections:
         incident_type = 'incident'
 
         last_fetch_time, offset, prev_fetch, last_fetch_timestamp = get_fetch_times_and_offset(incident_type)
+        last_run = demisto.getLastRun()
+        last_incident_fetched = last_run.get('last_fetched_incident')
+        new_last_incident_fetched = ''
 
-        fetch_query = demisto.params().get('fetch_query')
+        fetch_query = demisto.params().get('incidents_fetch_query')
 
         if fetch_query:
-            fetch_query = "modified_timestamp:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
+            fetch_query = "start:>'{time}'+{query}".format(time=last_fetch_time, query=fetch_query)
             incidents_ids = demisto.get(get_incidents_ids(filter_arg=fetch_query, offset=offset), 'resources')
 
         else:
@@ -1264,59 +1366,168 @@ def fetch_incidents():
                     if incident_date_timestamp > last_fetch_timestamp:
                         last_fetch_time = incident_date
                         last_fetch_timestamp = incident_date_timestamp
+                        new_last_incident_fetched = incident.get('incident_id')
 
-                    incidents.append(incident_to_context)
+                    if last_incident_fetched != incident.get('incident_id'):
+                        incidents.append(incident_to_context)
 
             if len(incidents) == INCIDENTS_PER_FETCH:
-                demisto.setLastRun({'first_behavior_incident_time': prev_fetch,
-                                    'incident_offset': offset + INCIDENTS_PER_FETCH})
+                current_fetch_info['first_behavior_incident_time'] = prev_fetch
+                current_fetch_info['incident_offset'] = offset + INCIDENTS_PER_FETCH
+                current_fetch_info['last_fetched_incident'] = new_last_incident_fetched
             else:
-                demisto.setLastRun({'first_behavior_incident_time': last_fetch_time})
+                current_fetch_info['first_behavior_incident_time'] = last_fetch_time
+                current_fetch_info['incident_offset'] = 0
+                current_fetch_info['last_fetched_incident'] = new_last_incident_fetched
+
+    demisto.setLastRun(current_fetch_info)
     return incidents
 
 
-def create_ioc_command():
+def upload_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=None,
+                       share_level=None, description=None, source=None):
     """
-        UNTESTED - Creates an IoC
-        :return: EntryObject of create IoC command
+    :param ioc_type: The type of the indicator:
+    :param policy :The policy to enact when the value is detected on a host.
+    :param share_level: The level at which the indicator will be shared.
+    :param expiration_days: This represents the days the indicator should be valid for.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param value: The string representation of the indicator.
     """
-    raw_res = create_ioc()
-    return create_entry_object(contents=raw_res, hr="Custom IoC was created successfully.")
+    raw_res = upload_ioc(ioc_type, value, policy, expiration_days, share_level, description, source)
+    handle_response_errors(raw_res)
+    iocs = search_iocs(ids=f"{ioc_type}:{value}").get('resources')
+    if not iocs:
+        raise DemistoException("Failed to create IOC. Please try again.")
+    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    enrich_ioc_dict_with_ids(ec)
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+                               hr=tableToMarkdown('Custom IOC was created successfully', ec))
 
 
-def search_iocs_command():
+def update_ioc_command(ioc_type=None, value=None, policy=None, expiration_days=None,
+                       share_level=None, description=None, source=None):
     """
-        UNTESTED IN OAUTH 2 - Searches for an ioc
-        :return: EntryObject of search IoC command
+    :param ioc_type: The type of the indicator:
+    :param policy :The policy to enact when the value is detected on a host.
+    :param share_level: The level at which the indicator will be shared.
+    :param expiration_days: This represents the days the indicator should be valid for.
+    :param source: The source where this indicator originated.
+    :param description: A meaningful description of the indicator.
+    :param value: The string representation of the indicator.
     """
-    raw_res = search_iocs()
+    raw_res = update_ioc(ioc_type, value, policy, expiration_days, share_level, description, source)
+    handle_response_errors(raw_res)
+    iocs = search_iocs(ids=f"{ioc_type}:{value}").get('resources')
+    ec = [get_trasnformed_dict(iocs[0], IOC_KEY_MAP)]
+    enrich_ioc_dict_with_ids(ec)
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+                               hr=tableToMarkdown('Custom IOC was created successfully', ec))
+
+
+def search_iocs_command(types=None, values=None, policies=None, sources=None, from_expiration_date=None,
+                        to_expiration_date=None, share_levels=None, limit=None, sort=None, offset=None):
+    """
+    :param types: A list of indicator types. Separate multiple types by comma.
+    :param values: Comma-separated list of indicator values
+    :param policies: Comma-separated list of indicator policies
+    :param sources: Comma-separated list of IOC sources
+    :param from_expiration_date: Start of date range to search (YYYY-MM-DD format).
+    :param to_expiration_date: End of date range to search (YYYY-MM-DD format).
+    :param share_levels: A list of share levels. Only red is supported.
+    :param limit: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
+    :param sort: The order of the results. Format
+    :param offset: The offset to begin the list from
+    """
+    raw_res = search_iocs(types=types, values=values, policies=policies, sources=sources, sort=sort, offset=offset,
+                          expiration_from=from_expiration_date, expiration_to=to_expiration_date,
+                          share_levels=share_levels, limit=limit)
     if not raw_res:
         return create_entry_object(hr='Could not find any Indicators of Compromise.')
+    handle_response_errors(raw_res)
     iocs = raw_res.get('resources')
-    ec = [get_trasnformed_dict(ioc, SEARCH_IOC_KEY_MAP) for ioc in iocs]
+    ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
     enrich_ioc_dict_with_ids(ec)
-    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IoC(val.ID === obj.ID)': ec},
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
                                hr=tableToMarkdown('Indicators of Compromise', ec))
 
 
-def delete_iocs_command():
+def get_ioc_command(ioc_type: str, value: str):
     """
-        UNTESTED - Deletes an IoC
-        :return: EntryObject of delete IoC command
+    :param ioc_type: The type of the indicator
+    :param value: The IOC value to retrieve
     """
-    raw_res = delete_ioc()
-    ids = demisto.args().get('ids')
-    return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully deleted.".format(ids))
+    raw_res = search_iocs(ids=f"{ioc_type}:{value}")
+    handle_response_errors(raw_res, 'Could not find any Indicators of Compromise.')
+    iocs = raw_res.get('resources')
+    ec = [get_trasnformed_dict(ioc, IOC_KEY_MAP) for ioc in iocs]
+    enrich_ioc_dict_with_ids(ec)
+    return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': ec},
+                               hr=tableToMarkdown('Indicator of Compromise', ec))
 
 
-def update_iocs_command():
+def delete_ioc_command(ioc_type, value):
     """
-        UNTESTED - Updates an IoC
-        :return: EntryObject of update IoC command
+    :param ioc_type: The type of the indicator
+    :param value: The IOC value to delete
     """
-    raw_res = update_iocs()
-    ids = demisto.args().get('ids')
-    return create_entry_object(contents=raw_res, hr="Custom IoC {0} successfully updated.".format(ids))
+    raw_res = delete_ioc(ioc_type, value)
+    handle_response_errors(raw_res, "The server has not confirmed deletion, please manually confirm deletion.")
+    ids = f"{ioc_type}:{value}"
+    return create_entry_object(contents=raw_res, hr=f"Custom IOC {ids} was successfully deleted.")
+
+
+def get_ioc_device_count_command(ioc_type: str, value: str):
+    """
+    :param ioc_type: The type of the indicator
+    :param value: The IOC value
+    """
+    raw_res = get_ioc_device_count(ioc_type, value)
+    if 'No results found for' in raw_res:
+        return raw_res
+    else:
+        handle_response_errors(raw_res)
+        device_count_res = raw_res.get('resources')
+        ioc_id = f"{ioc_type}:{value}"
+        if not device_count_res:
+            return create_entry_object(raw_res, hr=f"Could not find any devices the IOC **{ioc_id}** was detected in.")
+        context = [get_trasnformed_dict(device_count, IOC_DEVICE_COUNT_MAP) for device_count in device_count_res]
+        hr = f'Indicator of Compromise **{ioc_id}** device count: **{device_count_res[0].get("device_count")}**'
+        return create_entry_object(contents=raw_res, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context}, hr=hr)
+
+
+def get_process_details_command(ids: str):
+    """
+    :param ids: proccess ids
+    """
+    ids = argToList(ids)
+    raw_res = get_process_details(ids)
+    handle_response_errors(raw_res)
+    proc = raw_res.get('resources')
+    if not proc:
+        return create_entry_object(raw_res, hr="Could not find any searched processes.")
+    proc_hr_ids = str(ids)[1:-1].replace('\'', '')
+    title = f"Details for process{'es' if len(ids) > 1 else ''}: {proc_hr_ids}."
+    return create_entry_object(contents=raw_res, hr=tableToMarkdown(title, proc),
+                               ec={'CrowdStrike.Process(val.process_id === obj.process_id)': proc})
+
+
+def get_proccesses_ran_on_command(ioc_type, value, device_id):
+    """
+    :param device_id: Device id the IOC ran on
+    :param ioc_type: The type of the indicator
+    :param value: The IOC value
+    """
+    raw_res = get_proccesses_ran_on(ioc_type, value, device_id)
+    handle_response_errors(raw_res)
+    proc_ids = raw_res.get('resources')
+    ioc_id = f"{ioc_type}:{value}"
+    if not proc_ids:
+        return create_entry_object(raw_res, hr=f"Could not find any processes associated with the IOC **{ioc_id}**.")
+    context = {'ID': ioc_id, 'Type': ioc_type, 'Value': value, 'Process': {'DeviceID': device_id, 'ID': proc_ids}}
+    hr = tableToMarkdown(f"Processes with custom IOC {ioc_id} on device {device_id}.", proc_ids, headers="Process ID")
+    return create_entry_object(contents=raw_res, hr=hr, ec={'CrowdStrike.IOC(val.ID === obj.ID)': context})
 
 
 def search_device_command():
@@ -1443,12 +1654,18 @@ def run_command():
     output = []
 
     if target == 'batch':
-        if scope == 'read':
-            response = run_batch_read_cmd(host_ids, command_type, full_command)
-        elif scope == 'write':
-            response = run_batch_write_cmd(host_ids, command_type, full_command)
-        else:  # scope = admin
-            response = run_batch_admin_cmd(host_ids, command_type, full_command)
+        batch_id = init_rtr_batch_session(host_ids)
+        timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+        timer.start()
+        try:
+            if scope == 'read':
+                response = run_batch_read_cmd(batch_id, command_type, full_command)
+            elif scope == 'write':
+                response = run_batch_write_cmd(batch_id, command_type, full_command)
+            else:  # scope = admin
+                response = run_batch_admin_cmd(batch_id, command_type, full_command)
+        finally:
+            timer.cancel()
 
         resources: dict = response.get('combined', {}).get('resources', {})
 
@@ -1720,6 +1937,11 @@ def run_script_command():
     script_name = args.get('script_name')
     raw = args.get('raw')
     host_ids = argToList(args.get('host_ids'))
+    try:
+        timeout = int(args.get('timeout', 30))
+    except ValueError as e:
+        demisto.error(str(e))
+        raise ValueError('Timeout argument should be an integer, for example: 30')
 
     if script_name and raw:
         raise ValueError('Only one of the arguments script_name or raw should be provided, not both.')
@@ -1729,10 +1951,17 @@ def run_script_command():
         full_command = f'runscript -CloudFile={script_name}'
     elif raw:
         full_command = f'runscript -Raw=```{raw}```'
+    full_command += f' -Timeout={timeout}'
 
     command_type = 'runscript'
 
-    response = run_batch_admin_cmd(host_ids, command_type, full_command)
+    batch_id = init_rtr_batch_session(host_ids)
+    timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
+    timer.start()
+    try:
+        response = run_batch_admin_cmd(batch_id, command_type, full_command, timeout)
+    finally:
+        timer.cancel()
 
     resources: dict = response.get('combined', {}).get('resources', {})
 
@@ -2002,13 +2231,6 @@ def refresh_session_command():
     return create_entry_object(contents=response, hr=f'CrowdStrike Session Refreshed: {session_id}')
 
 
-def build_url_filter_for_device_id(args):
-    indicator_type = args.get('type')
-    indicator_value = args.get('value')
-    url_filter = f'/indicators/queries/devices/v1?type={indicator_type}&value={indicator_value}'
-    return url_filter
-
-
 def build_error_message(raw_res):
     if raw_res.get('errors'):
         error_data = raw_res.get('errors')[0]
@@ -2025,19 +2247,31 @@ def validate_response(raw_res):
 
 def get_indicator_device_id():
     args = demisto.args()
-    url_filter = build_url_filter_for_device_id(args)
-    raw_res = http_request('GET', url_filter)
+    ioc_type = args.get('type')
+    ioc_value = args.get('value')
+    params = assign_params(
+        type=ioc_type,
+        value=ioc_value
+    )
+    raw_res = http_request('GET', '/indicators/queries/devices/v1', params=params, status_code=404)
+    errors = raw_res.get('errors', [])
+    for error in errors:
+        if error.get('code') == 404:
+            return f'No results found for {ioc_type} - {ioc_value}'
     context_output = ''
     if validate_response(raw_res):
         context_output = raw_res.get('resources')
     else:
         error_message = build_error_message(raw_res)
         return_error(error_message)
+    ioc_id = f"{ioc_type}:{ioc_value}"
+    readable_output = tableToMarkdown(f"Devices that encountered the IOC {ioc_id}", context_output, headers='Device ID')
     return CommandResults(
-        readable_output=context_output,
+        readable_output=readable_output,
         outputs_prefix='CrowdStrike.DeviceID',
         outputs_key_field='DeviceID',
-        outputs=context_output
+        outputs=context_output,
+        raw_response=raw_res
     )
 
 
@@ -2094,9 +2328,13 @@ def list_incident_summaries_command():
         incidents_ids = get_incidents_ids(filter_arg=fetch_query)
     else:
         incidents_ids = get_incidents_ids()
-    incidents_response_data = get_incidents_entities(incidents_ids)
+    handle_response_errors(incidents_ids)
+    ids = incidents_ids.get('resources')
+    if not ids:
+        return CommandResults(readable_output='No incidents were found.')
+    incidents_response_data = get_incidents_entities(ids)
     incidents = [resource for resource in incidents_response_data.get('resources')]
-    incidents_human_readable = detections_to_human_readable(incidents)
+    incidents_human_readable = incidents_to_human_readable(incidents)
     return CommandResults(
         readable_output=incidents_human_readable,
         outputs_prefix='CrowdStrike.Incidents',
@@ -2120,71 +2358,92 @@ def test_module():
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
+LOG('Command being called is {}'.format(demisto.command()))
+
 
 def main():
-    LOG('Command being called is {}'.format(demisto.command()))
-
+    command = demisto.command()
     # should raise error in case of issue
-    if demisto.command() == 'fetch-incidents':
+    if command == 'fetch-incidents':
         demisto.incidents(fetch_incidents())
 
+    args = demisto.args()
     try:
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             result = test_module()
             return_results(result)
-
-            get_token(new_token=True)
-            demisto.results('ok')
-        elif demisto.command() == 'cs-device-ran-on':
+        elif command in ('cs-device-ran-on', 'cs-falcon-device-ran-on'):
             return_results(get_indicator_device_id())
         elif demisto.command() == 'cs-falcon-search-device':
             demisto.results(search_device_command())
-        elif demisto.command() == 'cs-falcon-get-behavior':
+        elif command == 'cs-falcon-get-behavior':
             demisto.results(get_behavior_command())
-        elif demisto.command() == 'cs-falcon-search-detection':
+        elif command == 'cs-falcon-search-detection':
             demisto.results(search_detections_command())
-        elif demisto.command() == 'cs-falcon-resolve-detection':
+        elif command == 'cs-falcon-resolve-detection':
             demisto.results(resolve_detection_command())
-        elif demisto.command() == 'cs-falcon-contain-host':
+        elif command == 'cs-falcon-contain-host':
             demisto.results(contain_host_command())
-        elif demisto.command() == 'cs-falcon-lift-host-containment':
+        elif command == 'cs-falcon-lift-host-containment':
             demisto.results(lift_host_containment_command())
-        elif demisto.command() == 'cs-falcon-run-command':
+        elif command == 'cs-falcon-run-command':
             demisto.results(run_command())
-        elif demisto.command() == 'cs-falcon-upload-script':
+        elif command == 'cs-falcon-upload-script':
             demisto.results(upload_script_command())
-        elif demisto.command() == 'cs-falcon-get-script':
+        elif command == 'cs-falcon-get-script':
             demisto.results(get_script_command())
-        elif demisto.command() == 'cs-falcon-delete-script':
+        elif command == 'cs-falcon-delete-script':
             demisto.results(delete_script_command())
-        elif demisto.command() == 'cs-falcon-list-scripts':
+        elif command == 'cs-falcon-list-scripts':
             demisto.results(list_scripts_command())
-        elif demisto.command() == 'cs-falcon-upload-file':
+        elif command == 'cs-falcon-upload-file':
             demisto.results(upload_file_command())
-        elif demisto.command() == 'cs-falcon-delete-file':
+        elif command == 'cs-falcon-delete-file':
             demisto.results(delete_file_command())
-        elif demisto.command() == 'cs-falcon-get-file':
+        elif command == 'cs-falcon-get-file':
             demisto.results(get_file_command())
-        elif demisto.command() == 'cs-falcon-list-files':
+        elif command == 'cs-falcon-list-files':
             demisto.results(list_files_command())
-        elif demisto.command() == 'cs-falcon-run-script':
+        elif command == 'cs-falcon-run-script':
             demisto.results(run_script_command())
-        elif demisto.command() == 'cs-falcon-run-get-command':
+        elif command == 'cs-falcon-run-get-command':
             demisto.results(run_get_command())
-        elif demisto.command() == 'cs-falcon-status-get-command':
+        elif command == 'cs-falcon-status-get-command':
             demisto.results(status_get_command())
-        elif demisto.command() == 'cs-falcon-status-command':
+        elif command == 'cs-falcon-status-command':
             demisto.results(status_command())
-        elif demisto.command() == 'cs-falcon-get-extracted-file':
+        elif command == 'cs-falcon-get-extracted-file':
             demisto.results(get_extracted_file_command())
-        elif demisto.command() == 'cs-falcon-list-host-files':
+        elif command == 'cs-falcon-list-host-files':
             demisto.results(list_host_files_command())
-        elif demisto.command() == 'cs-falcon-refresh-session':
+        elif command == 'cs-falcon-refresh-session':
             demisto.results(refresh_session_command())
-        elif demisto.command() == 'cs-falcon-list-detection-summaries':
+        elif command == 'cs-falcon-list-detection-summaries':
             return_results(list_detection_summaries_command())
-        elif demisto.command() == 'cs-falcon-list-incident-summaries':
+        elif command == 'cs-falcon-list-incident-summaries':
             return_results(list_incident_summaries_command())
+        elif command == 'cs-falcon-search-iocs':
+            return_results(search_iocs_command(**args))
+        elif command == 'cs-falcon-get-ioc':
+            return_results(get_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
+        elif command == 'cs-falcon-upload-ioc':
+            return_results(upload_ioc_command(**args))
+        elif command == 'cs-falcon-update-ioc':
+            return_results(update_ioc_command(**args))
+        elif command == 'cs-falcon-delete-ioc':
+            return_results(delete_ioc_command(ioc_type=args.get('type'), value=args.get('value')))
+        elif command == 'cs-falcon-device-count-ioc':
+            return_results(get_ioc_device_count_command(ioc_type=args.get('type'), value=args.get('value')))
+        elif command == 'cs-falcon-process-details':
+            return_results(get_process_details_command(**args))
+        elif command == 'cs-falcon-processes-ran-on':
+            return_results(
+                get_proccesses_ran_on_command(
+                    ioc_type=args.get('type'),
+                    value=args.get('value'),
+                    device_id=args.get('device_id')
+                )
+            )
         # Log exceptions
     except Exception as e:
         return_error(str(e))

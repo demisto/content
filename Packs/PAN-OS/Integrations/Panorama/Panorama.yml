@@ -16,19 +16,22 @@ configuration:
   name: key
   required: true
   type: 4
-- display: Device group - Panorama instances only (write shared for Shared location)
+- additionalinfo: Located in the Panorama UI. Go to Panorama, Device Groups and select the desired Device Group
+  display: Device group - Panorama instances only (write shared for Shared location)
   name: device_group
   required: false
   type: 0
-- display: Vsys - Firewall instances only
+- additionalinfo: Located in the Firewall URL; by default of PAN-OS it is vsys1
+  display: Vsys - Firewall instances only
   name: vsys
   required: false
   type: 0
-- display: Template - Panorama instances only.
+- display: Template - Panorama instances only
   name: template
   required: false
   type: 0
-- display: Use URL Filtering for auto enrichment
+- additionalinfo: If selected, when running the !url command, the command will execute using pan-os with PAN_DB (with applied filters). The URL filtering categories determine DBot score (malicious, suspicious, benign).
+  display: Use URL Filtering for auto enrichment
   name: use_url_filtering
   required: false
   type: 8
@@ -215,14 +218,13 @@ script:
     name: panorama
   - arguments:
     - default: false
-      description: If specified, retrieves the predefined threats from a specific
-        firewall managed by Panorama.
+      description: The firewall managed by Panorama from which to retrieve the predefined threats.
       isArray: false
       name: target
       required: false
       secret: false
     deprecated: false
-    description: Get pre-defined threats list from a Firewall or Panorama and stores
+    description: Gets the predefined threats list from a Firewall or Panorama and stores it
       as a JSON file in the context.
     execution: false
     name: panorama-get-predefined-threats-list
@@ -237,13 +239,13 @@ script:
       description: File type.
       type: string
     - contextPath: File.Info
-      description: File info.
+      description: File information.
       type: string
-    - contextPath: File.Extenstion
+    - contextPath: File.Extension
       description: File extension.
       type: string
     - contextPath: File.EntryID
-      description: FIle entryID.
+      description: File entry ID.
       type: string
     - contextPath: File.MD5
       description: MD5 hash of the file.
@@ -254,10 +256,16 @@ script:
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
       type: string
+    - contextPath: File.SHA512
+      description: SHA512 hash of the file.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
   - deprecated: false
-    description: Commits a configuration to Palo Alto Firewall or Panorama, but does
+    description: Commits a configuration to the Palo Alto firewall or Panorama, but does
       not validate if the commit was successful. Committing to Panorama does not push
-      the configuration to the Firewalls. To push the configuration, run the panorama-push-to-device-group
+      the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group
       command.
     execution: false
     name: panorama-commit
@@ -266,7 +274,7 @@ script:
       description: Job ID to commit.
       type: number
     - contextPath: Panorama.Commit.Status
-      description: Commit status
+      description: Commit status.
       type: string
   - arguments:
     - default: true
@@ -614,7 +622,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Type of session reject
+      description: 'Type of session rejection. Possible values are: "drop", "alert", "block-ip", "reset-both", "reset-client", and "reset-server". Default is "drop".'
       isArray: false
       name: drop_mode
       predefined:
@@ -633,7 +641,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Numerical Threat ID.
+      description: Numerical threat ID.
       isArray: false
       name: threat_id
       required: true
@@ -647,7 +655,7 @@ script:
       description: ID of vulnerability that has been blocked/overridden.
       type: string
     - contextPath: Panorama.Vulnerability.NewAction
-      description: New action for vulnerability
+      description: New action for the vulnerability.
       type: string
   - arguments:
     - default: false
@@ -1274,7 +1282,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets a URL category from URL Filtering.
+    description: Gets a URL category from URL filtering.
     execution: false
     name: panorama-get-url-category
     outputs:
@@ -1300,7 +1308,7 @@ script:
       description: The URL address.
       type: String
     - contextPath: URL.Category
-      description: The URL Category.
+      description: The URL category.
       type: String
   - arguments:
     - default: true
@@ -1310,15 +1318,15 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets a URL category from URL Filtering.
+    description: Gets a URL category from URL filtering.
     execution: false
     name: url
     outputs:
     - contextPath: Panorama.URLFilter.URL
-      description: URL.
+      description: The URL.
       type: string
     - contextPath: Panorama.URLFilter.Category
-      description: URL category.
+      description: The URL category.
       type: string
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
@@ -1336,17 +1344,17 @@ script:
       description: The URL address.
       type: String
     - contextPath: URL.Category
-      description: The URL Category.
+      description: The URL category.
       type: String
   - arguments:
     - default: false
-      description: URL to check.
+      description: The URL to check.
       isArray: true
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Returns a URL category from URL Filtering.
+    description: Returns a URL category from URL filtering.
     execution: false
     name: panorama-get-url-category-from-cloud
     outputs:
@@ -1354,17 +1362,17 @@ script:
       description: The URL.
       type: string
     - contextPath: Panorama.URLFilter.Category
-      description: URL category.
+      description: The URL category.
       type: string
   - arguments:
     - default: false
-      description: URL to check.
+      description: The URL to check.
       isArray: true
       name: url
       required: true
       secret: false
     deprecated: false
-    description: Returns a URL category from URL Filtering.
+    description: Returns a URL category from URL filtering.
     execution: false
     name: panorama-get-url-category-from-host
     outputs:
@@ -1372,7 +1380,7 @@ script:
       description: The URL.
       type: string
     - contextPath: Panorama.URLFilter.Category
-      description: URL category.
+      description: The URL category.
       type: string
   - arguments:
     - default: false
@@ -1996,6 +2004,12 @@ script:
       name: category
       required: false
       secret: false
+    - default: false
+      description: A profile setting group.
+      isArray: false
+      name: profile_setting
+      required: false
+      secret: false
     deprecated: false
     description: Creates a policy rule.
     execution: true
@@ -2042,6 +2056,9 @@ script:
       type: string
     - contextPath: Panorama.SecurityRules.Tags
       description: Rule tags.
+      type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: Profile setting group.
       type: String
   - arguments:
     - default: false
@@ -2144,6 +2161,9 @@ script:
     - contextPath: Panorama.SecurityRule.Tags
       description: Rule tags.
       type: String
+    - contextPath: Panorama.SecurityRules.ProfileSetting
+      description: Profile setting group.
+      type: String
   - arguments:
     - default: false
       description: Name of the rule to move.
@@ -2210,7 +2230,7 @@ script:
       default: false
       description: Parameter in the security rule to change. Can be 'source', 'destination',
         'application', 'action', 'category', 'description', 'disabled', 'target',
-        'log-forwarding' or 'tag'.
+        'log-forwarding', 'tag' or 'group_profile'.
       isArray: false
       name: element_to_change
       predefined:
@@ -2224,6 +2244,7 @@ script:
       - target
       - log-forwarding
       - tag
+      - profile-setting
       required: true
       secret: false
     - default: false
@@ -2509,7 +2530,7 @@ script:
     - contextPath: File.Info
       description: File info.
       type: string
-    - contextPath: File.Extenstion
+    - contextPath: File.Extension
       description: File extension.
       type: string
     - contextPath: File.EntryID
@@ -2523,6 +2544,12 @@ script:
       type: string
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.SHA512
+      description: SHA512 hash of the file.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
       type: string
   - arguments:
     - auto: PREDEFINED
@@ -2602,19 +2629,19 @@ script:
     name: panorama-unregister-ip-tag
   - arguments:
     - default: false
-      description: Tag for which to register Users.
+      description: Tag for which to register users.
       isArray: false
       name: tag
       required: true
       secret: false
     - default: false
-      description: Users to register.
+      description: A comma-separated list of users to register.
       isArray: true
       name: Users
       required: true
       secret: false
     deprecated: false
-    description: Registers Users to a tag.
+    description: Registers users to a tag. This command is only available for PAN-OS version 9.x and above.
     execution: false
     name: panorama-register-user-tag
     outputs:
@@ -2622,23 +2649,23 @@ script:
       description: Name of the tag.
       type: string
     - contextPath: Panorama.DynamicTags.Users
-      description: Registered Users.
+      description: List of registered users.
       type: string
   - arguments:
     - default: false
-      description: Tag for which to unregister Users.
+      description: Tag from which to unregister users.
       isArray: false
       name: tag
       required: true
       secret: false
     - default: false
-      description: Users to unregister.
+      description: A comma-separated list of users to unregister.
       isArray: true
       name: Users
       required: true
       secret: false
     deprecated: false
-    description: Unregisters Users from a tag.
+    description: Unregisters users from a tag. This command is only available for PAN-OS version 9.x and above.
     execution: false
     name: panorama-unregister-user-tag
   - arguments:
@@ -2777,7 +2804,7 @@ script:
       description: Destination port of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.FromZone
-      description: From zone of the traffic log.
+      description: The from zone of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.Protocol
       description: Protocol of the traffic log.
@@ -2801,7 +2828,7 @@ script:
       description: Start time of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.ToZone
-      description: To zone of the traffic log.
+      description: The to zone of the traffic log.
       type: String
     - contextPath: Panorama.TrafficLogs.Logs.Bytes
       description: Total log bytes.
@@ -3185,6 +3212,9 @@ script:
     - contextPath: Panorama.Monitor.Logs.BytesSent
       description: Log bytes sent.
       type: String
+    - contextPath: Panorama.Monitor.Logs.Vsys
+      description: Vsys on the firewall that generated the log.
+      type: String
   - arguments:
     - default: false
       description: The application name.
@@ -3241,7 +3271,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Checks whether a session matches the specified security policy. This
+    description: Checks whether a session matches a specified security policy. This
       command is only available on Firewall instances.
     execution: false
     name: panorama-security-policy-match
@@ -3283,10 +3313,10 @@ script:
       description: The destination port.
       type: Number
     - contextPath: Panorama.SecurityPolicyMatch.QueryFields.From
-      description: The from zone.
+      description: The query fields from zone.
       type: String
     - contextPath: Panorama.SecurityPolicyMatch.QueryFields.To
-      description: The to zone.
+      description: The query fields to zone.
       type: String
     - contextPath: Panorama.SecurityPolicyMatch.QueryFields.Protocol
       description: The IP protocol value.
@@ -3299,7 +3329,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The name of the virtual router for which to list static routes.
+      description: The name of the virtual router for which to list the static routes.
       isArray: false
       name: virtual_router
       required: true
@@ -3314,7 +3344,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to show an uncommitted configuration.
+      description: Whether to show an uncommitted configuration. Default is "false".
       isArray: false
       name: show_uncommitted
       predefined:
@@ -3333,23 +3363,23 @@ script:
     - contextPath: Panorama.StaticRoutes.BFDProfile
       description: The BFD profile of the static route.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Destination'
+    - contextPath: Panorama.StaticRoutes.Destination
       description: The destination of the static route.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Metric'
+    - contextPath: Panorama.StaticRoutes.Metric
       description: The metric (port) of the static route.
       type: Number
-    - contextPath: ' Panorama.StaticRoutes.NextHop'
+    - contextPath: Panorama.StaticRoutes.NextHop
       description: The next hop of the static route. Can be an IP address, FQDN, or
         a virtual router.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.RouteTable'
+    - contextPath: Panorama.StaticRoutes.RouteTable
       description: The route table of a static route.
       type: String
     - contextPath: Panorama.StaticRoutes.VirtualRouter
       description: The virtual router to which the static router belongs.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Template'
+    - contextPath: Panorama.StaticRoutes.Template
       description: The template in which the static route is defined (Panorama instances
         only).
       type: String
@@ -3370,7 +3400,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The template for which to run the command. Overrides the template
+      description: The template to use to run the command. Overrides the template
         parameter (Panorama instances).
       isArray: false
       name: template
@@ -3387,36 +3417,36 @@ script:
     - contextPath: Panorama.StaticRoutes.BFDProfile
       description: The BFD profile of the static route.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Destination'
+    - contextPath: Panorama.StaticRoutes.Destination
       description: The destination of the static route.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Metric'
+    - contextPath: Panorama.StaticRoutes.Metric
       description: The metric (port) of the static route.
       type: Number
-    - contextPath: ' Panorama.StaticRoutes.NextHop'
+    - contextPath: Panorama.StaticRoutes.NextHop
       description: The next hop of the static route. Can be an IP address, FQDN, or
         a virtual router.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.RouteTable'
+    - contextPath: Panorama.StaticRoutes.RouteTable
       description: The route table of the static route.
       type: String
     - contextPath: Panorama.StaticRoutes.VirtualRouter
       description: The virtual router to which the static router belongs.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Template'
+    - contextPath: Panorama.StaticRoutes.Template
       description: The template in which the static route is defined (Panorama instances
         only).
       type: String
   - arguments:
     - default: false
-      description: Virtual Router to which the routes will be added.
+      description: Virtual router to which the routes will be added.
       isArray: false
       name: virtual_router
       required: true
       secret: false
     - default: false
-      description: The name of the static route. The argument is limited to a maximum
-        of 31 characters, it's case-sensitive, and supports letters, numbers, spaces,
+      description: The name of the static route to add. The argument is limited to a maximum
+        of 31 characters, is case-sensitive, and supports letters, numbers, spaces,
         hyphens, and underscores.
       isArray: false
       name: static_route
@@ -3432,15 +3462,15 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'The type for the nexthop. Can be: "ip-address", "next-vr", "fqdn"
+      description: 'The type for the next hop. Can be: "ip-address", "next-vr", "fqdn",
         or "discard".'
       isArray: false
       name: nexthop_type
       predefined:
       - ip-address
-      - ' next-vr'
-      - ' fqdn'
-      - ' discard'
+      - next-vr
+      - fqdn
+      - discard
       required: true
       secret: false
     - default: false
@@ -3479,23 +3509,23 @@ script:
     - contextPath: Panorama.StaticRoutes.BFDProfile
       description: The BFD profile of the static route.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Destination'
+    - contextPath: Panorama.StaticRoutes.Destination
       description: The destination of the static route.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Metric'
+    - contextPath: Panorama.StaticRoutes.Metric
       description: The metric (port) of the static route.
       type: Number
-    - contextPath: ' Panorama.StaticRoutes.NextHop'
+    - contextPath: Panorama.StaticRoutes.NextHop
       description: The next hop of the static route. Can be an IP address, FQDN, or
         a virtual router.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.RouteTable'
+    - contextPath: Panorama.StaticRoutes.RouteTable
       description: The route table of the static route.
       type: String
     - contextPath: Panorama.StaticRoutes.VirtualRouter
       description: The virtual router to which the static router belongs.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Template'
+    - contextPath: Panorama.StaticRoutes.Template
       description: The template in which the static route is defined (Panorama instances
         only).
       type: String
@@ -3513,7 +3543,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The template for to use to run the command. Overrides the template
+      description: The template to use to run the command. Overrides the template
         parameter (Panorama instances).
       isArray: false
       name: template
@@ -3525,28 +3555,28 @@ script:
     name: panorama-delete-static-route
     outputs:
     - contextPath: Panorama.StaticRoutes.Name
-      description: The name of the static route.
+      description: The name of the static route to delete.
       type: String
     - contextPath: Panorama.StaticRoutes.BFDProfile
       description: The BFD profile of the static route.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Destination'
+    - contextPath: Panorama.StaticRoutes.Destination
       description: The destination of the static route.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Metric'
+    - contextPath: Panorama.StaticRoutes.Metric
       description: The metric (port) of the static route.
       type: Number
-    - contextPath: ' Panorama.StaticRoutes.NextHop'
+    - contextPath: Panorama.StaticRoutes.NextHop
       description: The next hop of the static route. Can be an IP address, FQDN, or
         a virtual router.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.RouteTable'
+    - contextPath: Panorama.StaticRoutes.RouteTable
       description: The route table of the static route.
       type: String
     - contextPath: Panorama.StaticRoutes.VirtualRouter
       description: The virtual router to which the static router belongs.
       type: String
-    - contextPath: ' Panorama.StaticRoutes.Template'
+    - contextPath: Panorama.StaticRoutes.Template
       description: The template in which the static route is defined (Panorama instances
         only).
       type: String
@@ -3555,7 +3585,7 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Serial number of target device.
+      description: Serial number of the target device.
       isArray: false
       name: target
       required: false
@@ -3566,13 +3596,13 @@ script:
     name: panorama-show-device-version
     outputs:
     - contextPath: Panorama.Device.Info.Devicename
-      description: Devicename of the PAN-OS.
+      description: Device name of the PAN-OS.
       type: String
     - contextPath: Panorama.Device.Info.Model
       description: Model of the PAN-OS.
       type: String
     - contextPath: Panorama.Device.Info.Serial
-      description: Serial of the PAN-OS.
+      description: Serial number of the PAN-OS.
       type: String
     - contextPath: Panorama.Device.Info.Version
       description: Version of the PAN-OS.
@@ -3590,7 +3620,7 @@ script:
     name: panorama-download-latest-content-update
     outputs:
     - contextPath: Panorama.Content.Download.JobID
-      description: JobID of the content download.
+      description: Job ID of the content download.
       type: String
     - contextPath: Panorama.Content.Download.Status
       description: Content download status.
@@ -3603,7 +3633,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: JobID to check.
+      description: Job ID to check.
       isArray: false
       name: job_id
       required: true
@@ -3614,13 +3644,13 @@ script:
     name: panorama-content-update-download-status
     outputs:
     - contextPath: Panorama.Content.Download.JobID
-      description: JobID to monitor.
+      description: Job ID to monitor.
       type: String
     - contextPath: Panorama.Content.Download.Status
       description: Download status.
       type: String
     - contextPath: Panorama.Content.Download.Details
-      description: JobID details.
+      description: Job ID details.
       type: String
   - arguments:
     - default: false
@@ -3635,21 +3665,21 @@ script:
     name: panorama-install-latest-content-update
     outputs:
     - contextPath: Panorama.Content.Install.JobID
-      description: JobID of the installation.
+      description: Job ID of the installation.
       type: String
     - contextPath: Content.Install.Status
       description: Installation status.
       type: String
   - arguments:
     - default: false
-      description: The device for which to check the installation status of the content
+      description: The device on which to check the installation status of the content
         update.
       isArray: false
       name: target
       required: false
       secret: false
     - default: false
-      description: JobID of the content installation.
+      description: Job ID of the content installation.
       isArray: false
       name: job_id
       required: true
@@ -3660,7 +3690,7 @@ script:
     name: panorama-content-update-install-status
     outputs:
     - contextPath: Panorama.Content.Install.JobID
-      description: JobID of the content installation.
+      description: Job ID of the content installation.
       type: String
     - contextPath: Panorama.Content.Install.Status
       description: Content installation status.
@@ -3670,7 +3700,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The target device for which to get the PAN-OS software version.
+      description: The target device from which to get the PAN-OS software version.
       isArray: false
       name: target
       required: false
@@ -3681,7 +3711,7 @@ script:
     name: panorama-check-latest-panos-software
   - arguments:
     - default: false
-      description: The target device on which to download the PAN-OS software version.
+      description: The target device from which to download the PAN-OS software version.
       isArray: false
       name: target
       required: false
@@ -3699,20 +3729,20 @@ script:
     name: panorama-download-panos-version
     outputs:
     - contextPath: Panorama.PANOS.Download.JobID
-      description: JobID of the PAN-OS download.
+      description: Job ID of the PAN-OS download.
       type: number
     - contextPath: Panorama.PANOS.Download.Status
       description: Status of the PAN-OS download.
       type: String
   - arguments:
     - default: false
-      description: The target device for which to get the download status.
+      description: The target device from which to get the download status.
       isArray: false
       name: target
       required: false
       secret: false
     - default: false
-      description: JobID to check.
+      description: Job ID to check.
       isArray: false
       name: job_id
       required: true
@@ -3723,7 +3753,7 @@ script:
     name: panorama-download-panos-status
     outputs:
     - contextPath: Panorama.PANOS.Download.JobID
-      description: JobID of the PAN-OS download.
+      description: Job ID of the PAN-OS download.
       type: string
     - contextPath: Panorama.PANOS.Download.Status
       description: PAN-OS download status.
@@ -3751,20 +3781,20 @@ script:
     name: panorama-install-panos-version
     outputs:
     - contextPath: Panorama.PANOS.Install.JobID
-      description: JobID from the PAN-OS installation.
+      description: Job ID of the PAN-OS installation.
       type: string
     - contextPath: Panorama.PANOS.Install.Status
       description: Status of the PAN-OS installation.
       type: String
   - arguments:
     - default: false
-      description: The target device for which to get the installation status.
+      description: The target device from which to get the installation status.
       isArray: false
       name: target
       required: false
       secret: false
     - default: false
-      description: JobID to check.
+      description: Job ID to check.
       isArray: false
       name: job_id
       required: true
@@ -3775,7 +3805,7 @@ script:
     name: panorama-install-panos-status
     outputs:
     - contextPath: Panorama.PANOS.Install.JobID
-      description: JobID of the PAN-OS installation.
+      description: Job ID of the PAN-OS installation.
       type: number
     - contextPath: Panorama.PANOS.Install.Status
       description: Status of the PAN-OS installation.
@@ -3785,7 +3815,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The target device for which to reboot the firewall.
+      description: The target device on which to reboot the firewall.
       isArray: false
       name: target
       required: false
@@ -3796,7 +3826,7 @@ script:
     name: panorama-device-reboot
   - arguments:
     - default: false
-      description: The IP address for which to return information.
+      description: The IP address from which to return information.
       isArray: false
       name: ip_address
       required: true
@@ -3807,16 +3837,16 @@ script:
     name: panorama-show-location-ip
     outputs:
     - contextPath: Panorama.Location.IP.country_code
-      description: The IP location country code.
+      description: The IP address location country code.
       type: String
     - contextPath: Panorama.Location.IP.country_name
-      description: The IP location country name.
+      description: The IP address location country name.
       type: String
     - contextPath: Panorama.Location.IP.ip_address
       description: The IP address.
       type: String
     - contextPath: Panorama.Location.IP.Status
-      description: Whether or not the IP address was found.
+      description: Whether the IP address was found.
       type: String
   - deprecated: false
     description: Gets information about available PAN-OS licenses and their statuses.
@@ -3876,7 +3906,7 @@ script:
     - contextPath: Panorama.Spyware.Rules.Action
       description: The rule action.
       type: String
-    - contextPath: Panorama.Spyware.Rules.Cateogry
+    - contextPath: Panorama.Spyware.Rules.Category
       description: The category for which to apply the rule.
       type: String
     - contextPath: Panorama.Spyware.Rules.Name
@@ -3930,7 +3960,7 @@ script:
     - contextPath: Panorama.Vulnerability.Rules.Name
       description: The rule name.
       type: String
-    - contextPath: Panorama.Vulnerability.Rules.Cateogry
+    - contextPath: Panorama.Vulnerability.Rules.Category
       description: The category for which to apply the rule.
       type: String
     - contextPath: Panorama.Vulnerability.Rules.CVE
@@ -4153,7 +4183,7 @@ script:
     - contextPath: Panorama.Spyware.BotentDomain.Sinkhole.ipv6-address
       description: The Botnet domain IPv6 address.
       type: String
-    - contextPath: Panorama.Spyware.Rule.Cateogry
+    - contextPath: Panorama.Spyware.Rule.Category
       description: The rule category.
       type: String
     - contextPath: Panorama.Spyware.Rule.Action
@@ -4213,7 +4243,7 @@ script:
     - contextPath: Panorama.Vulnerability.Rule.CVE
       description: The rule CVE.
       type: String
-    - contextPath: Panorama.Vulnerability.Rule.Cateogry
+    - contextPath: Panorama.Vulnerability.Rule.Category
       description: The rule category.
       type: String
     - contextPath: Panorama.Vulnerability.Rule.Host
@@ -4264,7 +4294,7 @@ script:
       description: The WildFire schedule recurring.
       type: String
   - deprecated: false
-    description: View URL Filtering best practices.
+    description: View URL filtering best practices.
     execution: false
     name: panorama-get-url-filtering-best-practice
     outputs:
@@ -4370,7 +4400,7 @@ script:
     description: Creates a WildFire analysis best practice profile.
     execution: false
     name: panorama-create-wildfire-best-practice-profile
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
   longRunning: false

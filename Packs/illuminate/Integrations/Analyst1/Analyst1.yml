@@ -1,0 +1,610 @@
+commonfields:
+  id: Analyst1
+  version: -1
+name: Analyst1
+display: Analyst1
+category: Data Enrichment & Threat Intelligence
+description: This integration utilizes Analyst1's system to enrich Demisto indicators
+  with data provided by the Analyst1 REST API, such as actor and malware information,
+  activity and reported dates, evidence and hit counts, and more.
+configuration:
+- display: Analyst1 API Credentials (username/password)
+  name: credentials
+  defaultvalue: ''
+  type: 9
+  required: true
+- display: Domain of Analyst1 server to use (format - server.that_you_use.com - No
+    http/https)
+  name: server
+  defaultvalue: analysis.cloud.analyst1.com
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: 'false'
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: 'false'
+  type: 8
+  required: false
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: The domain for which to return information.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name, for example, "google.com".
+      type: string
+    - contextPath: Analyst1.Domain.ID
+      description: The indicator's unique ID in Analyst1.
+      type: number
+    - contextPath: Analyst1.Domain.EvidenceCount
+      description: The number of evidence reports of the given indicator in Analyst1.
+      type: number
+    - contextPath: Analyst1.Domain.Active
+      description: Whether the given indicator is noted as active in Analyst1.
+      type: boolean
+    - contextPath: Analyst1.Domain.ConfidenceLevel
+      description: The confidence level of the data in Analyst1.
+      type: string
+    - contextPath: Analyst1.Domain.FirstHit
+      description: The first date this indicator was seen in a source scanned by Analyst1.
+      type: date
+    - contextPath: Analyst1.Domain.LastHit
+      description: The most recent date this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.Domain.HitCount
+      description: The total number of times this indicator was seen in a source scanned
+        by Analyst1.
+      type: number
+    - contextPath: Analyst1.Domain.ReportedDates
+      description: The dates this indicator was reported on in Analyst1.
+      type: date
+    - contextPath: Analyst1.Domain.ActivityDates
+      description: The dates this indicator had reported activity in Analyst1.
+      type: date
+    - contextPath: Analyst1.Domain.Malwares.ID
+      description: Each matched malware unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.Domain.Malwares.Name
+      description: Each matched malware name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Domain.Actors.ID
+      description: Each matched actor unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.Domain.Actors.Name
+      description: Each matched actor name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Domain.Analyst1Link
+      description: The URL of the matched indicator in Analyst1.
+      type: string
+    - contextPath: Analyst1.Domain.IpResolution
+      description: The resolved IP address for this domain.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    description: Queries the Analyst1 REST API and enriches the given domain with
+      Analyst1 Indicator data
+  - name: email
+    arguments:
+    - name: email
+      required: true
+      description: The email for which to return information.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: Email.From
+      description: The sender of the email.
+      type: string
+    - contextPath: Analyst1.Email.ID
+      description: The unique identifier of the given Indicator in Analyst1
+      type: number
+    - contextPath: Analyst1.Email.EvidenceCount
+      description: The number of evidence reports of the given indicator in Analyst1.
+      type: number
+    - contextPath: Analyst1.Email.Active
+      description: Whether the given indicator is noted as active in Analyst1.
+      type: boolean
+    - contextPath: Analyst1.Email.ConfidenceLevel
+      description: The confidence level of the data in Analyst1.
+      type: string
+    - contextPath: Analyst1.Email.FirstHit
+      description: The first date this indicator was seen in a source scanned by Analyst1.
+      type: date
+    - contextPath: Analyst1.Email.LastHit
+      description: The most recent date this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.Email.HitCount
+      description: The total number of times this indicator was seen in a source scanned
+        by Analyst1.
+      type: number
+    - contextPath: Analyst1.Email.ReportedDates
+      description: The dates this indicator was reported on in Analyst1.
+      type: date
+    - contextPath: Analyst1.Email.ActivityDates
+      description: The dates this indicator had reported activity in Analyst1.
+      type: date
+    - contextPath: Analyst1.Email.Malwares.ID
+      description: Each matched malware unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.Email.Malwares.Name
+      description: Each matched malware name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Email.Actors.ID
+      description: Each matched actor unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.Email.Actors.Name
+      description: Each matched actor name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Email.Analyst1Link
+      description: The URL of the matched indicator in Analyst1.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    description: Queries the Analyst1 REST API and enriches the given email with Analyst1
+      indicator data.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP address for which to return information.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address.
+      type: string
+    - contextPath: Analyst1.Ip.ID
+      description: The indicator's unique ID in Analyst1.
+      type: number
+    - contextPath: Analyst1.Ip.EvidenceCount
+      description: The number of evidence reports of the given indicator in Analyst1.
+      type: number
+    - contextPath: Analyst1.Ip.Active
+      description: Whether the given indicator is noted as active in Analyst1.
+      type: boolean
+    - contextPath: Analyst1.Ip.ConfidenceLevel
+      description: The confidence level of the data in Analyst1.
+      type: string
+    - contextPath: Analyst1.Ip.FirstHit
+      description: The first date this this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.Ip.LastHit
+      description: The most recent date this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.Ip.HitCount
+      description: The total number of times this indicator was seen in a source scanned
+        by Analyst1.
+      type: number
+    - contextPath: Analyst1.Ip.ReportedDates
+      description: The dates this indicator was reported on in Analyst1.
+      type: date
+    - contextPath: Analyst1.Ip.ActivityDates
+      description: The dates this indicator had reported activity in Analyst1.
+      type: date
+    - contextPath: Analyst1.Ip.Malwares.ID
+      description: Each matched malware unique identifier in Analyst1
+      type: number
+    - contextPath: Analyst1.Ip.Malwares.Name
+      description: Each matched malware name in Analyst1
+      type: string
+    - contextPath: Analyst1.Ip.Actors.ID
+      description: Each matched actor unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.Ip.Actors.Name
+      description: Each matched actor name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Ip.Analyst1Link
+      description: The URL of the matched indicator in Analyst1.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    description: Queries the Analyst1 REST API and enriches the given IP address with
+      Analyst1 indicator data.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      description: The file for which to return information.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: Analyst1.File.ID
+      description: The indicator's unique ID in Analyst1.
+      type: number
+    - contextPath: Analyst1.File.EvidenceCount
+      description: The number of evidence reports of the given indicator in Analyst1.
+      type: number
+    - contextPath: Analyst1.File.Active
+      description: Whether the given indicator is noted as active in Analyst1.
+      type: boolean
+    - contextPath: Analyst1.File.ConfidenceLevel
+      description: The confidence level of the data in Analyst1.
+      type: string
+    - contextPath: Analyst1.File.FirstHit
+      description: The first date this this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.File.LastHit
+      description: The most recent date this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.File.HitCount
+      description: The total number of times this indicator was seen in a source scanned
+        by Analyst1.
+      type: number
+    - contextPath: Analyst1.File.ReportedDates
+      description: The dates this indicator was reported on in Analyst1.
+      type: date
+    - contextPath: Analyst1.File.ActivityDates
+      description: The dates this indicator had reported activity in Analyst1.
+      type: date
+    - contextPath: Analyst1.File.Malwares.ID
+      description: Each matched malware unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.File.Malwares.Name
+      description: Each matched malware name in Analyst1
+      type: string
+    - contextPath: Analyst1.File.Actors.ID
+      description: Each matched actor unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.File.Actors.Name
+      description: Each matched actor name in Analyst1.
+      type: string
+    - contextPath: Analyst1.File.Analyst1Link
+      description: The URL of the matched indicator in Analyst1.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    description: Queries the Analyst1 REST API and enriches the given file with Analyst1
+      indicator data.
+  - name: analyst1-enrich-string
+    arguments:
+    - name: string
+      required: true
+      description: The string for which to return information.
+      isArray: true
+    outputs:
+    - contextPath: Analyst1.String.ID
+      description: The unique identifier of the given Indicator in Analyst1
+      type: number
+    - contextPath: Analyst1.String.EvidenceCount
+      description: The number of evidence reports of the given indicator in Analyst1.
+      type: number
+    - contextPath: Analyst1.String.Active
+      description: Whether the given indicator is noted as active in Analyst1.
+      type: boolean
+    - contextPath: Analyst1.String.ConfidenceLevel
+      description: The confidence level of the data in Analyst1.
+      type: string
+    - contextPath: Analyst1.String.FirstHit
+      description: The first date this indicator was seen in a source scanned by Analyst1.
+      type: date
+    - contextPath: Analyst1.String.LastHit
+      description: The most recent date this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.String.HitCount
+      description: The total number of times this indicator was seen in a source scanned
+        by Analyst1.
+      type: number
+    - contextPath: Analyst1.String.ReportedDates
+      description: The dates this indicator was reported on in Analyst1.
+      type: date
+    - contextPath: Analyst1.String.ActivityDates
+      description: The dates this indicator had reported activity in Analyst1.
+      type: date
+    - contextPath: Analyst1.String.Malwares.ID
+      description: Each matched malware unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.String.Malwares.Name
+      description: Each matched malware name in Analyst1
+      type: string
+    - contextPath: Analyst1.String.Actors.ID
+      description: Each matched actor unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.String.Actors.Name
+      description: Each matched actor name in Analyst1.
+      type: string
+    - contextPath: Analyst1.String.Analyst1Link
+      description: The URL of the matched indicator in Analyst1.
+      type: string
+    description: Queries the Analyst1 REST API and enriches the given string with
+      Analyst1 indicator data
+  - name: analyst1-enrich-ipv6
+    arguments:
+    - name: ip
+      required: true
+      description: The IP address for which to return information.
+      isArray: true
+    outputs:
+    - contextPath: Analyst1.Ipv6.ID
+      description: The unique identifier of the given Indicator in Analyst1
+      type: number
+    - contextPath: Analyst1.Ipv6.EvidenceCount
+      description: The number of evidence reports of the given indicator in Analyst1.
+      type: number
+    - contextPath: Analyst1.Ipv6.Active
+      description: Whether the given indicator is noted as active in Analyst1.
+      type: boolean
+    - contextPath: Analyst1.Ipv6.ConfidenceLevel
+      description: The confidence level of the data in Analyst1.
+      type: string
+    - contextPath: Analyst1.Ipv6.FirstHit
+      description: The first date this indicator was seen in a source scanned by Analyst1.
+      type: date
+    - contextPath: Analyst1.Ipv6.LastHit
+      description: The most recent date this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.Ipv6.HitCount
+      description: The total number of times this indicator was seen in a source scanned
+        by Analyst1.
+      type: number
+    - contextPath: Analyst1.Ipv6.ReportedDates
+      description: The dates this indicator was reported on in Analyst1.
+      type: date
+    - contextPath: Analyst1.Ipv6.ActivityDates
+      description: The dates this indicator had reported activity in Analyst1.
+      type: date
+    - contextPath: Analyst1.Ipv6.Malwares.ID
+      description: Each matched malware unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.Ipv6.Malwares.Name
+      description: Each matched malware name in Analyst1
+      type: string
+    - contextPath: Analyst1.Ipv6.Actors.ID
+      description: Each matched actor unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.Ipv6.Actors.Name
+      description: Each matched actor name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Ipv6.Analyst1Link
+      description: The URL of the matched indicator in Analyst1.
+      type: string
+    description: Queries the Analyst1 REST API and enriches the given IP address with
+      Analyst1 indicator data.
+  - name: analyst1-enrich-mutex
+    arguments:
+    - name: mutex
+      required: true
+      description: The mutex to query information for
+      isArray: true
+    outputs:
+    - contextPath: Analyst1.Mutex.ID
+      description: The unique identifier of the given Indicator in Analyst1
+      type: number
+    - contextPath: Analyst1.Mutex.EvidenceCount
+      description: The number of evidence reports of the given indicator in Analyst1.
+      type: number
+    - contextPath: Analyst1.Mutex.Active
+      description: Whether the given indicator is noted as active in Analyst1.
+      type: boolean
+    - contextPath: Analyst1.Mutex.ConfidenceLevel
+      description: The confidence level of the data in Analyst1.
+      type: string
+    - contextPath: Analyst1.Mutex.FirstHit
+      description: The first date this indicator was seen in a source scanned by Analyst1.
+      type: date
+    - contextPath: Analyst1.Mutex.LastHit
+      description: The most recent date this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.Mutex.HitCount
+      description: The total number of times this indicator was seen in a source scanned
+        by Analyst1.
+      type: number
+    - contextPath: Analyst1.Mutex.ReportedDates
+      description: The dates this indicator was reported on in Analyst1.
+      type: date
+    - contextPath: Analyst1.Mutex.ActivityDates
+      description: The dates this indicator had reported activity in Analyst1.
+      type: date
+    - contextPath: Analyst1.Mutex.Malwares.ID
+      description: Each matched malware unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.Mutex.Malwares.Name
+      description: Each matched malware name in Analyst1
+      type: string
+    - contextPath: Analyst1.Mutex.Actors.ID
+      description: Each matched actor unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.Mutex.Actors.Name
+      description: Each matched actor name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Mutex.Analyst1Link
+      description: The URL of the matched indicator in Analyst1.
+      type: string
+    description: Queries the Analyst1 REST API and enriches the given mutex with Analyst1
+      indicator data.
+  - name: analyst1-enrich-http-request
+    arguments:
+    - name: http-request
+      required: true
+      description: The HTTP request for which to return information.
+      isArray: true
+    outputs:
+    - contextPath: Analyst1.Httprequest.ID
+      description: The unique identifier of the given Indicator in Analyst1
+      type: number
+    - contextPath: Analyst1.Httprequest.EvidenceCount
+      description: The number of evidence reports of the given indicator in Analyst1.
+      type: number
+    - contextPath: Analyst1.Httprequest.Active
+      description: Whether the given indicator is noted as active in Analyst1.
+      type: boolean
+    - contextPath: Analyst1.Httprequest.ConfidenceLevel
+      description: The confidence level of the data in Analyst1.
+      type: string
+    - contextPath: Analyst1.Httprequest.FirstHit
+      description: The first date this indicator was seen in a source scanned by Analyst1.
+      type: date
+    - contextPath: Analyst1.Httprequest.LastHit
+      description: The most recent date this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.Httprequest.HitCount
+      description: The total number of times this indicator was seen in a source scanned
+        by Analyst1.
+      type: number
+    - contextPath: Analyst1.Httprequest.ReportedDates
+      description: The dates this indicator was reported on in Analyst1.
+      type: date
+    - contextPath: Analyst1.Httprequest.ActivityDates
+      description: The dates this indicator had reported activity in Analyst1.
+      type: date
+    - contextPath: Analyst1.Httprequest.Malwares.ID
+      description: Each matched malware unique identifier in Analyst1
+      type: number
+    - contextPath: Analyst1.Httprequest.Malwares.Name
+      description: Each matched malware name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Httprequest.Actors.ID
+      description: Each matched actor unique identifier in Analyst1.
+      type: number
+    - contextPath: Analyst1.Httprequest.Actors.Name
+      description: Each matched actor name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Httprequest.Analyst1Link
+      description: The URL of the matched indicator in Analyst1.
+      type: string
+    description: Queries the Analyst1 REST API and enriches the given HTTP request
+      with Analyst1 indicator data.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: The URL for which to return information.
+      default: true
+      isArray: true
+    outputs:
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: Analyst1.Url.ID
+      description: The unique identifier of the given Indicator in Analyst1
+      type: number
+    - contextPath: Analyst1.Url.EvidenceCount
+      description: The number of evidence reports of the given indicator in Analyst1.
+      type: number
+    - contextPath: Analyst1.Url.Active
+      description: Whether the given indicator is noted as active in Analyst1.
+      type: boolean
+    - contextPath: Analyst1.Url.ConfidenceLevel
+      description: The confidence level of the data in Analyst1.
+      type: string
+    - contextPath: Analyst1.Url.FirstHit
+      description: The first date this indicator was seen in a source scanned by Analyst1.
+      type: date
+    - contextPath: Analyst1.Url.LastHit
+      description: The most recent date this indicator was seen in a source scanned
+        by Analyst1.
+      type: date
+    - contextPath: Analyst1.Url.HitCount
+      description: The total number of this indicator was seen in a source scanned
+        by Analyst1.
+      type: number
+    - contextPath: Analyst1.Url.ReportedDates
+      description: The dates this indicator was reported on in Analyst1.
+      type: date
+    - contextPath: Analyst1.Url.ActivityDates
+      description: The dates this indicator had reported activity in Analyst1.
+      type: date
+    - contextPath: Analyst1.Url.Malwares.ID
+      description: Each matched malware unique identifier in Analyst1
+      type: number
+    - contextPath: Analyst1.Url.Malwares.Name
+      description: Each matched malware name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Url.Actors.ID
+      description: Each matched actor unique identifier in Analyst1
+      type: number
+    - contextPath: Analyst1.Url.Actors.Name
+      description: Each matched actor name in Analyst1.
+      type: string
+    - contextPath: Analyst1.Url.Analyst1Link
+      description: The URL of the matched indicator in Analyst1.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Numbe
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The AlienVault OTX vendor.
+      type: String
+    description: Queries the Analyst1 REST API and enriches the given URL with Analyst1
+      indicator data.
+  dockerimage: demisto/python3:3.8.6.12176
+  runonce: false
+  subtype: python3
+fromversion: 5.0.0
+tests:
+- Analyst1 Integration Demonstration - Test
+- Analyst1 Integration Test

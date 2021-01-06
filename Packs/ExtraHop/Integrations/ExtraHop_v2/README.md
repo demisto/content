@@ -3353,7 +3353,7 @@ Successful Modification
     </tr>
     <tr>
       <td>incident_status</td>
-      <td>Status of the incident</td>
+      <td>Status of the incident. 0=New, 1=In-progress, 2=Closed.</td>
       <td>Optional</td>
     </tr>
     <tr>

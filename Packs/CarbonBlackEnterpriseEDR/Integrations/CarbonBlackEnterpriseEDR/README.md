@@ -58,6 +58,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 30. cb-eedr-get-file-metadata
 31. cb-eedr-files-download-link-get
 32. cb-eedr-file-paths
+33. cb-eedr-process-search
+34. cb-eedr-events-by-process-get
+35. cb-eedr-process-search-results
 ### 1. cb-eedr-alert-workflow-update
 ---
 Updates the workflow of a single event.
@@ -1700,4 +1703,1012 @@ RBAC Permissions Required - RBAC Permissions Required: READ
 |file_path_count|file_paths|sha256|total_file_path_count|
 |---|---|---|---|
 | 1 | {'count': 3, 'file_path': 'c:\\program files\\admin\\test.exe', 'first_seen_timestamp': '2020-05-18T09:26:28.205254Z'} | 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | 3 |
+
+### 33. cb-eedr-process-search
+---
+Creates a process search job.
+##### Required Permissions
+RBAC Permissions Required - org.search.events: CREATE
+
+#### Base Command
+
+`cb-eedr-process-search`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| process_name | The process name to search. | Optional | 
+| process_hash | The process hash to search. | Optional | 
+| event_id | The event ID to search. | Optional | 
+| limit | The maximum number of rows to return. Default is 20. | Optional | 
+| query | A free-style query. For example, "process_name:svchost.exe". | Optional | 
+| start_time | First appearance time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes). Default is 1 day ago. | Optional | 
+| end_time | Last appearance time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes). Default is current time. | Optional | 
+| start | Index of first records to fetch. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CarbonBlackEEDR.SearchProcess.job_id | String | The ID of the job found by the search. | 
+| CarbonBlackEEDR.SearchProcess.status | String | The status of the job found by the search. | 
+
+
+#### Command Example
+```!cb-eedr-process-search process_name="vmtoolsd.exe" limit=10```
+
+#### Context Example
+```json
+{
+    "CarbonBlackEEDR": {
+        "SearchProcess": {
+            "job_id": "633b7900-2b28-456d-add3-28e665525753",
+            "status": "In Progress"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>job_id is 633b7900-2b28-456d-add3-28e665525753.
+
+### 34. cb-eedr-events-by-process-get
+---
+Retrieves the events associated with a given process.
+
+##### Required Permissions
+RBAC Permissions Required - org.search.events: READ
+#### Base Command
+
+`cb-eedr-events-by-process-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| process_guid | The process GUID to search. | Optional | 
+| event_type | The event type to search. | Optional | 
+| limit | The maximum number of rows to return. Default is 20. | Optional | 
+| query | A free-style query. For example, "process_name:svchost.exe". | Optional | 
+| start_time | First appearance time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes). Default is 1 day ago. | Optional | 
+| end_time | Last appearance time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes). Default is current time. | Optional | 
+| start | Index of first records to fetch. Default is 0. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CarbonBlackEEDR.SearchEvent.backend_timestamp | Date | The timestamp of when the process was ingested by the backend. | 
+| CarbonBlackEEDR.SearchEvent.created_timestamp | Date | The timestamp of when the event document was created. | 
+| CarbonBlackEEDR.SearchEvent.event_guid | String | A globally unique identifier for this event document. | 
+| CarbonBlackEEDR.SearchEvent.event_hash | String |  | 
+| CarbonBlackEEDR.SearchEvent.event_timestamp | Date | The timestamp of the event on the device. | 
+| CarbonBlackEEDR.SearchEvent.event_type | String | The event type. Possible values are: filemod, netconn, regmod, modload, crossproc, and childproc. | 
+| CarbonBlackEEDR.SearchEvent.legacy | Boolean | True if this event comes from the CBD data stream. | 
+| CarbonBlackEEDR.SearchEvent.modload_action | String | Action associated with the modload operation. The only possible value is: ACTION_LOAD_MODULE. | 
+| CarbonBlackEEDR.SearchEvent.modload_effective_reputation | String |  | 
+| CarbonBlackEEDR.SearchEvent.modload_md5 | String | The MD5 hash for the modules loaded. | 
+| CarbonBlackEEDR.SearchEvent.modload_name | String | The modules loaded by this event. | 
+| CarbonBlackEEDR.SearchEvent.modload_publisher | String | The publisher that signed this module, if any. | 
+| CarbonBlackEEDR.SearchEvent.modload_publisher_state | String | The set of states associated with the publisher of the module. Can be a combination of: FILE_SIGNATURE_STATE_INVALID, FILE_SIGNATURE_STATE_SIGNED, FILE_SIGNATURE_STATE_VERIFIED, FILE_SIGNATURE_STATE_NOT_SIGNED, FILE_SIGNATURE_STATE_UNKNOWN, FILE_SIGNATURE_STATE_CHAINED, FILE_SIGNATURE_STATE_TRUSTED, FILE_SIGNATURE_STATE_OS, and FILE_SIGNATURE_STATE_CATALOG_SIGNED. | 
+| CarbonBlackEEDR.SearchEvent.modload_sha256 | String | The SHA256 hash for the modules loaded. | 
+| CarbonBlackEEDR.SearchEvent.process_guid | String | The process GUID representing the process that this event belongs to. | 
+| CarbonBlackEEDR.SearchEvent.process_pid | Number | The PID of the process. | 
+
+
+#### Command Example
+```!cb-eedr-events-by-process-get process_guid="7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43" event_type="modload" start_time="1 month"```
+
+#### Context Example
+```json
+{
+    "CarbonBlackEEDR": {
+        "SearchEvent": [
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.503Z",
+                "event_guid": "OCaEtLR1SRGcWgVUcoj2mA",
+                "event_hash": "lQJi__dhQpGzdVwCmbdbjg",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_LOCAL_WHITE",
+                "modload_md5": "aae1f614bfe5e3e5cde18d1f928f5b12",
+                "modload_name": "c:\\windows\\system32\\ctiuser.dll",
+                "modload_publisher": "Carbon Black, Inc.",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "81eb5f6fbf8d7566560f43f75ec30e5f0284cdee9b5c9df0d81281bda0db3d07",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "aAVFrvjPQ3Sea-kK6Kdbxw",
+                "event_hash": "L8CCeipjQ7KtMQDiRwx8HA",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "2c7c14627cff3384c52e61d4dbd0ecc3",
+                "modload_name": "c:\\windows\\system32\\version.dll",
+                "modload_publisher": "Microsoft Windows",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_OS",
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "41b4d85d84a86e41b948694b9b5f398a0d79f47629d6d969eb5b461d4f5d0347",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "AlKrjPvcSLav4Vq7zBuD2A",
+                "event_hash": "k7Z5u-3_Siydt1DPvXW4dQ",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "f7c09099232987cbb965b9280c1dacf8",
+                "modload_name": "c:\\program files\\vmware\\vmware tools\\gmodule-2.0.dll",
+                "modload_publisher": "VMware, Inc.",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "d14560487312f487f94bfaed4fe9d0cfd5efbec1ac4ef44c26dd230800bc6b29",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "0g6iOKO9S8GHIfFSOG5sBA",
+                "event_hash": "TX8Ehlc2Qb2mbSl8ZtVmgg",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "26fc0a369a68d2a429e2ebe67b8dd1d8",
+                "modload_name": "c:\\program files\\vmware\\vmware tools\\gobject-2.0.dll",
+                "modload_publisher": "VMware, Inc.",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "9a914642e7e8e4e4ba004004b490c64453f13597cc43cb77a9e55d180c229f83",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "W_JoluvFTni9mPPHCvyxmg",
+                "event_hash": "CvjnmQdWQqGhbsmkcPzJYA",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "9d9b1790cc6eeb76757b5042914b7289",
+                "modload_name": "c:\\program files\\vmware\\vmware tools\\intl.dll",
+                "modload_publisher": "VMware, Inc.",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "03eef80ad1d4b066c4842546ba52ccb911e84606a27f0ec7016d9f62c572846b",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "-XTVyKT5SkeJ0PvsnozF6A",
+                "event_hash": "114rbukXQKSzjhiVBEApPQ",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "a83fcd02a532a08386a5bcbb39a581c5",
+                "modload_name": "c:\\program files\\vmware\\vmware tools\\glib-2.0.dll",
+                "modload_publisher": "VMware, Inc.",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "ff9bb3a84c807f8151d4956f895f672fa812765e931e9093f40caab0853bd120",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "junO0BiIT9imVAUSKCdB_A",
+                "event_hash": "9Sd5fEA8R9aOU7eYlY_97A",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "9f2b3fac3440db16e0c13473b551d12c",
+                "modload_name": "c:\\windows\\system32\\vcruntime140.dll",
+                "modload_publisher": "Microsoft Corporation",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "27c51ff3dc2f4cf2b61bdf55fb60148ef0abb06c2feae188c30f1a63f9e29caa",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "PocoJ9OATG6Qr-3cirRciQ",
+                "event_hash": "D8k62OqkQ9KiT0c5C1Ki0g",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "965eb822d0ef8fda78ccb1f41def093d",
+                "modload_name": "c:\\windows\\system32\\winmm.dll",
+                "modload_publisher": "Microsoft Windows",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_OS",
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "ad43d686930eae0f57a55ee75d10bd1882747089a291371ffe1e131eb5f76938",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "ThWF8yD5R5usoFJM4x_VRw",
+                "event_hash": "mk9Lj4O0TAq-enCNCKWBMA",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "e6450257ba3df5161684e4c73ebb8f92",
+                "modload_name": "c:\\windows\\system32\\winmmbase.dll",
+                "modload_publisher": "Microsoft Windows",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_OS",
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "948f13fe144cd80f93565ded2ac2e96d000869bb2761538996d28942495cb1d7",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "PZXgTx_XStWA1DGUkPDJzw",
+                "event_hash": "UVssy5LWSvyvFC0Isya8aQ",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "821236519995fdfb54b56bd9d7a60ba8",
+                "modload_name": "c:\\program files\\vmware\\vmware tools\\pcre.dll",
+                "modload_publisher": "VMware, Inc.",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "64388ee3beb0e69fd471b3c7eb5d4de8ae24b9ea0fdba51bc9c81c26be84e585",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "bmsH73bASGaRFpeo84Q5Kw",
+                "event_hash": "9Ri-_u68QjyV7UjSMeDAYw",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "40b92f37c0698cdc4cde8c0a75791c7e",
+                "modload_name": "c:\\program files\\vmware\\vmware tools\\vmtools.dll",
+                "modload_publisher": "VMware, Inc.",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "bb8098f4627441f6a29c31757c45339c74b2712b92783173df9ab58d47ae3bfa",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "WeL1uj4FSI-n4rVA7UoXFw",
+                "event_hash": "b2SKdGkNSNuw0eoZn9wK_g",
+                "event_timestamp": "2020-10-14T16:17:45.448Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "e202dd92848c5103c9abf8ecd22bc539",
+                "modload_name": "c:\\windows\\system32\\fltlib.dll",
+                "modload_publisher": "Microsoft Windows",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_OS",
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "353f8d4e647a11f235f4262d913f7bac4c4f266eac4601ea416e861afd611912",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "Q6PB6SqURW6xliJdsEogag",
+                "event_hash": "YPhofHOyQkKaMGEr1dX5cQ",
+                "event_timestamp": "2020-10-14T16:17:45.463Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "b7be84c53e81dd0a64ee0845410bd6c7",
+                "modload_name": "c:\\windows\\system32\\icmp.dll",
+                "modload_publisher": "Microsoft Windows",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_CATALOG_SIGNED",
+                    "FILE_SIGNATURE_STATE_OS",
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "8ddd1ddce37c7e560570774de7ca1a1ecf7b32dfd0ba014f504fc6ae50388de6",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "jg_1LLAYT1KZx9SZUPQqeQ",
+                "event_hash": "5eb6xzwkTt2p5b-2-ELzog",
+                "event_timestamp": "2020-10-14T16:17:45.463Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "3929147a2a34b0902152c7d0f241b02a",
+                "modload_name": "c:\\windows\\system32\\iphlpapi.dll",
+                "modload_publisher": "Microsoft Windows",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_OS",
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "ad1c5309aa873f6a284eabe382812868e20c3d3d64197f3e6ef9d015ea060caa",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "LDC8YHy4RFuIZuejh202dQ",
+                "event_hash": "zMI8yTZvRBWnBzcuyUU0bQ",
+                "event_timestamp": "2020-10-14T16:17:45.463Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "da9647c845792371dd2f95e1ccc9a63a",
+                "modload_name": "c:\\windows\\system32\\sspicli.dll",
+                "modload_publisher": "Microsoft Windows",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_OS",
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "fe741d2f986b0b9557a90bdf0560f49cd17381d1094c42a91634aabe49f46a1e",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "Oq1ZHJ-lSYGWynDM12vIhQ",
+                "event_hash": "HwnoQEtpSp-El_7fEmh4Lw",
+                "event_timestamp": "2020-10-14T16:17:45.463Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "435009d1ddc0365bfa34b8c8d3f85286",
+                "modload_name": "c:\\windows\\system32\\ntmarta.dll",
+                "modload_publisher": "Microsoft Windows",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_OS",
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "2f94628f056fe65ea81351e134e59ece813fec5e8400c12d6dfa49defd126d01",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "UpxEQukRRmiX3EjI4kkYYg",
+                "event_hash": "afxpRq5BT6WRdQyBWS4-kQ",
+                "event_timestamp": "2020-10-14T16:17:45.463Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "3c9d22cae173ad19806b6a016cd4cc28",
+                "modload_name": "c:\\windows\\system32\\uxtheme.dll",
+                "modload_publisher": "Microsoft Windows",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_CATALOG_SIGNED",
+                    "FILE_SIGNATURE_STATE_OS",
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "d95e7d07ea46d7d2aefa01cd0a64cf266be26d40fa6be42f7cf60f6deb8fbaf3",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "NcXdQS34QJWySTn-04pakA",
+                "event_hash": "4ZyNSN7yRyeNNBRop-HMDw",
+                "event_timestamp": "2020-10-14T16:17:45.463Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "1f1fe19bc54c75e568646327f6d99c1a",
+                "modload_name": "c:\\windows\\system32\\vsocklib.dll",
+                "modload_publisher": "VMware, Inc.",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "e685439d50aecf656ef5bd2523568b6d9220cc9917e7d57eda962c1a520e94a5",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "POYLqKCERASiTMBHcfsFmw",
+                "event_hash": "UAoluLSYSKe2pzn47rxVDw",
+                "event_timestamp": "2020-10-14T16:17:45.463Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "b56c118a906a0322b9319d50df188bc6",
+                "modload_name": "c:\\program files\\vmware\\vmware tools\\plugins\\common\\hgfsserver.dll",
+                "modload_publisher": "VMware, Inc.",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "0d74d8f4cf24bc72042234fb92b42396f6d2f6f77c534f9a07af3d82822a0452",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            },
+            {
+                "backend_timestamp": "2020-10-14T16:22:13.180Z",
+                "created_timestamp": "2020-11-04T06:58:51.505Z",
+                "event_guid": "x2Beg9ykSIiRKViJJxcsaA",
+                "event_hash": "6xUCWyDQTAuOm7Lnxq-qew",
+                "event_timestamp": "2020-10-14T16:17:45.463Z",
+                "event_type": "modload",
+                "legacy": false,
+                "modload_action": "ACTION_LOADED_MODULE_DISCOVERED",
+                "modload_effective_reputation": "REP_WHITE",
+                "modload_md5": "a381226b5a088a07680391b94c474baa",
+                "modload_name": "c:\\program files\\vmware\\vmware tools\\hgfs.dll",
+                "modload_publisher": "VMware, Inc.",
+                "modload_publisher_state": [
+                    "FILE_SIGNATURE_STATE_SIGNED",
+                    "FILE_SIGNATURE_STATE_TRUSTED",
+                    "FILE_SIGNATURE_STATE_VERIFIED"
+                ],
+                "modload_sha256": "429a69aba0196be3f53ffa1d2dd09b0caea6fc680468706b2a20fa0f7188ad4b",
+                "process_guid": "7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43",
+                "process_pid": 8056
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results Found.
+>|backend_timestamp|created_timestamp|event_guid|event_hash|event_timestamp|event_type|legacy|modload_action|modload_effective_reputation|modload_md5|modload_name|modload_publisher|modload_publisher_state|modload_sha256|process_guid|process_pid|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.503Z | OCaEtLR1SRGcWgVUcoj2mA | lQJi__dhQpGzdVwCmbdbjg | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_LOCAL_WHITE | aae1f614bfe5e3e5cde18d1f928f5b12 | c:\windows\system32\ctiuser.dll | Carbon Black, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 81eb5f6fbf8d7566560f43f75ec30e5f0284cdee9b5c9df0d81281bda0db3d07 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | aAVFrvjPQ3Sea-kK6Kdbxw | L8CCeipjQ7KtMQDiRwx8HA | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 2c7c14627cff3384c52e61d4dbd0ecc3 | c:\windows\system32\version.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 41b4d85d84a86e41b948694b9b5f398a0d79f47629d6d969eb5b461d4f5d0347 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | AlKrjPvcSLav4Vq7zBuD2A | k7Z5u-3_Siydt1DPvXW4dQ | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | f7c09099232987cbb965b9280c1dacf8 | c:\program files\vmware\vmware tools\gmodule-2.0.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | d14560487312f487f94bfaed4fe9d0cfd5efbec1ac4ef44c26dd230800bc6b29 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | 0g6iOKO9S8GHIfFSOG5sBA | TX8Ehlc2Qb2mbSl8ZtVmgg | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 26fc0a369a68d2a429e2ebe67b8dd1d8 | c:\program files\vmware\vmware tools\gobject-2.0.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 9a914642e7e8e4e4ba004004b490c64453f13597cc43cb77a9e55d180c229f83 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | W_JoluvFTni9mPPHCvyxmg | CvjnmQdWQqGhbsmkcPzJYA | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 9d9b1790cc6eeb76757b5042914b7289 | c:\program files\vmware\vmware tools\intl.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 03eef80ad1d4b066c4842546ba52ccb911e84606a27f0ec7016d9f62c572846b | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | -XTVyKT5SkeJ0PvsnozF6A | 114rbukXQKSzjhiVBEApPQ | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | a83fcd02a532a08386a5bcbb39a581c5 | c:\program files\vmware\vmware tools\glib-2.0.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | ff9bb3a84c807f8151d4956f895f672fa812765e931e9093f40caab0853bd120 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | junO0BiIT9imVAUSKCdB_A | 9Sd5fEA8R9aOU7eYlY_97A | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 9f2b3fac3440db16e0c13473b551d12c | c:\windows\system32\vcruntime140.dll | Microsoft Corporation | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 27c51ff3dc2f4cf2b61bdf55fb60148ef0abb06c2feae188c30f1a63f9e29caa | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | PocoJ9OATG6Qr-3cirRciQ | D8k62OqkQ9KiT0c5C1Ki0g | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 965eb822d0ef8fda78ccb1f41def093d | c:\windows\system32\winmm.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | ad43d686930eae0f57a55ee75d10bd1882747089a291371ffe1e131eb5f76938 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | ThWF8yD5R5usoFJM4x_VRw | mk9Lj4O0TAq-enCNCKWBMA | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | e6450257ba3df5161684e4c73ebb8f92 | c:\windows\system32\winmmbase.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 948f13fe144cd80f93565ded2ac2e96d000869bb2761538996d28942495cb1d7 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | PZXgTx_XStWA1DGUkPDJzw | UVssy5LWSvyvFC0Isya8aQ | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 821236519995fdfb54b56bd9d7a60ba8 | c:\program files\vmware\vmware tools\pcre.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 64388ee3beb0e69fd471b3c7eb5d4de8ae24b9ea0fdba51bc9c81c26be84e585 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | bmsH73bASGaRFpeo84Q5Kw | 9Ri-_u68QjyV7UjSMeDAYw | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 40b92f37c0698cdc4cde8c0a75791c7e | c:\program files\vmware\vmware tools\vmtools.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | bb8098f4627441f6a29c31757c45339c74b2712b92783173df9ab58d47ae3bfa | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | WeL1uj4FSI-n4rVA7UoXFw | b2SKdGkNSNuw0eoZn9wK_g | 2020-10-14T16:17:45.448Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | e202dd92848c5103c9abf8ecd22bc539 | c:\windows\system32\fltlib.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 353f8d4e647a11f235f4262d913f7bac4c4f266eac4601ea416e861afd611912 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | Q6PB6SqURW6xliJdsEogag | YPhofHOyQkKaMGEr1dX5cQ | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | b7be84c53e81dd0a64ee0845410bd6c7 | c:\windows\system32\icmp.dll | Microsoft Windows | FILE_SIGNATURE_STATE_CATALOG_SIGNED,<br/>FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 8ddd1ddce37c7e560570774de7ca1a1ecf7b32dfd0ba014f504fc6ae50388de6 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | jg_1LLAYT1KZx9SZUPQqeQ | 5eb6xzwkTt2p5b-2-ELzog | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 3929147a2a34b0902152c7d0f241b02a | c:\windows\system32\iphlpapi.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | ad1c5309aa873f6a284eabe382812868e20c3d3d64197f3e6ef9d015ea060caa | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | LDC8YHy4RFuIZuejh202dQ | zMI8yTZvRBWnBzcuyUU0bQ | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | da9647c845792371dd2f95e1ccc9a63a | c:\windows\system32\sspicli.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | fe741d2f986b0b9557a90bdf0560f49cd17381d1094c42a91634aabe49f46a1e | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | Oq1ZHJ-lSYGWynDM12vIhQ | HwnoQEtpSp-El_7fEmh4Lw | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 435009d1ddc0365bfa34b8c8d3f85286 | c:\windows\system32\ntmarta.dll | Microsoft Windows | FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 2f94628f056fe65ea81351e134e59ece813fec5e8400c12d6dfa49defd126d01 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | UpxEQukRRmiX3EjI4kkYYg | afxpRq5BT6WRdQyBWS4-kQ | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 3c9d22cae173ad19806b6a016cd4cc28 | c:\windows\system32\uxtheme.dll | Microsoft Windows | FILE_SIGNATURE_STATE_CATALOG_SIGNED,<br/>FILE_SIGNATURE_STATE_OS,<br/>FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | d95e7d07ea46d7d2aefa01cd0a64cf266be26d40fa6be42f7cf60f6deb8fbaf3 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | NcXdQS34QJWySTn-04pakA | 4ZyNSN7yRyeNNBRop-HMDw | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | 1f1fe19bc54c75e568646327f6d99c1a | c:\windows\system32\vsocklib.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | e685439d50aecf656ef5bd2523568b6d9220cc9917e7d57eda962c1a520e94a5 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | POYLqKCERASiTMBHcfsFmw | UAoluLSYSKe2pzn47rxVDw | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | b56c118a906a0322b9319d50df188bc6 | c:\program files\vmware\vmware tools\plugins\common\hgfsserver.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 0d74d8f4cf24bc72042234fb92b42396f6d2f6f77c534f9a07af3d82822a0452 | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | x2Beg9ykSIiRKViJJxcsaA | 6xUCWyDQTAuOm7Lnxq-qew | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | a381226b5a088a07680391b94c474baa | c:\program files\vmware\vmware tools\hgfs.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 429a69aba0196be3f53ffa1d2dd09b0caea6fc680468706b2a20fa0f7188ad4b | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
+>Total of 2120 items found. Showing items 0 - 19.
+
+### 35. cb-eedr-process-search-results
+---
+Retrieves the process search results for a given job ID.
+
+##### Required Permissions
+RBAC Permissions Required - org.search.events: READ
+#### Base Command
+
+`cb-eedr-process-search-results`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The job ID to search. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CarbonBlackEEDR.SearchProcess.job_id | String | The ID of the job found by the search. | 
+| CarbonBlackEEDR.SearchProcess.status | String | The status of the job found by the search. | 
+| CarbonBlackEEDR.SearchProcess.results.device_id | Number | The device ID that is guaranteed to be unique within each PSC environment. | 
+| CarbonBlackEEDR.SearchProcess.results.process_username | String | The user names related to the process. | 
+| CarbonBlackEEDR.SearchProcess.results.backend_timestamp | Date | A date/time field formatted as an ISO-8601 string based on the UTC timezone. For example, device_timestamp:2018-03-14T21:06:45.183Z. | 
+| CarbonBlackEEDR.SearchProcess.results.childproc_count | Number | The cumulative count of child-process creations since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.crossproc_count | Number | The cumulative count of cross-process events since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.device_group_id | Number | The ID of the sensor group where the device belongs. | 
+| CarbonBlackEEDR.SearchProcess.results.device_name | String | The name of the device. | 
+| CarbonBlackEEDR.SearchProcess.results.device_policy_id | Number | The ID of the policy applied to the device. | 
+| CarbonBlackEEDR.SearchProcess.results.device_timestamp | Date | The time displayed on the sensor based on the sensor’s clock. The time is an ISO-8601 formatted time string based on the UTC timezone. | 
+| CarbonBlackEEDR.SearchProcess.results.enriched | Boolean | True if the process document came from the CBD data stream. | 
+| CarbonBlackEEDR.SearchProcess.results.enriched_event_type | String | The CBD enriched event type. | 
+| CarbonBlackEEDR.SearchProcess.results.event_type | String | The CBD event type \(valid only for events coming through analytics\). Possible values are: CREATE_PROCESS, DATA_ACCESS, FILE_CREATE, INJECT_CODE, NETWORK, POLICY_ACTION, REGISTRY_ACCESS, and SYSTEM_API_CALL. | 
+| CarbonBlackEEDR.SearchProcess.results.filemod_count | Number | The cumulative count of file modifications since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.ingress_time | Date | Unknown | 
+| CarbonBlackEEDR.SearchProcess.results.legacy | Boolean | True if the process document came from the legacy data stream \(deprecated, use enriched\). | 
+| CarbonBlackEEDR.SearchProcess.results.modload_count | Number | The cumulative count of module loads since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.netconn_count | Number | The cumulative count of network connections since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.org_id | String | The globally unique organization key. This will most likely be the PSC organization ID \+ PSC environment ID or some other unique token used across environments. | 
+| CarbonBlackEEDR.SearchProcess.results.parent_guid | String | The process GUID of the parent process. | 
+| CarbonBlackEEDR.SearchProcess.results.parent_pid | Number | The PID of the parent process. | 
+| CarbonBlackEEDR.SearchProcess.results.process_guid | String | Unique ID of the solr document. Appears as process_guid \+ server-side timestamp in epoch ms \(1/1/1970 based\). | 
+| CarbonBlackEEDR.SearchProcess.results.process_hash | String | The MD5 and SHA-256 hashes of the process’s main module in a multi-valued field. | 
+| CarbonBlackEEDR.SearchProcess.results.process_name | String | The tokenized file path of the process’s main module. | 
+| CarbonBlackEEDR.SearchProcess.results.process_pid | Number | The PID of a process. Can be multi-valued in case of exec/fork on Linux/OSX. | 
+| CarbonBlackEEDR.SearchProcess.results.process_username | String | User names related to the process. | 
+| CarbonBlackEEDR.SearchProcess.results.regmod_count | Number | The cumulative count of registry modifications since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.scriptload_count | Number | The cumulative count of loaded scripts since process tracking started. | 
+
+
+#### Command Example
+```!cb-eedr-process-search-results job_id="99aad740-3903-4148-a5e7-7b5648794862"```
+
+#### Context Example
+```json
+{
+    "CarbonBlackEEDR": {
+        "SearchProcess": {
+            "job_id": "99aad740-3903-4148-a5e7-7b5648794862",
+            "results": [
+                {
+                    "backend_timestamp": "2020-10-28T07:20:55.988Z",
+                    "device_group_id": 0,
+                    "device_id": 3775337,
+                    "device_name": "cbcloud-win10",
+                    "device_policy_id": 12229,
+                    "device_timestamp": "2020-10-28T07:20:07.603Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "INJECT_CODE"
+                    ],
+                    "event_type": [
+                        "crossproc"
+                    ],
+                    "ingress_time": 1603869624380,
+                    "legacy": true,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "7DESJ9GN-00399b69-0000028c-00000000-1d6a6bb3b2bcc26",
+                    "parent_pid": 652,
+                    "process_guid": "7DESJ9GN-00399b69-00000b60-00000000-1d6a6bb41ebd8ef",
+                    "process_hash": [
+                        "1169495860abe1bc6a498d2c196787c3",
+                        "fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9"
+                    ],
+                    "process_name": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                    "process_pid": [
+                        2912
+                    ]
+                },
+                {
+                    "backend_timestamp": "2020-10-27T14:47:52.717Z",
+                    "device_group_id": 0,
+                    "device_id": 3739267,
+                    "device_name": "hw-host-027",
+                    "device_policy_id": 12229,
+                    "device_timestamp": "2020-10-27T14:47:13.760Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "INJECT_CODE"
+                    ],
+                    "event_type": [
+                        "crossproc"
+                    ],
+                    "ingress_time": 1603810047142,
+                    "legacy": true,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "7DESJ9GN-00390e83-000002a0-00000000-1d6a1f9ef3c0d3e",
+                    "parent_pid": 672,
+                    "process_guid": "7DESJ9GN-00390e83-00000bf4-00000000-1d6a1f9f37d1836",
+                    "process_hash": [
+                        "1169495860abe1bc6a498d2c196787c3",
+                        "fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9"
+                    ],
+                    "process_name": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                    "process_pid": [
+                        3060
+                    ],
+                    "process_username": [
+                        "NT AUTHORITY\\SYSTEM"
+                    ]
+                },
+                {
+                    "backend_timestamp": "2020-10-24T00:58:50.495Z",
+                    "device_group_id": 0,
+                    "device_id": 3739232,
+                    "device_name": "hw-host-004",
+                    "device_policy_id": 12229,
+                    "device_timestamp": "2020-10-24T00:57:37.097Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "INJECT_CODE"
+                    ],
+                    "event_type": [
+                        "crossproc"
+                    ],
+                    "ingress_time": 1603501093672,
+                    "legacy": true,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "7DESJ9GN-00390e60-000002a4-00000000-1d6a463297ebe9b",
+                    "parent_pid": 676,
+                    "process_guid": "7DESJ9GN-00390e60-00000c74-00000000-1d6a4632cda86e3",
+                    "process_hash": [
+                        "1169495860abe1bc6a498d2c196787c3",
+                        "fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9"
+                    ],
+                    "process_name": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                    "process_pid": [
+                        3188
+                    ]
+                },
+                {
+                    "backend_timestamp": "2020-10-17T14:13:34.936Z",
+                    "device_group_id": 0,
+                    "device_id": 3462642,
+                    "device_name": "win10etchangeme",
+                    "device_policy_id": 6525,
+                    "device_timestamp": "2020-10-17T14:12:28.438Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "INJECT_CODE"
+                    ],
+                    "event_type": [
+                        "crossproc"
+                    ],
+                    "ingress_time": 1602943969760,
+                    "legacy": true,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "7DESJ9GN-0034d5f2-0000032c-00000000-1d6a276fc5ed489",
+                    "parent_pid": 812,
+                    "process_guid": "7DESJ9GN-0034d5f2-00000b8c-00000000-1d6a27706e318a2",
+                    "process_hash": [
+                        "63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6",
+                        "c7084336325dc8eadfb1e8ff876921c4"
+                    ],
+                    "process_name": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                    "process_pid": [
+                        2956
+                    ],
+                    "process_username": [
+                        "NT AUTHORITY\\SYSTEM"
+                    ]
+                },
+                {
+                    "backend_timestamp": "2020-10-16T00:36:49.055Z",
+                    "device_group_id": 0,
+                    "device_id": 3216323,
+                    "device_name": "exapil\\pil-cb7-2",
+                    "device_policy_id": 6525,
+                    "device_timestamp": "2020-10-16T00:35:55.328Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "INJECT_CODE"
+                    ],
+                    "event_type": [
+                        "crossproc"
+                    ],
+                    "ingress_time": 1602808577528,
+                    "legacy": true,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "7DESJ9GN-003113c3-00000204-00000000-1d68d438b085325",
+                    "parent_pid": 516,
+                    "process_guid": "7DESJ9GN-003113c3-00000628-00000000-1d68d438ca1bfd4",
+                    "process_hash": [
+                        "63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6",
+                        "c7084336325dc8eadfb1e8ff876921c4"
+                    ],
+                    "process_name": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                    "process_pid": [
+                        1576
+                    ],
+                    "process_username": [
+                        "NT AUTHORITY\\SYSTEM"
+                    ]
+                },
+                {
+                    "backend_timestamp": "2020-10-05T02:17:33.365Z",
+                    "device_group_id": 0,
+                    "device_id": 3365471,
+                    "device_name": "hw-host-004",
+                    "device_policy_id": 6525,
+                    "device_timestamp": "2020-10-05T02:16:18.531Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "INJECT_CODE"
+                    ],
+                    "event_type": [
+                        "crossproc"
+                    ],
+                    "ingress_time": 1601864215004,
+                    "legacy": true,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "7DESJ9GN-00335a5f-00000288-00000000-1d687d4d1d5aec5",
+                    "parent_pid": 648,
+                    "process_guid": "7DESJ9GN-00335a5f-00000abc-00000000-1d687d4d6c9363a",
+                    "process_hash": [
+                        "1169495860abe1bc6a498d2c196787c3",
+                        "fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9"
+                    ],
+                    "process_name": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                    "process_pid": [
+                        2748
+                    ],
+                    "process_username": [
+                        "NT AUTHORITY\\SYSTEM"
+                    ]
+                },
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "null/AIUNTEPE"
+                    ],
+                    "backend_timestamp": "2020-09-03T11:00:49.482Z",
+                    "device_group_id": 791,
+                    "device_id": 3670727,
+                    "device_name": "desktop-fvb88fs",
+                    "device_policy_id": 6525,
+                    "device_timestamp": "2020-09-03T10:59:48.345Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "CREATE_PROCESS"
+                    ],
+                    "event_type": [
+                        "childproc"
+                    ],
+                    "ingress_time": 1599130817870,
+                    "legacy": true,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "7DESJ9GN-003802c7-000002b8-00000000-1d66fbac06780a2",
+                    "parent_pid": 696,
+                    "process_guid": "7DESJ9GN-003802c7-00000b4c-00000000-1d66fbac0f8ad57",
+                    "process_hash": [
+                        "aca121d48147ff717bcd1da7871a5a76",
+                        "da7e37ce59685964a3876ef1747964de1caabd13b3691b6a1d5ebed1d19c19ad"
+                    ],
+                    "process_name": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                    "process_pid": [
+                        2892
+                    ],
+                    "process_username": [
+                        "NT AUTHORITY\\SYSTEM"
+                    ]
+                },
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "null/UQJ5NT2N"
+                    ],
+                    "backend_timestamp": "2020-09-03T08:01:52.493Z",
+                    "device_group_id": 791,
+                    "device_id": 3670528,
+                    "device_name": "desktop-fvb88fs",
+                    "device_policy_id": 6525,
+                    "device_timestamp": "2020-09-03T08:00:46.548Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "CREATE_PROCESS"
+                    ],
+                    "event_type": [
+                        "childproc"
+                    ],
+                    "ingress_time": 1599120076739,
+                    "legacy": true,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "7DESJ9GN-00380200-000002b8-00000000-1d66fbac06780a2",
+                    "parent_pid": 696,
+                    "process_guid": "7DESJ9GN-00380200-00000b4c-00000000-1d66fbac0f8ad57",
+                    "process_hash": [
+                        "aca121d48147ff717bcd1da7871a5a76",
+                        "da7e37ce59685964a3876ef1747964de1caabd13b3691b6a1d5ebed1d19c19ad"
+                    ],
+                    "process_name": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                    "process_pid": [
+                        2892
+                    ],
+                    "process_username": [
+                        "NT AUTHORITY\\SYSTEM"
+                    ]
+                },
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "JMLXDNLG/XPU6S91H"
+                    ],
+                    "backend_timestamp": "2020-08-26T16:08:11.872Z",
+                    "device_group_id": 0,
+                    "device_id": 3644148,
+                    "device_name": "desktop-aa2m6ld",
+                    "device_policy_id": 6529,
+                    "device_timestamp": "2020-08-26T16:06:50.813Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "FILE_CREATE"
+                    ],
+                    "event_type": [
+                        "filemod"
+                    ],
+                    "ingress_time": 1598458053780,
+                    "legacy": true,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "7DESJ9GN-00379af4-00001520-00000000-1d67a883dbd713b",
+                    "parent_pid": 5408,
+                    "process_guid": "7DESJ9GN-00379af4-000007e0-00000000-1d67a8847cebcbd",
+                    "process_hash": [
+                        "80abd555c1869baaff2d8a8d535ce07e",
+                        "fa353f142361e5c6ca57a66dcb341bba20392f5c29d2c113c7d62a216b0e0504"
+                    ],
+                    "process_name": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                    "process_pid": [
+                        2016
+                    ],
+                    "process_username": [
+                        "DESKTOP-AA2M6LD\\John Doe"
+                    ]
+                },
+                {
+                    "backend_timestamp": "2020-08-17T14:38:21.589Z",
+                    "blocked_hash": [
+                        "908b64b1971a979c7e3e8ce4621945cba84854cb98d76367b791a6e22b5f6d53"
+                    ],
+                    "device_group_id": 0,
+                    "device_id": 3600261,
+                    "device_name": "desktop-aa2m6ld",
+                    "device_policy_id": 35704,
+                    "device_timestamp": "2020-08-17T14:37:19.963Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "POLICY_ACTION"
+                    ],
+                    "event_type": [
+                        "childproc"
+                    ],
+                    "ingress_time": 1597675083480,
+                    "legacy": true,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "7DESJ9GN-0036ef85-000007f0-00000000-1d674a3d9a6a335",
+                    "parent_pid": 2032,
+                    "process_guid": "7DESJ9GN-0036ef85-00001f74-00000000-1d674a3e4b3ba9a",
+                    "process_hash": [
+                        "80abd555c1869baaff2d8a8d535ce07e",
+                        "fa353f142361e5c6ca57a66dcb341bba20392f5c29d2c113c7d62a216b0e0504"
+                    ],
+                    "process_name": "c:\\program files\\vmware\\vmware tools\\vmtoolsd.exe",
+                    "process_pid": [
+                        8052
+                    ],
+                    "process_username": [
+                        "DESKTOP-AA2M6LD\\John Doe"
+                    ],
+                    "sensor_action": [
+                        "DENY",
+                        "BLOCK"
+                    ]
+                }
+            ],
+            "status": "Completed"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Completed Search Results:
+>|process_hash|process_name|device_name|device_timestamp|process_pid|process_username|
+>|---|---|---|---|---|---|
+>| 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | cbcloud-win10 | 2020-10-28T07:20:07.603Z | 2912 |  |
+>| 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | hw-host-027 | 2020-10-27T14:47:13.760Z | 3060 | NT AUTHORITY\SYSTEM |
+>| 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | hw-host-004 | 2020-10-24T00:57:37.097Z | 3188 |  |
+>| 63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6,<br/>c7084336325dc8eadfb1e8ff876921c4 | c:\program files\vmware\vmware tools\vmtoolsd.exe | win10etchangeme | 2020-10-17T14:12:28.438Z | 2956 | NT AUTHORITY\SYSTEM |
+>| 63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6,<br/>c7084336325dc8eadfb1e8ff876921c4 | c:\program files\vmware\vmware tools\vmtoolsd.exe | exapil\pil-cb7-2 | 2020-10-16T00:35:55.328Z | 1576 | NT AUTHORITY\SYSTEM |
+>| 1169495860abe1bc6a498d2c196787c3,<br/>fe6a1e46897b972a4f998d9792faccb3c292f9651fc9f744f1369e74667bf0f9 | c:\program files\vmware\vmware tools\vmtoolsd.exe | hw-host-004 | 2020-10-05T02:16:18.531Z | 2748 | NT AUTHORITY\SYSTEM |
+>| aca121d48147ff717bcd1da7871a5a76,<br/>da7e37ce59685964a3876ef1747964de1caabd13b3691b6a1d5ebed1d19c19ad | c:\program files\vmware\vmware tools\vmtoolsd.exe | desktop-fvb88fs | 2020-09-03T10:59:48.345Z | 2892 | NT AUTHORITY\SYSTEM |
+>| aca121d48147ff717bcd1da7871a5a76,<br/>da7e37ce59685964a3876ef1747964de1caabd13b3691b6a1d5ebed1d19c19ad | c:\program files\vmware\vmware tools\vmtoolsd.exe | desktop-fvb88fs | 2020-09-03T08:00:46.548Z | 2892 | NT AUTHORITY\SYSTEM |
+>| 80abd555c1869baaff2d8a8d535ce07e,<br/>fa353f142361e5c6ca57a66dcb341bba20392f5c29d2c113c7d62a216b0e0504 | c:\program files\vmware\vmware tools\vmtoolsd.exe | desktop-aa2m6ld | 2020-08-26T16:06:50.813Z | 2016 | DESKTOP-AA2M6LD\John Doe |
+>| 80abd555c1869baaff2d8a8d535ce07e,<br/>fa353f142361e5c6ca57a66dcb341bba20392f5c29d2c113c7d62a216b0e0504 | c:\program files\vmware\vmware tools\vmtoolsd.exe | desktop-aa2m6ld | 2020-08-17T14:37:19.963Z | 8052 | DESKTOP-AA2M6LD\John Doe |
 

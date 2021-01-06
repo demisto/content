@@ -10,7 +10,7 @@ class TestModifiedPacks:
         ("pack1, pack2,  pack3", {"pack1", "pack2", "pack3"})
     ])
     def test_get_packs_names_specific(self, packs_names_input, expected_result):
-        modified_packs = get_packs_names(packs_names_input)
+        modified_packs = get_packs_names(packs_names_input, 'fake_commit_hash')
 
         assert modified_packs == expected_result
 
@@ -20,7 +20,7 @@ class TestModifiedPacks:
                                        "Packs/Pack1/Integrations/Integration1/CHANGELOG.md\n"
                                        "Packs/Pack2/pack_metadata.json\n")
         mocker.patch('Tests.Marketplace.upload_packs.run_command', return_value=modified_packs_return_value)
-        modified_packs = get_packs_names(target_packs="modified")
+        modified_packs = get_packs_names("modified", 'fake_commit_hash')
 
         assert modified_packs == {"Pack1", "Pack2"}
 
@@ -390,58 +390,6 @@ class TestUpdateIndex:
             assert call_arg[0] in expected_copy_args
 
 
-class TestPrivatePacks:
-    def test_add_private_packs_to_index(self, mocker):
-        from Tests.Marketplace import upload_packs
-
-        dirs = scan_dir()
-        mocker.patch('os.scandir', return_value=dirs)
-        mocker.patch('os.path.isdir', side_effect=FakeDirEntry.isdir)
-        mocker.patch.object(upload_packs, 'update_index_folder')
-
-        upload_packs.add_private_packs_to_index('test', 'private_test')
-
-        index_call_args = upload_packs.update_index_folder.call_args[0]
-        index_call_count = upload_packs.update_index_folder.call_count
-
-        assert index_call_count == 1
-        assert index_call_args[0] == 'test'
-        assert index_call_args[1] == 'mock_dir'
-        assert index_call_args[2] == 'mock_path'
-
-    def test_get_private_packs(self, mocker):
-        import os
-        from Tests.Marketplace import upload_packs, marketplace_services
-
-        mocker.patch('glob.glob', return_value=[os.path.join(marketplace_services.CONTENT_ROOT_PATH,
-                                                             'Tests', 'Marketplace', 'Tests',
-                                                             'test_data', 'metadata.json')])
-
-        private_packs = upload_packs.get_private_packs('path')
-
-        assert private_packs == [{'id': 'ImpossibleTraveler', 'price': 100}]
-
-    def test_get_private_packs_empty(self, mocker):
-        from Tests.Marketplace import upload_packs
-
-        mocker.patch('glob.glob', return_value=[])
-        mocker.patch("Tests.Marketplace.upload_packs.print_warning")
-
-        private_packs = upload_packs.get_private_packs('path')
-
-        assert private_packs == []
-
-    def test_get_private_packs_error(self, mocker):
-        from Tests.Marketplace import upload_packs
-
-        mocker.patch('glob.glob', side_effect=InterruptedError)
-        mocker.patch("Tests.Marketplace.upload_packs.print_warning")
-
-        private_packs = upload_packs.get_private_packs('path')
-
-        assert private_packs == []
-
-
 class TestCleanPacks:
     """ Test for clean_non_existing_packs function scenarios.
     """
@@ -538,7 +486,7 @@ class TestCleanPacks:
         mocker.patch("Tests.Marketplace.upload_packs.os.listdir", return_value=[public_pack])
         mocker.patch("Tests.Marketplace.upload_packs.os.scandir", return_value=dirs)
         mocker.patch('Tests.Marketplace.upload_packs.shutil.rmtree')
-        mocker.patch("Tests.Marketplace.upload_packs.print_warning")
+        mocker.patch("Tests.Marketplace.upload_packs.logging.warning")
 
         private_packs = [{'id': private_pack, 'price': 120}]
 

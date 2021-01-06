@@ -14,6 +14,7 @@ class GoogleClient:
     """
     A Client class to wrap the google cloud api library.
     """
+
     def __init__(self, service_name: str, service_version: str, client_secret: str, scopes: list, proxy: bool,
                  insecure: bool, **kwargs):
         """
@@ -63,6 +64,7 @@ class GoogleClient:
                     proxy_pass=parsed_proxy.password)
                 return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=insecure)
         return httplib2.Http(disable_ssl_certificate_validation=insecure)
+
     # disable-secrets-detection-end
 
     def functions_list(self, region=None, project_id=None):
@@ -101,10 +103,12 @@ class GoogleClient:
 
 
 def functions_list_command(client: GoogleClient, args: dict):
-    region = args.get('region')
-    project_id = args.get('project_id')
+    region = client.region
+    project_id = client.project
     res = client.functions_list(region, project_id)
     functions = res.get('functions', [])
+    if not functions:
+        return 'No functions found.', {}, {}
     keys = list(functions[0].keys())
     keys.remove('name')
     disp_region = 'All' if client.region == '-' else client.region
@@ -169,15 +173,38 @@ def format_parameters(parameters: str) -> str:
     return json.dumps(dict(pairs))
 
 
+def resolve_default_region(region: str):
+    # when region is empty, set it to '-' meaning all regions
+    # note : demisto.params().get('region','-') did not worked on Demisto
+    if not region:
+        # from Google API : If you want to list functions in all locations, use "-" in place of a location
+        return "-"
+    return region
+
+
+def resolve_default_project_id(project: str, credentials_json: dict):
+    if not project:
+        # when project_id is empty, get it from credentials_json
+        no_project_id_in_credentials = "project_id" not in credentials_json
+        if no_project_id_in_credentials:
+            # when not provided project id at all, return error
+            return_error("Service account private key file contents does not have a project id")
+        project = credentials_json["project_id"]
+    return project
+
+
 def main():
     credentials_json = json.loads(demisto.params().get('credentials_json', {}))
-    project = demisto.params().get('project_id', '')
+    project = demisto.params().get('project_id')
+    project = resolve_default_project_id(project, credentials_json)
     region = demisto.params().get('region')
+    region = resolve_default_region(region)
     proxy = demisto.params().get('proxy', False)
     insecure = demisto.params().get('insecure', False)
     scopes = ['https://www.googleapis.com/auth/cloud-platform']
     client = GoogleClient('cloudfunctions', 'v1', credentials_json, scopes, proxy, insecure, project=project,
                           region=region)
+
     commands = {
         'google-cloud-functions-list': functions_list_command,
         'google-cloud-function-regions-list': region_list_command,

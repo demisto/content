@@ -8,6 +8,12 @@ configuration:
   name: threshold
   required: true
   type: 0
+- display: Alexa rank - top domains to be considered trusted.
+  name: benign
+  defaultvalue: "0"
+  type: 0
+  required: true
+  additionalinfo: These domains will be given a DbotScore of good.
 - display: Use system proxy settings
   name: proxy
   required: false

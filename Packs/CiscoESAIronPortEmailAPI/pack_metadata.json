@@ -1,0 +1,14 @@
+{
+    "name": "Cisco ESA IronPort Email API",
+    "description": "Cisco ESA IronPort Email API\nSearch IronPort mail traffic logs\nSearch in IronPort Spam and Quarantines\nRelease Emails from Spam and Quarantines  ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "OsamaShenoda",
+    "url": "",
+    "email": "",
+    "created": "2020-11-09T16:50:34Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

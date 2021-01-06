@@ -109,13 +109,13 @@ def create_scans_table(scans):
             "Update": scans.get(scan).get('update', None),
             "Details": scans.get(scan).get('detail', None)
         }
-        if (dict_for_table['Detected'] is not None and dict_for_table['Detected']):
+        if dict_for_table['Detected'] is not None and dict_for_table['Detected']:
             positives_scans_table.append(dict_for_table)
         else:
             negative_scans_table.append(dict_for_table)
 
-    positives_scans_table = sorted(positives_scans_table, key=lambda scan: scan['Source'])
-    negative_scans_table = sorted(negative_scans_table, key=lambda scan: scan['Source'])
+    positives_scans_table = sorted(positives_scans_table, key=lambda scan_: scan_['Source'])
+    negative_scans_table = sorted(negative_scans_table, key=lambda scan_: scan_['Source'])
 
     scans_table = positives_scans_table + negative_scans_table
     return scans_table
@@ -136,7 +136,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     md += 'VT Link: [' + str(vt_response.get('permalink')) + '](' + str(vt_response.get('permalink')) + ')\n'
     dbotScore = 0
 
-    if (positives >= threshold or is_enough_preferred_vendors(vt_response)):
+    if positives >= threshold or is_enough_preferred_vendors(vt_response):
         ec.update({
             outputPaths['file']: {
                 'MD5': vt_response.get('md5'),
@@ -156,7 +156,7 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
         if vt_response.get('size', False):
             ec[outputPaths['file']].update({'Size': vt_response.get('size')})
         dbotScore = 3
-    elif (positives >= threshold / 2):
+    elif positives >= threshold / 2:
         dbotScore = 2
     else:
         dbotScore = 1
@@ -170,13 +170,13 @@ def create_file_output(file_hash, threshold, vt_response, short_format):
     md += 'SHA1: **' + vt_response.get('sha1') + '**\n'
     md += 'SHA256: **' + vt_response.get('sha256') + '**\n'
 
-    if (vt_response.get('scans', False) and not short_format):
+    if vt_response.get('scans', False) and not short_format:
         scans = vt_response.pop('scans')
         scans_table = create_scans_table(scans)
         scans_table_md = tableToMarkdown('Scans', scans_table)
         md += scans_table_md
         md += '\n'
-        if (ec.get(outputPaths['file'], False)):
+        if ec.get(outputPaths['file'], False):
             ec[outputPaths['file']]['VirusTotal'] = {
                 'Scans': scans_table
             }
@@ -250,16 +250,16 @@ def check_file_behaviour_command():
     args = demisto.args()
     file_hash = args.get('resource')
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
-    if (full_response):
+    if full_response:
         max_len = 1000
     else:
         max_len = 50
-    md = 'We found the following data about hash ' + file_hash + ':\n'
+    md = ''
     # VT response
     response = check_file_behaviour(file_hash)
 
     ec = {}
-    if (response.get('response_code', None) == 0):
+    if response.get('response_code', None) == 0:
 
         if is_demisto_version_ge('5.5.0'):
             ec['DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type'
@@ -281,10 +281,10 @@ def check_file_behaviour_command():
     # data processing
 
     # network data contains all the communication data
-    network_data = response.get('network', None)
+    network_data = response.get('network', {})
 
-    hosts = network_data.get('hosts', None)
-    if (hosts is not None):
+    hosts = network_data.get('hosts')
+    if hosts:
         hosts = list(set(hosts))[:max_len]
         md += tableToMarkdown('Hosts that the hash communicates with are:', [{'Host': host} for host in hosts])
 
@@ -292,38 +292,38 @@ def check_file_behaviour_command():
     domains_list = []
     urls_list = []
 
-    udp_communication = network_data.get('udp', None)
-    if (udp_communication is not None):
+    udp_communication = network_data.get('udp')
+    if udp_communication:
         for entry in udp_communication:
-            ips_list.append(entry.get('dst', None))
+            ips_list.append(entry.get('dst'))
 
-    http_communication = network_data.get('http', None)
-    if (http_communication is not None):
+    http_communication = network_data.get('http')
+    if http_communication:
         for entry in http_communication:
-            urls_list.append(entry.get('uri', None))
-            domains_list.append(entry.get('host', None))
+            urls_list.append(entry.get('uri'))
+            domains_list.append(entry.get('host'))
 
-    tcp_communication = network_data.get('tcp', None)
-    if (tcp_communication is not None):
+    tcp_communication = network_data.get('tcp')
+    if tcp_communication:
         for entry in tcp_communication:
-            ips_list.append(entry.get('dst', None))
+            ips_list.append(entry.get('dst'))
 
-    dns_communication = network_data.get('dns', None)
-    if (dns_communication is not None):
+    dns_communication = network_data.get('dns')
+    if dns_communication:
         for entry in dns_communication:
-            ips_list.append(entry.get('ip', None))
-            domains_list.append(entry.get('hostname', None))
+            ips_list.append(entry.get('ip'))
+            domains_list.append(entry.get('hostname'))
 
-    if (len(ips_list) > 0):
+    if len(ips_list) > 0:
         ips_list = list(set(ips_list))[:max_len]
         md += tableToMarkdown('IPs that the hash communicates with are:', [{'IP': ip} for ip in ips_list])
 
-    if (len(domains_list) > 0):
+    if len(domains_list) > 0:
         domains_list = list(set(domains_list))[:max_len]
         md += tableToMarkdown('Domains that the hash communicates with are:',
                               [{'Domain': domain} for domain in domains_list])
 
-    if (len(urls_list) > 0):
+    if len(urls_list) > 0:
         urls_list = list(set(urls_list))[:max_len]
         md += tableToMarkdown('URLs that the hash communicates with are:', [{'URL': url} for url in urls_list])
 
@@ -337,25 +337,24 @@ def check_file_behaviour_command():
             keys_data = summary_data.get('keys', None)
             mutex_data = summary_data.get('mutexes', None)
 
-    if (files_data is not None):
+    if files_data:
         files_data = list(set(files_data))[:max_len]
         md += tableToMarkdown('Files that are related the hash', [{'File': file} for file in files_data])
 
-    if (keys_data is not None):
+    if keys_data:
         keys_data = list(set(keys_data))[:max_len]
         md += tableToMarkdown('Registry Keys that are related to the hash', [{'Key': k} for k in keys_data])
 
-    if (mutex_data is not None):
+    if mutex_data:
         mutex_data = list(set(mutex_data))[:max_len]
         md += tableToMarkdown('Opened mutexes that are related to the hash', [{'Mutex': m} for m in mutex_data])
 
     hash_length = len(file_hash)
-    hashtype_dic = None
-    if (hash_length == 32):
+    if hash_length == 32:
         hashtype_dic = {
             "MD5": file_hash
         }
-    elif (hash_length == 40):
+    elif hash_length == 40:
         hashtype_dic = {
             "SHA1": file_hash
         }
@@ -377,6 +376,12 @@ def check_file_behaviour_command():
     }
 
     hash_ec.update(hashtype_dic)
+
+    if md:
+        md = 'We found the following data about hash ' + file_hash + ':\n' + md
+    else:
+        md = 'No data were found for hash ' + file_hash
+
     return {
         'Type': entryTypes['note'],
         'Contents': response,
@@ -412,7 +417,7 @@ def get_domain_report_command():
     domain = args['domain']
     threshold = int(args.get('threshold', None) or demisto.params().get('domainThreshold', None) or 10)
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
-    if (full_response):
+    if full_response:
         max_len = 1000
     else:
         max_len = 50
@@ -420,9 +425,9 @@ def get_domain_report_command():
 
     # VT Response
     response = get_domain_report(domain)
-    if (response.get('response_code') == -1):
+    if response.get('response_code') == -1:
         return "Invalid domain"
-    elif (response.get('response_code') == 0):
+    elif response.get('response_code') == 0:
         return {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -446,7 +451,7 @@ def get_domain_report_command():
     if communicating_hashes:
         for d_hash in communicating_hashes:
             positives = d_hash.get('positives')
-            if (positives >= threshold):
+            if positives >= threshold:
                 communicating_malware_hashes.append(d_hash)
 
         communicating_malware_hashes = communicating_malware_hashes[:max_len]
@@ -457,7 +462,7 @@ def get_domain_report_command():
     if downloaded_hashes:
         for d_hash in downloaded_hashes:
             positives = d_hash.get('positives')
-            if (positives >= threshold):
+            if positives >= threshold:
                 downloaded_malware_hashes.append(d_hash)
         downloaded_malware_hashes = downloaded_malware_hashes[:max_len]
         md += tableToMarkdown("Latest detected files that were downloaded from " + domain, downloaded_malware_hashes)
@@ -663,6 +668,21 @@ def is_url_response_complete(res):
     return bool(res.get('total'))
 
 
+def update_entry_context_url(ec_url, url, field_name, field_value):
+    if ec_url:
+        if 'VirusTotal' not in ec_url:
+            ec_url['VirusTotal'] = {
+                field_name: field_value
+            }
+        else:
+            ec_url['VirusTotal'][field_name] = field_value
+    else:
+        ec_url.update({
+            'VirusTotal': {field_name: field_value},
+            'Data': url
+        })
+
+
 def create_url_report_output(url, response, threshold, max_len, short_format):
     """
     Returns 3 results:
@@ -705,17 +725,18 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
     additional_info = response.get('additional_info', None)
     if additional_info is not None:
         resolution = additional_info.get('resolution', None)
-        if resolution is not None:
+        if resolution:
             md += 'IP address resolution for this domain is: ' + resolution + '\n'
-        if ec_url:
-            ec_url['VirusTotal'] = {
-                'Resolutions': resolution[:max_len]
-            }
-        else:
-            ec_url.update({
-                'VirusTotal': {'Resolutions': resolution[:max_len]},
-                'Data': url
-            })
+        update_entry_context_url(ec_url, url, field_name='Resolutions', field_value=resolution[:max_len])
+
+        response_sha256 = additional_info.get('Response content SHA-256', None)
+        if response_sha256:
+            md += 'Response content SHA-256: {}\n'.format(response_sha256)
+            update_entry_context_url(ec_url, url, field_name='ResponseContentSHA256', field_value=response_sha256)
+
+        response_headers = additional_info.get('Response headers', None)
+        if response_headers:
+            update_entry_context_url(ec_url, url, field_name='ResponseHeaders', field_value=response_headers)
 
     scans = response.get('scans', None)
 
@@ -739,7 +760,6 @@ def create_url_report_output(url, response, threshold, max_len, short_format):
             ec_url['VirusTotal'] = {
                 'DroppedFiles': dropped_files
             }
-
     return md, ec_url, ec_dbot
 
 
@@ -868,11 +888,10 @@ def get_ip_report_command():
                               undetected_referrer_samples)
 
     ec['DBotScore'] = []
-    dbotScore = 0
     bad_downloads_amount = len(detected_communicating_samples) if detected_communicating_samples else 0
     detected_url_is_above_threshold = check_detected_urls_threshold(detected_urls,
                                                                     demisto.params().get('urlThreshold', None) or 10)
-    if (bad_downloads_amount >= threshold or detected_url_is_above_threshold):
+    if bad_downloads_amount >= threshold or detected_url_is_above_threshold:
         ec.update({
             outputPaths['ip']: {
                 'Address': ip,
@@ -887,13 +906,13 @@ def get_ip_report_command():
             }
         })
         dbotScore = 3
-    elif (bad_downloads_amount >= threshold / 2 or len(detected_urls) >= threshold / 2):
+    elif bad_downloads_amount >= threshold / 2 or len(detected_urls) >= threshold / 2:
         dbotScore = 2
     else:
         dbotScore = 1
 
     ec['DBotScore'] = {'Indicator': ip, 'Type': 'ip', 'Vendor': 'VirusTotal - Private API', 'Score': dbotScore}
-    if (dbotScore < 3):
+    if dbotScore < 3:
         ec.update({
             outputPaths['ip']: {
                 'Address': ip,
@@ -918,7 +937,7 @@ def get_ip_report_command():
         }
     }
 
-    if (ec.get(outputPaths['ip'], False)):
+    if ec.get(outputPaths['ip'], False):
         ec[outputPaths['ip']]['VirusTotal'] = {
             'DownloadedHashes': detected_downloaded_samples,
             'UnAVDetectedDownloadedHashes': undetected_downloaded_samples,
@@ -964,16 +983,16 @@ def search_file_command():
     query = args['query']
 
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
-    if (full_response):
+    if full_response:
         max_len = 1000
     else:
         max_len = 50
     response = search_file(query)
 
-    if (response.get('response_code') == -1):
+    if response.get('response_code') == -1:
         return "There was some sort of error with your query. Virus Total returned the following response: " + \
                json.dumps(response.get('verbose_msg'))
-    elif (response.get('response_code') == 0):
+    elif response.get('response_code') == 0:
         return "No files matched your query"
 
     del response['response_code']
@@ -1004,15 +1023,15 @@ def hash_communication_command():
     args = demisto.args()
     file_hash = args.get('hash')
     full_response = FULL_RESPONSE or args.get('fullResponse', None) == 'true'
-    if (full_response):
+    if full_response:
         max_len = 1000
     else:
         max_len = 50
-    md = 'Communication result for hash ' + file_hash + '\n'
+    md = ''
     # VT response
     response = check_file_behaviour(file_hash)
 
-    if (response.get('response_code') == 0):
+    if response.get('response_code') == 0:
         return {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -1027,10 +1046,10 @@ def hash_communication_command():
         }
 
     # network data contains all the communication data
-    network_data = response.get('network', None)
+    network_data = response.get('network', {})
 
-    hosts = network_data.get('hosts', None)
-    if (hosts is not None):
+    hosts = network_data.get('hosts')
+    if hosts:
         hosts = list(set(hosts))[:max_len]
         md += tableToMarkdown('Hosts that the hash communicates with are:', [{'Host': host} for host in hosts])
 
@@ -1038,48 +1057,47 @@ def hash_communication_command():
     domains_list = []
     urls_list = []
 
-    udp_communication = network_data.get('udp', None)
-    if (udp_communication is not None):
+    udp_communication = network_data.get('udp')
+    if udp_communication:
         for entry in udp_communication:
-            ips_list.append(entry.get('dst', None))
+            ips_list.append(entry.get('dst'))
 
-    http_communication = network_data.get('http', None)
-    if (http_communication is not None):
+    http_communication = network_data.get('http')
+    if http_communication:
         for entry in http_communication:
-            urls_list.append(entry.get('uri', None))
-            domains_list.append(entry.get('host', None))
+            urls_list.append(entry.get('uri'))
+            domains_list.append(entry.get('host'))
 
-    tcp_communication = network_data.get('tcp', None)
-    if (tcp_communication is not None):
+    tcp_communication = network_data.get('tcp')
+    if tcp_communication:
         for entry in tcp_communication:
-            ips_list.append(entry.get('dst', None))
+            ips_list.append(entry.get('dst'))
 
-    dns_communication = network_data.get('dns', None)
-    if (dns_communication is not None):
+    dns_communication = network_data.get('dns')
+    if dns_communication:
         for entry in dns_communication:
-            ips_list.append(entry.get('ip', None))
-            domains_list.append(entry.get('hostname', None))
+            ips_list.append(entry.get('ip'))
+            domains_list.append(entry.get('hostname'))
 
-    if (len(ips_list) > 0):
+    if len(ips_list) > 0:
         ips_list = list(set(ips_list))[:max_len]
         md += tableToMarkdown('IPs that the hash communicates with are:', [{'IP': ip} for ip in ips_list])
 
-    if (len(domains_list) > 0):
+    if len(domains_list) > 0:
         domains_list = list(set(domains_list))[:max_len]
         md += tableToMarkdown('Domains that the hash communicates with are:',
                               [{'Domain': domain} for domain in domains_list])
 
-    if (len(urls_list) > 0):
+    if len(urls_list) > 0:
         urls_list = list(set(urls_list))[:max_len]
         md += tableToMarkdown('URLs that the hash communicates with are:', [{'URL': url} for url in urls_list])
 
     hash_length = len(file_hash)
-    hashtype_dic = None
-    if (hash_length == 32):
+    if hash_length == 32:
         hashtype_dic = {
             "MD5": file_hash
         }
-    elif (hash_length == 40):
+    elif hash_length == 40:
         hashtype_dic = {
             "SHA1": file_hash
         }
@@ -1098,6 +1116,12 @@ def hash_communication_command():
     }
 
     hash_ec.update(hashtype_dic)
+
+    if md:
+        md = 'Communication result for hash ' + file_hash + '\n' + md
+    else:
+        md = 'No communication results were found for hash ' + file_hash
+
     return {
         'Type': entryTypes['note'],
         'Contents': network_data,
@@ -1127,7 +1151,7 @@ def download_file_command():
 
     response = download_file(file_hash)
 
-    if (response.status_code == 404):
+    if response.status_code == 404:
         return "File was not found in Virus Total's store"
 
     file_name = file_hash + "-vt-file"

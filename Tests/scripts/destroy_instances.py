@@ -1,12 +1,16 @@
-import sys
-import os
 import json
+import logging
+import os
 import subprocess
-from demisto_sdk.commands.common.tools import print_warning, print_error
+import sys
+
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
+
+from Tests.scripts.utils.log_util import install_logging
 
 
 def main():
+    install_logging('Destroy_instances.log')
     circle_aritfact = sys.argv[1]
     env_file = sys.argv[2]
     instance_role = sys.argv[3]
@@ -16,20 +20,22 @@ def main():
 
     filtered_results = [env_result for env_result in env_results if env_result["Role"] == instance_role]
     for env in filtered_results:
-        print(f'Downloading server log from {env.get("Role", "Unknown role")}')
+        logging.info(f'Downloading server log from {env.get("Role", "Unknown role")}')
         ssh_string = 'ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null {}@{} ' \
                      '"sudo chmod -R 755 /var/log/demisto"'
         scp_string = 'scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ' \
                      '{}@{}:/var/log/demisto/server.log {} || echo "WARN: Failed downloading server.log"'
 
         try:
+            logging.debug(f'Changing permissions of folder /var/log/demisto on server {env["InstanceDNS"]}')
             subprocess.check_output(
                 ssh_string.format(env["SSHuser"], env["InstanceDNS"]), shell=True)
 
-        except subprocess.CalledProcessError as exc:
-            print(exc.output)
+        except subprocess.CalledProcessError:
+            logging.exception(f'Failed changing permissions of folder /var/log/demisto on server {env["InstanceDNS"]}')
 
         try:
+            logging.debug(f'Downloading server logs from server {env["InstanceDNS"]}')
             server_ip = env["InstanceDNS"].split('.')[0]
             subprocess.check_output(
                 scp_string.format(
@@ -38,19 +44,27 @@ def main():
                     "{}/server_{}_{}.log".format(circle_aritfact, env["Role"].replace(' ', ''), server_ip)),
                 shell=True)
 
-        except subprocess.CalledProcessError as exc:
-            print(exc.output)
+        except subprocess.CalledProcessError:
+            logging.exception(f'Failed downloading server logs from server {env["InstanceDNS"]}')
+
+        try:
+            logging.debug(f'logging out of docker on server for server {env["InstanceDNS"]}')
+            subprocess.check_output(
+                f'ssh -o StrictHostKeyChecking=no {env["SSHuser"]}@{env["InstanceDNS"]} sudo -u demisto docker logout'.split())
+        except Exception:
+            logging.exception(f'Could not log out of docker on {env["InstanceDNS"]}')
 
         if time_to_live:
-            print(f'Skipping - Time to live was set to {time_to_live} minutes')
-            return
+            logging.info(f'Skipping - Time to live was set to {time_to_live} minutes')
+            continue
         if os.path.isfile("./Tests/is_build_passed_{}.txt".format(env["Role"].replace(' ', ''))):
-            print(f'Destroying instance {env.get("Role", "Unknown role")}')
+            logging.info(f'Destroying instance with role - {env.get("Role", "Unknown role")} and IP - '
+                         f'{env["InstanceDNS"]}')
             rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
             if aws_functions.isError(rminstance):
-                print_error(rminstance)
+                logging.error(rminstance['Message'])
         else:
-            print_warning(f'Tests failed on {env.get("Role", "Unknown role")}, keeping instance alive')
+            logging.warning(f'Tests failed on {env.get("Role", "Unknown role")}, keeping instance alive')
 
 
 if __name__ == "__main__":

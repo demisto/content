@@ -1,8 +1,7 @@
-from typing import Tuple, Dict, Any
 from collections import defaultdict
-import demistomock as demisto
+from typing import Tuple, Dict
+
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -74,6 +73,8 @@ def calculate_score(score: int, threshold: int) -> int:
     Returns:
         int - Demisto's score for the indicator
     """
+    if not score:
+        score = 0
 
     if score > threshold:
         return 3
@@ -212,25 +213,32 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
             markdown += f'Domain: {domain} not found\n'
             continue
         outputs = {'Name': report['url']}
-        dbot_score = {
-            'Indicator': report['url'],
-            'Type': 'domain',
-            'Vendor': 'XFE',
-            'Score': calculate_score(report['score'], threshold)
-        }
+        if report.get('score', 0):
+            dbot_score = {
+                'Indicator': report['url'],
+                'Type': 'domain',
+                'Vendor': 'XFE',
+                'Score': calculate_score(report.get('score', 0), threshold)
+            }
 
-        if dbot_score['Score'] == 3:
-            outputs['Malicious'] = {'Vendor': 'XFE'}
+            if dbot_score['Score'] == 3:
+                outputs['Malicious'] = {'Vendor': 'XFE'}
 
-        context[outputPaths['domain']].append(outputs)
-        context[DBOT_SCORE_KEY].append(dbot_score)
+            context[outputPaths['domain']].append(outputs)
+            context[DBOT_SCORE_KEY].append(dbot_score)
 
-        table = {
-            'Score': report['score'],
-            'Categories': '\n'.join(report['cats'].keys())
-        }
-        markdown += tableToMarkdown(f'X-Force Domain Reputation for: {report["url"]}\n'
-                                    f'{XFORCE_URL}/url/{report["url"]}', table, removeNull=True)
+            table = {
+                'Score': report['score'],
+                'Categories': '\n'.join(report['cats'].keys())
+            }
+
+            markdown += tableToMarkdown(f'X-Force Domain Reputation for: {report["url"]}\n'
+                                        f'{XFORCE_URL}/url/{report["url"]}', table, removeNull=True)
+
+        else:
+            markdown += f'### X-Force Domain Reputation for: {report["url"]}.\n{XFORCE_URL}/url/{report["url"]}\n' \
+                        f'No information found.'
+
         reports.append(report)
 
     return markdown, context, reports
@@ -373,12 +381,20 @@ def file_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
     reports = []
 
     for file_hash in argToList(args.get('file')):
-        report = client.file_report(file_hash)
+        try:
+            report = client.file_report(file_hash)
+        except Exception as err:
+            if 'Error in API call [404] - Not Found' in str(err):
+                markdown += f'File: {file_hash} not found\n'
+                continue
+            else:
+                raise
+
         hash_type = report['type']
 
         scores = {'high': 3, 'medium': 2, 'low': 1}
 
-        file_context = build_dbot_entry(args.get('file'), indicator_type=report['type'],
+        file_context = build_dbot_entry(file_hash, indicator_type=report['type'],
                                         vendor='XFE', score=scores.get(report['risk'], 0))
 
         if outputPaths['file'] in file_context:
@@ -476,11 +492,11 @@ def main():
 
     try:
         if command == 'test-module':
-            demisto.results(test_module(client))
+            return_results(test_module(client))
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
         else:
-            return_error('Command not found.')
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {e}')
 

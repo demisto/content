@@ -3,10 +3,6 @@ commonfields:
   id: QRadar_v2
   version: -1
 configuration:
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - display: Incident type
   name: incidentType
   required: false
@@ -309,13 +305,6 @@ script:
       isArray: false
       name: search_id
       required: true
-      secret: false
-    - default: false
-      description: Table headers to use the human readable output (if none provided,
-        will show all table headers).
-      isArray: false
-      name: headers
-      required: false
       secret: false
     - default: false
       description: Table headers to use the human readable output (if none provided,
@@ -1385,7 +1374,7 @@ script:
     - contextPath: QRadar.Properties.username
       description: The owner of the event regex property.
       type: String
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
   longRunning: true

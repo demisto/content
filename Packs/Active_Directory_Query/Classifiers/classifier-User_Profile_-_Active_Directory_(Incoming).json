@@ -1,0 +1,80 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "e0bc1e9c-7878-40e0-8598-a65c563d270a",
+ "mapping": {
+  "User Profile": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    " Street Address": {
+     "complex": null,
+     "simple": "streetAddress"
+    },
+    "City": {
+     "complex": null,
+     "simple": "l"
+    },
+    "Country Name": {
+     "complex": null,
+     "simple": "c"
+    },
+    "Department": {
+     "complex": null,
+     "simple": "department"
+    },
+    "Display Name": {
+     "complex": null,
+     "simple": "displayName"
+    },
+    "Email": {
+     "complex": null,
+     "simple": "mail"
+    },
+    "Employee ID": {
+     "complex": null,
+     "simple": "employeeID"
+    },
+    "Given Name": {
+     "complex": null,
+     "simple": "givenName"
+    },
+    "Surname": {
+     "complex": null,
+     "simple": "sn"
+    },
+    "Mobile Phone": {
+     "complex": null,
+     "simple": "mobile"
+    },
+    "State Name": {
+     "complex": null,
+     "simple": "st"
+    },
+    "Street Address": {
+     "complex": null,
+     "simple": "streetAddress"
+    },
+    "Title": {
+     "complex": null,
+     "simple": "title"
+    },
+    "Username": {
+     "complex": null,
+     "simple": "userPrincipalName"
+    },
+    "Work Phone": {
+     "complex": null,
+     "simple": "telephoneNumber"
+    },
+    "Zip Code": {
+     "complex": null,
+     "simple": "postalCode"
+    }
+   }
+  }
+ },
+ "name": "User Profile - Active Directory (Incoming)",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

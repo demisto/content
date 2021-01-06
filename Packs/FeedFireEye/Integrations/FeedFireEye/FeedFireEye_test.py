@@ -3,7 +3,8 @@ from typing import Optional
 
 import pytest
 import requests_mock
-from FeedFireEye import Client, STIX21Processor, FE_CONFIDENCE_TO_REPUTATION
+from FeedFireEye import Client, STIX21Processor, FE_CONFIDENCE_TO_REPUTATION, parse_timestamp, \
+    handle_first_fetch_timestamp
 from freezegun import freeze_time
 
 import demistomock as demisto
@@ -109,20 +110,21 @@ FETCH_INDICATORS_PACKAGE = [
         (
             [{'type': 'indicator'}, {'type': 'indicator'}],
             {'relationship1': {'type': 'relationship', 'id': 'relationship1'}},
-            {'malware1': {'type': 'malware', 'id': 'malware1'}}
+            {'malware1': {'type': 'malware', 'id': 'malware1'}},
+            None
         )
     ),
     (
         'https://api.intelligence.fireeye.com/collections/indicators/objects?length=1000',
         204,
         {},
-        ([], {}, {})
+        ([], {}, {}, None)
     ),
     (
         'https://api.intelligence.fireeye.com/collections/indicators/objects?length=1000',
         202,
         {},
-        ([], {}, {})
+        ([], {}, {}, None)
     )
 ]
 
@@ -153,7 +155,7 @@ def test_fetch_indicators_from_api(mocker, url, status_code, json_data, expected
         if status_code in [200, 204]:
             fetch_result = client.fetch_all_indicators_from_api(-1)
 
-            for i in range(3):
+            for i in range(4):
                 assert fetch_result[i] == expected_result[i]
 
             if status_code == 204:
@@ -185,13 +187,13 @@ FETCH_REPORTS_PACKAGE = [
                 },
             ]
         },
-        [{'type': 'report', 'id': 'report1'}, {'type': 'report', 'id': 'report2'}]
+        ([{'type': 'report', 'id': 'report1'}, {'type': 'report', 'id': 'report2'}], None)
     ),
     (
         'https://api.intelligence.fireeye.com/collections/reports/objects?length=100',
         204,
         {},
-        []
+        ([], None)
     )
 ]
 
@@ -242,7 +244,42 @@ PROCESS_INDICATOR_VALUE_PACKAGE = [
             {
                 'MD5': '1234',
                 'SHA-1': '12345',
-                'SHA-256': '12345'
+                'SHA-256': '123456'
+            }
+        )
+    ),
+    (
+        "[file:hashes.'SHA-1'='12345' OR "
+        "file:hashes.'SHA-256'='123456']",
+        (
+            ['file'],
+            ['12345'],
+            {
+                'SHA-1': '12345',
+                'SHA-256': '123456'
+            }
+        )
+    ),
+    (
+        "[file:hashes.'ssdeep'='12345' OR "
+        "file:hashes.'SHA-256'='123456']",
+        (
+            ['file'],
+            ['123456'],
+            {
+                'ssdeep': '12345',
+                'SHA-256': '123456'
+            }
+        )
+    ),
+    (
+        "[file:'fake'='12345' OR "
+        "file:hashes.'SHA-1'='123456']",
+        (
+            ['file'],
+            ['123456'],
+            {
+                'SHA-1': '123456'
             }
         )
     ),
@@ -273,7 +310,7 @@ def test_process_indicator_value(pattern_value, expected_result):
     """
     process_result = STIX21Processor.process_indicator_value(pattern_value)
 
-    for i in range(2):
+    for i in range(3):
         assert process_result[i] == expected_result[i]
 
 
@@ -305,3 +342,50 @@ def test_reputation_calculation(confidence, date, threshold, reputation_interval
     """
     FE_CONFIDENCE_TO_REPUTATION[3] = threshold
     assert STIX21Processor.calculate_indicator_reputation(confidence, date, reputation_interval) == expected
+
+
+def test_parse_timestamp():
+    """
+
+    Given:
+        - Next URL value from FE response
+
+    When:
+        - Saving the last timestamp fetched to context
+
+    Then:
+        - Returns decoded timestamp
+
+    """
+    assert parse_timestamp(
+        'https://api.intelligence.fireeye.com/collections/indicators/objects?length=1000&'
+        'last_id_modified_timestamp=MTU4MDgwOTIxOTcyODY0NixpbmRpY2F0b3ItLTA5MWI3OWQxLTllOWQtNWExYS04ODMzLTZlNTkyZmNj'
+        'MmM1NQ%3D%3D&added_after=1580764458'
+    ) == 1580809219
+
+
+@pytest.mark.parametrize('param_input, expected_result', [
+    ('1 month', '737636400'),
+    ('2 months', '735044400'),
+    ('1 day', '740228400'),
+    ('3 weeks', '738500400'),
+    ('', None),
+    (None, None),
+
+])
+@freeze_time("1993-06-17 11:00:00 GMT")
+def test_handle_first_fetch_timestamp(mocker, param_input, expected_result):
+    """
+
+    Given:
+        - first_fetch_timestamp parameter from user input
+
+    When:
+        - Calculating the first fetch timestamp value
+
+    Then:
+        - str value of the required time, or None if empty
+
+    """
+    mocker.patch.object(demisto, 'params', return_value={'first_fetch_timestamp': param_input})
+    assert handle_first_fetch_timestamp() == expected_result

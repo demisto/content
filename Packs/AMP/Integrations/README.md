@@ -1,6 +1,3 @@
-## Overview
----
-
 Uses CISCO AMP Endpoint
 This integration was integrated and tested with API version v1 of AMP
 
@@ -22,7 +19,7 @@ You can execute these commands from the Demisto CLI, as part of an automation, o
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. amp_get_computers
 2. amp_get_computer_by_connector
-3. amp_get_computer_trajectory
+3. amp_get_computer_trajctory
 4. amp_move_computer
 5. amp_get_computer_activity
 6. amp_get_events
@@ -40,6 +37,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 18. amp_get_policies
 19. amp_get_policy
 20. amp_get_version
+21. amp_delete_computers_isolation
+22. amp_put_computers_isolation
+23. amp_get_computers_isolation
 ### 1. amp_get_computers
 ---
 Returns a list of computers on which agents are deployed. You can use filters (arguments) to narrow the search.
@@ -84,13 +84,13 @@ Returns information for the specified computer.
 !amp_get_computer_by_connector connector_guid=12345abcde
 ```
 
-### 3. amp_get_computer_trajectory
+### 3. amp_get_computer_trajctory
 ---
 Returns a list of all activities associated with a particular computer. This is analogous to the Device Trajectory on the FireAMP Console. Use the Q argument to search for an IP address, SHA256 hash, or URL.
 
 ##### Base Command
 
-`amp_get_computer_trajectory`
+`amp_get_computer_trajctory`
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -102,13 +102,12 @@ Returns a list of all activities associated with a particular computer. This is 
 
 ##### Command Example
 ```
-!amp_get_computer_trajectory q='8.8.8.8' limit=10 connector_guid=12345abdce
+!amp_get_computer_trajctory q='8.8.8.8' limit=10 connector_guid=12345abdce
 ```
 
 ### 4. amp_move_computer
 ---
 Moves a computer to a group with the corresponding connector_guid and group_guid, respectively.
-
 ##### Base Command
 
 `amp_move_computer`
@@ -512,4 +511,74 @@ There is no context output for this command.
 ##### Command Example
 ```
 !amp_get_version
+```
+
+### 21. amp_delete_computers_isolation
+---
+Request to unlock an isolated computer. Can also be used as a course-grained isolation status request.
+
+##### Base Command
+
+`amp_delete_computers_isolation`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| connector_guid | connector GUID. | Required | 
+| unlock_code | Comment about unlocking the computer. Use the amp_get_computers_isolation command to retrieve the unlock_code. | Optional | 
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```
+!amp_delete_computers_isolation connector_guid=12345abcde
+```
+
+### 22. amp_put_computers_isolation
+---
+Requests isolation for a Computer.  If a computer is already isolated a 409 conflict error status is returned.
+
+##### Base Command
+
+`amp_put_computers_isolation`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| connector_guid | connector GUID. | Required | 
+| unlock_code | Comment used when locking the computer. Use the amp_get_computers_isolation command to retrieve the unlock_code. | Optional | 
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```
+!amp_put_computers_isolation connector_guid=12345abcde
+```
+
+### 23. amp_get_computers_isolation
+---
+Returns a fine grained isolation status for a computer.
+
+##### Base Command
+
+`amp_get_computers_isolation`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| connector_guid | connector GUID. | Required | 
+| status | The status of the computer. Can be: "not_isolated", "pending_start", "isolated", or "pending_stop". | Optional | 
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```
+!amp_get_computers_isolation connector_guid=12345abcde
 ```

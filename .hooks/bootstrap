@@ -35,6 +35,10 @@ if [ "$1" == "-u" -o "$1" == "--update" ]; then
         echo "Updating python 3 dependencies ..."
         venv/bin/pip3 install -r dev-requirements-py3.txt
     fi
+    if [ -d "node_modules" ]; then
+        echo "Updating node modules"
+        npm install
+    fi
     echo "Done updating dependencies"
     exit 0
 fi
@@ -83,8 +87,18 @@ else
                 INCLUDE_PY2_NOTE=yes
             fi
         fi
+
+        VIRTUALENV_VERSION=$(virtualenv --version)
+        if [[ $VIRTUALENV_VERSION != *16.7.* && "$SETUP_PY2" == "yes" ]]; then
+            echo "ERROR: You are using virtualenv version ${VIRTUALENV_VERSION}, Please install virtualenv version 16.7.7:
+            pip3 uninstall virtualenv && pip3 install virtualenv==16.7.7"
+            exit 1
+        fi
+
         PY3CMD="python3"
-        if command -v python3.8 >/dev/null 2>&1; then
+        if command -v python3.9 >/dev/null 2>&1; then
+            PY3CMD="python3.9"
+        elif command -v python3.8 >/dev/null 2>&1; then
             PY3CMD="python3.8"
         elif command -v python3.7 >/dev/null 2>&1; then
             PY3CMD="python3.7"
@@ -130,3 +144,21 @@ else
     fi
 fi
 
+echo "======================="
+
+if [ -n "$CI" ]; then
+    echo "Detected CI env. Running npm ci..."
+    npm ci
+elif [ -n "$NO_NPM" ]; then
+    echo "Skipping npm node modules setup as environment varialbe NO_NPM is set"
+else
+    if ! command -v npm >/dev/null 2>&1; then
+        echo "Skipping npm node modules as 'npm' command was not found!!"
+        echo "node and npm are optional but recommended. We use node for validating README files."
+        echo "You can install node and npm on your machine."
+        echo "and then run: 'npm install'"
+    else
+        echo "Running: npm install ..."        
+        npm install        
+    fi
+fi

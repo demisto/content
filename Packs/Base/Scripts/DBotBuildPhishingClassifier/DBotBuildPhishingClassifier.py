@@ -4,6 +4,7 @@ import copy
 from CommonServerPython import *
 
 PREFIXES_TO_REMOVE = ['incident.']
+ALL_LABELS = "*"
 
 
 def preprocess_incidents_field(incidents_field):
@@ -12,6 +13,37 @@ def preprocess_incidents_field(incidents_field):
         if incidents_field.startswith(prefix):
             incidents_field = incidents_field[len(prefix):]
     return incidents_field
+
+
+def get_phishing_map_labels(comma_values):
+    if comma_values == ALL_LABELS:
+        return comma_values
+    values = [x.strip() for x in comma_values.split(",")]
+    labels_dict = {}
+    for v in values:
+        v = v.strip()
+        if ":" in v:
+            splited = v.split(":")
+            labels_dict[splited[0].strip()] = splited[1].strip()
+        else:
+            labels_dict[v] = v
+    return {k: v for k, v in labels_dict.items()}
+
+
+def build_query_in_reepect_to_phishing_labels(args):
+    mapping = args.get('phishingLabels', ALL_LABELS)
+    query = args.get('query', None)
+    if mapping == ALL_LABELS:
+        return args
+    mapping_dict = get_phishing_map_labels(mapping)
+    tag_field = args['tagField']
+    tags_union = ' '.join(['"{}"'.format(label) for label in mapping_dict])
+    mapping_query = '{}:({})'.format(tag_field, tags_union)
+    if 'query' not in args:
+        args['query'] = mapping_query
+    else:
+        args['query'] = '({}) and ({})'.format(query, mapping_query)
+    return args
 
 
 def main():
@@ -25,6 +57,7 @@ def main():
     fields_to_populate = [get_incidents_by_query_args.get(x, None) for x in fields_names_to_populate]
     fields_to_populate = [x for x in fields_to_populate if x is not None]
     get_incidents_by_query_args['populateFileds'] = ','.join(fields_to_populate)
+    get_incidents_by_query_args = build_query_in_reepect_to_phishing_labels(get_incidents_by_query_args)
     res = demisto.executeCommand("GetIncidentsByQuery", get_incidents_by_query_args)
     if is_error(res):
         return_error(get_error(res))

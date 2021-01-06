@@ -2,7 +2,7 @@
     "name": "McAfee ESM",
     "description": "Run queries and receive alarms from Intel Security ESM.",
     "support": "xsoar",
-    "currentVersion": "1.1.1",
+    "currentVersion": "1.1.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

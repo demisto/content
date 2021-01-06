@@ -1,0 +1,33 @@
+{
+	"description": "Approved usecases for use in pack_metadata.json. To modify this file you will need a CODEOWNER to approve.",
+	"approved_list": [
+		"Access",
+		"Asset Management",
+		"Breach Notification",
+		"Breach and Attack Simulation",
+		"Brute Force",
+		"Case Management",
+		"Compliance",
+		"Crisis Management",
+		"Default",
+		"Email Communication",
+		"Employee Offboarding",
+		"GDPR Breach Notification",
+		"HIPAA Breach Notification",
+		"Health Check",
+		"Hunting",
+		"Identity and Access Management",
+		"Impossible Traveler",
+		"Incident Response",
+		"Lost or Stolen Device",
+		"Malware",
+		"NIST",
+		"PCAP Analysis",
+		"Phishing",
+		"Ransomware",
+		"SANS",
+		"Threat Intelligence Management",
+		"Vulnerability Management",
+		"Network Security"
+	]
+}

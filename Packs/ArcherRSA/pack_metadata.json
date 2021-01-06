@@ -1,16 +1,16 @@
 {
-  "name": "RSA Archer",
-  "description": "The RSA Archer GRC Platform provides a common foundation for managing policies, controls, risks, assessments and deficiencies across lines of business.",
-  "support": "xsoar",
-  "currentVersion": "1.1.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Case Management"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "RSA Archer",
+    "description": "The RSA Archer GRC Platform provides a common foundation for managing policies, controls, risks, assessments and deficiencies across lines of business.",
+    "support": "xsoar",
+    "currentVersion": "1.1.8",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
 }

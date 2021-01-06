@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 3e20bf2e-cb18-4178-8efe-caa9e28b41b2
+    taskid: 7f626c1d-c310-48dc-89dc-7074d8a81cdd
     type: start
     task:
-      id: 3e20bf2e-cb18-4178-8efe-caa9e28b41b2
+      id: 7f626c1d-c310-48dc-89dc-7074d8a81cdd
       version: -1
       name: ""
       iscommand: false
@@ -32,13 +32,13 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 554d6588-213b-4d3e-8f8c-d942c38a6703
+    taskid: 981c10d0-b2c8-4f40-8635-d2853246ef79
     type: regular
     task:
-      id: 554d6588-213b-4d3e-8f8c-d942c38a6703
+      id: 981c10d0-b2c8-4f40-8635-d2853246ef79
       version: -1
       name: Fetch from instance
-      scriptName: FetchFromInstance
+      script: FetchFromInstance
       type: regular
       iscommand: false
       brand: ""
@@ -63,10 +63,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 470a8a05-50c8-47e6-8d36-ce973abdc94d
+    taskid: 86c2d93d-2f50-4c2b-8fa3-bf5b05aec533
     type: regular
     task:
-      id: 470a8a05-50c8-47e6-8d36-ce973abdc94d
+      id: 86c2d93d-2f50-4c2b-8fa3-bf5b05aec533
       version: -1
       name: Get detections by filter
       script: '|||cs-falcon-search-detection'
@@ -95,10 +95,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 2bb78f10-176c-4ace-859c-2862b513a442
+    taskid: 9c7d67c9-3ff3-4466-8687-9e20d34e651d
     type: condition
     task:
-      id: 2bb78f10-176c-4ace-859c-2862b513a442
+      id: 9c7d67c9-3ff3-4466-8687-9e20d34e651d
       version: -1
       name: Assert detections were fetched
       type: condition
@@ -137,10 +137,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 9526ce2e-9a6b-4216-845d-b7d803051e39
+    taskid: cd4bdd31-6169-48d3-8080-2c11a3e016db
     type: regular
     task:
-      id: 9526ce2e-9a6b-4216-845d-b7d803051e39
+      id: cd4bdd31-6169-48d3-8080-2c11a3e016db
       version: -1
       name: Get behavior
       script: '|||cs-falcon-get-behavior'
@@ -168,10 +168,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 0c5b6fff-a2e8-4fea-819b-4bc2cd8e6434
+    taskid: 980fac84-6552-4071-8ff1-0e0ad85201e4
     type: condition
     task:
-      id: 0c5b6fff-a2e8-4fea-819b-4bc2cd8e6434
+      id: 980fac84-6552-4071-8ff1-0e0ad85201e4
       version: -1
       name: Assert 'suspicious_activity' scenario
       type: condition
@@ -208,10 +208,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: b36b37a0-434b-48ca-8683-6243354bdf4e
+    taskid: f5a0d080-8aef-4b7b-813e-999c1df7cee8
     type: regular
     task:
-      id: b36b37a0-434b-48ca-8683-6243354bdf4e
+      id: f5a0d080-8aef-4b7b-813e-999c1df7cee8
       version: -1
       name: Get multiple devices
       script: '|||cs-falcon-search-device'
@@ -245,10 +245,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 8b89d67a-947a-4e31-8f45-e9308846af86
+    taskid: aad3d39a-98c2-4ac0-8691-0351144fddf1
     type: condition
     task:
-      id: 8b89d67a-947a-4e31-8f45-e9308846af86
+      id: aad3d39a-98c2-4ac0-8691-0351144fddf1
       version: -1
       name: Assert devices were fetched
       type: condition
@@ -256,7 +256,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "8"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -287,10 +287,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: dabf9864-0516-41de-8b0b-bfc4c58fe1cc
+    taskid: 5867ab54-f582-4730-847d-a07c4106658e
     type: title
     task:
-      id: dabf9864-0516-41de-8b0b-bfc4c58fe1cc
+      id: 5867ab54-f582-4730-847d-a07c4106658e
       version: -1
       name: Done
       type: title
@@ -301,7 +301,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1420
+          "y": 3870
         }
       }
     note: false
@@ -311,10 +311,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: c0d9e042-0146-4d7e-863f-c00c6f62dad2
+    taskid: 7fac9423-394a-4a33-820e-2b1862a170ec
     type: regular
     task:
-      id: c0d9e042-0146-4d7e-863f-c00c6f62dad2
+      id: 7fac9423-394a-4a33-820e-2b1862a170ec
       version: -1
       name: Clear context
       scriptName: DeleteContext
@@ -345,12 +345,631 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "10":
+    id: "10"
+    taskid: 86cec3a0-2361-4359-869d-905bae0cef69
+    type: regular
+    task:
+      id: 86cec3a0-2361-4359-869d-905bae0cef69
+      version: -1
+      name: Search for domain IOCs
+      description: Returns a list of your uploaded IOCs that match the search criteria
+      script: '|||cs-falcon-search-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      from_expiration_date: {}
+      limit: {}
+      offset: {}
+      policies: {}
+      share_levels: {}
+      sort: {}
+      sources: {}
+      to_expiration_date: {}
+      types:
+        simple: domain
+      values: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 291463a9-3efa-4db3-8854-63cf7450ca7c
+    type: condition
+    task:
+      id: 291463a9-3efa-4db3-8854-63cf7450ca7c
+      version: -1
+      name: Assert domains were fetched
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: CrowdStrike.IOC.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: inList
+          left:
+            value:
+              simple: CrowdStrike.IOC.Value
+            iscontext: true
+          right:
+            value:
+              simple: value
+      - - operator: inList
+          left:
+            value:
+              simple: CrowdStrike.IOC.Policy
+            iscontext: true
+          right:
+            value:
+              simple: none
+      - - operator: inList
+          left:
+            value:
+              simple: CrowdStrike.IOC.ShareLevel
+            iscontext: true
+          right:
+            value:
+              simple: red
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: bab409ec-480f-4ea0-8b1d-5221863ffed7
+    type: regular
+    task:
+      id: bab409ec-480f-4ea0-8b1d-5221863ffed7
+      version: -1
+      name: Create test IOC
+      description: Uploads an indicator for CrowdStrike to monitor.
+      script: '|||cs-falcon-upload-ioc'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      description:
+        simple: Test ioc
+      expiration_days: {}
+      ioc_type:
+        simple: domain
+      policy:
+        simple: none
+      share_level:
+        simple: red
+      source:
+        simple: Demisto playbook
+      value:
+        simple: test.domain.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 860cdb12-9c18-4010-8d54-fa5d3a4c87a7
+    type: condition
+    task:
+      id: 860cdb12-9c18-4010-8d54-fa5d3a4c87a7
+      version: -1
+      name: Assert IOC was created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: CrowdStrike.IOC.Value
+            iscontext: true
+          right:
+            value:
+              simple: test.domain.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CrowdStrike.IOC.Description
+            iscontext: true
+          right:
+            value:
+              simple: Test ioc
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CrowdStrike.IOC.Source
+            iscontext: true
+          right:
+            value:
+              simple: Demisto playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b84b5dc0-a635-40b4-8c0e-e93e250291a6
+    type: regular
+    task:
+      id: b84b5dc0-a635-40b4-8c0e-e93e250291a6
+      version: -1
+      name: Update IOC
+      description: Updates an indicator for CrowdStrike to monitor.
+      script: '|||cs-falcon-update-ioc'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      description:
+        simple: Benign domain IOC
+      expiration_days: {}
+      ioc_type:
+        simple: domain
+      policy:
+        simple: detect
+      share_level: {}
+      source: {}
+      value:
+        simple: test.domain.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: a987cff3-c13c-438e-8bef-d632c56df11c
+    type: condition
+    task:
+      id: a987cff3-c13c-438e-8bef-d632c56df11c
+      version: -1
+      name: Assert IOC was updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: CrowdStrike.IOC.Description
+            iscontext: true
+          right:
+            value:
+              simple: Benign domain IOC
+      - - operator: inList
+          left:
+            value:
+              simple: CrowdStrike.IOC.Policy
+            iscontext: true
+          right:
+            value:
+              simple: detect
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: da45f510-4219-4df3-8c3d-77227f71d370
+    type: regular
+    task:
+      id: da45f510-4219-4df3-8c3d-77227f71d370
+      version: -1
+      name: Delete test IOC
+      description: Deletes a monitored indicator.
+      script: '|||cs-falcon-delete-ioc'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      type:
+        simple: domain
+      value:
+        simple: test.domain.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 0928dc08-30ab-44ec-82ae-06440880b4b5
+    type: regular
+    task:
+      id: 0928dc08-30ab-44ec-82ae-06440880b4b5
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 35a5c904-9db2-4ab8-8a8c-c0b786eb31de
+    type: regular
+    task:
+      id: 35a5c904-9db2-4ab8-8a8c-c0b786eb31de
+      version: -1
+      name: Get just created test IOC
+      description: Get the full definition of one or more indicators that you are
+        watching
+      script: '|||cs-falcon-get-ioc'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      type:
+        simple: domain
+      value:
+        simple: test.domain.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: e3350f2e-8233-48f5-859d-1cb1bdc9c9aa
+    type: condition
+    task:
+      id: e3350f2e-8233-48f5-859d-1cb1bdc9c9aa
+      version: -1
+      name: Assert IOC was fetched
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: CrowdStrike.IOC.Value
+            iscontext: true
+          right:
+            value:
+              simple: test.domain.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CrowdStrike.IOC.Description
+            iscontext: true
+          right:
+            value:
+              simple: Test ioc
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CrowdStrike.IOC.Source
+            iscontext: true
+          right:
+            value:
+              simple: Demisto playbook
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: defc81d2-4911-4853-84c3-2e4715d805c7
+    type: regular
+    task:
+      id: defc81d2-4911-4853-84c3-2e4715d805c7
+      version: -1
+      name: Check device count for IOC
+      description: Number of hosts that observed the given IOC.
+      script: '|||cs-falcon-device-count-ioc'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      type:
+        simple: domain
+      value:
+        simple: ynet.co.il
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: dad735d7-42b8-420f-89e3-a931e236266d
+    type: condition
+    task:
+      id: dad735d7-42b8-420f-89e3-a931e236266d
+      version: -1
+      name: Assert Device ID was fetched correctly
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CrowdStrike.IOC.ID
+            iscontext: true
+          right:
+            value:
+              simple: domain:ynet.co.il
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CrowdStrike.IOC.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CrowdStrike.IOC.Value
+            iscontext: true
+          right:
+            value:
+              simple: ynet.co.il
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: f8d891b7-fc00-47f2-8281-a2f75d9186dc
+    type: regular
+    task:
+      id: f8d891b7-fc00-47f2-8281-a2f75d9186dc
+      version: -1
+      name: Run Script
+      description: Runs a script on the agent host.
+      script: '|||cs-falcon-run-script'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      execution-timeout:
+        simple: "400"
+      host_ids:
+        simple: 15dbb9d8f06b45fe9f61eb46e829d986
+      raw: {}
+      script_name:
+        simple: MoreThanFiveMinutes
+      timeout:
+        simple: "400"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 32608aa6-24b4-474d-8383-159a3433d45a
+    type: condition
+    task:
+      id: 32608aa6-24b4-474d-8383-159a3433d45a
+      version: -1
+      name: Verify script results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CrowdStrike.Command.Stdout
+            iscontext: true
+          right:
+            value:
+              simple: Bye
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1435,
+        "height": 3885,
         "width": 810,
         "x": 50,
         "y": 50

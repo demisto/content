@@ -2,7 +2,6 @@ from CommonServerPython import *
 
 import pickle
 import uuid
-
 from dateutil import parser
 
 PREFIXES_TO_REMOVE = ['incident.']
@@ -18,23 +17,29 @@ def parse_datetime(datetime_str):
 
 
 def parse_relative_time(datetime_str):
-    try:
-        res = re.search("([0-9]+) (minutes|hours|days|weeks|months|years) ago", datetime_str)
-        if res:
-            number = int(res.group(1))
-            unit = res.group(2)
-            if unit == 'years':
-                unit = 'days'
-                number *= 365
-            elif unit == 'months':
-                number *= 43800
-                unit = 'minutes'
-            kargs = {}
-            kargs[unit] = int(number)
-            result = datetime.now() - timedelta(**kargs)
-            return result
-    except Exception:
-        return None
+    if datetime_str:
+        datetime_str = datetime_str.lower()
+        try:
+            res = re.search("([0-9]+) (minute|minutes|hour|hours|day|days|week|weeks|month|months|year|years) ago",
+                            datetime_str)
+            if res:
+                number = int(res.group(1))
+                unit = res.group(2)
+                if unit in ['minute', 'hour', 'day', 'week', 'month', 'year']:
+                    unit += "s"
+                if unit == 'years':
+                    unit = 'days'
+                    number *= 365
+                elif unit == 'months':
+                    number *= 43800
+                    unit = 'minutes'
+
+                kargs = {}
+                kargs[unit] = int(number)
+                result = datetime.now() - timedelta(**kargs)
+                return result
+        except Exception:
+            return None
 
 
 def get_context(incident_id):
@@ -50,7 +55,9 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
     if extra_query:
         query_parts.append(extra_query)
     if incident_types:
-        types_part = "type:(%s)" % " ".join(map(lambda x: '"%s"' % x.strip(), incident_types.split(",")))
+        types = ['"{}"'.format(x.strip()) if '*' not in x else '{}'.format(x.strip())
+                 for x in incident_types.split(",")]
+        types_part = "type:({})".format(' '.join(types))
         query_parts.append(types_part)
     if from_date:
         from_part = '%s:>="%s"' % (time_field, parse_datetime(from_date))
@@ -59,12 +66,11 @@ def build_incidents_query(extra_query, incident_types, time_field, from_date, to
         to_part = '%s:<"%s"' % (time_field, parse_datetime(to_date))
         query_parts.append(to_part)
     if len(non_empty_fields) > 0:
-        non_empty_fields_part = " and ".join(map(lambda x: "%s:*" % x, non_empty_fields))
+        non_empty_fields_part = " and ".join("{}:*".format(x) for x in non_empty_fields)
         query_parts.append(non_empty_fields_part)
     if len(query_parts) == 0:
         raise Exception("Incidents query is empty - please fill one of the arguments")
-    query = " and ".join(map(lambda x: "(%s)" % x, query_parts))
-
+    query = " and ".join('({})'.format(x) for x in query_parts)
     return query
 
 
@@ -103,19 +109,43 @@ def get_incidents_by_page(args, page, fields_to_populate, include_context):
     return parsed_incidents
 
 
-def get_incidents(query, time_field, size, from_date, fields_to_populate, include_context):
-    query_size = min(PAGE_SIZE, size)
-    args = {"query": query, "size": query_size, "sort": time_field}
-    if time_field == "created" and from_date:
-        from_datetime = None
+def get_demisto_datetme_format(date_string):
+    if date_string:
+        date_object = None
+        # try to parse date string
         try:
-            from_datetime = parser.parse(from_date)
+            date_object = parser.parse(date_string)
         except Exception:
             pass
-        if from_datetime is None and from_date.strip().endswith("ago"):
-            from_datetime = parse_relative_time(from_date)
-        if from_datetime:
-            args['from'] = from_datetime.isoformat()
+        # try to parse relative time
+        if date_object is None and date_string.strip().endswith("ago"):
+            date_object = parse_relative_time(date_string)
+
+        if date_object:
+            return date_object.astimezone().isoformat('T')
+        else:
+            return None
+
+
+def get_incidents(query, time_field, size, from_date, to_date, fields_to_populate, include_context):
+    query_size = min(PAGE_SIZE, size)
+    args = {"query": query, "size": query_size, "sort": "%s.%s" % (time_field, "desc")}
+    # apply only when created time field
+    if time_field == 'created':
+        if from_date:
+            from_datetime = get_demisto_datetme_format(from_date)
+            if from_datetime:
+                args['fromdate'] = from_datetime
+            else:
+                demisto.results("did not set from date due to a wrong format: " + from_date)
+
+        if to_date:
+            to_datetime = get_demisto_datetme_format(to_date)
+            if to_datetime:
+                args['todate'] = to_datetime
+            else:
+                demisto.results("did not set to date due to a wrong format: " + from_date)
+
     incident_list = []  # type: ignore
     page = 0
     while len(incident_list) < size:
@@ -165,6 +195,7 @@ def main():
         incidents = get_incidents(query, d_args['timeField'],
                                   int(d_args['limit']),
                                   d_args.get('fromDate'),
+                                  d_args.get('toDate'),
                                   fields_to_populate,
                                   include_context)
 
@@ -172,9 +203,9 @@ def main():
         file_name = str(uuid.uuid4())
         output_format = d_args['outputFormat']
         if output_format == 'pickle':
-            data_encoded = pickle.dumps(incidents)
+            data_encoded = pickle.dumps(incidents, protocol=2)
         elif output_format == 'json':
-            data_encoded = json.dumps(incidents)
+            data_encoded = json.dumps(incidents)  # type: ignore
         else:
             raise Exception("Invalid output format: %s" % output_format)
 
@@ -192,6 +223,6 @@ def main():
         return_error(str(e))
 
 
-if __name__ in ['__builtin__', '__main__']:
+if __name__ in ['builtins', '__main__']:
     entry = main()
     demisto.results(entry)

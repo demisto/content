@@ -1,34 +1,34 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-import sys
-import traceback
-import json
-import os
-import hashlib
-from datetime import timedelta
-from cStringIO import StringIO
-import logging
-import warnings
-import subprocess
 import email
-from requests.exceptions import ConnectionError
+import hashlib
+import subprocess
+import warnings
 from collections import deque
-
 from multiprocessing import Process
+
 import exchangelib
-from exchangelib.errors import ErrorItemNotFound, ResponseMessageError, TransportError, RateLimitError, \
-    ErrorInvalidIdMalformed, \
-    ErrorFolderNotFound, ErrorMailboxStoreUnavailable, ErrorMailboxMoveInProgress, \
-    AutoDiscoverFailed, ErrorNameResolutionNoResults, ErrorInvalidPropertyRequest, ErrorIrresolvableConflict
-from exchangelib.items import Item, Message, Contact
-from exchangelib.services import EWSService, EWSAccountService
-from exchangelib.util import create_element, add_xml_child
-from exchangelib import IMPERSONATION, DELEGATE, Account, Credentials, \
-    EWSDateTime, EWSTimeZone, Configuration, NTLM, DIGEST, BASIC, FileAttachment, \
-    Version, Folder, HTMLBody, Body, Build, ItemAttachment
-from exchangelib.version import EXCHANGE_2007, EXCHANGE_2010, EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2016
+from CommonServerPython import *
+from cStringIO import StringIO
+from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
+                         Body, Build, Configuration, Credentials, EWSDateTime,
+                         EWSTimeZone, FileAttachment, Folder, HTMLBody,
+                         ItemAttachment, Version)
+from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
+                                ErrorInvalidIdMalformed,
+                                ErrorInvalidPropertyRequest,
+                                ErrorIrresolvableConflict, ErrorItemNotFound,
+                                ErrorMailboxMoveInProgress,
+                                ErrorMailboxStoreUnavailable,
+                                ErrorNameResolutionNoResults, RateLimitError,
+                                ResponseMessageError, TransportError)
+from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from exchangelib.services import EWSAccountService, EWSService
+from exchangelib.util import add_xml_child, create_element
+from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
+                                 EXCHANGE_2010_SP2, EXCHANGE_2013,
+                                 EXCHANGE_2016)
+from future import utils as future_utils
+from requests.exceptions import ConnectionError
 
 # Define utf8 as default encoding
 reload(sys)
@@ -90,7 +90,6 @@ ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceive
                          'toRecipients', 'textBody', ]
 
 # Load integratoin params from demisto
-USE_PROXY = demisto.params().get('proxy', False)
 NON_SECURE = demisto.params().get('insecure', True)
 AUTH_METHOD_STR = demisto.params().get('authType', '')
 AUTH_METHOD_STR = AUTH_METHOD_STR.lower() if AUTH_METHOD_STR else ''
@@ -342,7 +341,8 @@ def exchangelib_cleanup():
                 protocol.thread_pool.terminate()
                 del protocol.__dict__["thread_pool"]
             else:
-                demisto.info('Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
+                demisto.info(
+                    'Thread pool not found (ignoring terminate) in protcol dict: {}'.format(dir(protocol.__dict__)))
         except Exception as ex:
             demisto.error("Error with thread_pool.terminate, ignoring: {}".format(ex))
 
@@ -399,8 +399,6 @@ def prepare_context(credentials):
                 access_type=ACCESS_TYPE, credentials=credentials,
             )
             EWS_SERVER = account.protocol.service_endpoint
-            if not USE_PROXY:
-                os.environ['NO_PROXY'] = EWS_SERVER
             SERVER_BUILD = account.protocol.version.build
             demisto.setIntegrationContext(create_context_dict(account))
         except AutoDiscoverFailed:
@@ -415,17 +413,8 @@ def prepare_context(credentials):
 def prepare():
     if NON_SECURE:
         BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
-
-    if not USE_PROXY:
-        def remove_from_dict(d, key):
-            if key in d:
-                del d[key]
-
-        remove_from_dict(os.environ, 'HTTP_PROXY')
-        remove_from_dict(os.environ, 'http_proxy')
-        remove_from_dict(os.environ, 'HTTPS_PROXY')
-        remove_from_dict(os.environ, 'https_proxy')
-        os.environ['NO_PROXY'] = EWS_SERVER or ""
+    else:
+        BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
 
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     AUTO_DISCOVERY = not EWS_SERVER
@@ -921,7 +910,13 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
     qs = qs.filter().order_by('datetime_received')
 
     result = qs.all()
-    result = [x for x in result if isinstance(x, Message)]
+    try:
+        result = [item for item in result if isinstance(item, Message)]
+    except ValueError as exc:
+        future_utils.raise_from(ValueError(
+            'Got an error when pulling incidents. You might be using the wrong exchange version.'
+        ), exc)
+
     if exclude_ids and len(exclude_ids) > 0:
         exclude_ids = set(exclude_ids)
         result = [x for x in result if x.message_id not in exclude_ids]
@@ -1064,59 +1059,95 @@ def parse_incident_from_item(item, is_fetch):
     labels = []
 
     try:
-        incident['details'] = item.text_body or item.body
-    except AttributeError:
-        incident['details'] = item.body
-    incident['name'] = item.subject
-    labels.append({'type': 'Email/subject', 'value': item.subject})
-    incident['occurred'] = item.datetime_created.ewsformat()
+        try:
+            incident['details'] = item.text_body or item.body
+        except AttributeError:
+            incident['details'] = item.body
 
-    # handle recipients
-    if item.to_recipients:
-        for recipient in item.to_recipients:
-            labels.append({'type': 'Email', 'value': recipient.email_address})
+        incident['name'] = item.subject
+        labels.append({'type': 'Email/subject', 'value': item.subject})
+        incident['occurred'] = item.datetime_created.ewsformat()
 
-    # handle cc
-    if item.cc_recipients:
-        for recipient in item.cc_recipients:
-            labels.append({'type': 'Email/cc', 'value': recipient.email_address})
-    # handle email from
-    if item.sender:
-        labels.append({'type': 'Email/from', 'value': item.sender.email_address})
+        # handle recipients
+        if item.to_recipients:
+            for recipient in item.to_recipients:
+                labels.append({'type': 'Email', 'value': recipient.email_address})
 
-    # email format
-    email_format = ''
-    try:
-        if item.text_body:
-            labels.append({'type': 'Email/text', 'value': item.text_body})
-            email_format = 'text'
-    except AttributeError:
-        pass
-    if item.body:
-        labels.append({'type': 'Email/html', 'value': item.body})
-        email_format = 'HTML'
-    labels.append({'type': 'Email/format', 'value': email_format})
+        # handle cc
+        if item.cc_recipients:
+            for recipient in item.cc_recipients:
+                labels.append({'type': 'Email/cc', 'value': recipient.email_address})
+        # handle email from
+        if item.sender:
+            labels.append({'type': 'Email/from', 'value': item.sender.email_address})
 
-    # handle attachments
-    if item.attachments:
-        incident['attachment'] = []
-        for attachment in item.attachments:
-            if attachment is not None:
-                attachment.parent_item = item
-                file_result = None
-                label_attachment_type = None
-                label_attachment_id_type = None
-                if isinstance(attachment, FileAttachment):
-                    try:
-                        if attachment.content:
-                            # file attachment
-                            label_attachment_type = 'attachments'
-                            label_attachment_id_type = 'attachmentId'
+        # email format
+        email_format = ''
+        try:
+            if item.text_body:
+                labels.append({'type': 'Email/text', 'value': item.text_body})
+                email_format = 'text'
+        except AttributeError:
+            pass
+        if item.body:
+            labels.append({'type': 'Email/html', 'value': item.body})
+            email_format = 'HTML'
+        labels.append({'type': 'Email/format', 'value': email_format})
 
-                            # save the attachment
-                            file_name = get_attachment_name(attachment.name)
-                            file_result = fileResult(file_name, attachment.content)
+        # handle attachments
+        if item.attachments:
+            incident['attachment'] = []
+            for attachment in item.attachments:
+                if attachment is not None:
+                    attachment.parent_item = item
+                    file_result = None
+                    label_attachment_type = None
+                    label_attachment_id_type = None
+                    if isinstance(attachment, FileAttachment):
+                        try:
+                            if attachment.content:
+                                # file attachment
+                                label_attachment_type = 'attachments'
+                                label_attachment_id_type = 'attachmentId'
 
+                                # save the attachment
+                                file_name = get_attachment_name(attachment.name)
+                                file_result = fileResult(file_name, attachment.content)
+
+                                # check for error
+                                if file_result['Type'] == entryTypes['error']:
+                                    demisto.error(file_result['Contents'])
+                                    raise Exception(file_result['Contents'])
+
+                                # save attachment to incident
+                                incident['attachment'].append({
+                                    'path': file_result['FileID'],
+                                    'name': get_attachment_name(attachment.name)
+                                })
+                        except TypeError as e:
+                            if e.message != "must be string or buffer, not None":
+                                raise
+                            continue
+                    else:
+                        # other item attachment
+                        label_attachment_type = 'attachmentItems'
+                        label_attachment_id_type = 'attachmentItemsId'
+
+                        # save the attachment
+                        if hasattr(attachment, 'item') and attachment.item.mime_content:
+                            attached_email = email.message_from_string(attachment.item.mime_content)
+                            if attachment.item.headers:
+                                attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
+                                                          attached_email.items()]
+                                for header in attachment.item.headers:
+                                    if (header.name, header.value) not in attached_email_headers \
+                                            and header.name != 'Content-Type':
+                                        attached_email.add_header(header.name, header.value)
+
+                            file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
+                                                     attached_email.as_string())
+
+                        if file_result:
                             # check for error
                             if file_result['Type'] == entryTypes['error']:
                                 demisto.error(file_result['Contents'])
@@ -1125,80 +1156,54 @@ def parse_incident_from_item(item, is_fetch):
                             # save attachment to incident
                             incident['attachment'].append({
                                 'path': file_result['FileID'],
-                                'name': get_attachment_name(attachment.name)
+                                'name': get_attachment_name(attachment.name) + ".eml"
                             })
-                    except TypeError as e:
-                        if e.message != "must be string or buffer, not None":
-                            raise
-                        continue
-                else:
-                    # other item attachment
-                    label_attachment_type = 'attachmentItems'
-                    label_attachment_id_type = 'attachmentItemsId'
 
-                    # save the attachment
-                    if hasattr(attachment, 'item') and attachment.item.mime_content:
-                        attached_email = email.message_from_string(attachment.item.mime_content)
-                        if attachment.item.headers:
-                            attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
-                                                      attached_email.items()]
-                            for header in attachment.item.headers:
-                                if (header.name, header.value) not in attached_email_headers \
-                                        and header.name != 'Content-Type':
-                                    attached_email.add_header(header.name, header.value)
+                        else:
+                            incident['attachment'].append({
+                                'name': get_attachment_name(attachment.name) + ".eml"
+                            })
 
-                        file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attached_email.as_string())
+                    labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
+                    labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
-                    if file_result:
-                        # check for error
-                        if file_result['Type'] == entryTypes['error']:
-                            demisto.error(file_result['Contents'])
-                            raise Exception(file_result['Contents'])
+        # handle headers
+        if item.headers:
+            headers = []
+            for header in item.headers:
+                labels.append({'type': 'Email/Header/{}'.format(header.name), 'value': str(header.value)})
+                headers.append("{}: {}".format(header.name, header.value))
+            labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
 
-                        # save attachment to incident
-                        incident['attachment'].append({
-                            'path': file_result['FileID'],
-                            'name': get_attachment_name(attachment.name) + ".eml"
-                        })
+        # handle item id
+        if item.message_id:
+            labels.append({'type': 'Email/MessageId', 'value': str(item.message_id)})
 
-                    else:
-                        incident['attachment'].append({
-                            'name': get_attachment_name(attachment.name) + ".eml"
-                        })
+        if item.item_id:
+            labels.append({'type': 'Email/ID', 'value': item.item_id})
+            labels.append({'type': 'Email/itemId', 'value': item.item_id})
 
-                labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
-                labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
+        # handle conversion id
+        if item.conversation_id:
+            labels.append({'type': 'Email/ConversionID', 'value': item.conversation_id.id})
 
-    # handle headers
-    if item.headers:
-        headers = []
-        for header in item.headers:
-            labels.append({'type': 'Email/Header/{}'.format(header.name), 'value': str(header.value)})
-            headers.append("{}: {}".format(header.name, header.value))
-        labels.append({'type': 'Email/headers', 'value': "\r\n".join(headers)})
+        if MARK_AS_READ and is_fetch:
+            item.is_read = True
+            try:
+                item.save()
+            except ErrorIrresolvableConflict:
+                time.sleep(0.5)
+                item.save()
 
-    # handle item id
-    if item.message_id:
-        labels.append({'type': 'Email/MessageId', 'value': str(item.message_id)})
+        incident['labels'] = labels
+        incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
 
-    if item.item_id:
-        labels.append({'type': 'Email/ID', 'value': item.item_id})
-        labels.append({'type': 'Email/itemId', 'value': item.item_id})
-
-    # handle conversion id
-    if item.conversation_id:
-        labels.append({'type': 'Email/ConversionID', 'value': item.conversation_id.id})
-
-    if MARK_AS_READ and is_fetch:
-        item.is_read = True
-        try:
-            item.save()
-        except ErrorIrresolvableConflict:
-            time.sleep(0.5)
-            item.save()
-
-    incident['labels'] = labels
-    incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
+    except Exception as e:
+        if 'Message is not decoded yet' in str(e):
+            demisto.debug('EWS v2 - Skipped a protected message')
+            return None
+        else:
+            raise e
 
     return incident
 
@@ -1217,7 +1222,8 @@ def fetch_emails_as_incidents(account_email, folder_name):
             if item.message_id:
                 ids.append(item.message_id)
                 incident = parse_incident_from_item(item, True)
-                incidents.append(incident)
+                if incident:
+                    incidents.append(incident)
 
                 if len(incidents) >= MAX_FETCH:
                     break
@@ -1822,7 +1828,7 @@ def start_compliance_search(query):
     }
 
 
-def get_compliance_search(search_name):
+def get_compliance_search(search_name, show_only_recipients):
     check_cs_prereqs()
     try:
         with open("getcompliancesearch2.ps1", "w+") as f:
@@ -1841,23 +1847,42 @@ def get_compliance_search(search_name):
     # Get search status
     stdout = stdout[len(PASSWORD):]
     stdout = stdout.split('\n', 1)  # type: ignore
+
     results = [get_cs_status(search_name, stdout[0])]
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
     if stdout[0] == 'Completed':
-        res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
-        res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
-        results.append(
-            {
+        if stdout[1] and stdout[1] != '{}':
+            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
+            res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
+            entry = {
                 'Type': entryTypes['note'],
                 'ContentsFormat': formats['text'],
                 'Contents': stdout,
                 'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown('Office 365 Compliance search results', res,
-                                                 ['Location', 'Item count', 'Total size'])
             }
-        )
+            if show_only_recipients == 'True':
+                res = filter(lambda x: int(x['Item count']) > 0, res)
 
+                entry['EntryContext'] = {
+                    'EWS.ComplianceSearch(val.Name == obj.Name)': {
+                        'Name': search_name,
+                        'Results': res
+                    }
+                }
+
+            entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
+                                                     ['Location', 'Item count', 'Total size'])
+        else:
+            entry = {
+                'Type': entryTypes['note'],
+                'ContentsFormat': formats['text'],
+                'Contents': stdout,
+                'ReadableContentsFormat': formats['markdown'],
+                'HumanReadable': "The compliance search didn't return any results."
+            }
+
+        results.append(entry)
     return results
 
 
@@ -2125,7 +2150,15 @@ def sub_main():
 
             error_message_simple += "You can try using 'domain\\username' as username for authentication. " \
                 if AUTH_METHOD_STR.lower() == 'ntlm' else ''
-        if "Status code: 503" in debug_log:
+
+        if "SSL: CERTIFICATE_VERIFY_FAILED" in debug_log:
+            # same status code (503) but different error.
+            error_message_simple = "Certificate verification failed - This error may happen if the server " \
+                                   "certificate cannot be validated or as a result of a proxy that is doing SSL/TLS " \
+                                   "termination. It is possible to bypass certificate validation by checking " \
+                                   "'Trust any certificate' in the instance settings."
+
+        elif "Status code: 503" in debug_log:
             error_message_simple = "Got timeout from the server. " \
                                    "Probably the server is not reachable with the current settings. " \
                                    "Check proxy parameter. If you are using server URL - change to server IP address. "
@@ -2169,20 +2202,24 @@ def process_main():
 
 
 def main():
-    # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
-    # collector. `separate_process` flag will run the integration on a separate process that will prevent
-    # memory leakage.
-    separate_process = demisto.params().get("separate_process", False)
-    demisto.debug("Running as separate_process: {}".format(separate_process))
-    if separate_process:
-        try:
-            p = Process(target=process_main)
-            p.start()
-            p.join()
-        except Exception as ex:
-            demisto.error("Failed starting Process: {}".format(ex))
-    else:
-        sub_main()
+    try:
+        handle_proxy()
+        # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
+        # collector. `separate_process` flag will run the integration on a separate process that will prevent
+        # memory leakage.
+        separate_process = demisto.params().get("separate_process", False)
+        demisto.debug("Running as separate_process: {}".format(separate_process))
+        if separate_process:
+            try:
+                p = Process(target=process_main)
+                p.start()
+                p.join()
+            except Exception as ex:
+                demisto.error("Failed starting Process: {}".format(ex))
+        else:
+            sub_main()
+    except Exception as exc:
+        return_error("Found error in EWSv2", exc)
 
 
 # python2 uses __builtin__ python3 uses builtins

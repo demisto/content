@@ -93,37 +93,37 @@ script:
     outputs:
     - contextPath: MSGraphUser.ID
       description: User's ID.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.DisplayName
       description: User's display name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.GivenName
       description: User's given name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.BusinessPhones
       description: User's business phone numbers.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.JobTitle
       description: User's job title.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.Mail
       description: User's mail address.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.MobilePhone
       description: User's mobile phone number.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.OfficeLocation
       description: User's office location.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.PreferredLanguage
       description: User's preferred language.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.Surname
       description: User's surname.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.UserPrincipalName
       description: User's principal name.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: User ID or userPrincipalName to delete.
@@ -194,37 +194,37 @@ script:
     outputs:
     - contextPath: MSGraphUser.ID
       description: User's ID.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.DisplayName
       description: User's display name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.GivenName
       description: User's given name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.BusinessPhones
       description: User's business phone numbers.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.JobTitle
       description: User's job title.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.Mail
       description: User's mail address.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.MobilePhone
       description: User's mobile phone number.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.OfficeLocation
       description: User's office location.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.PreferredLanguage
       description: User's preferred language.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.Surname
       description: User's surname.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.UserPrincipalName
       description: User's principal name.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: ' A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" '
@@ -241,37 +241,37 @@ script:
     outputs:
     - contextPath: MSGraphUser.ID
       description: User's ID.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.DisplayName
       description: User's display name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.GivenName
       description: User's given name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.BusinessPhones
       description: User's business phone numbers.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.JobTitle
       description: User's job title.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.Mail
       description: User's mail address.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.MobilePhone
       description: User's mobile phone.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.OfficeLocation
       description: User's office location.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.PreferredLanguage
       description: User's preferred language.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.Surname
       description: User's surname.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.UserPrincipalName
       description: User's principal name.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: User ID or userPrincipalName
@@ -294,37 +294,37 @@ script:
     outputs:
     - contextPath: MSGraphUser.ID
       description: User's ID.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.DisplayName
       description: User's display name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.GivenName
       description: User's given name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.BusinessPhones
       description: User's business phone numbers.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.JobTitle
       description: User's job title.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.Mail
       description: User's mail address.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.MobilePhone
       description: User's mobile phone number.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.OfficeLocation
       description: User's office location.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.PreferredLanguage
       description: User's preferred language.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.Surname
       description: User's surname.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.UserPrincipalName
       description: User's principal name.
-      type: Unknown
+      type: String
   - arguments:
     - default: false
       description: 'A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone"'
@@ -347,43 +347,43 @@ script:
     outputs:
     - contextPath: MSGraphUser.ID
       description: User's ID.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.DisplayName
       description: User's display name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.GivenName
       description: User's given name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.BusinessPhones
       description: User's business phone numbers.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.JobTitle
       description: User's job title.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.Mail
       description: User's mail address.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.MobilePhone
       description: User's mobile phone number.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.OfficeLocation
       description: User's office location.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.PreferredLanguage
       description: User's preferred language.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.Surname
       description: User's surname.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.UserPrincipalName
       description: User's principal name.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUser.NextPage
       description: A token to pass to the next list command to retrieve additional results.
       type: String
   - arguments:
     - default: false
-      description: The user for which to search direct reports.
+      description: The User ID or userPrincipalName of the user for which to retrieve direct reports.
       isArray: false
       name: user
       required: true
@@ -410,25 +410,92 @@ script:
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.JobTitle
       description: The user's job title.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUserDirectReports.Reports.Mail
       description: The email address of the user.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUserDirectReports.Reports.MobilePhone
       description: The primary cellular telephone number for the user.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUserDirectReports.Reports.OfficeLocation
       description: The office location in the user's place of business.
-      type: Unknown
+      type: String
     - contextPath: MSGraphUserDirectReports.Reports.PreferredLanguage
       description: 'The preferred language for the user. Should follow ISO 639-1 Code; for example: en-US.'
-      type: Unknown
+      type: String
     - contextPath: MSGraphUserDirectReports.Reports.Surname
       description: The user's surname (family name or last name).
       type: String
     - contextPath: MSGraphUserDirectReports.Reports.UserPrincipalName
       description: The user principal name (UPN) of the user. The UPN is an Internet-style login name for the user based on the Internet standard RFC 822. By convention, this should map to the user's email name. The general format is alias@domain, where domain must be present in the tenant’s collection of verified domains. This property is required when a user is created. The verified domains for the tenant can be accessed from the verifiedDomains property of organization.
       type: String
+  - arguments:
+    - default: false
+      description: The User ID or userPrincipalName of the user for which to get the manager properties.
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    deprecated: false
+    description: "Retrieves the properties from the manager of a user."
+    execution: false
+    name: msgraph-user-get-manager
+    outputs:
+    - contextPath: MSGraphUserManager.ID
+      description: User's user ID.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.ID
+      description: Manager's user ID.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.DisplayName
+      description: User's display name.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.GivenName
+      description: User's given name.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.BusinessPhones
+      description: User's business phone numbers.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.JobTitle
+      description: User's job title.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.Mail
+      description: User's mail address.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.MobilePhone
+      description: User's mobile phone number.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.OfficeLocation
+      description: User's office location.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.PreferredLanguage
+      description: User's preferred language.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.Surname
+      description: User's surname.
+      type: String
+    - contextPath: MSGraphUserManager.Manager.UserPrincipalName
+      description: User's principal name.
+      type: String
+  - arguments:
+    - default: false
+      description: User ID or userPrincipalName of the user to which to assign a manager.
+      isArray: false
+      name: user
+      required: true
+      secret: false
+    - default: false
+      description: User ID or userPrincipalName of the manager.
+      isArray: false
+      name: manager
+      required: true
+      secret: false
+    deprecated: false
+    description: |-
+      Assigns a manager to the specified user.
+      Permission: - User.ReadWrite (Delegated) or - User.ReadWrite (Application)
+    execution: false
+    name: msgraph-user-assign-manager
   - arguments:
     - default: false
       description: User ID or userPrincipalName to update password for.
@@ -474,7 +541,7 @@ script:
     description: Tests connectivity to Microsoft Graph User.
     execution: false
     name: msgraph-user-test
-  dockerimage: demisto/crypto:1.0.0.11412
+  dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false
   longRunning: false

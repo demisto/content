@@ -2,9 +2,9 @@
     "name": "Indeni",
     "description": "Indeni is a turn-key automated monitoring providing visibility for security infrastructure. Indeni's production-ready Knowledge is curated from vetted, community-sourced experience, to deliver automation of tedious tasks with integration with your existing processes.\ndisplay: Indeni",
     "support": "partner",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.7",
     "author": "Indeni",
-    "url": "https://www.paloaltonetworks.com/cortex",
+    "url": "",
     "email": "support@indeni.com",
     "created": "2020-03-10T08:37:18Z",
     "categories": [
@@ -15,5 +15,6 @@
     "keywords": [],
     "githubUser": [
         "joshhe"
-    ]
+    ],
+    "certification": "certified"
 }

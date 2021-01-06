@@ -749,10 +749,7 @@ MOCK_DOMAIN_RESPONSE = {
             ],
             'isCollapsed': False,
             'lastSampledIp': '192.64.147.150',
-            'details': {
-                'recentIps': [],
-                'cloudResources': []
-            },
+            'details': None,
             'lastSubdomainMetadata': None,
             'dnsResolutionStatus': ['HAS_DNS_RESOLUTION'],
             'serviceStatus': ['NO_ACTIVE_SERVICE', 'NO_ACTIVE_CLOUD_SERVICE', 'NO_ACTIVE_ON_PREM_SERVICE']

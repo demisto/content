@@ -8,6 +8,12 @@ from CommonServerUserPython import *
 
 INTEGRATION_COMMAND_NAME = "lastline"
 INTEGRATION_NAME = "Lastline v2"
+
+SUFFIX_TRANSFORMER = {'/analysis/submit/file': {'url': 'papi/analysis/submit_file', 'method': 'POST'},
+                      '/analysis/get': {'url': 'papi/analysis/get_result', 'method': 'GET'},
+                      '/analysis/get_completed': {'url': 'papi/analysis/get_history', 'method': 'GET'},
+                      '/analysis/submit/url': {'url': 'papi/analysis/submit_url', 'method': 'POST'}}
+
 disable_warnings()
 
 
@@ -17,8 +23,14 @@ class Client(BaseClient):
     SHA256_LEN = 64
     DEFAULT_THRESHOLD = 70
 
-    def __init__(self, base_url: str, api_params: Dict, verify=True, proxy=False):
+    def __init__(self, base_url: str, api_params: Dict, verify=True, proxy=False, credentials: Dict = None):
         self.command_params = api_params
+
+        if credentials:
+            self.credentials = {'username': credentials.get('identifier'), 'password': credentials.get('password')}
+        else:
+            self.credentials = {}
+
         super(Client, self).__init__(base_url, verify, proxy)
 
     def file(self):
@@ -62,7 +74,12 @@ class Client(BaseClient):
                 self.command_params[param] = self.command_params[param].replace('T', ' ')
         result = self.http_request('/analysis/get_completed')
         if 'data' in result:
-            context_entry: List = self.get_status_and_time(argToList(result['data'].get('tasks')))
+            context_entry: List = []
+            if self.credentials:
+                context_entry = self.get_status_and_time_from_get_history_response(argToList(result['data']))
+            else:
+                context_entry = self.get_status_and_time(argToList(result['data'].get('tasks')))
+
             for i in range(len(context_entry)):
                 context_entry[i] = {
                     'UUID': context_entry[i][0],
@@ -88,15 +105,11 @@ class Client(BaseClient):
         return human_readable, context_entry, result
 
     def test_module_command(self):
-        try:
-            self.get_report()
-        except DemistoException as error:
-            if str(error) == 'error Missing required field \'uuid\'.':
-                return 'ok', {}, {}
-            else:
-                raise error
+        self.command_params.update({'after': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")})
+        self.get_task_list()
+        return 'ok', {}, {}
 
-    def get_status_and_time(self, uuids) -> List[List]:
+    def get_status_and_time(self, uuids) -> List:
         task_list: List[List] = []
         for uuid in uuids:
             self.command_params['uuid'] = uuid
@@ -112,12 +125,41 @@ class Client(BaseClient):
             task_list.append([uuid, task_time.replace(' ', 'T'), status])
         return task_list
 
+    def get_status_and_time_from_get_history_response(self, tasks) -> List:
+        task_list: List[List] = []
+        filtered_tasks: List = []
+        uuid_set: set = set(map(lambda x: x.get('task_uuid'), tasks))
+
+        for uuid in uuid_set:
+            tasks_same_uuid = [x for x in tasks if x.get('task_uuid') == uuid]
+            latest_date = max(datetime.strptime(x.get('task_start_time'), '%Y-%m-%d %H:%M:%S') for x in tasks_same_uuid)
+            latest_date_str = latest_date.strftime('%Y-%m-%d %H:%M:%S')
+            task = [x for x in tasks_same_uuid if x.get('task_start_time') == latest_date_str][0]
+            filtered_tasks.append(task)
+
+        for task in filtered_tasks:
+            task_time = task.get('task_start_time')
+            if task.get('status'):
+                status = task.get('status')
+            else:
+                status = 'Analyzing'
+
+            task_list.append([task.get('task_uuid'), task_time.replace(' ', 'T'), status])
+        return task_list
+
     def http_request(self, path: str, headers=None, file_to_upload=None) -> Dict:
         if file_to_upload:
             with open(file_to_upload, 'rb') as _file:
                 file_to_upload = {'file': (file_to_upload, _file.read())}
 
-        result: Dict = self._http_request('POST', path, params=self.command_params, headers=headers, files=file_to_upload)
+        result: Dict = {}
+        if self.credentials:
+            url_suffix = SUFFIX_TRANSFORMER[path]
+            result = self._http_request(url_suffix['method'], url_suffix['url'], data=self.credentials,
+                                        params=self.command_params, files=file_to_upload, timeout=2000)
+        else:
+            result = self._http_request('POST', path, params=self.command_params, headers=headers, files=file_to_upload)
+
         lastline_exception_handler(result)
         return result
 
@@ -264,12 +306,21 @@ def main():
     base_url = params.get('url')
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
+    credentials = params.get('credentials')
     api_params = {
         'key': params.get('api_key'),
         'api_token': params.get('api_token')
     }
     api_params.update(demisto.args())
-    client = Client(base_url, api_params, verify=verify_ssl, proxy=proxy)
+
+    if not credentials or not credentials.get('identifier') or not credentials.get('password'):
+        credentials = {}
+
+    if not ((params.get('api_key') and params.get('api_token')) or credentials):
+        raise DemistoException('Please fill the credentials in the integration params'
+                               ' - api key and token or username and password')
+
+    client = Client(base_url, api_params, verify=verify_ssl, proxy=proxy, credentials=credentials)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 

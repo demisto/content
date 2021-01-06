@@ -5,8 +5,8 @@ FAIL_STATUS_MSG = "Command send-mail in module EWS Mail Sender requires argument
 
 
 def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-               entry_id_list, additional_header):
-    """Send email reply.
+               entry_id_list, email_latest_message, email_code):
+    """Send email reply.-
     Args:
         incident_id: The incident ID.
         email_subject: The email subject.
@@ -16,14 +16,15 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
         email_cc: The email cc.
         reply_html_body: The email html body.
         entry_id_list: The files entry ids list.
-        additional_header: The additional header.
+        email_latest_message: The latest message ID in the email thread to reply to.
+        email_code: The random code that was generated when the incident was created.
     """
     email_reply = send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc,
-                                    reply_html_body, entry_id_list, additional_header)
+                                    reply_html_body, entry_id_list, email_latest_message, email_code)
 
     status = email_reply[0].get('Contents', '')
     if status != FAIL_STATUS_MSG and status:
-        msg = 'Mail sent successfully. To: {}'.format(email_to)
+        msg = f'Mail sent successfully. To: {email_to}'
         if email_cc:
             msg += f' Cc: {email_cc}'
     else:
@@ -33,18 +34,32 @@ def send_reply(incident_id, email_subject, email_to, reply_body, service_mail, e
 
 
 def send_mail_request(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, reply_html_body,
-                      entry_id_list, additional_header):
+                      entry_id_list, email_latest_message, email_code):
+    if f'<{email_code}' not in email_subject:
+        subject_with_id = f"<{email_code}> {email_subject}"
+
+        # setting the email's subject for gmail adjustments
+        try:
+            demisto.executeCommand('setIncident',
+                                   {'id': incident_id, 'customFields': {'emailsubject': f'{subject_with_id}'}})
+        except Exception:
+            demisto.debug(f'SetIncident Failed.'
+                          f'"emailsubject" field was not updated with {subject_with_id} value '
+                          f'for incident: {incident_id}')
+    else:
+        subject_with_id = email_subject
+
     mail_content = {
         "to": email_to,
-        "subject": f"#{incident_id} {email_subject}",
+        "inReplyTo": email_latest_message,
+        "subject": subject_with_id,
         "cc": email_cc,
         "htmlBody": reply_html_body,
         "body": reply_body,
         "attachIDs": ",".join(entry_id_list),
         "replyTo": service_mail,
-        "additionalHeader": additional_header
     }
-    email_reply = demisto.executeCommand("send-mail", mail_content)
+    email_reply = demisto.executeCommand("reply-mail", mail_content)
     return email_reply
 
 
@@ -124,22 +139,31 @@ def create_file_data_json(attachment):
     return json.dumps(file_data)
 
 
-def get_reply_body(notes, incident_id):
+def get_reply_body(notes, incident_id, attachments):
     """ Get the notes and the incident id and return the reply body
     Args:
         notes (dict): The notes of the email.
         incident_id (str): The incident id.
+        attachments (list): The email's attachments.
     Returns:
         The reply body and the html body.
     """
     reply_body = ''
     if notes:
         for note in notes:
-            reply_body += note['Contents'] + "\n\n"
+            note_user = note['Metadata']['user']
+            note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
+            user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
+            reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
+            if attachments:
+                attachment_names = [attachment.get('name') for attachment in attachments]
+                reply_body += f'Attachments: {attachment_names}\n'
+            entry_note = json.dumps(
+                [{"Type": 1, "ContentsFormat": 'html', "Contents": reply_body, "tags": ['email-thread']}])
+            entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id})
+
             entry_note_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/note", "body": json.dumps(
                 {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "data": "false"})})
-            entry_tags_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/tags", "body": json.dumps(
-                {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "tags": ['email-thread']})})
             if is_error(entry_note_res):
                 return_error(get_error(entry_note_res))
             if is_error(entry_tags_res):
@@ -168,8 +192,9 @@ def get_email_recipients(email_to, email_from, service_mail):
     email_to_set = {email_from}
     email_to = argToList(email_to)
     email_to_set = email_to_set.union(set(email_to))
-    if service_mail in email_to_set:
-        email_to_set.remove(service_mail)
+    service_mail_recipient = next(recipient for recipient in email_to_set if service_mail in recipient)
+    if service_mail_recipient:
+        email_to_set.remove(service_mail_recipient)
 
     email_recipients = ','.join(email_to_set)
     return email_recipients
@@ -177,29 +202,28 @@ def get_email_recipients(email_to, email_from, service_mail):
 
 def main():
     args = demisto.args()
-    incident = demisto.incidents()[0]
+    incident = demisto.incident()
     incident_id = incident.get('id')
     custom_fields = incident.get('CustomFields')
     email_subject = custom_fields.get('emailsubject')
     email_cc = custom_fields.get('emailcc', '')
     add_cc = custom_fields.get('addcctoemail', '')
-    message_id = custom_fields.get('emailmessageid')
     service_mail = args.get('service_mail', '')
     email_from = custom_fields.get('emailfrom')
     email_to = custom_fields.get('emailto')
+    email_latest_message = custom_fields.get('emaillatestmessage')
+    email_code = custom_fields.get('emailgeneratedcode')
     email_to_str = get_email_recipients(email_to, email_from, service_mail)
     files = args.get('files', {})
     attachments = args.get('attachment', {})
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
-    additional_header = [f'In-Reply-To={message_id}']
 
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
-        reply_body, reply_html_body = get_reply_body(notes, incident_id)
+        reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments)
         entry_id_list = get_entry_id_list(incident_id, attachments, files)
         result = send_reply(incident_id, email_subject, email_to_str, reply_body, service_mail, final_email_cc,
-                            reply_html_body,
-                            entry_id_list, additional_header)
+                            reply_html_body, entry_id_list, email_latest_message, email_code)
         demisto.results(result)
     except Exception as error:
         return_error(str(error), error)
