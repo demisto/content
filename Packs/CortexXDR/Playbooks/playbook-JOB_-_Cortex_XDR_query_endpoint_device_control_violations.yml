@@ -277,7 +277,7 @@ tasks:
       destos: {}
       details:
         simple: |2
-           An unwanted device connected to the corporate network.
+           An external device connected to the corporate network.
           Device Control violation fetched from Cortex XDR with the Fetch device control violation Job.
       detectedexternalhosts: {}
       detectedexternalips: {}
