@@ -1,0 +1,25 @@
+{
+    "name": "X509Certificate",
+    "description": "The X509 Certificate Content Packs provides additional capabilities for handling, parsing and validating X509 Certificates in Cortex XSOAR.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-12-01T10:38:35Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Security",
+        "Network"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "X509",
+        "Certificate"
+    ]
+}

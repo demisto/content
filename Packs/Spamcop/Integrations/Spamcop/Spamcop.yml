@@ -22,29 +22,29 @@ script:
     - contextPath: Spamcop.IP
       description: IP details
       type: String
-    - contextPath: DbotScore.Indicator
-      description: The indicator itself
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
       type: string
-    - contextPath: DbotScore.Score
-      description: Score
+    - contextPath: DBotScore.Score
+      description: The actual score.
       type: number
-    - contextPath: DbotScore.Type
-      description: Type of the indicator
+    - contextPath: DBotScore.Type
+      description: The actual score.
       type: string
-    - contextPath: DbotScore.Vendor
-      description: Vendor information
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: IP.Address
-      description: IP address
+      description: The IP address.
       type: string
     - contextPath: IP.Malicious.Vendor
-      description: The vendor reporting the IP address as malicious.
+      description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: IP.Malicious.Description
       description: A description explaining why the IP address was reported as malicious.
       type: string
     description: Get IP details from Spamcop service
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.13358
   runonce: false
   subtype: python3
 fromversion: 5.0.0
