@@ -131,7 +131,7 @@ def build_feed_filters(params: dict) -> Dict[str, Optional[Union[str, list]]]:
 
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
-    
+
     filters: Dict[str, Optional[Union[str, list]]] = build_feed_filters(params)
     indicators_type: list = argToList(params.get('indicator_type', []))
     params['feed_name_to_config'] = create_fetch_configuration(indicators_type, filters, params)
