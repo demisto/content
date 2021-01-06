@@ -791,6 +791,68 @@ def test_test_module_server_error(requests_mock):
     assert "Test failed because of: Error in API call [500] - None" in _test_module_command(client)
 
 
+def test_test_module_invalid_token(requests_mock):
+    """
+    Given:
+        - the IP reputation feed
+
+    When:
+        - running test-module with a 400 on an invalid claim
+
+    Then:
+        - it tells you the test failed
+
+    """
+
+    base_url = "https://cyren.feed/"
+    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400,
+                      json=dict(statusCode=400,
+                                error="unable to parse claims from token: ..."))
+    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+
+    assert "Test failed because of an invalid API token!" in _test_module_command(client)
+
+
+def test_test_module_other_400(requests_mock):
+    """
+    Given:
+        - the IP reputation feed
+
+    When:
+        - running test-module with an unknown 400
+
+    Then:
+        - it tells you the test failed
+
+    """
+
+    base_url = "https://cyren.feed/"
+    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400)
+    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+
+    assert "Test failed because of: 400 Client Error:" in _test_module_command(client)
+
+
+def test_test_module_404(requests_mock):
+    """
+    Given:
+        - the IP reputation feed
+
+    When:
+        - running test-module with a 404
+
+    Then:
+        - it tells you the test failed
+
+    """
+
+    base_url = "https://cyren.feed/"
+    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=404)
+    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+
+    assert "Test failed because of an invalid API URL!" in _test_module_command(client)
+
+
 def test_test_module_no_entries(requests_mock):
     """
     Given:

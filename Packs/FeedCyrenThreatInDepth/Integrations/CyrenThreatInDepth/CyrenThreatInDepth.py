@@ -231,12 +231,47 @@ FEED_TO_ENTRY_CLASS: Dict[str, Callable] = {
 }
 
 
+FEED_OPTION_TO_FEED: Dict[str, str] = {
+    "IP Reputation": FeedName.IP_REPUTATION,
+    "Phishing URLs": FeedName.PHISHING_URLS,
+    "Malware URLs": FeedName.MALWARE_URLS,
+    "Malware Hashes": FeedName.MALWARE_FILES,
+}
+
+
+class InvalidAPITokenException(Exception):
+    pass
+
+
+class InvalidAPIUrlException(Exception):
+    pass
+
+
 class Client(BaseClient):
     PARAMS = {"format": "jsonl"}
+    INVALID_TOKEN_TEXTS = [
+        "unable to parse claims from token",
+        "unable to parse token from header",
+        "token was revoked",
+        "claims are invalid",
+    ]
 
     def __init__(self, feed_name: str, *args, **kwargs):
+        if not feed_name:
+            raise ValueError("please specify a correct feed name")
+
         super().__init__(*args, **kwargs)
         self.feed_name = feed_name
+
+    def _is_invalid_token(self, response: requests.Response) -> bool:
+        if response.status_code != 400:
+            return False
+
+        for invalid_text in self.INVALID_TOKEN_TEXTS:
+            if invalid_text in response.text:
+                return True
+
+        return False
 
     def _do_request(self, path: str, offset: int = -1, count: int = 0) -> requests.Response:
         params = self.PARAMS.copy()
@@ -250,14 +285,18 @@ class Client(BaseClient):
 
         try:
             response = self._http_request(method="GET", url_suffix=path,
-                                          params=params, resp_type="")
+                                          params=params, resp_type="",
+                                          ok_codes=[200, 204, 201, 400, 404])
         except requests.ConnectionError as e:
             raise requests.ConnectionError(f"Failed to establish a new connection: {str(e)}")
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError:
-            demisto.error(f"exception in request: {response.status_code} {response.content!r} {path}")
-            raise
+
+        if self._is_invalid_token(response):
+            raise InvalidAPITokenException()
+
+        if response.status_code == 404:
+            raise InvalidAPIUrlException()
+
+        response.raise_for_status()
 
         return response
 
@@ -288,6 +327,10 @@ def test_module_command(client: Client) -> str:
         entries = client.fetch_entries(0, 10)
         if not any(entries):
             return "Test failed because no indicators could be fetched!"
+    except InvalidAPITokenException:
+        return "Test failed because of an invalid API token!"
+    except InvalidAPIUrlException:
+        return "Test failed because of an invalid API URL!"
     except Exception as e:
         return f"Test failed because of: {str(e)}!"
 
@@ -353,30 +396,36 @@ def main():
     params = demisto.params()
     base_url = params.get("url", "https://api-feeds.cyren.com/v1/feed")
     api_token = params.get("apikey")
+
     feed_name = params.get("feed_name")
+    feed_name = FEED_OPTION_TO_FEED.get(feed_name, "")
+
     max_indicators = int(params.get("max_indicators", MAX_API_COUNT))
     if max_indicators > MAX_API_COUNT:
-        demisto.info(f"using a maximum value for max_indicators of {MAX_API_COUNT}!")
+        demisto.info(f"using a maximum value for max_indicators of {MAX_API_COUNT} instead of {max_indicators}!")
         max_indicators = MAX_API_COUNT
+
     proxy = params.get("proxy", False)
     verify_certificate = not params.get("insecure", False)
 
     headers = dict(Authorization=f"Bearer {api_token}")
 
     demisto.info(f"using feed {feed_name}, max {max_indicators}")
-
-    client = Client(feed_name=feed_name,
-                    base_url=base_url,
-                    verify=verify_certificate,
-                    headers=headers,
-                    proxy=proxy)
-
-    command = demisto.command()
-    demisto.info(f"Command being called is {command}")
     commands: Dict[str, Callable] = {
         "cyren-threat-indepth-get-indicators": get_indicators_command,
     }
+
+    command = demisto.command()
+    demisto.info(f"Command being called is {command}")
+
+    error = None
     try:
+        client = Client(feed_name=feed_name,
+                        base_url=base_url,
+                        verify=verify_certificate,
+                        headers=headers,
+                        proxy=proxy)
+
         if command == "fetch-indicators":
             indicators = fetch_indicators_command(client=client,
                                                   initial_count=0,
@@ -388,9 +437,16 @@ def main():
             return_outputs(test_module_command(client))
         else:
             return_results(commands[command](client, demisto.args()))
+    except InvalidAPITokenException:
+        error = "Invalid API token!"
+    except InvalidAPIUrlException:
+        error = "Invalid API URL!"
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Error failed to execute {command}, error: [{e}]")
+        error = f"Error failed to execute {command}, error: [{e}]"
+
+    if error:
+        return_error(error)
 
 
 if __name__ == "__builtin__" or __name__ == "builtins":

@@ -2,12 +2,12 @@ commonfields:
   id: CyrenThreatInDepth
   version: -1
 name: CyrenThreatInDepth
-display: Cyren Threat InDepth Threat Intelligence
+display: Cyren Threat InDepth Threat Intelligence Feed
 category: Data Enrichment & Threat Intelligence
 description: Threat InDepth's actionable and contextualized intelligence helps
   enterprises improve their threat detection and response by providing unprecedented
   visibility into new email-borne security threats faster than other security vendors.
-fromversion: 5.5.0
+fromversion: 6.0.0
 configuration:
 - display: Indicator Reputation
   name: feedReputation
@@ -94,7 +94,7 @@ configuration:
 - defaultvalue: https://api-feeds.cyren.com/v1/feed
   display: API URL
   name: url
-  required: false
+  required: true
   type: 0
 - display: API Token
   name: apikey
@@ -102,19 +102,23 @@ configuration:
   required: true
 - display: Feed Name
   name: feed_name
-  defaultvalue: ip_reputation
+  defaultvalue: IP Reputation
   type: 15
   required: true
   options:
-  - ip_reputation
-  - phishing_urls
-  - malware_urls
-  - malware_files
-- display: Maximum number of indicators to be fetched each time, cannot be higher than 100000
+  - IP Reputation
+  - Phishing URLs
+  - Malware URLs
+  - Malware Hashes
+  additionalinfo: Choose from the available options to ingest the type of data you are interested in.
+    Keep in mind that the API token issued to you only corresponds to one of the data types each.
+- display: Maximum number of indicators
   name: max_indicators
   defaultvalue: "100000"
   type: 0
   required: false
+  additionalinfo: Maximum number of indicators to be fetched each time. The value cannot
+    be higher than 100.000. If you provide a value higher than that it will be capped at 100.000.
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -139,7 +143,7 @@ script:
     description: Fetching Cyren Threat InDepth indicators
     execution: true
     name: cyren-threat-indepth-get-indicators
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   feed: true
   isfetch: false
   longRunning: false
