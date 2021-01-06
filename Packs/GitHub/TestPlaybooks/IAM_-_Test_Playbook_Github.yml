@@ -49,7 +49,7 @@ tasks:
     scriptarguments:
       user-profile:
         complex:
-          root: inputs.githubuserprofile
+          root: inputs.userprofile
           transformers:
           - operator: ParseJSON
     separatecontext: false
@@ -85,7 +85,7 @@ tasks:
       default_attribute: {}
       user-profile:
         complex:
-          root: inputs.githubuserprofile
+          root: inputs.userprofile
           transformers:
           - operator: ParseJSON
     separatecontext: false
@@ -121,7 +121,7 @@ tasks:
     scriptarguments:
       user-profile:
         complex:
-          root: inputs.githubuserprofile
+          root: inputs.userprofile
           transformers:
           - operator: ParseJSON
     separatecontext: false
@@ -156,7 +156,7 @@ tasks:
     scriptarguments:
       user-profile:
         complex:
-          root: inputs.githubuserprofile
+          root: inputs.userprofile
           transformers:
           - operator: ParseJSON
     separatecontext: false
@@ -194,7 +194,7 @@ tasks:
         simple: "true"
       user-profile:
         complex:
-          root: inputs.githubuserprofile
+          root: inputs.userprofile
           transformers:
           - operator: ParseJSON
     separatecontext: false
@@ -472,15 +472,14 @@ view: |-
     }
   }
 inputs:
-- key: githubuserprofile
+- key: userprofile
   value:
-    simple: '{"emails": {"primary": true, "type": "work", "value": "TestID@paloaltonetworks.com"},
-      "name": {"familyName": "testlast", "givenName": "testgiven"}, "userName": "TestID@paloaltonetworks.com",
-      "email": "TestID@paloaltonetworks.com"}'
+    simple: '{"email": "TestID@paloaltonetworks.com", "username": "TestID@paloaltonetworks.com",
+     "givenname": "testgiven", "surname":"demisto", "locationregion": "Americas"}'
   required: true
   description: Test user profile data.
   playbookInputQuery:
 outputs: []
 sourceplaybookid: 266bcc20-b5f3-4a64-8d93-af843bd24add
-fromversion: 6.0.0
+fromversion: 6.1.0
 description: 'Test user profile data using github user info, due to the fact that the relevant classifiers are in SCIM pack.'

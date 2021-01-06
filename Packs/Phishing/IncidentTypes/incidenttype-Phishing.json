@@ -24,5 +24,6 @@
     "disabled": false,
     "reputationCalc": 0,
     "fromVersion": "6.0.0",
+    "toVersion": "6.0.99",
     "layout": "Phishing"
 }
