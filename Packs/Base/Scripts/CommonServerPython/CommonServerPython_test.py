@@ -1035,7 +1035,7 @@ def test_exception_in_return_error(mocker):
 
     expected = {'EntryContext': None, 'Type': 4, 'ContentsFormat': 'text', 'Contents': 'Message'}
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(IntegrationLogger, '__call__')
+    mocker.patch.object(IntegrationLogger, '__call__', return_value='Message')
     with raises(SystemExit, match='0'):
         return_error("Message", error=ValueError("Error!"))
     results = demisto.results.call_args[0][0]
