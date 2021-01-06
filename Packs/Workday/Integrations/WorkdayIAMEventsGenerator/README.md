@@ -1,7 +1,9 @@
-Generates Workday dummy test reports and events. Used for testing/dev purposes.
+Generates mock reports and events from Workday. Use these for testing and development.
 
 To use this integration for testing:
-1. Create an instance - Add a listening port and mark the *Long running instance* checkbox.
+1. Create an instance.
+    1. Add a listening port 
+    2. Select the **Long running instance** checkbox.
 2. Take the server with the listening port that has been configured in the integration settings,
 and configure the **Workday_IAM** instance with this url and invoke the *fetch_incidents*.
 
