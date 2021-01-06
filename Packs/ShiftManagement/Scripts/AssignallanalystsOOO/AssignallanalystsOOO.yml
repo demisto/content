@@ -1,7 +1,6 @@
 commonfields:
   id: AssignallanalystsOOO
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: AssignallanalystsOOO
 script: ''
 type: python
@@ -30,7 +29,9 @@ args:
   defaultValue: OOO List
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.8.5.10455
 runas: DBotRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
