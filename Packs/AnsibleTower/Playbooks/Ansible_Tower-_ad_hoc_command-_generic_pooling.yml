@@ -1,6 +1,6 @@
-id: AnsibleTower_adhocCommand_generic
+id: AnsibleTowerAdhocCommandGeneric
 version: -1
-name: AnsibleTower_adhocCommand_generic
+name: AnsibleTowerAdhocCommandGeneric
 starttaskid: "0"
 tasks:
   "0":

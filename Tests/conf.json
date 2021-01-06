@@ -3217,7 +3217,7 @@
         },
         {
             "integrations": "AnsibleTower",
-            "playbookID": "AnsibleTower_job_launch_generic",
+            "playbookID": "AnsibleTowerJobLaunchGeneric",
             "fromversion": "5.0.0"
         }
     ],

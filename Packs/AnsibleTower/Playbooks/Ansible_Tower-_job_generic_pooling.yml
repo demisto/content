@@ -1,6 +1,6 @@
-id: AnsibleTower_job_launch_generic
+id: AnsibleTowerJobLaunchGeneric
 version: -1
-name: AnsibleTower_job_launch_generic
+name: AnsibleTowerJobLaunchGeneric
 starttaskid: "0"
 tasks:
   "0":
