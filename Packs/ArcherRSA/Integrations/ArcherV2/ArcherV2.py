@@ -1154,11 +1154,11 @@ def fetch_incidents(
         incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
         if next_fetch <= incident_created_time:
             next_fetch = incident_created_time
+            incidents.append(incident)
         else:
             demisto.debug(
                 f'The newly fetched incident is older than last fetch. {incident_created_time=} {next_fetch=}'
             )
-        incidents.append(incident)
     demisto.debug(f'Going out fetch incidents with {next_fetch=}, {len(incidents)=}')
     return incidents, next_fetch
 
