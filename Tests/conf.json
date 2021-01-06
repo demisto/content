@@ -452,6 +452,12 @@
             "timeout": 400
         },
         {
+            "integrations": "HelloWorldPremium",
+            "playbookID": "HelloWorldPremium_Scan-Test",
+            "fromversion": "5.0.0",
+            "timeout": 400
+        },
+        {
             "integrations": "ThreatQ v2",
             "playbookID": "ThreatQ - Test",
             "fromversion": "4.5.0"
@@ -3420,7 +3426,10 @@
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "Palo Alto Minemeld": "Issue #26878",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "CrowdStrike Falcon Intel v2": "License issues #32473",
+        "CrowdStrikeMalquery": "License issues #32473",
+        "CrowdstrikeFalcon": "License issues #32473"
     },
     "nightly_integrations": [
         "Lastline v2",
