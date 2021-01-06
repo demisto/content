@@ -1,17 +1,17 @@
 Acalvio ShadowPlex is a comprehensive Autonomous Deception Platform that offers Advanced Threat Detection, Investigation and Response capabilities.
-This integration was integrated and tested with version 5.x of Acalvio ShadowPlex
+This integration was integrated and tested with Acalvio ShadowPlex 5.x and ShadowPlex API 2.0.
 ## Configure Acalvio ShadowPlex on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Acalvio ShadowPlex.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| url | Acalvio API Server URL \(e.g. https://example.net\) | True |
-| apikey | Acalvio API Key | True |
-| insecure | Trust SSL certificate | False |
-| proxy | Use system proxy settings | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | url | Acalvio API Server URL \(e.g. https://example.net\) | True |
+    | apikey | Acalvio API Key | True |
+    | insecure | Trust SSL certificate | False |
+    | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

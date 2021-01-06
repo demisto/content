@@ -1,5 +1,3 @@
-''' IMPORTS '''
-import requests
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -7,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-OK_HTTP_CODES = (200, 401, 422, 500)
+OK_HTTP_CODES = (200, 201)
 
 
 class Action():
@@ -50,7 +48,7 @@ class Client(BaseClient):
         http request to Acalvio API server
         """
 
-        _action = kwargs['action'] if 'action' in kwargs else None
+        _action = kwargs.get('action')
 
         _data = None
         _uri = ''
@@ -62,49 +60,45 @@ class Client(BaseClient):
         elif Action.DECEPTION_FILE == _action:
             _uri = Uri.DECEPTION_FILE
             _data = {
-                'file': kwargs['filename'] if 'filename' in kwargs
-                else None,
-                'host': kwargs['endpoint'] if 'endpoint' in kwargs
-                else None
+                'file': kwargs.get('filename'),
+                'host': kwargs.get('endpoint')
             }
 
         elif Action.DECEPTION_HOST == _action:
             _uri = Uri.DECEPTION_HOST
             _data = {
-                'host': kwargs['host'] if 'host' in kwargs else None
+                'host': kwargs.get('host')
             }
 
         elif Action.DECEPTION_USER == _action:
             _uri = Uri.DECEPTION_USER
             _data = {
-                'user': kwargs['username'] if 'username' in kwargs
-                else None,
-                'domain': kwargs['domain'] if 'domain' in kwargs
-                else None,
+                'user': kwargs.get('username'),
+                'domain': kwargs.get('domain'),
             }
 
         elif Action.MUTE_DECEPTION_HOST == _action:
             _uri = Uri.MUTE_DECEPTION_HOST
             _data = {
-                'host': kwargs['host'] if 'host' in kwargs else None
+                'host': kwargs.get('host')
             }
 
         elif Action.UNMUTE_DECEPTION_HOST == _action:
             _uri = Uri.UNMUTE_DECEPTION_HOST
             _data = {
-                'host': kwargs['host'] if 'host' in kwargs else None
+                'host': kwargs.get('host')
             }
 
         elif Action.MUTE_DECEPTION_EP == _action:
             _uri = Uri.MUTE_DECEPTION_EP
             _data = {
-                'host': kwargs['ep'] if 'ep' in kwargs else None
+                'host': kwargs.get('ep')
             }
 
         elif Action.UNMUTE_DECEPTION_EP == _action:
             _uri = Uri.UNMUTE_DECEPTION_EP
             _data = {
-                'host': kwargs['ep'] if 'ep' in kwargs else None
+                'host': kwargs.get('ep')
             }
 
         res = self._http_request(
@@ -112,340 +106,288 @@ class Client(BaseClient):
             url_suffix=_uri,
             json_data=_data,
             resp_type='response',
+            error_handler=get_api_error,
             ok_codes=OK_HTTP_CODES
         )
 
         if Action.TEST_CONN != _action:
-            demisto.log(f'Response from Acalvio API Server: '
-                        f'HTTP Status Code - {res.status_code}, '
-                        f'HTTP Reason - {res.reason}, HTTP Body - {res.text}')
+            demisto.info(f'Response from Acalvio API Server: '
+                         f'HTTP Status Code - {res.status_code}, '
+                         f'HTTP Reason - {res.reason}, HTTP Body - {res.text}')
 
-        return res
+        return res.json()
     # end of function - call_acal_api
 
 # end of class - Client
 
 
-class AcalError(object):
+def get_api_error(res):
 
-    def __init__(self, message='Unknown Error', error='', outputs=None):
-        self.message = message  # str
-        self.error = error  # str
-        self.outputs = outputs if outputs is not None \
-            else {'error': True, 'details': None}  # dict
-
-# end of class - AcalError
-
-
-def get_acal_error(res):
-
-    error = None
+    message = 'API - HTTP Response Error'
+    error = ''
+    outputs = None
 
     if res is not None:
-        error = AcalError(
-            message='HTTP Status Code - {}, HTTP Reason - {}, '
-                    'Message Body - {}'
-            .format(res.status_code, res.reason, res.text),
-            error='',
-            outputs={'error': True, 'details': res.text}
-        )
+        message = 'HTTP Status Code - {}, HTTP Reason - {}, Message Body - {}' \
+            .format(res.status_code, res.reason, res.text)
+        outputs = {'error': True, 'details': res.text}
 
-    return error
-# end of function - get_acal_error
+    return_error(message=message, error=error, outputs=outputs)
+# end of function - get_api_error
 
 
 def do_test_connection(client):
 
     results = None
-    error = None
 
-    try:
-        res = client.call_acal_api(action=Action.TEST_CONN)
+    res_json = client.call_acal_api(action=Action.TEST_CONN)
 
-        if 200 == res.status_code \
-                and 'result' in res.json() \
-                and type(res.json()['result']) is bool\
-                and res.json()['result']:
+    if res_json is not None \
+            and 'result' in res_json \
+            and type(res_json['result']) is bool\
+            and res_json['result']:
 
-            results = 'ok'  # Test Success
+        results = 'ok'  # Test Success
 
-        else:
-            error = get_acal_error(res)
+    else:
+        return_error(message='Error in TestConnection')
 
-    except DemistoException as de:
-        raise Exception(de)
-
-    return (results, error)
+    return results
 # end of function - do_test_connection
 
 
 def do_deception_host_command(client, args):
 
     results = None
-    error = None
 
-    try:
-        host = args.get('host')
+    host = args.get('host')
 
-        res = client.call_acal_api(action=Action.DECEPTION_HOST,
-                                   host=host)
+    res_json = client.call_acal_api(action=Action.DECEPTION_HOST,
+                                    host=host)
 
-        if 200 == res.status_code \
-                and 'result' in res.json() \
-                and type(res.json()['result']) is bool:
+    if res_json is not None \
+            and 'result' in res_json \
+            and type(res_json['result']) is bool:
 
-            out_result = {
-                'is_deception': res.json()['result'],
-                'host': str(host)
-            }
+        out_result = {
+            'IsDeception': res_json['result'],
+            'Host': str(host)
+        }
 
-            results = CommandResults(
-                outputs_prefix='Acalvio.IsDeceptionHost',
-                outputs_key_field=['is_deception', 'host'],
-                outputs=out_result,
-                readable_output=tableToMarkdown
-                ('Acalvio ShadowPlex - Deception Host', out_result),
-                raw_response=res.json()
-            )
-        else:
-            error = get_acal_error(res)
+        results = CommandResults(
+            outputs_prefix='Acalvio.IsDeceptionHost',
+            outputs_key_field=['host'],
+            outputs=out_result,
+            readable_output=tableToMarkdown
+            ('Acalvio ShadowPlex - Deception Host', out_result),
+            raw_response=res_json
+        )
+    else:
+        return_error(message='Error in IsDeceptionHost')
 
-    except DemistoException as de:
-        raise Exception(de)
-
-    return (results, error)
+    return results
 # end of function - do_deception_host_command
 
 
 def do_deception_file_command(client, args):
 
     results = None
-    error = None
 
-    try:
-        filename = args.get('filename')
-        endpoint = args.get('endpoint')
+    filename = args.get('filename')
+    endpoint = args.get('endpoint')
 
-        res = client.call_acal_api(action=Action.DECEPTION_FILE,
-                                   filename=filename,
-                                   endpoint=endpoint)
+    res_json = client.call_acal_api(action=Action.DECEPTION_FILE,
+                                    filename=filename,
+                                    endpoint=endpoint)
 
-        if 200 == res.status_code \
-                and 'result' in res.json() \
-                and type(res.json()['result']) is bool:
+    if res_json is not None \
+            and 'result' in res_json \
+            and type(res_json['result']) is bool:
 
-            out_result = {
-                'is_deception': res.json()['result'],
-                'filename': str(filename),
-                'endpoint': str(endpoint)
-            }
+        out_result = {
+            'IsDeception': res_json['result'],
+            'Filename': str(filename),
+            'Endpoint': str(endpoint)
+        }
 
-            results = CommandResults(
-                outputs_prefix='Acalvio.IsDeceptionFile',
-                outputs_key_field=['is_deception', 'filename', 'endpoint'],
-                outputs=out_result,
-                readable_output=tableToMarkdown
-                ('Acalvio ShadowPlex - Deception File', out_result),
-                raw_response=res.json()
-            )
-        else:
-            error = get_acal_error(res)
+        results = CommandResults(
+            outputs_prefix='Acalvio.IsDeceptionFile',
+            outputs_key_field=['filename', 'endpoint'],
+            outputs=out_result,
+            readable_output=tableToMarkdown
+            ('Acalvio ShadowPlex - Deception File', out_result),
+            raw_response=res_json
+        )
+    else:
+        return_error(message='Error in IsDeceptionFile')
 
-    except DemistoException as de:
-        raise Exception(de)
-
-    return (results, error)
+    return results
 # end of function - do_deception_file_command
 
 
 def do_deception_user_command(client, args):
 
     results = None
-    error = None
 
-    try:
-        username = args.get('username')
-        domain = args.get('domain')
+    username = args.get('username')
+    domain = args.get('domain')
 
-        res = client.call_acal_api(action=Action.DECEPTION_USER,
-                                   username=username,
-                                   domain=domain)
+    res_json = client.call_acal_api(action=Action.DECEPTION_USER,
+                                    username=username,
+                                    domain=domain)
 
-        if 200 == res.status_code \
-                and 'result' in res.json() \
-                and type(res.json()['result']) is bool:
+    if res_json is not None \
+            and 'result' in res_json \
+            and type(res_json['result']) is bool:
 
-            out_result = {
-                'is_deception': res.json()['result'],
-                'username': str(username),
-                'domain': str(domain) if domain is not None else None
-            }
+        out_result = {
+            'IsDeception': res_json['result'],
+            'Username': str(username),
+            'Domain': str(domain) if domain is not None else None
+        }
 
-            results = CommandResults(
-                outputs_prefix='Acalvio.IsDeceptionUser',
-                outputs_key_field=['is_deception', 'username', 'domain'],
-                outputs=out_result,
-                readable_output=tableToMarkdown
-                ('Acalvio ShadowPlex - Deception User', out_result),
-                raw_response=res.json()
-            )
-        else:
-            error = get_acal_error(res)
+        results = CommandResults(
+            outputs_prefix='Acalvio.IsDeceptionUser',
+            outputs_key_field=['username', 'domain'],
+            outputs=out_result,
+            readable_output=tableToMarkdown
+            ('Acalvio ShadowPlex - Deception User', out_result),
+            raw_response=res_json
+        )
+    else:
+        return_error(message='Error in IsDeceptionUser')
 
-    except DemistoException as de:
-        raise Exception(de)
-
-    return (results, error)
+    return results
 # end of function - do_deception_user_command
 
 
 def do_mute_deception_host_command(client, args):
 
     results = None
-    error = None
 
-    try:
-        host = args.get('host')
+    host = args.get('host')
 
-        res = client.call_acal_api(action=Action.MUTE_DECEPTION_HOST,
-                                   host=host)
+    res_json = client.call_acal_api(action=Action.MUTE_DECEPTION_HOST,
+                                    host=host)
 
-        if 200 == res.status_code \
-                and 'rescode' in res.json():
+    if res_json is not None \
+            and 'rescode' in res_json:
 
-            out_result = {
-                'is_mute': True if 0 == res.json()['rescode'] else False,
-                'host': str(host)
-            }
+        out_result = {
+            'IsMute': True if 0 == res_json['rescode'] else False,
+            'Host': str(host)
+        }
 
-            results = CommandResults(
-                outputs_prefix='Acalvio.MuteDeceptionHost',
-                outputs_key_field=['host', 'is_mute'],
-                outputs=out_result,
-                readable_output=tableToMarkdown
-                ('Acalvio ShadowPlex - Mute Deception Host', out_result),
-                raw_response=res.json()
-            )
-        else:
-            error = get_acal_error(res)
+        results = CommandResults(
+            outputs_prefix='Acalvio.MuteDeceptionHost',
+            outputs_key_field=['host'],
+            outputs=out_result,
+            readable_output=tableToMarkdown
+            ('Acalvio ShadowPlex - Mute Deception Host', out_result),
+            raw_response=res_json
+        )
+    else:
+        return_error(message='Error in MuteDeceptionHost')
 
-    except DemistoException as de:
-        raise Exception(de)
-
-    return (results, error)
+    return results
 # end of function - do_mute_deception_host_command
 
 
 def do_unmute_deception_host_command(client, args):
 
     results = None
-    error = None
 
-    try:
-        host = args.get('host')
+    host = args.get('host')
 
-        res = client.call_acal_api(action=Action.UNMUTE_DECEPTION_HOST,
-                                   host=host)
+    res_json = client.call_acal_api(action=Action.UNMUTE_DECEPTION_HOST,
+                                    host=host)
 
-        if 200 == res.status_code \
-                and 'rescode' in res.json():
+    if res_json is not None \
+            and 'rescode' in res_json:
 
-            out_result = {
-                'is_unmute': True if 0 == res.json()['rescode'] else False,
-                'host': str(host)
-            }
+        out_result = {
+            'IsUnmute': True if 0 == res_json['rescode'] else False,
+            'Host': str(host)
+        }
 
-            results = CommandResults(
-                outputs_prefix='Acalvio.UnmuteDeceptionHost',
-                outputs_key_field=['host', 'is_unmute'],
-                outputs=out_result,
-                readable_output=tableToMarkdown
-                ('Acalvio ShadowPlex - Unmute Deception Host', out_result),
-                raw_response=res.json()
-            )
-        else:
-            error = get_acal_error(res)
+        results = CommandResults(
+            outputs_prefix='Acalvio.UnmuteDeceptionHost',
+            outputs_key_field=['host'],
+            outputs=out_result,
+            readable_output=tableToMarkdown
+            ('Acalvio ShadowPlex - Unmute Deception Host', out_result),
+            raw_response=res_json
+        )
+    else:
+        return_error(message='Error in UnmuteDeceptionHost')
 
-    except DemistoException as de:
-        raise Exception(de)
-
-    return (results, error)
+    return results
 # end of function - do_unmute_deception_host_command
 
 
 def do_mute_deception_ep_command(client, args):
 
     results = None
-    error = None
 
-    try:
-        ep = args.get('endpoint')
+    ep = args.get('endpoint')
 
-        res = client.call_acal_api(action=Action.MUTE_DECEPTION_EP,
-                                   ep=ep)
+    res_json = client.call_acal_api(action=Action.MUTE_DECEPTION_EP,
+                                    ep=ep)
 
-        if 200 == res.status_code \
-                and 'rescode' in res.json():
+    if res_json is not None \
+            and 'rescode' in res_json:
 
-            out_result = {
-                'is_mute': True if 0 == res.json()['rescode'] else False,
-                'endpoint': str(ep)
-            }
+        out_result = {
+            'IsMute': True if 0 == res_json['rescode'] else False,
+            'Endpoint': str(ep)
+        }
 
-            results = CommandResults(
-                outputs_prefix='Acalvio.MuteDeceptionEndpoint',
-                outputs_key_field=['endpoint', 'is_mute'],
-                outputs=out_result,
-                readable_output=tableToMarkdown
-                ('Acalvio ShadowPlex - Mute Deception on Endpoint',
-                 out_result),
-                raw_response=res.json()
-            )
-        else:
-            error = get_acal_error(res)
+        results = CommandResults(
+            outputs_prefix='Acalvio.MuteDeceptionEndpoint',
+            outputs_key_field=['endpoint'],
+            outputs=out_result,
+            readable_output=tableToMarkdown
+            ('Acalvio ShadowPlex - Mute Deception on Endpoint',
+             out_result),
+            raw_response=res_json
+        )
+    else:
+        return_error(message='Error in MuteDeceptionEndpoint')
 
-    except DemistoException as de:
-        raise Exception(de)
-
-    return (results, error)
+    return results
 # end of function - do_mute_deception_ep_command
 
 
 def do_unmute_deception_ep_command(client, args):
 
     results = None
-    error = None
 
-    try:
-        ep = args.get('endpoint')
+    ep = args.get('endpoint')
 
-        res = client.call_acal_api(action=Action.UNMUTE_DECEPTION_EP,
-                                   ep=ep)
+    res_json = client.call_acal_api(action=Action.UNMUTE_DECEPTION_EP,
+                                    ep=ep)
 
-        if 200 == res.status_code \
-                and 'rescode' in res.json():
+    if res_json is not None \
+            and 'rescode' in res_json:
 
-            out_result = {
-                'is_unmute': True if 0 == res.json()['rescode'] else False,
-                'endpoint': str(ep)
-            }
+        out_result = {
+            'IsUnmute': True if 0 == res_json['rescode'] else False,
+            'Endpoint': str(ep)
+        }
 
-            results = CommandResults(
-                outputs_prefix='Acalvio.UnmuteDeceptionEndpoint',
-                outputs_key_field=['endpoint', 'is_unmute'],
-                outputs=out_result,
-                readable_output=tableToMarkdown
-                ('Acalvio ShadowPlex - Unmute Deception on Endpoint',
-                 out_result),
-                raw_response=res.json()
-            )
-        else:
-            error = get_acal_error(res)
+        results = CommandResults(
+            outputs_prefix='Acalvio.UnmuteDeceptionEndpoint',
+            outputs_key_field=['endpoint'],
+            outputs=out_result,
+            readable_output=tableToMarkdown
+            ('Acalvio ShadowPlex - Unmute Deception on Endpoint',
+             out_result),
+            raw_response=res_json
+        )
+    else:
+        return_error(message='Error in UnmuteDeceptionEndpoint')
 
-    except DemistoException as de:
-        raise Exception(de)
-
-    return (results, error)
+    return results
 # end of function - do_unmute_deception_ep_command
 
 
@@ -454,16 +396,18 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
 
+    params = demisto.params()
+
     # get Acalvio API Server url
-    base_url = demisto.params()['url']
+    base_url = params['url'].rstrip('/')
 
     # get Acalvio API Key
-    apikey = demisto.params()['apikey']
+    apikey = params['apikey']
 
     # check if SSL is to be verified
-    verify_certificate = demisto.params().get('insecure', False)
+    verify_certificate = params.get('insecure', False)
 
-    proxy = demisto.params().get('proxy', False)
+    proxy = params.get('proxy', False)
 
     # set the headers
     headers = {
@@ -471,9 +415,8 @@ def main():
         'content-type': 'application/json'
     }
 
-    demisto.log(f'Command being called is \'{demisto.command()}\'')
+    demisto.info(f'Command being called is \'{demisto.command()}\'')
     result = None
-    acalerror = AcalError()
 
     try:
         client = Client(
@@ -484,49 +427,41 @@ def main():
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button
-            result, acalerror = do_test_connection(client)
+            result = do_test_connection(client)
 
         elif demisto.command() == 'acalvio-is-deception-host':
-            result, acalerror = \
+            result = \
                 do_deception_host_command(client, demisto.args())
 
         elif demisto.command() == 'acalvio-is-deception-file':
-            result, acalerror = \
+            result = \
                 do_deception_file_command(client, demisto.args())
 
         elif demisto.command() == 'acalvio-is-deception-user':
-            result, acalerror = \
+            result = \
                 do_deception_user_command(client, demisto.args())
 
         elif demisto.command() == 'acalvio-mute-deception-host':
-            result, acalerror = \
+            result = \
                 do_mute_deception_host_command(client, demisto.args())
 
         elif demisto.command() == 'acalvio-unmute-deception-host':
-            result, acalerror = \
+            result = \
                 do_unmute_deception_host_command(client, demisto.args())
 
         elif demisto.command() == 'acalvio-mute-deception-on-endpoint':
-            result, acalerror = \
+            result = \
                 do_mute_deception_ep_command(client, demisto.args())
 
         elif demisto.command() == 'acalvio-unmute-deception-on-endpoint':
-            result, acalerror = \
+            result = \
                 do_unmute_deception_ep_command(client, demisto.args())
 
-    # Log exceptions
-    except Exception as e:
-        acalerror = AcalError(message=f'Failed to execute \'{demisto.command()}\' command. Error: {str(e)}')
+        return_results(result)
 
-    finally:
-        if result is not None:
-            return_results(result)
-        else:
-            if acalerror is None:
-                acalerror = AcalError()
-            return_error(message=acalerror.message,
-                         error=acalerror.error,
-                         outputs=acalerror.outputs)
+    # Log exceptions
+    except DemistoException as de:
+        return_error(message=f'Failed to execute \'{demisto.command()}\' command. Error: {str(de)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

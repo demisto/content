@@ -14,10 +14,19 @@ from test_data.api_request_data import BASE_URL, \
     apikey, content_type, decoy_host, ep_host, decoy_filename, \
     decoy_user, domain
 
+from acalvioapp import Client
+
+
 headers = {
     'api_key': apikey,
     'content-type': content_type
 }
+
+client = Client(
+    base_url=BASE_URL,
+    verify=False,
+    headers=headers
+)
 
 
 class MockRequestsResponse:
@@ -32,17 +41,12 @@ class MockRequestsResponse:
 
 
 def test_do_test_connection_success(mocker):
-    from acalvioapp import do_test_connection, Client
+    from acalvioapp import do_test_connection
     mock_response = MockRequestsResponse(
         json_data=test_connection_success.__getitem__('HTTP Body'),
         status_code=test_connection_success.__getitem__('HTTP Status Code'),
         reason=test_connection_success.__getitem__('HTTP Reason'),
         text=test_connection_success.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_test_connection(client)
@@ -51,17 +55,12 @@ def test_do_test_connection_success(mocker):
 
 
 def test_do_test_connection_failure(mocker):
-    from acalvioapp import do_test_connection, Client
+    from acalvioapp import do_test_connection
     mock_response = MockRequestsResponse(
         json_data=test_connection_failure.__getitem__('HTTP Body'),
         status_code=test_connection_failure.__getitem__('HTTP Status Code'),
         reason=test_connection_failure.__getitem__('HTTP Reason'),
         text=test_connection_failure.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_test_connection(client)
@@ -71,18 +70,13 @@ def test_do_test_connection_failure(mocker):
 
 
 def test_do_test_connection_unauthorized(mocker):
-    from acalvioapp import do_test_connection, Client
+    from acalvioapp import do_test_connection
     mock_response = MockRequestsResponse(
         json_data=test_connection_invalid_api_key.__getitem__('HTTP Body'),
         status_code=test_connection_invalid_api_key
         .__getitem__('HTTP Status Code'),
         reason=test_connection_invalid_api_key.__getitem__('HTTP Reason'),
         text=test_connection_invalid_api_key.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_test_connection(client)
@@ -92,17 +86,12 @@ def test_do_test_connection_unauthorized(mocker):
 
 
 def test_do_test_connection_error(mocker):
-    from acalvioapp import do_test_connection, Client
+    from acalvioapp import do_test_connection
     mock_response = MockRequestsResponse(
         json_data=test_server_error.__getitem__('HTTP Body'),
         status_code=test_server_error.__getitem__('HTTP Status Code'),
         reason=test_server_error.__getitem__('HTTP Reason'),
         text=test_server_error.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_test_connection(client)
@@ -113,17 +102,12 @@ def test_do_test_connection_error(mocker):
 
 def test_do_deception_host_command_decoy_exists(mocker):
     from acalvioapp import \
-        do_deception_host_command, Client
+        do_deception_host_command
     mock_response = MockRequestsResponse(
         json_data=test_decoy_host_true.__getitem__('HTTP Body'),
         status_code=test_decoy_host_true.__getitem__('HTTP Status Code'),
         reason=test_decoy_host_true.__getitem__('HTTP Reason'),
         text=test_decoy_host_true.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_deception_host_command(client, {"host": decoy_host})
@@ -134,17 +118,12 @@ def test_do_deception_host_command_decoy_exists(mocker):
 
 def test_do_deception_host_command_decoy_not_exists(mocker):
     from acalvioapp import \
-        do_deception_host_command, Client
+        do_deception_host_command
     mock_response = MockRequestsResponse(
         json_data=test_decoy_host_false.__getitem__('HTTP Body'),
         status_code=test_decoy_host_false.__getitem__('HTTP Status Code'),
         reason=test_decoy_host_false.__getitem__('HTTP Reason'),
         text=test_decoy_host_false.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_deception_host_command(client, {"host": decoy_host})
@@ -155,17 +134,12 @@ def test_do_deception_host_command_decoy_not_exists(mocker):
 
 def test_do_deception_file_command_decoy_file_exists(mocker):
     from acalvioapp import \
-        do_deception_file_command, Client
+        do_deception_file_command
     mock_response = MockRequestsResponse(
         json_data=test_decoy_file_true.__getitem__('HTTP Body'),
         status_code=test_decoy_file_true.__getitem__('HTTP Status Code'),
         reason=test_decoy_file_true.__getitem__('HTTP Reason'),
         text=test_decoy_file_true.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_deception_file_command(client,
@@ -178,17 +152,12 @@ def test_do_deception_file_command_decoy_file_exists(mocker):
 
 def test_do_deception_file_command_decoy_file_not_exists(mocker):
     from acalvioapp import \
-        do_deception_file_command, Client
+        do_deception_file_command
     mock_response = MockRequestsResponse(
         json_data=test_decoy_file_false.__getitem__('HTTP Body'),
         status_code=test_decoy_file_false.__getitem__('HTTP Status Code'),
         reason=test_decoy_file_false.__getitem__('HTTP Reason'),
         text=test_decoy_file_false.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_deception_file_command(client,
@@ -201,17 +170,12 @@ def test_do_deception_file_command_decoy_file_not_exists(mocker):
 
 def test_do_deception_user_command_user_exists(mocker):
     from acalvioapp import \
-        do_deception_user_command, Client
+        do_deception_user_command
     mock_response = MockRequestsResponse(
         json_data=test_decoy_user_true.__getitem__('HTTP Body'),
         status_code=test_decoy_user_true.__getitem__('HTTP Status Code'),
         reason=test_decoy_user_true.__getitem__('HTTP Reason'),
         text=test_decoy_user_true.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_deception_user_command(client,
@@ -225,17 +189,12 @@ def test_do_deception_user_command_user_exists(mocker):
 
 def test_do_deception_user_command_user_not_exists(mocker):
     from acalvioapp import \
-        do_deception_user_command, Client
+        do_deception_user_command
     mock_response = MockRequestsResponse(
         json_data=test_decoy_user_false.__getitem__('HTTP Body'),
         status_code=test_decoy_user_false.__getitem__('HTTP Status Code'),
         reason=test_decoy_user_false.__getitem__('HTTP Reason'),
         text=test_decoy_user_false.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_deception_user_command(client,
@@ -249,17 +208,12 @@ def test_do_deception_user_command_user_not_exists(mocker):
 
 def test_do_mute_deception_host_command_decoy_exists(mocker):
     from acalvioapp import \
-        do_mute_deception_host_command, Client
+        do_mute_deception_host_command
     mock_response = MockRequestsResponse(
         json_data=test_mute_decoy_true.__getitem__('HTTP Body'),
         status_code=test_mute_decoy_true.__getitem__('HTTP Status Code'),
         reason=test_mute_decoy_true.__getitem__('HTTP Reason'),
         text=test_mute_decoy_true.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_mute_deception_host_command(client,
@@ -271,17 +225,12 @@ def test_do_mute_deception_host_command_decoy_exists(mocker):
 
 def test_do_mute_deception_host_command_decoy_not_exists(mocker):
     from acalvioapp import \
-        do_mute_deception_host_command, Client
+        do_mute_deception_host_command
     mock_response = MockRequestsResponse(
         json_data=test_mute_decoy_false.__getitem__('HTTP Body'),
         status_code=test_mute_decoy_false.__getitem__('HTTP Status Code'),
         reason=test_mute_decoy_false.__getitem__('HTTP Reason'),
         text=test_mute_decoy_false.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_mute_deception_host_command(client,
@@ -293,18 +242,13 @@ def test_do_mute_deception_host_command_decoy_not_exists(mocker):
 
 def test_do_mute_deception_host_command_decoy_already_muted(mocker):
     from acalvioapp import \
-        do_mute_deception_host_command, Client
+        do_mute_deception_host_command
     mock_response = MockRequestsResponse(
         json_data=test_mute_again_already_muted_decoy.__getitem__('HTTP Body'),
         status_code=test_mute_again_already_muted_decoy.
         __getitem__('HTTP Status Code'),
         reason=test_mute_again_already_muted_decoy.__getitem__('HTTP Reason'),
         text=test_mute_again_already_muted_decoy.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_mute_deception_host_command(client,
@@ -316,17 +260,12 @@ def test_do_mute_deception_host_command_decoy_already_muted(mocker):
 
 def test_do_unmute_deception_host_command_decoy_exists(mocker):
     from acalvioapp import \
-        do_unmute_deception_host_command, Client
+        do_unmute_deception_host_command
     mock_response = MockRequestsResponse(
         json_data=test_unmute_decoy_true.__getitem__('HTTP Body'),
         status_code=test_unmute_decoy_true.__getitem__('HTTP Status Code'),
         reason=test_unmute_decoy_true.__getitem__('HTTP Reason'),
         text=test_unmute_decoy_true.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_unmute_deception_host_command(client,
@@ -338,17 +277,12 @@ def test_do_unmute_deception_host_command_decoy_exists(mocker):
 
 def test_do_unmute_deception_host_command_decoy_not_exists(mocker):
     from acalvioapp import \
-        do_unmute_deception_host_command, Client
+        do_unmute_deception_host_command
     mock_response = MockRequestsResponse(
         json_data=test_unmute_decoy_false.__getitem__('HTTP Body'),
         status_code=test_unmute_decoy_false.__getitem__('HTTP Status Code'),
         reason=test_unmute_decoy_false.__getitem__('HTTP Reason'),
         text=test_unmute_decoy_false.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_unmute_deception_host_command(client,
@@ -360,7 +294,7 @@ def test_do_unmute_deception_host_command_decoy_not_exists(mocker):
 
 def test_do_unmute_deception_host_command_decoy_already_unmuted(mocker):
     from acalvioapp import \
-        do_unmute_deception_host_command, Client
+        do_unmute_deception_host_command
     mock_response = MockRequestsResponse(
         json_data=test_unmute_again_already_unmuted_decoy.
         __getitem__('HTTP Body'),
@@ -370,11 +304,6 @@ def test_do_unmute_deception_host_command_decoy_already_unmuted(mocker):
         __getitem__('HTTP Reason'),
         text=test_unmute_again_already_unmuted_decoy.
         __getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_unmute_deception_host_command(client,
@@ -386,17 +315,12 @@ def test_do_unmute_deception_host_command_decoy_already_unmuted(mocker):
 
 def test_do_mute_deception_ep_command_ep_exists(mocker):
     from acalvioapp import \
-        do_mute_deception_ep_command, Client
+        do_mute_deception_ep_command
     mock_response = MockRequestsResponse(
         json_data=test_mute_host_true.__getitem__('HTTP Body'),
         status_code=test_mute_host_true.__getitem__('HTTP Status Code'),
         reason=test_mute_host_true.__getitem__('HTTP Reason'),
         text=test_mute_host_true.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_mute_deception_ep_command(client,
@@ -408,17 +332,12 @@ def test_do_mute_deception_ep_command_ep_exists(mocker):
 
 def test_do_mute_deception_ep_command_ep_not_exists(mocker):
     from acalvioapp import \
-        do_mute_deception_ep_command, Client
+        do_mute_deception_ep_command
     mock_response = MockRequestsResponse(
         json_data=test_mute_host_false.__getitem__('HTTP Body'),
         status_code=test_mute_host_false.__getitem__('HTTP Status Code'),
         reason=test_mute_host_false.__getitem__('HTTP Reason'),
         text=test_mute_host_false.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_mute_deception_ep_command(client,
@@ -430,18 +349,13 @@ def test_do_mute_deception_ep_command_ep_not_exists(mocker):
 
 def test_do_mute_deception_ep_command_ep_already_muted(mocker):
     from acalvioapp import \
-        do_mute_deception_ep_command, Client
+        do_mute_deception_ep_command
     mock_response = MockRequestsResponse(
         json_data=test_mute_already_muted_host.__getitem__('HTTP Body'),
         status_code=test_mute_already_muted_host.
         __getitem__('HTTP Status Code'),
         reason=test_mute_already_muted_host.__getitem__('HTTP Reason'),
         text=test_mute_already_muted_host.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_mute_deception_ep_command(client,
@@ -453,17 +367,12 @@ def test_do_mute_deception_ep_command_ep_already_muted(mocker):
 
 def test_do_unmute_deception_ep_command_ep_exists(mocker):
     from acalvioapp import \
-        do_unmute_deception_ep_command, Client
+        do_unmute_deception_ep_command
     mock_response = MockRequestsResponse(
         json_data=test_unmute_host_true.__getitem__('HTTP Body'),
         status_code=test_unmute_host_true.__getitem__('HTTP Status Code'),
         reason=test_unmute_host_true.__getitem__('HTTP Reason'),
         text=test_unmute_host_true.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_unmute_deception_ep_command(client,
@@ -475,17 +384,12 @@ def test_do_unmute_deception_ep_command_ep_exists(mocker):
 
 def test_do_unmute_deception_ep_command_ep_not_exists(mocker):
     from acalvioapp import \
-        do_unmute_deception_ep_command, Client
+        do_unmute_deception_ep_command
     mock_response = MockRequestsResponse(
         json_data=test_unmute_host_false.__getitem__('HTTP Body'),
         status_code=test_unmute_host_false.__getitem__('HTTP Status Code'),
         reason=test_unmute_host_false.__getitem__('HTTP Reason'),
         text=test_unmute_host_false.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_unmute_deception_ep_command(client,
@@ -497,18 +401,13 @@ def test_do_unmute_deception_ep_command_ep_not_exists(mocker):
 
 def test_do_unmute_deception_ep_command_ep_already_unmuted(mocker):
     from acalvioapp import \
-        do_unmute_deception_ep_command, Client
+        do_unmute_deception_ep_command
     mock_response = MockRequestsResponse(
         json_data=test_unmute_already_unmuted_host.__getitem__('HTTP Body'),
         status_code=test_unmute_already_unmuted_host.
         __getitem__('HTTP Status Code'),
         reason=test_unmute_already_unmuted_host.__getitem__('HTTP Reason'),
         text=test_unmute_already_unmuted_host.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_unmute_deception_ep_command(client,
@@ -520,17 +419,12 @@ def test_do_unmute_deception_ep_command_ep_already_unmuted(mocker):
 
 def test_do_deception_host_command_missing_parameter(mocker):
     from acalvioapp import \
-        do_deception_host_command, Client
+        do_deception_host_command
     mock_response = MockRequestsResponse(
         json_data=test_missing_parameter.__getitem__('HTTP Body'),
         status_code=test_missing_parameter.__getitem__('HTTP Status Code'),
         reason=test_missing_parameter.__getitem__('HTTP Reason'),
         text=test_missing_parameter.__getitem__('HTTP Body')
-    )
-    client = Client(
-        base_url=BASE_URL,
-        verify=False,
-        headers=headers
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result, error = do_deception_host_command(client, {})

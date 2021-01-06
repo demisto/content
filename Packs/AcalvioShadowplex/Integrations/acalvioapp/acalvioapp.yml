@@ -39,10 +39,10 @@ script:
     execution: false
     name: acalvio-is-deception-host
     outputs:
-    - contextPath: Acalvio.IsDeceptionHost.is_deception
+    - contextPath: Acalvio.IsDeceptionHost.IsDeception
       description: Returns 'True' if Host is a Deception else 'False'
       type: Boolean
-    - contextPath: Acalvio.IsDeceptionHost.host
+    - contextPath: Acalvio.IsDeceptionHost.Host
       description: Host to be checked if Deception
       type: String
   - arguments:
@@ -63,13 +63,13 @@ script:
     execution: false
     name: acalvio-is-deception-user
     outputs:
-    - contextPath: Acalvio.IsDeceptionUser.is_deception
+    - contextPath: Acalvio.IsDeceptionUser.IsDeception
       description: Returns 'True' if its a Deception User else 'False'
       type: Boolean
-    - contextPath: Acalvio.IsDeceptionUser.username
+    - contextPath: Acalvio.IsDeceptionUser.Username
       description: Username to be checked if Deception
       type: String
-    - contextPath: Acalvio.IsDeceptionUser.domain
+    - contextPath: Acalvio.IsDeceptionUser.Domain
       description: Users Domain
       type: String
   - arguments:
@@ -90,13 +90,13 @@ script:
     execution: false
     name: acalvio-is-deception-file
     outputs:
-    - contextPath: Acalvio.IsDeceptionFile.is_deception
+    - contextPath: Acalvio.IsDeceptionFile.IsDeception
       description: Returns 'True' if File is a Deception else 'False'
       type: Boolean
-    - contextPath: Acalvio.IsDeceptionFile.filename
+    - contextPath: Acalvio.IsDeceptionFile.Filename
       description: Filename to be checked if Deception
       type: String
-    - contextPath: Acalvio.IsDeceptionFile.endpoint
+    - contextPath: Acalvio.IsDeceptionFile.Endpoint
       description: Hostname or IP Address of Endpoint where file resides
       type: String
   - arguments:
@@ -111,10 +111,10 @@ script:
     execution: false
     name: acalvio-mute-deception-host
     outputs:
-    - contextPath: Acalvio.MuteDeceptionHost.host
+    - contextPath: Acalvio.MuteDeceptionHost.Host
       description: Deception Host to be Muted
       type: String
-    - contextPath: Acalvio.MuteDeceptionHost.is_mute
+    - contextPath: Acalvio.MuteDeceptionHost.IsMute
       description: Returns 'True' if Deception is Muted else 'False'
       type: Boolean
   - arguments:
@@ -129,10 +129,10 @@ script:
     execution: false
     name: acalvio-unmute-deception-host
     outputs:
-    - contextPath: Acalvio.UnmuteDeceptionHost.host
+    - contextPath: Acalvio.UnmuteDeceptionHost.Host
       description: Deception Host to be Unmuted
       type: String
-    - contextPath: Acalvio.UnmuteDeceptionHost.is_unmute
+    - contextPath: Acalvio.UnmuteDeceptionHost.IsUnmute
       description: Returns 'True' if Deception is Unmuted else 'False'
       type: Boolean
   - arguments:
@@ -147,10 +147,10 @@ script:
     execution: false
     name: acalvio-mute-deception-on-endpoint
     outputs:
-    - contextPath: Acalvio.MuteDeceptionEndpoint.endpoint
+    - contextPath: Acalvio.MuteDeceptionEndpoint.Endpoint
       description: Endpoint on which Deception is to be Muted
       type: String
-    - contextPath: Acalvio.MuteDeceptionEndpoint.is_mute
+    - contextPath: Acalvio.MuteDeceptionEndpoint.IsMute
       description: Returns 'True' if Deception is Muted else 'False'
       type: Boolean
   - arguments:
@@ -165,13 +165,13 @@ script:
     execution: false
     name: acalvio-unmute-deception-on-endpoint
     outputs:
-    - contextPath: Acalvio.UnmuteDeceptionEndpoint.endpoint
+    - contextPath: Acalvio.UnmuteDeceptionEndpoint.Endpoint
       description: Endpoint on which Deception is to be Unmuted
       type: String
-    - contextPath: Acalvio.UnmuteDeceptionEndpoint.is_unmute
+    - contextPath: Acalvio.UnmuteDeceptionEndpoint.IsUnmute
       description: Returns 'True' if Deception is Unmuted else 'False'
       type: Boolean
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false
@@ -180,4 +180,6 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- no test
 fromversion: 5.0.0
