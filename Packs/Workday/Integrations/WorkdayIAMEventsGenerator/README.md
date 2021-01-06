@@ -1,6 +1,4 @@
-IAM mock Workday full reports and events.
-
-This integration is for testing propose only.
+Generates Workday dummy test reports and events. Used for testing/dev purposes.
 
 To use this integration for testing:
 1. Create an instance - Add a listening port and mark the *Long running instance* checkbox.

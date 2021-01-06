@@ -15,7 +15,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: IAM mock Workday full reports and events.
+description: Generates Workday dummy test reports and events. Used for testing/dev
+  purposes.
 display: Workday IAM Event Generator (Beta)
 name: Workday_IAM_Event_Generator
 script:
@@ -56,7 +57,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-beta: true
 tests:
 - No tests
 fromversion: 6.0.0
+beta: true
