@@ -3,19 +3,12 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR incident handling v3
-description: "This playbook is triggered by fetching a Palo Alto Networks Cortex XDR\
-  \ incident.\nThe playbook syncs and updates new XDR alerts that construct the incident\
-  \ and triggers a sub-playbook to handle each alert by type.\nThen, the playbook\
-  \ performs enrichment on the incident's indicators and hunts for related IOCs.\n\
-  Based on the severity, it lets the analyst decide whether to continue to the remediation\
-  \ stage or close the investigation as a false positive. \nAfter the remediation,\
-  \ if there are no new alerts, the playbook stops the alert sync and closes the XDR\
-  \ incident and investigation. For performing the bidirectional sync, the playbook\
-  \ uses the incoming and outgoing mirroring feature added in XSOAR version 6.0.0.\
-  \ After the `Calculate Severity - Generic v2` sub-playbook’s run, Cortex XSOAR will\
-  \ be treated as the single source of truth for the severity field, and it will sync\
-  \ only from Cortex XSOAR to XDR, so manual changes for the severity field in XDR\
-  \ will not update in the XSOAR incident."
+description: |-
+  This playbook is triggered by fetching a Palo Alto Networks Cortex XDR incident.
+  The playbook syncs and updates new XDR alerts that construct the incident and triggers a sub-playbook to handle each alert by type.
+  Then, the playbook performs enrichment on the incident’s indicators and hunts for related IOCs.
+  Based on the severity, it lets the analyst decide whether to continue to the remediation stage or close the investigation as a false positive.
+  After the remediation, if there are no new alerts, the playbook stops the alert sync and closes the XDR incident and investigation. For performing the bidirectional sync, the playbook uses the incoming and outgoing mirroring feature added in XSOAR version 6.0.0. After the Calculate Severity - Generic v2 sub-playbook’s run, Cortex XSOAR will be treated as the single source of truth for the severity field, and it will sync only from Cortex XSOAR to XDR, so manual changes for the severity field in XDR will not update in the XSOAR incident.
 starttaskid: "0"
 tasks:
   "0":
@@ -93,7 +86,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2465
+          "y": 2275
         }
       }
     note: false
@@ -139,7 +132,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 3480
+          "y": 3290
         }
       }
     note: false
@@ -149,17 +142,18 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: f638b500-210c-4760-8767-c07b9db62308
+    taskid: 8764e9ac-4b02-42e1-8c01-d65dd5d8657e
     type: playbook
     task:
-      id: f638b500-210c-4760-8767-c07b9db62308
+      id: 8764e9ac-4b02-42e1-8c01-d65dd5d8657e
       version: -1
       name: Cortex XDR Alerts Handling
+      description: "This playbook is used to loop over every alert in a Cortex XDR\
+        \ incident. \nSupported alert categories:\n- Malware\n- Port Scan"
       playbookName: Cortex XDR Alerts Handling
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "20"
@@ -172,6 +166,9 @@ tasks:
         complex:
           root: PaloAltoNetworksXDR
           accessor: Incident.incident_id
+      internalRanges:
+        complex:
+          root: inputs.InternalRange
     separatecontext: false
     loop:
       iscommand: false
@@ -183,7 +180,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 535
         }
       }
     note: false
@@ -208,7 +205,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4530
+          "y": 4340
         }
       }
     note: false
@@ -251,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4170
+          "y": 3980
         }
       }
     note: false
@@ -291,7 +288,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 4355
+          "y": 4165
         }
       }
     note: false
@@ -388,7 +385,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2070
+          "y": 1900
         }
       }
     note: false
@@ -416,7 +413,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1545
+          "y": 1375
         }
       }
     note: false
@@ -426,10 +423,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 1a52d2f9-00df-4ac9-8df5-364ebb3c3bfb
+    taskid: 6a74c970-e8e5-45c7-8926-4aa490c376de
     type: condition
     task:
-      id: 1a52d2f9-00df-4ac9-8df5-364ebb3c3bfb
+      id: 6a74c970-e8e5-45c7-8926-4aa490c376de
       version: -1
       name: Auto remediation?
       description: Should the playbook perform auto remediation or manual remediation?
@@ -457,7 +454,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2630
+          "y": 2440
         }
       }
     note: false
@@ -485,7 +482,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 2800
+          "y": 2610
         }
       }
     note: false
@@ -515,7 +512,7 @@ tasks:
       {
         "position": {
           "x": 520,
-          "y": 3650
+          "y": 3460
         }
       }
     note: false
@@ -543,7 +540,7 @@ tasks:
       {
         "position": {
           "x": 750,
-          "y": 3820
+          "y": 3630
         }
       }
     note: false
@@ -553,14 +550,14 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: d58909ea-e787-496c-81ea-1db784cf8c5b
+    taskid: 168681ab-873d-425d-8a1f-4c14703812bf
     type: playbook
     task:
-      id: d58909ea-e787-496c-81ea-1db784cf8c5b
+      id: 168681ab-873d-425d-8a1f-4c14703812bf
       version: -1
       name: Block Indicators - Generic v2
       description: |+
-        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
 
         - Block URL - Generic
         - Block Account - Generic
@@ -711,7 +708,7 @@ tasks:
       {
         "position": {
           "x": 20,
-          "y": 2800
+          "y": 2610
         }
       }
     note: false
@@ -735,7 +732,7 @@ tasks:
       '#default#':
       - "23"
       "yes":
-      - "34"
+      - "55"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -755,131 +752,13 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1730
+          "y": 1540
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "34":
-    id: "34"
-    taskid: f548cabe-46a5-48ed-8c91-098bbef16b1a
-    type: playbook
-    task:
-      id: f548cabe-46a5-48ed-8c91-098bbef16b1a
-      version: -1
-      name: PANW - Hunting and threat detection by indicator type V2
-      description: "Integrations list: Cortex (Traps, PAN-OS, Analytics)\nThis is\
-        \ a multipurpose playbook used for hunting and threat detection. The playbook\
-        \ receives inputs based on hashes, IP addresses, or domain names provided\
-        \ manually or from outputs by other playbooks. \nWith the received indicators,\
-        \ the playbook leverages Palo Alto Cortex data received by products such as\
-        \ Traps, Analytics, and Pan-OS to search for IP addresses and hosts related\
-        \ to that specific hash. \nThe output provided by the playbook facilitates\
-        \ pivoting searches for possibly affected hosts, IP addresses, or users."
-      playbookName: PANW - Hunting and threat detection by indicator type V2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      IPAddresses:
-        complex:
-          root: IP
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: IP.Malicious
-                iscontext: true
-          accessor: Address
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
-                iscontext: true
-          - operator: uniq
-      InternalRange:
-        complex:
-          root: inputs.InternalRange
-      MD5:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: MD5
-      SHA1:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: SHA1
-      SHA256:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: SHA256
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
-                iscontext: true
-          - operator: uniq
-      URLDomain:
-        complex:
-          root: Domain
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: Domain.Malicious
-                iscontext: true
-          accessor: Name
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
-                iscontext: true
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 530,
-          "y": 1900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
   "35":
     id: "35"
@@ -966,7 +845,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1350
+          "y": 1210
         }
       }
     note: false
@@ -989,7 +868,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+      - "56"
     scriptarguments:
       append: {}
       key:
@@ -1004,7 +883,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 890
+          "y": 870
         }
       }
     note: false
@@ -1014,10 +893,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: b1d89a7b-6fb1-49bf-815c-1d87183bc192
+    taskid: 2cbfefaa-28d8-4454-8789-dbba2266e7fa
     type: condition
     task:
-      id: b1d89a7b-6fb1-49bf-815c-1d87183bc192
+      id: 2cbfefaa-28d8-4454-8789-dbba2266e7fa
       version: -1
       name: Continue to remediation or close as false positive?
       description: Continue to remediation or close the investigation as false positive?
@@ -1034,7 +913,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2260
+          "y": 2070
         }
       }
     note: false
@@ -1074,7 +953,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 4180
+          "y": 3990
         }
       }
     note: false
@@ -1091,7 +970,7 @@ tasks:
       version: -1
       name: Find similar incidents
       description: |-
-        Finds similar incidents by common incident keys, labels, custom fields, or context keys.
+        Finds similar incidents by common incident keys, labels, custom fields or context keys.
         It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
         For best performance, it's recommended to avoid using context keys whenever possible (for example, if the value also appears in a label key, use label).
       scriptName: FindSimilarIncidents
@@ -1175,10 +1054,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 424508c4-04d7-48f4-86a5-6ffc14ad979c
+    taskid: 472956e6-8189-4dff-8fd7-f2c6fc31a385
     type: regular
     task:
-      id: 424508c4-04d7-48f4-86a5-6ffc14ad979c
+      id: 472956e6-8189-4dff-8fd7-f2c6fc31a385
       version: -1
       name: Link similar incidents
       description: Link two or more incidents.
@@ -1258,10 +1137,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: 7b258004-dd56-40e1-8a0e-f3936bca8b8c
+    taskid: 3820a737-827b-4c1c-8349-07bc6c94f4e7
     type: condition
     task:
-      id: 7b258004-dd56-40e1-8a0e-f3936bca8b8c
+      id: 3820a737-827b-4c1c-8349-07bc6c94f4e7
       version: -1
       name: Close as duplicate?
       description: Close the incident as a duplicate?
@@ -1321,7 +1200,7 @@ tasks:
       {
         "position": {
           "x": 1030,
-          "y": 4170
+          "y": 3980
         }
       }
     note: false
@@ -1377,7 +1256,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 2465
+          "y": 2275
         }
       }
     note: false
@@ -1417,7 +1296,7 @@ tasks:
       {
         "position": {
           "x": -240,
-          "y": 4355
+          "y": 4165
         }
       }
     note: false
@@ -1457,7 +1336,7 @@ tasks:
       {
         "position": {
           "x": 1030,
-          "y": 4355
+          "y": 4165
         }
       }
     note: false
@@ -1485,7 +1364,7 @@ tasks:
       {
         "position": {
           "x": 740,
-          "y": 3310
+          "y": 3120
         }
       }
     note: false
@@ -1524,7 +1403,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2970
+          "y": 2780
         }
       }
     note: false
@@ -1567,7 +1446,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 3140
+          "y": 2950
         }
       }
     note: false
@@ -1612,22 +1491,75 @@ tasks:
     quietmode: 0
   "55":
     id: "55"
-    taskid: 27440553-7c35-4ee2-80ea-0ae9f2f845d6
+    taskid: fe2efb11-73e5-4367-8bfc-99c3d5d338d9
     type: playbook
     task:
-      id: 27440553-7c35-4ee2-80ea-0ae9f2f845d6
+      id: fe2efb11-73e5-4367-8bfc-99c3d5d338d9
+      version: -1
+      name: Palo Alto Networks - Hunting And Threat Detection
+      description: This is a multipurpose playbook used for hunting and threat detection.\
+        \ The playbook receives inputs based on hashes, IP addresses, or domain names\
+        \ provided manually or from outputs by other playbooks. \nWith the received\
+        \ indicators, the playbook leverages data received by PANW products including,\
+        \ Cortex Data Lake, Autofocus, and Pan-OS to search for IP addresses, host\
+        \ names, and users related to the provided indicators.\nThe output provided\
+        \ by the playbook facilitates pivoting searches for possibly affected IP addresses\
+        \ or users.
+      playbookName: Palo Alto Networks - Hunting And Threat Detection
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 3c3c04d3-b7d0-4b6f-8364-09058f833723
+    type: playbook
+    task:
+      id: 3c3c04d3-b7d0-4b6f-8364-09058f833723
       version: -1
       name: Cortex XDR device control violations
+      description: "Queries Cortex XDR for device control violations for the specified\
+        \ hosts, IP address, or XDR endpoint id. It then communicates via email with\
+        \ the involved users to understand the nature of the incident and if the user\
+        \ connected the device. \nAll the collected data will be displayed in the\
+        \ XDR device control incident layout.\nThis playbook can also be associated\
+        \ with Cortex XDR device control violation job to periodically query and investigate\
+        \ XDR device control violations; in this configuration, the playbook will\
+        \ only communicate with the involved users."
       playbookName: Cortex XDR device control violations
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "35"
     scriptarguments:
-      EndpointID: {}
+      EndpointID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: endpoint_id
+          transformers:
+          - operator: uniq
       Hostname: {}
       IPAddress: {}
       MessageBody:
@@ -1637,7 +1569,8 @@ tasks:
       MessageSubject:
         simple: Device control violation
       TimeStamp:
-        simple: 
+        complex:
+          root: inputs.TimeStamp
     separatecontext: true
     loop:
       iscommand: false
@@ -1648,7 +1581,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1120
+          "y": 1040
         }
       }
     note: false
@@ -1662,7 +1595,7 @@ view: |-
       "11_17_#default#": 0.43,
       "30_17_No": 0.39,
       "33_23_#default#": 0.53,
-      "33_34_yes": 0.44,
+      "33_55_yes": 0.39,
       "37_7_CONTINUE": 0.77,
       "43_2_#default#": 0.32,
       "44_2_no": 0.31,
@@ -1673,7 +1606,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5420,
+        "height": 5230,
         "width": 1650,
         "x": -240,
         "y": -825
@@ -1700,28 +1633,30 @@ inputs:
     simple: "Yes"
   required: false
   description: This input indicates whether the playbook will link similar incidents.
-    Specify Yes/No.
+    To link similar incidents you must enable Demisto REST API integration. Specify
+    Yes/No.
   playbookInputQuery:
 - key: Hunting
   value:
     simple: "Yes"
   required: false
-  description: This input indicates whether the playbook will hunt for related IOCs. Specify Yes/No.
+  description: This input indicates whether the playbook will hunt for related IOCs.
+    Specify Yes/No.
   playbookInputQuery:
 - key: InternalRange
   value: {}
   required: false
-  description: 'A comma-separated list of internal IP ranges to check IP addresses against. The list
-    should be provided in CIDR notation. An example of a list
-    of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
-    If a list is not provided, will use the default list provided in the IsIPInRanges
-    script (the known IPv4 private address ranges).'
+  description: "A comma-separated list of internal IP ranges to check IP addresses\
+    \ against. The list should be provided in CIDR notation. An example of a list\
+    \ \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list\
+    \ is not provided, will use the default list provided in the IsIPInRanges"
   playbookInputQuery:
 - key: CriticalUsernames
   value:
     simple: admin,administrator
   required: false
-  description: A comma-separated list of names of critical users in the organization.
+  description: |-
+    A comma-separated list of names of critical users in the organization.
     This will affect the calculated severity of the incident.
   playbookInputQuery:
 - key: CriticalHostnames
@@ -1736,7 +1671,31 @@ inputs:
   description: CSV of DN names of critical Active Directory groups. This will affect
     the severity calculated for this incident.
   playbookInputQuery:
+- key: InternalHostRegex
+  value: {}
+  required: false
+  description: This is provided for the script IsInternalHostName that checks if the
+    detected host names are internal or external. If the hosts match the organization's
+    naming convention. For example the host testpc1 will have the following regex
+    \w{6}\d{1}
+  playbookInputQuery:
+- key: InternalDomainName
+  value: {}
+  required: false
+  description: The organizations internal domain name. This is provided for the script
+    IsInternalHostName that checks if the detected host names are internal or external
+    if the hosts contain the internal domains suffix. For example demisto.com. If
+    there is more than one domain, use the | character to separate values such as
+    (demisto.com|test.com)
+  playbookInputQuery:
+- key: TimeStamp
+  value:
+    simple: 10 days
+  required: false
+  description: Timestamp in relative date format for query device control events from
+    Cortex XDR
+  playbookInputQuery:
 outputs: []
 tests:
-- No test
+- No tests (auto formatted)
 fromversion: 6.0.0

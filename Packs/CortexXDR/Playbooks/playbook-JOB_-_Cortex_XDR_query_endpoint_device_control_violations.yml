@@ -77,13 +77,13 @@ tasks:
     scriptarguments:
       endpoint_ids:
         complex:
-          root: inputs.EndpointID
+          root: 
       hostname:
         complex:
-          root: inputs.Hostname
+          root: 
       ip_list:
         complex:
-          root: inputs.IPAddress
+          root: 
       product: {}
       product_id: {}
       serial: {}
