@@ -1016,7 +1016,7 @@ inputs:
   playbookInputQuery:
 - key: IncidentType
   value:
-    simple: XDR Device Control Violations
+    simple: Cortex XDR Device Control Violations
   required: false
   description: The desired incident type for the created incident when the device
     control violations were found.

@@ -1,9 +1,9 @@
 {
-    "TypeName": "XDR Device Control Violations",
+    "TypeName": "Cortex XDR Device Control Violations",
     "kind": "details",
     "layout": {
         "TypeName": "",
-        "id": "XDR Device Control Violations",
+        "id": "Cortex XDR Device Control Violations",
         "kind": "details",
         "modified": "2021-01-06T14:38:49.891320861Z",
         "name": "",
@@ -310,10 +310,10 @@
                 "type": "canvas"
             }
         ],
-        "typeId": "XDR Device Control Violations",
+        "typeId": "Cortex XDR Device Control Violations",
         "version": -1
     },
-    "typeId": "XDR Device Control Violations",
+    "typeId": "Cortex XDR Device Control Violations",
     "version": -1,
     "toVersion": "5.9.9",
     "fromVersion": "5.0.0",

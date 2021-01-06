@@ -2,7 +2,7 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Cortex XDR Incident",
-        "XDR Device Control Violations"
+        "Cortex XDR Device Control Violations"
     ],
     "caseInsensitive": true,
     "cliName": "xdrdevicecontrolviolations",
@@ -135,5 +135,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.5.0"
 }
