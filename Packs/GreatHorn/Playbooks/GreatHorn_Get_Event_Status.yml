@@ -1,0 +1,141 @@
+id: GreatHorn Get Event Status
+inputs: []
+name: GreatHorn Get Event Status
+outputs: []
+starttaskid: "0"
+fromversion: 6.0.0
+description: Get status for a specific GreatHorn Event
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 693aca31-b074-4b91-8b3f-df8e0c55d7bb
+      iscommand: false
+      name: ""
+      version: -1
+      description: Initialize
+    taskid: 693aca31-b074-4b91-8b3f-df8e0c55d7bb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${incident.details}
+      includeheaders: {}
+      showalllinks: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2d33b21f-f4fc-4049-8e88-43357842a120
+      iscommand: true
+      name: GreatHorn Get Event Details
+      description: Get details for a GreatHorn event
+      script: '|||gh-get-message'
+      type: regular
+      version: -1
+    taskid: 2d33b21f-f4fc-4049-8e88-43357842a120
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 250
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: "Event: ${GreatHorn.Message.eventId} \nStatus: ${GreatHorn.Message.status}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: da524736-1262-4ca4-89a5-c0d979999dec
+      iscommand: false
+      name: Print Status
+      script: Print
+      type: regular
+      version: -1
+    taskid: da524736-1262-4ca4-89a5-c0d979999dec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 480
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ccc1f16e-eb88-4218-89f5-d43456ee3366
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: End
+    taskid: ccc1f16e-eb88-4218-89f5-d43456ee3366
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- TestGreatHornPlaybook
