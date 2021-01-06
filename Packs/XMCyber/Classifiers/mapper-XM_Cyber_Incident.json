@@ -1,284 +1,303 @@
 {
-	"defaultIncidentType": "",
-	"description": "Maps fields from XM Cyber incidents",
-	"feed": false,
-	"id": "XM Cyber Incident Mapper",
-	"fromVersion": "6.0.0",
-	"mapping": {
-		"XM Cyber Choke Point": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Agent ID": {
-					"complex": null,
-					"simple": "entityId"
-				},
-				"Average Complexity Level": {
-					"complex": null,
-					"simple": "level"
-				},
-				"Average Complexity of Compromise": {
-					"complex": null,
-					"simple": "value"
-				},
-				"Device Local IP": {
-					"complex": {
-						"accessor": "",
-						"filters": [
-							[
-								{
-									"ignoreCase": false,
-									"left": {
-										"isContext": true,
-										"value": {
-											"complex": null,
-											"simple": "entityBasicData.entityNetworkIdentifierProperties.displayValue"
-										}
-									},
-									"operator": "match",
-									"right": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
-										}
-									}
-								}
-							]
-						],
-						"root": "entityBasicData.entityNetworkIdentifierProperties.displayValue",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Device Model": {
-					"complex": null,
-					"simple": "entityTypeDisplayName"
-				},
-				"Device Name": {
-					"complex": null,
-					"simple": "displayName"
-				},
-				"Event ID": {
-					"complex": null,
-					"simple": "linkToReport"
-				},
-				"Event Type": {
-					"complex": null,
-					"simple": "type"
-				},
-				"Log Source": {
-					"complex": null,
-					"simple": "linkToReport"
-				},
-				"OS": {
-					"complex": null,
-					"simple": "entitySubType.displayValue"
-				},
-				"OS Version": {
-					"complex": null,
-					"simple": "entityBasicData.entityFlavorProperties.displayValue"
-				},
-				"Sub Category": {
-					"complex": null,
-					"simple": "entityType"
-				},
-				"name": {
-					"complex": null,
-					"simple": "name"
-				},
-				"occurred": {
-					"complex": null,
-					"simple": "create_time"
-				},
-				"severity": {
-					"complex": null,
-					"simple": "severity"
-				}
-			}
-		},
-		"XM Cyber Critical Asset": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Agent ID": {
-					"complex": null,
-					"simple": "entityId"
-				},
-				"Average Complexity Level": {
-					"complex": null,
-					"simple": "level"
-				},
-				"Average Complexity of Compromise": {
-					"complex": null,
-					"simple": "value"
-				},
-				"Device Local IP": {
-					"complex": {
-						"accessor": "",
-						"filters": [
-							[
-								{
-									"ignoreCase": false,
-									"left": {
-										"isContext": true,
-										"value": {
-											"complex": null,
-											"simple": "entityBasicData.entityNetworkIdentifierProperties.displayValue"
-										}
-									},
-									"operator": "match",
-									"right": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
-										}
-									}
-								}
-							]
-						],
-						"root": "entityBasicData.entityNetworkIdentifierProperties.displayValue",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Device Model": {
-					"complex": null,
-					"simple": "entityTypeDisplayName"
-				},
-				"Device Name": {
-					"complex": null,
-					"simple": "displayName"
-				},
-				"Event ID": {
-					"complex": null,
-					"simple": "linkToReport"
-				},
-				"Event Type": {
-					"complex": null,
-					"simple": "type"
-				},
-				"Log Source": {
-					"complex": null,
-					"simple": "linkToReport"
-				},
-				"OS": {
-					"complex": null,
-					"simple": "entitySubType.displayValue"
-				},
-				"OS Version": {
-					"complex": null,
-					"simple": "entityBasicData.entityFlavorProperties.displayValue"
-				},
-				"Sub Category": {
-					"complex": null,
-					"simple": "entityType"
-				},
-				"name": {
-					"complex": null,
-					"simple": "name"
-				},
-				"occurred": {
-					"complex": null,
-					"simple": "create_time"
-				},
-				"severity": {
-					"complex": null,
-					"simple": "severity"
-				}
-			}
-		},
-		"XM Cyber Security Score": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Event Type": {
-					"complex": null,
-					"simple": "type"
-				},
-				"XM Cyber Dashboard": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "linkToReport",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"severity": {
-					"complex": null,
-					"simple": "severity"
-				}
-			}
-		},
-		"XM Cyber Technique": {
-			"dontMapEventToLabels": false,
-			"internalMapping": {
-				"Event Type": {
-					"complex": null,
-					"simple": "type"
-				},
-				"Log Source": {
-					"complex": null,
-					"simple": "linkToReport"
-				},
-				"Technique Advices": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "advices",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Technique Affected Assets": {
-					"complex": null,
-					"simple": "criticalAssets"
-				},
-				"Technique Best Practice": {
-					"complex": null,
-					"simple": "bestPractice"
-				},
-				"Technique Choke Points": {
-					"complex": null,
-					"simple": "chokePoints"
-				},
-				"Technique Description": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "description",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Technique Mitre": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "mitre",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"Technique Name": {
-					"complex": null,
-					"simple": "displayName"
-				},
-				"name": {
-					"complex": null,
-					"simple": "name"
-				},
-				"occurred": {
-					"complex": null,
-					"simple": "create_time"
-				},
-				"severity": {
-					"complex": null,
-					"simple": "severity"
-				}
-			}
-		}
-	},
-	"name": "XM Cyber Incident Mapper",
-	"type": "mapping-incoming",
-	"version": -1
+ "description": "Maps fields from XM Cyber incidents",
+ "feed": false,
+ "id": "XM Cyber Incident Mapper",
+ "fromVersion": "6.0.0",
+ "mapping": {
+  "XM Cyber Choke Point": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Agent ID": {
+     "complex": null,
+     "simple": "entityId"
+    },
+    "Average Complexity Level": {
+     "complex": null,
+     "simple": "level"
+    },
+    "Average Complexity of Compromise": {
+     "complex": null,
+     "simple": "value"
+    },
+    "Device Local IP": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+       [
+        {
+         "ignoreCase": false,
+         "left": {
+          "isContext": true,
+          "value": {
+           "complex": null,
+           "simple": "entityBasicData.entityNetworkIdentifierProperties.displayValue"
+          }
+         },
+         "operator": "match",
+         "right": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
+          }
+         }
+        }
+       ]
+      ],
+      "root": "entityBasicData.entityNetworkIdentifierProperties.displayValue",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Device Model": {
+     "complex": null,
+     "simple": "entityTypeDisplayName"
+    },
+    "Device Name": {
+     "complex": null,
+     "simple": "displayName"
+    },
+    "Event ID": {
+     "complex": null,
+     "simple": "linkToReport"
+    },
+    "Event Type": {
+     "complex": null,
+     "simple": "type"
+    },
+    "Log Source": {
+     "complex": null,
+     "simple": "linkToReport"
+    },
+    "OS": {
+     "complex": null,
+     "simple": "entitySubType.displayValue"
+    },
+    "OS Version": {
+     "complex": null,
+     "simple": "entityBasicData.entityFlavorProperties.displayValue"
+    },
+    "Sub Category": {
+     "complex": null,
+     "simple": "entityType"
+    },
+    "name": {
+     "complex": null,
+     "simple": "name"
+    },
+    "occurred": {
+     "complex": null,
+     "simple": "create_time"
+    },
+    "severity": {
+     "complex": null,
+     "simple": "severity"
+    }
+   }
+  },
+  "XM Cyber Critical Asset": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Agent ID": {
+     "complex": null,
+     "simple": "entityId"
+    },
+    "Average Complexity Level": {
+     "complex": null,
+     "simple": "level"
+    },
+    "Average Complexity of Compromise": {
+     "complex": null,
+     "simple": "value"
+    },
+    "Device Local IP": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+       [
+        {
+         "ignoreCase": false,
+         "left": {
+          "isContext": true,
+          "value": {
+           "complex": null,
+           "simple": "entityBasicData.entityNetworkIdentifierProperties.displayValue"
+          }
+         },
+         "operator": "match",
+         "right": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
+          }
+         }
+        }
+       ]
+      ],
+      "root": "entityBasicData.entityNetworkIdentifierProperties.displayValue",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Device Model": {
+     "complex": null,
+     "simple": "entityTypeDisplayName"
+    },
+    "Device Name": {
+     "complex": null,
+     "simple": "displayName"
+    },
+    "Event ID": {
+     "complex": null,
+     "simple": "linkToReport"
+    },
+    "Event Type": {
+     "complex": null,
+     "simple": "type"
+    },
+    "Log Source": {
+     "complex": null,
+     "simple": "linkToReport"
+    },
+    "OS": {
+     "complex": null,
+     "simple": "entitySubType.displayValue"
+    },
+    "OS Version": {
+     "complex": null,
+     "simple": "entityBasicData.entityFlavorProperties.displayValue"
+    },
+    "Sub Category": {
+     "complex": null,
+     "simple": "entityType"
+    },
+    "name": {
+     "complex": null,
+     "simple": "name"
+    },
+    "occurred": {
+     "complex": null,
+     "simple": "create_time"
+    },
+    "severity": {
+     "complex": null,
+     "simple": "severity"
+    }
+   }
+  },
+  "XM Cyber Security Score": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Event Type": {
+     "complex": null,
+     "simple": "type"
+    },
+    "XM Cyber Dashboard": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "linkToReport",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "severity": {
+     "complex": null,
+     "simple": "severity"
+    }
+   }
+  },
+  "XM Cyber Technique": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Event Type": {
+     "complex": null,
+     "simple": "type"
+    },
+    "Log Source": {
+     "complex": null,
+     "simple": "linkToReport"
+    },
+    "Technique Advices": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "advices",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Technique Affected Assets": {
+     "complex": null,
+     "simple": "criticalAssets"
+    },
+    "Technique Best Practice": {
+     "complex": null,
+     "simple": "bestPractice"
+    },
+    "Technique Choke Points": {
+     "complex": null,
+     "simple": "chokePoints"
+    },
+    "Technique Description": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "description",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Technique Mitre": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "mitre",
+      "transformers": [
+
+      ]
+     },
+     "simple": ""
+    },
+    "Technique Name": {
+     "complex": null,
+     "simple": "displayName"
+    },
+    "name": {
+     "complex": null,
+     "simple": "name"
+    },
+    "occurred": {
+     "complex": null,
+     "simple": "create_time"
+    },
+    "severity": {
+     "complex": null,
+     "simple": "severity"
+    }
+   }
+  }
+ },
+ "name": "XM Cyber Incident Mapper",
+ "type": "mapping-incoming",
+ "version": -1
 }
