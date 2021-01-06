@@ -4260,7 +4260,6 @@ def test_fail_connect_threads(mocker):
     assert threading.active_count() < 6  # we shouldn't have more than 5 threads (1 + 4 max size of executor)
 
 
-
 def test_slack_send_filter_one_mirro_tag(mocker):
     # When filtered_tags parameter contains the same tag as the entry tag - slack_send method should send the message
     import Slack
