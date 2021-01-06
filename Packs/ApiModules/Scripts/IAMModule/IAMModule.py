@@ -268,7 +268,7 @@ class IAMUserAppData:
 
 
 class IAMCommand:
-    """ A class that implements the IAM CRUD commands - should bbe used.
+    """ A class that implements the IAM CRUD commands - should be used.
 
     :type id: ``str``
     :param id: The ID of the user.

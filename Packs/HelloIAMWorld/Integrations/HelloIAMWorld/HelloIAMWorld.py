@@ -1,6 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
-from IAMModulue import *
+from IAMModule import *
 import traceback
 
 # Disable insecure warnings
