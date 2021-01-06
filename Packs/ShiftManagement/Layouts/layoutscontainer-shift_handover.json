@@ -1,0 +1,914 @@
+{
+	"close": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_closereason",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_closenotes",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_incomingmirrorerror",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_outgoingmirrorerror",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"description": "SOC shift change layout is part of shift management pack, this layout is managing the SOC shift change. ",
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "sg5y5mii0k",
+				"name": "Incident info ",
+				"sections": [
+					{
+						"h": 2,
+						"i": "sg5y5mii0k-g7gjnikhyi-caseinfoid-6afbc4c0-32e0-11eb-b74b-1df0a6e0d46b",
+						"items": [],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "On call team members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 1,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"i": "sg5y5mii0k-g7gjnikhyi-caseinfoid-18c82310-3466-11eb-83ae-b5480619fc47",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "incident_attachment",
+								"height": 53,
+								"id": "18bf9791-3466-11eb-83ae-b5480619fc47",
+								"index": 1,
+								"isVisible": true,
+								"listId": "caseinfoid-18c82310-3466-11eb-83ae-b5480619fc47",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Attachments",
+						"static": false,
+						"type": "",
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"description": "",
+						"h": 2,
+						"i": "sg5y5mii0k-g7gjnikhyi-caseinfoid-1c5af080-3497-11eb-afb3-b3d49c138afb",
+						"items": [],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "War Room entries",
+						"query": {
+							"categories": [
+								"playbookTaskResult",
+								"playbookErrors",
+								"justFound"
+							],
+							"fromTime": "0001-01-01T00:00:00Z",
+							"pageSize": 0,
+							"tagsAndOperator": false,
+							"usersAndOperator": false
+						},
+						"queryType": "warRoomFilter",
+						"static": false,
+						"type": "invTimeline",
+						"w": 1,
+						"x": 2,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "sg5y5mii0k-g7gjnikhyi-caseinfoid-ea79c440-34ac-11eb-afb3-b3d49c138afb",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 4,
+								"fieldId": "shiftopenincidents",
+								"height": 106,
+								"id": "6289f0b0-3956-11eb-b642-d7e206cc9403",
+								"index": 0,
+								"listId": "g7gjnikhyi-caseinfoid-ea79c440-34ac-11eb-afb3-b3d49c138afb",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 2,
+						"minH": 1,
+						"minW": 2,
+						"moved": false,
+						"name": "Shift open incidents ",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 1,
+						"hideItemTitleOnlyOne": true,
+						"hideName": true,
+						"i": "sg5y5mii0k-g7gjnikhyi-caseinfoid-b5b7fa70-42b1-11eb-9c1a-b5a38100bcf3",
+						"items": [
+							{
+								"args": {
+									"channel": {
+										"simple": "soc-shift-handover"
+									},
+									"message": {
+										"simple": "Hi all, shift handover started please join"
+									},
+									"using": {
+										"simple": "SlackV2_instance_1,Microsoft_Teams_instance_1"
+									}
+								},
+								"buttonClass": "primary",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "ba3da9a0-42b1-11eb-9c1a-b5a38100bcf3",
+								"index": 0,
+								"name": "Notify the team about the meeting",
+								"scriptId": "SlackV2|||send-notification",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Notify the team",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "sg5y5mii0k-g7gjnikhyi-caseinfoid-e2fa0130-45be-11eb-b73e-31f10f68f537",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "outofoffice",
+								"height": 22,
+								"id": "e906c590-45be-11eb-b73e-31f10f68f537",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "outofftheoffice",
+								"height": 106,
+								"id": "45200ad0-45bf-11eb-b73e-31f10f68f537",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "OOO team members",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": true,
+						"i": "sg5y5mii0k-9ce35b60-494c-11eb-8579-93785087c949",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "tostartthemeeting",
+								"height": 44,
+								"id": "aabfc9d0-494c-11eb-8579-93785087c949",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "tostartzoommeeting",
+								"height": 44,
+								"id": "c3454110-494c-11eb-8579-93785087c949",
+								"index": 1,
+								"listId": "sg5y5mii0k-9ce35b60-494c-11eb-8579-93785087c949",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "tojointhemeeting",
+								"height": 44,
+								"id": "b193d5d0-494c-11eb-8579-93785087c949",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "tojoinzoommeeting",
+								"height": 44,
+								"id": "cce23110-494c-11eb-8579-93785087c949",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Quick links to start meetings",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"h": 2,
+						"i": "sg5y5mii0k-4901db60-494d-11eb-8579-93785087c949",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "To-Do Tasks",
+						"query": null,
+						"static": false,
+						"type": "todoTasks",
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "sg5y5mii0k-5e8b0500-5010-11eb-969e-a98f47a2652e",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "shiftmanagerbriefing",
+								"height": 22,
+								"id": "67f12d90-5010-11eb-969e-a98f47a2652e",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "SOC shift manager briefing ",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_reminder",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_attachment",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_shiftmanagerbriefing",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_details",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_agentid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_app",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_assigneduser",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_assignmentgroup",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_caller",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_commandline",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_country",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotprediction",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotpredictionprobability",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_destinationhostname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_destinationip",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_destinationnetwork",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_destinationport",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_detectionurl",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_deviceexternalip",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicehash",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicelocalip",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_escalation",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_eventid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_eventtype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_filehash",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_filename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_filepath",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_filesize",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_firstname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_incomingmirrorerror",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_investigationstage",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lastname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_logsource",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_macaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_md5",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_mobiledevicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_os",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_osversion",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_outgoingmirrorerror",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phonenumber",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_pid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_protocol",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_ticketnumber",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "c6610ca1-32e1-49b2-84c9-239d7e3b405d",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "shift handover",
+	"packID": "27061f91-5a0b-4156-8aeb-c6c28ef1570a",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourcebrand",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourceinstance",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotcreated",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_agentid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_app",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_assigneduser",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_assignmentgroup",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_caller",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_commandline",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_country",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotprediction",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotpredictionprobability",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_destinationhostname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_destinationip",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_destinationnetwork",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_destinationport",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_detectionsla",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_detectionurl",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_deviceexternalip",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicehash",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicelocalip",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_escalation",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_eventid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_eventtype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_filehash",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_filename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_filepath",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_filesize",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_firstname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_incomingmirrorerror",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_investigationstage",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_lastname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_logsource",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_macaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_md5",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_mobiledevicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_os",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_osversion",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_outgoingmirrorerror",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phonenumber",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_pid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_protocol",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_remediationsla",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_servicenowresolutionnotes",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_ticketnumber",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Labels",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "labels"
+			}
+		]
+	},
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}
