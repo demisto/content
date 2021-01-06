@@ -17,18 +17,13 @@
  "name": "Troubleshoot type",
  "neverSetAsRequired": false,
  "ownerOnly": false,
- "propagationLabels": [
-  "all"
- ],
  "required": false,
  "selectValues": [
-  "",
   "I'm unable to configure an instance",
   "I have a problem with running a command"
  ],
  "sla": 0,
  "system": false,
- "threshold": 72,
  "type": "singleSelect",
  "unmapped": false,
  "unsearchable": false,
