@@ -3,7 +3,7 @@
     "description": "DevSecOps CI/CD Orchestration Integration Pack.",
     "support": "community",
     "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
+    "author": "Ayman Mahmoud",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-09-26T08:37:18Z",
