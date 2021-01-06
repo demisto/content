@@ -863,6 +863,6 @@ script:
     - contextPath: GreatHorn.Policy.description
       description: ""
       type: String
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   runonce: false
   subtype: python3
