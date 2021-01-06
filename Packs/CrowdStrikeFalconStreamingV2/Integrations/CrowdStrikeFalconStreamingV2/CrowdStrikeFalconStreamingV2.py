@@ -22,7 +22,8 @@ OK_STATUS_CODE = 200
 CREATED_STATUS_CODE = 201
 UNAUTHORIZED_STATUS_CODE = 401
 TOO_MANY_REQUESTS_STATUS_CODE = 429
-NOT_FOUND_STATUS_CODE = 404
+
+CONTAINER_ID = os.environ.get('HOSTNAME')
 
 
 class Client(BaseClient):
@@ -77,7 +78,6 @@ class Client(BaseClient):
                         CREATED_STATUS_CODE,
                         UNAUTHORIZED_STATUS_CODE,
                         TOO_MANY_REQUESTS_STATUS_CODE,
-                        NOT_FOUND_STATUS_CODE,
                     ),
                 )
                 if res.ok:
@@ -109,11 +109,9 @@ class Client(BaseClient):
                     )
                     time.sleep(time_to_wait)
                     demisto.debug('Finished waiting - retrying')
-                elif res.status_code == NOT_FOUND_STATUS_CODE:
-                    demisto.debug(f'Got status code 404 - {str(res.content)}')
-                    return {}
             except Exception as e:
-                demisto.debug(f'Got unexpected exception in the API HTTP request - {str(e)}')
+                demisto.debug(str(e))
+                return {}
 
     async def discover_stream(self, refresh_token: 'RefreshToken') -> Dict:
         demisto.debug('Sending request to discover stream')
@@ -155,7 +153,6 @@ class EventStream:
         self.data_feed_url: str
         self.session_token: str
         self.refresh_token: RefreshToken
-        self.client: Client
 
     def set_refresh_token(self, refresh_token) -> None:
         self.refresh_token = refresh_token
@@ -171,17 +168,18 @@ class EventStream:
         Yields:
             Iterator[Dict]: Event fetched from the stream.
         """
+        client = Client(base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy)
         while True:
             refreshed = True
-            if self.client.refresh_stream_url:
+            if client.refresh_stream_url:
                 # We already discovered an event stream, need to refresh it
-                demisto.debug('Starting stream refresh')
+                demisto.debug(f'Starting stream refresh. Container ID: {CONTAINER_ID}')
                 try:
-                    response = await self.client.refresh_stream_session(self.refresh_token)
+                    response = await client.refresh_stream_session(self.refresh_token)
                     if not response:
-                        # Should get here in case we got 404 from the refresh stream query
+                        # Should get here in case we got unexpected status code (e.g. 404) from the refresh stream query
                         demisto.debug('Clearing refresh stream URL to trigger stream discovery.')
-                        self.client.refresh_stream_url = ''
+                        client.refresh_stream_url = ''
                         raise RuntimeError()
                     else:
                         demisto.debug(f'Refresh stream response: {response}')
@@ -194,9 +192,9 @@ class EventStream:
                     demisto.debug('Finished stream refresh successfully')
             else:
                 # We have no event stream, need to discover
-                await self.client.set_access_token(self.refresh_token)
-                demisto.debug('Starting stream discovery')
-                discover_stream_response = await self.client.discover_stream(self.refresh_token)
+                await client.set_access_token(self.refresh_token)
+                demisto.debug(f'Starting stream discovery. Container ID: {CONTAINER_ID}')
+                discover_stream_response = await client.discover_stream(self.refresh_token)
                 demisto.debug('Finished stream discovery')
                 resources = discover_stream_response.get('resources', [])
                 if not resources:
@@ -213,14 +211,15 @@ class EventStream:
                 demisto.debug(f'Discovered data feed URL: {self.data_feed_url}')
                 self.session_token = resource.get('sessionToken', {}).get('token')
                 refresh_url = resource.get('refreshActiveSessionURL')
-                self.client.refresh_stream_url = refresh_url
+                client.refresh_stream_url = refresh_url
                 event.set()
             if refreshed:
-                demisto.debug('Discover/Refresh loop - going to sleep for 25 minutes')
+                demisto.debug(f'Discover/Refresh loop - going to sleep for 25 minutes. Container ID: {CONTAINER_ID}')
                 await sleep(MINUTES_25)
                 event.clear()
             else:
-                demisto.debug('Failed refreshing stream, going to sleep for 30 seconds and then retry')
+                demisto.debug(f'Failed refreshing stream, going to sleep for 30 seconds and then retry. '
+                              f'Container ID: {CONTAINER_ID}')
                 await sleep(30)
 
     async def fetch_event(
@@ -238,18 +237,17 @@ class EventStream:
             AsyncGenerator[Dict, None]: Event fetched from the stream.
         """
         while True:
-            self.client = Client(
-                base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy
-            )
-            demisto.debug('Fetching event')
+            discover_refresh_task = None
+            demisto.debug(f'Fetching event. Container ID: {CONTAINER_ID}')
             try:
                 event = Event()
-                create_task(self._discover_refresh_stream(event))
-                demisto.debug('Waiting for stream discovery with 10 seconds timeout')
+                discover_refresh_task = create_task(self._discover_refresh_stream(event))
+                demisto.debug(f'Waiting for stream discovery with 10 seconds timeout. Container ID: {CONTAINER_ID}')
                 await wait_for(event.wait(), 10)
             except TimeoutError as e:
                 demisto.debug(f'Failed discovering stream: {e} - '
-                              f'Going to sleep for 30 seconds and then retry - {traceback.format_exc()}')
+                              f'Going to sleep for 30 seconds and then retry - {traceback.format_exc()}. '
+                              f'Container ID: {CONTAINER_ID}')
                 await sleep(30)
             else:
                 demisto.debug('Done waiting for stream discovery')
@@ -310,8 +308,12 @@ class EventStream:
                                     new_lines_fetched = 0
                                     last_fetch_stats_print = datetime.utcnow()
                     except Exception as e:
-                        demisto.debug(f'Failed to fetch event: {e} - Going to sleep for 10 seconds and then retry -'
-                                      f' {traceback.format_exc()}')
+                        demisto.debug(f'Failed to fetch event: {e} - {traceback.format_exc()}. '
+                                      f'Container ID: {CONTAINER_ID}')
+                        if discover_refresh_task and not discover_refresh_task.cancelled():
+                            demisto.debug('Cancelling discover/refresh task')
+                            discover_refresh_task.cancel()
+                        demisto.debug('Going to sleep for 10 seconds and then retry')
                         await sleep(10)
 
 
