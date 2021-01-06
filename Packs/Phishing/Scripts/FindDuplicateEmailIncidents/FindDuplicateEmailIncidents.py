@@ -337,7 +337,8 @@ def main():
         return_error('Illegal value of arguement "maxIncidentsToReturn": {}. '
                      'Value should be an integer'.format(max_incidents_to_return))
     new_incident = demisto.incidents()[0]
-    existing_incidents = get_existing_incidents(input_args, new_incident.get('type', IGNORE_INCIDENT_TYPE_VALUE))
+    type_field = input_args.get('incidentTypeFieldName', 'type')
+    existing_incidents = get_existing_incidents(input_args, new_incident.get(type_field, IGNORE_INCIDENT_TYPE_VALUE))
     demisto.debug('found {} incidents by query'.format(len(existing_incidents)))
     if len(existing_incidents) == 0:
         create_new_incident()

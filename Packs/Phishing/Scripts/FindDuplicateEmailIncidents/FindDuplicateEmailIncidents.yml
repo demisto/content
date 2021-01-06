@@ -168,7 +168,8 @@ outputs:
   description: A list of all duplicate incidents names found.
   type: Unknown
 - contextPath: allDuplicateIncidents.similarity
-  description: A list of the simlairty between duplicate incidents and new the incident of all duplicate incidents names found.
+  description: A list of the simlairty between duplicate incidents and new the incident
+    of all duplicate incidents names found.
   type: Unknown
 script: '-'
 subtype: python3
