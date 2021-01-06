@@ -29,31 +29,29 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url, conn_client_id, conn_client_secret, conn_username, conn_password,
-                 ok_codes, verify=True, proxy=False, token=""):
+                 ok_codes, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
         self._conn_client_id = conn_client_id
         self._conn_client_secret = conn_client_secret
         self._conn_username = conn_username
         self._conn_password = conn_password
         self._instance_url = ""
-        self.token = self.get_access_token_(token)
+        self.token = self.get_access_token_()
 
-    def get_access_token_(self, token=""):
-
-        if not token:
-            params = {
-                "client_id": self._conn_client_id,
-                "client_secret": self._conn_client_secret,
-                "username": self._conn_username,
-                "password": self._conn_password,
-                "grant_type": "password"
-            }
-            res = self._http_request(
-                method='POST',
-                full_url=GENERATE_TOKEN_URL,
-                params=params
-            )
-            token = res.get('access_token')
+    def get_access_token_(self):
+        params = {
+            "client_id": self._conn_client_id,
+            "client_secret": self._conn_client_secret,
+            "username": self._conn_username,
+            "password": self._conn_password,
+            "grant_type": "password"
+        }
+        res = self._http_request(
+            method='POST',
+            full_url=GENERATE_TOKEN_URL,
+            params=params
+        )
+        token = res.get('access_token')
 
         headers = {
             'content-type': 'application/json',
@@ -116,6 +114,18 @@ class Client(BaseClient):
             params=params,
             json_data=data,
             resp_type='text'
+        )
+
+    def get_all_users(self):
+        uri = URI_PREFIX + 'parameterizedSearch/'
+        params = {
+            "q": "User",
+            "sobject": "User",
+        }
+        return self._http_request(
+            method='GET',
+            url_suffix=uri,
+            params=params
         )
 
 
@@ -333,9 +343,34 @@ def check_and_set_manndatory_fields(salesforce_user):
     return salesforce_user
 
 
+def get_all_user_attributes(client):
+    """
+    This command gets all users, chooses the first
+    then, run a second get command that returns all the users attributes
+    """
+    user_id = ""
+    attributes = []
+
+    all_users = client.get_all_users()
+    users_list = all_users.get("searchRecords")
+    if isinstance(users_list, list):
+        user = users_list[0]
+        user_id = user.get("Id")
+
+    if user_id:
+        user_data = client.get_user(user_id)
+        attributes = list(user_data.keys())
+    return attributes
+
+
 def get_mapping_fields_command(client):
-    # in progress
-    return ""
+    scheme = get_all_user_attributes(client)
+    incident_type_scheme = SchemeTypeMapping(type_name=IAMUserProfile.INDICATOR_TYPE)
+
+    for field in scheme:
+        incident_type_scheme.add_field(field, "Field")
+
+    return GetMappingFieldsResponse([incident_type_scheme])
 
 
 def main():
@@ -368,12 +403,6 @@ def main():
 
     LOG(f'Command being called is {command}')
 
-    # getting the access token from the last run
-    token = ""
-    last_run = demisto.getLastRun()
-    if last_run:
-        token = last_run.get("token")
-
     try:
         client = Client(
             base_url=base_url,
@@ -383,8 +412,7 @@ def main():
             conn_password=password,
             ok_codes=(200, 201, 204),
             verify=verify_certificate,
-            proxy=proxy,
-            token=token
+            proxy=proxy
         )
 
         if command == 'test-module':
@@ -409,8 +437,6 @@ def main():
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client))
-
-        demisto.setLastRun({"token": client.token})
 
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {e}. Traceback: {traceback.format_exc()}')
