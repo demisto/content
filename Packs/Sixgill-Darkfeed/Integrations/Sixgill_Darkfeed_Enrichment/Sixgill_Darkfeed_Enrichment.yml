@@ -20,30 +20,29 @@ configuration:
     required: false
     type: 8
 description: Sixgill Darkfeed Enrichment – powered by the broadest automated collection from the deep and dark web – is the most comprehensive IOC enrichment solution on the market.
-  By enriching Palo Alto’s Cortex XSOAR IOCs with Darkfeed, customers gain unparalleled context and essential explanations in order to accelerate their incident prevention and response and stay ahead of the threat curve.
-  Automatically enrich Cortex XSOAR IOCs (machine to machine) via Darkfeed Block threats and enrich endpoint protection in real-time from the Cortex XSOAR dashboard,
-  Gain contextual and actionable insights with essential explanations of Cortex XSOAR IOCs.
+  By enriching Palo Alto Networks Cortex XSOAR IOCs with Darkfeed, customers gain unparalleled context and essential explanations in order to accelerate their incident prevention and response and stay ahead of the threat curve.
+  Automatically enrich Cortex XSOAR IOCs (machine to machine) via Darkfeed. Block threats and enrich endpoint protection in real-time from the Cortex XSOAR dashboard,
+  gain contextual and actionable insights with essential explanations of Cortex XSOAR IOCs.
 display: Sixgill DarkFeed Enrichment
 name: Sixgill_Darkfeed_Enrichment
 script:
   commands:
     - arguments:
         - default: true
-          description: List of ip's
+          description: A comma-separated list of IPs to check.
           isArray: true
           name: ip
           required: true
           secret: false
         - default: true
           defaultValue: '0'
-          description: No. of indicators which need to be skipped while returning the
-            result set
+          description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
           isArray: false
           name: skip
           required: false
           secret: false
       deprecated: false
-      description: Return IP information and reputation
+      description: Returns information and a reputation for each IP in the input list.
       execution: false
       name: ip
       outputs:
@@ -51,93 +50,91 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The actual score.
+          description: The score of the indicator.
           type: Number
         - contextPath: DBotScore.Type
-          description: The indicator type.
+          description: Indicator type.
           type: String
         - contextPath: DBotScore.Vendor
-          description: The vendor used to calculate the score.
+          description: The vendor used to calculate the indicator score.
           type: String
         - contextPath: SixgillDarkfeed.IP.created
-          description: Creation timestamp of IOC
+          description: The timestamp when the indicator was created.
           type: Date
         - contextPath: SixgillDarkfeed.IP.id
-          description: Unique ID of IOC
+          description: The unique ID of the indicator.
           type: String
         - contextPath: SixgillDarkfeed.IP.description
-          description: Description of IOC
+          description: The description of the indicator.
           type: String
         - contextPath: SixgillDarkfeed.IP.lang
-          description: Language of original post in Sixgill portal
+          description: The language of the original post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.IP.modified
-          description: Modification timestamp of IOC
+          description: The timestamp when the indicator was last modified.
           type: Date
         - contextPath: SixgillDarkfeed.IP.pattern
-          description: IOC hash/domain/IP address. hashes include MD5, SHA-1 and SHA-256
-            when possible
+          description: The indicator IP address.
           type: String
         - contextPath: SixgillDarkfeed.IP.sixgill_actor
-          description: Actor of original post on dark web
+          description: The actor of the original post on the dark web.
           type: String
         - contextPath: SixgillDarkfeed.IP.sixgill_confidence
-          description: Confidence score
+          description: The indicator confidence score.
           type: Number
         - contextPath: SixgillDarkfeed.IP.sixgill_feedid
-          description: Subfeed ID
+          description: The indicator subfeed ID.
           type: String
         - contextPath: SixgillDarkfeed.IP.sixgill_feedname
-          description: Subfeed name
+          description: The indicator subfeed name.
           type: String
         - contextPath: SixgillDarkfeed.IP.sixgill_postid
-          description: ID of post in Sixgill portal
+          description: The ID of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.IP.sixgill_posttitle
-          description: Title of post in Sixgill portal
+          description: The title of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.IP.sixgill_severity
-          description: Severity score
+          description: The indicator severity score.
           type: Number
         - contextPath: SixgillDarkfeed.IP.sixgill_source
-          description: Source of post in Sixgill portal
+          description: The source of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.IP.spec_version
-          description: STIX specification version
+          description: The STIX specification version.
           type: String
         - contextPath: SixgillDarkfeed.IP.type
-          description: STIX object type
+          description: The STIX object type.
           type: String
         - contextPath: SixgillDarkfeed.IP.valid_from
-          description: Post creation date in Sixgill portal
+          description: The creation date of the post in the Sixgill portal.
           type: Date
         - contextPath: SixgillDarkfeed.IP.labels
-          description: Indicative labels of IOC
+          description: The indicative labels of the indicator.
           type: Unknown
         - contextPath: SixgillDarkfeed.IP.external_reference
-          description: Link to IOC on Virustotal and abstraction of number of detections;
-            Mitre ATT&CK tatics and techniques
+          description: Link to the IOC on VirusTotal and an abstraction of the number of detections;
+            MITRE ATT&CK tactics and techniques.
           type: Unknown
         - contextPath: IP.Address
-          description: IP address.
+          description: The indicator IP address.
           type: String
     - arguments:
         - default: true
-          description: domain name
+          description: A comma-separated list of domain names to check.
           isArray: true
           name: domain
           required: true
           secret: false
         - default: true
           defaultValue: '0'
-          description: No. of indicators which need to be skipped while returning the
-            result set
+          description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
           isArray: false
           name: skip
           required: false
           secret: false
       deprecated: false
-      description: Return Domain information and reputation
+      description: Returns information and a reputation for each domain name in the input list.
       execution: false
       name: domain
       outputs:
@@ -145,93 +142,91 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The actual score.
+          description: The score of the indicator.
           type: Number
         - contextPath: DBotScore.Type
           description: The indicator type.
           type: String
         - contextPath: DBotScore.Vendor
-          description: The vendor used to calculate the score.
+          description: The vendor used to calculate the indicator score.
           type: String
         - contextPath: SixgillDarkfeed.Domain.created
-          description: Creation timestamp of IOC
+          description: The timestamp when the indicator was created.
           type: Date
         - contextPath: SixgillDarkfeed.Domain.id
-          description: Unique ID of IOC
+          description: The unique ID of the indicator.
           type: String
         - contextPath: SixgillDarkfeed.Domain.description
-          description: Description of IOC
+          description: The description of the indicator.
           type: String
         - contextPath: SixgillDarkfeed.Domain.lang
-          description: Language of original post in Sixgill portal
+          description: The language of the original post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Domain.modified
-          description: Modification timestamp of IOC
+          description: The timestamp when the indicator was last modified.
           type: Date
         - contextPath: SixgillDarkfeed.Domain.pattern
-          description: IOC hash/domain/IP address. hashes include MD5, SHA-1 and SHA-256
-            when possible
+          description: The indicator domain name.
           type: String
         - contextPath: SixgillDarkfeed.Domain.sixgill_actor
-          description: Actor of original post on dark web
+          description: The actor of the original post on the dark web.
           type: String
         - contextPath: SixgillDarkfeed.Domain.sixgill_confidence
-          description: Confidence score
+          description: The indicator confidence score.
           type: Number
         - contextPath: SixgillDarkfeed.Domain.sixgill_feedid
-          description: Subfeed ID
+          description: The indicator subfeed ID.
           type: String
         - contextPath: SixgillDarkfeed.Domain.sixgill_feedname
-          description: Subfeed name
+          description: The indicator subfeed name.
           type: String
         - contextPath: SixgillDarkfeed.Domain.sixgill_postid
-          description: ID of post in Sixgill portal
+          description: The ID of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Domain.sixgill_posttitle
-          description: Title of post in Sixgill portal
+          description: The title of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Domain.sixgill_severity
-          description: Severity score
+          description: The indicator severity score.
           type: Number
         - contextPath: SixgillDarkfeed.Domain.sixgill_source
-          description: Source of post in Sixgill portal
+          description: The source of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Domain.spec_version
-          description: STIX specification version
+          description: The STIX specification version.
           type: String
         - contextPath: SixgillDarkfeed.Domain.type
-          description: STIX object type
+          description: The STIX object type.
           type: String
         - contextPath: SixgillDarkfeed.Domain.valid_from
-          description: Post creation date in Sixgill portal
+          description: The creation date of the post in the Sixgill portal.
           type: Date
         - contextPath: SixgillDarkfeed.Domain.labels
-          description: Indicative labels of IOC
+          description: The indicative labels of the indicator.
           type: Unknown
         - contextPath: SixgillDarkfeed.Domain.external_reference
-          description: Link to IOC on Virustotal and abstraction of number of detections;
-            Mitre ATT&CK tatics and techniques
+          description: Link to the IOC on Virustotal and an abstraction of the number of detections;
+            MITRE ATT&CK tactics and techniques.
           type: Unknown
         - contextPath: Domain.Name
-          description: Domain name.
+          description: The indicator domain name.
           type: String
     - arguments:
         - default: true
-          description: List of URL's
+          description: A comma-separated list of URLs to check.
           isArray: true
           name: url
           required: true
           secret: false
         - default: true
           defaultValue: '0'
-          description: No. of indicators which need to be skipped while returning the
-            result set
+          description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
           isArray: false
           name: skip
           required: false
           secret: false
       deprecated: false
-      description: Return URL information and reputation
+      description: Returns information and a reputation for each URL in the input list.
       execution: false
       name: url
       outputs:
@@ -239,93 +234,91 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The actual score.
+          description: The score of the indicator.
           type: Number
         - contextPath: DBotScore.Type
-          description: The indicator type.
+          description: Indicator type.
           type: String
         - contextPath: DBotScore.Vendor
-          description: The vendor used to calculate the score.
+          description: The vendor used to calculate the indicator score.
           type: String
         - contextPath: SixgillDarkfeed.URL.created
-          description: Creation timestamp of IOC
+          description: The timestamp when the indicator was created.
           type: Date
         - contextPath: SixgillDarkfeed.URL.id
-          description: Unique ID of IOC
+          description: The unique ID of the indicator.
           type: String
         - contextPath: SixgillDarkfeed.URL.description
-          description: Description of IOC
+          description: The description of the indicator.
           type: String
         - contextPath: SixgillDarkfeed.URL.lang
-          description: Language of original post in Sixgill portal
+          description: The language of the original post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.URL.modified
-          description: Modification timestamp of IOC
+          description: The timestamp when the indicator was last modified.
           type: Date
         - contextPath: SixgillDarkfeed.URL.pattern
-          description: IOC hash/domain/IP address. hashes include MD5, SHA-1 and SHA-256
-            when possible
+          description: The indicator URL.
           type: String
         - contextPath: SixgillDarkfeed.URL.sixgill_actor
-          description: Actor of original post on dark web
+          description: The actor of the original post on the dark web.
           type: String
         - contextPath: SixgillDarkfeed.URL.sixgill_confidence
-          description: Confidence score
+          description: The indicator confidence score.
           type: Number
         - contextPath: SixgillDarkfeed.URL.sixgill_feedid
-          description: Subfeed ID
+          description: The indicator subfeed ID.
           type: String
         - contextPath: SixgillDarkfeed.URL.sixgill_feedname
-          description: Subfeed name
+          description: The indicator subfeed name.
           type: String
         - contextPath: SixgillDarkfeed.URL.sixgill_postid
-          description: ID of post in Sixgill portal
+          description: The ID of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.URL.sixgill_posttitle
-          description: Title of post in Sixgill portal
+          description: The title of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.URL.sixgill_severity
-          description: Severity score
+          description: The indicator severity score.
           type: Number
         - contextPath: SixgillDarkfeed.URL.sixgill_source
-          description: Source of post in Sixgill portal
+          description: The source of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.URL.spec_version
-          description: STIX specification version
+          description: The STIX specification version.
           type: String
         - contextPath: SixgillDarkfeed.URL.type
-          description: STIX object type
+          description: The STIX object type.
           type: String
         - contextPath: SixgillDarkfeed.URL.valid_from
-          description: Post creation date in Sixgill portal
+          description: The creation date of the post in the Sixgill portal.
           type: Date
         - contextPath: SixgillDarkfeed.URL.labels
-          description: Indicative labels of IOC
+          description: The indicative labels of the indicator.
           type: Unknown
         - contextPath: URL.Data
-          description: URL name.
+          description: The indicator URL.
           type: string
         - contextPath: SixgillDarkfeed.URL.external_reference
-          description: Link to IOC on Virustotal and abstraction of number of detections;
-            Mitre ATT&CK tatics and techniques
+          description: Link to the IOC on Virustotal and an abstraction of the number of detections;
+            MITRE ATT&CK tactics and techniques.
           type: Unknown
     - arguments:
         - default: true
-          description: List of File Hash's
+          description: A comma-separated list of file hashes to check.
           isArray: true
           name: file
           required: true
           secret: false
         - default: true
           defaultValue: '0'
-          description: No. of indicators which need to be skipped while returning the
-            result set
+          description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
           isArray: false
           name: skip
           required: false
           secret: false
       deprecated: false
-      description: Return file information and reputation
+      description: Returns information and a reputation for each file hash in the input list.
       execution: false
       name: file
       outputs:
@@ -333,266 +326,237 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The actual score.
+          description: The score of the indicator.
           type: Number
         - contextPath: DBotScore.Type
-          description: The indicator type.
+          description: Indicator type.
           type: String
         - contextPath: DBotScore.Vendor
-          description: The vendor used to calculate the score.
+          description: The vendor used to calculate the indicator score.
           type: String
         - contextPath: SixgillDarkfeed.File.created
-          description: Creation timestamp of IOC
+          description: The timestamp when the indicator was created.
           type: Date
         - contextPath: SixgillDarkfeed.File.id
-          description: Unique ID of IOC
+          description: The unique ID of the indicator.
           type: String
         - contextPath: SixgillDarkfeed.File.description
-          description: Description of IOC
+          description: The description of the indicator.
           type: String
         - contextPath: SixgillDarkfeed.File.lang
-          description: Language of original post in Sixgill portal
+          description: The language of the original post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.File.modified
-          description: Modification timestamp of IOC
+          description: The timestamp when the indicator was last modified.
           type: Date
         - contextPath: SixgillDarkfeed.File.pattern
-          description: IOC hash/domain/IP address. hashes include MD5, SHA-1 and SHA-256
-            when possible
+          description: The indicator file hash (hashes include MD5, SHA-1 and SHA-256 when possible).
           type: String
         - contextPath: SixgillDarkfeed.File.sixgill_actor
-          description: Actor of original post on dark web
+          description: The actor of the original post on the dark web.
           type: String
         - contextPath: SixgillDarkfeed.File.sixgill_confidence
-          description: Confidence score
+          description: The indicator confidence score.
           type: Number
         - contextPath: SixgillDarkfeed.File.sixgill_feedid
-          description: Subfeed ID
+          description: The indicator subfeed ID.
           type: String
         - contextPath: SixgillDarkfeed.File.sixgill_feedname
-          description: Subfeed name
+          description: The indicator subfeed name.
           type: String
         - contextPath: SixgillDarkfeed.File.sixgill_postid
-          description: ID of post in Sixgill portal
+          description: The ID of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.File.sixgill_posttitle
-          description: Title of post in Sixgill portal
+          description: The title of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.File.sixgill_severity
-          description: Severity score
+          description: The indicator severity score.
           type: Number
         - contextPath: SixgillDarkfeed.File.sixgill_source
-          description: Source of post in Sixgill portal
+          description: The source of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.File.spec_version
-          description: STIX specification version
+          description: The STIX specification version.
           type: String
         - contextPath: SixgillDarkfeed.File.type
-          description: STIX object type
+          description: The STIX object type.
           type: String
         - contextPath: SixgillDarkfeed.File.valid_from
-          description: Post creation date in Sixgill portal
+          description: The creation date of the post in the Sixgill portal.
           type: Date
         - contextPath: SixgillDarkfeed.File.labels
-          description: Indicative labels of IOC
+          description: The indicative labels of the indicator.
           type: Unknown
         - contextPath: SixgillDarkfeed.File.external_reference
-          description: Link to IOC on Virustotal and abstraction of number of detections;
-            Mitre ATT&CK tatics and techniques
+          description: Link to the IOC on Virustotal and an abstraction of the number of detections;
+            MITRE ATT&CK tactics and techniques.
           type: Unknown
         - contextPath: File.SHA256
-          description: SHA256 hash of the file.
+          description: The SHA256 file hash.
           type: string
         - contextPath: File.SHA512
-          description: SHA512 hash of the file.
+          description: The SHA512 file hash.
           type: string
         - contextPath: File.SHA1
-          description: SHA1 hash of the file.
+          description: The SHA1 file hash.
           type: string
         - contextPath: File.MD5
-          description: MD5 hash of the file.
+          description: The MD5 file hash.
           type: string
     - arguments:
         - default: true
-          description: List of actor's
+          description: A comma-separated list of actors to check.
           isArray: true
           name: actor
           required: true
           secret: false
         - default: true
           defaultValue: '0'
-          description: No. of indicators which need to be skipped while returning the
-            result set
+          description: The number of outputs per actor to be skipped when returning the result set. Default is 0.
           isArray: false
           name: skip
           required: false
           secret: false
       deprecated: false
-      description: Query the Sixgill Darkfeed and receive all IOCs shared by that threat actor
+      description: Returns information and a reputation for each actor in the input list. 
       execution: false
       name: sixgill-get-actor
       outputs:
-        - contextPath: DBotScore.Indicator
-          description: The indicator that was tested.
-          type: String
-        - contextPath: DBotScore.Score
-          description: The actual score.
-          type: Number
-        - contextPath: DBotScore.Type
-          description: The indicator type.
-          type: String
-        - contextPath: DBotScore.Vendor
-          description: The vendor used to calculate the score.
-          type: String
         - contextPath: SixgillDarkfeed.Actor.created
-          description: Creation timestamp of IOC
+          description: The timestamp when the actor shared their first IOC.
           type: Date
         - contextPath: SixgillDarkfeed.Actor.id
-          description: Unique ID of IOC
+          description: The unique ID of the actor.
           type: String
         - contextPath: SixgillDarkfeed.Actor.description
-          description: Description of IOC
+          description: The description of the actor.
           type: String
         - contextPath: SixgillDarkfeed.Actor.lang
-          description: Language of original post in Sixgill portal
+          description: The language of the original post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Actor.modified
-          description: Modification timestamp of IOC
+          description: The timestamp when the actor was last modified.
           type: Date
         - contextPath: SixgillDarkfeed.Actor.pattern
-          description: IOC hash/domain/IP address. hashes include MD5, SHA-1 and SHA-256
-            when possible
+          description: A list of the IOCs shared by the actor.
           type: String
         - contextPath: SixgillDarkfeed.Actor.sixgill_actor
-          description: Actor of original post on dark web
+          description: The actor of the original post on the dark web.
           type: String
         - contextPath: SixgillDarkfeed.Actor.sixgill_confidence
-          description: Confidence score
+          description: The confidence score of the actor.
           type: Number
         - contextPath: SixgillDarkfeed.Actor.sixgill_feedid
-          description: Subfeed ID
+          description: The Subfeed ID of the actor.
           type: String
         - contextPath: SixgillDarkfeed.Actor.sixgill_feedname
-          description: Subfeed name
+          description: The Subfeed name of the actor.
           type: String
         - contextPath: SixgillDarkfeed.Actor.sixgill_postid
-          description: ID of post in Sixgill portal
+          description: The ID of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Actor.sixgill_posttitle
-          description: Title of post in Sixgill portal
+          description: The title of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Actor.sixgill_severity
-          description: Severity score
+          description: The severity score of the actor.
           type: Number
         - contextPath: SixgillDarkfeed.Actor.sixgill_source
-          description: Source of post in Sixgill portal
+          description: The source of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Actor.spec_version
-          description: STIX specification version
+          description: The STIX specification version.
           type: String
         - contextPath: SixgillDarkfeed.Actor.type
-          description: STIX object type
+          description: The STIX object type.
           type: String
         - contextPath: SixgillDarkfeed.Actor.valid_from
-          description: Post creation date in Sixgill portal
+          description: The creation date of the post in the Sixgill portal.
           type: Date
         - contextPath: SixgillDarkfeed.Actor.labels
-          description: Indicative labels of IOC
+          description: The indicative labels of the actor.
           type: Unknown
         - contextPath: SixgillDarkfeed.Actor.external_reference
-          description: Link to IOC on Virustotal and abstraction of number of detections;
-            Mitre ATT&CK tatics and techniques
+          description: Link to the IOC on Virustotal and an abstraction of the number of detections;
+            MITRE ATT&CK tactics and techniques.
           type: Unknown
     - arguments:
         - default: true
-          description: List of postid's
+          description: A comma-separated list of post IDs to check.
           isArray: true
           name: post_id
           required: true
           secret: false
         - default: true
           defaultValue: '0'
-          description: No. of indicators which need to be skipped while returning the
-            result set
+          description: The number of outputs per post ID to be skipped when returning the result set. Default is 0.
           isArray: false
           name: skip
           required: false
           secret: false
       deprecated: false
-      description: Query the Sixgill Darkfeed for a specific Sixgill post ID (i.e. unique identifier of a specific post shared in the underground) and receive all IOCs shared in that post
+      description: Returns information and a reputation for each post ID in the input list.
       execution: false
       name: sixgill-get-post-id
       outputs:
-        - contextPath: DBotScore.Indicator
-          description: The indicator that was tested.
-          type: String
-        - contextPath: DBotScore.Score
-          description: The actual score.
-          type: Number
-        - contextPath: DBotScore.Type
-          description: The indicator type.
-          type: String
-        - contextPath: DBotScore.Vendor
-          description: The vendor used to calculate the score.
-          type: String
         - contextPath: SixgillDarkfeed.Postid.created
-          description: Creation timestamp of IOC
+          description: The timestamp when an IOC was first included in the post.
           type: Date
         - contextPath: SixgillDarkfeed.Postid.id
-          description: Unique ID of IOC
+          description: The unique ID of the post.
           type: String
         - contextPath: SixgillDarkfeed.Postid.description
-          description: Description of IOC
+          description: The description of the post ID.
           type: String
         - contextPath: SixgillDarkfeed.Postid.lang
-          description: Language of original post in Sixgill portal
+          description: The language of the original post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Postid.modified
-          description: Modification timestamp of IOC
+          description: The timestamp when the post ID information was last modified.
           type: Date
         - contextPath: SixgillDarkfeed.Postid.pattern
-          description: IOC hash/domain/IP address. hashes include MD5, SHA-1 and SHA-256
-            when possible
+          description: A list of the IOCs included in the post.
           type: String
         - contextPath: SixgillDarkfeed.Postid.sixgill_actor
-          description: Actor of original post on dark web
+          description: The actor of the original post on the dark web.
           type: String
         - contextPath: SixgillDarkfeed.Postid.sixgill_confidence
-          description: Confidence score
+          description: The confidence score of the post ID.
           type: Number
         - contextPath: SixgillDarkfeed.Postid.sixgill_feedid
-          description: Subfeed ID
+          description: The Subfeed ID of the post ID.
           type: String
         - contextPath: SixgillDarkfeed.Postid.sixgill_feedname
-          description: Subfeed name
+          description: The Subfeed name of the post ID.
           type: String
         - contextPath: SixgillDarkfeed.Postid.sixgill_postid
-          description: ID of post in Sixgill portal
+          description: The ID of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Postid.sixgill_posttitle
-          description: Title of post in Sixgill portal
+          description: The title of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Postid.sixgill_severity
-          description: Severity score
+          description: The severity score of the post ID.
           type: Number
         - contextPath: SixgillDarkfeed.Postid.sixgill_source
-          description: Source of post in Sixgill portal
+          description: The source of the post in the Sixgill portal.
           type: String
         - contextPath: SixgillDarkfeed.Postid.spec_version
-          description: STIX specification version
+          description: The STIX specification version.
           type: String
         - contextPath: SixgillDarkfeed.Postid.type
-          description: STIX object type
+          description: The STIX object type.
           type: String
         - contextPath: SixgillDarkfeed.Postid.valid_from
-          description: Post creation date in Sixgill portal
+          description: The creation date of the post in the Sixgill portal.
           type: Date
         - contextPath: SixgillDarkfeed.Postid.labels
-          description: Indicative labels of IOC
+          description: The indicative labels of the post ID.
           type: Unknown
         - contextPath: SixgillDarkfeed.Postid.external_reference
-          description: Link to IOC on Virustotal and abstraction of number of detections;
-            Mitre ATT&CK tatics and techniques
+          description: Link to the IOC on Virustotal and an abstraction of the number of detections;
+            MITRE ATT&CK tactics and techniques.
           type: Unknown
   dockerimage: demisto/sixgill:1.0.0.12410
   feed: false
