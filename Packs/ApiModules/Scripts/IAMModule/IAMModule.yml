@@ -1,5 +1,4 @@
-comment: Common ServiceNow code that will be appended to each ServiceNow integration
-  when it is deployed to automatically enable OAuth2 authentication.
+comment: Common code that will be appended into each IAM integration when it's deployed.
 commonfields:
   id: IAMModule
   version: -1
