@@ -1,0 +1,31 @@
+{
+	"autorun": true,
+	"closureScript": "",
+	"color": "#418ae6",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "Shift handover",
+	"itemVersion": "",
+	"layout": "c6610ca1-32e1-49b2-84c9-239d7e3b405d",
+	"locked": false,
+	"name": "Shift handover",
+	"packID": "27061f91-5a0b-4156-8aeb-c6c28ef1570a",
+	"playbookId": "a3c36ee5-efe0-4a44-8b76-3bb7459f565d",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
