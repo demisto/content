@@ -426,7 +426,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Reason for updating the alerts status to closed.
+      description: Reason for updating the alerts status to closed. Required when
+        status is closed.
       isArray: false
       name: closure_reason
       predefined:
@@ -447,7 +448,7 @@ script:
       description: Status of the alert.
       type: String
     - contextPath: Cyberint.Alert.closure_reason
-      description: Reason for updating the alert to closed.
+      description: Reason for updating the alert to closed if closed.
       type: String
   dockerimage: demisto/python3:3.8.3.8715
   feed: false
