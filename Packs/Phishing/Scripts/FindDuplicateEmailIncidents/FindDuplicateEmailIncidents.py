@@ -69,6 +69,10 @@ def get_existing_incidents(input_args, current_incident_type):
         query_components.append(type_query)
     if len(query_components) > 0:
         get_incidents_args['query'] = ' and '.join('({})'.format(c) for c in query_components)
+
+    fields = [EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD, 'created', 'id',
+              'name', 'status']
+    get_incidents_args['populateFields'] = ','.join(fields)
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
@@ -89,7 +93,7 @@ def extract_domain(address):
         return ''
     email_address = parseaddr(address)[1]
     ext = no_fetch_extract(email_address)
-    return ext.domain
+    return '{}.{}'.format(ext.domain, ext.suffix)
 
 
 def get_text_from_html(html):
@@ -138,12 +142,13 @@ def preprocess_text_fields(incident):
 def preprocess_incidents_df(existing_incidents):
     global MERGED_TEXT_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD
     incidents_df = pd.DataFrame(existing_incidents)
-    incidents_df['CustomFields'] = incidents_df['CustomFields'].fillna(value={})
-    custom_fields_df = incidents_df['CustomFields'].apply(pd.Series)
-    unique_keys = [k for k in custom_fields_df if k not in incidents_df]
-    custom_fields_df = custom_fields_df[unique_keys]
-    incidents_df = pd.concat([incidents_df.drop('CustomFields', axis=1),
-                              custom_fields_df], axis=1).reset_index()
+    if 'CustomFields' in incidents_df.columns:
+        incidents_df['CustomFields'] = incidents_df['CustomFields'].fillna(value={})
+        custom_fields_df = incidents_df['CustomFields'].apply(pd.Series)
+        unique_keys = [k for k in custom_fields_df if k not in incidents_df]
+        custom_fields_df = custom_fields_df[unique_keys]
+        incidents_df = pd.concat([incidents_df.drop('CustomFields', axis=1),
+                                  custom_fields_df], axis=1).reset_index()
     incidents_df[MERGED_TEXT_FIELD] = incidents_df.apply(lambda x: preprocess_text_fields(x), axis=1)
     incidents_df = incidents_df[incidents_df[MERGED_TEXT_FIELD].str.len() >= MIN_TEXT_LENGTH]
     incidents_df.reset_index(inplace=True)
