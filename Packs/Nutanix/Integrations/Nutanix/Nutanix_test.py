@@ -4,15 +4,27 @@ import io
 import json
 
 import pytest
-
-from CommonServerPython import DemistoException
+from typing import Dict
+from CommonServerPython import DemistoException, CommandResults
 from Nutanix import MINIMUM_LIMIT_VALUE
 from Nutanix import MINIMUM_PAGE_VALUE
+from Nutanix import Client
+from Nutanix import fetch_incidents_command, nutanix_hypervisor_hosts_list_command, \
+    nutanix_hypervisor_vms_list_command, nutanix_hypervisor_vm_power_status_change_command, \
+    nutanix_hypervisor_task_poll_command, nutanix_alerts_list_command, nutanix_alert_acknowledge_command, \
+    nutanix_alert_resolve_command, nutanix_alerts_acknowledge_by_filter_command, \
+    nutanix_alerts_resolve_by_filter_command
+
+MOCKED_BASE_URL = 'https://prefix:11111/PrismGateway/services/rest/v2.0'
+client = Client(base_url=MOCKED_BASE_URL, verify=False, proxy=False, auth=('fake_username', 'fake_password'))
 
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+command_tests_data = util_load_json('test_data/test_command_data.json')
 
 
 @pytest.mark.parametrize('args, argument_name, minimum, maximum, expected',
@@ -166,7 +178,6 @@ def test_get_optional_boolean_param_invalid_argument(args, argument_name, expect
                          [({'start_time': '2020-11-22T16:31:14'}, 'start_time', 1606062674000),
                           ({'start_time': '2020-11-22T16:31:14'}, 'end_time', None),
                           ])
-# TODO TOM : seems there is a problem with lint getting different results - probably because of time zones
 def test_get_optional_time_parameter_valid_time_argument(args, time_parameter, expected):
     """
     Given:
@@ -199,5 +210,88 @@ def test_get_optional_time_parameter_invalid_time_argument():
        expected time format.
     """
     from Nutanix import get_optional_time_parameter_as_epoch
-    with pytest.raises(DemistoException, match='''date format of 'start_time' is not valid. Please enter a date format of YYYY-MM-DDTHH:MM:SS'''):
+    with pytest.raises(DemistoException,
+                       match='''date format of 'start_time' is not valid. Please enter a date format of YYYY-MM-DDTHH:MM:SS'''):
         (get_optional_time_parameter_as_epoch({'start_time': 'bla'}, 'start_time'))
+
+    commands = {
+        'fetch-incidents': fetch_incidents_command,
+        'nutanix-hypervisor-hosts-list': nutanix_hypervisor_hosts_list_command,
+        'nutanix-hypervisor-vms-list': nutanix_hypervisor_vms_list_command,
+        'nutanix-hypervisor-vm-powerstatus-change': nutanix_hypervisor_vm_power_status_change_command,
+        'nutanix-hypervisor-task-poll': nutanix_hypervisor_task_poll_command,
+        'nutanix-alerts-list': nutanix_alerts_list_command,
+        'nutanix-alert-acknowledge': nutanix_alert_acknowledge_command,
+        'nutanix-alert-resolve': nutanix_alert_resolve_command,
+        'nutanix-alerts-acknowledge-by-filter': nutanix_alerts_acknowledge_by_filter_command,
+        'nutanix-alerts-resolve-by-filter': nutanix_alerts_resolve_by_filter_command
+    }
+
+
+@pytest.mark.parametrize('command_function, args, url_suffix, response, expected',
+                         [(nutanix_hypervisor_hosts_list_command,
+                           command_tests_data['nutanix-hypervisor-hosts-list']['args'],
+                           command_tests_data['nutanix-hypervisor-hosts-list']['suffix'],
+                           command_tests_data['nutanix-hypervisor-hosts-list']['response'],
+                           command_tests_data['nutanix-hypervisor-hosts-list']['expected']),
+
+                          (nutanix_hypervisor_vms_list_command,
+                           command_tests_data['nutanix-hypervisor-vms-list']['args'],
+                           command_tests_data['nutanix-hypervisor-vms-list']['suffix'],
+                           command_tests_data['nutanix-hypervisor-vms-list']['response'],
+                           command_tests_data['nutanix-hypervisor-vms-list']['expected']),
+
+                          (nutanix_hypervisor_vm_power_status_change_command,
+                           command_tests_data['nutanix-hypervisor-vm-powerstatus-change']['args'],
+                           command_tests_data['nutanix-hypervisor-vm-powerstatus-change']['suffix'],
+                           command_tests_data['nutanix-hypervisor-vm-powerstatus-change']['response'],
+                           command_tests_data['nutanix-hypervisor-vm-powerstatus-change']['expected']),
+
+                          (nutanix_hypervisor_task_poll_command,
+                           command_tests_data['nutanix-hypervisor-task-poll']['args'],
+                           command_tests_data['nutanix-hypervisor-task-poll']['suffix'],
+                           command_tests_data['nutanix-hypervisor-task-poll']['response'],
+                           command_tests_data['nutanix-hypervisor-task-poll']['expected']),
+
+                          (nutanix_alerts_list_command,
+                           command_tests_data['nutanix-alerts-list']['args'],
+                           command_tests_data['nutanix-alerts-list']['suffix'],
+                           command_tests_data['nutanix-alerts-list']['response'],
+                           command_tests_data['nutanix-alerts-list']['expected']),
+
+                          (nutanix_alert_acknowledge_command,
+                           command_tests_data['nutanix-alert-acknowledge']['args'],
+                           command_tests_data['nutanix-alert-acknowledge']['suffix'],
+                           command_tests_data['nutanix-alert-acknowledge']['response'],
+                           command_tests_data['nutanix-alert-acknowledge']['expected']),
+
+                          (nutanix_alert_resolve_command,
+                           command_tests_data['nutanix-alert-resolve']['args'],
+                           command_tests_data['nutanix-alert-resolve']['suffix'],
+                           command_tests_data['nutanix-alert-resolve']['response'],
+                           command_tests_data['nutanix-alert-resolve']['expected']),
+
+                          (nutanix_alerts_acknowledge_by_filter_command,
+                           command_tests_data['nutanix-alerts-acknowledge-by-filter']['args'],
+                           command_tests_data['nutanix-alerts-acknowledge-by-filter']['suffix'],
+                           command_tests_data['nutanix-alerts-acknowledge-by-filter']['response'],
+                           command_tests_data['nutanix-alerts-acknowledge-by-filter']['expected']),
+
+                          (nutanix_alerts_resolve_by_filter_command,
+                           command_tests_data['nutanix-alerts-resolve-by-filter']['args'],
+                           command_tests_data['nutanix-alerts-resolve-by-filter']['suffix'],
+                           command_tests_data['nutanix-alerts-resolve-by-filter']['response'],
+                           command_tests_data['nutanix-alerts-resolve-by-filter']['expected']),
+                          ])
+def test_command_return_values(requests_mock, command_function, args, url_suffix, response, expected: Dict):
+    requests_mock.post(
+        f'{MOCKED_BASE_URL}/{url_suffix}',
+        json=response
+    )
+    expected_command_results = CommandResults(
+        outputs_prefix=expected.get('outputs_prefix'),
+        outputs_key_field=expected.get('outputs_key_field'),
+        outputs=expected.get('outputs')
+    )
+
+    assert command_function(client, args) == expected_command_results

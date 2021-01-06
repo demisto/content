@@ -54,26 +54,26 @@ class Client(BaseClient):
             )
         )
 
-    # TODO TOM : figure real signature (Optionals or not)
-    def nutanix_hypervisor_vm_power_status_change(self, uuid: str, host_uuid: str, transition: str):
+    def nutanix_hypervisor_vm_power_status_change(self, uuid: str, host_uuid: Optional[str], transition: str):
         return self._http_request(
             method='POST',
             url_suffix=f'vms/{uuid}/set_power_state',
             headers=CONTENT_JSON,
             json_data=assign_params(
-                # host_uuid='ON',
-                transition='off',
-                uuid=uuid
+                uuid=uuid,
+                host_uuid=host_uuid,
+                transition=transition
             )
         )
 
-    def nutanix_hypervisor_task_poll(self, completed_tasks: List[str]):
+    def nutanix_hypervisor_task_poll(self, completed_tasks: List[str], timeout_interval: Optional[int]):
         return self._http_request(
             method='POST',
             url_suffix='tasks/poll',
             headers=CONTENT_JSON,
-            data=assign_params(
-                completed_tasks=completed_tasks
+            json_data=assign_params(
+                completed_tasks=completed_tasks,
+                timeout_interval=timeout_interval
             )
         )
 
@@ -114,10 +114,11 @@ class Client(BaseClient):
             url_suffix=f'alerts/{alert_id}/resolve',
         )
 
-    # TODO TOM : figure real signature (Optionals or not)
-    def post_nutanix_alerts_acknowledge_by_filter(self, start_time: int, end_time: int, severity: str,
-                                                  impact_types: str, classification: str, entity_type: str,
-                                                  entity_type_ids: str, limit: int):
+    def post_nutanix_alerts_acknowledge_by_filter(self, start_time: Optional[int], end_time: Optional[int],
+                                                  severity: Optional[str],
+                                                  impact_types: Optional[str], classification: Optional[str],
+                                                  entity_type: Optional[str],
+                                                  entity_type_ids: Optional[str], limit: Optional[int]):
         return self._http_request(
             method='POST',
             url_suffix='alerts/acknowledge',
@@ -133,10 +134,10 @@ class Client(BaseClient):
             )
         )
 
-    # TODO TOM : figure real signature (Optionals or not)
-    def post_nutanix_alerts_resolve_by_filter(self, start_time: int, end_time: int, severity: str,
-                                              impact_types: str, classification: str, entity_type: str,
-                                              entity_type_ids: str, page: int, limit: int):
+    def post_nutanix_alerts_resolve_by_filter(self, start_time: Optional[int], end_time: Optional[int],
+                                              severity: Optional[str], impact_types: Optional[str],
+                                              classification: Optional[str], entity_type: Optional[str],
+                                              entity_type_ids: Optional[str], page: int, limit: Optional[int]):
         return self._http_request(
             method='POST',
             url_suffix='alerts/resolve',
@@ -207,7 +208,6 @@ def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optio
         - If argument is exists and is not between min to max, raises DemistoException.
 
     """
-    assert (minimum <= maximum if minimum and maximum else True)
     argument_value = arg_to_number(args.get(argument_name), arg_name=argument_name)
 
     if argument_value is None:
@@ -294,7 +294,19 @@ def fetch_incidents_command(client: Client, args: Dict):
 
 def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     """
-    List all physical hosts configured in the cluster.
+    Gets a list all physical hosts configured in the cluster by Nutanix service.
+    Possible filters:
+    - page: The offset page to start retrieving hosts.
+    - limit: The number of hosts to retrieve.
+    - filter: Retrieve only machines that matches the filters given.
+              - Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value.
+              - Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for Example:
+                storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x is parsed by Nutanix the following way:
+                Return all hosts s.t (storage.capacity_bytes == 2 AND host_nic_ids != 35) OR host_gpus == x.
+
+    In case response was successful, response will be a dict containing key 'entities' with value of list of hosts.
+    Each element in the list contains data about the host.
+
     Args:
         client (Client): Client object to perform request.
         args (Dict): Demisto arguments.
@@ -311,14 +323,26 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Host',
         outputs_key_field='entities.uuid',
-        outputs=response,
-        readable_output=""
+        outputs=response
     )
 
 
 def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
     """
-    List all virtual machines.
+    Gets a list all virtual machines by Nutanix service.
+    Possible filters:
+    - offset: The offset to start retrieving virtual machines.
+    - length: The number of virtual machines to retrieve.
+    - filter: Retrieve only machines that matches the filters given.
+              - Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value.
+              - Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for Example:
+                machine_type==pc;power_state!=off,ha_priority==0 is parsed by Nutanix the following way:
+                Return all virtual machines s.t (machine type == pc AND power_state != off) OR ha_priority == 0.
+
+    In case response was successful, response will be a dict containing key 'entities' with value of list of
+    virtual machines.
+    Each element in the list contains data about the virtual machine.
+
     Args:
         client (Client): Client object to perform request.
         args (Dict): Demisto arguments.
@@ -335,8 +359,7 @@ def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
     return CommandResults(
         outputs_prefix='NutanixHypervisor.VM',
         outputs_key_field='entities.uuid',
-        outputs=response,
-        readable_output=""
+        outputs=response
     )
 
 
@@ -346,6 +369,13 @@ def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict
     If the virtual machine is being powered on and no host is specified, the scheduler will pick the one with
     the most available CPU and memory that can support the Virtual Machine.
     If the virtual machine is being power cycled, a different host can be specified to start it on.
+
+    This is also an asynchronous operation that results in the creation of a task object.
+    The UUID of this task object is returned as the response of this operation.
+    This task can be monitored by using the nutanix-hypervisor-task-poll command
+
+    In case response was successful, response will be a dict {'task_uuid': int}.
+
     Args:
         client (Client): Client object to perform request.
         args (Dict): Demisto arguments.
@@ -353,21 +383,32 @@ def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict
     Returns:
         CommandResults.
     """
-    # context_path = 'NutanixHypervisor.VMPowerStatus'
-    #
     vm_uuid = args.get('vm_uuid')
     host_uuid = args.get('host_uuid')
     transition = args.get('transition')
-    #
-    # # TODO : are they required? optional?
+
     response = client.nutanix_hypervisor_vm_power_status_change(vm_uuid, host_uuid, transition)
-    # # TODO : what to return? whats the return value (currently cant reach the endpoint)
-    raise NotImplementedError
+
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.VMPowerStatus',
+        outputs_key_field='task_uuid',
+        outputs=response
+    )
 
 
 def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     """
     Poll tasks given by task_ids to check if they are ready.
+    Returns all the tasks from 'task_ids' list that are ready at the moment
+    Nutanix service was polled.
+    In case no task is ready, waits until at least one task is ready, unless given
+    argument 'timeout_interval' which waits time_interval seconds and in case no task
+    had finished, returns a time out response.
+
+    In case response was successful, response will be a dict containing key 'completed_tasks_info'
+    which holds details about every completed task returned by Nutanix service.
+    In case response timed out, response will be a dict {'timed_out': True}.
+
     Args:
         client (Client): Client object to perform request.
         args (Dict): Demisto arguments.
@@ -375,27 +416,75 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    # context_path = 'NutanixHypervisor.Task'
-    #
-    # task_ids = args.get('task_ids')
-    #
-    # response = client.nutanix_hypervisor_task_poll(task_ids)
-    # # TODO : what to return? whats the return value (currently cant reach the endpoint)
-    raise NotImplementedError
+    outputs_key_field = 'completed_tasks_info.uuid'
+
+    task_ids = argToList(args.get('task_ids'))
+    timeout_interval = arg_to_number(args.get('timeout_interval'), 'timeout_interval')
+    if not task_ids:
+        raise DemistoException('Task ids for command nutanix_hypervisor_task_poll_command cannot be empty.')
+
+    response = client.nutanix_hypervisor_task_poll(task_ids, timeout_interval)
+
+    maybe_time_out = response.get('timed_out')
+    if maybe_time_out and argToBoolean(maybe_time_out):
+        outputs_key_field = None
+
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.Task',
+        outputs_key_field=outputs_key_field,
+        outputs=response
+    )
 
 
 def nutanix_alerts_list_command(client: Client, args: Dict):
+    """
+    Get the list of Alerts generated in the cluster which matches the filters if given.
+    Possible filters:
+    - start_time: Retrieve alerts that their creation time have been after 'start_time'.
+    - end_time: Retrieve alerts that their creation time have been before 'end_time'.
+    - auto_resolved: If auto_resolved is True, retrieves alerts that have been resolved, and were auto_resolved.
+                     If auto_resolved is False, retrieves alerts that have been resolved, and were not auto_resolved.
+    - resolved: If resolved is True, retrieves alerts that have been resolved.
+                If resolved is False, retrieves alerts that have not been resolved.
+    - acknowledged: If acknowledged is True, retrieves alerts that have been acknowledged.
+                    If acknowledged is False, retrieves alerts that have been acknowledged.
+    - severity: Retrieve any alerts that their severity level matches one of the severities in severity list.
+                Possible severities: [CRITICAL, WARNING, INFO, AUDIT].
+    - alert_type_ids: Retrieve only alerts that id of their type matches one alert_type_id in alert_type_id list.
+                     For example, alert 'Alert E-mail Failure' has type id of A111066.
+                     Given alert_type_id = [A111066], only alerts of 'Alert E-mail Failure' will be shown.
+    - entity_ids: TODO.
+    - impact_types: Retrieve only alerts that their impact type matches one of the impact_type in impact_types list.
+                    Possible impact types: [Availability, Capacity, Configuration, Performance, System Indicator]
+    - classification: Retrieve only alerts that their classifications matches one of the classification in
+                      classifications list given.
+    - entity_type: Retrieve only alerts that their entity_type matches one of the entity_type in entity_types list.
+                   Examples for entity types: [VM, Host, Disk, Storage Container, Cluster].
+                   If Nutanix service can't recognize the entity type, it returns 404 response.
+    - page: The offset of page number in the query response to start retrieving alerts.
+    - limit: Maximum number of alerts to retrieve.
+
+    In case response was successful, response will be a dict containing key 'entities' with value of list of alerts.
+    Each element in the list contains data about the alert.
+
+    Args:
+        client (Client): Client object to perform request.
+        args (Dict): Demisto arguments.
+
+    Returns:
+        CommandResults.
+    """
     start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
     end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
     auto_resolved = get_optional_boolean_param(args, 'auto_resolved')
     resolved = True if auto_resolved else get_optional_boolean_param(args, 'resolved')
     acknowledged = get_optional_boolean_param(args, 'acknowledged')
     severity = args.get('severity')
-    alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
-    entity_ids = args.get('entity_ids')  # maybe split ,
-    impact_types = args.get('impact_types')  # maybe split ,
-    classification = args.get('classifications')  # maybe split ,
-    entity_type = args.get('entity_type')  # maybe split ,
+    alert_type_id = args.get('alert_type_id')
+    entity_ids = args.get('entity_ids')
+    impact_types = args.get('impact_types')
+    classification = args.get('classifications')
+    entity_type = args.get('entity_type')
     page = get_page_argument(args)
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
 
@@ -406,14 +495,19 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Alerts',
         outputs_key_field='entities.id',
-        outputs=response,
-        readable_output=""
+        outputs=response
     )
 
 
 def nutanix_alert_acknowledge_command(client: Client, args: Dict):
     """
     Acknowledge alert with the specified alert_id.
+
+    In case response was successful, response will be a dict
+    {'id': str, 'successful': bool, 'message': Optional[str]}
+    In case of an invalid alert id, status code 422 - UNPROCESSABLE ENTITY
+    will be returned by Nutanix service.
+
     Args:
         client (Client): Client object to perform request.
         args (Dict): Demisto arguments.
@@ -421,19 +515,26 @@ def nutanix_alert_acknowledge_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    # context_path = 'NutanixHypervisor.Alert'
-    #
-    # alert_id = args.get('alert_id')
-    #
-    # # TODO TOM : what output returned? is it useless or not
-    # response = client.post_nutanix_alert_acknowledge(alert_id)
+    alert_id = args.get('alert_id')
 
-    raise NotImplementedError
+    response = client.post_nutanix_alert_acknowledge(alert_id)
+
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.Alert',
+        outputs_key_field='id',
+        outputs=response
+    )
 
 
 def nutanix_alert_resolve_command(client: Client, args: Dict):
     """
     Resolve alert with the specified alert_id.
+
+    In case response was successful, response will be a dict
+    {'id': str, 'successful': bool, 'message': Optional[str]}.
+    In case of an invalid alert id, status code 422 - UNPROCESSABLE ENTITY
+    will be returned by Nutanix service.
+
     Args:
         client (Client): Client object to perform request.
         args (Dict): Demisto arguments.
@@ -441,60 +542,118 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    # context_path = 'NutanixHypervisor.Alert'
-    #
-    # alert_id = args.get('alert_id')
-    #
-    # # TODO TOM : what output returned? is it useless or not
-    # client.post_nutanix_alert_resolve(alert_id)
-    raise NotImplementedError
+    alert_id = args.get('alert_id')
+
+    response = client.post_nutanix_alert_resolve(alert_id)
+
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.Alert',
+        outputs_key_field='id',
+        outputs=response
+    )
 
 
 def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
-    # context_path = 'NutanixHypervisor.Alert'
-    #
-    # start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
-    # end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
-    # severity = args.get('severity')
-    # impact_types = args.get('impact_types')  # maybe split ,
-    # classification = args.get('classifications')  # maybe split ,
-    # entity_type = args.get('entity_type')
-    # entity_type_ids = args.get('entity_type_ids')  # maybe split ,
-    # limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
-    #
-    # # TODO : are they required? optional?
-    # response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
-    #                                                             classification, entity_type, entity_type_ids, limit)
-    # # TODO : what to return? whats the return value (currently cant reach the endpoint)
-    raise NotImplementedError
+    """
+    Acknowledges all of the Alerts which matches the filters if given.
+    Only alerts that have not been resolved can be acknowledged.
+    - start_time: Acknowledge alerts that their creation time have been after 'start_time'.
+    - end_time: Acknowledge alerts that their creation time have been before 'end_time'.
+    - severity: Acknowledge any alerts that their severity level matches one of the severities in severity list.
+                Possible severities: [CRITICAL, WARNING, INFO, AUDIT].
+    - impact_types: Acknowledge only alerts that their impact type matches one of the impact_type in impact_types list.
+                    Possible impact types: [Availability, Capacity, Configuration, Performance, System Indicator]
+    - classification: Retrieve only alerts that their classifications matches one of the classification in
+                      classifications list given.
+    - entity_type: Acknowledge only alerts that their entity_type matches one of the entity_type in entity_types list.
+                   Example for entity types: [VM, Host, Disk, Storage Container, Cluster].
+                   If Nutanix service can't recognize the entity type, it returns 404 response.
+    - entity_type_id: TODO maybe delete
+    - limit: Maximum number of alerts to acknowledge. Nutanix does not have max for limit, but a very high limit value
+             will cause read timeout exception.
+
+    In case response was successful, outputs will be a dict of
+    {'num_successful_updates': int, 'num_failed_updates': int, 'alert_status_list' : List[Dict]}.
+    where every element in 'alert_status_list' is {id: str, message: str, successful: bool}
+
+    Args:
+        client (Client): Client object to perform request.
+        args (Dict): Demisto arguments.
+
+    Returns:
+        CommandResults.
+    """
+    start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
+    end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
+    severity = args.get('severity')
+    impact_types = args.get('impact_types')
+    classification = args.get('classifications')
+    entity_type = args.get('entity_type')
+    entity_type_ids = args.get('entity_type_ids')
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE)
+
+    response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
+                                                                classification, entity_type, entity_type_ids, limit)
+
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.Alert',
+        outputs=response
+    )
 
 
 def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
-    # # context_path = 'NutanixHypervisor.Alert'
-    #
-    # start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
-    # end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
-    # severity = args.get('severity')
-    # impact_types = args.get('impact_types')  # maybe split ,
-    # classification = args.get('classifications')  # maybe split ,
-    # entity_type = args.get('entity_type')
-    # entity_type_ids = args.get('entity_type_ids')  # maybe split ,
-    # page = get_page_argument(args)
-    # limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
-    #
-    # # TODO : are they required? optional?
-    # client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity,
-    #                                              impact_types, classification, entity_type, entity_type_ids, page,
-    #                                              limit)
-    # # TODO : what to return? whats the return value (currently cant reach the endpoint)
-    raise NotImplementedError
+    """
+    Resolves all of the Alerts which matches the filters if given.
+    Possible filters:
+    - start_time: Resolve alerts that their creation time have been after 'start_time'.
+    - end_time: Resolve alerts that their creation time have been before 'end_time'.
+    - severity: Resolve any alerts that their severity level matches one of the severities in severity list.
+    - impact_types: Resolve only alerts that their impact type matches one of the impact_type in impact_types list.
+                    Possible impact types: [Availability, Capacity, Configuration, Performance, System Indicator]
+    - classification: Resolve only alerts that their classifications matches one of the classification in
+                      classifications list given.
+    - entity_type: Resolve only alerts that their entity_type matches one of the entity_type in entity_types list.
+                   Example for entity types: [VM, Host, Disk, Storage Container, Cluster].
+                   If Nutanix service can't recognize the entity type, it returns 404 response.
+    - entity_type_id: TODO maybe delete
+    - page: The offset of page number in the query response to start resolving alerts.
+    - limit: Maximum number of alerts to resolve. Nutanix does not have max for limit, but a very high limit value
+             will cause read timeout exception.
+
+    In case response was successful, outputs will be a dict of
+    {'num_successful_updates': int, 'num_failed_updates': int, 'alert_status_list' : List[Dict]}.
+    where every element in 'alert_status_list' is {id: str, message: str, successful: bool}
+    Args:
+        client (Client): Client object to perform request.
+        args (Dict): Demisto arguments.
+
+    Returns:
+        CommandResults.
+    """
+    start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
+    end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
+    severity = args.get('severity')
+    impact_types = args.get('impact_types')
+    classification = args.get('classifications')
+    entity_type = args.get('entity_type')
+    entity_type_ids = args.get('entity_type_ids')
+    page = get_page_argument(args)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
+
+    response = client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity, impact_types,
+                                                            classification, entity_type, entity_type_ids, page, limit)
+
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.Alert',
+        outputs=response
+    )
 
 
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
-    command = demisto.command()
+    command = 'nutanix-alerts-acknowledge-by-filter'
     params = demisto.params()
 
     commands = {
