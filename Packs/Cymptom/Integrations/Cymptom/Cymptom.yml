@@ -43,7 +43,7 @@ description: Cymptom is a Breach and Attack Simulation solution that revolutioni
   the existing approach by transforming attack simulation into a data analysis question.
   Cymptom agentless scanning brings real-time always-on visibility into the entire
   security posture.
-display: Cymptom (Partner Contribution)
+display: Cymptom (Partner Contribution) (Partner Contribution)
 name: Cymptom
 script:
   commands:
@@ -98,7 +98,7 @@ script:
     - contextPath: Cymptom.CrackedUsers.Username
       description: Username of users with cracked passwords
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.8.6.14516
   runonce: false
   script: ''
   subtype: python3

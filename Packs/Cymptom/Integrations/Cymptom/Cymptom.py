@@ -1,7 +1,8 @@
-from typing import Dict, Set
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from typing import Dict, Set
+
+
 import requests
 
 # Imports
@@ -219,6 +220,13 @@ def main():
     headers = {
         "Authorization": f"Bearer {api_key}"  # Replace ${token} with the token you have obtained
     }
+
+    demisto.debug(" ---- MAIN CALL -----")
+    demisto.debug(" ---- PARAMS -----")
+    demisto.debug(f"base_url: {base_url}")
+    demisto.debug(f"api_key: {api_key}")
+    demisto.debug(f"insecure: {insecure}")
+    demisto.debug(f"use_proxy: {use_proxy}")
 
     client = Client(base_url=base_url, headers=headers, proxy=use_proxy, verify=insecure)
 

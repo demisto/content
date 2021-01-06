@@ -1,211 +1,262 @@
 id: TestCymptomPlaybook
+inputs: []
 name: TestCymptomPlaybook
-version: -1
-fromversion: 5.0.0
-starttaskid: '0'
+outputs: []
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    taskid: '0'
-    type: start
-    task:
-      id: '0'
-      version: -1
-      name: ''
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '1'
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 50}}'
-    note: false
-    timertriggers: []
+  "0":
+    id: "0"
     ignoreworker: false
-  '1':
-    id: 1
-    taskid: '1'
-    type: regular
-    task:
-      id: '1'
-      version: -1
-      name: DeleteContext
-      description: ''
-      script: DeleteContext
-      type: regular
-      iscommand: true
-      brand: ''
     nexttasks:
       '#none#':
-      - '2'
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6d05c9d5-8d3d-424c-8c54-1021ab0e0228
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6d05c9d5-8d3d-424c-8c54-1021ab0e0228
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
-        simple: yes
+        simple: "yes"
     separatecontext: false
-    view: '{"position": {"x": 50, "y": 200}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-  '2':
-    id: 2
-    taskid: '2'
-    type: regular
     task:
-      id: '2'
+      brand: ""
+      id: ff5c3891-5b12-4f7d-8abf-4f1942c6d693
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
       version: -1
+    taskid: ff5c3891-5b12-4f7d-8abf-4f1942c6d693
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1964286e-15f8-4dd9-8a88-083dee0537ee
+      iscommand: true
       name: cymptom-get-mitigations
-      description: ''
       script: '|||cymptom-get-mitigations'
       type: regular
-      iscommand: true
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 400}}'
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-  '3':
-    id: '3'
-    taskid: '3'
-    type: condition
-    task:
-      id: '3'
       version: -1
-      name: Verify Outputs
-      type: condition
-      iscommand: false
-      description: ''
-      brand: ''
-    nexttasks:
-      yes:
-      - '4'
-    separatecontext: false
+    taskid: 1964286e-15f8-4dd9-8a88-083dee0537ee
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+  "3":
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Cymptom.Mitigations.SeverityType
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: Cymptom.Mitigations.Name
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: Cymptom.Mitigations.AttackVectorsUsedPercentage
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: Cymptom.Mitigations.ID
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: Cymptom.Mitigations.AttackVectorsCount
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: Cymptom.Mitigations.Procedures
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: Cymptom.Mitigations.Techniques
+          operator: isNotEmpty
+      - - left:
             iscontext: true
-      - - operator: isNotEmpty
-          left:
             value:
               simple: Cymptom.Mitigations.SubTechniques
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 600}}'
-    note: false
-    timertriggers: []
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
     ignoreworker: false
-    skipunavailable: false
-  '4':
-    id: 4
-    taskid: '4'
-    type: regular
-    task:
-      id: '4'
-      version: -1
-      name: cymptom-get-users-with-cracked-passwords
-      description: ''
-      script: '|||cymptom-get-users-with-cracked-passwords'
-      type: regular
-      iscommand: true
-      brand: ''
     nexttasks:
-      '#none#':
-      - '5'
-    scriptarguments: {}
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 800}}'
+      "yes":
+      - "4"
     note: false
-    timertriggers: []
-    ignoreworker: false
+    quietmode: 0
+    separatecontext: false
     skipunavailable: false
-  '5':
-    id: '5'
-    taskid: '5'
-    type: condition
     task:
-      id: '5'
-      version: -1
+      brand: ""
+      id: 82f4feca-7871-4ca6-8510-4b0e86446e83
+      iscommand: false
       name: Verify Outputs
       type: condition
-      iscommand: false
-      description: ''
-      brand: ''
+      version: -1
+    taskid: 82f4feca-7871-4ca6-8510-4b0e86446e83
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
     nexttasks:
-      yes:
-      - '6'
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ac2e341f-0364-4a23-843b-e823208a1f75
+      iscommand: true
+      name: cymptom-get-users-with-cracked-passwords
+      script: '|||cymptom-get-users-with-cracked-passwords'
+      type: regular
+      version: -1
+    taskid: ac2e341f-0364-4a23-843b-e823208a1f75
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+  "5":
     conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: Cymptom.CrackedUsers.Username
-            iscontext: true
-    view: '{"position": {"x": 50, "y": 1000}}'
-    note: false
-    timertriggers: []
+          operator: isNotEmpty
+      label: "yes"
+    id: "5"
     ignoreworker: false
+    nexttasks:
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
     skipunavailable: false
-  '6':
-    id: '6'
-    taskid: '6'
-    type: title
     task:
-      id: '6'
+      brand: ""
+      id: ae5a7c55-a18b-4820-8307-c53f2fdacffc
+      iscommand: false
+      name: Verify Outputs
+      type: condition
       version: -1
+    taskid: ae5a7c55-a18b-4820-8307-c53f2fdacffc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e0344a2a-a59b-403a-8439-05823e4cd3d2
+      iscommand: false
       name: Test Done
       type: title
-      iscommand: false
-      brand: ''
-      description: ''
-    separatecontext: false
-    view: '{"position": {"x": 50, "y": 1200}}'
-    note: false
+      version: -1
+    taskid: e0344a2a-a59b-403a-8439-05823e4cd3d2
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
-  380, "x": 50, "y": 50}}}'
-inputs: []
-outputs: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 200,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.0.0
