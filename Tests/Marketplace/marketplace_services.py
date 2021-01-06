@@ -560,7 +560,7 @@ class Pack(object):
         pack_metadata['description'] = user_metadata.get('description') or pack_id
         pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Metadata.DATE_FORMAT))
         pack_metadata['updated'] = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-        pack_metadata['legacy'] = user_metadata.get('legacy', True)
+        pack_metadata['legacy'] = user_metadata.get('legacy', False)
         pack_metadata['support'] = user_metadata.get('support') or Metadata.XSOAR_SUPPORT
         pack_metadata['supportDetails'] = Pack._create_support_section(support_type=pack_metadata['support'],
                                                                        support_url=user_metadata.get('url'),
