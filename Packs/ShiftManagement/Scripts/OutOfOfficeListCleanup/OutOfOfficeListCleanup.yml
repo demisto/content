@@ -1,0 +1,25 @@
+commonfields:
+  id: 8b5cd284-2d8a-409a-8461-9aad0ca9114b
+  version: 4
+vcShouldKeepItemLegacyProdMachine: false
+name: OutOfOfficeListCleanup
+script: ''
+type: python
+tags:
+- example
+- ooo
+comment: Cleans the out of office list for XSOAR users, removing any where the off
+  until day is in the past.   Can be used with the JOB - Out of Office Cleanup Example
+  playbook.
+enabled: true
+args:
+- name: listname
+  description: Optionally pass in a different XSOAR list to run this automation against
+    (defaults to OOO List)
+  defaultValue: OOO List
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.5.10455
+runas: DBotWeakRole

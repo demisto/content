@@ -1,0 +1,39 @@
+commonfields:
+  id: a3ca77ca-0beb-41a6-80b6-745656740a2e
+  version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: OutOfOffice
+script: ''
+type: python
+tags:
+- example
+- ooo
+comment: |-
+  Add/Remove yourself from the out of office list in XSOAR.
+
+  When used with the SimpleAssignAnalystToIncident automation, prevents Incidents from being assigned to you while out of office.
+enabled: true
+args:
+- name: option
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - add
+  - remove
+  description: Add or Remove yourself from the Out of Office list.
+- name: daysoff
+  description: Number of days you'll be off, default is 7
+  defaultValue: "7"
+- name: listname
+  description: Optionally pass in a different XSOAR list to run this automation against
+    (defaults to OOO List)
+  defaultValue: OOO List
+- name: username
+  description: Optionally pass in the XSOAR user name to add to the list (defaults
+    to current user), in case they forgot in their haste to go on vacation!
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.8.5.10455
+runas: DBotWeakRole
