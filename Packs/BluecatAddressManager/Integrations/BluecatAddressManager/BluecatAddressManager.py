@@ -96,7 +96,7 @@ class Client:
                 self._headers['Authorization'] = self.get_token(new_token=True)
                 res = requests.request(method, url, verify=self._use_ssl, params=params, data=data, headers=self._headers)
         except requests.exceptions.RequestException:
-            return_error('Error in connection to the server. Please make sure you entered the URL correctly.')
+            raise Exception('Error in connection to the server. Please make sure you entered the URL correctly.')
         # Handle error responses gracefully
         if res.status_code not in {200, 201, 202}:
             result_msg = None
@@ -107,7 +107,7 @@ class Client:
                 err_msg = f'Error in API call. code:{res.status_code}; reason: {reason}'
                 if safe:
                     return None
-                return_error(err_msg)
+                raise Exception(err_msg)
         return res.json()
 
     def get_configuration(self):
@@ -124,7 +124,7 @@ class Client:
         }
         confs = self.http_request('GET', '/getEntities', params)
         if not confs:
-            return_error('No configurations could be fetched from the system')
+            raise Exception('No configurations could be fetched from the system')
         if user_conf:
             for conf in confs:
                 if conf.get('name') == user_conf:
@@ -197,7 +197,7 @@ def query_ip_command(client):
             return_outputs(hr, ec, base_ip_raw_res)
 
     except ipaddress.AddressValueError:
-        return_error(f'Invalid IP: {ip}')
+        raise Exception(f'Invalid IP: {ip}')
 
 
 def query_ipv4(client, ip):
@@ -274,7 +274,7 @@ def get_range_by_ip_command(client):
                 return_outputs(hr, ec, range_raw_res)
 
     except ipaddress.AddressValueError:
-        return_error(f'Invalid IP: {ip}')
+        raise Exception(f'Invalid IP: {ip}')
 
 
 def get_range_by_ip(client, ip):
