@@ -141,6 +141,7 @@ def url_data_to_dbot_score(url_data, url):
 def create_verified_markdown(url_data, url):
     markdown = f'#### Found matches for URL {url} \n'
     markdown += tableToMarkdown('', url_data)
+
     phish_tank_url = f'http://www.phishtank.com/phish_detail.php?phish_id={url_data["phish_id"]}'
     phish_tank_url = create_clickable_url(phish_tank_url)
     markdown += f'Additional details at {phish_tank_url} \n'
