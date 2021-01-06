@@ -34,6 +34,7 @@ script:
       default: true
       description: IP address to check.
       isArray: true
+      required: true
     outputs:
     - contextPath: IP.Address
       description: The IP address that was checked.
@@ -63,6 +64,7 @@ script:
       default: true
       description: The domain to check.
       isArray: true
+      required: true
     outputs:
     - contextPath: Domain.Name
       description: The name of the domain that was checked.
@@ -92,6 +94,7 @@ script:
       default: true
       description: The URL to check (must start with "http://").
       isArray: true
+      required: true
     outputs:
     - contextPath: URL.Data
       description: The URL that was checked.
@@ -162,7 +165,7 @@ script:
       description: The actual score.
       type: Number
     description: Get specific indicator reputation
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false
