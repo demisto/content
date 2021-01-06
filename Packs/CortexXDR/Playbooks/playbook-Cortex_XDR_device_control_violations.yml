@@ -7,23 +7,23 @@ description: "Queries Cortex XDR for device control violations for the specified
   \ configuration, the playbook will only communicate with the involved users."
 id: Cortex XDR device control violations
 inputs:
-- description: Timestamp in relative date format for query device control events
-    from Cortex XDR.
+- description: Timestamp in relative date format for query device control events from Cortex XDR.
+For example, "1 day", "3 weeks".
   key: TimeStamp
   playbookInputQuery:
   required: false
   value: {}
-- description: XDR endpoint ID to filter results for.
+- description: Comma-separated list of endpoint IDs to filter results for.
   key: EndpointID
   playbookInputQuery:
   required: false
   value: {}
-- description: Hostname to filter results for.
+- description:  Comma-separated list of hostnames to filter results for.
   key: Hostname
   playbookInputQuery:
   required: false
   value: {}
-- description: IP address to filter results for.
+- description:  Comma-separated list of endpoints IP Addresses to filter results for.
   key: IPAddress
   playbookInputQuery:
   required: false

@@ -305,7 +305,7 @@
     },
     "group": "incident",
     "id": "75653ac3-f752-44f4-8b48-e55ca224ef55",
-    "name": "Cotrex XDR Device Control Violations",
+    "name": "Cortex XDR Device Control Violations",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
