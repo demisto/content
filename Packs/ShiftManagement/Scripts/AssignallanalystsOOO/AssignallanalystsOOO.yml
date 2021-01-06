@@ -5,7 +5,7 @@ name: AssignallanalystsOOO
 script: ''
 type: python
 tags:
-- ooo
+- Shift Management
 comment: |-
   Assign all the analysts to incident with consideration of PTO, OOO, or Disabled Users.
   Users can use the OutOfOffice automation to add or remove themselves from the list.
