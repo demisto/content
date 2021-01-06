@@ -4,14 +4,14 @@ To use this integration for testing:
 1. Create an instance.
     1. Add a listening port 
     2. Select the **Long running instance** checkbox.
-2. Take the server with the listening port that has been configured in the integration settings,
-and configure the **Workday_IAM** instance with this url and invoke the *fetch_incidents*.
+2. Take the server URL and listening port that you entered in the integration settings for example (http://localhost:9000/) and configure the **Workday_IAM** instance and invoke *fetch_incidents*.
 
 For more information about how to configure the long running integration go to [Long Running HTTP Integrations](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke).
 
 
-This integration uses mock reports (simulates the real reports that are coming from Workday).
-You can use the **generate-event** command to get all kinds of reports (hire, update, terminate and rehire)
+This integration uses mock reports (simulates the real reports from Workday).
+You can use the **generate-event** command to get various report types (hire, update, terminate, and rehire).
+To use the generate-event command, the email must be an email from the mock reports.
 
 ## Configure Workday_IAM_Event_Generator on Cortex XSOAR
 
@@ -33,6 +33,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Generate workday event.
 
+To use the generate-event command with the email argument, the email must be an email from the mock reports.
 
 #### Base Command
 
