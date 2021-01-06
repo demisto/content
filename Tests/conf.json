@@ -3213,7 +3213,6 @@
         }
     ],
     "skipped_tests": {
-        "urlscan_malicious_Test": "Issue 20111",
         "Github IAM - Test Playbook": "Issue 32383",
         "Workday - Test": "No credentials Issue 29595",
         "PCAP File Carving Test": "Merged with PCAP Analysis Test",
@@ -3424,8 +3423,7 @@
         "Lastline v2",
         "TruSTAR",
         "SlackV2",
-        "VulnDB",
-        "urlscan.io"
+        "VulnDB"
     ],
     "unmockable_integrations": {
         "HashiCorp Vault": "Has a command that sends parameters in the path",
