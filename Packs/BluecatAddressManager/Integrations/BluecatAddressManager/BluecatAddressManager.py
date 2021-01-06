@@ -159,7 +159,7 @@ def properties_to_camelized_dict(properties):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module(client):
+def test_module(client: Client):
     """
     Performs basic get request to get item samples
     """
@@ -167,7 +167,7 @@ def test_module(client):
     demisto.results('ok')
 
 
-def query_ip_command(client):
+def query_ip_command(client: Client):
     ip = demisto.getArg('ip')
     try:
         if isinstance(ipaddress.ip_address(ip), ipaddress.IPv6Address):
@@ -200,7 +200,7 @@ def query_ip_command(client):
         raise Exception(f'Invalid IP: {ip}')
 
 
-def query_ipv4(client, ip):
+def query_ipv4(client: Client, ip: str):
     params = {
         'containerId': client.conf,
         'address': ip
@@ -208,7 +208,7 @@ def query_ipv4(client, ip):
     return client.http_request('GET', '/getIP4Address', params=params)
 
 
-def query_ipv6(client, ip):
+def query_ipv6(client: Client, ip: str):
     params = {
         'containerId': client.conf,
         'address': ip
@@ -216,7 +216,7 @@ def query_ipv6(client, ip):
     return client.http_request('GET', '/getIP6Address', params=params)
 
 
-def get_entity_parents(client, base_id):
+def get_entity_parents(client: Client, base_id):
     base_ip_parents = []
     entity_parent = get_entity_parent(client, entity_id=base_id)
     # entity with id 0 is root, and CONF is root of parent
@@ -233,14 +233,14 @@ def get_entity_parents(client, base_id):
     return base_ip_parents
 
 
-def get_entity_parent(client, entity_id):
+def get_entity_parent(client: Client, entity_id):
     params = {
         'entityId': entity_id
     }
     return client.http_request('GET', '/getParent', params=params)
 
 
-def create_human_readable_ip(ip_object, ip_value):
+def create_human_readable_ip(ip_object: dict, ip_value: str):
     ip_object_cpy = dict(ip_object)
     reversed_parents = list(reversed(ip_object_cpy['Parents']))
     ip_object_cpy.pop('Parents')
@@ -249,7 +249,7 @@ def create_human_readable_ip(ip_object, ip_value):
     return hr
 
 
-def get_range_by_ip_command(client):
+def get_range_by_ip_command(client: Client):
     ip = demisto.getArg('ip')
     try:
         if isinstance(ipaddress.ip_address(ip), ipaddress.IPv6Address) or isinstance(ipaddress.ip_address(ip),
@@ -277,7 +277,7 @@ def get_range_by_ip_command(client):
         raise Exception(f'Invalid IP: {ip}')
 
 
-def get_range_by_ip(client, ip):
+def get_range_by_ip(client: Client, ip: str):
     params = {
         'containerId': client.conf,
         'type': '',
@@ -286,7 +286,7 @@ def get_range_by_ip(client, ip):
     return client.http_request('GET', '/getIPRangedByIP', params=params)
 
 
-def create_human_readable_range(range_object, ip_value):
+def create_human_readable_range(range_object: dict, ip_value: str):
     range_object_cpy = dict(range_object)
     reversed_parents = list(reversed(range_object_cpy['Parents']))
     range_object_cpy.pop('Parents')
@@ -295,7 +295,7 @@ def create_human_readable_range(range_object, ip_value):
     return hr
 
 
-def get_response_policies_command(client):
+def get_response_policies_command(client: Client):
     start = demisto.getArg('start')
     count = demisto.getArg('count')
     raw_response_policies = get_response_policies(client, start, count)
@@ -303,7 +303,7 @@ def get_response_policies_command(client):
     return_outputs(hr, response_policies, raw_response_policies)
 
 
-def get_response_policies(client, start, count):
+def get_response_policies(client: Client, start: str, count: str):
     params = {
         'parentId': client.conf,
         'type': 'ResponsePolicy',
@@ -313,7 +313,7 @@ def get_response_policies(client, start, count):
     return client.http_request('GET', '/getEntities', params=params)
 
 
-def create_response_policies_result(raw_response_policies):
+def create_response_policies_result(raw_response_policies: list):
     response_policies = []
     if raw_response_policies:
         hr = '## Response Policies:\n'
@@ -330,7 +330,7 @@ def create_response_policies_result(raw_response_policies):
     return {}, 'Could not find any response policy'
 
 
-def add_domain_response_policy_command(client):
+def add_domain_response_policy_command(client: Client):
     policy_id = demisto.getArg('policy_id')
     domain = demisto.getArg('domain')
     raw_response = add_domain_response_policy(client, policy_id, domain)
@@ -342,7 +342,7 @@ def add_domain_response_policy_command(client):
         return_outputs(error_msg, {}, raw_response)
 
 
-def add_domain_response_policy(client, policy_id, domain):
+def add_domain_response_policy(client: Client, policy_id: str, domain: str):
     params = {
         'policyId': policy_id,
         'itemName': domain
@@ -350,7 +350,7 @@ def add_domain_response_policy(client, policy_id, domain):
     return client.http_request('POST', '/addResponsePolicyItem', params=params)
 
 
-def remove_domain_response_policy_command(client):
+def remove_domain_response_policy_command(client: Client):
     policy_id = demisto.getArg('policy_id')
     domain = demisto.getArg('domain')
     raw_response = remove_domain_response_policy(client, policy_id, domain)
@@ -362,7 +362,7 @@ def remove_domain_response_policy_command(client):
         return_outputs(error_msg, {}, raw_response)
 
 
-def remove_domain_response_policy(client, policy_id, domain):
+def remove_domain_response_policy(client: Client, policy_id: str, domain: str):
     params = {
         'policyId': policy_id,
         'itemName': domain
@@ -370,14 +370,14 @@ def remove_domain_response_policy(client, policy_id, domain):
     return client.http_request('DELETE', '/deleteResponsePolicyItem', params=params)
 
 
-def search_response_policy_by_domain_command(client):
+def search_response_policy_by_domain_command(client: Client):
     domain = demisto.getArg('domain')
     raw_response_policies = search_response_policy_by_domain(client, domain)
     response_policies, hr = create_response_policies_result(raw_response_policies)
     return_outputs(hr, response_policies, raw_response_policies)
 
 
-def search_response_policy_by_domain(client, domain):
+def search_response_policy_by_domain(client: Client, domain: str):
     params = {
         'configurationId': client.conf,
         'itemName': domain
@@ -419,8 +419,9 @@ def main():
             add_domain_response_policy_command(client)
         elif command == 'bluecat-am-response-policy-remove-domain':
             remove_domain_response_policy_command(client)
+        else:
+            raise NotImplementedError(f'{command} is not an existing Bluecat Address Mannager command')
 
-    # Log exceptions
     except Exception as e:
         return_error(str(e))
 
