@@ -151,6 +151,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 993b8c02-02df-4d6e-87c4-309f736550d6
       iscommand: false
       name: Were device control violations found?
@@ -353,6 +354,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 1a2e8d21-6e20-4035-8e0f-a8b6011ecab0
       iscommand: false
       name: Did the involved user connect the device?
@@ -380,6 +382,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: b43b51d9-5d52-42d2-881c-89e2cebadb34
       iscommand: false
       name: Check if the device is approved for use
@@ -485,6 +488,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
+      description: ''
       id: 69f94ca2-68f4-4831-83ac-0086f324d322
       iscommand: false
       name: Were current violations found?
