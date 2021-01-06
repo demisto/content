@@ -7,8 +7,10 @@ description: "Queries Cortex XDR for device control violations for the specified
   \ configuration, the playbook will only communicate with the involved users."
 id: Cortex XDR device control violations
 inputs:
-- description: Timestamp in relative date format for query device control events from Cortex XDR.
-For example, "1 day", "3 weeks".
+- description: |-
+    Timestamp in relative date format for query device control events
+    from Cortex XDR.
+    For example "1 day", "3 weeks".
   key: TimeStamp
   playbookInputQuery:
   required: false
