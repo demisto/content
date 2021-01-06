@@ -7,6 +7,6 @@ if [[ $CIRCLE_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPL
   then
     demisto-sdk validate -a --id-set
 else
-  demisto-sdk validate -g --post-commit --id-set
+  demisto-sdk validate -a --id-set
 fi
 
