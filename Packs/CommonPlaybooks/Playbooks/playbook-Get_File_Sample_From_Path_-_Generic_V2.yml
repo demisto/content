@@ -1,0 +1,322 @@
+id: Get File Sample From Path - Generic V2
+version: -1
+name: Get File Sample From Path - Generic V2
+description: |
+  This playbook returns a file sample correlating to a path into the War Room using the following sub-playbooks:
+  inputs:
+  1) Get File Sample From Path - D2.
+  2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5d887731-fb71-4226-872c-a9e8dbddac42
+    type: start
+    task:
+      id: 5d887731-fb71-4226-872c-a9e8dbddac42
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 8adb1ff3-5400-4f88-8a2b-4511ae8303f5
+    type: condition
+    task:
+      id: 8adb1ff3-5400-4f88-8a2b-4511ae8303f5
+      version: -1
+      name: Use D2 agent?
+      description: Yes, if we want to use the D2 agent to get the file.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    scriptarguments:
+      left:
+        simple: ${inputs.UseD2}
+      right:
+        simple: "True"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.UseD2
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f81d6908-8ce9-452b-8dde-689f44256933
+    type: title
+    task:
+      id: f81d6908-8ce9-452b-8dde-689f44256933
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: acf75e5f-0da0-483e-82e2-2dbf09a0362c
+    type: playbook
+    task:
+      id: acf75e5f-0da0-483e-82e2-2dbf09a0362c
+      version: -1
+      name: Get File Sample From Path - D2
+      description: |-
+        Returns a file sample to the War Room from a path on an endpoint using Demisto Dissolvable Agent (D2).
+
+        Input:
+        * Credentials - credentials to use when trying to deploy Demisto Dissolvable Agent (D2)  (default: Admin)
+        * ${Endpoint.Hostname} - deploy agent on target endpoint
+        * ${File.Path} - file's path to collect
+      playbookName: Get File Sample From Path - D2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Credentials:
+        simple: Admin
+      Hostname:
+        simple: ${inputs.Hostname}
+      Path:
+        simple: ${inputs.Path}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 1,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 906138a1-e3ee-4711-889a-4ebcc8c2a1c6
+    type: title
+    task:
+      id: 906138a1-e3ee-4711-889a-4ebcc8c2a1c6
+      version: -1
+      name: Use VMware Carbon Black EDR (Live Response API)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 96e50a4f-9369-4549-885e-7a53814d1548
+    type: playbook
+    task:
+      id: 96e50a4f-9369-4549-885e-7a53814d1548
+      version: -1
+      name: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
+      description: |-
+        This playbook retrieves a file from endpoints by path using VMware Carbon Black EDR (Live Response API).
+        Make sure to provide the Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
+      playbookName: Get File Sample From Path - VMware Carbon Black EDR - Live Response
+        API
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Path:
+        complex:
+          root: inputs.Path
+      Sensor_ID:
+        complex:
+          root: inputs.Agent_ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 859,
+        "x": 1,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: UseD2
+  value: {}
+  required: false
+  description: |-
+    Determines whether a D2 agent will be used to retrieve the file.
+    Options:
+    no (default)
+    yes
+  playbookInputQuery:
+- key: Hostname
+  value: {}
+  required: false
+  description: Hostname of the machine on which the file is located.
+  playbookInputQuery:
+- key: Path
+  value: {}
+  required: false
+  description: |
+    The path of the file to retrieve.
+    For example:
+    C:\users\folder\file.txt
+  playbookInputQuery:
+- key: Agent_ID
+  value: {}
+  required: false
+  description: The ID of the agent in the relevant integration (such as EDR).
+  playbookInputQuery:
+outputs:
+- contextPath: File.Size
+  description: The size of the file.
+  type: number
+- contextPath: File.Type
+  description: The type of the file.
+  type: string
+- contextPath: File.Info
+  description: General information of the file.
+  type: string
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: string
+- contextPath: File.EntryID
+  description: The file entry ID.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
+  type: string
+- contextPath: File.Name
+  description: The file name.
+  type: string
+- contextPath: File.SSDeep
+  description: File SSDeep.
+  type: string
+tests:
+- Account Enrichment - Generic v2.1 - Test
+- Calculate Severity - Generic v2 - Test
+- Calculate Severity - Standard - Test
+- Test Convert file hash to corresponding hashes
+- Dedup - Generic v2 - Test
+- Detonate File - Generic Test
+- Detonate File - No Files test
+- Detonate URL - Generic Test
+- Domain Enrichment - Generic v2 - Test
+- Email Address Enrichment - Generic v2.1 - Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Extract Indicators From File - Generic v2 - Test
+- Field polling test
+- File Enrichment - Generic v2 - Test
+- IP Enrichment - Generic v2 - Test
+- Send Investigation Summary Reports - Test
+- test-domain-indicator
+- URL Enrichment - Generic v2 - Test
+- Wait Until Datetime - Test
+fromversion: 5.0.0

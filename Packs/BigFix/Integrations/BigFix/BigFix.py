@@ -788,7 +788,7 @@ try:
     elif demisto.command() == 'bigfix-action-stop':
         action_stop_command()
 
-    elif demisto.command():
+    elif demisto.command() == 'bigfix-query':
         query_command()
 
 except Exception as e:
