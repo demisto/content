@@ -4246,7 +4246,7 @@ def test_unset_proxy_and_ssl(mocker):
     assert init_args['proxy'] is None
 
 
-@pytest.mark.skip(reason="Test not stable, issue: 32385")
+# @pytest.mark.skip(reason="Test not stable, issue: 32385")
 def test_fail_connect_threads(mocker):
     import Slack
     mocker.patch.object(demisto, 'params', return_value={'unsecure': 'true', 'bot_token': '123'})
@@ -4258,6 +4258,7 @@ def test_fail_connect_threads(mocker):
         time.sleep(0.5)
     assert return_error_mock.call_count == 8
     assert threading.active_count() < 6  # we shouldn't have more than 5 threads (1 + 4 max size of executor)
+
 
 
 def test_slack_send_filter_one_mirro_tag(mocker):
