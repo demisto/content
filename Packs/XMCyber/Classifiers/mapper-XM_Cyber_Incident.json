@@ -203,18 +203,6 @@
 					},
 					"simple": ""
 				},
-				"XM Security Score": {
-					"complex": null,
-					"simple": "current_score"
-				},
-				"XM Security Score Grade": {
-					"complex": null,
-					"simple": "current_grade"
-				},
-				"XM Security Score Trend": {
-					"complex": null,
-					"simple": "trend"
-				},
 				"severity": {
 					"complex": null,
 					"simple": "severity"
@@ -274,10 +262,6 @@
 				"Technique Name": {
 					"complex": null,
 					"simple": "displayName"
-				},
-				"Technique Report": {
-					"complex": null,
-					"simple": "linkToReport"
 				},
 				"name": {
 					"complex": null,
