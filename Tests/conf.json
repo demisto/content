@@ -73,6 +73,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "EwsExtension",
+            "playbookID": "O365 - EWS - Extension - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
@@ -1323,6 +1328,11 @@
             "timeout": 300
         },
         {
+            "integrations": "Okta IAM",
+            "playbookID": "Okta IAM - Test Playbook",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Test filters & transformers scripts"
         },
         {
@@ -1541,6 +1551,12 @@
             "integrations": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
+        },
+        {
+            "integrations": "ServiceNow IAM",
+            "playbookID": "ServiceNow IAM - Test Playbook",
+            "instance_name": "snow_basic_auth",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "LanguageDetect-Test",
@@ -2533,6 +2549,11 @@
             "playbookID": "Git_Integration-Test"
         },
         {
+            "integrations": "GitHub IAM",
+            "playbookID": "Github IAM - Test Playbook",
+            "fromversion": "6.1.0"
+        },
+        {
             "integrations": "LogRhythmRest",
             "playbookID": "LogRhythm REST test"
         },
@@ -3198,7 +3219,7 @@
         }
     ],
     "skipped_tests": {
-        "urlscan_malicious_Test": "Issue 20111",
+        "Github IAM - Test Playbook": "Issue 32383",
         "Workday - Test": "No credentials Issue 29595",
         "PCAP File Carving Test": "Merged with PCAP Analysis Test",
         "PCAP Parsing And Indicator Enrichment Test": "Merged with PCAP Analysis Test",
@@ -3266,7 +3287,6 @@
         "AttackIQ - Test": "Issue 29774",
         "AWS-securityhub Test": "Issue 29796",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
-        "IAM - Test Playbook": "Issue 30013",
         "Trend Micro Apex - Test": "Issue 27280",
         "Azure Compute - Test": "Issue 28056",
         "Test - CrowdStrike Falcon": "Issue 30068",
@@ -3286,7 +3306,8 @@
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Archer-Test-Playbook": "Issue 26851",
-        "Carbon Black Live Response Test": "Issue 28237"
+        "Carbon Black Live Response Test": "Issue 28237",
+        "Carbon Black Enterprise Protection V2 Test": "Issue 32322"
     },
     "skipped_integrations": {
 
@@ -3373,6 +3394,7 @@
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
+        "Akamai WAF": "Issue 32318",
 
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
@@ -3407,8 +3429,7 @@
         "Lastline v2",
         "TruSTAR",
         "SlackV2",
-        "VulnDB",
-        "urlscan.io"
+        "VulnDB"
     ],
     "unmockable_integrations": {
         "HashiCorp Vault": "Has a command that sends parameters in the path",
@@ -3528,7 +3549,7 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
-        "MISP V2": "Issue 26905"
+        "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [
         "SNDBOX",
