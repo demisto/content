@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: SlackV2_dev
+  id: SlackV2
   version: -1
 configuration:
 - display: Slack API access token
@@ -84,8 +84,8 @@ configuration:
   type: 0
   additionalinfo: Only supported in Demisto V6.1 and above.
 description: Send messages and notifications to your Slack team.
-display: Slack v2_dev
-name: SlackV2_dev
+display: Slack v2
+name: SlackV2
 script:
   commands:
   - arguments:
