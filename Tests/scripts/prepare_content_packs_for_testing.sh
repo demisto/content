@@ -43,7 +43,7 @@ echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target pa
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$CONTENT_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
 echo "Finished copying successfully."
 
-if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
+if [ ! -n "${BUCKET_UPLOAD}" ]; then
     echo "Updating modified content packs in the bucket ..."
     CONTENT_PACKS_TO_INSTALL_FILE="./Tests/content_packs_to_install.txt"
   if [ ! -f $CONTENT_PACKS_TO_INSTALL_FILE ]; then
@@ -59,34 +59,25 @@ if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
     fi
   fi
 else
-  IS_FORCE_UPLOAD=false
-  if [ -n "${NIGHTLY}" ]; then
-    echo "Updating all content packs for nightly build..."
-    # In content nightly we include test-pbs in the zipped packs, we override all packs and we test all packs in the repo
-    REMOVE_PBS=false
+  # In Upload-Flow, we exclude test-pbs in the zipped packs
+  REMOVE_PBS=true
+  BUCKET_UPLOAD_FLOW=true
+  GCS_PRIVATE_BUCKET="marketplace-dist-private"
+  if [ -n "${FORCE_PACK_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
+    # In case the workflow is force upload, we override the forced packs
+    echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"
     OVERRIDE_ALL_PACKS=true
-    BUCKET_UPLOAD_FLOW=false
+    PACKS_LIST="${PACKS_TO_UPLOAD}"
+    IS_FORCE_UPLOAD=true
+  else
+    # In case of a regular upload flow, the upload_packs script will decide which pack to upload or not, thus it is
+    # given with all the packs, we don't override packs to not force upload a pack
+    echo "Updating all content packs for upload packs to production..."
+    OVERRIDE_ALL_PACKS=false
     PACKS_LIST="all"
-  elif [ -n "${BUCKET_UPLOAD}" ]; then
-      # In bucket upload flow, we exclude test-pbs in the zipped packs
-      REMOVE_PBS=true
-      BUCKET_UPLOAD_FLOW=true
-      GCS_PRIVATE_BUCKET="marketplace-dist-private"
-    if [ -n "${FORCE_PACK_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
-      # In case the workflow is force upload, we override the forced packs
-      echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"
-      OVERRIDE_ALL_PACKS=true
-      PACKS_LIST="${PACKS_TO_UPLOAD}"
-      IS_FORCE_UPLOAD=true
-    else
-      # In case of a regular upload flow, the upload_packs script will decide which pack to upload or not, thus it is
-      # given with all the packs, we don't override packs to not force upload a pack
-      echo "Updating all content packs for upload packs to production..."
-      OVERRIDE_ALL_PACKS=false
-      PACKS_LIST="all"
-    fi
+    IS_FORCE_UPLOAD=false
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS --id_set_path $ID_SET -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CIRCLE_BRANCH -f $IS_FORCE_UPLOAD
+  python3 ./Tests/Marketplace/upload_packs.py -a $PACK_ARTIFACTS -d $CIRCLE_ARTIFACTS/packs_dependencies.json -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s $KF -n $CIRCLE_BUILD_NUM -p "$PACKS_LIST" -o $OVERRIDE_ALL_PACKS -sb $TARGET_PATH -k $PACK_SIGNING_KEY -rt $REMOVE_PBS -i $ID_SET -bu $BUCKET_UPLOAD_FLOW -pb "$GCS_PRIVATE_BUCKET" -c $CIRCLE_BRANCH -f $IS_FORCE_UPLOAD
   echo "Finished updating content packs successfully."
 fi
 
