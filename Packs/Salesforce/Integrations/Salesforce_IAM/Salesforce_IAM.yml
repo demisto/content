@@ -57,6 +57,27 @@ configuration:
   name: mapper_out
   required: true
   type: 0
+- additionalinfo: Used when creating a new user.
+  defaultvalue: en_US
+  display: Default Local Sid Key
+  hidden: false
+  name: localesidkey
+  required: false
+  type: 0
+- additionalinfo: Used when creating a new user.
+  defaultvalue: ISO-8859-1
+  display: Default Email Encoding Key
+  hidden: false
+  name: emailencodingkey
+  required: false
+  type: 0
+- additionalinfo: Used when creating a new user.
+  defaultvalue: en_US
+  display: Default Language Locale Key
+  hidden: false
+  name: languagelocalekey
+  required: false
+  type: 0
 description: Integrate with Salesforce's services to perform Identity Lifecycle Management
   operations.
 display: Salesforce IAM

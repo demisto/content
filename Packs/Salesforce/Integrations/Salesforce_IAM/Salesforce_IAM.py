@@ -11,15 +11,11 @@ URI_PREFIX = '/services/data/v44.0/'
 GENERATE_TOKEN_URL = 'https://login.salesforce.com/services/oauth2/token'
 
 # setting defaults for mandatory fields
-MANDATORY_FIELDS = {
-    "lastname": "",
-    "alias": "",
-    "timezonesidkey": "",
-    "localesidkey": "en_US",
-    "emailencodingkey": "ISO-8859-1",
-    "languagelocalekey": "en_US",
-    "profileid": "",
-}
+DEFAULT_FIELDS = [
+    "localesidkey",
+    "emailencodingkey",
+    "languagelocalekey"
+]
 
 
 class Client(BaseClient):
@@ -35,7 +31,6 @@ class Client(BaseClient):
         self._conn_client_secret = conn_client_secret
         self._conn_username = conn_username
         self._conn_password = conn_password
-        self._instance_url = ""
         self.token = self.get_access_token_()
 
     def get_access_token_(self):
@@ -336,9 +331,11 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
 
 
 def check_and_set_manndatory_fields(salesforce_user):
-    for field, default_value in MANDATORY_FIELDS.items():
+    params = demisto.params()
+
+    for field in DEFAULT_FIELDS:
         if not salesforce_user.get(field):
-            salesforce_user[field] = default_value
+            salesforce_user[field] = params.get(field)
 
     return salesforce_user
 

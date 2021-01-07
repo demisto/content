@@ -13,8 +13,7 @@ def mock_client():
         conn_password="password",
         ok_codes=(200, 201, 204),
         verify=True,
-        proxy=True,
-        token="token"
+        proxy=True
     )
     return client
 
