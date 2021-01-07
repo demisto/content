@@ -485,10 +485,11 @@ def get_latest_incident_time(incidents):
     return latest_incident_time
 
 
-def get_next_start_time(last_run, fetches_with_same_start_time_count):
+def get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_incidents_found=True):
     last_run_datetime = occurred_to_datetime(last_run)
-    # Decreasing one minute to avoid missing incidents that were indexed late
-    last_run_datetime = last_run_datetime - timedelta(minutes=1)
+    if were_new_incidents_found:
+        # Decreasing one minute to avoid missing incidents that were indexed late
+        last_run_datetime = last_run_datetime - timedelta(minutes=1)
     last_run_milliseconds_and_tz = last_run.split('.')[1]
 
     # keep last time max 20 mins before current time, to avoid timeout
@@ -560,18 +561,23 @@ def fetch_incidents(service):
     oneshotsearch_results = service.jobs.oneshot(searchquery_oneshot, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
 
-    fetched_incidents_custom_ids = {}
     last_run_fetched_ids = demisto.getLastRun().get('found_incidents_ids', {})
+
+    current_epoch_time = int(time.time())
 
     for item in reader:
         inc = notable_to_incident(item)
         opt_in_log('\n\n inc after notable_to_incident: {} \n\n'.format(inc))
         incident_id = create_incident_id(inc)
-        fetched_incidents_custom_ids[incident_id] = 'dummy'
+
         if incident_id not in last_run_fetched_ids:
+            last_run_fetched_ids[incident_id] = current_epoch_time
             incidents.append(inc)
         else:
             opt_in_log('\n\nDropped incident due to duplication.\n\n')
+
+    last_run_fetched_ids = {inc_id: time for inc_id, time in last_run_fetched_ids.items() if
+                            current_epoch_time - time < 3600}
 
     debug_message = '\n\n total number of incidents found: from {}\n to {}\n with the ' \
                     'query: {} is: {}.\n\n incidents found: {} \n\n'.format(last_run, now, searchquery_oneshot,
@@ -583,22 +589,22 @@ def fetch_incidents(service):
     fetches_with_same_start_time_count = demisto.getLastRun().get('fetch_start_update_count', 0) + 1
 
     demisto.incidents(incidents)
-    opt_in_log('\n\n found incidents at the end of this run: {}\n\n'.format(fetched_incidents_custom_ids))
+    opt_in_log('\n\n found incidents at the end of this run: {}\n\n'.format(last_run_fetched_ids))
     if len(incidents) == 0:
-        next_run = get_next_start_time(last_run, fetches_with_same_start_time_count)
+        next_run = get_next_start_time(last_run, fetches_with_same_start_time_count, False)
         opt_in_log('\n\n next run time with 00000 incidents: {}\n\n'.format(next_run))
-        demisto.setLastRun({'time': next_run, 'offset': 0, 'found_incidents_ids': fetched_incidents_custom_ids,
+        demisto.setLastRun({'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_ids,
                             'fetch_start_update_count': fetches_with_same_start_time_count})
     elif len(incidents) < FETCH_LIMIT:
         next_run = get_next_start_time(latest_incident_fetched_time, fetches_with_same_start_time_count)
         opt_in_log('\n\n next run time with some incidents:  {}\n\n \n\n'.format(next_run))
         demisto.setLastRun(
-            {'time': next_run, 'offset': 0, 'found_incidents_ids': fetched_incidents_custom_ids,
+            {'time': next_run, 'offset': 0, 'found_incidents_ids': last_run_fetched_ids,
              'fetch_start_update_count': 0})
     else:
         opt_in_log('\n\n next run time with too many incidents:  {}\n\n \n\n'.format(last_run))
         demisto.setLastRun({'time': last_run, 'offset': search_offset + FETCH_LIMIT,
-                            'fetch_start_update_count': 0, 'found_incidents_ids': fetched_incidents_custom_ids})
+                            'fetch_start_update_count': 0, 'found_incidents_ids': last_run_fetched_ids})
 
 
 def parse_time_to_minutes():
