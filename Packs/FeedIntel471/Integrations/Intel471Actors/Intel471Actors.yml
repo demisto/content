@@ -62,7 +62,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
+- additionalinfo: Type of the indicator in the feed.
   display: Indicator Type
   name: indicator_type
   required: false
@@ -99,20 +99,13 @@ configuration:
   name: extractor
   required: true
   type: 0
+  defaultvalue: "*"
 - additionalinfo: The JSON attribute that holds the indicator value. Default value
     is 'indicator'.
   display: JSON Indicator Attribute
   name: indicator
   required: false
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
@@ -126,6 +119,14 @@ configuration:
   name: feedTags
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: |-
   "Intel 471's Actors feed is an actor-centric intelligence capability.
   It combines both a field-based intelligence collection and a headquartered based intelligence analysis component.
