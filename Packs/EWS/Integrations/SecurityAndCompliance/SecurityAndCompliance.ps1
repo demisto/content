@@ -212,14 +212,14 @@ function ParseSuccessResults([string]$success_results, [int]$limit, [bool]$all_r
 
 function ParseResults([string]$results, [int]$limit = -1) {
     $parsed_results = New-Object System.Collections.Generic.List[System.Object]
-    $lines = $results.Split(",")
+    $lines = $results.Split(",\r\n")
     # Results limit
     foreach ($line in $lines)
     {
         if ($limit -ne -1 -and $parsed_results.Count -ge $limit){
             break
         }
-        if ($line -match "Location: (\S+); Sender: ([\S ]+); Subject: ([\S ]+); Type: (\S+); Size: (\d+); Received Time: ([\S\d ]+); Data Link: ([^\}]+)")
+        if ($lines[0] -match "\{?Location: (.*); Sender: (.*); Subject: (.*); Type: (.*); Size: (.*); Received Time: (.*); Data Link: (.*)\}?")
         {
             $parsed_results.Add(@{
                 "Location" = $matches[1]
