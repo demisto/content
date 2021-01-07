@@ -269,7 +269,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
                 response = client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
             response = api_error.response
-            headers = response.headers
+            headers = response.headers  # type: ignore
             if 'Retry-After' in headers:
                 retry_after = int(headers['Retry-After'])
                 total_try_time += retry_after
@@ -279,7 +279,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
             raise
         break
 
-    return response
+    return response  # type: ignore
 
 
 async def send_slack_request_async(client: slack.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
@@ -306,11 +306,11 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
         try:
             if http_verb == 'POST':
                 if file_:
-                    response = await client.api_call(method, files={"file": file_}, data=body)
+                    response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore
                 else:
-                    response = await client.api_call(method, json=body)
+                    response = await client.api_call(method, json=body)  # type: ignore
             else:
-                response = await client.api_call(method, http_verb='GET', params=body)
+                response = await client.api_call(method, http_verb='GET', params=body)  # type: ignore
         except SlackApiError as api_error:
             response = api_error.response
             headers = response.headers
@@ -2002,7 +2002,7 @@ def main():
         LOG(e)
         return_error(str(e))
     finally:
-        demisto.info(f'{command_name} completed. loop: {loop_info(CLIENT._event_loop)}')
+        demisto.info(f'{command_name} completed. loop: {loop_info(CLIENT._event_loop)}')  # type: ignore
         if is_debug_mode():
             print_thread_dump()
 
