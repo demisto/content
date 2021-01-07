@@ -109,7 +109,7 @@
       "entities": {
         "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
         "alert_type_uuid": "A140001",
-        "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::140001",
+        "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
         "resolved": true,
         "auto_resolved": false,
         "acknowledged": true,
@@ -122,7 +122,7 @@
       "outputs": {
         "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
         "alert_type_uuid": "A140001",
-        "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::140001",
+        "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
         "resolved": true,
         "auto_resolved": false,
         "acknowledged": true,

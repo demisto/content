@@ -104,6 +104,11 @@ configuration:
   name: entity_type_ids
   required: false
   type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  required: false
+  type: 0
 description: This is the Hello World integration for getting started.
 display: Nutanix
 name: Nutanix
