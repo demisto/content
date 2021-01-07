@@ -658,6 +658,10 @@ jobs:
                 name: Prepare Content Packs For Testing
                 when: always
                 command: |
+                  if [ -n "$NIGHTLY" ] ; then
+                    echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
+                    exit 0
+                  fi
                   ./Tests/scripts/prepare_content_packs_for_testing.sh
                   echo "$CIRCLE_BUILD_NUM" > create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
             - run:
