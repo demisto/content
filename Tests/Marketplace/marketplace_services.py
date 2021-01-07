@@ -770,15 +770,13 @@ class Pack(object):
             new_encrypted_pack_path = os.path.join(extract_destination_path, 'encrypted_zip_pack.zip')
             shutil.copy(encrypted_zip_pack_path, new_encrypted_pack_path)
             os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
-            output_file_path = f"{extract_destination_path}/decrypt_pack.zip"
+            output_decrypt_file_path = f"{extract_destination_path}/decrypt_pack.zip"
             os.chdir(extract_destination_path)
 
             subprocess.call('chmod +x ./decryptor', shell=True)
-            full_command = f'./decryptor {new_encrypted_pack_path} {output_file_path} "{decryption_key}"'
+            full_command = f'./decryptor {new_encrypted_pack_path} {output_decrypt_file_path} "{decryption_key}"'
             process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
             stdout, stderr = process.communicate()
-            print("\nstdout:\n")
-            print(str(stdout))
             shutil.rmtree(extract_destination_path)
             os.chdir(current_working_dir)
             if stdout:
@@ -791,9 +789,18 @@ class Pack(object):
         except subprocess.CalledProcessError as error:
             logging.exception(f"Error while trying to decrypt pack. {error}")
 
-    def is_pack_encrypted(self, encrypted_zip_pack_path, encryption_key):
+    def is_pack_encrypted(self, encrypted_zip_pack_path, decryption_key):
+        """ Checks if the pack is encrypted by trying to decrypt it.
+
+        Args:
+            encrypted_zip_pack_path (str): The path for the encrypted zip pack.
+            decryption_key (str): The key which we can decrypt the pack with.
+
+        Returns:
+            bool: whether the pack is encrypted.
+        """
         task_status = False
-        if self.decrypt_pack(encrypted_zip_pack_path, encryption_key):
+        if self.decrypt_pack(encrypted_zip_pack_path, decryption_key):
             task_status = True
         return task_status
 
