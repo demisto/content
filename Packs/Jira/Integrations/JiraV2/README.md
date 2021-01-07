@@ -17,18 +17,19 @@ For more information about manage syntax, see the https://support.atlassian.com/
 3. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Jira URL, for example: https://demisto.atlassian.net/__
-    * _______________ Basic Authentication ____________
+    * _______________ Basic Authentication _______________
 
-Username__
-    * __Password (Deprecated - Use API token)__
-    * __API token__
+        * __Username__
+        * __Password (Deprecated - Use API token)__
+        * __API token__
+        
     * ____________________ OAuth 1.0 __________________
+           
+         For OAuth: See the https://developer.atlassian.com/server/jira/platform/oauth/
 
-For OAuth: See the https://developer.atlassian.com/server/jira/platform/oauth/
-
-ConsumerKey__
-    * __AccessToken__
-    * __PrivateKey__
+        * __ConsumerKey__
+        * __AccessToken__
+        * __PrivateKey__
     * __Query (in JQL) for fetching incidents__
     * __Issue index to start fetching incidents from__
     * __Trust any certificate (not secure)__

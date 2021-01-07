@@ -15,7 +15,7 @@ configuration:
   type: 0
   required: true
 - display: |-
-    _____________ Basic Authentication ____________
+    ______________ Basic Authentication _____________
 
     Username
   name: username
@@ -45,7 +45,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: PrivateKey
+- display: PrivateKey (PKCS8 format)
   name: privateKey
   defaultvalue: ""
   type: 14
