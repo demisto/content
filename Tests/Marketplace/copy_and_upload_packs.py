@@ -315,7 +315,7 @@ def main():
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
-    pc_successful_packs_dict, pc_failed_packs_dict, pc_uploaded_images = get_successful_and_failed_packs(
+    pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
     )
     logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
@@ -345,13 +345,13 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.copy_integration_images(production_bucket, build_bucket, pc_uploaded_images)
+        task_status = pack.copy_integration_images(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_IMAGES_UPLOAD.name
             pack.cleanup()
             continue
 
-        task_status = pack.copy_author_image(production_bucket, build_bucket, pc_uploaded_images)
+        task_status = pack.copy_author_image(production_bucket, build_bucket)
         if not task_status:
             pack.status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
             pack.cleanup()
