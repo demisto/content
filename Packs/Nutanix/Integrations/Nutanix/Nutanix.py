@@ -80,7 +80,7 @@ class Client(BaseClient):
     def get_nutanix_alerts_list(self, start_time: Optional[int], end_time: Optional[int], resolved: Optional[bool],
                                 auto_resolved: Optional[bool], acknowledged: Optional[bool], severity: Optional[str],
                                 alert_type_uuid: Optional[str], entity_ids: Optional[str], impact_types: Optional[str],
-                                classification: Optional[str], entity_type: Optional[str], page: Optional[int],
+                                classification: Optional[str], entity_types: Optional[str], page: Optional[int],
                                 limit: Optional[int]):
         return self._http_request(
             method='GET',
@@ -96,7 +96,7 @@ class Client(BaseClient):
                 entity_ids=entity_ids,
                 impact_types=impact_types,
                 classification=classification,
-                entity_type=entity_type,
+                entity_type=entity_types,
                 page=page,
                 count=limit
             )
@@ -117,7 +117,7 @@ class Client(BaseClient):
     def post_nutanix_alerts_acknowledge_by_filter(self, start_time: Optional[int], end_time: Optional[int],
                                                   severity: Optional[str],
                                                   impact_types: Optional[str], classification: Optional[str],
-                                                  entity_type: Optional[str],
+                                                  entity_types: Optional[str],
                                                   entity_type_ids: Optional[str], limit: Optional[int]):
         return self._http_request(
             method='POST',
@@ -128,7 +128,7 @@ class Client(BaseClient):
                 severity=severity,
                 impact_types=impact_types,
                 classification=classification,
-                entity_type=entity_type,
+                entity_type=entity_types,
                 entity_type_ids=entity_type_ids,
                 count=limit
             )
@@ -136,7 +136,7 @@ class Client(BaseClient):
 
     def post_nutanix_alerts_resolve_by_filter(self, start_time: Optional[int], end_time: Optional[int],
                                               severity: Optional[str], impact_types: Optional[str],
-                                              classification: Optional[str], entity_type: Optional[str],
+                                              classification: Optional[str], entity_types: Optional[str],
                                               entity_type_ids: Optional[str], limit: Optional[int]):
         return self._http_request(
             method='POST',
@@ -147,7 +147,7 @@ class Client(BaseClient):
                 severity=severity,
                 impact_types=impact_types,
                 classification=classification,
-                entity_type=entity_type,
+                entity_type=entity_types,
                 entity_type_ids=entity_type_ids,
                 count=limit
             )
@@ -282,7 +282,7 @@ def fetch_incidents_command(client: Client, args: Dict):
     # auto_resolved = get_optional_boolean_param(args, 'auto_resolved')
     # resolved = True if auto_resolved else get_optional_boolean_param(args, 'resolved')
     # acknowledged = get_optional_boolean_param(args, 'acknowledged')
-    # alert_type_id = args.get('alert_type_id')  # maybe split , maybe ids?
+    # alert_type_ids = args.get('alert_type_ids')  # maybe split , maybe ids?
     # entity_ids = args.get('entity_ids')  # maybe split , in doc entity_id probably mistake
     # impact_types = args.get('impact_types')  # maybe split ,
     # classifications = args.get('classifications')  # maybe split ,
@@ -297,7 +297,7 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     Possible filters:
     - page: The offset page to start retrieving hosts.
     - limit: The number of hosts to retrieve.
-    - filter: Retrieve only machines that matches the filters given.
+    - filter: Retrieve machines that matches the filters given.
               - Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value.
               - Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for Example:
                 storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x is parsed by Nutanix the following way:
@@ -332,7 +332,7 @@ def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
     Possible filters:
     - offset: The offset to start retrieving virtual machines.
     - length: The number of virtual machines to retrieve.
-    - filter: Retrieve only machines that matches the filters given.
+    - filter: Retrieve virtual machines that matches the filters given.
               - Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value.
               - Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for Example:
                 machine_type==pc;power_state!=off,ha_priority==0 is parsed by Nutanix the following way:
@@ -449,15 +449,21 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
                     If acknowledged is False, retrieves alerts that have been acknowledged.
     - severity: Retrieve any alerts that their severity level matches one of the severities in severity list.
                 Possible severities: [CRITICAL, WARNING, INFO, AUDIT].
-    - alert_type_ids: Retrieve only alerts that id of their type matches one alert_type_id in alert_type_id list.
+    - alert_type_ids: Retrieve alerts that id of their type matches one alert_type_id in alert_type_id list.
                      For example, alert 'Alert E-mail Failure' has type id of A111066.
-                     Given alert_type_id = [A111066], only alerts of 'Alert E-mail Failure' will be shown.
+                     Given alert_type_ids = 'A111066', only alerts of 'Alert E-mail Failure' will be retrieved.
     - entity_ids: TODO.
-    - impact_types: Retrieve only alerts that their impact type matches one of the impact_type in impact_types list.
-                    Possible impact types: [Availability, Capacity, Configuration, Performance, System Indicator]
-    - classification: Retrieve only alerts that their classifications matches one of the classification in
+    - impact_types: Retrieve alerts that their impact type matches one of the impact_type in impact_types list.
+                    Possible impact types: [Availability, Capacity, Configuration, Performance, SystemIndicator]
+                    For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'.
+                    Given Impact Types = 'SystemIndicator',only alerts with impact type 'SystemIndicator',
+                    such as 'Incorrect NTP Configuration' will be retrieved.
+    - classification: Retrieve alerts that their classifications matches one of the classification in
                       classifications list given.
-    - entity_type: Retrieve only alerts that their entity_type matches one of the entity_type in entity_types list.
+                      For example, alert 'Pulse cannot connect to REST server endpoint' has classification of Cluster.
+                      Given classifications = 'cluster', only alerts with classification of 'cluster', such as
+                      'Pulse cannot connect to REST server endpoint' will be retrieved.
+    - entity_types: Retrieve alerts that their entity_type matches one of the entity_type in entity_types list.
                    Examples for entity types: [VM, Host, Disk, Storage Container, Cluster].
                    If Nutanix service can't recognize the entity type, it returns 404 response.
     - page: The offset of page number in the query response to start retrieving alerts.
@@ -479,16 +485,16 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     resolved = True if auto_resolved else get_optional_boolean_param(args, 'resolved')
     acknowledged = get_optional_boolean_param(args, 'acknowledged')
     severity = args.get('severity')
-    alert_type_id = args.get('alert_type_id')
+    alert_type_ids = args.get('alert_type_ids')
     entity_ids = args.get('entity_ids')
     impact_types = args.get('impact_types')
     classification = args.get('classifications')
-    entity_type = args.get('entity_type')
+    entity_types = args.get('entity_types')
     page = get_page_argument(args)
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
 
     response = client.get_nutanix_alerts_list(start_time, end_time, resolved, auto_resolved, acknowledged, severity,
-                                              alert_type_id, entity_ids, impact_types, classification, entity_type,
+                                              alert_type_ids, entity_ids, impact_types, classification, entity_types,
                                               page, limit)
 
     return CommandResults(
@@ -555,16 +561,22 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
 def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     """
     Acknowledges all of the Alerts which matches the filters if given.
-    Only alerts that have not been resolved can be acknowledged.
+    Only alerts that have not been resolved can be acknowledged. TODO CHECK
     - start_time: Acknowledge alerts that their creation time have been after 'start_time'.
     - end_time: Acknowledge alerts that their creation time have been before 'end_time'.
     - severity: Acknowledge any alerts that their severity level matches one of the severities in severity list.
                 Possible severities: [CRITICAL, WARNING, INFO, AUDIT].
-    - impact_types: Acknowledge only alerts that their impact type matches one of the impact_type in impact_types list.
-                    Possible impact types: [Availability, Capacity, Configuration, Performance, System Indicator]
-    - classification: Retrieve only alerts that their classifications matches one of the classification in
+    - impact_types: Acknowledge alerts that their impact type matches one of the impact_type in impact_types list.
+                    Possible impact types: [Availability, Capacity, Configuration, Performance, SystemIndicator]
+                    For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'.
+                    Given Impact Types = 'SystemIndicator',only alerts with impact type 'SystemIndicator',
+                    such as 'Incorrect NTP Configuration' will be acknowledged.
+    - classification: Retrieve alerts that their classifications matches one of the classification in
                       classifications list given.
-    - entity_type: Acknowledge only alerts that their entity_type matches one of the entity_type in entity_types list.
+                      For example, alert 'Pulse cannot connect to REST server endpoint' has classification of Cluster.
+                      Given classifications = 'cluster', only alerts with classification of 'cluster', such as
+                      'Pulse cannot connect to REST server endpoint' will be acknowledged.
+    - entity_types: Acknowledge alerts that their entity_type matches one of the entity_type in entity_types list.
                    Example for entity types: [VM, Host, Disk, Storage Container, Cluster].
                    If Nutanix service can't recognize the entity type, it returns 404 response.
     - entity_type_id: TODO maybe delete
@@ -587,12 +599,12 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     severity = args.get('severity')
     impact_types = args.get('impact_types')
     classification = args.get('classifications')
-    entity_type = args.get('entity_type')
+    entity_types = args.get('entity_types')
     entity_type_ids = args.get('entity_type_ids')
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE)
 
     response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
-                                                                classification, entity_type, entity_type_ids, limit)
+                                                                classification, entity_types, entity_type_ids, limit)
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Alert',
@@ -607,11 +619,17 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
     - start_time: Resolve alerts that their creation time have been after 'start_time'.
     - end_time: Resolve alerts that their creation time have been before 'end_time'.
     - severity: Resolve any alerts that their severity level matches one of the severities in severity list.
-    - impact_types: Resolve only alerts that their impact type matches one of the impact_type in impact_types list.
-                    Possible impact types: [Availability, Capacity, Configuration, Performance, System Indicator]
-    - classification: Resolve only alerts that their classifications matches one of the classification in
+    - impact_types: Resolve alerts that their impact type matches one of the impact_type in impact_types list.
+                    Possible impact types: [Availability, Capacity, Configuration, Performance, SystemIndicator]
+                    For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'.
+                    Given Impact Types = 'SystemIndicator',only alerts with impact type 'SystemIndicator',
+                    such as 'Incorrect NTP Configuration' will be resolved.
+    - classification: Resolve alerts that their classifications matches one of the classification in
                       classifications list given.
-    - entity_type: Resolve only alerts that their entity_type matches one of the entity_type in entity_types list.
+                      For example, alert 'Pulse cannot connect to REST server endpoint' has classification of Cluster.
+                      Given classifications = 'cluster', only alerts with classification of 'cluster', such as
+                      'Pulse cannot connect to REST server endpoint' will be resolved.
+    - entity_types: Resolve alerts that their entity_type matches one of the entity_type in entity_types list.
                    Example for entity types: [VM, Host, Disk, Storage Container, Cluster].
                    If Nutanix service can't recognize the entity type, it returns 404 response.
     - entity_type_id: TODO maybe delete
@@ -634,12 +652,12 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
     severity = args.get('severity')
     impact_types = args.get('impact_types')
     classification = args.get('classifications')
-    entity_type = args.get('entity_type')
+    entity_types = args.get('entity_types')
     entity_type_ids = args.get('entity_type_ids')
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE)
 
     response = client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity, impact_types,
-                                                            classification, entity_type, entity_type_ids, limit)
+                                                            classification, entity_types, entity_type_ids, limit)
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Alert',
