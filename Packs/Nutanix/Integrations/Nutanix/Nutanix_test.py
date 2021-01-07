@@ -9,7 +9,7 @@ from CommonServerPython import DemistoException, CommandResults
 from Nutanix import MINIMUM_LIMIT_VALUE
 from Nutanix import MINIMUM_PAGE_VALUE
 from Nutanix import Client
-from Nutanix import fetch_incidents_command, nutanix_hypervisor_hosts_list_command, \
+from Nutanix import nutanix_hypervisor_hosts_list_command, \
     nutanix_hypervisor_vms_list_command, nutanix_hypervisor_vm_power_status_change_command, \
     nutanix_hypervisor_task_poll_command, nutanix_alerts_list_command, nutanix_alert_acknowledge_command, \
     nutanix_alert_resolve_command, nutanix_alerts_acknowledge_by_filter_command, \
@@ -258,7 +258,7 @@ def test_commands_get_methods(requests_mock, command_function: Callable[[Client,
     expected_command_results = CommandResults(
         outputs_prefix=expected.get('outputs_prefix'),
         outputs_key_field=expected.get('outputs_key_field'),
-        outputs=response
+        outputs=expected.get('outputs')
     )
     returned_command_results = command_function(client, args)
 
@@ -327,7 +327,7 @@ def test_commands_post_methods(requests_mock, command_function: Callable[[Client
     expected_command_results = CommandResults(
         outputs_prefix=expected.get('outputs_prefix'),
         outputs_key_field=expected.get('outputs_key_field'),
-        outputs=response
+        outputs=expected.get('outputs')
     )
     returned_command_results = command_function(client, args)
 

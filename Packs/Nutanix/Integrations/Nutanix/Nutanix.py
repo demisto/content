@@ -275,7 +275,9 @@ def test_module_command(client: Client):
         CommandResults.
     """
     client.get_nutanix_hypervisor_hosts_list(None, None, None)
-    demisto.results('ok')
+    return CommandResults(
+        readable_output='ok'
+    )
 
 
 def fetch_incidents_command(client: Client, args: Dict):
@@ -303,8 +305,7 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
                 storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x is parsed by Nutanix the following way:
                 Return all hosts s.t (storage.capacity_bytes == 2 AND host_nic_ids != 35) OR host_gpus == x.
 
-    In case response was successful, response will be a dict containing key 'entities' with value of list of hosts.
-    Each element in the list contains data about the host.
+    In case response was successful, response will be a of list of hosts details.
 
     Args:
         client (Client): Client object to perform request.
@@ -319,10 +320,13 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
 
     response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
 
+    if response.get('entities') is None:
+        raise DemistoException('No entities were found in response for nutanix-hypervisor-hosts-list command')
+
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Host',
-        outputs_key_field='entities.uuid',
-        outputs=response
+        outputs_key_field='uuid',
+        outputs=response['entities']
     )
 
 
@@ -338,9 +342,7 @@ def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
                 machine_type==pc;power_state!=off,ha_priority==0 is parsed by Nutanix the following way:
                 Return all virtual machines s.t (machine type == pc AND power_state != off) OR ha_priority == 0.
 
-    In case response was successful, response will be a dict containing key 'entities' with value of list of
-    virtual machines.
-    Each element in the list contains data about the virtual machine.
+    In case response was successful, response will be a list of virtual machines details.
 
     Args:
         client (Client): Client object to perform request.
@@ -355,10 +357,13 @@ def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
 
     response = client.get_nutanix_hypervisor_vms_list(filter_, offset, length)
 
+    if response.get('entities') is None:
+        raise DemistoException('No entities were found in response for nutanix-hypervisor-vms-list command')
+
     return CommandResults(
         outputs_prefix='NutanixHypervisor.VM',
-        outputs_key_field='entities.uuid',
-        outputs=response
+        outputs_key_field='uuid',
+        outputs=response['entities']
     )
 
 
@@ -415,7 +420,6 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    outputs_key_field: Optional[str] = 'completed_tasks_info.uuid'
 
     task_ids = argToList(args.get('task_ids'))
     timeout_interval = arg_to_number(args.get('timeout_interval'), 'timeout_interval')
@@ -425,13 +429,20 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     response = client.nutanix_hypervisor_task_poll(task_ids, timeout_interval)
 
     maybe_time_out = response.get('timed_out')
-    if maybe_time_out and argToBoolean(maybe_time_out):
+
+    if response.get('completed_tasks_info') is not None:
+        outputs_key_field: Optional[str] = 'uuid'
+        outputs = response['completed_tasks_info']
+    elif maybe_time_out and argToBoolean(maybe_time_out):
         outputs_key_field = None
+        outputs = response
+    else:
+        raise DemistoException('Unexpected response returned by Nutanix for nutanix-hypervisor-task-poll command')
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Task',
         outputs_key_field=outputs_key_field,
-        outputs=response
+        outputs=outputs
     )
 
 
@@ -497,10 +508,13 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
                                               alert_type_ids, entity_ids, impact_types, classification, entity_types,
                                               page, limit)
 
+    if response.get('entities') is None:
+        raise DemistoException('No entities were found in response for nutanix-alerts-list command')
+
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Alerts',
-        outputs_key_field='entities.id',
-        outputs=response
+        outputs_key_field='id',
+        outputs=response['entities']
     )
 
 
