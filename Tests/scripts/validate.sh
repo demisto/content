@@ -5,8 +5,7 @@ echo "CIRCLE_BRANCH: $CIRCLE_BRANCH CI: $CI DEMISTO_README_VALIDATION: $DEMISTO_
 
 if [[ $CIRCLE_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]];
   then
-    demisto-sdk validate -a
-else
-  demisto-sdk validate -g --post-commit
+    demisto-sdk validate -a --post-commit -s --id-set-path $CIRCLE_ARTIFACTS/unified_id_set.json
+  else
+    demisto-sdk validate -g --post-commit -s --id-set-path $CIRCLE_ARTIFACTS/unified_id_set.json
 fi
-
