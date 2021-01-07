@@ -148,7 +148,7 @@ def test_add_incident_comment_command(requests_mock):
         }
     )
     args = {
-        'id': "1262bd8cce113de890854455",
+        'incident_obj_id': "1262bd8cce113de890854455",
         'comment': "Hello world"
     }
 
@@ -187,7 +187,7 @@ def test_assign_incidents_command(requests_mock):
         }
     )
     args = {
-        'incident_ids': "1262bd8cce113de890854455",
+        'incident_obj_ids': "1262bd8cce113de890854455,1262bd8cce113de890854456",
         'new_assignee': "12b0eacfd8cce4334eef1700"
     }
 
@@ -227,7 +227,7 @@ def test_resolve_incidents_command(requests_mock):
     )
     args = {
         "version": "0.1",
-        'incident_ids': "1262bd8cce113de890854455,1262bd8cce113de890854456"
+        'incident_obj_ids': "1262bd8cce113de890854455,1262bd8cce113de890854456"
     }
 
     response = resolve_incidents_command(client, args)
@@ -266,7 +266,7 @@ def test_close_incidents_command(requests_mock):
     )
     args = {
         "version": "0.1",
-        'incident_ids': "1262bd8cce113de890854455,1262bd8cce113de890854456"
+        'incident_obj_ids': "1262bd8cce113de890854455,1262bd8cce113de890854456"
     }
 
     response = close_incidents_command(client, args)
@@ -305,7 +305,7 @@ def test_reopen_incidents_command(requests_mock):
     )
     args = {
         "version": "0.1",
-        'incident_ids': "1262bd8cce113de890854455,1262bd8cce113de890854456"
+        'incident_obj_ids': "1262bd8cce113de890854455,1262bd8cce113de890854456"
     }
 
     response = reopen_incidents_command(client, args)
@@ -366,7 +366,8 @@ def test_fetch_incidents(requests_mock):
         }
     )
     first_fetch = "1608189921"
-    response = fetch_incidents(client, first_fetch)
+    max_fetch = 10
+    response = fetch_incidents(client, first_fetch, max_fetch)
     assert response == [
         {
             'name': 'Potential SQL Injection attack',

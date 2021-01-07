@@ -1,9 +1,9 @@
 !lp-get-incidents ts_from=1608284280 ts_to=1608284400
 !lp-get-incident-data date=1608284302.3569734 incident_id=cff43115719e19cd04ddf5a7e61d982d incident_obj_id=5fdc788ecf35d7ae0f6b791b
 !lp-get-incident-states ts_from="1608281509" ts_to="1608281523"
-!lp-add-incident-comment comment="Example comment" id=5fdc788ecf35d7ae0f6b791b
-!lp-assign-incidents incident_ids=5fdc788ecf35d7ae0f6b791b new_assignee=5fd9d95769d3a4ea5684fccf
-!lp-resolve-incidents incident_ids=5fdc788ecf35d7ae0f6b791c
-!lp-close-incidents incident_ids=5fdc788ecf35d7ae0f6b791c
-!lp-reopen-incidents incident_ids=5fdc788ecf35d7ae0f6b791c
+!lp-add-incident-comment comment="Example comment" incident_obj_id=5fdc788ecf35d7ae0f6b791b
+!lp-assign-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791b,5fdc788ecf35d7ae0f6b791c" new_assignee=5fd9d95769d3a4ea5684fccf
+!lp-resolve-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791c,5fdc788ecf35d7ae0f6b791d"
+!lp-close-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791c,5fdc788ecf35d7ae0f6b791d"
+!lp-reopen-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791c,5fdc788ecf35d7ae0f6b791d"
 !lp-get-users

@@ -183,7 +183,7 @@ tasks:
     scriptarguments:
       comment:
         simple: This is example comment done using Test Playbook.
-      id:
+      incident_obj_id:
         simple: ${incident.logpointobjectid}
     separatecontext: false
     view: |-
@@ -215,7 +215,7 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
-      incident_ids:
+      incident_obj_ids:
         simple: ${incident.logpointobjectid}
       new_assignee:
         simple: ${incident.logpointassignedto}
@@ -285,7 +285,7 @@ tasks:
       '#none#':
       - "16"
     scriptarguments:
-      incident_ids:
+      incident_obj_ids:
         simple: ${incident.logpointobjectid}
     separatecontext: false
     view: |-
@@ -353,7 +353,7 @@ tasks:
       '#none#':
       - "18"
     scriptarguments:
-      incident_ids:
+      incident_obj_ids:
         simple: ${incident.logpointobjectid}
     separatecontext: false
     view: |-
@@ -421,7 +421,7 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      incident_ids:
+      incident_obj_ids:
         simple: ${incident.logpointobjectid}
     separatecontext: false
     view: |-

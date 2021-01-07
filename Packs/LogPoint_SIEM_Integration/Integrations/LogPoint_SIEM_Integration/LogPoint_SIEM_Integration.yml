@@ -31,7 +31,8 @@ configuration:
   type: 8
 - additionalinfo: If it is not provided, incidents from past 24 hours will be fetched
     by default.
-  display: First fetch timestamp in UTC (e.g., 1608189921)
+  defaultvalue: 1 day
+  display: First fetch timestamp (<number> <time unit>, e.g., 6 hours, 1 day)
   name: first_fetch
   required: false
   type: 0
@@ -43,6 +44,14 @@ configuration:
   name: isFetch
   required: false
   type: 8
+- additionalinfo: If this is left blank, maximum 50 incidents will be fetched at a
+    time.
+  defaultvalue: '50'
+  display: Fetch limit (Max value is 200, Recommended value is 50 or less)
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
 description: Use this Content Pack to fetch incident logs from LogPoint, analyze them
   for underlying threats, and respond to these threats in real-time.
 display: LogPoint SIEM Integration
@@ -63,7 +72,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets all incidents between the provided two Timestamps. If ts_from
+    description: Gets first 50 incidents between the provided two Timestamps. If ts_from
       and ts_to is not provided, this command will display incident data of the past
       24 hours.
     execution: false
@@ -266,8 +275,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets the Incident States. Arguments are optional. If ts_from and
-      ts_to arguments are not provided, it will get incidents of the past 24 hours.
+    description: Gets the first 50 Incident States. Arguments are optional. If ts_from
+      and ts_to arguments are not provided, it will get incidents of the past 24 hours.
     execution: false
     name: lp-get-incident-states
     outputs:
@@ -288,7 +297,7 @@ script:
       description: Object ID of a particular incident. It is the value contained in
         'id' key of the incidents obtained from 'lp-get-incidents' command.
       isArray: false
-      name: id
+      name: incident_obj_id
       required: true
       secret: false
     - default: false
@@ -310,8 +319,8 @@ script:
       description: Object ID of a particular incident. It is the value contained in
         'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
         id can be provided by separating them using comma.
-      isArray: false
-      name: incident_ids
+      isArray: true
+      name: incident_obj_ids
       required: true
       secret: false
     - default: false
@@ -334,8 +343,8 @@ script:
       description: Object ID of a particular incident. It is the value contained in
         'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
         id can be provided by separating them using comma.
-      isArray: false
-      name: incident_ids
+      isArray: true
+      name: incident_obj_ids
       required: true
       secret: false
     deprecated: false
@@ -351,8 +360,8 @@ script:
       description: Object ID of a particular incident. It is the value contained in
         'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
         id can be provided by separating them using comma.
-      isArray: false
-      name: incident_ids
+      isArray: true
+      name: incident_obj_ids
       required: true
       secret: false
     deprecated: false
@@ -368,8 +377,8 @@ script:
       description: Object ID of a particular incident. It is the value contained in
         'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple
         id can be provided by separating them using comma.
-      isArray: false
-      name: incident_ids
+      isArray: true
+      name: incident_obj_ids
       required: true
       secret: false
     deprecated: false
@@ -394,7 +403,7 @@ script:
     - contextPath: LogPoint.Incidents.users.usergroups
       description: LogPoint Incidents Users Usergroups
       type: String
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false
@@ -403,6 +412,9 @@ script:
   script: '-'
   subtype: python3
   type: python
+tests:
+- LogPoint SIEM Integration - Test Playbook 1
+- LogPoint SIEM Integration - Test Playbook 2
 defaultmapperin: LogPoint-mapper
 defaultclassifier: null
 fromversion: 6.0.0

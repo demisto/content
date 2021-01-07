@@ -368,7 +368,7 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      incident_ids:
+      incident_obj_ids:
         simple: ${incident.logpointobjectid}
       new_assignee:
         simple: ${incident.logpointassignedto}
@@ -403,8 +403,8 @@ tasks:
       - "29"
     scriptarguments:
       comment:
-        simple: Comment added by "LogPoint SIEM Integration - LogPoint Sample Playbook"
-      id:
+        simple: Comment added by "LogPoint Playbook"
+      incident_obj_id:
         simple: ${incident.logpointobjectid}
     separatecontext: false
     view: |-

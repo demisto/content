@@ -20,9 +20,10 @@ Use this Content Pack to fetch incident logs from LogPoint, analyze them for und
     | apikey | API Key | True |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
-    | first_fetch | First fetch timestamp in UTC \(e.g., 1608189921\) | False |
+    | first_fetch | First fetch timestamp \(\<number\> \<time unit\>, e.g., 6 hours, 1 day\) | False |
     | incidentType | Incident type | False |
     | isFetch | Fetch incidents | False |
+    | max_fetch | Fetch limit (Max value is 200, Recommended value is 50 or less) | False
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -30,7 +31,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### lp-get-incidents
 ***
-Gets all incidents between the provided two Timestamps. If ts_from and ts_to is not provided, this command will display incident data of past 24 hours.
+Gets first 50 incidents between the provided two Timestamps. If ts_from and ts_to is not provided, this command will display incident data of past 24 hours.
 
 
 #### Base Command
@@ -245,7 +246,7 @@ Retrieves a Particular Incident's Data
 
 ### lp-get-incident-states
 ***
-Gets the Incident States. Arguments are optional. If ts_from and ts_to arguments are not provided, it will get incidents of the past 24 hours.
+Gets the first 50 Incident States. Arguments are optional. If ts_from and ts_to arguments are not provided, it will get incidents of the past 24 hours.
 
 
 #### Base Command
@@ -313,7 +314,7 @@ Add comments to the incidents
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. | Required | 
+| incident_obj_id | Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. | Required | 
 | comment | Comment to be added to the incidents. | Required | 
 
 
@@ -325,7 +326,7 @@ Add comments to the incidents
 
 
 #### Command Example
-```!lp-add-incident-comment comment="Example comment" id=5fdc788ecf35d7ae0f6b791b```
+```!lp-add-incident-comment comment="Example comment" incident_obj_id=5fdc788ecf35d7ae0f6b791b```
 
 #### Context Example
 ```json
@@ -354,7 +355,7 @@ Assigning/Re-assigning Incidents
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_ids | Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma. | Required | 
+| incident_obj_ids | Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma. | Required | 
 | new_assignee | Id of the user whom the incidents are assigned.  It can be displayed using 'lp-get-users' command. | Required | 
 
 
@@ -366,7 +367,7 @@ Assigning/Re-assigning Incidents
 
 
 #### Command Example
-```!lp-assign-incidents incident_ids=5fdc788ecf35d7ae0f6b791b new_assignee=5fd9d95769d3a4ea5684fccf```
+```!lp-assign-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791b,5fdc788ecf35d7ae0f6b791c" new_assignee=5fd9d95769d3a4ea5684fccf```
 
 #### Context Example
 ```json
@@ -395,7 +396,7 @@ Resolves the Incidents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_ids | Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma. | Required | 
+| incident_obj_ids | Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma. | Required | 
 
 
 #### Context Output
@@ -406,7 +407,7 @@ Resolves the Incidents.
 
 
 #### Command Example
-```!lp-resolve-incidents incident_ids=5fdc788ecf35d7ae0f6b791c```
+```!lp-resolve-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791c,5fdc788ecf35d7ae0f6b791d"```
 
 #### Context Example
 ```json
@@ -435,7 +436,7 @@ Closes the Incidents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_ids | Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma. | Required | 
+| incident_obj_ids | Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma. | Required | 
 
 
 #### Context Output
@@ -446,7 +447,7 @@ Closes the Incidents.
 
 
 #### Command Example
-```!lp-close-incidents incident_ids=5fdc788ecf35d7ae0f6b791c```
+```!lp-close-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791c,5fdc788ecf35d7ae0f6b791d"```
 
 #### Context Example
 ```json
@@ -475,7 +476,7 @@ Re-opens the closed incidents
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_ids | Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma. | Required | 
+| incident_obj_ids | Object ID of a particular incident. It is the value contained in 'id' key of the incidents obtained from 'lp-get-incidents' command. Multiple id can be provided by separating them using comma. | Required | 
 
 
 #### Context Output
@@ -486,7 +487,7 @@ Re-opens the closed incidents
 
 
 #### Command Example
-```!lp-reopen-incidents incident_ids=5fdc788ecf35d7ae0f6b791c```
+```!lp-reopen-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791c,5fdc788ecf35d7ae0f6b791d"```
 
 #### Context Example
 ```json

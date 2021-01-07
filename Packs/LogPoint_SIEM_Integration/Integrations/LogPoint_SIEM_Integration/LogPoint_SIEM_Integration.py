@@ -5,6 +5,7 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
+import dateparser
 import json
 import traceback
 import requests
@@ -103,9 +104,9 @@ class Client(BaseClient):
             data=data
         )
 
-    def add_incident_comment(self, obj_id, comment):
+    def add_incident_comment(self, incident_obj_id, comment):
         """
-        :param obj_id: incident obj id
+        :param incident_obj_id: incident obj id
         :param comment: Comments to be added
         :return: dict containing response from API call
         """
@@ -116,7 +117,7 @@ class Client(BaseClient):
                 "version": "0.1",
                 "states": [
                     {
-                        "_id": obj_id,
+                        "_id": incident_obj_id,
                         "comments": [comment]
                     }
                 ]
@@ -129,9 +130,9 @@ class Client(BaseClient):
             data=data
         )
 
-    def assign_incidents(self, incident_ids, new_assignee):
+    def assign_incidents(self, incident_obj_ids, new_assignee):
         """
-        :param incident_ids: incident ids separated by comma in string format
+        :param incident_obj_ids: incident obj ids in the list format
         :param new_assignee: id of the user
         :return: dict containing response from API call
         """
@@ -140,7 +141,7 @@ class Client(BaseClient):
             "secret_key": self.apikey,
             "requestData": {
                 "version": "0.1",
-                "incident_ids": [x.strip() for x in incident_ids.split(',')],
+                "incident_ids": incident_obj_ids,
                 "new_assignee": new_assignee
             }
         }
@@ -151,9 +152,9 @@ class Client(BaseClient):
             data=data
         )
 
-    def resolve_incidents(self, incident_ids):
+    def resolve_incidents(self, incident_obj_ids):
         """
-        :param incident_ids: incident ids separated by comma in string format
+        :param incident_obj_ids: incident obj ids in the list format
         :return: dict containing response from API call
         """
         data = {
@@ -161,7 +162,7 @@ class Client(BaseClient):
             "secret_key": self.apikey,
             "requestData": {
                 "version": "0.1",
-                "incident_ids": [x.strip() for x in incident_ids.split(',')]
+                "incident_ids": incident_obj_ids
             }
         }
         data = json.dumps(data)
@@ -171,9 +172,9 @@ class Client(BaseClient):
             data=data
         )
 
-    def close_incidents(self, incident_ids):
+    def close_incidents(self, incident_obj_ids):
         """
-        :param incident_ids: incident ids separated by comma in string format
+        :param incident_obj_ids: incident ids in list format
         :return: dict containing response from API call
         """
         data = {
@@ -181,7 +182,7 @@ class Client(BaseClient):
             "secret_key": self.apikey,
             "requestData": {
                 "version": "0.1",
-                "incident_ids": [x.strip() for x in incident_ids.split(',')]
+                "incident_ids": incident_obj_ids
             }
         }
         data = json.dumps(data)
@@ -191,9 +192,9 @@ class Client(BaseClient):
             data=data
         )
 
-    def reopen_incidents(self, incident_ids):
+    def reopen_incidents(self, incident_obj_ids):
         """
-        :param incident_ids: incident ids separated by comma in string format
+        :param incident_obj_ids: incident obj ids in list format
         :return: dict containing response from API call
         """
         data = {
@@ -201,7 +202,7 @@ class Client(BaseClient):
             "secret_key": self.apikey,
             "requestData": {
                 "version": "0.1",
-                "incident_ids": [x.strip() for x in incident_ids.split(',')]
+                "incident_ids": incident_obj_ids
             }
         }
         data = json.dumps(data)
@@ -251,12 +252,19 @@ def get_demisto_severity(severity):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client):
-    ts_from = ts_to = round(float(datetime.timestamp(datetime.utcnow())))
+def test_module(client, max_fetch):
+    if max_fetch:
+        try:
+            max_fetch = int(max_fetch)
+        except Exception:
+            raise DemistoException("Fetch limit does not seem to be valid integer. Suggested: 50 or less, max: 200")
+        if max_fetch > 200:
+            raise DemistoException("Fetch limit should not be greater than 200.")
+    ts_from = ts_to = round(datetime.timestamp(datetime.utcnow()))
     result = client.get_incidents(ts_from, ts_to)
     if not result.get('success'):
         raise DemistoException(result['message'])
-    demisto.results("ok")
+    return "ok"
 
 
 def get_incidents_command(client, args):
@@ -265,11 +273,18 @@ def get_incidents_command(client, args):
     result = client.get_incidents(ts_from, ts_to)
     if not result.get('success'):
         raise DemistoException(result['message'])
-    incidents = result.get('incidents')
+    incidents = result.get('incidents', [])
     table_header = []
     if incidents and len(incidents) > 0:
         table_header = list(incidents[0].keys())
-    markdown = tableToMarkdown('Incidents', incidents, headers=table_header)
+    markdown_name = 'Incidents'
+    if len(incidents) > 50:
+        incidents = incidents[:50]
+        last_detection_ts = incidents[-1].get('detection_timestamp')
+        markdown_name = f"Displaying first 50 incidents. \
+        \n Only first 50 incidents are displayed. Detection time of the 50th incident is: {last_detection_ts}\
+        \n Please narrow down your ts_from and ts_to filter to get all the required incidents"
+    markdown = tableToMarkdown(markdown_name, incidents, headers=table_header)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.Incidents',
@@ -285,9 +300,9 @@ def get_incident_data_command(client, args):
     result = client.get_incident_data(incident_obj_id, incident_id, date)
     if not result.get('success'):
         raise DemistoException(result['message'])
-    incident_data = result.get('rows')
+    incident_data = result.get('rows', [])
     table_header = []
-    if len(incident_data) > 0:
+    if incident_data and len(incident_data) > 0:
         table_header = list(incident_data[0].keys())
     markdown = tableToMarkdown('Incident Data', incident_data, headers=table_header)
     return CommandResults(
@@ -304,11 +319,17 @@ def get_incident_states_command(client, args):
     result = client.get_incident_states(ts_from, ts_to)
     if not result.get('success'):
         raise DemistoException(result['message'])
-    incident_states = result.get('states')
+    incident_states = result.get('states', [])
     table_header = []
     if incident_states and len(incident_states) > 0:
         table_header = list(incident_states[0].keys())
-    markdown = tableToMarkdown('Incident States', incident_states, headers=table_header)
+    markdown_name = 'Incident States'
+    if len(incident_states) > 50:
+        incident_states = incident_states[:50]
+        markdown_name = "Displaying first 50 Incident States\
+            \nOnly first 50 incident states are displayed.\
+            \nPlease narrow down your ts_from and ts_to filter to get all the required data."
+    markdown = tableToMarkdown(markdown_name, incident_states, headers=table_header)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.Incidents.states',
@@ -318,9 +339,9 @@ def get_incident_states_command(client, args):
 
 
 def add_incident_comment_command(client, args):
-    obj_id = args.get('id')
+    incident_obj_id = args.get('incident_obj_id')
     comment = args.get('comment')
-    result = client.add_incident_comment(obj_id, comment)
+    result = client.add_incident_comment(incident_obj_id, comment)
     if not result.get('success'):
         raise DemistoException(result['message'])
     msg = result.get('message', 'Comment added!')
@@ -335,9 +356,9 @@ def add_incident_comment_command(client, args):
 
 
 def assign_incidents_command(client, args):
-    incident_ids = args.get('incident_ids')
+    incident_obj_ids = argToList(args.get('incident_obj_ids'))
     new_assignee = args.get('new_assignee')
-    result = client.assign_incidents(incident_ids, new_assignee)
+    result = client.assign_incidents(incident_obj_ids, new_assignee)
     if not result.get('success'):
         raise DemistoException(result['message'])
     msg = result.get('message')
@@ -352,8 +373,8 @@ def assign_incidents_command(client, args):
 
 
 def resolve_incidents_command(client, args):
-    incident_ids = args.get('incident_ids')
-    result = client.resolve_incidents(incident_ids)
+    incident_obj_ids = argToList(args.get('incident_obj_ids'))
+    result = client.resolve_incidents(incident_obj_ids)
     if not result.get('success'):
         raise DemistoException(result['message'])
     msg = result.get('message')
@@ -367,8 +388,8 @@ def resolve_incidents_command(client, args):
 
 
 def close_incidents_command(client, args):
-    incident_ids = args.get('incident_ids')
-    result = client.close_incidents(incident_ids)
+    incident_obj_ids = argToList(args.get('incident_obj_ids'))
+    result = client.close_incidents(incident_obj_ids)
     if not result.get('success'):
         raise DemistoException(result['message'])
     msg = result.get('message')
@@ -382,8 +403,8 @@ def close_incidents_command(client, args):
 
 
 def reopen_incidents_command(client, args):
-    incident_ids = args.get('incident_ids')
-    result = client.reopen_incidents(incident_ids)
+    incident_obj_ids = argToList(args.get('incident_obj_ids'))
+    result = client.reopen_incidents(incident_obj_ids)
     if not result.get('success'):
         raise DemistoException(result['message'])
     msg = result.get('message')
@@ -413,37 +434,40 @@ def get_users_command(client):
     )
 
 
-def fetch_incidents(client, first_fetch):
+def fetch_incidents(client, first_fetch, max_fetch):
     """
     This function retrieves new incidents every interval (default is 1 minute).
     """
     now = datetime.timestamp(datetime.utcnow())
     last_run_object = demisto.getLastRun()
-    last_run = last_run_object and last_run_object.get('time', None)
+    last_run = last_run_object.get('time', None) if last_run_object else None
     if not last_run:
         if first_fetch:
-            last_run = first_fetch
+            last_run = float(first_fetch)
         else:
             last_run = datetime.timestamp(datetime.utcnow() - timedelta(days=1))
-    last_run = float(last_run)
     result = client.get_incidents(last_run, now)
     if not result.get('success'):
         raise DemistoException(result['message'])
     lp_incidents = result.get('incidents')
-    demisto.info("Executing LogPoint fetch_incidents between {} and {} Timestamp.".format(last_run, now))
     incidents = []
-    # for alert in response:
+    if len(lp_incidents) > max_fetch:
+        next_fetch_time = lp_incidents[max_fetch]['detection_timestamp']
+        lp_incidents = lp_incidents[:max_fetch]
+    else:
+        next_fetch_time = now
+    demisto.info(f"Executing LogPoint fetch_incidents between {last_run} and {next_fetch_time} Timestamp.")
     for inc in lp_incidents:
         detection_ts = inc['detection_timestamp']
         dt = datetime.utcfromtimestamp(detection_ts)
         occurred = dt.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
         incidents.append({
-            'name': inc.get('name', 'LgPoint - No name'),
+            'name': inc.get('name', 'LogPoint - No name'),
             'occurred': occurred,
             'severity': get_demisto_severity(inc.get('risk_level')),
             'rawJSON': json.dumps(inc)
         })
-    demisto.setLastRun({'time': now})
+    demisto.setLastRun({'time': next_fetch_time})
     return incidents
 
 
@@ -457,18 +481,24 @@ def main():
     :rtype:
     """
     handle_proxy()
-    username = demisto.params().get('username')
-    apikey = demisto.params().get('apikey')
-    base_url = demisto.params().get('url')
-    if base_url.endswith('/'):
-        base_url = base_url[:-1]
-    proxy = demisto.params().get('proxy', False)
-    verify_certificate = not demisto.params().get('insecure', False)
-    first_fetch = demisto.params().get('first_fetch')
+    params = demisto.params()
+    username = params.get('username')
+    apikey = params.get('apikey')
+    base_url = params.get('url').rstrip('/')
+    proxy = params.get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    first_fetch_param = params.get('first_fetch') if params.get('first_fetch') else '1 day'
+    first_fetch_dt = dateparser.parse(first_fetch_param, settings={'TIMEZONE': 'UTC'})
+    if first_fetch_param and not first_fetch_dt:
+        raise DemistoException(f"First fetch input '{first_fetch_param}' is invalid. Valid format eg.:1 day")
+    first_fetch = first_fetch_dt.timestamp()
+    max_fetch = params.get('max_fetch')
+    max_fetch = int(params.get('max_fetch')) if (max_fetch and max_fetch.isdigit()) else 50
+    max_fetch = max(min(200, max_fetch), 1)
     headers = {
         'Content-Type': 'application/json'
     }
-    demisto.debug("Command being called is {}".format(demisto.command()))
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
         client = Client(
             base_url=base_url,
@@ -479,7 +509,7 @@ def main():
             apikey=apikey)
         args = demisto.args()
         if demisto.command() == 'test-module':
-            test_module(client)
+            return_results(test_module(client, params.get('max_fetch')))
         elif demisto.command() == 'lp-get-incidents':
             return_results(get_incidents_command(client, args))
         elif demisto.command() == 'lp-get-incident-data':
@@ -499,10 +529,10 @@ def main():
         elif demisto.command() == 'lp-get-users':
             return_results(get_users_command(client))
         elif demisto.command() == 'fetch-incidents':
-            demisto.incidents(fetch_incidents(client, first_fetch))
+            demisto.incidents(fetch_incidents(client, first_fetch, max_fetch))
     except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error("Failed to execute {} command. Error: {}".format(demisto.command(), str(err)))
+        return_error(f"Failed to execute {demisto.command()} command. Error: {str(err)}")
 
 
 ''' ENTRY POINT '''
