@@ -382,9 +382,9 @@ def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict
     Returns:
         CommandResults.
     """
-    vm_uuid = args.get('vm_uuid')
+    vm_uuid = args.get('vm_uuid', '')
     host_uuid = args.get('host_uuid')
-    transition = args.get('transition')
+    transition = args.get('transition', '')
 
     response = client.nutanix_hypervisor_vm_power_status_change(vm_uuid, host_uuid, transition)
 
@@ -415,7 +415,7 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    outputs_key_field = 'completed_tasks_info.uuid'
+    outputs_key_field: Optional[str] = 'completed_tasks_info.uuid'
 
     task_ids = argToList(args.get('task_ids'))
     timeout_interval = arg_to_number(args.get('timeout_interval'), 'timeout_interval')
@@ -514,7 +514,7 @@ def nutanix_alert_acknowledge_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    alert_id = args.get('alert_id')
+    alert_id = args.get('alert_id', '')
 
     response = client.post_nutanix_alert_acknowledge(alert_id)
 
@@ -541,7 +541,7 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    alert_id = args.get('alert_id')
+    alert_id = args.get('alert_id', '')
 
     response = client.post_nutanix_alert_resolve(alert_id)
 
