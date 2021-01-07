@@ -31,14 +31,11 @@ BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
 # ====== PRODUCTION CONFIGURATION ======
 GCS_MARKET_BUCKET="marketplace-dist-dev"
-SOURCE_PATH="wow/content"
+SOURCE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM/content"
 
 # ====== UPDATING TESTING BUCKET ======
-echo "Deleting testing bucket at path: gs://marketplace-dist-dev/wow/content ..."
-gsutil -m rm -r "gs://marketplace-dist-dev/wow/content" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
-echo "Finished deleting successfully."
-echo "Copying production bucket files at: gs://marketplace-dist/content to testing bucket at path: gs://marketplace-dist-dev/wow/content ..."
-gsutil -m cp -r "gs://marketplace-dist/content" "gs://marketplace-dist-dev/wow/content" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
+echo "Copying production bucket files at: gs://marketplace-dist/content to testing bucket at path: gs://marketplace-dist-dev/$SOURCE_PATH ..."
+gsutil -m cp -r "gs://marketplace-dist/content" "gs://marketplace-dist-dev/$SOURCE_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
 echo "Finished copying successfully."
 # ====== UPDATING TESTING BUCKET ======
 

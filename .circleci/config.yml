@@ -988,7 +988,7 @@ jobs:
 
             GCS_BUILD_BUCKET="marketplace-ci-build"
             GCS_MARKET_BUCKET="marketplace-dist-dev"
-            STORAGE_BATH_PATH="wow/content/packs"
+            STORAGE_BATH_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
 
             python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BATH_PATH}"
             rm $GCS_PATH
@@ -1022,7 +1022,7 @@ jobs:
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
                   GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
-                  SOURCE_TESTING_PATH="wow/content/packs"
+                  SOURCE_TESTING_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
 
                   python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_TESTING_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp "$SOURCE_TESTING_PATH"
                   rm $GCS_PATH
