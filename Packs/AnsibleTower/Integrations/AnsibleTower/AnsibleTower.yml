@@ -282,7 +282,7 @@ script:
     name: ansible-tower-job-relaunch
   - arguments:
     - default: false
-      description: job id tp cancel
+      description: job id to cancel
       isArray: false
       name: job_id
       required: true
@@ -293,7 +293,7 @@ script:
     name: ansible-tower-job-cancel
   - arguments:
     - default: false
-      description: job id
+      description: ''
       isArray: false
       name: job_id
       required: true
@@ -311,7 +311,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: job id status
+      description: ''
       isArray: false
       name: job_id
       required: true

@@ -50,13 +50,27 @@ def output_data(response: dict) -> dict:
     Returns:
         the response without irrelevant fields
     """
-    remove_fields = {'ask_diff_mode_on_launch', 'ask_variables_on_launch', 'ask_limit_on_launch',
+    remove_fields = ['ask_diff_mode_on_launch', 'ask_variables_on_launch', 'ask_limit_on_launch',
                      'ask_tags_on_launch', 'ask_skip_tags_on_launch', 'ask_job_type_on_launch',
-                     'ask_verbosity_on_launch', 'ask_inventory_on_launch', 'ask_credential_on_launch', 'job_env'}
+                     'ask_verbosity_on_launch', 'ask_inventory_on_launch', 'ask_credential_on_launch', 'job_env', 'job',
+                     'job_slice_number', 'job_slice_count', 'event_processing_finished', 'diff_mode', 'elapsed',
+                     'allow_simultaneous', 'force_handlers', 'forks', 'unified_job_template', 'use_fact_cache',
+                     'verbosity', 'has_inventory_sources', 'last_job_host_summary']
     context_data = {}
     for key in response:
         if key not in remove_fields:
-            context_data[key] = response[key]
+            if key in ['created', 'modified']:
+                value = parse_date_string(str(response[key]), DATE_FORMAT)
+                context_data[key] = str(value)
+            else:
+                context_data[key] = response[key]
+    return context_data
+
+
+def results_output_data(results: list) -> list:
+    context_data = []
+    for res in results:
+        context_data.append(output_data(res))
     return context_data
 
 
@@ -69,11 +83,12 @@ def inventories_list(client: Client, args: dict) -> CommandResults:
             readable_output=f"No results were found for the following arguments {str(args)}",
             raw_response=response
         )
+    context_data = results_output_data(results)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Inventory',
         outputs_key_field='id',
         outputs=results,
-        readable_output=tableToMarkdown(name='Results', t=results, removeNull=True),
+        readable_output=tableToMarkdown(name='Results', t=context_data, removeNull=True),
         raw_response=results
     )
 
@@ -92,11 +107,12 @@ def hosts_list(client: Client, args: dict) -> CommandResults:
             readable_output=f"No results were found for the following argument {str(args)}",
             raw_response=response
         )
+    context_data = results_output_data(results)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Host',
         outputs_key_field='id',
         outputs=results,
-        readable_output=tableToMarkdown(name='Results', t=results, removeNull=True),
+        readable_output=tableToMarkdown(name='Results', t=context_data, removeNull=True),
         raw_response=response)
 
 
