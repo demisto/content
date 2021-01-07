@@ -602,7 +602,6 @@ def long_running_loop():
     while True:
         error = ''
         try:
-            demisto.debug("long_running_loop is running now")
             check_for_mirrors()
             check_for_answers()
         except requests.exceptions.ConnectionError as e:
