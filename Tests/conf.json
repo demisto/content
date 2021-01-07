@@ -101,7 +101,7 @@
             ]
         },
         {
-            "integrations":"Azure Network Security Groups",
+            "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
             "instance_names": "azure_nsg_prod",
             "playbookID": "Azure NSG - Test"
@@ -448,6 +448,12 @@
         {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
+            "fromversion": "5.0.0",
+            "timeout": 400
+        },
+        {
+            "integrations": "HelloWorldPremium",
+            "playbookID": "HelloWorldPremium_Scan-Test",
             "fromversion": "5.0.0",
             "timeout": 400
         },
@@ -2053,7 +2059,6 @@
                 "carbonblack-v2",
                 "carbonblackliveresponse",
                 "Cylance Protect v2"
-
             ],
             "playbookID": "Retrieve File from Endpoint - Generic V2 Test",
             "fromversion": "5.0.0"
@@ -3301,10 +3306,14 @@
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Archer-Test-Playbook": "Issue 26851",
         "Carbon Black Live Response Test": "Issue 28237",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 32322"
+        "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
+        "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
+        "FeedThreatConnect-Test": "Issue 32317",
+        "Phishing v2 - Test - Incident Starter": "Issue 26783",
+        "Phishing - Core - Test - Incident Starter": "Issue 26784"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
@@ -3389,19 +3398,19 @@
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
         "Akamai WAF": "Issue 32318",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "Infoblox": "Unstable instance, issue 25651",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3417,7 +3426,10 @@
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "Palo Alto Minemeld": "Issue #26878",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "CrowdStrike Falcon Intel v2": "License issues #32473",
+        "CrowdStrikeMalquery": "License issues #32473",
+        "CrowdstrikeFalcon": "License issues #32473"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3592,7 +3604,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
