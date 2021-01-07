@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Panorama bug fix
+  id: Panorama
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -55,8 +55,8 @@ configuration:
   type: 8
 description: Manage Palo Alto Networks Firewall and Panorama. For more information
   see Panorama documentation.
-display: Palo Alto Networks PAN-OS bug fix
-name: Panorama bug fix
+display: Palo Alto Networks PAN-OS
+name: Panorama
 script:
   commands:
   - arguments:
@@ -4400,7 +4400,7 @@ script:
     description: Creates a WildFire analysis best practice profile.
     execution: false
     name: panorama-create-wildfire-best-practice-profile
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false
