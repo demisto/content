@@ -1,2 +1,6 @@
 [file:BMCHelixRemedyForce.yml]
 ignore=ID101
+[file:BMCHelixRemedyforceCreateServiceRequest.yml]
+ignore=ID101
+[file:BMCHelixRemedyforceCreateIncident.yml]
+ignore=ID101
