@@ -275,7 +275,9 @@ def test_module_command(client: Client):
         CommandResults.
     """
     client.get_nutanix_hypervisor_hosts_list(None, None, None)
-    demisto.results('ok')
+    return CommandResults(
+        readable_output='ok'
+    )
 
 
 def fetch_incidents_command(client: Client, args: Dict):
