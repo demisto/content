@@ -268,7 +268,14 @@ class DemistoObject {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        return $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } }).context
+        $integration_context = $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } })
+        # When Demisto Version is greater equal then "6.0.0".  integration_context will be under "context" attribute.
+        $this.DemistoVersion().version -match "\d{1,2}\.\d{1,2}\.\d{1,2}" | Out-Null
+        if (VersionEqualGreaterThen -bigger_version $matches[0] -smaller_version "6.0.0") {
+            $integration_context = $integration_context.context
+        }
+
+        return $integration_context
     }
 
     SetIntegrationContext ($Value) {
@@ -603,4 +610,19 @@ function FileResult([string]$file_name, [string]$data, [string]$file_type) {
         "File" = $file_name
         "FileID" = $temp
     }
+}
+
+function VersionEqualGreaterThen([string]$bigger_version, [string]$smaller_version) {
+    if ($bigger_version -match "\d{1,2}\.\d{1,2}\.\d{1,2}"){
+        $bigger_version= $matches[0]
+    } else {
+        throw "Unable to parse version $bigger_version"
+    }
+    if ($smaller_version -match "\d{1,2}\.\d{1,2}\.\d{1,2}"){
+        $smaller_version = $matches[0]
+    } else {
+        throw "Unable to parse version $smaller_version"
+    }
+
+    return [version]::Parse($bigger_version) -ge  [version]::Parse($smaller_version)
 }

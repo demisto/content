@@ -11,6 +11,13 @@ Describe 'Check-DemistoServerRequest' {
 }
 
 Describe 'Check-UtilityFunctions' {
+    It "VersionEqualGreaterThen" {
+       VersionEqualGreaterThen -bigger_version "6.0.1" -smaller_version "6.0.0" | Should -BeTrue
+       VersionEqualGreaterThen -bigger_version "6.0.0" -smaller_version "6.0.1" | Should -BeFalse
+       VersionEqualGreaterThen -bigger_version "6.1.0-beta" -smaller_version "6.0.0" | Should -BeTrue
+       VersionEqualGreaterThen -bigger_version "6.0.0" -smaller_version "6.1.0-beta" | Should -BeFalse
+    }
+
     It "ArgToList" {
         $r = argToList "a,b,c,2"
         $r.GetType().IsArray | Should -BeTrue
