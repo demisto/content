@@ -623,9 +623,10 @@ class TestImagesUpload:
        """
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
-                                           'image_path': f'/path/{temp_image_name}'}]
-        mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=(search_for_images_return_value,
-                                                                                        search_for_images_return_value))
+                                           'image_path': f'/path/{temp_image_name}',
+                                           'integration_path_basename': 'fake_unified_integration_path'}]
+        mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
+        mocker.patch("marketplace_services_test.Pack.need_to_upload_integration_image", return_value=True)
         mocker.patch('builtins.open', mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()
@@ -657,9 +658,10 @@ class TestImagesUpload:
        """
         temp_image_name = f'{integration_name.replace(" ", "")}_image.png'
         search_for_images_return_value = [{'display_name': integration_name,
-                                           'image_path': f'/path/{temp_image_name}'}]
-        mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=(search_for_images_return_value,
-                                                                                        search_for_images_return_value))
+                                           'image_path': f'/path/{temp_image_name}',
+                                           'integration_path_basename': 'fake_unified_integration_path'}]
+        mocker.patch("marketplace_services_test.Pack._search_for_images", return_value=search_for_images_return_value)
+        mocker.patch("marketplace_services_test.Pack.need_to_upload_integration_image", return_value=True)
         mocker.patch("builtins.open", mock_open(read_data="image_data"))
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         dummy_storage_bucket = mocker.MagicMock()

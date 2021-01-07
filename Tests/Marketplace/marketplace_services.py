@@ -1608,7 +1608,7 @@ class Pack(object):
     def need_to_upload_integration_image(image_data: dict, integration_dirs: list, unified_integrations: list):
         """ Checks whether needs to upload the integration image or not.
         We upload in one of the two cases:
-        1. The integration_path_basename integration's name is one of the integration dirs detected
+        1. The integration_path_basename is one of the integration dirs detected
         2. The integration_path_basename is one of the added/modified unified integrations
 
         Args:
