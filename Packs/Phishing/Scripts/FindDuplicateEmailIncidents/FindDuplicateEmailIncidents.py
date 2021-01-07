@@ -24,6 +24,8 @@ EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
 FROM_FIELD = 'emailfrom'
 FROM_DOMAIN_FIELD = 'fromdomain'
+PREPROCESSED_EMAIL_BODY = 'preprocessedemailbody'
+PREPROCESSED_EMAIL_SUBJECT = 'preprocessedemailsubject'
 MERGED_TEXT_FIELD = 'mereged_text'
 MIN_TEXT_LENGTH = 50
 DEFAULT_ARGS = {
@@ -121,22 +123,30 @@ def eliminate_urls_extensions(text):
     return text
 
 
-def preprocess_text_fields(incident):
-    email_body = email_subject = email_html = ''
+def preprocess_email_body(incident):
+    email_body = email_html = ''
     if EMAIL_BODY_FIELD in incident:
         email_body = incident[EMAIL_BODY_FIELD]
     if EMAIL_HTML_FIELD in incident:
         email_html = incident[EMAIL_HTML_FIELD]
-    if EMAIL_SUBJECT_FIELD in incident:
-        email_subject = incident[EMAIL_SUBJECT_FIELD]
     if isinstance(email_html, float):
         email_html = ''
     if email_body is None or isinstance(email_body, float) or email_body.strip() == '':
         email_body = get_text_from_html(email_html)
+    return eliminate_urls_extensions(email_body)
+
+
+def preprocess_email_subject(incident):
+    email_subject = ''
+    if EMAIL_SUBJECT_FIELD in incident:
+        email_subject = incident[EMAIL_SUBJECT_FIELD]
     if isinstance(email_subject, float):
         email_subject = ''
-    text = eliminate_urls_extensions(email_subject + '\n\n' + email_body)
-    return text
+    return eliminate_urls_extensions(email_subject)
+
+
+def concatenate_subject_body(row):
+    return '{}\n{}'.format(row[PREPROCESSED_EMAIL_SUBJECT], row[PREPROCESSED_EMAIL_BODY])
 
 
 def preprocess_incidents_df(existing_incidents):
@@ -149,7 +159,9 @@ def preprocess_incidents_df(existing_incidents):
         custom_fields_df = custom_fields_df[unique_keys]
         incidents_df = pd.concat([incidents_df.drop('CustomFields', axis=1),
                                   custom_fields_df], axis=1).reset_index()
-    incidents_df[MERGED_TEXT_FIELD] = incidents_df.apply(lambda x: preprocess_text_fields(x), axis=1)
+    incidents_df[PREPROCESSED_EMAIL_SUBJECT] = incidents_df.apply(lambda x: preprocess_email_subject(x), axis=1)
+    incidents_df[PREPROCESSED_EMAIL_BODY] = incidents_df.apply(lambda x: preprocess_email_body(x), axis=1)
+    incidents_df[MERGED_TEXT_FIELD] = incidents_df.apply(concatenate_subject_body, axis=1)
     incidents_df = incidents_df[incidents_df[MERGED_TEXT_FIELD].str.len() >= MIN_TEXT_LENGTH]
     incidents_df.reset_index(inplace=True)
     if FROM_FIELD in incidents_df:
