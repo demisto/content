@@ -48,7 +48,6 @@ def main():
         server_host: str = server.client.api_client.configuration.host
         success_flag = install_all_content_packs(client=server.client, host=server_host, server_version=server_version)
 
-        # from Tests.Marketplace.search_and_install_packs import SUCCESS_FLAG
         if success_flag:
             logging.success(f'Finished installing all content packs in {host}')
         else:
