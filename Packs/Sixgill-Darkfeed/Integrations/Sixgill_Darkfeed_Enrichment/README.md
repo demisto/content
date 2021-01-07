@@ -1,5 +1,5 @@
-Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time Threat Intelligence indicators. Enrich IOCs such as domains, URLs, hashes, and IP addresses straight from XSOAR platform.
-This integration was integrated and tested with sixgill-clients
+Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time Threat Intelligence indicators. Enrich IOCs such as domains, URLs, hashes, and IP addresses straight from the XSOAR platform.
+This integration was integrated and tested with Sixgill clients.
 ## Configure Sixgill_Darkfeed_Enrichment on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
