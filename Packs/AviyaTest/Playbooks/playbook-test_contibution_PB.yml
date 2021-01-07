@@ -1,0 +1,116 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: cbbdc01e-dfc3-4eb7-8126-d0b7ca0a8f60
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 8acb1a5a-8f1b-4d2f-8fc7-fe60ecd43b29
+inputs: []
+name: test_contibution_PB
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6d6980c3-8f51-47f2-8ca4-3f3186902960
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6d6980c3-8f51-47f2-8ca4-3f3186902960
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all: {}
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 28f8b66e-37ee-47a7-8cc2-04fd9213d76d
+      iscommand: false
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 28f8b66e-37ee-47a7-8cc2-04fd9213d76d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      name: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Hello command - prints hello to anyone
+      id: 82b1f892-211a-4302-8fcc-34fe6b96c93c
+      iscommand: true
+      name: test hello
+      script: '|||helloworld-say-hello'
+      type: regular
+      version: -1
+    taskid: 82b1f892-211a-4302-8fcc-34fe6b96c93c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 410
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
