@@ -297,7 +297,7 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     Possible filters:
     - page: The offset page to start retrieving hosts.
     - limit: The number of hosts to retrieve.
-    - filter: Retrieve machines that matches the filters given.
+    - filter: Retrieve hosts that matches the filters given.
               - Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value.
               - Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for Example:
                 storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x is parsed by Nutanix the following way:

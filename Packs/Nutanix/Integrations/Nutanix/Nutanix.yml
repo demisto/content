@@ -3,8 +3,7 @@ commonfields:
   id: Nutanix
   version: -1
 configuration:
-- defaultvalue: https://soar.monstersofhack.com
-  display: Server URL (e.g. https://example.net)
+- display: Server URL (e.g. https://example.net)
   name: base_url
   required: true
   type: 0
@@ -26,11 +25,11 @@ configuration:
   type: 8
 - display: Username
   name: username
-  required: false
+  required: true
   type: 0
 - display: Password
   name: password
-  required: false
+  required: true
   type: 4
 - defaultvalue: "1"
   display: Incidents Fetch Interval
@@ -41,13 +40,82 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- additionalinfo: Fetches incidents by resolved value. if resolved is set to true,
+    only alerts that were resolved will be fetched, if resolved is set to false, only
+    alerts that weren't resolved will be fetched.
+  display: Resolved
+  name: resolved
+  required: false
+  type: 8
+- additionalinfo: Fetches incidents by auto resolved value. if auto resolved is set
+    to true, only alerts that were resolved and were auto resolved will be fetched,
+    if auto resolved is set to false, only alerts that were resolved and weren't auto
+    resolved will be fetched.
+  display: Auto Resolved
+  name: auto_resolved
+  required: false
+  type: 8
+- additionalinfo: Fetches incidents by acknowledged value. if acknowledged is set
+    to true, only alerts that were acknowledged will be fetched, if √ is set to false,
+    only alerts that weren't acknowledged will be fetched.
+  display: Acknowledged
+  name: acknowledged
+  required: false
+  type: 8
+- additionalinfo: Comma separated list. Fetches alerts that id of their type matches
+    one alert type uuid in Alert Type Uuids list. For example, alert 'Alert E-mail
+    Failure' has type uuid of A111066. Given Alert Type Uuids = 'A111066', only alerts
+    of 'Alert E-mail Failure' will be shown.
+  display: Alert Type Uuids
+  name: alert_type_uuids
+  required: false
+  type: 0
+- additionalinfo: TODO
+  display: Entity Id
+  name: entity_id
+  required: false
+  type: 0
+- additionalinfo: Comma separated list. Fetch alerts that their impact type matches
+    one impact type in Impact Types list. For example, alert 'Incorrect NTP Configuration'
+    has impact type 'SystemIndicator'. Given Impact Types = 'SystemIndicator', only
+    alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration'
+    will be shown.
+  display: Impact Types
+  name: impact_types
+  options:
+  - Availability
+  - Capacity
+  - Configuration
+  - Performance
+  - SystemIndicator
+  required: false
+  type: 16
+- additionalinfo: Comma separated list. Fetch alerts that their classifications matches
+    one of the classification in classifications list given. For example, alert 'Pulse
+    cannot connect to REST server endpoint' has classification of Cluster. Given classifications
+    = 'cluster', only alerts with classification of 'cluster', such as 'Pulse cannot
+    connect to REST server endpoint' will be fetched.
+  display: Classifications
+  name: classifications
+  required: false
+  type: 0
+- additionalinfo: TODO
+  display: ""
+  name: entity_type_ids
+  required: false
+  type: 0
 description: This is the Hello World integration for getting started.
 display: Nutanix
 name: Nutanix
 script:
   commands:
   - arguments:
-    - description: ADD HELPFUL DESCRIPTION
+    - description: 'Retrieve hosts that matches the filters given. Each filter is
+        written in the following way: filter_name==filter_value or filter_name!=filter_value.
+        Possible combinations of OR (using comma '','') and AND (using semicolon '';''),
+        for Example: storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x is parsed
+        by Nutanix the following way: Return all hosts s.t (storage.capacity_bytes
+        == 2 AND host_nic_ids != 35) OR host_gpus == x.'
       name: filter
     - description: Page number in the query response, default is 1. When page is specified,
         limit argument is required.
@@ -61,11 +129,16 @@ script:
       description: Host list
       type: string
   - arguments:
-    - description: ADD HELPFUL DESCRIPTION
+    - description: 'Retrieve virtual machines that matches the filters given. Each
+        filter is written in the following way: filter_name==filter_value or filter_name!=filter_value.
+        Possible combinations of OR (using comma '','') and AND (using semicolon '';''),
+        for Example: machine_type==pc;power_state!=off,ha_priority==0 is parsed by
+        Nutanix the following way: Return all virtual machines s.t (machine type ==
+        pc AND power_state != off) OR ha_priority == 0.'
       name: filter
     - description: Number of virtual machines to retrieve. Possible values 1-9223372036854775807.
       name: length
-    - description: offset.
+    - description: The offset to start retrieving virtual machines.
       name: offset
     description: Get a list of virtual machines.
     name: nutanix-hypervisor-vms-list
@@ -74,7 +147,7 @@ script:
       description: Virtual Machines list.
       type: string
   - arguments:
-    - description: Id of the virtual machine.
+    - description: Id of the virtual machine to change its power status.
       name: uuid
       required: true
     - description: If virtual machine is being powered 'on', this host will be chosen
@@ -113,7 +186,14 @@ script:
     - description: The IDs of the tasks to poll
       name: task_ids
       required: true
-    description: Poll a task to check if its ready.
+    - description: An integer number. Waits time_interval seconds and in case no task
+        had finished, returns a time out response.
+      name: timeout_interval
+    description: Poll tasks given by task_ids to check if they are ready. Returns
+      all the tasks from 'task_ids' list that are ready at the moment Nutanix service
+      was polled. In case no task is ready, waits until at least one task is ready,
+      unless given argument 'timeout_interval' which waits time_interval seconds and
+      in case no task had finished, returns a time out response.
     name: nutanix-hypervisor-task-poll
     outputs:
     - contextPath: NutanixHypervisor.Task
@@ -121,47 +201,59 @@ script:
       type: string
   - arguments:
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
-        created on or after the specified date/time will be retrieved.
+        created on or after the specified date/time will be retrieved. Time is expected
+        to be in UTC.
       name: start_time
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
-        created on or before the specified date/time will be retrieved.
+        created on or before the specified date/time will be retrieved. Time is expected
+        to be in UTC.
       name: end_time
     - auto: PREDEFINED
-      description: Get list of alerts which have been resolved.
+      description: If resolved is True, retrieves alerts that have been resolved.
+        If resolved is False, retrieves alerts that have not been resolved.
       name: resolved
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
-      description: Get list of alerts which have been resolved automatically. If auto_resolved
-        is set, resolved must be set to true.
+      description: If auto_resolved is True, retrieves alerts that have been resolved,
+        and were auto_resolved. If auto_resolved is False, retrieves alerts that have
+        been resolved, and were not auto_resolved.
       name: auto_resolved
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
-      description: Get list of alerts which have been acknowledged.
+      description: If acknowledged is True, retrieves alerts that have been acknowledged.                     If
+        acknowledged is False, retrieves alerts that have been acknowledged.
       name: acknowledged
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
-      description: Get list of alerts which have level of severity specified
+      description: Comma separated list. Retrieve any alerts that their severity level
+        matches one of the severities in severity list.
       name: severity
       predefined:
       - CRITICAL
       - WARNING
       - INFO
       - AUDIT
-    - description: Get list of the alerts which their alert type uuid matches one
-        of the uuids given. List of alert_type_uuids are given comma separated
+    - description: Comma separated list. Retrieve alerts that id of their type matches
+        one alert_type_uuid in alert_type_uuids list. For example, alert 'Alert E-mail
+        Failure' has type id of A111066. Given alert_type_uuids= 'A111066', only alerts
+        of 'Alert E-mail Failure' will be retrieved.
       isArray: true
       name: alert_type_uuids
     - description: ADD DESCRIPTION
       isArray: true
       name: entity_ids
     - auto: PREDEFINED
-      description: ADD DESCRIPTION
+      description: Comma separated list. Retrieve alerts that their impact type matches
+        one of the impact types in impact_types list. For example, alert 'Incorrect
+        NTP Configuration' has impact type 'SystemIndicator'. Given impact_types =
+        'SystemIndicator',only alerts with impact type 'SystemIndicator', such as
+        'Incorrect NTP Configuration' will be retrieved.
       isArray: true
       name: impact_types
       predefined:
@@ -170,17 +262,27 @@ script:
       - Configuration
       - Performance
       - System Indicator
-    - description: ADD DESCRIPTION
+    - description: Comma separated list. Retrieve alerts that their classifications
+        matches one of the classification in classifications list given. For example,
+        alert 'Pulse cannot connect to REST server endpoint' has classification of
+        Cluster. Given classifications = 'cluster', only alerts with classification
+        of 'cluster', such as 'Pulse cannot connect to REST server endpoint' will
+        be retrieved.
       isArray: true
       name: classifications
-    - description: ADD DESCRIPTION
-      name: entity_type
+    - description: 'Comma separated list. Retrieve alerts that their entity_type matches
+        one of the entity_type in entity_types list. Examples for entity types: [VM,
+        Host, Disk, Storage Container, Cluster]. If Nutanix service can''t recognize
+        the entity type, it returns 404 response.'
+      isArray: true
+      name: entity_types
     - description: Page number in the query response, default is 1. When page is specified,
         limit argument is required.
       name: page
     - description: Limit of physical hosts to retrieve. Possible values are 1-1000.
       name: limit
-    description: Get the list of Alerts generated in the cluster.
+    description: Get the list of Alerts generated in the cluster which matches the
+      filters if given.
     name: nutanix-alerts-list
     outputs:
     - contextPath: NutanixHypervisor.Alerts
@@ -188,7 +290,8 @@ script:
   - arguments:
     - description: The id of the alert to acknowledge.
       name: alert_id
-    description: Acknowledge alert with the specified id.
+      required: true
+    description: Acknowledge alert with the specified alert_id.
     name: nutanix-alert-acknowledge
     outputs:
     - contextPath: NutanixHypervisor.Alert
@@ -196,39 +299,56 @@ script:
   - arguments:
     - description: The id of the alert to resolve.
       name: alert_id
-    description: The id of the alert to resolve.
+      required: true
+    description: Resolve alert with the specified alert_id.
     name: nutanix-alert-resolve
     outputs:
     - contextPath: NutanixHypervisor.Alert
       description: ADD DESCRIPTION
   - arguments:
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
-        created on or after the specified date/time will be retrieved.
+        created on or after the specified date/time will be acknowledged. Time is
+        expected to be in UTC.
       name: start_time
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
-        created on or before the specified date/time will be retrieved.
+        created on or before the specified date/time will be acknowledged. Time is
+        expected to be in UTC.
       name: end_time
     - auto: PREDEFINED
-      description: Get list of alerts which have level of severity specified
+      description: Comma separated list. Acknowledge alerts that their severity level
+        matches one of the severities in severity list.
       name: severity
       predefined:
       - CRITICAL
       - WARNING
       - INFO
       - AUDIT
-    - description: TODO
+    - description: Comma separated list. Acknowledge alerts that their impact type
+        matches one of the impact types in impact_types list. For example, alert 'Incorrect
+        NTP Configuration' has impact type 'SystemIndicator'. Given impact_types =
+        'SystemIndicator',only alerts with impact type 'SystemIndicator', such as
+        'Incorrect NTP Configuration' will be acknowledged.
       isArray: true
       name: impact_types
-    - description: TODO
+    - description: Comma separated list. Acknowledge alerts that their classifications
+        matches one of the classification in classifications list given. For example,
+        alert 'Pulse cannot connect to REST server endpoint' has classification of
+        Cluster. Given classifications = 'cluster', only alerts with classification
+        of 'cluster', such as 'Pulse cannot connect to REST server endpoint' will
+        be acknowledged.
       isArray: true
       name: classifications
-    - description: TODO
-      name: entity_type
+    - description: 'Comma separated list. Acknowledge alerts that their entity_type
+        matches one of the entity_type in entity_types list. Examples for entity types:
+        [VM, Host, Disk, Storage Container, Cluster]. If Nutanix service can''t recognize
+        the entity type, it returns 404 response.'
+      isArray: true
+      name: entity_types
     - description: TODO
       isArray: true
       name: entity_type_ids
-    - description: Limit of physical hosts to retrieve. Possible values are 1-1000.
-        TODO CHECK VALUES
+    - description: Maximum number of alerts to acknowledge. Nutanix does not have
+        max for limit, but a very high limit value will cause read timeout exception.
       name: limit
     description: Acknowledge alerts using a filters.
     name: nutanix-alerts-acknowledge-by-filter
@@ -237,35 +357,50 @@ script:
       description: TODO
   - arguments:
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
-        created on or after the specified date/time will be retrieved.
+        created on or after the specified date/time will be resolved. Time is expected
+        to be in UTC.
       name: start_time
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
-        created on or before the specified date/time will be retrieved.
+        created on or before the specified date/time will be resolved. Time is expected
+        to be in UTC.
       name: end_time
     - auto: PREDEFINED
-      description: Get list of alerts which have level of severity specified
+      description: Comma separated list. Resolve alerts that their severity level
+        matches one of the severities in severity list.
       name: severity
       predefined:
       - CRITICAL
       - WARNING
       - INFO
       - AUDIT
-    - description: TODO
+    - description: Comma separated list. Resolve alerts that their impact type matches
+        one of the impact types in impact_types list. For example, alert 'Incorrect
+        NTP Configuration' has impact type 'SystemIndicator'. Given impact_types =
+        'SystemIndicator',only alerts with impact type 'SystemIndicator', such as
+        'Incorrect NTP Configuration' will be resolved.
       isArray: true
       name: impact_types
-    - description: TODO
+    - description: Comma separated list.Resolve alerts that their classifications
+        matches one of the classification in classifications list given. For example,
+        alert 'Pulse cannot connect to REST server endpoint' has classification of
+        Cluster. Given classifications = 'cluster', only alerts with classification
+        of 'cluster', such as 'Pulse cannot connect to REST server endpoint' will
+        be resolved.
       isArray: true
       name: classifications
-    - description: TODO
-      name: entity_type
+    - description: 'Comma separated list. Resolve alerts that their entity_type matches
+        one of the entity_type in entity_types list. Examples for entity types: [VM,
+        Host, Disk, Storage Container, Cluster]. If Nutanix service can''t recognize
+        the entity type, it returns 404 response.'
+      name: entity_types
     - description: TODO
       isArray: true
       name: entity_type_ids
     - description: Page number in the query response, default is 1. When page is specified,
         limit argument is required. TODO CHECK IF ARGUMENT LIMIT IS REQUIRED
       name: page
-    - description: Limit of physical hosts to retrieve. Possible values are 1-1000.
-        TODO CHECK
+    - description: Maximum number of alerts to resolve. Nutanix does not have max
+        for limit, but a very high limit value will cause read timeout exception.
       name: limit
     description: Resolve alerts using a filters.
     name: nutanix-alerts-resolve-by-filter
