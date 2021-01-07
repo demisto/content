@@ -4,7 +4,7 @@ import io
 import json
 
 import pytest
-from typing import Dict
+from typing import *
 from CommonServerPython import DemistoException, CommandResults
 from Nutanix import MINIMUM_LIMIT_VALUE
 from Nutanix import MINIMUM_PAGE_VALUE
@@ -210,22 +210,10 @@ def test_get_optional_time_parameter_invalid_time_argument():
        expected time format.
     """
     from Nutanix import get_optional_time_parameter_as_epoch
+    invalid_date_msg = '''date format of 'start_time' is not valid. Please enter a date format of YYYY-MM-DDTHH:MM:SS'''
     with pytest.raises(DemistoException,
-                       match='''date format of 'start_time' is not valid. Please enter a date format of YYYY-MM-DDTHH:MM:SS'''):
+                       match=invalid_date_msg):
         (get_optional_time_parameter_as_epoch({'start_time': 'bla'}, 'start_time'))
-
-    commands = {
-        'fetch-incidents': fetch_incidents_command,
-        'nutanix-hypervisor-hosts-list': nutanix_hypervisor_hosts_list_command,
-        'nutanix-hypervisor-vms-list': nutanix_hypervisor_vms_list_command,
-        'nutanix-hypervisor-vm-powerstatus-change': nutanix_hypervisor_vm_power_status_change_command,
-        'nutanix-hypervisor-task-poll': nutanix_hypervisor_task_poll_command,
-        'nutanix-alerts-list': nutanix_alerts_list_command,
-        'nutanix-alert-acknowledge': nutanix_alert_acknowledge_command,
-        'nutanix-alert-resolve': nutanix_alert_resolve_command,
-        'nutanix-alerts-acknowledge-by-filter': nutanix_alerts_acknowledge_by_filter_command,
-        'nutanix-alerts-resolve-by-filter': nutanix_alerts_resolve_by_filter_command
-    }
 
 
 @pytest.mark.parametrize('command_function, args, url_suffix, response, expected',
@@ -241,7 +229,46 @@ def test_get_optional_time_parameter_invalid_time_argument():
                            command_tests_data['nutanix-hypervisor-vms-list']['response'],
                            command_tests_data['nutanix-hypervisor-vms-list']['expected']),
 
-                          (nutanix_hypervisor_vm_power_status_change_command,
+                          (nutanix_alerts_list_command,
+                           command_tests_data['nutanix-alerts-list']['args'],
+                           command_tests_data['nutanix-alerts-list']['suffix'],
+                           command_tests_data['nutanix-alerts-list']['response'],
+                           command_tests_data['nutanix-alerts-list']['expected'])
+                          ])
+def test_commands_get_methods(requests_mock, command_function: Callable[[Client, Dict], CommandResults], args: Dict,
+                              url_suffix: str, response: Dict, expected: Dict):
+    """
+    Given:
+     - command function.
+     - Demisto arguments.
+     - url suffix of the Nutanix service endpoint that the command function will use (needed to mock the request).
+     - response returned from Nutanix.
+     - expected CommandResults object to be returned from the command function.
+
+    When:
+     - Executing a command
+
+    Then:
+     - Ensure that the expected CommandResults object is returned by the command function.
+    """
+    requests_mock.get(
+        f'{MOCKED_BASE_URL}/{url_suffix}',
+        json=response
+    )
+    expected_command_results = CommandResults(
+        outputs_prefix=expected.get('outputs_prefix'),
+        outputs_key_field=expected.get('outputs_key_field'),
+        outputs=response
+    )
+    returned_command_results = command_function(client, args)
+
+    assert returned_command_results.outputs_prefix == expected_command_results.outputs_prefix
+    assert returned_command_results.outputs_key_field == expected_command_results.outputs_key_field
+    assert returned_command_results.outputs == expected_command_results.outputs
+
+
+@pytest.mark.parametrize('command_function, args, url_suffix, response, expected',
+                         [(nutanix_hypervisor_vm_power_status_change_command,
                            command_tests_data['nutanix-hypervisor-vm-powerstatus-change']['args'],
                            command_tests_data['nutanix-hypervisor-vm-powerstatus-change']['suffix'],
                            command_tests_data['nutanix-hypervisor-vm-powerstatus-change']['response'],
@@ -252,12 +279,6 @@ def test_get_optional_time_parameter_invalid_time_argument():
                            command_tests_data['nutanix-hypervisor-task-poll']['suffix'],
                            command_tests_data['nutanix-hypervisor-task-poll']['response'],
                            command_tests_data['nutanix-hypervisor-task-poll']['expected']),
-
-                          (nutanix_alerts_list_command,
-                           command_tests_data['nutanix-alerts-list']['args'],
-                           command_tests_data['nutanix-alerts-list']['suffix'],
-                           command_tests_data['nutanix-alerts-list']['response'],
-                           command_tests_data['nutanix-alerts-list']['expected']),
 
                           (nutanix_alert_acknowledge_command,
                            command_tests_data['nutanix-alert-acknowledge']['args'],
@@ -283,7 +304,22 @@ def test_get_optional_time_parameter_invalid_time_argument():
                            command_tests_data['nutanix-alerts-resolve-by-filter']['response'],
                            command_tests_data['nutanix-alerts-resolve-by-filter']['expected']),
                           ])
-def test_command_return_values(requests_mock, command_function, args, url_suffix, response, expected: Dict):
+def test_commands_post_methods(requests_mock, command_function: Callable[[Client, Dict], CommandResults], args: Dict,
+                               url_suffix: str, response: Dict, expected: Dict):
+    """
+    Given:
+     - command function.
+     - Demisto arguments.
+     - url suffix of the Nutanix service endpoint that the command function will use (needed to mock the request).
+     - response returned from Nutanix.
+     - expected CommandResults object to be returned from the command function.
+
+    When:
+     - Executing a command
+
+    Then:
+     - Ensure that the expected CommandResults object is returned by the command function.
+    """
     requests_mock.post(
         f'{MOCKED_BASE_URL}/{url_suffix}',
         json=response
@@ -291,7 +327,10 @@ def test_command_return_values(requests_mock, command_function, args, url_suffix
     expected_command_results = CommandResults(
         outputs_prefix=expected.get('outputs_prefix'),
         outputs_key_field=expected.get('outputs_key_field'),
-        outputs=expected.get('outputs')
+        outputs=response
     )
+    returned_command_results = command_function(client, args)
 
-    assert command_function(client, args) == expected_command_results
+    assert returned_command_results.outputs_prefix == expected_command_results.outputs_prefix
+    assert returned_command_results.outputs_key_field == expected_command_results.outputs_key_field
+    assert returned_command_results.outputs == expected_command_results.outputs

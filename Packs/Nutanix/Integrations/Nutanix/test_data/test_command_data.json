@@ -56,7 +56,7 @@
       "outputs_key_field": "task_uuid"
     },
     "args": {
-      "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      "vm_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     }
   },
 
@@ -71,7 +71,9 @@
       "outputs_prefix": "NutanixHypervisor.Task",
       "outputs_key_field": "completed_tasks_info.uuid"
     },
-    "args": {}
+    "args": {
+      "task_ids": "123"
+    }
   },
 
   "nutanix-alerts-list": {

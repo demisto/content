@@ -137,7 +137,7 @@ class Client(BaseClient):
     def post_nutanix_alerts_resolve_by_filter(self, start_time: Optional[int], end_time: Optional[int],
                                               severity: Optional[str], impact_types: Optional[str],
                                               classification: Optional[str], entity_type: Optional[str],
-                                              entity_type_ids: Optional[str], page: int, limit: Optional[int]):
+                                              entity_type_ids: Optional[str], limit: Optional[int]):
         return self._http_request(
             method='POST',
             url_suffix='alerts/resolve',
@@ -149,7 +149,6 @@ class Client(BaseClient):
                 classification=classification,
                 entity_type=entity_type,
                 entity_type_ids=entity_type_ids,
-                page=page,
                 count=limit
             )
         )
@@ -637,11 +636,10 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
     classification = args.get('classifications')
     entity_type = args.get('entity_type')
     entity_type_ids = args.get('entity_type_ids')
-    page = get_page_argument(args)
-    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE)
 
     response = client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity, impact_types,
-                                                            classification, entity_type, entity_type_ids, page, limit)
+                                                            classification, entity_type, entity_type_ids, limit)
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Alert',
