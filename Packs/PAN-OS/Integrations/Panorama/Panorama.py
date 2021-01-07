@@ -5702,12 +5702,11 @@ def get_security_profiles_command(security_profile: str = None):
 
 
 @logger
-def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, profile_name: str) -> Dict:
+def apply_security_profile(xpath: str, profile_name: str) -> Dict:
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"
-        f"profiles/{profile_type}",
+        'xpath': xpath,
         'key': API_KEY,
         'element': f'<member>{profile_name}</member>'
     }
@@ -5722,9 +5721,17 @@ def apply_security_profile_command(profile_name: str, profile_type: str, rule_na
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
                             'Panorama instance.')
+        xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"\
+                f"profiles/{profile_type}",
+        apply_security_profile(xpath, profile_name)
+        return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
 
-    apply_security_profile(pre_post, rule_name, profile_type, profile_name)
-    return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
+    else:
+        xpath = f"{XPATH_RULEBASE}/rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/"\
+                f"profiles/{profile_type}"
+
+        apply_security_profile(xpath, profile_name)
+        return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
 
 
 @logger
