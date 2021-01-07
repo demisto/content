@@ -1,5 +1,4 @@
 {
-
   "fetch-incidents": {
     "suffix": "a",
     "response": {
@@ -7,45 +6,68 @@
     "expected": {
     }
   },
-
   "nutanix-hypervisor-hosts-list": {
     "suffix": "hosts",
     "response": {
-      "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-      "num_cpu_cores": 8,
-      "num_cpu_threads": 8,
-      "num_cpu_sockets": 2,
-      "cpu_frequency_in_hz": 2095000000,
-      "cpu_capacity_in_hz": 16760000000,
-      "memory_capacity_in_bytes": 33722204160,
-      "details": "many details about the host"
+      "metadata": "a few rows containing meta data about the request",
+      "entities": {
+        "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        "num_cpu_cores": 8,
+        "num_cpu_threads": 8,
+        "num_cpu_sockets": 2,
+        "cpu_frequency_in_hz": 2095000000,
+        "cpu_capacity_in_hz": 16760000000,
+        "memory_capacity_in_bytes": 33722204160,
+        "details": "many details about the host"
+      }
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Host",
-      "outputs_key_field": "entities.uuid"
+      "outputs_key_field": "uuid",
+      "outputs": {
+        "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        "num_cpu_cores": 8,
+        "num_cpu_threads": 8,
+        "num_cpu_sockets": 2,
+        "cpu_frequency_in_hz": 2095000000,
+        "cpu_capacity_in_hz": 16760000000,
+        "memory_capacity_in_bytes": 33722204160,
+        "details": "many details about the host"
+      }
     },
     "args": {}
   },
-
   "nutanix-hypervisor-vms-list": {
     "suffix": "vms",
     "response": {
-      "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-      "num_cores_per_vcpu": 2,
-      "num_vcpus": 2,
-      "power_state": "on",
-      "timezone": "UTC",
-      "details": "many details about the virtual machine"
+      "metadata": "a few rows containing meta data about the request",
+      "entities": {
+        "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        "num_cores_per_vcpu": 2,
+        "num_vcpus": 2,
+        "power_state": "on",
+        "timezone": "UTC",
+        "details": "many details about the virtual machine"
+      }
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.VM",
-      "outputs_key_field": "entities.uuid"
+      "outputs_key_field": "uuid",
+      "outputs": {
+        "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+        "num_cores_per_vcpu": 2,
+        "num_vcpus": 2,
+        "power_state": "on",
+        "timezone": "UTC",
+        "details": "many details about the virtual machine"
+      }
     },
     "args": {}
   },
-
   "nutanix-hypervisor-vm-powerstatus-change": {
     "suffix": "vms/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/set_power_state",
     "response": {
@@ -53,13 +75,15 @@
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.VMPowerStatus",
-      "outputs_key_field": "task_uuid"
+      "outputs_key_field": "task_uuid",
+      "outputs": {
+        "task_uuid": 123123
+      }
     },
     "args": {
       "vm_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     }
   },
-
   "nutanix-hypervisor-task-poll": {
     "suffix": "tasks/poll",
     "response": {
@@ -69,31 +93,44 @@
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Task",
-      "outputs_key_field": "completed_tasks_info.uuid"
+      "outputs_key_field": "uuid",
+      "outputs": {
+        "details": "many details about the tasks"
+      }
     },
     "args": {
       "task_ids": "123"
     }
   },
-
   "nutanix-alerts-list": {
     "suffix": "alerts",
     "response": {
-      "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "alert_type_uuid": "A140001",
-      "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::140001",
-      "resolved": true,
-      "auto_resolved": false,
-      "acknowledged": true,
-      "details": "many details about the alert"
+      "metadata": "a few rows containing meta data about the request",
+      "entities": {
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "alert_type_uuid": "A140001",
+        "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::140001",
+        "resolved": true,
+        "auto_resolved": false,
+        "acknowledged": true,
+        "details": "many details about the alert"
+      }
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Alerts",
-      "outputs_key_field": "entities.id"
+      "outputs_key_field": "id",
+      "outputs": {
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "alert_type_uuid": "A140001",
+        "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::140001",
+        "resolved": true,
+        "auto_resolved": false,
+        "acknowledged": true,
+        "details": "many details about the alert"
+      }
     },
     "args": {}
   },
-
   "nutanix-alert-acknowledge": {
     "suffix": "alerts/123123/acknowledge",
     "response": {
@@ -103,11 +140,17 @@
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Alert",
-      "outputs_key_field": "id"
+      "outputs_key_field": "id",
+      "outputs": {
+        "id": 123123,
+        "successful": true,
+        "message": "message about acknowledge"
+      }
     },
-    "args": {"alert_id": 123123}
+    "args": {
+      "alert_id": 123123
+    }
   },
-
   "nutanix-alert-resolve": {
     "suffix": "alerts/123123/resolve",
     "response": {
@@ -117,11 +160,17 @@
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Alert",
-      "outputs_key_field": "id"
+      "outputs_key_field": "id",
+      "outputs": {
+        "id": 123123,
+        "successful": true,
+        "message": "message about acknowledge"
+      }
     },
-    "args": {"alert_id": 123123}
+    "args": {
+      "alert_id": 123123
+    }
   },
-
   "nutanix-alerts-acknowledge-by-filter": {
     "suffix": "alerts/acknowledge",
     "response": {
@@ -134,11 +183,19 @@
       }
     },
     "expected": {
-      "outputs_prefix": "NutanixHypervisor.Alert"
+      "outputs_prefix": "NutanixHypervisor.Alert",
+      "outputs": {
+        "num_successful_updates": 1,
+        "num_failed_updates": 0,
+        "alert_status_list": {
+          "id": "123123",
+          "message": "",
+          "successful": true
+        }
+      }
     },
     "args": {}
   },
-
   "nutanix-alerts-resolve-by-filter": {
     "suffix": "alerts/resolve",
     "response": {
@@ -151,9 +208,17 @@
       }
     },
     "expected": {
-      "outputs_prefix": "NutanixHypervisor.Alert"
+      "outputs_prefix": "NutanixHypervisor.Alert",
+      "outputs": {
+        "num_successful_updates": 1,
+        "num_failed_updates": 0,
+        "alert_status_list": {
+          "id": "123123",
+          "message": "",
+          "successful": true
+        }
+      }
     },
     "args": {}
   }
-
 }
