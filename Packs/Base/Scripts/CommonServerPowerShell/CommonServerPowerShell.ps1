@@ -270,8 +270,7 @@ class DemistoObject {
         }
         $integration_context = $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } })
         # When Demisto Version is greater equal then "6.0.0".  integration_context will be under "context" attribute.
-        $this.DemistoVersion().version -match "\d{1,2}\.\d{1,2}\.\d{1,2}" | Out-Null
-        if (VersionEqualGreaterThen -bigger_version $matches[0] -smaller_version "6.0.0") {
+        if (DemistoVersionEqualGreaterThen -version "6.0.0") {
             $integration_context = $integration_context.context
         }
 
@@ -612,17 +611,15 @@ function FileResult([string]$file_name, [string]$data, [string]$file_type) {
     }
 }
 
-function VersionEqualGreaterThen([string]$bigger_version, [string]$smaller_version) {
-    if ($bigger_version -match "\d{1,2}\.\d{1,2}\.\d{1,2}"){
-        $bigger_version= $matches[0]
+function DemistoVersionEqualGreaterThen([string]$version) {
+    $demisto.DemistoVersion().version -match "\d{1,2}\.\d{1,2}\.\d{1,2}" | Out-Null
+    $current_version = $matches[0]
+
+    if ($version -match "\d{1,2}\.\d{1,2}\.\d{1,2}"){
+        $version = $matches[0]
     } else {
-        throw "Unable to parse version $bigger_version"
-    }
-    if ($smaller_version -match "\d{1,2}\.\d{1,2}\.\d{1,2}"){
-        $smaller_version = $matches[0]
-    } else {
-        throw "Unable to parse version $smaller_version"
+        throw "Unable to parse version $version"
     }
 
-    return [version]::Parse($bigger_version) -ge  [version]::Parse($smaller_version)
+    return [version]::Parse($version) -ge  [version]::Parse($current_version)
 }
