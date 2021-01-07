@@ -1,4 +1,4 @@
-Fetch indicators from Intel471 Malware Indicator Stream feed..
+Fetch indicators from Intel471 Actors Stream feed.
 
 * **Username** - Email address to access the intel471. 
-* **Password** - Api key to access the intel471.
+* **Password** - Api key to access the intel471. In order to get api key, enter https://titan.intel471.com/api .

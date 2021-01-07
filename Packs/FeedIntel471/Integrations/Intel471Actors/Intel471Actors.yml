@@ -126,7 +126,10 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Fetches actors indicators from intel471 feed.
+description: |-
+  "Intel 471's Actors feed is an actor-centric intelligence capability.
+  It combines both a field-based intelligence collection and a headquartered based intelligence analysis component.
+  This feed allows getting data out of access to closed sources (typically referred to as the deep and dark web) where threat actors collaborate, communicate and plan cyber attacks."
 display: Intel471 Actors Feed
 name: Intel471 Actors Feed
 script:
