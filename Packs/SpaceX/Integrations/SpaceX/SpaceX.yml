@@ -2894,7 +2894,7 @@ script:
     - contextPath: SpaceX.Rockets.first_flight
       description: First flight
       type: string
-  dockerimage: demisto/python3:3.8.2.6981
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: true
   ismappable: true
   isremotesyncin: true
