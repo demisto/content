@@ -2,7 +2,7 @@ Asks a user a question via email and process the reply directly into the investi
 
 ## Setup
 
-Demisto can use email responses within the system, e.g. when an external user's approval is required. To do this, you will create an email template with multiple choice options (e.g. Reply "Yes" if you approve and "No" if you do not).
+XSOAR can use email responses within the system, e.g. when an external user's approval is required. To do this, you will create an email template with multiple choice options (e.g. Reply "Yes" if you approve and "No" if you do not).
 
 **Before starting you will need to configure an integration capable for sending and receiving emails. Such as: Mail Listener v2 and Mail Sender (New), GMail, EWS O365, Microsoft Graph Mail Single User.**
 
@@ -89,5 +89,4 @@ There are no outputs for this script.
 ## Prerequisites
 ---
 Requires an instance of one of the available email integrations.
-
 
