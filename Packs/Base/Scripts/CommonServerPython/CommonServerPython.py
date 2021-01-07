@@ -19,6 +19,10 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+try:
+    from IAMModule import IAMUserProfile
+except ImportError:
+    from IAMModule import IAMUserProfile  # type: ignore
 
 import demistomock as demisto
 import warnings
@@ -6152,135 +6156,3 @@ class TableOrListWidget(BaseWidget):
             'total': len(self.data),
             'data': self.data
         })
-
-
-class IAMUserProfile:
-    """ A User Profile object class for IAM integrations.
-
-    :type _user_profile: ``str``
-    :param _user_profile: The user profile information.
-
-    :type _user_profile_delta: ``str``
-    :param _user_profile_delta: The user profile delta.
-
-    :type _vendor_action_results: ``list``
-    :param _vendor_action_results: A List of data returned from the vendor.
-
-    :return: None
-    :rtype: ``None``
-    """
-
-    INDICATOR_TYPE = 'User Profile'
-
-    def __init__(self, user_profile, user_profile_delta=None):
-        self._user_profile = safe_load_json(user_profile)
-        self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
-        self._vendor_action_results = []
-
-    def get_attribute(self, item):
-        return self._user_profile.get(item)
-
-    def to_entry(self):
-        """ Generates a XSOAR IAM entry from the data in _vendor_action_results.
-        Note: Currently we are using only the first element of the list, in the future we will support multiple results.
-
-        :return: A XSOAR entry.
-        :rtype: ``dict``
-        """
-
-        outputs = self._vendor_action_results[0].create_outputs()
-        readable_output = self._vendor_action_results[0].create_readable_outputs(outputs)
-
-        entry_context = {
-            'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
-            'IAM.Vendor(val.instanceName && val.instanceName == obj.instanceName && '
-            'val.email && val.email == obj.email)': outputs
-        }
-
-        return_entry = {
-            'ContentsFormat': EntryFormat.JSON,
-            'Contents': outputs,
-            'EntryContext': entry_context
-        }
-
-        if self._vendor_action_results[0].should_return_error():
-            return_entry['Type'] = EntryType.ERROR
-        else:
-            return_entry['Type'] = EntryType.NOTE
-            return_entry['HumanReadable'] = readable_output
-
-        return return_entry
-
-    def set_result(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
-                   error_message=None, details=None, skip=False, skip_reason=None, action=None, return_error=False):
-        """ Sets the outputs and readable outputs attributes according to the given arguments.
-
-        :param success: (bool) whether or not the command succeeded.
-        :param active:  (bool) whether or not the user status is active.
-        :param iden: (str) the user ID.
-        :param username: (str) the username of the user.
-        :param email:  (str) the email of the user.
-        :param error_code: (str or int) the error code of the response, if exists.
-        :param error_message: (str) the error details of the response, if exists.
-        :param details: (dict) the full response.
-        :param skip: (bool) whether or not the command is skipped.
-        :param skip_reason: (str) If the command is skipped, describes the reason.
-        :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
-        :param return_error: (bool) Whether or not to return an error entry.
-        """
-        if not email:
-            email = self.get_attribute('email')
-
-        vendor_action_result = IAMVendorActionResult(
-            success=success,
-            active=active,
-            iden=iden,
-            username=username,
-            email=email,
-            error_code=error_code,
-            error_message=error_message if error_message else '',
-            details=details,
-            skip=skip,
-            skip_reason=skip_reason if skip_reason else '',
-            action=action,
-            return_error=return_error
-        )
-
-        self._vendor_action_results.append(vendor_action_result)
-
-    def map_object(self, mapper_name, mapping_type=None):
-        """ Returns the user data, in an application data format.
-
-        :type mapper_name: ``str``
-        :param mapper_name: The outgoing mapper from XSOAR to the application.
-
-        :type mapping_type: ``str``
-        :param mapping_type: The mapping type of the mapper (optional).
-
-        :return: the user data, in the app data format.
-        :rtype: ``dict``
-        """
-        if not mapping_type:
-            mapping_type = IAMUserProfile.INDICATOR_TYPE
-        if not self._user_profile:
-            raise DemistoException('You must provide the user profile data.')
-        app_data = demisto.mapObject(self._user_profile, mapper_name, mapping_type)
-        return app_data
-
-    def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
-        """ updates the user_profile attribute according to the given app_data
-
-        :type app_data: ``dict``
-        :param app_data: The user data in app
-
-        :type mapper_name: ``str``
-        :param mapper_name: Incoming mapper name
-
-        :type mapping_type: ``str``
-        :param mapping_type: Optional - mapping type
-        """
-        if not mapping_type:
-            mapping_type = IAMUserProfile.INDICATOR_TYPE
-        if not isinstance(app_data, dict):
-            app_data = safe_load_json(app_data)
-        self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)
