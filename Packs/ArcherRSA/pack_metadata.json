@@ -2,7 +2,7 @@
     "name": "RSA Archer",
     "description": "The RSA Archer GRC Platform provides a common foundation for managing policies, controls, risks, assessments and deficiencies across lines of business.",
     "support": "xsoar",
-    "currentVersion": "1.1.6",
+    "currentVersion": "1.1.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

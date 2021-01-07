@@ -73,6 +73,11 @@
             "fromversion": "5.5.0"
         },
         {
+            "integrations": "EwsExtension",
+            "playbookID": "O365 - EWS - Extension - Test",
+            "fromversion": "5.5.0"
+        },
+        {
             "integrations": "Majestic Million",
             "playbookID": "Majestic Million Test Playbook",
             "fromversion": "5.5.0",
@@ -94,6 +99,12 @@
             "instance_names": [
                 "Mail_Sender_(New)_STARTTLS"
             ]
+        },
+        {
+            "integrations": "Azure Network Security Groups",
+            "fromversion": "5.0.0",
+            "instance_names": "azure_nsg_prod",
+            "playbookID": "Azure NSG - Test"
         },
         {
             "integrations": "OpenCTI Feed",
@@ -268,7 +279,6 @@
             "playbookID": "AzureFeed - Test",
             "fromversion": "5.5.0"
         },
-
         {
             "playbookID": "CreateIndicatorFromSTIXTest",
             "fromversion": "5.0.0"
@@ -438,6 +448,12 @@
         {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
+            "fromversion": "5.0.0",
+            "timeout": 400
+        },
+        {
+            "integrations": "HelloWorldPremium",
+            "playbookID": "HelloWorldPremium_Scan-Test",
             "fromversion": "5.0.0",
             "timeout": 400
         },
@@ -906,13 +922,13 @@
             "playbookID": "Google-Vault-Generic-Test",
             "nightly": true,
             "timeout": 3600,
-            "memory_threshold": 130
+            "memory_threshold": 180
         },
         {
             "integrations": "google-vault",
             "playbookID": "Google_Vault-Search_And_Display_Results_test",
             "nightly": true,
-            "memory_threshold": 130,
+            "memory_threshold": 180,
             "timeout": 3600
         },
         {
@@ -1312,6 +1328,11 @@
             "timeout": 300
         },
         {
+            "integrations": "Okta IAM",
+            "playbookID": "Okta IAM - Test Playbook",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Test filters & transformers scripts"
         },
         {
@@ -1530,6 +1551,12 @@
             "integrations": "Service Manager",
             "playbookID": "TestHPServiceManager",
             "timeout": 400
+        },
+        {
+            "integrations": "ServiceNow IAM",
+            "playbookID": "ServiceNow IAM - Test Playbook",
+            "instance_name": "snow_basic_auth",
+            "fromversion": "6.0.0"
         },
         {
             "playbookID": "LanguageDetect-Test",
@@ -1985,7 +2012,6 @@
                 "Lastline v2",
                 "WildFire-v2",
                 "SNDBOX",
-                "VxStream",
                 "McAfee Advanced Threat Defense"
             ],
             "playbookID": "Detonate File - Generic Test",
@@ -2029,6 +2055,15 @@
             "toversion": "4.4.9"
         },
         {
+            "integrations": [
+                "carbonblack-v2",
+                "carbonblackliveresponse",
+                "Cylance Protect v2"
+            ],
+            "playbookID": "Retrieve File from Endpoint - Generic V2 Test",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "Zscaler",
             "playbookID": "Zscaler Test",
             "nightly": true,
@@ -2066,7 +2101,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 115,
-            "pid_threshold": 5
+            "pid_threshold": 60
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -2079,7 +2114,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 100,
-            "pid_threshold": 5
+            "pid_threshold": 60
         },
         {
             "integrations": "duo",
@@ -2513,6 +2548,11 @@
             "playbookID": "Git_Integration-Test"
         },
         {
+            "integrations": "GitHub IAM",
+            "playbookID": "Github IAM - Test Playbook",
+            "fromversion": "6.1.0"
+        },
+        {
             "integrations": "LogRhythmRest",
             "playbookID": "LogRhythm REST test"
         },
@@ -2612,21 +2652,6 @@
             "fromversion": "4.5.0",
             "integrations": "VirusTotal",
             "instance_names": "virus_total_general"
-        },
-        {
-            "playbookID": "PANW - Hunting and threat detection by indicator type Test",
-            "fromversion": "5.0.0",
-            "timeout": 1200,
-            "integrations": [
-                "Panorama",
-                "Palo Alto Networks Cortex",
-                "AutoFocus V2",
-                "VirusTotal"
-            ],
-            "instance_names": [
-                "palo_alto_panorama",
-                "virus_total_general"
-            ]
         },
         {
             "playbookID": "PAN-OS Query Logs For Indicators Test",
@@ -3175,9 +3200,25 @@
             "integrations": "Public DNS Feed",
             "playbookID": "Public_DNS_Feed_Test",
             "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "BitcoinAbuse",
+            "playbookID": "BitcoinAbuse-test",
+            "fromversion": "5.5.0"
+        },
+        {
+            "integrations": "ExpanseV2",
+            "playbookID": "ExpanseV2 Test",
+            "fromversion": "6.0.0"
+        },
+        {
+            "integrations": "FeedExpanse",
+            "playbookID": "Feed Expanse Test",
+            "fromversion": "6.0.0"
         }
     ],
     "skipped_tests": {
+        "Github IAM - Test Playbook": "Issue 32383",
         "Workday - Test": "No credentials Issue 29595",
         "PCAP File Carving Test": "Merged with PCAP Analysis Test",
         "PCAP Parsing And Indicator Enrichment Test": "Merged with PCAP Analysis Test",
@@ -3245,7 +3286,6 @@
         "AttackIQ - Test": "Issue 29774",
         "AWS-securityhub Test": "Issue 29796",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
-        "IAM - Test Playbook": "Issue 30013",
         "Trend Micro Apex - Test": "Issue 27280",
         "Azure Compute - Test": "Issue 28056",
         "Test - CrowdStrike Falcon": "Issue 30068",
@@ -3257,22 +3297,23 @@
         "Test-BPA_Integration": "Issue 28236",
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
-        "VxStream Test": "Issue 29280",
         "PhishLabsIOC TestPlaybook": "Issue 30874",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
-        "urlscan_malicious_Test": "Issue 20111",
-        "Test-Detonate URL - Crowdstrike": "Issue 30879",
         "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
-        "Akamai_WAF-Test": "Issue 31900",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 27846",
-        "Archer-Test-Playbook": "Issue 26851"
+        "Archer-Test-Playbook": "Issue 26851",
+        "Carbon Black Live Response Test": "Issue 28237",
+        "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
+        "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
+        "FeedThreatConnect-Test": "Issue 32317",
+        "Phishing v2 - Test - Incident Starter": "Issue 26783",
+        "Phishing - Core - Test - Incident Starter": "Issue 26784"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
@@ -3301,7 +3342,6 @@
         "Vectra v2": "No instance",
         "Awake Security": "Issue 23376",
         "ExtraHop": "No license, issue 23731",
-        "Palo Alto Networks Cortex": "Issue 22300",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
@@ -3357,19 +3397,20 @@
         "SNDBOX": "Issue 28826",
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
-
+        "Akamai WAF": "Issue 32318",
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
-
+        "Infoblox": "Unstable instance, issue 25651",
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
-        "Joe Security": "Issue 25650",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
         "Endace": "Issue 24304",
@@ -3385,7 +3426,10 @@
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "Palo Alto Minemeld": "Issue #26878",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "CrowdStrike Falcon Intel v2": "License issues #32473",
+        "CrowdStrikeMalquery": "License issues #32473",
+        "CrowdstrikeFalcon": "License issues #32473"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3394,6 +3438,8 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "HashiCorp Vault": "Has a command that sends parameters in the path",
+        "urlscan.io": "Uses data that comes in the headers",
         "QRadar_v2": "Test playbook 'test playbook - QRadarCorrelations' has multiple branches",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
         "EWS v2": "Fetches bytes data (!ews-get-items-from-folder)",
@@ -3460,7 +3506,6 @@
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Anomali ThreatStream": "'proxy' parameter not working",
-        "Palo Alto Networks Cortex": "SDK",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "RedLock": "SSL Issues",
@@ -3510,7 +3555,7 @@
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
         "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
-        "MISP V2": "Issue 26905"
+        "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [
         "SNDBOX",
@@ -3559,7 +3604,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
