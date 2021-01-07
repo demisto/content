@@ -2,7 +2,7 @@ Asks a user a question via email and process the reply directly into the investi
 
 ## Setup
 
-XSOAR can use email responses within the system, e.g. when an external user's approval is required. To do this, you will create an email template with multiple choice options (e.g. Reply "Yes" if you approve and "No" if you do not).
+Cortex XSOAR can use email responses within the system, e.g. when an external user's approval is required. To do this, you will create an email template with multiple choice options (e.g. Reply "Yes" if you approve and "No" if you do not).
 
 **Before starting you will need to configure an integration capable for sending and receiving emails. Such as: Mail Listener v2 and Mail Sender (New), GMail, EWS O365, Microsoft Graph Mail Single User.**
 
@@ -18,7 +18,7 @@ Add the EmailAskUser script and set as follows:
 * Option 1 – The first option to choose from.
 * Option 2 – The second option to choose from.
 * Subject -  The email subject.
-* Task – The ID of the task in the playbook, to trigger when a reply is received. The task ID is found when you look at the task and as represented as #<number> on the task. The task ID is located in the lower-left corner of the task. You can also use a task *tag* (see Example below).
+* Task – The ID of the task in the playbook, to trigger when a reply is received. The task ID is found when you look at the task and as represented as `#<number>` on the task. The task ID is located in the lower-left corner of the task. You can also use a task *tag* (see Example below).
 
 ### Step 2 - A conditional task
 Add a conditional task to receive the reply from the email. This task is triggered when a reply from the email is received according to its task ID that is set as the Task parameter in the EmailAskUser script (see above).
