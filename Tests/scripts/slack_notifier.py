@@ -11,7 +11,7 @@ from slackclient import SlackClient
 
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import str2bool, run_command
-from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs
+from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs, PackStatus
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
@@ -139,7 +139,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         }] + steps_fields
 
     if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
-        successful_packs, failed_packs = get_successful_and_failed_packs(
+        successful_packs, failed_packs, _ = get_successful_and_failed_packs(
             packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         )
         if successful_packs:
@@ -151,7 +151,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         if failed_packs:
             steps_fields += [{
                 "title": "Failed Packs:",
-                "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
+                "value": "\n".join([f"{pack_name}: {PackStatus[pack_data.get(BucketUploadFlow.STATUS)].value}"
                                     for pack_name, pack_data in failed_packs.items()]),
                 "short": False
             }]
