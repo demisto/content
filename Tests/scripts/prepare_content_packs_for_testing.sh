@@ -54,14 +54,7 @@ if [ ! -n "${NIGHTLY}" ] && [ ! -n "${BUCKET_UPLOAD}" ]; then
   fi
 else
   IS_FORCE_UPLOAD=false
-  if [ -n "${NIGHTLY}" ]; then
-    echo "Updating all content packs for nightly build..."
-    # In content nightly we include test-pbs in the zipped packs, we override all packs and we test all packs in the repo
-    REMOVE_PBS=false
-    OVERRIDE_ALL_PACKS=true
-    BUCKET_UPLOAD_FLOW=false
-    PACKS_LIST="all"
-  elif [ -n "${BUCKET_UPLOAD}" ]; then
+  if [ -n "${BUCKET_UPLOAD}" ]; then
       # In bucket upload flow, we exclude test-pbs in the zipped packs
       REMOVE_PBS=true
       BUCKET_UPLOAD_FLOW=true
