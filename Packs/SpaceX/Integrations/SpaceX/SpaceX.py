@@ -932,7 +932,7 @@ def main():
         else:
             return_error(f"{command} does not exist in SpaceX integration.")
     except Exception as err:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(err)}')
+        return_error(f'Failed to execute {command} command. Error: {str(err)}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
