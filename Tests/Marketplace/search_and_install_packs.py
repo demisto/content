@@ -444,7 +444,7 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     install_packs(client, host, all_packs, is_nightly=True)
 
 
-def install_all_content_packs(client: demisto_client, host: str):
+def install_all_content_packs(client: demisto_client, host: str, server_version=None):
     """ Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
     Retrieving the latest version of each pack from the metadata file in content repo.
 
@@ -461,7 +461,9 @@ def install_all_content_packs(client: demisto_client, host: str):
             with open(metadata_path, 'r') as json_file:
                 pack_metadata = json.load(json_file)
                 pack_version = pack_metadata.get('currentVersion')
-            all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
+                server_min_version = pack_metadata.get('serverMinVersion', '6.0.0')
+            if 'Master' in server_version or server_version >= server_min_version:
+                all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     return install_packs(client, host, all_packs)
 
 
