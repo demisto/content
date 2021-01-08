@@ -274,7 +274,7 @@ class DemistoObject {
             $integration_context = $integration_context.context
         }
 
-        return $integration_context
+        return $integration_context.context
     }
 
     SetIntegrationContext ($Value) {
@@ -612,14 +612,10 @@ function FileResult([string]$file_name, [string]$data, [string]$file_type) {
 }
 
 function DemistoVersionEqualGreaterThen([string]$version) {
-    $demisto.DemistoVersion().version -match "\d{1,2}\.\d{1,2}\.\d{1,2}" | Out-Null
-    $current_version = $matches[0]
-
-    if ($version -match "\d{1,2}\.\d{1,2}\.\d{1,2}"){
-        $version = $matches[0]
-    } else {
-        throw "Unable to parse version $version"
-    }
+    $demisto_version = $demisto.DemistoVersion().version
+    $version_pattern = "\d{1,2}\.\d{1,2}\.\d{1,2}"
+    $current_version = (Select-string -Pattern $version_pattern -InputObject $demisto_version).Matches[0].Value
+    $version = (Select-string -Pattern $version_pattern -InputObject $version).Matches[0].Value
 
     return [version]::Parse($version) -ge  [version]::Parse($current_version)
 }

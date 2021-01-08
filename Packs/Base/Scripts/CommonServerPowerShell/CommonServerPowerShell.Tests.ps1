@@ -12,10 +12,21 @@ Describe 'Check-DemistoServerRequest' {
 
 Describe 'Check-UtilityFunctions' {
     It "VersionEqualGreaterThen" {
-       VersionEqualGreaterThen -bigger_version "6.0.1" -smaller_version "6.0.0" | Should -BeTrue
-       VersionEqualGreaterThen -bigger_version "6.0.0" -smaller_version "6.0.1" | Should -BeFalse
-       VersionEqualGreaterThen -bigger_version "6.1.0-beta" -smaller_version "6.0.0" | Should -BeTrue
-       VersionEqualGreaterThen -bigger_version "6.0.0" -smaller_version "6.1.0-beta" | Should -BeFalse
+        class DemistoObject {
+            DemistoObject () {
+            }
+
+            [array] DemistoVersion () {
+                return @{
+                    "version" = "6.0.0-build"
+                }
+            }
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        DemistoVersionEqualGreaterThen -version "6.0.1"  | Should -BeTrue
+        DemistoVersionEqualGreaterThen "6.0.1-build"  | Should -BeTrue
+        DemistoVersionEqualGreaterThen -version "5.0.0"  | Should -BeFalse
+        DemistoVersionEqualGreaterThen -version "5.0.0-build"  | Should -BeFalse
     }
 
     It "ArgToList" {
