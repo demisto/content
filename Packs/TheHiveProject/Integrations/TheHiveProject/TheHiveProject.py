@@ -1,11 +1,6 @@
-import json
-import traceback
 from pprint import pprint
 from typing import Any, Dict, List, Optional, Tuple, Union, cast
 
-import dateparser
-import demistomock as demisto
-import requests
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings

@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: TheHiveProject
+  id: TheHive Project
   version: -1
 configuration:
 - additionalinfo: Ensure to include the port number with the URL
@@ -41,8 +41,8 @@ configuration:
   required: true
   type: 15
 description: Integration with The Hive Project Security Incident Response Platform.
-display: TheHiveProject
-name: TheHiveProject
+display: TheHive Project
+name: TheHive Project
 script:
   commands:
   - arguments:
@@ -1419,7 +1419,7 @@ script:
       - Deleted
     description: Update an observable
     name: thehive-update-observable
-  dockerimage: demisto/python3:3.8.5.10845
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1428,6 +1428,6 @@ script:
   script: ''
   subtype: python3
   type: python
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
