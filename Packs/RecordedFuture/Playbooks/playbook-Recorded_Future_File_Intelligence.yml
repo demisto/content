@@ -662,7 +662,7 @@ outputs:
   description: Recorded Future Threat List Type
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedAttacker.count
-  description: Recorded Future Related Count
+  description: Recorded Future Related Attacker Count
   type: number
 - contextPath: RecordedFuture.File.relatedEntities.RelatedAttacker.id
   description: Recorded Future Related ID
