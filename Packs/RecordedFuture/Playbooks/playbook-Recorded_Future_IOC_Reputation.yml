@@ -248,7 +248,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: MD5 to enrich
+  description: File MD5 to enrich
   playbookInputQuery:
 - key: SHA256
   value:
@@ -258,7 +258,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: SHA256 to enrich
+  description: File SHA256 to enrich
   playbookInputQuery:
 - key: SHA1
   value:
@@ -268,7 +268,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: SHA1 to enrich
+  description: File SHA1 to enrich
   playbookInputQuery:
 - key: URL
   value:
@@ -310,10 +310,10 @@ outputs:
   description: Domain name
   type: string
 - contextPath: Domain.Malicious.Vendor
-  description: For malicious domains, the vendor that made the decision
+  description: For malicious Domains, the vendor that made the decision
   type: string
 - contextPath: Domain.Malicious.Description
-  description: For malicious domains, the reason that the vendor made the decision
+  description: For malicious Domains, the reason that the vendor made the decision
   type: string
 - contextPath: IP.Address
   description: IP address
@@ -364,22 +364,22 @@ outputs:
   description: Recorded Future Hash Risk Level
   type: string
 - contextPath: RecordedFuture.File.Evidence.rule
-  description: Recorded Future Risk Rule Name
+  description: Recorded Risk Rule Name
   type: string
 - contextPath: RecordedFuture.File.Evidence.mitigation
-  description: Recorded Future Risk Rule Mitigation
+  description: Recorded Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.File.Evidence.description
-  description: Recorded Future Risk Rule description
+  description: Recorded Risk Rule description
   type: string
 - contextPath: RecordedFuture.File.Evidence.timestamp
-  description: Recorded Future Risk Rule timestamp
+  description: Recorded Risk Rule timestamp
   type: date
 - contextPath: RecordedFuture.File.Evidence.level
-  description: Recorded Future Risk Rule Level
+  description: Recorded Risk Rule Level
   type: number
 - contextPath: RecordedFuture.File.Evidence.ruleid
-  description: Recorded Future Risk Rule ID
+  description: Recorded Risk Rule ID
   type: string
 - contextPath: RecordedFuture.File.name
   description: Hash
@@ -397,22 +397,22 @@ outputs:
   description: Recorded Future IP Risk Level
   type: string
 - contextPath: RecordedFuture.IP.Evidence.rule
-  description: Recorded Future Risk Rule Name
+  description: Recorded Risk Rule Name
   type: string
 - contextPath: RecordedFuture.IP.Evidence.mitigation
-  description: Recorded Future Risk Rule Mitigation
+  description: Recorded Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.IP.Evidence.description
-  description: Recorded Future Risk Rule Description
+  description: Recorded Risk Rule Description
   type: string
 - contextPath: RecordedFuture.IP.Evidence.timestamp
-  description: Recorded Future Risk Rule Timestamp
+  description: Recorded Risk Rule Timestamp
   type: date
 - contextPath: RecordedFuture.IP.Evidence.level
-  description: Recorded Future Risk Rule Level
+  description: Recorded Risk Rule Level
   type: number
 - contextPath: RecordedFuture.IP.Evidence.ruleid
-  description: Recorded Future Risk Rule ID
+  description: Recorded Risk Rule ID
   type: string
 - contextPath: RecordedFuture.IP.name
   description: IP Address
@@ -430,22 +430,22 @@ outputs:
   description: Risk Score
   type: number
 - contextPath: RecordedFuture.CVE.Evidence.rule
-  description: Recorded Future Risk Rule Name
+  description: Recorded Risk Rule Name
   type: string
 - contextPath: RecordedFuture.CVE.Evidence.mitigation
-  description: Recorded Future Risk Rule Mitigation
+  description: Recorded Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.CVE.Evidence.description
-  description: Recorded Future Risk Rule description
+  description: Recorded Risk Rule description
   type: string
 - contextPath: RecordedFuture.CVE.Evidence.timestamp
-  description: Recorded Future Risk Rule timestamp
+  description: Recorded Risk Rule timestamp
   type: date
 - contextPath: RecordedFuture.CVE.Evidence.level
-  description: Recorded Future Risk Rule Level
+  description: Recorded Risk Rule Level
   type: number
 - contextPath: RecordedFuture.CVE.Evidence.ruleid
-  description: Recorded Future Risk Rule ID
+  description: Recorded Risk Rule ID
   type: string
 - contextPath: RecordedFuture.CVE.name
   description: Vulnerability name
@@ -463,22 +463,22 @@ outputs:
   description: Recorded Future Domain Risk Level
   type: string
 - contextPath: RecordedFuture.Domain.Evidence.rule
-  description: Recorded Future Risk Rule Name
+  description: Recorded Risk Rule Name
   type: string
 - contextPath: RecordedFuture.Domain.Evidence.mitigation
-  description: Recorded Future Risk Rule Mitigation
+  description: Recorded Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.Domain.Evidence.description
-  description: Recorded Future Risk Rule description
+  description: Recorded Risk Rule description
   type: string
 - contextPath: RecordedFuture.Domain.Evidence.timestamp
-  description: Recorded Future Risk Rule timestamp
+  description: Recorded Risk Rule timestamp
   type: date
 - contextPath: RecordedFuture.Domain.Evidence.level
-  description: Recorded Future Risk Rule Level
+  description: Recorded Risk Rule Level
   type: number
 - contextPath: RecordedFuture.Domain.Evidence.ruleid
-  description: Recorded Future Risk Rule ID
+  description: Recorded Risk Rule ID
   type: string
 - contextPath: RecordedFuture.Domain.name
   description: Domain name
@@ -496,22 +496,22 @@ outputs:
   description: Recorded Future URL Risk Level
   type: string
 - contextPath: RecordedFuture.URL.Evidence.rule
-  description: Recorded Future Risk Rule Name
+  description: Recorded Risk Rule Name
   type: string
 - contextPath: RecordedFuture.URL.Evidence.mitigation
-  description: Recorded Future Risk Rule Mitigation
+  description: Recorded Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.URL.Evidence.description
-  description: Recorded Future Risk Rule description
+  description: Recorded Risk Rule description
   type: string
 - contextPath: RecordedFuture.URL.Evidence.timestamp
-  description: Recorded Future Risk Rule timestamp
+  description: Recorded Risk Rule timestamp
   type: date
 - contextPath: RecordedFuture.URL.Evidence.level
-  description: Recorded Future Risk Rule Level
+  description: Recorded Risk Rule Level
   type: number
 - contextPath: RecordedFuture.URL.Evidence.ruleid
-  description: Recorded Future Risk Rule ID
+  description: Recorded Risk Rule ID
   type: string
 - contextPath: RecordedFuture.URL.name
   description: URL

@@ -1,15 +1,15 @@
 id: Recorded Future CVE Reputation
 version: -1
 name: Recorded Future CVE Reputation
-description: CVE reputation with Recorded Future SOAR enrichment.
+description: CVE reputation with Recorded Future SOAR Enrichment
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 89ea0694-d9c9-4ddf-8fd0-135f159afb57
+    taskid: 812bc576-9c30-453e-8b30-7671d8c68ade
     type: start
     task:
-      id: 89ea0694-d9c9-4ddf-8fd0-135f159afb57
+      id: 812bc576-9c30-453e-8b30-7671d8c68ade
       version: -1
       name: ""
       iscommand: false
@@ -33,14 +33,14 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 2b22eb54-802e-4d08-88da-3435a0e282da
+    taskid: 52d6c5d0-d5b3-467c-8410-766e7c274632
     type: condition
     task:
-      id: 2b22eb54-802e-4d08-88da-3435a0e282da
+      id: 52d6c5d0-d5b3-467c-8410-766e7c274632
       version: -1
       name: Is there a CVE ID to get reputation of?
       description: Checks whether the playbook's input contains at least one domain
-        name for which to retrieve the reputation.
+        name to get reputation of.
       type: condition
       iscommand: false
       brand: ""
@@ -72,10 +72,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 9b1db93f-3933-43ee-89cd-df000c5047a2
+    taskid: ebb1418e-2cee-43ba-898b-dd3d039db302
     type: title
     task:
-      id: 9b1db93f-3933-43ee-89cd-df000c5047a2
+      id: ebb1418e-2cee-43ba-898b-dd3d039db302
       version: -1
       name: Done
       type: title
@@ -97,10 +97,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 4729ec6c-7996-4e59-88c7-f9621b41d451
+    taskid: e94dae4a-53ae-4f18-8e09-e4e6f6b85de8
     type: condition
     task:
-      id: 4729ec6c-7996-4e59-88c7-f9621b41d451
+      id: e94dae4a-53ae-4f18-8e09-e4e6f6b85de8
       version: -1
       name: Is Recorded Future API enabled?
       description: Checks if there is an active instance of the Recorded Future API
@@ -157,20 +157,20 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: a2869b99-0dfa-4009-8feb-b03dd23bf17d
+    taskid: b4ebb4f7-615c-465b-8927-9b23e38dbe53
     type: regular
     task:
-      id: a2869b99-0dfa-4009-8feb-b03dd23bf17d
+      id: b4ebb4f7-615c-465b-8927-9b23e38dbe53
       version: -1
       name: Get CVE reputation from Recorded Future
-      description: Get a quick indicator of the risk associated with a specific CVE.
+      description: Get a quick indicator of the risk associated with a CVE.
       script: Recorded Future v2|||cve
       type: regular
       iscommand: true
       brand: Recorded Future v2
     nexttasks:
       '#none#':
-      - "24"
+      - "30"
     scriptarguments:
       cve:
         simple: ${inputs.CVE}
@@ -179,8 +179,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 410,
-          "y": 730
+          "x": 530,
+          "y": 700
         }
       }
     note: false
@@ -190,10 +190,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 8075d9ed-0723-4435-8018-09dc88e18081
+    taskid: 11c140fa-79ce-4595-84ac-6274a0b9b7f4
     type: title
     task:
-      id: 8075d9ed-0723-4435-8018-09dc88e18081
+      id: 11c140fa-79ce-4595-84ac-6274a0b9b7f4
       version: -1
       name: Get reputation using Recorded Future API
       type: title
@@ -216,6 +216,153 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "30":
+    id: "30"
+    taskid: 617ca2be-df7c-4921-86e4-513b1d4df570
+    type: regular
+    task:
+      id: 617ca2be-df7c-4921-86e4-513b1d4df570
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskrules:
+        simple: ${RecordedFuture.CVE.rules}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threatassessment: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        simple: ${RecordedFuture.CVE.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -225,8 +372,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 880,
-        "width": 740,
+        "height": 895,
+        "width": 860,
         "x": 50,
         "y": 50
       }
@@ -239,7 +386,7 @@ inputs:
       root: CVE
       accessor: ID
   required: false
-  description: The CVE ID for which to get the reputation.
+  description: The CVE ID to get reputation of.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
@@ -258,38 +405,38 @@ outputs:
   description: Vulnerability name
   type: string
 - contextPath: RecordedFuture.CVE.riskLevel
-  description: Recorded Future vulnerability risk level
+  description: Recorded Future Vulnerability Risk Level
   type: string
 - contextPath: RecordedFuture.CVE.riskScore
-  description: Risk score
+  description: Risk Score
   type: number
 - contextPath: RecordedFuture.CVE.Evidence.rule
-  description: Recorded Future risk rule name
+  description: Recorded Risk Rule Name
   type: string
 - contextPath: RecordedFuture.CVE.Evidence.mitigation
-  description: Recorded Future risk rule mitigation
+  description: Recorded Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.CVE.Evidence.description
-  description: Recorded Future risk rule description
+  description: Recorded Risk Rule description
   type: string
 - contextPath: RecordedFuture.CVE.Evidence.timestamp
-  description: Recorded Future risk rule timestamp
+  description: Recorded Risk Rule timestamp
   type: date
 - contextPath: RecordedFuture.CVE.Evidence.level
-  description: Recorded Future risk rule level
+  description: Recorded Risk Rule Level
   type: number
 - contextPath: RecordedFuture.CVE.Evidence.ruleid
-  description: Recorded Future risk rule ID
+  description: Recorded Risk Rule ID
   type: string
 - contextPath: RecordedFuture.CVE.name
   description: Vulnerability name
   type: string
 - contextPath: RecordedFuture.CVE.maxRules
-  description: Maximum count of Recorded Future vulnerability risk rules
+  description: Maximum count of Recorded Future Vulnerability Risk Rules
   type: number
 - contextPath: RecordedFuture.CVE.ruleCount
-  description: Number of triggered Recorded Future vulnerability risk rules
+  description: Number of triggered Recorded Future Vulnerability Risk Rules
   type: number
-fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Recorded Future Test Playbook
+fromversion: 5.0.0

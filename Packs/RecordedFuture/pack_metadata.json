@@ -2,29 +2,25 @@
     "name": "RecordedFuture v2",
     "description": "Recorded Future App v2",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.0",
     "author": "Recorded Future",
     "url": "https://www.recordedfuture.com/support/demisto-integration/",
     "email": "support@recordedfuture.com",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
+    "tags": [
+        ""
+    ],
     "created": "2020-05-12T13:09:02Z",
     "updated": "2020-06-03T13:09:02Z",
-    "certification": "certified",
+    "beta": false,
+    "deprecated": false,
     "useCases": [],
-    "keywords": [
-        "recorded future",
-        "recordedfuture",
-        "rf",
-        "threat intelligence",
-        "ti",
-        "tip",
-        "enrichment",
-        "enrich",
-        "intelligence",
-        "data enrichment"
-    ],
-    "dependencies": {}
+    "keywords": ["recorded future", "recordedfuture", "rf", "threat intelligence", "ti",
+        "tip", "enrichment", "enrich", "intelligence", "data enrichment"],
+    "dependencies": {},
+    "githubUser": [
+        "christian-recordedfuture"
+    ]
 }

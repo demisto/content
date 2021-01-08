@@ -1,0 +1,9 @@
+!ip ip="8.8.8.8"
+!domain domain="google.com"
+!file file="027cc450ef5f8c5f653329641ec1fed91f694e0d229928963b30f6b0d7d3a745"
+!url url="https://google.com"
+!cve cve="CVE-2011-3874"
+!recordedfuture-threat-assessment context="c2" ip="8.8.8.8"
+!recordedfuture-alert-rules limit=1
+!recordedfuture-alerts limit=1
+!recordedfuture-intelligence entity_type="ip" entity="8.8.8.8"

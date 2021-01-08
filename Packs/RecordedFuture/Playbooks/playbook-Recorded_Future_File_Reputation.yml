@@ -1,15 +1,15 @@
 id: Recorded Future File Reputation
 version: -1
 name: Recorded Future File Reputation
-description: File reputation using Recorded Future SOAR enrichment
+description: File reputation using Recorded Future SOAR Enrichment
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 23a78b35-39ae-4280-80fd-4692966313d3
+    taskid: 74181337-dde0-4a67-8cb3-947f1e5b475c
     type: start
     task:
-      id: 23a78b35-39ae-4280-80fd-4692966313d3
+      id: 74181337-dde0-4a67-8cb3-947f1e5b475c
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: d3c732b7-1ebb-464c-813d-4ba3d092db01
+    taskid: 736504e0-6cc2-4ea8-8ba5-c12192af0bc2
     type: title
     task:
-      id: d3c732b7-1ebb-464c-813d-4ba3d092db01
+      id: 736504e0-6cc2-4ea8-8ba5-c12192af0bc2
       version: -1
       name: Get reputation using Recorded Future API
       type: title
@@ -63,20 +63,20 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 4914716e-d3cc-4d8a-8bed-c8c3f66a3b8c
+    taskid: 35a895eb-d8ec-4fd6-8b25-eb7f23b7da9e
     type: regular
     task:
-      id: 4914716e-d3cc-4d8a-8bed-c8c3f66a3b8c
+      id: 35a895eb-d8ec-4fd6-8b25-eb7f23b7da9e
       version: -1
       name: Get MD5 reputation
-      description: Get a quick indication of the risk associated with a file.
+      description: Get a quick indicator of the risk associated with a file.
       script: Recorded Future v2|||file
       type: regular
       iscommand: true
       brand: Recorded Future v2
     nexttasks:
       '#none#':
-      - "7"
+      - "20"
     scriptarguments:
       file:
         complex:
@@ -87,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 655
+          "y": 665
         }
       }
     note: false
@@ -97,10 +97,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 7bb25a37-781b-437b-8286-7bb3162be1fa
+    taskid: 0cb4b168-d43a-426e-85f4-63341287ee88
     type: title
     task:
-      id: 7bb25a37-781b-437b-8286-7bb3162be1fa
+      id: 0cb4b168-d43a-426e-85f4-63341287ee88
       version: -1
       name: Done
       type: title
@@ -111,8 +111,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1920,
-          "y": 950
+          "x": 1370,
+          "y": 1050
         }
       }
     note: false
@@ -122,10 +122,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 40e9afcb-fd99-47fc-85cd-b7494a8497b0
+    taskid: 58bb05e5-2b1d-4971-83e5-90ac5d7518de
     type: condition
     task:
-      id: 40e9afcb-fd99-47fc-85cd-b7494a8497b0
+      id: 58bb05e5-2b1d-4971-83e5-90ac5d7518de
       version: -1
       name: Is there an MD5 hash?
       description: Check if there is an MD5 hash in context.
@@ -164,10 +164,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 4caf0a1b-7bbe-4162-8918-a1390918de5a
+    taskid: b870b692-b1a9-47f2-8852-c68c345aff51
     type: condition
     task:
-      id: 4caf0a1b-7bbe-4162-8918-a1390918de5a
+      id: b870b692-b1a9-47f2-8852-c68c345aff51
       version: -1
       name: Is there a SHA-256 hash?
       description: Check if there is a SHA-256 hash in context.
@@ -206,20 +206,20 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 667df526-d5c0-4ba7-8c04-91ec2bd925c5
+    taskid: fad9cc52-fc61-4eb3-80c4-70a4af1ac54c
     type: regular
     task:
-      id: 667df526-d5c0-4ba7-8c04-91ec2bd925c5
+      id: fad9cc52-fc61-4eb3-80c4-70a4af1ac54c
       version: -1
       name: Get SHA-256 reputation
-      description: Get a quick indication of the risk associated with a file.
+      description: Get a quick indicator of the risk associated with a file.
       script: Recorded Future v2|||file
       type: regular
       iscommand: true
       brand: Recorded Future v2
     nexttasks:
       '#none#':
-      - "7"
+      - "20"
     scriptarguments:
       file:
         complex:
@@ -240,10 +240,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: fbf610f2-782a-48ec-8d05-8976f347dc7a
+    taskid: b4368d5a-c045-407b-8cfb-aab08cebdfac
     type: condition
     task:
-      id: fbf610f2-782a-48ec-8d05-8976f347dc7a
+      id: b4368d5a-c045-407b-8cfb-aab08cebdfac
       version: -1
       name: Is there a SHA-1 hash?
       description: Check if there is a SHA-1 hash in context.
@@ -282,20 +282,20 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 3831a085-c16b-4eec-8499-4852a0fd1f43
+    taskid: eb590faf-6a42-4447-8f10-f09b45b979a7
     type: regular
     task:
-      id: 3831a085-c16b-4eec-8499-4852a0fd1f43
+      id: eb590faf-6a42-4447-8f10-f09b45b979a7
       version: -1
       name: Get SHA-1 reputation
-      description: Get a quick indication of the risk associated with a file.
+      description: Get a quick indicator of the risk associated with a file.
       script: Recorded Future v2|||file
       type: regular
       iscommand: true
       brand: Recorded Future v2
     nexttasks:
       '#none#':
-      - "7"
+      - "20"
     scriptarguments:
       file:
         complex:
@@ -316,10 +316,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: eb6380e9-cb99-4450-8190-c3be63dd1c1b
+    taskid: 4783ab5f-c69d-4c75-8188-72fb800630a1
     type: condition
     task:
-      id: eb6380e9-cb99-4450-8190-c3be63dd1c1b
+      id: 4783ab5f-c69d-4c75-8188-72fb800630a1
       version: -1
       name: Is Recorded Future API enabled?
       description: Checks if there is an active instance of the Recorded Future API
@@ -372,6 +372,153 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "20":
+    id: "20"
+    taskid: 97caa79f-8b3d-4565-86ae-2b0027ae5e8f
+    type: regular
+    task:
+      id: 97caa79f-8b3d-4565-86ae-2b0027ae5e8f
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskrules:
+        simple: ${RecordedFuture.File.rules}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threatassessment: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        simple: ${RecordedFuture.File.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -380,8 +527,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1215,
-        "width": 2250,
+        "height": 1315,
+        "width": 1700,
         "x": 50,
         "y": -200
       }
@@ -394,7 +541,7 @@ inputs:
       root: File
       accessor: MD5
   required: false
-  description: MD5 hash for which to get the reputation.
+  description: File MD5 hash to get reputation of.
   playbookInputQuery:
 - key: SHA256
   value:
@@ -402,7 +549,7 @@ inputs:
       root: File
       accessor: SHA256
   required: false
-  description: SHA-256 hash for which to get the reputation.
+  description: File SHA-256 hash to get reputation of.
   playbookInputQuery:
 - key: SHA1
   value:
@@ -410,7 +557,7 @@ inputs:
       root: File
       accessor: SHA1
   required: false
-  description: SHA-1 hash for which to get the reputation.
+  description: File SHA-1 hash to get reputation of.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
@@ -456,22 +603,22 @@ outputs:
   description: Recorded Future Hash Risk Level
   type: string
 - contextPath: RecordedFuture.File.Evidence.rule
-  description: Recorded Future Risk Rule Name
+  description: Recorded Risk Rule Name
   type: string
 - contextPath: RecordedFuture.File.Evidence.mitigation
-  description: Recorded Future Risk Rule Mitigation
+  description: Recorded Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.File.Evidence.description
-  description: Recorded Future Risk Rule description
+  description: Recorded Risk Rule description
   type: string
 - contextPath: RecordedFuture.File.Evidence.timestamp
-  description: Recorded Future Risk Rule timestamp
+  description: Recorded Risk Rule timestamp
   type: date
 - contextPath: RecordedFuture.File.Evidence.level
-  description: Recorded Future Risk Rule Level
+  description: Recorded Risk Rule Level
   type: number
 - contextPath: RecordedFuture.File.Evidence.ruleid
-  description: Recorded Future Risk Rule ID
+  description: Recorded Risk Rule ID
   type: string
 - contextPath: RecordedFuture.File.name
   description: Hash
@@ -482,6 +629,6 @@ outputs:
 - contextPath: RecordedFuture.File.ruleCount
   description: Number of triggered Recorded Future Hash Risk Rules
   type: number
-fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Recorded Future Test Playbook
+fromversion: 5.0.0

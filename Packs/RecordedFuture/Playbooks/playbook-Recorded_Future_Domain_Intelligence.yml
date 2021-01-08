@@ -1,15 +1,15 @@
 id: Recorded Future Domain Intelligence
 version: -1
 name: Recorded Future Domain Intelligence
-description: Domain enrichment using Recorded Future intelligence
+description: Domain Enrichment using Recorded Future Intelligence
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 89ea0694-d9c9-4ddf-8fd0-135f159afb57
+    taskid: f4b60c32-9586-439f-800c-c8cb71ee5589
     type: start
     task:
-      id: 89ea0694-d9c9-4ddf-8fd0-135f159afb57
+      id: f4b60c32-9586-439f-800c-c8cb71ee5589
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 3c6fe423-8215-4bd0-8bf5-c57c35889637
+    taskid: 85412671-162b-4f6f-8aa9-3cbabe89098e
     type: condition
     task:
-      id: 3c6fe423-8215-4bd0-8bf5-c57c35889637
+      id: 85412671-162b-4f6f-8aa9-3cbabe89098e
       version: -1
       name: Is there a domain to enrich?
       description: Checks whether the playbook's input contains at least one domain
@@ -72,10 +72,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 9b1db93f-3933-43ee-89cd-df000c5047a2
+    taskid: 5c25e685-6692-4d66-828f-4cbc4264844c
     type: title
     task:
-      id: 9b1db93f-3933-43ee-89cd-df000c5047a2
+      id: 5c25e685-6692-4d66-828f-4cbc4264844c
       version: -1
       name: Done
       type: title
@@ -87,7 +87,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 1045
         }
       }
     note: false
@@ -97,10 +97,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 3b354965-eea8-4788-8823-1fba55a9f03a
+    taskid: a19c274b-c50c-498c-8ad7-b352e8cf6c08
     type: condition
     task:
-      id: 3b354965-eea8-4788-8823-1fba55a9f03a
+      id: a19c274b-c50c-498c-8ad7-b352e8cf6c08
       version: -1
       name: Is Recorded Future API enabled?
       description: Checks if there is an active instance of the Recorded Future API
@@ -157,20 +157,20 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: f4ac0b12-f3ed-4d27-8ba6-c9b8c70202b6
+    taskid: ee31f6ce-5751-4049-85a3-d3fc1b55eaf1
     type: regular
     task:
-      id: f4ac0b12-f3ed-4d27-8ba6-c9b8c70202b6
+      id: ee31f6ce-5751-4049-85a3-d3fc1b55eaf1
       version: -1
       name: Get domain intelligence from Recorded Future
-      description: Get threat intelligence for an IP, domain, CVE, URL, or file.
+      description: Get threat intelligence for an IP, domain, cve, url or file.
       script: Recorded Future v2|||recordedfuture-intelligence
       type: regular
       iscommand: true
       brand: Recorded Future v2
     nexttasks:
       '#none#':
-      - "24"
+      - "30"
     scriptarguments:
       entity:
         simple: ${inputs.Domain}
@@ -196,10 +196,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 8075d9ed-0723-4435-8018-09dc88e18081
+    taskid: 4b34cf28-ad8f-4788-8080-5c751c6642eb
     type: title
     task:
-      id: 8075d9ed-0723-4435-8018-09dc88e18081
+      id: 4b34cf28-ad8f-4788-8080-5c751c6642eb
       version: -1
       name: Enrich Using Recorded Future API
       type: title
@@ -222,6 +222,153 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "30":
+    id: "30"
+    taskid: 3e1b7c13-3ace-4ad2-81f2-18fc6e425eb5
+    type: regular
+    task:
+      id: 3e1b7c13-3ace-4ad2-81f2-18fc6e425eb5
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskrules:
+        simple: ${RecordedFuture.Domain.concatRules}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threatassessment: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        simple: ${RecordedFuture.Domain.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -231,7 +378,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 880,
+        "height": 1060,
         "width": 740,
         "x": 50,
         "y": 50
@@ -509,6 +656,6 @@ outputs:
 - contextPath: RecordedFuture.Domain.relatedEntities.RelatedCompany.type
   description: Recorded Future Related Type
   type: string
-fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Recorded Future Test Playbook
+fromversion: 5.0.0
