@@ -692,7 +692,7 @@ outputs:
   description: Recorded Future Related Threat Actor ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedThreatActor.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Threat Actor Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedThreatActor.type
   description: Recorded Future Related Type
