@@ -752,7 +752,7 @@ outputs:
   description: Recorded Future Related Product ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedProduct.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Product Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedProduct.type
   description: Recorded Future Related Type
