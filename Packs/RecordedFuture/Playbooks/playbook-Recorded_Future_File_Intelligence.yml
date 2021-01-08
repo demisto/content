@@ -740,7 +740,7 @@ outputs:
   description: Recorded Future Related Domain Name ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedInternetDomainName.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Domain Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedInternetDomainName.type
   description: Recorded Future Related Type
