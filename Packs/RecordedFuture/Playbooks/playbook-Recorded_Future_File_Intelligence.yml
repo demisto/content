@@ -776,7 +776,7 @@ outputs:
   description: Recorded Future Related Hash ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedHash.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Hash Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedHash.type
   description: Recorded Future Related Type
