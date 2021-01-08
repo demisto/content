@@ -1050,7 +1050,6 @@ def get_alert_single_command(client: Client, _id: str) -> CommandResults:
     try:
         has_entity = all([entity.get('entity') for entity in data['entities']])
         if has_entity:
-            # it seems like if we've got an entity, documents are not used.
             return entity_formatting(data)
         return document_formatting(data)
     except Exception:
