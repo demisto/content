@@ -426,7 +426,7 @@ outputs:
   description: Recorded Future Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.Domain.Evidence.description
-  description: Recorded Risk Rule description
+  description: Recorded Future Risk Rule description
   type: string
 - contextPath: RecordedFuture.Domain.Evidence.timestamp
   description: Recorded Risk Rule timestamp
