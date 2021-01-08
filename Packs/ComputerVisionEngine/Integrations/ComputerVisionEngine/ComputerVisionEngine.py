@@ -1,5 +1,4 @@
 import os
-import time
 
 import cv2
 import demistomock as demisto
