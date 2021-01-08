@@ -423,7 +423,7 @@ outputs:
   description: Recorded Risk Rule Name
   type: string
 - contextPath: RecordedFuture.IP.Evidence.mitigation
-  description: Recorded Risk Rule Mitigation
+  description: Recorded Future Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.IP.Evidence.description
   description: Recorded Risk Rule Description
