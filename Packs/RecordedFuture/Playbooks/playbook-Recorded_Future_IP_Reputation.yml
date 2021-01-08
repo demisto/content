@@ -429,7 +429,7 @@ outputs:
   description: Recorded Future Risk Rule Description
   type: string
 - contextPath: RecordedFuture.IP.Evidence.timestamp
-  description: Recorded Risk Rule Timestamp
+  description: Recorded Future Risk Rule Timestamp
   type: date
 - contextPath: RecordedFuture.IP.Evidence.level
   description: Recorded Risk Rule Level
