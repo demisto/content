@@ -680,7 +680,7 @@ outputs:
   description: Recorded Future Related Target ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedTarget.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Target Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedTarget.type
   description: Recorded Future Related Type
