@@ -17,8 +17,3 @@
 * Threat assessment action
     * Takes a context, such as phishing or malware and one or more IOC as input
     * Outputs a verdict (true/false) and related evidence (risk rules) in regards to the context chosen
-* Example playbooks
-    * TODO
-    * TODO
-* Dashboard
-    * TODO
