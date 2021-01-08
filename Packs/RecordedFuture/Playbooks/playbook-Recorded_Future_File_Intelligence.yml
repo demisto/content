@@ -773,7 +773,7 @@ outputs:
   description: Recorded Future Related Hash Count
   type: number
 - contextPath: RecordedFuture.File.relatedEntities.RelatedHash.id
-  description: Recorded Future Related ID
+  description: Recorded Future Related Hash ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedHash.name
   description: Recorded Future Related Name
