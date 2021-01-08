@@ -432,7 +432,7 @@ outputs:
   description: Recorded Future Risk Rule timestamp
   type: date
 - contextPath: RecordedFuture.Domain.Evidence.level
-  description: Recorded Risk Rule Level
+  description: Recorded Future Risk Rule Level
   type: number
 - contextPath: RecordedFuture.Domain.Evidence.ruleid
   description: Recorded Risk Rule ID
