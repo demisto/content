@@ -1,3 +1,5 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR.
-- You can use the following API Key: `43ea9b2d-4998-43a6-ae91-aba62a26868c`
+## Computer Vision Engine
+Return objects detected on a picture to context data. i.e. people, cars, cats, dogs, etc.
+
+**Configuration Notes:**
+* No additional configuration is needed as the integration is analysing the image on prem (not a cloud solution)

@@ -1,27 +1,24 @@
-import argparse
 import os
 import time
-from datetime import datetime, timedelta
 
 import cv2
 import demistomock as demisto
 import numpy as np
 from CommonServerPython import *  # noqa: F401
 
-#import dateutil.parser
 # The command demisto.command() holds the command sent from the user.
 if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
     demisto.results('ok')
     sys.exit(0)
 
 if demisto.command() == 'yolo-coco-process-image':
     args = {}
     args["yolo"] = "/yolo-coco"
-    args["confidence"] = 0.5
-    args["threshold"] = 0.3
+    args["confidence"] = float(demisto.args().get('confidence'))
+    # https://www.pyimagesearch.com/2014/11/17/non-maximum-suppression-object-detection-python/
+    args["threshold"] = float(demisto.args().get('threshold'))
 
-    entry_id = demisto.args()['entryid']
+    entry_id = demisto.args().get('entryid')
 
     coco_file = open(args["yolo"] + "/coco.names")
     coco_objects = coco_file.readlines()
@@ -63,17 +60,17 @@ if demisto.command() == 'yolo-coco-process-image':
     blob = cv2.dnn.blobFromImage(image, 1 / 255.0, (416, 416),
                                  swapRB=True, crop=False)
     net.setInput(blob)
-    start = time.time()
+
     layerOutputs = net.forward(ln)
-    end = time.time()
+
 
     # initialize our lists of detected bounding boxes, confidences, and
     # class IDs, respectively
     boxes = []
     confidences = []
     classIDs = []
-    output_keys = []
-    objects = {}
+    output_keys = {}
+    output_keys['EntryID'] = entry_id
     for I in coco_objects:
         globals()[I] = []
     # loop over each of the layer outputs
@@ -116,6 +113,7 @@ if demisto.command() == 'yolo-coco-process-image':
     if len(idxs) > 0:
         # loop over the indexes we are keeping
         for i in idxs.flatten():
+            tmp_list = []
             # extract the bounding box coordinates
             (x, y) = (boxes[i][0], boxes[i][1])
             (w, h) = (boxes[i][2], boxes[i][3])
@@ -124,8 +122,15 @@ if demisto.command() == 'yolo-coco-process-image':
             color = [int(c) for c in COLORS[classIDs[i]]]
             cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
             text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])
-            output_keys.append(text)
-            objects[LABELS[classIDs[i]]] = confidences[i]
+            if LABELS[classIDs[i]] in output_keys.keys():
+                if isinstance(output_keys[LABELS[classIDs[i]]],float):
+                    tmp_list = [output_keys[LABELS[classIDs[i]]]]
+                else:
+                    tmp_list = output_keys[LABELS[classIDs[i]]]
+                tmp_list.append(confidences[i])
+                output_keys[LABELS[classIDs[i]]] = tmp_list
+            else:
+                output_keys[LABELS[classIDs[i]]] = confidences[i]
             cv2.putText(image, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX,
                         0.5, color, 2)
 
@@ -143,18 +148,18 @@ if demisto.command() == 'yolo-coco-process-image':
         'Type': entryTypes['note'],
         'Contents': output_keys,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Detected Objects", objects),
+        'HumanReadable': tableToMarkdown("Detected Objects", output_keys),
         'EntryContext': {
-            'ComputerVision.person(obj.object == val.object)': output_keys,
+            'ComputerVision': output_keys,
         }
     }
     demisto.results(demisto_entry)
     sys.exit(0)
 
 
-# You can use demisto.args()[argName] to get a specific arg. args are strings.
-# You can use demisto.params()[paramName] to get a specific params.
-# Params are of the type given in the integration page creation.
 
-# if demisto.command() == 'long-running-execution':
-#  # Should have here an endless loop
+
+
+
+
+

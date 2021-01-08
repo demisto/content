@@ -3,10 +3,12 @@ commonfields:
   id: Computer Vision Engine
   version: -1
 configuration:
-- display: test
-  name: test
+- hidden: false
+  name: CV engine
+  options:
+  - YOLO-COCO
   required: false
-  type: 0
+  type: 16
 description: |-
   This integration is processing images or movies and detects objects on them by using Machine Learning.
   It is using OpenCV with:
@@ -18,15 +20,43 @@ name: Computer Vision Engine
 script:
   commands:
   - arguments:
-    - description: Image EntryID
+    - default: false
+      description: Image EntryID
+      isArray: false
       name: entryid
       required: true
+      secret: false
+    - default: false
+      defaultValue: '0.5'
+      description: minimum probability to filter weak detections
+      isArray: false
+      name: confidence
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0.3'
+      description: threshold when applying non-maxima suppres
+      isArray: false
+      name: threshold
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
     name: yolo-coco-process-image
+    outputs:
+    - contextPath: ComputerVision
+      description: The key holds down the information about detected objects in the
+        picture
+      type: Unknown
   dockerimage: magicpl/yolo-coco:0.6
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
