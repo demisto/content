@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 70db8e96-a768-4f64-89de-4f822c87d694
+    taskid: adb7954a-1b6a-4644-8985-ad77bdbc0295
     type: start
     task:
-      id: 70db8e96-a768-4f64-89de-4f822c87d694
+      id: adb7954a-1b6a-4644-8985-ad77bdbc0295
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 6c3bda0e-4e5a-414e-89ae-09ff9087f150
+    taskid: d70bec20-aa9b-44c2-8901-a8b730247d25
     type: condition
     task:
-      id: 6c3bda0e-4e5a-414e-89ae-09ff9087f150
+      id: d70bec20-aa9b-44c2-8901-a8b730247d25
       version: -1
       name: Is there anything to assess?
       description: Checks whether the playbook's input contains at least one domain
@@ -103,10 +103,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 7f5f8c9f-b25b-4a7a-854b-553dc88f1c54
+    taskid: d1410bed-68ef-4308-8a99-964df74ff88e
     type: title
     task:
-      id: 7f5f8c9f-b25b-4a7a-854b-553dc88f1c54
+      id: d1410bed-68ef-4308-8a99-964df74ff88e
       version: -1
       name: Done
       type: title
@@ -117,8 +117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1005
+          "x": 0,
+          "y": 1100
         }
       }
     note: false
@@ -128,10 +128,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 2bb4b3b1-3c77-447b-8cce-2d600641142e
+    taskid: 8b5c54f4-ef8e-4b2f-8af7-6bc093b49ff3
     type: condition
     task:
-      id: 2bb4b3b1-3c77-447b-8cce-2d600641142e
+      id: 8b5c54f4-ef8e-4b2f-8af7-6bc093b49ff3
       version: -1
       name: Is Recorded Future API enabled?
       description: Checks if there is an active instance of the Recorded Future API
@@ -188,20 +188,20 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: e9f5bca8-94bd-4b41-83b4-b97b9f47599b
+    taskid: 436a7665-15ab-4274-80fe-e9d17d0896e9
     type: regular
     task:
-      id: e9f5bca8-94bd-4b41-83b4-b97b9f47599b
+      id: 436a7665-15ab-4274-80fe-e9d17d0896e9
       version: -1
       name: Get Threat Assessment from Recorded Future
-      description: Get an indication of the risk based on context.
+      description: Get an indicator of the risk based on context.
       script: Recorded Future v2|||recordedfuture-threat-assessment
       type: regular
       iscommand: true
       brand: Recorded Future v2
     nexttasks:
       '#none#':
-      - "24"
+      - "30"
     scriptarguments:
       context:
         simple: ${inputs.threat-assessment-context}
@@ -211,6 +211,8 @@ tasks:
         simple: ${inputs.Domain}
       file:
         simple: ${inputs.MD5},${inputs.SHA1},${inputs.SHA256}
+      filter:
+        simple: ${inputs.filter}
       ip:
         simple: ${inputs.IP}
       url:
@@ -231,10 +233,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 6f7224be-bf6f-4080-842d-c3196a87c951
+    taskid: 53365659-56c0-4f05-8e96-4437c06fcc74
     type: title
     task:
-      id: 6f7224be-bf6f-4080-842d-c3196a87c951
+      id: 53365659-56c0-4f05-8e96-4437c06fcc74
       version: -1
       name: Threat Assessment Using Recorded Future API
       type: title
@@ -257,6 +259,153 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "30":
+    id: "30"
+    taskid: 80d37316-6d8f-4e04-8993-39d4432ca5ee
+    type: regular
+    task:
+      id: 80d37316-6d8f-4e04-8993-39d4432ca5ee
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskrules: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threatassessment:
+        simple: ${RecordedFuture.Entities.context}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        simple: ${RecordedFuture.Entities.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -264,9 +413,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1020,
-        "width": 740,
-        "x": 50,
+        "height": 1115,
+        "width": 790,
+        "x": 0,
         "y": 50
       }
     }
@@ -349,6 +498,13 @@ inputs:
   description: Context to use for assessment. This is used by Recorded Future to calculate
     the relevant score and verdict. Valid values are "c2", "malware" and "phishing".
   playbookInputQuery:
+- key: filter
+  value:
+    simple: "yes"
+  required: false
+  description: 'Makes sure that we filter out values that are zero in score from the
+    threat assessment api. '
+  playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
   description: The indicator that was tested
@@ -363,22 +519,22 @@ outputs:
   description: The actual score
   type: number
 - contextPath: File.SHA256
-  description: SHA-256
+  description: File SHA-256
   type: string
 - contextPath: File.SHA512
-  description: SHA-512
+  description: File SHA-512
   type: string
 - contextPath: File.SHA1
-  description: SHA-1
+  description: File SHA-1
   type: string
 - contextPath: File.MD5
-  description: MD5
+  description: File MD5
   type: string
 - contextPath: File.CRC32
-  description: CRC32
+  description: File CRC32
   type: string
 - contextPath: File.CTPH
-  description: CTPH
+  description: File CTPH
   type: string
 - contextPath: IP.Address
   description: IP address
@@ -437,6 +593,6 @@ outputs:
 - contextPath: RecordedFuture.Entities.Evidence.level
   description: Recorded Future Risk Rule Level
   type: number
-fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Recorded Future Test Playbook
+fromversion: 5.0.0

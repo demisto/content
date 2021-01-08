@@ -1,15 +1,15 @@
 id: Recorded Future URL Reputation
 version: -1
 name: Recorded Future URL Reputation
-description: URL reputation using Recorded Future SOAR enrichment
+description: URL reputation using Recorded Future SOAR Enrichment
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b50e0577-4b53-4047-81cd-98a1f39b4e45
+    taskid: c92b1170-f0de-4f89-865b-57384f643590
     type: start
     task:
-      id: b50e0577-4b53-4047-81cd-98a1f39b4e45
+      id: c92b1170-f0de-4f89-865b-57384f643590
       version: -1
       name: ""
       iscommand: false
@@ -33,13 +33,13 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 6e674458-38fe-4444-8f45-9d7a3722e1c7
+    taskid: 12143d22-746b-4d0f-83e0-baaac8b7736d
     type: condition
     task:
-      id: 6e674458-38fe-4444-8f45-9d7a3722e1c7
+      id: 12143d22-746b-4d0f-83e0-baaac8b7736d
       version: -1
       name: Is there a URL to get reputation of?
-      description: Do we have a url to check
+      description: do we have a url to check
       type: condition
       iscommand: false
       brand: ""
@@ -74,10 +74,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 30f3ff5b-5922-4260-821d-0faccc04cc9f
+    taskid: b6ea41c7-12b6-41d9-8b8a-56a8fafd735c
     type: title
     task:
-      id: 30f3ff5b-5922-4260-821d-0faccc04cc9f
+      id: b6ea41c7-12b6-41d9-8b8a-56a8fafd735c
       version: -1
       name: Done
       type: title
@@ -99,10 +99,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 739989e4-4116-4083-80d1-7797ec9e9e15
+    taskid: b778548d-ed9f-40f8-8fe2-31505eed7c77
     type: title
     task:
-      id: 739989e4-4116-4083-80d1-7797ec9e9e15
+      id: b778548d-ed9f-40f8-8fe2-31505eed7c77
       version: -1
       name: Get reputation using Recorded Future API
       type: title
@@ -127,10 +127,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: 389dc4be-95dc-4f92-862b-221d91282c4c
+    taskid: 7ee7ccf8-8457-49d8-8266-206196ebaffc
     type: condition
     task:
-      id: 389dc4be-95dc-4f92-862b-221d91282c4c
+      id: 7ee7ccf8-8457-49d8-8266-206196ebaffc
       version: -1
       name: Is Recorded Future API enabled?
       description: Checks if there is an active instance of the Recorded Future API
@@ -187,20 +187,20 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 97a20a7a-d43e-48ea-80ea-3ccec51c816b
+    taskid: 025dc93f-d522-4986-8da8-894942710d88
     type: regular
     task:
-      id: 97a20a7a-d43e-48ea-80ea-3ccec51c816b
+      id: 025dc93f-d522-4986-8da8-894942710d88
       version: -1
       name: Get URL reputation from Recorded Future
-      description: Get a quick indication of the risk associated with a URL.
+      description: Get a quick indicator of the risk associated with a URL.
       script: Recorded Future v2|||url
       type: regular
       iscommand: true
       brand: Recorded Future v2
     nexttasks:
       '#none#':
-      - "24"
+      - "38"
     scriptarguments:
       url:
         simple: ${inputs.URL}
@@ -217,13 +217,160 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "38":
+    id: "38"
+    taskid: 9f129643-ad72-4f99-8daa-f8c1863b61ba
+    type: regular
+    task:
+      id: 9f129643-ad72-4f99-8daa-f8c1863b61ba
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskrules:
+        simple: ${RecordedFuture.URL.rules}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threatassessment: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        simple: ${RecordedFuture.URL.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 880,
-        "width": 690,
+        "height": 910,
+        "width": 800,
         "x": 50,
         "y": 50
       }
@@ -269,22 +416,22 @@ outputs:
   description: Recorded Future URL Risk Level
   type: string
 - contextPath: RecordedFuture.URL.Evidence.rule
-  description: Recorded Future Risk Rule Name
+  description: Recorded Risk Rule Name
   type: string
 - contextPath: RecordedFuture.URL.Evidence.mitigation
-  description: Recorded Future Risk Rule Mitigation
+  description: Recorded Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.URL.Evidence.description
-  description: Recorded Future Risk Rule description
+  description: Recorded Risk Rule description
   type: string
 - contextPath: RecordedFuture.URL.Evidence.timestamp
-  description: Recorded Future Risk Rule timestamp
+  description: Recorded Risk Rule timestamp
   type: date
 - contextPath: RecordedFuture.URL.Evidence.level
-  description: Recorded Future Risk Rule Level
+  description: Recorded Risk Rule Level
   type: number
 - contextPath: RecordedFuture.URL.Evidence.ruleid
-  description: Recorded Future Risk Rule ID
+  description: Recorded Risk Rule ID
   type: string
 - contextPath: RecordedFuture.URL.name
   description: URL
@@ -295,6 +442,6 @@ outputs:
 - contextPath: RecordedFuture.URL.ruleCount
   description: Number of triggered Recorded Future URL Risk Rules
   type: number
-fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Recorded Future Test Playbook
+fromversion: 5.0.0

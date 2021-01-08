@@ -1,15 +1,15 @@
 id: Recorded Future IP Reputation
 version: -1
 name: Recorded Future IP Reputation
-description: IP address reputation using Recorded Future SOAR enrichment
+description: IP address reputation using Recorded Future SOAR Enrichment
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 65b788e2-ba01-4648-8bf0-76562f27ebe2
+    taskid: 516c1e66-6dc3-42cc-8aab-55ae4d423887
     type: start
     task:
-      id: 65b788e2-ba01-4648-8bf0-76562f27ebe2
+      id: 516c1e66-6dc3-42cc-8aab-55ae4d423887
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 8fb5078f-0271-4700-8b60-384418a72b9a
+    taskid: 503cd71c-1ef9-434a-8a5f-3c864c8fd2bd
     type: title
     task:
-      id: 8fb5078f-0271-4700-8b60-384418a72b9a
+      id: 503cd71c-1ef9-434a-8a5f-3c864c8fd2bd
       version: -1
       name: Done
       type: title
@@ -47,8 +47,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 865
+          "x": -90,
+          "y": 1020
         }
       }
     note: false
@@ -58,10 +58,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 10952510-36d8-4785-825d-fd8b3538bc36
+    taskid: cde569ba-1616-4b91-8836-82af19b61235
     type: condition
     task:
-      id: 10952510-36d8-4785-825d-fd8b3538bc36
+      id: cde569ba-1616-4b91-8836-82af19b61235
       version: -1
       name: Is there an IP address to get reputation of?
       description: Determine whether the playbook's input contains at least one IP
@@ -97,10 +97,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: ee7aa4a2-ed13-4add-8dc0-84026be9d2e3
+    taskid: ea628132-47f2-4d68-8ed2-89db95914aa8
     type: title
     task:
-      id: ee7aa4a2-ed13-4add-8dc0-84026be9d2e3
+      id: ea628132-47f2-4d68-8ed2-89db95914aa8
       version: -1
       name: Get reputation using Recorded Future API
       type: title
@@ -125,10 +125,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: bc220d03-fb65-49a8-8603-8947874f2efc
+    taskid: f2c03e77-bee9-46d3-8e25-0cdf5e520c51
     type: condition
     task:
-      id: bc220d03-fb65-49a8-8603-8947874f2efc
+      id: f2c03e77-bee9-46d3-8e25-0cdf5e520c51
       version: -1
       name: Is Recorded Future API enabled?
       description: Checks if there is an active instance of the Recorded Future API
@@ -186,10 +186,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 5d3e2d34-8a41-443e-8cca-51e7db3f241f
+    taskid: 30520374-376e-474e-8818-46d3ec49445b
     type: regular
     task:
-      id: 5d3e2d34-8a41-443e-8cca-51e7db3f241f
+      id: 30520374-376e-474e-8818-46d3ec49445b
       version: -1
       name: Get IP reputation from Recorded Future
       description: Get a quick indicator of the risk associated with an IP.
@@ -199,7 +199,7 @@ tasks:
       brand: Recorded Future v2
     nexttasks:
       '#none#':
-      - "24"
+      - "39"
     scriptarguments:
       ip:
         simple: ${inputs.IP}
@@ -217,6 +217,153 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "39":
+    id: "39"
+    taskid: b596c1c9-322d-4ac2-8555-b3221b8b4ebc
+    type: regular
+    task:
+      id: b596c1c9-322d-4ac2-8555-b3221b8b4ebc
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskrules:
+        simple: ${RecordedFuture.IP.rules}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags: {}
+      threatassessment: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        simple: ${RecordedFuture.IP.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
@@ -226,9 +373,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 880,
-        "width": 740,
-        "x": 50,
+        "height": 1035,
+        "width": 880,
+        "x": -90,
         "y": 50
       }
     }
@@ -273,22 +420,22 @@ outputs:
   description: Recorded Future IP Risk Level
   type: string
 - contextPath: RecordedFuture.IP.Evidence.rule
-  description: Recorded Future Risk Rule Name
+  description: Recorded Risk Rule Name
   type: string
 - contextPath: RecordedFuture.IP.Evidence.mitigation
-  description: Recorded Future Risk Rule Mitigation
+  description: Recorded Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.IP.Evidence.description
-  description: Recorded Future Risk Rule Description
+  description: Recorded Risk Rule Description
   type: string
 - contextPath: RecordedFuture.IP.Evidence.timestamp
-  description: Recorded Future Risk Rule Timestamp
+  description: Recorded Risk Rule Timestamp
   type: date
 - contextPath: RecordedFuture.IP.Evidence.level
-  description: Recorded Future Risk Rule Level
+  description: Recorded Risk Rule Level
   type: number
 - contextPath: RecordedFuture.IP.Evidence.ruleid
-  description: Recorded Future Risk Rule ID
+  description: Recorded Risk Rule ID
   type: string
 - contextPath: RecordedFuture.IP.name
   description: IP Address
@@ -299,6 +446,6 @@ outputs:
 - contextPath: RecordedFuture.IP.ruleCount
   description: Number of triggered Recorded Future IP Risk Rules
   type: number
-fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Recorded Future Test Playbook
+fromversion: 5.0.0
