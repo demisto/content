@@ -405,7 +405,7 @@ def main():
     apikey = params['apikey']
 
     # check if SSL is to be verified
-    verify_certificate = params.get('insecure', False)
+    verify_certificate = not params.get('insecure', False)
 
     proxy = params.get('proxy', False)
 
