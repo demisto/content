@@ -716,7 +716,7 @@ outputs:
   description: Recorded Future Related Vulnerability ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Vulnerability Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.type
   description: Recorded Future Related Type
