@@ -719,7 +719,7 @@ outputs:
   description: Recorded Future Related Vulnerability Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.type
-  description: Recorded Future Related Type
+  description: Recorded Future Related Vulnerability Type
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedIpAddress.count
   description: Recorded Future Related Count
