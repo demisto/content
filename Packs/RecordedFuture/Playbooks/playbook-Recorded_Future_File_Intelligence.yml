@@ -731,7 +731,7 @@ outputs:
   description: Recorded Future Related IP Address Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedIpAddress.type
-  description: Recorded Future Related Type
+  description: Recorded Future Related IP Address Type
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedInternetDomainName.count
   description: Recorded Future Related Count
