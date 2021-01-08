@@ -1,0 +1,104 @@
+category: Data Enrichment & Threat Intelligence
+display: Cyjax Feed
+name: Cyjax Feed
+description: 'The feed allows customers to pull indicators of compromise from cyber incidents (IP addresses, URLs, domains, CVE and file hashes)'
+commonfields:
+  id: Cyjax Feed
+  version: -1
+configuration:
+- defaultvalue: https://api.cyberportal.co
+  additionalinfo: Url to Cyjax API.
+  display: Cyjax API URL
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  additionalinfo: Cyjax API Key obtained from Cyjax portal.
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  defaultvalue: 'false'
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch indicators
+  defaultvalue: 'true'
+  name: feed
+  required: false
+  type: 8
+- display: Indicator Reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  defaultvalue: Suspicious
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- name: feedFetchInterval
+  defaultvalue: '60'
+  display: Feed Fetch Interval
+  required: true
+  type: 19
+- defaultvalue: 3 days
+  display: First fetch time
+  additionalinfo: The time interval for the first fetch (retroactive). For example 3 days, 1 hour
+  name: first_fetch
+  required: true
+  type: 0
+script:
+  commands:
+  - arguments:
+      - name: since
+        description: The start date time in ISO 8601 format
+        required: false
+      - name: until
+        description: The end date time in ISO 8601 format
+        required: false
+      - name: type
+        description: 'The indicator type. If not specified all indicators are returned. Allowed values are IPv4, IPv6,
+          Domain, Hostname, Email, FileHash-SHA1, FileHash-SHA256, FileHash-MD5, FileHash-SSDEEP'
+        required: false
+      - name: source_type
+        description: The indicators source type. Allowed values are incidnet-report, my-report
+        required: false
+      - name: source_id
+        description: The indicators source ID
+        required: false
+    name: cyjax-get-indicators
+    description: Get sighting of indicator
+  - arguments:
+      - description: Indicator value
+        name: value
+        required: true
+    name: cyjax-indicator-sighting
+    description: Get sighting of indicator
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/cyjax:1.0.0.15205
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,27 @@
+{
+    "name": "Cyjax Feed",
+    "description": "This Content Pack is used to pull indicators of compromise from the Cyjax Threat Intelligence Platform.",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Jakub Orzol",
+    "url": "https://cyjax.com",
+    "email": "devs@cyjax.com",
+    "created": "2021-01-06T15:46:16Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "cyjax",
+        "threat intelligence",
+        "indicators",
+        "incident response",
+        "incident report"
+    ],
+    "githubUser": []
+}
