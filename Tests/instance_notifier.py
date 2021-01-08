@@ -1,14 +1,14 @@
-import json
 import argparse
+import json
 import logging
 
 import demisto_client
 from slackclient import SlackClient
 
+from Tests.configure_and_test_integration_instances import update_content_on_demisto_instance
 from Tests.scripts.utils.log_util import install_simple_logging
 from Tests.test_integration import __create_integration_instance, __delete_integrations_instances
 from demisto_sdk.commands.common.tools import str2bool
-from Tests.configure_and_test_integration_instances import update_content_on_demisto_instance
 
 SERVER_URL = "https://{}"
 
@@ -123,21 +123,26 @@ def slack_notifier(slack_token, secret_conf_path, server, user, password, build_
     # Failing instances list
     sc.api_call(
         "chat.postMessage",
-        channel="dmst-content-lab",
-        username="Instances nightly report",
-        as_user="False",
-        attachments=attachments,
-        text="You have {0} instances configurations".format(integrations_counter)
+        json={
+            'channel': 'dmst-content-lab',
+            'username': 'Instances nightly report',
+            'as_user': 'False',
+            'attachments': attachments,
+            'text': "You have {0} instances configurations".format(integrations_counter)
+        }
     )
 
     # Failing instances file
     sc.api_call(
         "chat.postMessage",
-        channel="dmst-content-lab",
-        username="Instances nightly report",
-        as_user="False",
-        text="Detailed list of failing instances could be found in the following link:\n"
-             "https://{}-60525392-gh.circle-artifacts.com/0/artifacts/failed_instances.txt".format(build_number)
+        json={
+            'channel': 'dmst-content-lab',
+            'username': 'Instances nightly report',
+            'as_user': 'False',
+            'text': "Detailed list of failing instances could be found in the following link:\n"
+                    "https://{}-60525392-gh.circle-artifacts.com/0/artifacts/failed_instances.txt".format(build_number)
+
+        }
     )
 
 
