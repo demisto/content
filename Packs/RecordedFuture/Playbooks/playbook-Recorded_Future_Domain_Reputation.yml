@@ -435,7 +435,7 @@ outputs:
   description: Recorded Future Risk Rule Level
   type: number
 - contextPath: RecordedFuture.Domain.Evidence.ruleid
-  description: Recorded Risk Rule ID
+  description: Recorded Future Risk Rule ID
   type: string
 - contextPath: RecordedFuture.Domain.name
   description: Domain name
