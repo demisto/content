@@ -1,0 +1,76 @@
+commonfields:
+  id: dw_send_trustar_data_to_intsights
+  version: -1
+name: dw_send_trustar_data_to_intsights
+display: dw_send_trustar_data_to_intsights
+category: Data Enrichment & Threat Intelligence
+description: |-
+  This integration downloads TruSTAR IOC data and sends it to IntSights.
+
+  /docker_image_create name=trustar dependencies=trustar
+configuration:
+- display: Intsights Credentials (ID/Key)
+  name: intsights
+  type: 9
+  required: false
+- display: TruSTAR Credentials (API Key/Secret)
+  name: trustar
+  type: 9
+  required: false
+- display: Time between sending documents
+  name: sleep_setting
+  defaultvalue: "5"
+  type: 0
+  required: false
+- display: Confidence Level of the documents
+  name: ConfidenceLevel
+  defaultvalue: "3"
+  type: 0
+  required: false
+- display: The list of enclave ids. separated by commas
+  name: enclave_ids
+  type: 0
+  required: false
+- display: The email for the user.
+  name: client_metatag
+  type: 0
+  required: false
+- display: ""
+  name: user_api_key
+  type: 0
+  required: false
+- display: ""
+  name: user_api_secret
+  type: 0
+  required: false
+- display: Long running instance
+  name: longRunning
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: trustar-get-IOC-data
+    arguments: []
+  - name: trustar-clean-IOC-data
+    arguments: []
+  - name: trustar-send-IOC-data-to-intsights
+    arguments: []
+  - name: trustar-length-IOC-data
+    arguments: []
+    outputs:
+    - contextPath: IndicatorValues.Length
+      description: Number of Indicators
+    description: Get the length of IOC Indicators Obtained
+  dockerimage: demisto/trustar:latest
+  runonce: false
+  longRunning: true
+  subtype: python3
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
