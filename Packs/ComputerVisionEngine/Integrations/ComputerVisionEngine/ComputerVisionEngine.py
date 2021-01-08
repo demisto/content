@@ -71,8 +71,8 @@ if demisto.command() == 'yolo-coco-process-image':
     classIDs = []
     output_keys = {}
     output_keys['EntryID'] = entry_id
-    for I in coco_objects:
-        globals()[I] = []
+    for i in coco_objects:
+        globals()[i] = []
     # loop over each of the layer outputs
     for output in layerOutputs:
         # loop over each of the detections
