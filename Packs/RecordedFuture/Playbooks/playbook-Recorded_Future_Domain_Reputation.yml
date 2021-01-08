@@ -420,7 +420,7 @@ outputs:
   description: Recorded Future Domain Risk Level
   type: string
 - contextPath: RecordedFuture.Domain.Evidence.rule
-  description: Recorded Risk Rule Name
+  description: Recorded Future Risk Rule Name
   type: string
 - contextPath: RecordedFuture.Domain.Evidence.mitigation
   description: Recorded Risk Rule Mitigation
