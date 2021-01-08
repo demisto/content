@@ -761,7 +761,7 @@ outputs:
   description: Recorded Future Related Countries Count
   type: number
 - contextPath: RecordedFuture.File.relatedEntities.RelatedCountries.id
-  description: Recorded Future Related ID
+  description: Recorded Future Related Countries IDs
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedCountries.name
   description: Recorded Future Related Name
