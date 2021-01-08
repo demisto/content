@@ -41,6 +41,7 @@ script:
       required: true
       secret: false
     deprecated: false
+    description: Detect objects on an picture using the yolo-coco ML
     execution: false
     name: yolo-coco-process-image
     outputs:
