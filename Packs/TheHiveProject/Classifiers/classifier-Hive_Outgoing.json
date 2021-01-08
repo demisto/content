@@ -1,5 +1,5 @@
 {
- "description": "Default outbound mapping for The Hive Project cases.",
+ "description": "Default outbound mapping for TheHive Project cases.",
  "feed": false,
  "id": "Hive_Outgoing",
  "mapping": {

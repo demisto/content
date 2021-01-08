@@ -1,5 +1,5 @@
 {
- "description": "Default incoming mapper for TheHiveProject cases",
+ "description": "Default incoming mapper for TheHive Project cases",
  "feed": false,
  "id": "Hive_Incoming",
  "mapping": {
