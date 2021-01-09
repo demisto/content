@@ -6,7 +6,8 @@ on:
 jobs:
   handle_new_external_pr:
     runs-on: ubuntu-latest
-    if: github.repository == 'demisto/content' && github.event.action == 'opened' && github.event.pull_request.head.repo.fork == true
+#    if: github.repository == 'demisto/content' && github.event.action == 'opened' && github.event.pull_request.head.repo.fork == true
+    if: github.repository == 'demisto/content' && github.event.action == 'opened'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
