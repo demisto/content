@@ -197,6 +197,8 @@ def main():
     repo_name = 'content'
     gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
+    slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
+    print(slack_token[-3:])
     pr = content_repo.get_pull(pr_number)
     metadata_files = [file for file in pr.get_files() if file.filename.endswith('_metadata.json')]
 
@@ -208,8 +210,7 @@ def main():
     print(f'{t.yellow}Finished preparing message: \n{pformat(blocks)}{t.normal}')
 
     # Send message
-    slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
-    print(slack_token[-3:])
+
     client = WebClient(token=slack_token)
     slack_post_message(client, blocks, pr)
     print(f'{t.cyan}Slack message sent successfully{t.normal}')
