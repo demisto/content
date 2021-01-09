@@ -197,24 +197,21 @@ def main():
     repo_name = 'content'
     gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
+    pr = content_repo.get_pull(pr_number)
+    metadata_files = [file for file in pr.get_files() if file.filename.endswith('_metadata.json')]
+
+    # Build all blocks of the message
+    header = create_pr_title(pr)
+    pull_request_segment = create_pull_request_segment(pr)
+    packs_segment = create_packs_segment(metadata_files)
+    blocks = header + pull_request_segment + packs_segment
+    print(f'{t.yellow}Finished preparing message: \n{pformat(blocks)}{t.normal}')
+
+    # Send message
     slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
-    print('!!!!!!!')
-    print(slack_token[-3:])
-    # pr = content_repo.get_pull(pr_number)
-    # metadata_files = [file for file in pr.get_files() if file.filename.endswith('_metadata.json')]
-    #
-    # # Build all blocks of the message
-    # header = create_pr_title(pr)
-    # pull_request_segment = create_pull_request_segment(pr)
-    # packs_segment = create_packs_segment(metadata_files)
-    # blocks = header + pull_request_segment + packs_segment
-    # print(f'{t.yellow}Finished preparing message: \n{pformat(blocks)}{t.normal}')
-    #
-    # # Send message
-    #
-    # client = WebClient(token=slack_token)
-    # slack_post_message(client, blocks, pr)
-    # print(f'{t.cyan}Slack message sent successfully{t.normal}')
+    client = WebClient(token=slack_token)
+    slack_post_message(client, blocks, pr)
+    print(f'{t.cyan}Slack message sent successfully{t.normal}')
 
 
 if __name__ == "__main__":

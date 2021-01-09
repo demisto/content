@@ -1,8 +1,7 @@
 name: Handle New External PRs
-#on:
-#  pull_request_target:
-#    types: [opened]
-on: push
+on:
+  pull_request_target:
+    types: [opened]
 
 jobs:
   handle_new_external_pr:
