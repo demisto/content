@@ -5586,7 +5586,8 @@ def get_security_profiles_command(security_profile: str = None):
                 'Rules': antivirus_rules
             }]
 
-        human_readable += tableToMarkdown('Antivirus Profiles', virus_content, headers=['Name', 'Decoder'])
+        human_readable += tableToMarkdown('Antivirus Profiles', virus_content, headers=['Name', 'Decoder', 'Rules'],
+                                          removeNull=True)
         context.update({"Panorama.Antivirus(val.Name == obj.Name)": virus_content})
 
     if 'file-blocking' in security_profiles and security_profiles['file-blocking'] is not None:
@@ -5734,7 +5735,7 @@ def apply_security_profile_command(profile_name: str, profile_type: str, rule_na
         xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/"\
                 f"profiles/{profile_type}"
 
-    apply_security_profile(firewall_xpath, profile_name)
+    apply_security_profile(xpath, profile_name)
     return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
 
 
