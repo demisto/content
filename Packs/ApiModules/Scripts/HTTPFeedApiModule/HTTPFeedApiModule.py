@@ -220,6 +220,10 @@ class Client(BaseClient):
                         f' {r.status_code!r} {r.content!r}')
                     raise
                 url_to_response_list.append({url: r})
+        except requests.exceptions.ConnectTimeout as exception:
+            err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
+                      ' is incorrect or that the Server is not accessible from your host.'
+            raise DemistoException(err_msg, exception)
         except requests.exceptions.SSLError as exception:
             err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
                       ' the integration configuration.'
@@ -228,8 +232,15 @@ class Client(BaseClient):
             err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
                       ' selected, try clearing the checkbox.'
             raise DemistoException(err_msg, exception)
-        except requests.ConnectionError:
-            raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
+        except requests.exceptions.ConnectionError as exception:
+            # Get originating Exception in Exception chain
+            error_class = str(exception.__class__)
+            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_msg = 'Verify that the server URL parameter' \
+                      ' is correct and that you have access to the server from your host.' \
+                      '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                .format(err_type, exception.errno, exception.strerror)
+            raise DemistoException(err_msg, exception)
 
         results = []
         for url_to_response in url_to_response_list:
