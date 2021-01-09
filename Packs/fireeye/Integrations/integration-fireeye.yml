@@ -56,7 +56,7 @@ script:
             method: 'GET',
         },
         'fe-submit-status': {
-            url: 'submissions/status/%submission_Key%',
+            url: 'submissions/status',
             method: 'GET',
             setContentType: true,
             extended: true,
@@ -259,9 +259,11 @@ script:
            httpParams.Username = params.credentials.identifier;
            httpParams.Password = params.credentials.password;
         }
+        full_url = server + url + (method === 'GET' && method ? encodeToURLQuery(args) : '')
+        console.log('full_url: ' + full_url)
         httpParams.Headers = headers;
         var res = http(
-                server + url + (method === 'GET' && method ? encodeToURLQuery(args) : ''),
+                full_url,
                 httpParams,
                 params.insecure,
                 params.proxy
@@ -341,6 +343,44 @@ script:
             }
             result = JSON.parse(res.Body);
             break;
+
+        case 'fe-submit-status':
+            submissionKeyList = argToList(args.submission_Key);
+            result = [];
+            for (var i=0; i < submissionKeyList.length; i++) {
+                url = commandDictionary[command].url + '/' + submissionKeyList[i]
+                method = commandDictionary[command].method
+                setContentType = commandDictionary[command].setContentType
+
+                respoonse = sendRequest(url, method, setContentType, token, {"submission_Key": submissionKeyList[i]});
+                status_result = respoonse.Body;
+
+                contentType = respoonse.Headers && respoonse.Headers['Content-Type'] && respoonse.Headers['Content-Type'][0];
+                if (contentType && contentType.indexOf('application/json') !== -1) {
+                  status_result = JSON.parse(respoonse.Body);
+                }
+                if (contentType && contentType.indexOf('application/xml') !== -1) {
+                  status_result = JSON.parse(x2j(respoonse.Body));
+                }
+                // status_result = {
+                //     "submission_Key": submissionKeyList[i],
+                //     "submissionStatus":"Done",
+                //     "verdict":"non-malicious",
+                //     "analysisStatus":"done",
+                //     "submission_details":[
+                //         {
+                //             "vnc_port":[0],
+                //             "job_ids":[123916],
+                //             "id":submissionKeyList[i],
+                //             "uuid":"930d748c-a7c2-4204-8f88-a27ab07d83f7"
+                //         }
+                //     ]
+                // }
+
+                result.push(status_result)
+            }
+            break;
+
         default:
             respoonse = sendRequest(replaceInTemplatesAndRemove(commandDictionary[command].url, args), commandDictionary[command].method, token, commandDictionary[command].setContentType, args);
             result = respoonse.Body;
@@ -560,40 +600,55 @@ script:
       predefined:
       - "1"
       - "2"
-      description: 'Specify live or sandbox analysis mode. 1—Live, analyze suspected malware objects live within the MAS Multivector Virtual Execution (MVX) analysis engine. 2—Sandbox, analyze suspected malware objects in a closed, protected environment. Example: analysisType=1'
+      description: 'Specify live or sandbox analysis mode. 1—Live, analyze suspected
+        malware objects live within the MAS Multivector Virtual Execution (MVX) analysis
+        engine. 2—Sandbox, analyze suspected malware objects in a closed, protected
+        environment. Example: analysisType=1'
     - name: profiles
       required: true
-      description: Select the MAS profile to use for analysis. To determine the available profiles, use the configuration command.  To submit profiles, add them as a parameter using a comma to separate them.  For example, profiles="win7-sp1,winxp-sp3"
+      description: Select the MAS profile to use for analysis. To determine the available
+        profiles, use the configuration command.  To submit profiles, add them as
+        a parameter using a comma to separate them.  For example, profiles="win7-sp1,winxp-sp3"
     - name: application
       required: true
-      description: 'Specifies the application to be used for the analysis. To determine the available applications  for a specific profile, use the configuration command. Note: Setting the application value to 0, allows the MAS to determine the file type for you'
+      description: 'Specifies the application to be used for the analysis. To determine
+        the available applications  for a specific profile, use the configuration
+        command. Note: Setting the application value to 0, allows the MAS to determine
+        the file type for you'
     - name: priority
       required: true
       auto: PREDEFINED
       predefined:
       - "0"
       - "1"
-      description: 'Sets the analysis priority: 0—Normal, adds analysis to the bottom of queue. 1—Urgent, places the analysis at the top of the queue'
+      description: 'Sets the analysis priority: 0—Normal, adds analysis to the bottom
+        of queue. 1—Urgent, places the analysis at the top of the queue'
     - name: force
       required: true
       auto: PREDEFINED
       predefined:
       - "false"
       - "true"
-      description: 'Specify whether to perform an analysis on the malware object even if the object exactly matches an analysis that has already been performed. In most cases, it is not necessary to reanalyze malware. (default: false) False, Do not analyze duplicate objects. True, Force analysis'
+      description: 'Specify whether to perform an analysis on the malware object even
+        if the object exactly matches an analysis that has already been performed.
+        In most cases, it is not necessary to reanalyze malware. (default: false)
+        False, Do not analyze duplicate objects. True, Force analysis'
     - name: prefetch
       required: true
       auto: PREDEFINED
       predefined:
       - "0"
       - "1"
-      description: Specifies whether to determine the file target based on an internal determination rather than browsing to the target location. 0—No 1—Yes. If analysistype is set to 0 for sandbox analysis, prefetch must be set to 1.
+      description: Specifies whether to determine the file target based on an internal
+        determination rather than browsing to the target location. 0—No 1—Yes. If
+        analysistype is set to 0 for sandbox analysis, prefetch must be set to 1.
     - name: timeout
       required: true
       description: Sets the analysis timeout (in seconds)
     - name: urls
       required: true
-      description: URLs to be analyzed. To submit URLs, add them as a parameter using a comma to separate them.  For example, urls="www.demisto.com,www.google.com"
+      description: URLs to be analyzed. To submit URLs, add them as a parameter using
+        a comma to separate them.  For example, urls="www.demisto.com,www.google.com"
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The file submission key
@@ -617,7 +672,9 @@ script:
       required: true
       description: Submission ID of the submission
     - name: info_level
-      description: 'Specifies the level of information to be returned. Unless otherwise specified, the info_level is set to concise. You can select the following information levels concise: (default), normal, extended'
+      description: 'Specifies the level of information to be returned. Unless otherwise
+        specified, the info_level is set to concise. You can select the following
+        information levels concise: (default), normal, extended'
     outputs:
     - contextPath: FireEyeAX.Submissions.Key
       description: The submission key
