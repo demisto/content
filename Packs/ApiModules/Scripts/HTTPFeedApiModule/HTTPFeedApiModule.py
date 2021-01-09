@@ -221,6 +221,14 @@ class Client(BaseClient):
                         f' {r.status_code!r} {r.content!r}')
                     raise
                 url_to_response_list.append({url: r})
+        except requests.exceptions.SSLError as exception:
+            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                      ' the integration configuration.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ProxyError as exception:
+            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                      ' selected, try clearing the checkbox.'
+            raise DemistoException(err_msg, exception)
         except requests.ConnectionError:
             raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
 
@@ -445,5 +453,5 @@ def feed_main(feed_name, params=None, prefix=''):
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {feed_name} integration [{e}]\nTrace\n:{traceback.format_exc()}'
-        return_error(err_msg)
+        err_msg = f'Error in {feed_name} integration [{e}]'
+        return_error(err_msg, error=e)

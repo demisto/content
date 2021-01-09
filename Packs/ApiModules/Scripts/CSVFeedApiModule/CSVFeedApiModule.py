@@ -142,6 +142,14 @@ class Client(BaseClient):
 
             try:
                 r = _session.send(prepreq, **kwargs)
+            except requests.exceptions.SSLError as exception:
+                err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                          ' the integration configuration.'
+                raise DemistoException(err_msg, exception)
+            except requests.exceptions.ProxyError as exception:
+                err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                          ' selected, try clearing the checkbox.'
+                raise DemistoException(err_msg, exception)
             except requests.ConnectionError:
                 raise requests.ConnectionError('Failed to establish a new connection.'
                                                ' Please make sure your URL is valid.')
