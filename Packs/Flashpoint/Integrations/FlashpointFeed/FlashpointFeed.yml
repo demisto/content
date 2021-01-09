@@ -1,0 +1,115 @@
+commonfields:
+  id: FlashpointFeed
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: FlashpointFeed
+display: FlashpointFeed
+category: Data Enrichment & Threat Intelligence
+configuration:
+  - display: URL
+    name: url
+    defaultvalue: https://fp.tools
+    type: 0
+    required: true
+  - display: API Key
+    name: api_key
+    type: 4
+    required: true
+  - display: Query
+    name: query
+    type: 0
+    required: false
+  - display: Tags
+    name: tags
+    type: 0
+    required: false
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+  - display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
+  - display: Fetch indicators
+    name: feed
+    defaultvalue: "true"
+    type: 8
+    required: false
+  - display: Indicator Reputation
+    name: feedReputation
+    defaultvalue: feedInstanceReputationNotSet
+    type: 18
+    required: false
+    options:
+      - None
+      - Good
+      - Suspicious
+      - Bad
+    additionalinfo: Indicators from this integration instance will be marked with this
+      reputation
+  - display: Source Reliability
+    name: feedReliability
+    defaultvalue: F - Reliability cannot be judged
+    type: 15
+    required: true
+    options:
+      - A - Completely reliable
+      - B - Usually reliable
+      - C - Fairly reliable
+      - D - Not usually reliable
+      - E - Unreliable
+      - F - Reliability cannot be judged
+    additionalinfo: Reliability of the source providing the intelligence data
+  - display: ""
+    name: feedExpirationPolicy
+    defaultvalue: indicatorType
+    type: 17
+    required: false
+    options:
+      - never
+      - interval
+      - indicatorType
+      - suddenDeath
+  - display: ""
+    name: feedExpirationInterval
+    defaultvalue: "20160"
+    type: 1
+    required: false
+  - display: Feed Fetch Interval
+    name: feedFetchInterval
+    defaultvalue: "240"
+    type: 19
+    required: false
+  - display: Bypass exclusion list
+    name: feedBypassExclusionList
+    type: 8
+    required: false
+    additionalinfo: When selected, the exclusion list is ignored for indicators from
+      this feed. This means that if an indicator from this feed is on the exclusion
+      list, the indicator might still be added to the system.
+script:
+  type: python
+  commands:
+    - name: flashpoint-search-intelligence-reports
+      arguments:
+        - name: report_search
+          required: true
+          description: Search report using keyword or text
+      outputs:
+        - contextPath: Flashpoint.Report
+          description: List of reports based on specified search query or keyword
+      description: Search for the Intelligence Reports using a keyword
+    - name: flashpoit-get-indicators
+      arguments:
+        - name: limit
+          description: The maximum number of indicators to return. The default is 10.
+          defaultValue: "10"
+        - name: query
+          description: Search for the Intelligence Reports using a keyword
+        - name: tags
+          description: Sepecify tags to filter reports.
+
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: true
+  subtype: python3
