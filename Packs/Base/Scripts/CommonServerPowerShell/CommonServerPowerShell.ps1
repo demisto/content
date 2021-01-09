@@ -270,7 +270,7 @@ class DemistoObject {
         }
         $integration_context = $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } })
         # When Demisto Version is greater equal then "6.0.0".  integration_context will be under "context" attribute.
-        if (DemistoVersionEqualGreaterThen -version "6.0.0") {
+        if (DemistoVersionGreaterEqualThen -version "6.0.0") {
             $integration_context = $integration_context.context
         }
 
@@ -611,7 +611,7 @@ function FileResult([string]$file_name, [string]$data, [string]$file_type) {
     }
 }
 
-function DemistoVersionEqualGreaterThen([string]$version) {
+function DemistoVersionGreaterEqualThen([string]$version) {
     $demisto_version = $demisto.DemistoVersion().version
     $version_pattern = "\d{1,2}\.\d{1,2}\.\d{1,2}"
     $demisto_version = (Select-string -Pattern $version_pattern -InputObject $demisto_version).Matches[0].Value

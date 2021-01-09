@@ -23,10 +23,10 @@ Describe 'Check-UtilityFunctions' {
             }
         }
         [DemistoObject]$demisto = [DemistoObject]::New()
-        DemistoVersionEqualGreaterThen -version "6.0.0"  | Should -BeTrue
-        DemistoVersionEqualGreaterThen "5.0.1-build"  | Should -BeTrue
-        DemistoVersionEqualGreaterThen -version "6.0.1"  | Should -BeFalse
-        DemistoVersionEqualGreaterThen -version "6.0.2-build"  | Should -BeFalse
+        DemistoVersionGreaterEqualThen -version "6.0.0"  | Should -BeTrue
+        DemistoVersionGreaterEqualThen "5.0.1-build"  | Should -BeTrue
+        DemistoVersionGreaterEqualThen -version "6.0.1"  | Should -BeFalse
+        DemistoVersionGreaterEqualThen -version "6.0.2-build"  | Should -BeFalse
     }
 
     It "ArgToList" {
