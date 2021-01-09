@@ -198,6 +198,7 @@ def main():
     gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
     content_repo = gh.get_repo(f'{org_name}/{repo_name}')
     slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
+    print('!!!!!!!')
     print(slack_token[-3:])
     pr = content_repo.get_pull(pr_number)
     metadata_files = [file for file in pr.get_files() if file.filename.endswith('_metadata.json')]
