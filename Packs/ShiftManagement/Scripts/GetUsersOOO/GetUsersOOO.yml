@@ -10,14 +10,13 @@ tags:
 enabled: true
 args:
 - name: listname
-  description: Optionally pass in a different XSOAR list to run this automation against
-    (defaults to OOO List)
+  description: Retrieves users that are currently out of office.
   defaultValue: OOO List
 scripttarget: 0
 subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.8.5.10455
 runas: DBotWeakRole
-fromversion: 5.0.0
+fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
