@@ -10,10 +10,10 @@ jobs:
 #    if: github.repository == 'demisto/content' && github.event.action == 'opened' && github.event.pull_request.head.repo.fork == true
     if: github.repository == 'demisto/content'
     steps:
-#      - name: Checkout
-#        uses: actions/checkout@v2
-#        with:
-#          ref: master
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
