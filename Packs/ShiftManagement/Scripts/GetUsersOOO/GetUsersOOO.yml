@@ -17,7 +17,7 @@ args:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.8.5.10455
+dockerimage: demisto/python3:3.9.1.14969
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
