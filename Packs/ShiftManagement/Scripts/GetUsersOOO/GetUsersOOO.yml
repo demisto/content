@@ -1,3 +1,4 @@
+comment: Retrieves users that are currently out of office.
 commonfields:
   id: GetUsersOOO
   version: -1
@@ -10,7 +11,8 @@ tags:
 enabled: true
 args:
 - name: listname
-  description: Retrieves users that are currently out of office.
+  description: Optionally pass in a different XSOAR list to run this automation against
+    (defaults to OOO List)
   defaultValue: OOO List
 scripttarget: 0
 subtype: python3
