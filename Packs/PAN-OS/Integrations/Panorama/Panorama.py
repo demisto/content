@@ -5727,17 +5727,15 @@ def apply_security_profile_command(profile_name: str, profile_type: str, rule_na
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
                             'Panorama instance.')
-        panorama_xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"\
-                         f"profiles/{profile_type}",
-        apply_security_profile(panorama_xpath, profile_name)
-        return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
+        xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"\
+                f"profiles/{profile_type}"
 
     else:  # firewall instance
-        firewall_xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/"\
-                         f"profiles/{profile_type}"
+        xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/"\
+                f"profiles/{profile_type}"
 
-        apply_security_profile(firewall_xpath, profile_name)
-        return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
+    apply_security_profile(firewall_xpath, profile_name)
+    return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
 
 
 @logger
