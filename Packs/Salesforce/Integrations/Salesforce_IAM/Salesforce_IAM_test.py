@@ -15,6 +15,7 @@ def mock_client():
         verify=True,
         proxy=True
     )
+
     return client
 
 
@@ -57,8 +58,8 @@ def get_outputs_from_user_profile(user_profile):
 
 def test_create_user_command(mocker):
     args = {"user-profile": {"email": "mock@mock.com"}}
+    mocker.patch.object(Client, 'get_access_token_', return_value='')
     client = mock_client()
-    mocker.patch.object(client, 'get_access_token_', return_value='')
 
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
     mocker.patch.object(client, 'create_user', return_value=SALESFORCE_CREATE_USER_OUTPUT)
@@ -75,8 +76,8 @@ def test_create_user_command(mocker):
 
 def test_get_user_command__existing_user(mocker):
     args = {"user-profile": {"email": "mock@mock.com"}}
+    mocker.patch.object(Client, 'get_access_token_', return_value='')
     client = mock_client()
-    mocker.patch.object(client, 'get_access_token_', return_value='')
 
     mocker.patch.object(client, 'get_user', return_value=SALESFORCE_GET_USER_OUTPUT)
     mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=("id", None))
@@ -94,8 +95,8 @@ def test_get_user_command__existing_user(mocker):
 
 def test_get_user_command__non_existing_user(mocker):
     args = {"user-profile": {"email": "mock@mock.com"}}
+    mocker.patch.object(Client, 'get_access_token_', return_value='')
     client = mock_client()
-    mocker.patch.object(client, 'get_access_token_', return_value='')
 
     mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=(None, None))
     mocker.patch.object(client, 'get_user', return_value={})
@@ -111,8 +112,8 @@ def test_get_user_command__non_existing_user(mocker):
 
 def test_create_user_command__user_already_exists(mocker):
     args = {"user-profile": {"email": "mock@mock.com"}}
+    mocker.patch.object(Client, 'get_access_token_', return_value='')
     client = mock_client()
-    mocker.patch.object(client, 'get_access_token_', return_value='')
 
     mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=("mock@mock.com", ""))
     mocker.patch.object(client, 'update_user', return_value="")
@@ -126,8 +127,8 @@ def test_create_user_command__user_already_exists(mocker):
 
 def test_update_user_command__non_existing_user(mocker):
     args = {"user-profile": {"email": "mock@mock.com"}}
+    mocker.patch.object(Client, 'get_access_token_', return_value='')
     client = mock_client()
-    mocker.patch.object(client, 'get_access_token_', return_value='')
 
     mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=(None, None))
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
@@ -145,8 +146,8 @@ def test_update_user_command__non_existing_user(mocker):
 
 def test_update_user_command__command_is_disabled(mocker):
     args = {"user-profile": {"email": "mock@mock.com"}}
+    mocker.patch.object(Client, 'get_access_token_', return_value='')
     client = mock_client()
-    mocker.patch.object(client, 'get_access_token_', return_value='')
 
     mocker.patch.object(client, 'get_user_id_and_activity_by_mail', return_value=(None, None))
     mocker.patch.object(IAMUserProfile, 'map_object', return_value={})
