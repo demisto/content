@@ -1,13 +1,12 @@
 commonfields:
   id: ipinfo
   version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: ipinfo
-system: true
 display: ipinfo
 category: Data Enrichment & Threat Intelligence
 image: data:image/png;base64,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
 description: Use the ipinfo.io API to get data about an IP address
-defaultEnabled: false
 configuration:
 - display: Use system proxy settings
   name: proxy
@@ -16,7 +15,6 @@ configuration:
   required: false
 - display: API Token (optional)
   name: token
-  defaultvalue: ""
   type: 4
   required: false
 - display: Trust any certificate (not secure)
@@ -28,7 +26,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: >-
+  script: |-
     var sendRequest = function(url, json) {
         var res = http(
                 url,
@@ -60,8 +58,24 @@ script:
             return 'not cool';
         case 'ip':
             var o = sendRequest(base + args.ip + jsonSuffix, true);
-            var ec = {IP: {Address: o.ip, Hostname: o.hostname, ASN: o.org, Geo: {
-                Location: o.loc, Country: o.country, Description: o.city + ', ' + o.region + ', ' + o.postal + ', ' + o.country}}};
+
+            var asn = o.asn.asn? o.asn.asn: o.org;
+            var tags = [];
+            if (o.privacy.hosting){
+                tags.push('hosting');
+            }
+            if (o.privacy.proxy){
+                tags.push('proxy');
+            }
+            if (o.privacy.tor){
+                tags.push('tor');
+            }
+            if (o.privacy.vpn){
+                tags.push('vpn');
+            }
+            var ec = {IP: {Address: o.ip, Hostname: o.hostname, ASN: asn, ASOwner: o.asn.name, Tags: tags, Organization: {Name:  o.company.name, Type:  o.company.type}, Geo: {
+                Location: o.loc, Country: o.country, Description: o.city + ', ' + o.region + ', ' + o.postal + ', ' + o.country}, Registrar: {Abuse: {
+                Address: o.abuse.address, Country: o.abuse.country, Name: o.abuse.name, Network: o.abuse.network, Phone: o.abuse.phone, Email: o.abuse.email}}, FeedRelatedIndicators: [o.asn.domain, o.company.domain, o.hostname]}};
             ec.DBotScore = {Indicator: args.ip, Type: 'ip', Vendor: 'ipinfo', Score: 0};
             var reply = [{Type: entryTypes.note, Contents: o, ContentsFormat: formats.json, HumanReadable: objToMd(o), EntryContext: ec}];
             if (o.loc) {
@@ -83,17 +97,57 @@ script:
     outputs:
     - contextPath: IP.Address
       description: The IP address
+      type: string
     - contextPath: IP.Hostname
       description: The IP hostname
+      type: string
     - contextPath: IP.ASN
       description: The IP ASN
+      type: string
     - contextPath: IP.Geo.Location
       description: The IP geographic location in coordinates
+      type: string
     - contextPath: IP.Geo.Country
       description: The IP country
+      type: string
     - contextPath: IP.Geo.Description
       description: The IP location as <City, Region, Postal Code, Country>
-    description: Check IP reputation (when information is available, returns a JSON with details).  Uses all configured Threat Intelligence feeds
+      type: string
+    - contextPath: IP.ASOwner
+      description: The IP ASN owner
+      type: string
+    - contextPath: IP.FeedRelatedIndicators
+      description: Related Indicators
+      type: string
+    - contextPath: IP.Tags
+      description: the tags
+      type: string
+    - contextPath: IP.Registrar.Abuse.Address
+      description: The Abuse Address
+      type: string
+    - contextPath: IP.Registrar.Abuse.Country
+      description: The Abuse Country
+      type: string
+    - contextPath: IP.Registrar.Abuse.Name
+      description: The Abuse Name
+      type: string
+    - contextPath: IP.Registrar.Abuse.Network
+      description: The Abuse Network
+      type: string
+    - contextPath: IP.Registrar.Abuse.Phone
+      description: The Abuse Phone
+      type: string
+    - contextPath: IP.Registrar.Abuse.Email
+      description: The Abuse Email
+      type: string
+    - contextPath: IP.Organization.Name
+      description: The Organization Name
+      type: string
+    - contextPath: IP.Organization.Type
+      description: The Organization Type
+      type: string
+    description: Check IP reputation (when information is available, returns a JSON
+      with details).  Uses all configured Threat Intelligence feeds
   - name: ipinfo_field
     arguments:
     - name: ip
