@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: Parameters that were changed and causes the integration to run successfully.
+  description: Parameters that were changed and caused the integration to run successfully.
   isArray: true
   name: succeeded_changed_params
   required: false
