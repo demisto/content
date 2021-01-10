@@ -1,7 +1,6 @@
 commonfields:
   id: ipinfo
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: ipinfo
 display: ipinfo
 category: Data Enrichment & Threat Intelligence
@@ -94,6 +93,7 @@ script:
       required: true
       default: true
       description: IP address to query. E.g. !ip 1.1.1.1
+      isArray: false
     outputs:
     - contextPath: IP.Address
       description: The IP address
