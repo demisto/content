@@ -183,7 +183,7 @@ def mantis_create_issue_command(client, args):
         outputs_key_field=TABLE_HEADERS,
         outputs=issues
     )
-    return_results(results)
+    return results
 
 
 def matis_create_note_command(client, args):
