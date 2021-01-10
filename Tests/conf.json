@@ -3310,7 +3310,8 @@
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
         "Phishing v2 - Test - Incident Starter": "Issue 26783",
-        "Phishing - Core - Test - Incident Starter": "Issue 26784"
+        "Phishing - Core - Test - Incident Starter": "Issue 26784",
+        "Process Email - Generic - Test - Incident Starter": "Issue 32459"
     },
     "skipped_integrations": {
         

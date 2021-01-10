@@ -2,7 +2,7 @@
     "name": "XM Cyber",
     "description": "XMCyber continuously finds attack vectors to critical assets. This integration fetches events (incidents) on new critical assets at risk, new choke points, and trends in the overall risk score. Additionally incidents are enriched with incoming attack vectors to the incident's endpoints, and critical assets at risk form the incident.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "XM Cyber",
     "url": "https://www.xmcyber.com",
     "email": "support@xmcyber.com",
