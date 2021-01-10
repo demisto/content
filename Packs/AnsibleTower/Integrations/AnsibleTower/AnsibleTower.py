@@ -95,7 +95,7 @@ def output_content(content, print_output, text_filter, headline):
                 if re.search(fr'{text_filter.lower()}', line.lower()):
                     filtered_content = '\n'.join([filtered_content, line])
         add_filter_data = f'Filtered text: {text_filter}\n' if text_filter else ''
-        output_text = headline + add_filter_data + (filtered_content if filtered_content else content) + '\n'
+        output_text = headline + add_filter_data + (filtered_content if text_filter else content) + '\n'
     return output_text
 
 
