@@ -1,0 +1,31 @@
+{
+    "fromVersion": "5.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GraCase",
+        "GraHighRiskUser"
+    ],
+    "caseInsensitive": true,
+    "cliName": "graentityid",
+    "closeForm": false,
+    "content": true,
+    "description": "Gra Entity Id",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_graentityid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Gra Entity Id",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1
+}
