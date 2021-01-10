@@ -80,7 +80,7 @@ def test_module(client):
     }
     result = client.get_issues(params)
     if "issues" in result:
-        demisto.results('ok')
+       return 'ok'
     else:
         return_error(result)
 
