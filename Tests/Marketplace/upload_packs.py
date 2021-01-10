@@ -88,7 +88,6 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
 
     """
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
-        print(f"the PRODUCTION_PRIVATE_BUCKET is {GCPConfig.PRODUCTION_PRIVATE_BUCKET}")
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     else:
         index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
@@ -487,7 +486,6 @@ def get_updated_private_packs(private_packs, index_folder_path):
     updated_private_packs = []
     # open public index
     public_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
-    print(f"public path : {public_path}")
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as public_index_file:
         public_index_json = json.load(public_index_file)
     public_packs = public_index_json.get("packs", {})
@@ -500,17 +498,15 @@ def get_updated_private_packs(private_packs, index_folder_path):
         old_private_commit_hash = ""
         for public_pack in public_packs:
             if public_pack.get('id') == private_pack_id:
-                print("this is the right pack")
                 old_private_commit_hash = public_pack.get('contentCommitHash', "")
 
-        # old_private_commit_hash = [public_pack.get('contentCommitHash', "") for public_pack in public_packs
-        #                            if public_pack.get('id') == private_pack_id]
         print(f"new private pack commit hash : {new_private_commit_hash}, old commit: {old_private_commit_hash}")
         private_pack_was_updated = new_private_commit_hash != old_private_commit_hash
         if private_pack_was_updated:
             print("there is a new change")
             updated_private_packs.append(private_pack_id)
-    print(f"number of updated_private_packs is : {updated_private_packs}")
+
+    print(f"updated_private_packs are : {updated_private_packs}")
     return updated_private_packs
 
 
@@ -535,7 +531,6 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
 
     private_packs = []
     for metadata_file_path in metadata_files:
-        print(f" metadata file path is : {metadata_file_path}")
         try:
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
