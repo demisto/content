@@ -291,7 +291,7 @@ def main():
         elif demisto.command() == 'mantis-create-issue':
             return_results(mantis_create_issue_command(client, args))
         elif demisto.command() == 'mantis-add-note':
-            matis_create_note_command(client, args)
+            return_results(matis_create_note_command(client, args))
         elif demisto.command() == 'mantis-close-issue':
             mantis_close_issue_command(client, args)
 
