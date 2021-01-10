@@ -1,102 +1,90 @@
 {
-	"associatedToAll": false,
-	"associatedTypes": [
-		"Space X Mission"
-	],
-	"breachScript": "",
-	"caseInsensitive": true,
-	"cliName": "spacexpayloads",
-	"closeForm": false,
-	"columns": [
-		{
-			"displayName": "payload_id",
-			"fieldCalcScript": "",
-			"isDefault": true,
-			"isReadOnly": true,
-			"key": "payload_id",
-			"required": false,
-			"script": "",
-			"selectValues": null,
-			"type": "shortText",
-			"width": 208
-		},
-		{
-			"displayName": "nationality",
-			"fieldCalcScript": "",
-			"isDefault": true,
-			"isReadOnly": true,
-			"key": "nationality",
-			"required": false,
-			"script": "",
-			"selectValues": null,
-			"type": "shortText",
-			"width": 150
-		},
-		{
-			"displayName": "manufacturer",
-			"fieldCalcScript": "",
-			"isDefault": true,
-			"isReadOnly": true,
-			"key": "manufacturer",
-			"required": false,
-			"script": "",
-			"selectValues": null,
-			"type": "shortText",
-			"width": 150
-		},
-		{
-			"displayName": "payload_type",
-			"fieldCalcScript": "",
-			"isDefault": true,
-			"isReadOnly": true,
-			"key": "payload_type",
-			"required": false,
-			"script": "",
-			"selectValues": null,
-			"type": "shortText",
-			"width": 150
-		}
-	],
-	"content": true,
-	"defaultRows": [
-		{},
-		{},
-		{}
-	],
-	"description": "",
-	"editForm": true,
-	"fieldCalcScript": "",
-	"fromServerVersion": "",
-	"group": 0,
-	"hidden": false,
-	"id": "incident_spacexpayloads",
-	"isReadOnly": true,
-	"itemVersion": "",
-	"locked": false,
-	"mergeStrategy": "",
-	"name": "SpaceX Payloads",
-	"neverSetAsRequired": false,
-	"ownerOnly": false,
-	"packID": "affbee60-6879-4f47-8002-5b8820cc33bc",
-	"placeholder": "",
-	"propagationLabels": [
-		"all"
-	],
-	"required": false,
-	"script": "",
-	"selectValues": [],
-	"sla": 0,
-	"sortValues": null,
-	"system": false,
-	"systemAssociatedTypes": null,
-	"threshold": 72,
-	"toServerVersion": "",
-	"type": "grid",
-	"unmapped": false,
-	"unsearchable": false,
-	"useAsKpi": false,
-	"validatedError": "",
-	"validationRegex": "",
-	"version": -1,
-	"fromVersion": "6.0.0"
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Space X Mission"
+ ],
+ "caseInsensitive": true,
+ "cliName": "spacexpayloads",
+ "closeForm": false,
+ "columns": [
+  {
+   "displayName": "payload_id",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "payload_id",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 208
+  },
+  {
+   "displayName": "nationality",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "nationality",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "manufacturer",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "manufacturer",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "payload_type",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "payload_type",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  }
+ ],
+ "content": true,
+ "defaultRows": [
+  {
+
+  },
+  {
+
+  },
+  {
+
+  }
+ ],
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_spacexpayloads",
+ "isReadOnly": true,
+ "locked": false,
+ "name": "SpaceX Payloads",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "grid",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
 }

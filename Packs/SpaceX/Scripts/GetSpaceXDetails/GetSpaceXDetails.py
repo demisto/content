@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 
 incident = demisto.incident()

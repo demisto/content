@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -10,10 +9,9 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' GLOBAL VARIABLES '''
 
-SCHEMA = {
+SCHEMA: dict = {
     "flight_number": 99,
     "mission_type": "mission",
     "mission_name": "Starlink-9 (v1.0) & BlackSky Global 5-6",
@@ -150,12 +148,10 @@ SCHEMA = {
     "launch_date_source": "wiki"
 }
 
-
 ''' CLASSES '''
 
 
 class Client(BaseClient):
-
     """
     Client will implement the service API, should not contain Cortex
     XSOAR logic. Should do requests and return data
@@ -327,7 +323,7 @@ class Client(BaseClient):
     def get_historical_events(self, params: dict = None):
         return self._http_request(
             method='GET',
-            url_suffix=f'/history',
+            url_suffix='/history',
             params=params
         )
 
@@ -518,7 +514,7 @@ def get_landing_pad_command(client, args):
 
 def get_roadster_data_command(client, args):
     res = client.get_roadster_data()
-    md = tableToMarkdown(f'SpaceX Roadster Data:', res)
+    md = tableToMarkdown('SpaceX Roadster Data:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Roadster',
         outputs_key_field='launch_date_utc',
@@ -530,7 +526,7 @@ def get_roadster_data_command(client, args):
 
 def get_all_missions_command(client, args):
     res = client.get_all_missions(args)
-    md = tableToMarkdown(f'SpaceX Missions:', res)
+    md = tableToMarkdown('SpaceX Missions:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Missions',
         outputs_key_field='mission_id',
@@ -555,7 +551,7 @@ def get_mission_command(client, args):
 
 def get_launch_pads_command(client, args):
     res = client.get_launch_pads(args)
-    md = tableToMarkdown(f'SpaceX Launch Pads:', res)
+    md = tableToMarkdown('SpaceX Launch Pads:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.LaunchPads',
         outputs_key_field='id',
@@ -580,7 +576,7 @@ def get_launch_pad_command(client, args):
 
 def get_ships_command(client, args):
     res = client.get_ships(args)
-    md = tableToMarkdown(f'SpaceX Ships:', res)
+    md = tableToMarkdown('SpaceX Ships:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Ships',
         outputs_key_field='ship_id',
@@ -608,7 +604,7 @@ def get_capsules_command(client, args):
     # This limits the results as the API seems to return
     # one more than it should do
     res = res[0:int(args['limit'])] if "limit" in args else res
-    md = tableToMarkdown(f'SpaceX Capsules:', res)
+    md = tableToMarkdown('SpaceX Capsules:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Capsules',
         outputs_key_field='capsule_serial',
@@ -633,7 +629,7 @@ def get_capsule_command(client, args):
 
 def get_upcoming_capsules_command(client, args):
     res = client.get_upcoming_capsules(args)
-    md = tableToMarkdown(f'SpaceX Upcoming Capsules:', res)
+    md = tableToMarkdown('SpaceX Upcoming Capsules:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Capsules',
         outputs_key_field='capsule_serial',
@@ -645,7 +641,7 @@ def get_upcoming_capsules_command(client, args):
 
 def get_past_capsules_command(client, args):
     res = client.get_past_capsules(args)
-    md = tableToMarkdown(f'SpaceX Past Capsules:', res)
+    md = tableToMarkdown('SpaceX Past Capsules:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Capsules',
         outputs_key_field='capsule_serial',
@@ -657,7 +653,7 @@ def get_past_capsules_command(client, args):
 
 def get_cores_command(client, args):
     res = client.get_cores(args)
-    md = tableToMarkdown(f'SpaceX Cores:', res)
+    md = tableToMarkdown('SpaceX Cores:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Cores',
         outputs_key_field='core_serial',
@@ -682,7 +678,7 @@ def get_core_command(client, args):
 
 def get_upcoming_cores_command(client, args):
     res = client.get_upcoming_cores(args)
-    md = tableToMarkdown(f'SpaceX Upcoming Cores:', res)
+    md = tableToMarkdown('SpaceX Upcoming Cores:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Cores',
         outputs_key_field='core_serial',
@@ -694,7 +690,7 @@ def get_upcoming_cores_command(client, args):
 
 def get_past_cores_command(client, args):
     res = client.get_past_cores(args)
-    md = tableToMarkdown(f'SpaceX Past Cores:', res)
+    md = tableToMarkdown('SpaceX Past Cores:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Cores',
         outputs_key_field='core_serial',
@@ -706,7 +702,7 @@ def get_past_cores_command(client, args):
 
 def get_dragons_command(client, args):
     res = client.get_dragons(args)
-    md = tableToMarkdown(f'SpaceX Dragons:', res)
+    md = tableToMarkdown('SpaceX Dragons:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Dragons',
         outputs_key_field='id',
@@ -731,7 +727,7 @@ def get_dragon_command(client, args):
 
 def get_historical_events_command(client, args):
     res = client.get_historical_events(args)
-    md = tableToMarkdown(f'SpaceX Historical Events:', res)
+    md = tableToMarkdown('SpaceX Historical Events:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.History',
         outputs_key_field='id',
@@ -756,7 +752,7 @@ def get_historical_event_command(client, args):
 
 def get_payloads_command(client, args):
     res = client.get_payloads(args)
-    md = tableToMarkdown(f'SpaceX Payloads:', res)
+    md = tableToMarkdown('SpaceX Payloads:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Payloads',
         outputs_key_field='payload_id',
@@ -781,7 +777,7 @@ def get_payload_command(client, args):
 
 def get_rockets_command(client, args):
     res = client.get_rockets(args)
-    md = tableToMarkdown(f'SpaceX Rockets:', res)
+    md = tableToMarkdown('SpaceX Rockets:', res)
     command_results = CommandResults(
         outputs_prefix='SpaceX.Rockets',
         outputs_key_field='id',
@@ -805,7 +801,6 @@ def get_rocket_command(client, args):
 
 
 def fetch_incidents_command(client, params):
-
     incidents = []
     last_run = demisto.getLastRun()
     if last_run:
@@ -858,7 +853,7 @@ def get_remote_data_command(client, args, params):
     return [mission] + entries
 
 
-def update_remote_system_command(client, args, params):
+def update_remote_system_command(client, args):
     case_id = args.get('remoteId')
     return case_id
 
@@ -926,9 +921,9 @@ def main():
         elif command == 'get-remote-data':
             demisto.results(get_remote_data_command(client, args, params))
         elif command == 'update-remote-system':
-            demisto.results(update_remote_system_command(client, args, params))
+            demisto.results(update_remote_system_command(client, args))
         elif command in commands:
-            commands[command](client, args)
+            commands[command](client, args)  # type: ignore
         else:
             return_error(f"{command} does not exist in SpaceX integration.")
     except Exception as err:

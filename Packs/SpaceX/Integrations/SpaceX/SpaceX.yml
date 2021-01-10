@@ -3,9 +3,7 @@ commonfields:
   id: Space-X
   version: -1
 configuration:
-- additionalinfo: This does not really need to be changed.
-  defaultvalue: https://api.spacexdata.com/v3
-  display: Server URL (e.g. https://api.spacexdata.com/v3)
+- display: Server URL (e.g. https://api.spacexdata.com/v3)
   name: url
   required: true
   type: 0
@@ -2894,7 +2892,7 @@ script:
     - contextPath: SpaceX.Rockets.first_flight
       description: First flight
       type: string
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   ismappable: true
   isremotesyncin: true

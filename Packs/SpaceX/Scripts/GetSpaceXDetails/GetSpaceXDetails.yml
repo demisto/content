@@ -7,12 +7,12 @@ args:
   - payload
   - site
   required: true
-  description: The type to get the details for
-comment: Retrieves details for a rocket
+  description: The type to get the details for.
+comment: Retrieves details for a rocket.
 commonfields:
   id: getSpaceXDetails
   version: -1
-dockerimage: demisto/python3:3.8.3.9324
+dockerimage: demisto/python3:3.9.1.14969
 enabled: true
 name: getSpaceXDetails
 runas: DBotWeakRole
