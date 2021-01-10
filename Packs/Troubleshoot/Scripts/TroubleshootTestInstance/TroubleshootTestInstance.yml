@@ -1,17 +1,17 @@
 args:
 - default: false
-  description: Instance parameters - Can acquired from the GetInstanceParameter command.
+  description: Instance parameters. Can be acquired from the GetInstanceParameter command.
   isArray: false
   name: parameters
   required: true
   secret: false
 - default: false
-  description: Keys to check the negative result of the tes button.
+  description: Keys to check the negative result of the Test button.
   isArray: false
   name: keys
   required: false
   secret: false
-comment: Clicking on the "Test" button and return if the test failed.
+comment: Click the "Test" button and return if the test failed.
 commonfields:
   id: TroubleshootTestInstance
   version: -1
@@ -19,16 +19,16 @@ enabled: false
 name: TroubleshootTestInstance
 outputs:
 - contextPath: TroubleshootTestInstance.instance_name
-  description: Name of the instance
+  description: Name of the instance.
   type: String
 - contextPath: TroubleshootTestInstance.Errors
-  description: Errors after changing all the wanted keys
+  description: Errors after changing all the wanted keys.
   type: String
 - contextPath: TroubleshootTestInstance.changed_keys
-  description: Keys that changed in the test
+  description: Keys that changed in the test.
   type: String
 - contextPath: TroubleshootTestInstance.succeed
-  description: Is the test passed
+  description: Whether the test passed.
   type: Boolean
 script: '-'
 system: false
@@ -44,3 +44,4 @@ dependson:
   - demisto-api-put
 tests:
 - No tests (auto formatted)
+
