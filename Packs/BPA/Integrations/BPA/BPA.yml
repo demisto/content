@@ -33,7 +33,7 @@ script:
     - default: false
       description: A comma-separated list of ids of the documents to return.
       isArray: false
-      name: ids
+      name: doc_ids
       required: false
       secret: false
     deprecated: false
