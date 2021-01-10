@@ -14,6 +14,8 @@ if not list_name:
 if not list_name.startswith("OOO"):
     list_name = f"OOO {list_name}"
 
+# clean the out of office list
+demisto.executeCommand("OutOfOfficeListCleanup", {"listName": list_name})
 
 # get the out of office list, check if the list exists, if not create it:
 ooo_list = demisto.executeCommand("getList", {"listName": list_name})[0]["Contents"]
