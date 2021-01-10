@@ -31,7 +31,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: A comma-separated list of ids of the documents to return.
+      description: A comma-separated list of IDs of the documents to return.
       isArray: false
       name: doc_ids
       required: false
@@ -42,13 +42,13 @@ script:
     name: pan-os-get-documentation
     outputs:
     - contextPath: PAN-OS-BPA.Documentation.Document.DocId
-      description: The id of the document.
+      description: The ID of the document.
       type: Number
     - contextPath: PAN-OS-BPA.Documentation.Document.TopNav
       description: The TopNav field of the document.
       type: String
     - contextPath: PAN-OS-BPA.Documentation.Document.LeftNav
-      description: The LeftNav of the document
+      description: The LeftNav field of the document.
       type: String
     - contextPath: PAN-OS-BPA.Documentation.Document.Title
       description: The title of the document.
@@ -72,7 +72,7 @@ script:
       description: The date the document was last updated.
       type: String
     - contextPath: PAN-OS-BPA.Documentation.Document.CapabilityLabel
-      description: The CapabilityLabel of the document.
+      description: The capability label of the document.
       type: Unknown
     - contextPath: PAN-OS-BPA.Documentation.Document.ClassLabel
       description: The class label of the document.
@@ -81,10 +81,10 @@ script:
       description: The control category of the document.
       type: Unknown
     - contextPath: PAN-OS-BPA.Documentation.Document.Cscv6Control
-      description: The cscv6 control of the document.
+      description: The CSCv6 control of the document.
       type: Unknown
     - contextPath: PAN-OS-BPA.Documentation.Document.Cscv7Control
-      description: The cscv7 control of the document.
+      description: The CSCv7 control of the document.
       type: Unknown
     - contextPath: PAN-OS-BPA.Documentation
       description: The list of BPA checks.
@@ -108,7 +108,7 @@ script:
     name: pan-os-bpa-submit-job
     outputs:
     - contextPath: PAN-OS-BPA.SubmittedJob.JobID
-      description: Submitted Job ID, used to query results when job is done.
+      description: Submitted job ID, used to query results when the job is done.
       type: String
   - arguments:
     - default: false
@@ -130,19 +130,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the BPA ids of the results to return.
+      description: A comma-separated list of the BPA IDs of the results to return.
       isArray: false
       name: check_id
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of name of the results to return.
+      description: A comma-separated list of the name of the results to return.
       isArray: false
       name: check_name
       required: false
       secret: false
     deprecated: false
-    description: Returns results of BPA job.
+    description: Returns the results of the BPA job.
     execution: false
     name: pan-os-bpa-get-job-results
     outputs:
@@ -156,22 +156,22 @@ script:
       description: The list of checks.
       type: Unknown
     - contextPath: InfoFile.Name
-      description: File name
+      description: File name.
       type: string
     - contextPath: InfoFile.EntryID
-      description: File entry ID
+      description: File entry ID.
       type: string
     - contextPath: InfoFile.Size
-      description: File size
+      description: File size.
       type: number
     - contextPath: InfoFile.Type
-      description: File type, e.g., "PE"
+      description: File type, e.g., "PE".
       type: string
     - contextPath: InfoFile.Info
-      description: Basic information of the file
+      description: Basic information of the file.
       type: string
     - contextPath: InfoFile.Extension
-      description: File extension
+      description: File extension.
       type: string
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
