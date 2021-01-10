@@ -499,7 +499,7 @@ response.
 
 #### Command Example
 
-```!nutanix-hypervisor-task-poll task_ids=f198cc79-d2e8-42a9-9fcb-9bc80a63327c```
+```!nutanix-hypervisor-task-poll task_ids=b111bb11-b1b1-11b1-1bbb-1bb11b11111b```
 
 #### Context Example
 
@@ -532,7 +532,7 @@ response.
       "subtask_uuid_list": [
         "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
       ],
-      "uuid": "f198cc79-d2e8-42a9-9fcb-9bc80a63327c"
+      "uuid": "b111bb11-b1b1-11b1-1bbb-1bb11b11111b"
     }
   }
 }
@@ -543,7 +543,7 @@ response.
 > ### Results
 >|cluster_uuid|complete_time_usecs|create_time_usecs|entity_list|last_updated_time_usecs|message|meta_request|meta_response|operation_type|percentage_complete|progress_status|start_time_usecs|subtask_uuid_list|uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 1610288165197853 | 1610288160827398 | {'entity_id': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'entity_type': 'VM', 'entity_name': None} | 1610288165197853 |  | method_name: VmChangePowerState | error_code: 0 | VmChangePowerState | 100 | Succeeded | 1610288160863871 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | f198cc79-d2e8-42a9-9fcb-9bc80a63327c |
+>| xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 1610288165197853 | 1610288160827398 | {'entity_id': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'entity_type': 'VM', 'entity_name': None} | 1610288165197853 |  | method_name: VmChangePowerState | error_code: 0 | VmChangePowerState | 100 | Succeeded | 1610288160863871 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | b111bb11-b1b1-11b1-1bbb-1bb11b11111b |
 
 ### nutanix-alerts-list
 
