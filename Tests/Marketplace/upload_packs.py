@@ -496,10 +496,15 @@ def get_updated_private_packs(private_packs, index_folder_path):
         private_pack_id = pack.get('id')
         print(f"current private pack id is : {private_pack_id}")
         new_private_commit_hash = pack.get('contentCommitHash', "")
-        print(f"new private pack commit hash : {new_private_commit_hash}")
 
-        old_private_commit_hash = [public_pack.get('contentCommitHash', "") for public_pack in public_packs
-                                   if public_pack.get('id') == private_pack_id]
+        old_private_commit_hash = ""
+        for public_pack in public_packs:
+            if public_pack.get('id') == private_pack_id:
+                print("this is the right pack")
+                old_private_commit_hash = public_pack.get('contentCommitHash', "")
+
+        # old_private_commit_hash = [public_pack.get('contentCommitHash', "") for public_pack in public_packs
+        #                            if public_pack.get('id') == private_pack_id]
         print(f"new private pack commit hash : {new_private_commit_hash}, old commit: {old_private_commit_hash}")
         private_pack_was_updated = new_private_commit_hash != old_private_commit_hash
         if private_pack_was_updated:
@@ -534,7 +539,6 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
         try:
             with open(metadata_file_path, "r") as metadata_file:
                 metadata = json.load(metadata_file)
-                print(f"here : {metadata}")
             pack_id = metadata.get('id')
             is_changed_private_pack = pack_id in pack_names
             if is_changed_private_pack:  # Should take metadata from artifacts.
@@ -542,7 +546,6 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
             if metadata:
-                print(f"LOOK HERE :  {metadata.get('contentCommitHash')}, vendorNAME: {metadata.get('vendorName')} ")
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
                     'price': metadata.get('price'),
