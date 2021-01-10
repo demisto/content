@@ -195,7 +195,7 @@ def matis_create_note_command(client, args):
         }
     }
     resp = client.create_note(_id, body)
-    return_results('Note successfully added')
+    return 'Note successfully added'
 
 
 def fetch_incidents(client, last_run, first_fetch_time):
