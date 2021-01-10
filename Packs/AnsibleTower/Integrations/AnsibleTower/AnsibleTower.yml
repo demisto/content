@@ -309,6 +309,12 @@ script:
       - 'False'
       required: false
       secret: false
+    - default: false
+      description: Filter lines from the stdout for lines including the string provided
+      isArray: false
+      name: text_filter
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve the stdout from running the given job
     execution: false
@@ -474,6 +480,12 @@ script:
       predefined:
       - 'True'
       - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: Filter lines from the stdout for lines including the string provided
+      isArray: false
+      name: text_filter
       required: false
       secret: false
     deprecated: false

@@ -1,6 +1,6 @@
 import pytest
 import requests_mock
-from AnsibleTower import Client, delete_host, job_template_launch, create_ad_hoc_command
+from AnsibleTower import Client, delete_host, job_template_launch, create_ad_hoc_command, output_content
 from test_data.test_responses import JOB_TEMPLATE_LAUNCH_RES, ADHOC_COMMAND_LAUNCH_RES, JOB_TEMPLATE_EXPECTED, \
     ADHOC_COMMAND_LAUNCH_EXPECTED
 
@@ -97,3 +97,21 @@ def test_check_command_result_output(command, args, response, expected_result, o
     else:
         output = results.to_context().get('EntryContext', {})
     assert output.get(output_prefix, '') == expected_result
+
+
+def test_filtered_data():
+    """
+    Given:
+        - a string to filter lines from the stdout
+
+    When:
+        - print output is True and the user provide a string to filter
+
+    Then:
+        - validating that the returned text is filtered and arranged correctly
+
+    """
+    content = "UNREACHABLE! => \n line 1 \n line 2"
+    actual_output = output_content(content, True, "reachable", "Test headline\n")
+    expected_output = "Test headline\nFiltered text: reachable\n\nUNREACHABLE! => \n"
+    assert actual_output == expected_output

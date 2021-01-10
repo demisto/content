@@ -43,7 +43,7 @@ class Client(BaseClient):
 
 def output_data(response: dict) -> dict:
     """
-
+    Arrange the returned data and remove irrelevant fields from response
     Args:
         response: raw json api response
 
@@ -75,7 +75,39 @@ def results_output_data(results: list) -> list:
     return context_data
 
 
+def output_content(content, print_output, text_filter, headline):
+    """
+    Builds the human readable output return from stdout commands according to print_output and text_filter
+    Args:
+        content: stdout returned from running ad hoc command or job
+        print_output: if True human readable is shown to user
+        text_filter: if provided than human readable will include only lines in the content that contains this text
+        headline: headline of the human readable text
+
+    Returns: human readable text
+
+    """
+    output_text = ' '
+    if print_output:
+        filtered_content = ''
+        if text_filter:
+            for line in content.split("\n"):
+                if re.search(fr'{text_filter.lower()}', line.lower()):
+                    filtered_content = '\n'.join([filtered_content, line])
+        add_filter_data = f'Filtered text: {text_filter}\n' if text_filter else ''
+        output_text = headline + add_filter_data + (filtered_content if filtered_content else content) + '\n'
+    return output_text
+
+
 def get_headers(context_data) -> list:
+    """
+    Arrange the headers by importance - 'name' and 'id' will appear first
+    Args:
+        context_data: list or dict containing the context data
+
+    Returns: headers arrange by importance
+
+    """
     if isinstance(context_data, dict):
         context_data = [context_data]
     headers = list(context_data[0].keys())
@@ -270,19 +302,19 @@ def cancel_job(client: Client, args: dict) -> CommandResults:
 
 def job_stdout(client: Client, args: dict) -> CommandResults:
     print_output = True if args.get('print_output', 'True') == 'True' else False
+    text_filter = args.get('text_filter', '')
     job_id = args.get('job_id', '')
     url_suffix = f'jobs/{job_id}/stdout/'
     params = {"format": "json"}
     response = client.api_request(method='GET', url_suffix=url_suffix, params=params)
     response['job_id'] = job_id
-    output_content = ' '
-    if print_output:
-        output_content = f'### Job {job_id} output ### \n\n' + response.get('content', '') + '\n'
+    output_text = output_content(response.get('content', ''), print_output, text_filter,
+                                 f'### Job {job_id} output ### \n\n')
     return CommandResults(
         outputs_prefix='AnsibleAWX.JobStdout',
         outputs_key_field='job_id',
         outputs=response,
-        readable_output=output_content,
+        readable_output=output_text,
         raw_response=response
     )
 
@@ -387,19 +419,19 @@ def cancel_ad_hoc_command(client: Client, args: dict) -> CommandResults:
 
 def ad_hoc_command_stdout(client: Client, args: dict) -> CommandResults:
     print_output = True if args.get('print_output', 'True') == 'True' else False
+    text_filter = args.get('text_filter', '')
     command_id = args.get('command_id', None)
     url_suffix = f'ad_hoc_commands/{command_id}/stdout/'
     params = {"format": "json"}
     response = client.api_request(method='GET', url_suffix=url_suffix, params=params)
     response['command_id'] = command_id
-    output_content = ' '
-    if print_output:
-        output_content = f'### Ad hoc command {command_id} output ### \n\n' + response.pop('content') + '\n'
+    output_text = output_content(response.get('content', ''), print_output, text_filter,
+                                 f'### Ad hoc command {command_id} output ### \n\n')
     return CommandResults(
         outputs_prefix='AnsibleAWX.AdhocCommandStdout',
         outputs_key_field='job_id',
         outputs=response,
-        readable_output=output_content,
+        readable_output=output_text,
         raw_response=response
     )
 
