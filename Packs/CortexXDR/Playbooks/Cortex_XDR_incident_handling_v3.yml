@@ -1535,7 +1535,7 @@ tasks:
     taskid: 3c3c04d3-b7d0-4b6f-8364-09058f833723
     type: playbook
     task:
-      id: 3c3c04d3-b7d0-4b6f-8364-09058f833723
+      id: Cortex XDR device control violations
       version: -1
       name: Cortex XDR device control violations
       description: "Queries Cortex XDR for device control violations for the specified\

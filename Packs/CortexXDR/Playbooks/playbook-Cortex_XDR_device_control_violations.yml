@@ -1,3 +1,6 @@
+id: Cortex XDR device control violations
+version: -1
+name: Cortex XDR device control violations
 description: "Queries Cortex XDR for device control violations for the specified hosts,\
   \ IP address, or XDR endpoint ID. It then communicates via email with the involved\
   \ users to understand the nature of the incident and if the user connected the device.\
@@ -5,69 +8,23 @@ description: "Queries Cortex XDR for device control violations for the specified
   \ layout.\nThis playbook can also be associated with Cortex XDR device control violation\
   \ job to periodically query and investigate XDR device control violations. In this\
   \ configuration, the playbook will only communicate with the involved users."
-id: Cortex XDR device control violations
-inputs:
-- description: |-
-    Timestamp in relative date format for query device control events
-    from Cortex XDR.
-    For example "1 day", "3 weeks".
-  key: TimeStamp
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: Comma-separated list of endpoint IDs to filter results for.
-  key: EndpointID
-  playbookInputQuery:
-  required: false
-  value: {}
-- description:  Comma-separated list of hostnames to filter results for.
-  key: Hostname
-  playbookInputQuery:
-  required: false
-  value: {}
-- description:  Comma-separated list of endpoints IP Addresses to filter results for.
-  key: IPAddress
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: The subject of the message for communication with the involved users.
-  key: MessageSubject
-  playbookInputQuery:
-  required: false
-  value:
-    simple: Device control violation
-- description: A body of the message for communication with the involved users.
-  key: MessageBody
-  playbookInputQuery:
-  required: false
-  value:
-    simple: |-
-      Hello,
-      Your user was involved with a device control violation. Please open the following link to fill in the needed information to understand the incident further.
-name: Cortex XDR device control violations
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 99d3bc4b-62a5-432d-821f-4dffa1c5b1e9
+    type: start
+    task:
+      id: 99d3bc4b-62a5-432d-821f-4dffa1c5b1e9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 4697830d-8e95-4755-8304-ad01cfc0ddb9
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 4697830d-8e95-4755-8304-ad01cfc0ddb9
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -75,14 +32,28 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: 3b9e0236-4004-482e-8c5b-5084d95a532d
+    type: regular
+    task:
+      id: 3b9e0236-4004-482e-8c5b-5084d95a532d
+      version: -1
+      name: Get endpoint device control violations
+      description: Gets a list of device control violations filtered by selected fields.
+        You can retrieve up to 100 violations.
+      script: '|||xdr-get-endpoint-device-control-violations'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     scriptarguments:
       endpoint_ids:
         complex:
@@ -106,20 +77,6 @@ tasks:
       vendor_id: {}
       violation_id_list: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Gets a list of device control violations filtered by selected fields.
-        You can retrieve up to 100 violations.
-      id: e36cfcd4-c297-4393-86c4-6e644c364cc6
-      iscommand: true
-      name: Get endpoint device control violations
-      script: '|||xdr-get-endpoint-device-control-violations'
-      type: regular
-      version: -1
-    taskid: e36cfcd4-c297-4393-86c4-6e644c364cc6
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -127,39 +84,38 @@ tasks:
           "y": 370
         }
       }
-  "2":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: EndpointViolations
-                root: PaloAltoNetworksXDR
-          operator: isNotEmpty
-      label: "yes"
-    id: "2"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5201332f-5be8-49ca-8a34-ba282ec5ff82
+    type: condition
+    task:
+      id: 5201332f-5be8-49ca-8a34-ba282ec5ff82
+      version: -1
+      name: Were device control violations found?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "8"
       "yes":
       - "9"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: 993b8c02-02df-4d6e-87c4-309f736550d6
-      iscommand: false
-      name: Were device control violations found?
-      type: condition
-      version: -1
-    taskid: 993b8c02-02df-4d6e-87c4-309f736550d6
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR
+                accessor: EndpointViolations
+            iscontext: true
     view: |-
       {
         "position": {
@@ -167,71 +123,26 @@ tasks:
           "y": 545
         }
       }
-  "3":
-    form:
-      description: Did you perform the external device connection?
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          simple: 'Did you connect the '
-        options: []
-        optionsarg:
-        - simple: "Yes"
-        - simple: "No"
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: ""
-        type: singleSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "1"
-        label: ""
-        labelarg:
-          simple: Please add any additional information that can assist the investigation
-        options: []
-        optionsarg: []
-        placeholder: ""
-        readonly: false
-        required: false
-        tooltip: ""
-        type: shortText
-      sender: Your SOC team
-      title: Device Control Violation
-      totalanswers: 0
-    id: "3"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    message:
-      bcc:
-      body:
-        complex:
-          root: inputs.MessageBody
-      cc:
-      format: ""
-      methods:
-      - email
-      subject:
-        complex:
-          root: inputs.MessageSubject
-      timings:
-        completeafterreplies: 1
-        retriescount: 2
-        retriesinterval: 360
-      to:
-        complex:
-          accessor: Email
-          root: Account
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a28d149b-91ca-4c81-8640-327f703edd79
+    type: collection
+    task:
+      id: a28d149b-91ca-4c81-8640-327f703edd79
+      version: -1
+      name: Communicate with the end-user
+      description: Sends an email using EWS.
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -248,24 +159,12 @@ tasks:
       templateParams: {}
       to:
         complex:
-          accessor: mail
           root: ActiveDirectory.Users
+          accessor: mail
       transientFile: {}
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sends an email using EWS.
-      id: 5ca567db-ff89-4d5b-8190-ca6af9e233f7
-      iscommand: false
-      name: Communicate with the end-user
-      type: collection
-      version: -1
-    taskid: 5ca567db-ff89-4d5b-8190-ca6af9e233f7
-    timertriggers: []
-    type: collection
     view: |-
       {
         "position": {
@@ -273,14 +172,86 @@ tasks:
           "y": 1065
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: Account
+          accessor: Email
+      subject:
+        complex:
+          root: inputs.MessageSubject
+      body:
+        complex:
+          root: inputs.MessageBody
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Did you connect the '
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Please add any additional information that can assist the investigation
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Device Control Violation
+      description: Did you perform the external device connection?
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    ignoreworker: false
+    taskid: 256b3ed5-14c2-4e5f-8ae2-bc937b86b8ce
+    type: regular
+    task:
+      id: 256b3ed5-14c2-4e5f-8ae2-bc937b86b8ce
+      version: -1
+      name: Get user email address
+      description: Retrieves detailed information about a user account. The user can
+        be specified by name, email address, or as an Active Directory Distinguished
+        Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       attributes: {}
       custom-field-data: {}
@@ -292,34 +263,19 @@ tasks:
       user-account-control-out: {}
       username:
         complex:
-          accessor: username
           root: PaloAltoNetworksXDR.EndpointViolations
+          accessor: username
           transformers:
           - operator: uniq
-          - args:
+          - operator: Cut
+            args:
               delimiter:
                 value:
                   simple: \
               fields:
                 value:
                   simple: "0"
-            operator: Cut
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
-      id: e384e86d-82bc-45ea-8706-24bb237d8deb
-      iscommand: true
-      name: Get user email address
-      script: '|||ad-get-user'
-      type: regular
-      version: -1
-    taskid: e384e86d-82bc-45ea-8706-24bb237d8deb
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -327,42 +283,41 @@ tasks:
           "y": 890
         }
       }
-  "5":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: "0"
-                root: Device Control Violation.Answers
-          operator: isEqualString
-          right:
-            value:
-              simple: "Yes"
-      label: "yes"
-    id: "5"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 935f3d5b-a6b6-452a-81ca-0a3c31495999
+    type: condition
+    task:
+      id: 935f3d5b-a6b6-452a-81ca-0a3c31495999
+      version: -1
+      name: Did the involved user connect the device?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "8"
       "yes":
       - "6"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: 1a2e8d21-6e20-4035-8e0f-a8b6011ecab0
-      iscommand: false
-      name: Did the involved user connect the device?
-      type: condition
-      version: -1
-    taskid: 1a2e8d21-6e20-4035-8e0f-a8b6011ecab0
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Device Control Violation.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
     view: |-
       {
         "position": {
@@ -370,67 +325,79 @@ tasks:
           "y": 1210
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "6":
     id: "6"
-    ignoreworker: false
+    taskid: 2a3eb3b4-ac48-4526-8b8d-dcde62ec67d2
+    type: regular
+    task:
+      id: 2a3eb3b4-ac48-4526-8b8d-dcde62ec67d2
+      version: -1
+      name: Check if the device is approved for use
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: b43b51d9-5d52-42d2-881c-89e2cebadb34
-      iscommand: false
-      name: Check if the device is approved for use
-      type: regular
-      version: -1
-    taskid: b43b51d9-5d52-42d2-881c-89e2cebadb34
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 447.5,
-          "y": 1470
+          "x": 580,
+          "y": 1460
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 1a96d761-18b5-456a-8f26-b282377c131c
+    type: title
     task:
-      brand: ""
-      id: 12a6aa0f-8046-48bd-82ad-f5b3490cae6b
-      iscommand: false
+      id: 1a96d761-18b5-456a-8f26-b282377c131c
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 12a6aa0f-8046-48bd-82ad-f5b3490cae6b
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1650
+          "y": 1660
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "9":
     id: "9"
-    ignoreworker: false
+    taskid: 199041f9-c401-46e9-81f6-268a5b132768
+    type: regular
+    task:
+      id: 199041f9-c401-46e9-81f6-268a5b132768
+      version: -1
+      name: Set device control grid
+      description: Creates a grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       columns:
         simple: Hostname,Username,IP,XDR endpoint ID,Violation type,Date,Product,Vendor
@@ -444,19 +411,6 @@ tasks:
       sort_by: {}
       unpack_nested_elements: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Creates a grid table from items or key-value pairs.
-      id: f31ad3e0-ea95-4eea-8910-1b91c825d0e0
-      iscommand: false
-      name: Set device control grid
-      script: SetGridField
-      type: regular
-      version: -1
-    taskid: f31ad3e0-ea95-4eea-8910-1b91c825d0e0
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -464,39 +418,38 @@ tasks:
           "y": 720
         }
       }
-  "10":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: xdrdevicecontrolviolations
-                root: incident
-          operator: isNotEmpty
-      label: "yes"
-    id: "10"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: e12bce4a-c80e-4907-8767-86102a491bd8
+    type: condition
+    task:
+      id: e12bce4a-c80e-4907-8767-86102a491bd8
+      version: -1
+      name: Were current violations found?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "1"
       "yes":
       - "11"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: ''
-      id: 69f94ca2-68f4-4831-83ac-0086f324d322
-      iscommand: false
-      name: Were current violations found?
-      type: condition
-      version: -1
-    taskid: 69f94ca2-68f4-4831-83ac-0086f324d322
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: xdrdevicecontrolviolations
+            iscontext: true
     view: |-
       {
         "position": {
@@ -504,14 +457,27 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    ignoreworker: false
+    taskid: 637b111d-8ab6-4f2b-8498-26e01b330c6b
+    type: regular
+    task:
+      id: 637b111d-8ab6-4f2b-8498-26e01b330c6b
+      version: -1
+      name: Set Violations fields
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
-    note: false
-    quietmode: 0
     scriptarguments:
       append:
         simple: "true"
@@ -520,22 +486,9 @@ tasks:
       stringify: {}
       value:
         complex:
-          accessor: xdrdevicecontrolviolations
           root: incident
+          accessor: xdrdevicecontrolviolations
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: b1da0ef5-6ff1-48bb-8148-1a144766fc77
-      iscommand: false
-      name: Set Violations fields
-      script: Set
-      type: regular
-      version: -1
-    taskid: b1da0ef5-6ff1-48bb-8148-1a144766fc77
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -543,23 +496,67 @@ tasks:
           "y": 370
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
       "10_11_yes": 0.47,
       "2_8_#default#": 0.1,
-      "5_6_yes": 0.57
+      "5_6_yes": 0.57,
+      "5_8_#default#": 0.22
     },
     "paper": {
       "dimensions": {
-        "height": 1665,
-        "width": 777.5,
+        "height": 1675,
+        "width": 910,
         "x": 50,
         "y": 50
       }
     }
   }
+inputs:
+- key: TimeStamp
+  value: {}
+  required: false
+  description: |-
+    Timestamp in relative date format for query device control events
+    from Cortex XDR.
+    For example "1 day", "3 weeks".
+  playbookInputQuery:
+- key: EndpointID
+  value: {}
+  required: false
+  description: Comma-separated list of endpoint IDs to filter results for.
+  playbookInputQuery:
+- key: Hostname
+  value: {}
+  required: false
+  description: Comma-separated list of hostnames to filter results for.
+  playbookInputQuery:
+- key: IPAddress
+  value: {}
+  required: false
+  description: Comma-separated list of endpoints IP Addresses to filter results for.
+  playbookInputQuery:
+- key: MessageSubject
+  value:
+    simple: Device control violation
+  required: false
+  description: The subject of the message for communication with the involved users.
+  playbookInputQuery:
+- key: MessageBody
+  value:
+    simple: |-
+      Hello,
+      Your user was involved with a device control violation. Please open the following link to fill in the needed information to understand the incident further.
+  required: false
+  description: A body of the message for communication with the involved users.
+  playbookInputQuery:
+outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0

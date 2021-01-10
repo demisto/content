@@ -18,10 +18,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4697830d-8e95-4755-8304-ad01cfc0ddb9
+    taskid: ffe7dd30-7c4d-40c0-8734-468ae38cffe6
     type: start
     task:
-      id: 4697830d-8e95-4755-8304-ad01cfc0ddb9
+      id: ffe7dd30-7c4d-40c0-8734-468ae38cffe6
       version: -1
       name: ""
       iscommand: false
@@ -45,10 +45,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: bbd92a45-3548-4b6d-8c4b-7b1bdcc8bda6
+    taskid: 759e4939-75e9-4c60-8cb0-40d94fd5f232
     type: regular
     task:
-      id: bbd92a45-3548-4b6d-8c4b-7b1bdcc8bda6
+      id: 759e4939-75e9-4c60-8cb0-40d94fd5f232
       version: -1
       name: Get endpoint device control violations
       description: Gets a list of device control violations filtered by selected fields.
@@ -97,19 +97,18 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 5e461543-fa9d-460a-893e-41b5a69ade9d
+    taskid: 180ab59c-d7fe-460d-8612-083c0816afd6
     type: condition
     task:
-      id: 5e461543-fa9d-460a-893e-41b5a69ade9d
+      id: 180ab59c-d7fe-460d-8612-083c0816afd6
       version: -1
       name: Were device control violations found?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
-      - "8"
+      - "11"
       "yes":
       - "9"
     separatecontext: false
@@ -137,10 +136,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 12a6aa0f-8046-48bd-82ad-f5b3490cae6b
+    taskid: 43feb7c2-573d-4f0c-8521-07955a671d29
     type: title
     task:
-      id: 12a6aa0f-8046-48bd-82ad-f5b3490cae6b
+      id: 43feb7c2-573d-4f0c-8521-07955a671d29
       version: -1
       name: Done
       type: title
@@ -162,10 +161,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: e75b8895-1641-4d52-8fa9-547bfe5479ed
+    taskid: d21ccce9-a4da-4018-8dd4-f0c5ec25a6a2
     type: regular
     task:
-      id: e75b8895-1641-4d52-8fa9-547bfe5479ed
+      id: d21ccce9-a4da-4018-8dd4-f0c5ec25a6a2
       version: -1
       name: Set device control grid
       description: Creates a grid table from items or key-value pairs.
@@ -203,10 +202,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 4c85d754-b327-450a-8cbc-ad4a5af789c7
+    taskid: beef8861-2f9d-4a70-810f-ffae2e09eb80
     type: regular
     task:
-      id: 4c85d754-b327-450a-8cbc-ad4a5af789c7
+      id: beef8861-2f9d-4a70-810f-ffae2e09eb80
       version: -1
       name: Create New Incident
       description: commands.local.cmd.create.inc
@@ -577,10 +576,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 46f64af5-3e6c-47e3-8fc7-0a2082e59825
+    taskid: 200c5756-b13d-48b9-8100-277a9fd35507
     type: regular
     task:
-      id: 46f64af5-3e6c-47e3-8fc7-0a2082e59825
+      id: 200c5756-b13d-48b9-8100-277a9fd35507
       version: -1
       name: Close job
       description: commands.local.cmd.close.inv
@@ -615,10 +614,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 74be5363-4b53-4c66-880c-2b8d753135e2
+    taskid: 9f84a3cd-4791-492b-899c-da8e19549b4b
     type: regular
     task:
-      id: 74be5363-4b53-4c66-880c-2b8d753135e2
+      id: 9f84a3cd-4791-492b-899c-da8e19549b4b
       version: -1
       name: Count involved users and hosts
       description: commands.local.cmd.set.incident
@@ -986,7 +985,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "2_8_#default#": 0.17
+      "2_11_#default#": 0.19
     },
     "paper": {
       "dimensions": {
