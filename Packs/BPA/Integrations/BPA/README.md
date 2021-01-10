@@ -1,5 +1,5 @@
 Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
-This integration was integrated and tested with version xx of BPA.
+This integration was integrated and tested with version 1.0 of BPA.
 Supported Cortex XSOAR versions: 5.0.0 and later.
 
 ## Configure BPA on Cortex XSOAR
@@ -32,16 +32,16 @@ Gets the documentation of all BPA checks.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of ids of the documents to return. | Optional | 
+| doc_ids | A comma-separated list of IDs of the documents to return. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PAN-OS-BPA.Documentation.Document.DocId | Number | The id of the document. | 
+| PAN-OS-BPA.Documentation.Document.DocId | Number | The ID of the document. | 
 | PAN-OS-BPA.Documentation.Document.TopNav | String | The TopNav field of the document. | 
-| PAN-OS-BPA.Documentation.Document.LeftNav | String | The LeftNav of the document | 
+| PAN-OS-BPA.Documentation.Document.LeftNav | String | The LeftNav of the document. | 
 | PAN-OS-BPA.Documentation.Document.Title | String | The title of the document. | 
 | PAN-OS-BPA.Documentation.Document.DocType | String | The type of the document. | 
 | PAN-OS-BPA.Documentation.Document.Description | String | The description of the document. | 
@@ -49,11 +49,11 @@ Gets the documentation of all BPA checks.
 | PAN-OS-BPA.Documentation.Document.References | String | The references for the document. | 
 | PAN-OS-BPA.Documentation.Document.Active | Boolean | Whether the document is active or not. | 
 | PAN-OS-BPA.Documentation.Document.LastUpdatedDate | String | The date the document was last updated. | 
-| PAN-OS-BPA.Documentation.Document.CapabilityLabel | Unknown | The CapabilityLabel of the document. | 
+| PAN-OS-BPA.Documentation.Document.CapabilityLabel | Unknown | The capability label of the document. | 
 | PAN-OS-BPA.Documentation.Document.ClassLabel | Unknown | The class label of the document. | 
 | PAN-OS-BPA.Documentation.Document.ControlCategory | Unknown | The control category of the document. | 
-| PAN-OS-BPA.Documentation.Document.Cscv6Control | Unknown | The cscv6 control of the document. | 
-| PAN-OS-BPA.Documentation.Document.Cscv7Control | Unknown | The cscv7 control of the document. | 
+| PAN-OS-BPA.Documentation.Document.Cscv6Control | Unknown | The CSCv6 control of the document. | 
+| PAN-OS-BPA.Documentation.Document.Cscv7Control | Unknown | The CSCv7 control of the document. | 
 | PAN-OS-BPA.Documentation | Unknown | The list of BPA checks. | 
 
 
@@ -282,14 +282,14 @@ Submits a job to the BPA job queue.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| generate_zip_bundle | Whether to download the Panorama report. Can be "true" or "false". Default is "false". Possible values are: false, true. Default is false. | Optional | 
+| generate_zip_bundle | Whether to download the Panorama report. Can be "true" or "false". Default is "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PAN-OS-BPA.SubmittedJob.JobID | String | Submitted Job ID, used to query results when job is done. | 
+| PAN-OS-BPA.SubmittedJob.JobID | String | Submitted Job ID, used to query results when the job is done. | 
 
 
 #### Command Example
@@ -323,9 +323,9 @@ Returns results of BPA job.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | task_id | The job ID for which to return results. | Required | 
-| exclude_passed_checks | Whether to exclude passed checks. Can be "true" or "false". Default is "false". Possible values are: true, false. Default is false. | Optional | 
-| check_id | A comma-separated list of the BPA ids of the results to return. | Optional | 
-| check_name | A comma-separated list of name of the results to return. | Optional | 
+| exclude_passed_checks | Whether to exclude passed checks. Can be "true" or "false". Default is "false". | Optional | 
+| check_id | A comma-separated list of the BPA IDs of the results to return. | Optional | 
+| check_name | A comma-separated list of the name of the results to return. | Optional | 
 
 
 #### Context Output
@@ -335,12 +335,12 @@ Returns results of BPA job.
 | PAN-OS-BPA.JobResults.JobID | String | The submitted job ID. | 
 | PAN-OS-BPA.JobResults.Status | String | The job status in the queue \(in progress or completed\). | 
 | PAN-OS-BPA.JobResults.Checks | Unknown | The list of checks. | 
-| InfoFile.Name | string | File name | 
-| InfoFile.EntryID | string | File entry ID | 
-| InfoFile.Size | number | File size | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | File entry ID. | 
+| InfoFile.Size | number | File size. | 
 | InfoFile.Type | string | File type, e.g., "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 
 
 #### Command Example
