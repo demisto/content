@@ -468,7 +468,7 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
                                           extract_destination_path)
 
         logging.info("get_updated_private_packs")
-        updated_private_packs = get_updated_private_packs(private_index_path, index_folder_path)
+        updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
 
         logging.info("add_private_packs_to_index")
         add_private_packs_to_index(index_folder_path, private_index_path)
@@ -480,7 +480,7 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
         return private_packs, private_index_path, private_index_blob, updated_private_packs
 
 
-def get_updated_private_packs(private_index_path, index_folder_path):
+def get_updated_private_packs(private_packs, index_folder_path):
     """
     todo: add docstring
     """
@@ -491,14 +491,6 @@ def get_updated_private_packs(private_index_path, index_folder_path):
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as public_index_file:
         public_index_json = json.load(public_index_file)
     public_packs = public_index_json.get("packs", {})
-
-    # open private index
-    private_path = os.path.join(private_index_path, f"{GCPConfig.INDEX_NAME}.json")
-    print(f"private path : {private_path}")
-    with open(os.path.join(private_index_path, f"{GCPConfig.INDEX_NAME}.json")) as private_index_file:
-        private_index_json = json.load(private_index_file)
-    private_packs = private_index_json.get("packs", {})
-    print(f"in get_updated_private_packs  private_packs are : {private_packs}")
 
     for pack in private_packs:
         private_pack_id = pack.get('id')
