@@ -46,8 +46,8 @@ name: TheHive Project
 script:
   commands:
     - arguments:
-        - description: Limit the number of results
-          name: limit
+      - description: Limit the number of results
+        name: limit
       description: List cases.
       name: thehive-list-cases
       outputs:
@@ -1423,6 +1423,24 @@ script:
       description: Returns the list of fields.
       execution: false
       name: get-mapping-fields
+    - arguments:
+      - default: false
+        description: The ticket ID.
+        isArray: false
+        name: id
+        required: true
+        secret: false
+      - default: false
+        description: Retrieve entries that were created after lastUpdate.
+        isArray: false
+        name: lastUpdate
+        required: true
+        secret: false
+      deprecated: false
+      description: Get remote data from a remote incident. This method does not update
+        the current incident, and should be used for debugging purposes.
+      execution: false
+      name: get-remote-data
   dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   ismappable: true

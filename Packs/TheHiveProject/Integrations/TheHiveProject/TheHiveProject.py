@@ -1,13 +1,13 @@
 from typing import Dict
 
-from CommonServerPython import *  # noqa: F401
+from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-SCHEMA = {
+SCHEMA: dict = {
     "_id": "00000000",
     "_parent": None,
     "_routing": "00000000",
@@ -109,7 +109,7 @@ class Client(BaseClient):
             cases.append(case)
         return cases
 
-    def get_case(self, case_id: int = None):
+    def get_case(self, case_id: str):
         res = self._http_request('GET', f'case/{case_id}', ok_codes=[200, 201, 404], resp_type='response')
         if res.status_code == 404:
             return None
@@ -120,7 +120,7 @@ class Client(BaseClient):
 
     def search_cases(self, args: dict = None):
         data = args
-        res = self._http_request('POST', f'case/_search', ok_codes=[200, 201, 404], data=data, resp_type='response')
+        res = self._http_request('POST', 'case/_search', ok_codes=[200, 201, 404], data=data, resp_type='response')
         if res.status_code == 404:
             return None
         else:
@@ -153,24 +153,24 @@ class Client(BaseClient):
             return res.status_code
 
     def get_linked_cases(self, case_id: str = None):
-        res = self._http_request(f'GET', 'case/{case_id}/links', ok_codes=[200, 201, 204, 404], resp_type='response')
+        res = self._http_request('GET', 'case/{case_id}/links', ok_codes=[200, 201, 204, 404], resp_type='response')
         if res.status_code not in [200, 201, 204]:
             return (res.status_code, res.text)
         else:
             return res.json()
 
     def merge_cases(self, first_case_id: str = None, second_case_id: str = None):
-        res = self._http_request(f'POST', f'case/{first_case_id}/_merge/{second_case_id}',
+        res = self._http_request('POST', f'case/{first_case_id}/_merge/{second_case_id}',
                                  ok_codes=[200, 201, 204, 404], resp_type='response')
         if res.status_code not in [200, 201, 204]:
             return (res.status_code, res.text)
         else:
             return res.json()
 
-    def get_tasks(self, case_id: str = None):
+    def get_tasks(self, case_id: str = ''):
         data = {"id": case_id}
         tasks = list()
-        res = self._http_request(f'POST', f'case/task/_search', data=data, ok_codes=[200, 201, 204, 404],
+        res = self._http_request('POST', 'case/task/_search', data=data, ok_codes=[200, 201, 204, 404],
                                  resp_type='response')
         if res.status_code != 200:
             return None
@@ -232,12 +232,12 @@ class Client(BaseClient):
         users = self._http_request('POST', 'user/_search', ok_codes=[200], data=search_filter)
         return users
 
-    def get_user(self, user_id: str = None):
+    def get_user(self, user_id: str):
         res = self._http_request('GET', f'user/{user_id}', ok_codes=[200])
         return res
 
-    def create_user(self, user_data: dict = None):
-        res = self._http_request('POST', f'user', data=user_data, ok_codes=[201])
+    def create_user(self, user_data: dict):
+        res = self._http_request('POST', 'user', data=user_data, ok_codes=[201])
         return res
 
     def block_user(self, user_id: str = None):
@@ -248,7 +248,7 @@ class Client(BaseClient):
             return False
 
     def list_observables(self, case_id: str = None):
-        res = self._http_request('POST', f'case/artifact/_search', ok_codes=[200])
+        res = self._http_request('POST', 'case/artifact/_search', ok_codes=[200])
         res[:] = [x for x in res if x['_parent'] == case_id] if case_id else res
         return res
 
@@ -264,8 +264,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def output_results(title: str = None, outputs: [dict, list] = None, headers: [str, list] = None,
-                   outputs_prefix: str = None, outputs_key_field: [str, list] = None, human_readable: bool = True):
+def output_results(title: str, outputs: Any, headers: list, outputs_prefix: str,
+                   outputs_key_field: str, human_readable: bool = True):
     if title and outputs and headers and human_readable:
         md = tableToMarkdown(title, outputs, headers)
     else:
@@ -282,7 +282,7 @@ def output_results(title: str = None, outputs: [dict, list] = None, headers: [st
 ''' COMMAND FUNCTIONS '''
 
 
-def list_cases_command(client: Client, args: dict = None):
+def list_cases_command(client: Client, args: dict):
     limit = int(args.get('limit', None)) if args.get('limit', None) else None
     res = client.get_cases(limit=limit)
     res = sorted(res, key=lambda x: x['caseId'])
@@ -295,8 +295,8 @@ def list_cases_command(client: Client, args: dict = None):
     )
 
 
-def get_case_command(client: Client, args: dict = None):
-    case_id = args.get('id')
+def get_case_command(client: Client, args: dict):
+    case_id = str(args.get('id', ''))
     case = client.get_case(case_id)
     output_results(
         title=f'TheHive Case ID {case_id}:',
@@ -307,8 +307,8 @@ def get_case_command(client: Client, args: dict = None):
     )
 
 
-def search_cases_command(client: Client, args: dict = None):
-    arguments = {k: True if v == 'true' else v for k, v in args.items() if v != None}
+def search_cases_command(client: Client, args: dict):
+    arguments = {k: True if v == 'true' else v for k, v in args.items() if v is not None}
     arguments = {k: False if v == 'false' else v for k, v in arguments.items()}
     cases = client.search_cases(arguments)
     output_results(
@@ -320,18 +320,18 @@ def search_cases_command(client: Client, args: dict = None):
     )
 
 
-def update_case_command(client: Client, args: dict = None):
-    case_id = args.get('id')
+def update_case_command(client: Client, args: dict):
+    case_id = str(args.get('id', ''))
 
     # Get the case first
     original_case = client.get_case(case_id)
     if not original_case:
         return_error(f'Could not find case ID {case_id}')
-    del updates['id']
-    for k, v in updates.items():
+    del args['id']
+    for k, v in args.items():
         v = v.split(",") if k in ['tags'] and "," in v else v
         original_case[k] = v
-    res = client.update_case(case_id, updates)
+    res = client.update_case(case_id, args)
     if type(res) == tuple:
         return_error(f'Error updating case ({res[0]}) - {res[1]}')
     output_results(
@@ -343,7 +343,7 @@ def update_case_command(client: Client, args: dict = None):
     )
 
 
-def create_case_command(client: Client, args: dict = None):
+def create_case_command(client: Client, args: dict):
     res = client.create_case(args)
     if type(res) == tuple:
         return_error(f'Error creating case ({res[0]}) - {res[1]}')
@@ -356,8 +356,8 @@ def create_case_command(client: Client, args: dict = None):
     )
 
 
-def remove_case_command(client: Client, args: dict = None):
-    case_id = args.get('id')
+def remove_case_command(client: Client, args: dict):
+    case_id = str(args.get('id', ''))
     permanent = args.get('permanent', 'false')
     permanent = True if permanent == 'true' else False
 
@@ -372,7 +372,7 @@ def remove_case_command(client: Client, args: dict = None):
     demisto.results(message)
 
 
-def get_linked_cases_command(client: Client, args: dict = None):
+def get_linked_cases_command(client: Client, args: dict):
     case_id = args.get('case_id')
     res = client.get_linked_cases(case_id)
     if type(res) == tuple:
@@ -386,14 +386,14 @@ def get_linked_cases_command(client: Client, args: dict = None):
     )
 
 
-def merge_cases_command(client: Client, args: dict = None):
+def merge_cases_command(client: Client, args: dict):
     first_case = args.get('firstCaseID')
     second_case = args.get('secondCaseID')
     res = client.merge_cases(first_case, second_case)
     if type(res) == tuple:
         return_error(f'Error getting linked cases ({res[0]}) - {res[1]}')
     output_results(
-        title=f'TheHive Linked Cases of {case_id}:',
+        title=f'TheHive Linked Cases of {first_case}:',
         outputs=res,
         headers=['id', 'title', 'description', 'createdAt'],
         outputs_prefix='TheHive.Cases',
@@ -401,8 +401,8 @@ def merge_cases_command(client: Client, args: dict = None):
     )
 
 
-def get_case_tasks_command(client: Client, args: dict = None):
-    case_id = args.get('id')
+def get_case_tasks_command(client: Client, args: dict):
+    case_id = str(args.get('id', ''))
     tasks = client.get_tasks(case_id)
     output_results(
         title=f'TheHive Tasks For Case {case_id}:',
@@ -413,7 +413,7 @@ def get_case_tasks_command(client: Client, args: dict = None):
     )
 
 
-def get_task_command(client: Client, args: dict = None, params: dict = None):
+def get_task_command(client: Client, args: dict, params: dict):
     task_id = args.get('id')
     tasks = client.get_task(task_id)
     output_results(
@@ -425,7 +425,7 @@ def get_task_command(client: Client, args: dict = None, params: dict = None):
     )
 
 
-def get_attachment_command(client: Client, args: dict = None, params: dict = None):
+def get_attachment_command(client: Client, args: dict, params: dict):
     log_id = args.get('id')
     log = client.get_log(log_id)
     if log and "attachment" in log:
@@ -433,7 +433,7 @@ def get_attachment_command(client: Client, args: dict = None, params: dict = Non
         data = client.get_attachment_data(filename=attachment.get('name', None), fileId=attachment.get('id', None))
         demisto.results(fileResult(attachment['name'], data))
         output_results(
-            title=f'TheHive Log Attachments:',
+            title='TheHive Log Attachments:',
             outputs=attachment,
             headers=['id', 'name', 'hashes', 'size', 'contentType'],
             outputs_prefix='TheHive.Attachments',
@@ -443,7 +443,7 @@ def get_attachment_command(client: Client, args: dict = None, params: dict = Non
         demisto.results('No attachments in log ID {log_id}')
 
 
-def update_task_command(client: Client, args: dict = None, params: dict = None):
+def update_task_command(client: Client, args: dict, params: dict):
     task_id = args.get('id')
     data = args
     del data['id']
@@ -462,7 +462,7 @@ def update_task_command(client: Client, args: dict = None, params: dict = None):
 def search_users_command(client: Client, args: dict = None, params: dict = None):
     users = client.search_users()
     output_results(
-        title=f'TheHive Users:',
+        title='TheHive Users:',
         outputs=users,
         headers=['id', 'name', 'roles', 'status'],
         outputs_prefix='TheHive.Users',
@@ -470,8 +470,8 @@ def search_users_command(client: Client, args: dict = None, params: dict = None)
     )
 
 
-def get_user_command(client: Client, args: dict = None, params: dict = None):
-    user_id = args.get('id')
+def get_user_command(client: Client, args: dict, params: dict):
+    user_id = str(args.get('id', ''))
     user = client.get_user(user_id)
     output_results(
         title=f'TheHive User ID {user_id}:',
@@ -482,16 +482,17 @@ def get_user_command(client: Client, args: dict = None, params: dict = None):
     )
 
 
-def create_local_user_command(client: Client, args: dict = None, params: dict = None):
-    data = {
+def create_local_user_command(client: Client, args: dict, params: dict):
+    user_data = {
         "login": args.get('login'),
         "name": args.get('name'),
-        "roles": args.get('roles').split(",") if "," in args.get('roles') else args.get('roles'),
+        "roles": str(args.get('roles', '')).split(",") if "," in str(args.get('roles', '')) else str(
+            args.get('roles', '')),
         "password": args.get('password')
     }
-    result = client.create_user(user_data=data)
+    result = client.create_user(user_data=user_data)
     output_results(
-        title=f'New User {user_id}:',
+        title=f"New User {result.get('id')}:",
         outputs=result,
         headers=['id', 'name', 'roles', 'status'],
         outputs_prefix='TheHive.Users',
@@ -499,7 +500,7 @@ def create_local_user_command(client: Client, args: dict = None, params: dict = 
     )
 
 
-def block_user_command(client: Client, args: dict = None, params: dict = None):
+def block_user_command(client: Client, args: dict, params: dict):
     user_id = args.get('id')
     if client.block_user(user_id):
         demisto.results(f'User "{user_id}" blocked successfully')
@@ -507,7 +508,7 @@ def block_user_command(client: Client, args: dict = None, params: dict = None):
         demisto.results(f'User "{user_id}" was not blocked successfully')
 
 
-def list_observables_command(client: Client, args: dict = None, params: dict = None):
+def list_observables_command(client: Client, args: dict, params: dict):
     case_id = args.get('id')
     observables = client.list_observables(case_id)
     title = f"Observables for Case {case_id}" if case_id else "Observables:"
@@ -520,7 +521,7 @@ def list_observables_command(client: Client, args: dict = None, params: dict = N
     )
 
 
-def create_observable_command(client: Client, args: dict = None, params: dict = None):
+def create_observable_command(client: Client, args: dict, params: dict):
     case_id = args.get('id')
     data = {
         "data": args.get('data'),
@@ -542,7 +543,7 @@ def create_observable_command(client: Client, args: dict = None, params: dict = 
     )
 
 
-def update_observable_command(client: Client, args: dict = None, params: dict = None):
+def update_observable_command(client: Client, args: dict, params: dict):
     artifact_id = args.get('id')
     data = {
         "message": args.get('message'),
@@ -561,33 +562,33 @@ def update_observable_command(client: Client, args: dict = None, params: dict = 
     )
 
 
-def get_mapping_fields_command(client: Client, args: dict = None, params: dict = None) -> Dict[str, Any]:
+def get_mapping_fields_command(client: Client, args: dict, params: dict) -> Dict[str, Any]:
     instance_name = demisto.integrationInstance()
-    mirror_direction = demisto.params().get('mirror')
+    mirror_direction = params.get('mirror')
     mirror_direction = None if mirror_direction == "Disabled" else mirror_direction
     SCHEMA['dbotMirrorDirection'] = mirror_direction
     SCHEMA['dbotMirrorInstance'] = instance_name
     return {"Default Schema": SCHEMA}
 
 
-def update_remote_system_command(client: Client, args: dict = None, params: dict = None) -> Dict[str, Any]:
-    data = args.get('data')
-    delta = args.get('delta')
+def update_remote_system_command(client: Client, args: dict, params: dict) -> str:
+    data: dict = args.get('data', {})
+    delta: dict = args.get('delta', {})
     changes = {k: v for k, v in delta.items() if k in data.keys()}
-    entries = args.get('entries')
+    entries = args.get('entries')  # TODO
     incident_changed = args.get('incidentChanged')
-    case_id = args.get('remoteId')
-    status = args.get('status')
+    case_id = str(args.get('remoteId'))
+    status = args.get('status')  # TODO
     if incident_changed:
         # Apply the updates
         client.update_case(case_id=case_id, updates=changes)
     return case_id
 
 
-def get_remote_data_command(client: Client, args: dict = None, params: dict = None) -> List[Dict[str, Any]]:
-    case_id = args.get('id')
+def get_remote_data_command(client: Client, args: dict, params: dict) -> Union[List[Dict[str, Any]], str]:
+    case_id = str(args.get('id', ''))
     last_update = args.get('lastUpdate')
-    last_update_timestamp = dateparser.parse(last_update).timestamp()
+    last_update_timestamp = dateparser.parse(last_update).timestamp()  # TODO
     entries = list()
     case = client.get_case(case_id)
     if not case:
@@ -601,7 +602,7 @@ def get_remote_data_command(client: Client, args: dict = None, params: dict = No
             },
             'ContentsFormat': EntryFormat.JSON
         })
-        return [{}] + entries
+        return [{}] + entries  # TODO
 
     # Handle closing the case
     if case['status'] != "Open":
@@ -614,7 +615,7 @@ def get_remote_data_command(client: Client, args: dict = None, params: dict = No
             },
             'ContentsFormat': EntryFormat.JSON
         })
-    return [case] + entries
+    return [case] + entries  # TODO
 
 
 def test_module(client: Client):
@@ -720,12 +721,12 @@ def main() -> None:
             demisto.results(get_mapping_fields_command(client, args, params))
 
         elif command in command_map:
-            command_map[command](client, args)
+            command_map[command](client, args)  # type: ignore
 
     # Log exceptions and return errors
-    except Exception as e:
+    except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command. \nError: {str(e)}')
+        return_error(f'Failed to execute {command} command. \nError: {str(err)}')
 
 
 ''' ENTRY POINT '''
