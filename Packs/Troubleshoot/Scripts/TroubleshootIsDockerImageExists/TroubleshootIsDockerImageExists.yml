@@ -1,11 +1,11 @@
 args:
 - default: true
-  description: The docker image to check
+  description: The Docker image to check.
   isArray: false
   name: docker_image
   required: true
   secret: false
-comment: Gets a docker image and check if it exists on the machine running CortexXSOAR.
+comment: Gets a Docker image and checks if it exists on the machine running Cortex XSOAR.
 commonfields:
   id: TroubleshootIsDockerImageExists
   version: -1
@@ -13,10 +13,10 @@ enabled: false
 name: TroubleshootIsDockerImageExists
 outputs:
 - contextPath: TroubleshootIsDockerImageExists.docker_image
-  description: The docker image name.
+  description: The Docker image name.
   type: String
 - contextPath: TroubleshootIsDockerImageExists.exists
-  description: Is the docker image exists?
+  description: Whether the Docker image exists.
   type: Boolean
 script: '-'
 system: false
