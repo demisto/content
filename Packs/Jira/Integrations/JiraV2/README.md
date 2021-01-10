@@ -20,7 +20,7 @@ For more information about manage syntax, see the https://support.atlassian.com/
     * __Jira URL, for example: https://demisto.atlassian.net/__
     *  ______________ Basic Authentication ________________
     
-        To use basic authentication, follow [this tutorial](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) to get an API token. Authorizing using basic authentication requires:
+        To use basic authentication, follow [this tutorial](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) to get the API token. Authorizing using basic authentication requires:
     
         * __Username__
         * __Password (Deprecated)__
