@@ -811,6 +811,9 @@ def main():
     circle_branch = option.circle_branch
     force_upload = option.force_upload
 
+    print(f"storage_bucket_name is {storage_bucket_name}")
+    print(f"private_bucket_name is {private_bucket_name}")
+
     # google cloud storage client initialized
     storage_client = init_storage_client(service_account)
     storage_bucket = storage_client.bucket(storage_bucket_name)
