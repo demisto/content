@@ -90,7 +90,7 @@ def create_output_result(resp):
     if isinstance(resp, dict):
         for key, value in resp.items():
             if isinstance(value, dict) and 'name' in value:
-                output[key] = value['name']
+                output[key] = value.get('name', "")
             else:
                 output[key] = value
     return output
