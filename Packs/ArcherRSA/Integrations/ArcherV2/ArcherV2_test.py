@@ -471,3 +471,32 @@ class TestArcherV2:
         assert last_fetch < next_fetch
         assert next_fetch == datetime(2020, 3, 18, 15, 30, tzinfo=timezone.utc)
         assert incidents[0]['occurred'] == '2020-03-18T15:30:00.000Z'
+
+    def test_fetch_got_old_incident(self, mocker):
+        """
+        Given:
+            last_fetch is newer than new incident
+
+        When:
+            Fetching incidents
+
+        Then:
+            Check that the next fetch is equals last fetch (no new incident)
+            Check that no incidents brought back
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        date_time_reported = '2018-03-01T10:02:00.000Z'
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported'
+        }
+        record = copy.deepcopy(INCIDENT_RECORD)
+        record['record']['Date/Time Reported'] = date_time_reported
+        record['raw']['Field'][1]['@xmlConvertedValue'] = date_time_reported
+        last_fetch = get_fetch_time(
+            {'last_fetch': '2018-03-01T10:03:00Z'}, params.get('fetch_time', '3 days')
+        )
+        mocker.patch.object(client, 'search_records', return_value=([record], {}))
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
+        assert last_fetch == next_fetch
+        assert not incidents, 'Should not get new incidents.'
