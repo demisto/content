@@ -1111,6 +1111,7 @@ class IntegrationLogger(object):
                 demisto.debug(text)
         else:
             demisto.info(text)
+        return text
 
     def add_replace_strs(self, *args):
         '''
@@ -4389,7 +4390,7 @@ def return_error(message, error='', outputs=None):
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
         message = "{}\n\n{}".format(message, traceback.format_exc())
 
-    LOG(message)
+    message = LOG(message)
     if error:
         LOG(str(error))
 
