@@ -300,7 +300,7 @@ def return_involved_incdients_entry(incidents_df):
         'similarity': 'Similarity to Current Incident'},
         axis=1, inplace=True)
     incidents_headers = ['Id', 'Created', 'Name', 'Email From', 'Similarity to Current Incident']
-    hr = '\n\n' + tableToMarkdown('Involved incidents', incidents_df[incidents_headers].to_dict(orient='records'),
+    hr = '\n\n' + tableToMarkdown('Involved Incidents', incidents_df[incidents_headers].to_dict(orient='records'),
                                   headers=incidents_headers)
     return_outputs(hr)
 
