@@ -59,7 +59,7 @@ Steps required for setting AD roles Mapping:
 ![mapping](https://user-images.githubusercontent.com/45535078/71556645-ee745c00-2a43-11ea-90da-764d0543f1ca.png)
 
 
-7. Login to Cortex XSOAR using `uid` or full DN and password of creted user from step 1. 
+7. Login to Cortex XSOAR using `uid` or full DN and password of created user from step 1. 
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
