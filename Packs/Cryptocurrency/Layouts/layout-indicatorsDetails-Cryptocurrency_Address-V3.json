@@ -558,15 +558,6 @@
        },
        {
         "endCol": 2,
-        "fieldId": "score",
-        "height": 22,
-        "id": "38c99380-4909-11eb-acee-9dee112485f0",
-        "index": 14,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "abusetype",
         "height": 22,
         "id": "42e85db0-4909-11eb-acee-9dee112485f0",
