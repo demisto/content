@@ -152,7 +152,7 @@ def mantis_get_issue_by_id_command(client, args):
         outputs_key_field=TABLE_HEADERS,
         outputs=issues
     )
-    return_results(results)
+    return results
 
 
 def mantis_create_issue_command(client, args):
