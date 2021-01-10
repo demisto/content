@@ -22,6 +22,23 @@ configuration:
   name: hostname
   required: false
   type: 0
+- defaultvalue: Negotiate
+  display: Authentication Method
+  hidden: false
+  name: auth_method
+  options:
+  - Negotiate
+  - Basic
+  required: true
+  type: 15
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use SSL (HTTPS)
+  name: ssl
+  required: false
+  type: 8
 description: "PowerShell Remoting is a comprehensive built-in remoting subsystem A\
   \ part of Microsofts native Windows management framework (WMF) and windows remote\
   \ management (WinRM).\nThis facility allows you to handle most remoting tasks in\
@@ -297,10 +314,11 @@ script:
       name: output_path
     description: Extract master file table from volume.
     name: ps-remote-export-mft
-  dockerimage: mcr.microsoft.com/powershell:centos-7
+  dockerimage: demisto/powershell-ubuntu:7.0.3.12001
   runonce: false
   script: ''
   type: powershell
 fromversion: 5.5.0
+beta: true
 tests:
 - No tests (auto formatted)

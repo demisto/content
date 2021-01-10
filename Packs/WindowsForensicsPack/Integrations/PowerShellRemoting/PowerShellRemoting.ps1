@@ -3,13 +3,14 @@
 $script:INTEGRATION_NAME = "PowerShell Remoting"
 $script:COMMAND_PREFIX = "ps-remote"
 $script:INTEGRATION_ENTRY_CONTEX = "PsRemote"
+$script:INSECURE_WARNING = "Unix does not currently support CA or CN checks."
 
 #### HELPER FUNCTIONS ####
 
 function CreateNewSession {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope = 'Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
-    param([string]$fqdn_list, [string]$username, [string]$password, [bool]$insecure)
+    param([string]$fqdn_list, [string]$username, [string]$password, [bool]$insecure, [bool]$ssl, [string]$auth_method)
 
     $credential = ConvertTo-SecureString "$password" -AsPlainText -Force
     $ps_credential = New-Object System.Management.Automation.PSCredential($username, $credential)
@@ -23,12 +24,23 @@ function CreateNewSession {
         "ComputerName" = $fqdn_list
         "Credential" = $ps_credential
         "SessionOption" = $session_options
-        "Authentication" = "Negotiate"
+        "Authentication" = $auth_method
         "ErrorAction" = "Stop"
         "WarningAction" = "SilentlyContinue"
+        "UseSSL" = $ssl
     }
-    $session = New-PSSession @sessions_params
-
+    try
+    {
+        $session = New-PSSession @sessions_params
+    }
+    catch
+    {
+        if ($_.Exception.Message -Match $script:INSECURE_WARNING)
+        {
+            throw "HTTPS certificate check isn't currently supported. Please enable 'Trust any certificate' or disable 'Use SSL'"
+        }
+        throw $_.Exception.Message
+    }
     return $session
     <#
         .DESCRIPTION
@@ -64,13 +76,15 @@ class RemotingClient
     [string]$password
     [string]$domain
     [string]$dns
+    [string]$auth_method
     [psobject]$session
     [bool]$insecure
+    [bool]$ssl
     [bool]$proxy
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
     RemotingClient([string]$hostname, [string]$username, [string]$password, [string]$domain, [string]$dns,
-                   [string]$ip_hosts, [string]$insecure, [string]$proxy)
+                   [string]$ip_hosts, [string]$auth_method, [bool]$insecure, [bool]$ssl, [bool]$proxy)
     {
         # set the container's resolv.conf to use to provided dns
         if ($dns)
@@ -102,6 +116,8 @@ class RemotingClient
         $this.username = $username
         $this.password = $password
         $this.insecure = $insecure
+        $this.ssl = $ssl
+        $this.auth_method = $auth_method
         $this.proxy = $proxy
         <#
             .DESCRIPTION
@@ -122,7 +138,13 @@ class RemotingClient
             .PARAMETER insecure
             Wheter to trust any TLS/SSL Certificate) or not.
 
-            .EXAMPLE proxy
+            .PARAMETER ssl
+            Wheter use SSL protocol to establish a connection.
+
+            .PARAMETER auth_method
+            Authentication method to use when creating a new session.
+
+            .PARAMETER proxy
             Wheter to user system proxy configuration or not.
 
             .EXAMPLE
@@ -132,7 +154,7 @@ class RemotingClient
 
     CreateSession()
     {
-        $this.session = CreateNewSession -fqdn_list $this.fqdn_list -username $this.username -password $this.password -insecure $this.insecure
+        $this.session = CreateNewSession -fqdn_list $this.fqdn_list -username $this.username -password $this.password -insecure $this.insecure -ssl $this.ssl $this.auth_method
         <#
             .DESCRIPTION
             This method is for internal use. It creates session to the remote hosts.
@@ -182,7 +204,7 @@ class RemotingClient
         This method invokes a command in the session via a temporary file.
 
         .EXAMPLE
-        $client.("$PSVersionTable")
+        $client.InvokeCommandInSession("$PSVersionTable")
 
         .LINK
         https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/invoke-command?view=powershell-7.1
@@ -196,6 +218,16 @@ class RemotingClient
             $this.CreateSession()
         }
         Copy-Item -FromSession $this.session $path -Destination $file_name
+    <#
+        .DESCRIPTION
+        This method copies an item from the session in specified path to the destination file_name.
+
+        .EXAMPLE
+        $client.CopyItemFromSession("remote\file.txt", "local\file.txt")
+
+        .LINK
+        https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/copy-item?view=powershell-7.1
+    #>
     }
 
     CopyItemToSession([string]$path, [string]$file_name)
@@ -205,6 +237,16 @@ class RemotingClient
             $this.CreateSession()
         }
         Copy-Item -ToSession $this.session $path -Destination $file_name
+    <#
+        .DESCRIPTION
+        This method copies an item from the local path to the session destination file_name.
+
+        .EXAMPLE
+        $client.CopyItemFromSession("remote\file.txt", "local\file.txt")
+
+        .LINK
+        https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/copy-item?view=powershell-7.1
+    #>
     }
 
     [string]ExportMFT([string]$volume, [string]$output_file_path) {
@@ -664,6 +706,7 @@ function Main
     #>
     $no_proxy = $false
     $insecure = (ConvertTo-Boolean $params.insecure)
+    $ssl = (ConvertTo-Boolean $params.ssl)
 
     try
     {
@@ -677,7 +720,7 @@ function Main
         $domain = if ($params.domain) {"." + $params.domain} else {""}
         # Creating Remoting client
         $client = [RemotingClient]::new($params.hostname, $params.credentials.identifier, $params.credentials.password,
-                                           $domain, $params.dns, $ip_hosts, $insecure, $no_proxy)
+                                           $domain, $params.dns, $ip_hosts, $params.auth_method, $insecure, $ssl, $no_proxy)
         # Executing command
         $Demisto.Debug("Command being called is $command")
         switch ($command)
