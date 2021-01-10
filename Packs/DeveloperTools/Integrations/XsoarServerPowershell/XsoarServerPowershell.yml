@@ -1,0 +1,39 @@
+category: Messaging
+commonfields:
+  id: XsoarServerPowershell
+  version: -1
+configuration: []
+description: This integration allows interacting with XSOAR server.
+display: XSOAR Server Powershell
+name: XsoarServerPowershell
+script:
+  commands:
+  - deprecated: false
+    description: Get integration context.
+    execution: false
+    name: xsoar-get-integration-context
+    outputs:
+      - contextPath: XSOAR.IntegrationContext.Value
+        description: Integration context value.
+        type: String
+  - arguments:
+      - default: false
+        description: Value to set in integration context.
+        isArray: false
+        name: value
+        required: true
+        secret: false
+    deprecated: false
+    description: Set integration context.
+    execution: false
+    name: xsoar-set-integration-context
+  dockerimage: demisto/powershell-ubuntu:7.0.3.12001
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: powershell
+fromversion: 5.5.0
+tests:
+- XsoarServerPowershell-Test

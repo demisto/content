@@ -46,6 +46,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "XsoarServerPowershell",
+            "playbookID": "XsoarServerPowershell-Test"
+        },
+        {
             "integrations": "Palo Alto Networks Threat Vault",
             "playbookID": "PANW Threat Vault - Signature Search - Test",
             "fromversion": "5.0.0"
