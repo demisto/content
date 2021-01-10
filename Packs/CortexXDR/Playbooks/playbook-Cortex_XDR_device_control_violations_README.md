@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR device control violations](Insert the link to your image here)
+![Cortex XDR device control violations](https://raw.githubusercontent.com/demisto/content/a5193eb37b596ddf338156ce7b5f99aae0b27b35/Packs/CortexXDR/doc_files/Cortex_XDR_device_control_violations.png)
