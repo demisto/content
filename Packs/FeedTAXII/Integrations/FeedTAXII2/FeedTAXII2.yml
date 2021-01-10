@@ -179,7 +179,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'TAXII filter arguments. Comma-separated values, e.g.: "added_after=<date>,revoked=true".'
+      description: 'Deprecated. TAXII filter arguments. Comma-separated values, e.g.: "added_after=<date>,revoked=true".'
       isArray: false
       name: filter_args
       required: false
@@ -214,7 +214,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.11306
+  dockerimage: demisto/taxii2:1.0.0.13859
   feed: true
   isfetch: false
   longRunning: false
