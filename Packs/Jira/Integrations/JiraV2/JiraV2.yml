@@ -337,7 +337,7 @@ script:
       will not update the current incident, it's here for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.13983
+  dockerimage: demisto/oauthlib:1.0.0.15261
   isfetch: true
   isremotesyncin: true
   runonce: false
