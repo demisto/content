@@ -7,5 +7,5 @@ If you wish the first run to start from a specific time, use "Issue index to sta
 Fetching incidents by creation time (using the Created field), instead of using IDs, is done by checking the "Use created field to fetch incidents" checkbox.
 
 As of June 2019, Basic authentication with passwords for Jira is no longer supported, please use basic authentication using API Token or use OAuth 1.0. To use basic authentication, follow [this tutorial](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) to get the API token.
-To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access Token. Authorizing using OAuth1.0, requires Access Token, Private Key and Consumer Key. 
 
+To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access Token. Authorizing using OAuth1.0, requires Access Token, Private Key, and Consumer Key. 
