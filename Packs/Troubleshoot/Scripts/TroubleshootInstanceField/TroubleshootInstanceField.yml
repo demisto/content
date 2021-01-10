@@ -10,9 +10,10 @@ enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-comment: Populates InstanceName field with active instances.
+comment: Populates the InstanceName field with active instances.
 dockerimage: demisto/python3:3.9.1.14969
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+
