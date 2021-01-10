@@ -234,6 +234,9 @@ tasks:
         complex:
           root: AnsibleAWX.Job
           accessor: id
+      print_output:
+        complex:
+          root: inputs.show_output
     separatecontext: false
     view: |-
       {
@@ -261,8 +264,7 @@ view: |-
   }
 inputs:
 - key: job_template_id
-  value:
-    simple: "5"
+  value: {}
   required: true
   description: 'The job template id to launch. '
   playbookInputQuery:
@@ -282,6 +284,12 @@ inputs:
   value: {}
   required: false
   description: Pass extra command line variables to the playbook (if needed)
+  playbookInputQuery:
+- key: show_output
+  value:
+    simple: "False"
+  required: false
+  description: Print output from the job running
   playbookInputQuery:
 - key: Interval
   value:

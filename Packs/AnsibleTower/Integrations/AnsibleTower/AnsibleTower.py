@@ -56,6 +56,7 @@ def output_data(response: dict) -> dict:
                      'job_slice_number', 'job_slice_count', 'event_processing_finished', 'diff_mode', 'elapsed',
                      'allow_simultaneous', 'force_handlers', 'forks', 'unified_job_template', 'use_fact_cache',
                      'verbosity', 'has_inventory_sources', 'last_job_host_summary']
+
     context_data = {}
     for key in response:
         if key not in remove_fields:
@@ -74,6 +75,19 @@ def results_output_data(results: list) -> list:
     return context_data
 
 
+def get_headers(context_data) -> list:
+    if isinstance(context_data, dict):
+        context_data = [context_data]
+    headers = list(context_data[0].keys())
+    if 'name' in headers:
+        headers.remove('name')
+        headers.insert(0, 'name')
+    if 'id' in headers:
+        headers.remove('id')
+        headers.insert(1, 'id')
+    return headers
+
+
 def inventories_list(client: Client, args: dict) -> CommandResults:
     args['page'] = args.pop('page_number', 1)
     response = client.api_request(method='GET', url_suffix='inventories/', params=args)
@@ -84,11 +98,12 @@ def inventories_list(client: Client, args: dict) -> CommandResults:
             raw_response=response
         )
     context_data = results_output_data(results)
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Inventory',
         outputs_key_field='id',
         outputs=results,
-        readable_output=tableToMarkdown(name='Results', t=context_data, removeNull=True),
+        readable_output=tableToMarkdown(name='Inventories List', t=context_data, removeNull=True, headers=headers),
         raw_response=results
     )
 
@@ -108,11 +123,12 @@ def hosts_list(client: Client, args: dict) -> CommandResults:
             raw_response=response
         )
     context_data = results_output_data(results)
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Host',
         outputs_key_field='id',
         outputs=results,
-        readable_output=tableToMarkdown(name='Results', t=context_data, removeNull=True),
+        readable_output=tableToMarkdown(name='Hosts List', t=context_data, removeNull=True, headers=headers),
         raw_response=response)
 
 
@@ -125,11 +141,12 @@ def create_host(client: Client, args: dict) -> CommandResults:
             'enabled': bool(args.get('enabled', 'True')),
             }
     response = client.api_request(method='POST', url_suffix=url_suffix, json_data=body)
+    context_data = output_data(response)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Host',
         outputs_key_field='id',
         outputs=response,
-        readable_output=tableToMarkdown(name='Created Host', t=response, removeNull=True),
+        readable_output=tableToMarkdown(name='Created Host', t=context_data, removeNull=True),
         raw_response=response
     )
 
@@ -155,19 +172,21 @@ def templates_list(client: Client, args: dict) -> CommandResults:
         url_suffix = 'job_templates/'
 
     response = client.api_request(method='GET', url_suffix=url_suffix, params=args)
-
     results = response.get('results', [])
+
     if not results:
         return CommandResults(
             readable_output=f"No results were found for the following argument {str(args)}",
             raw_response=response
         )
 
+    context_data = results_output_data(results)
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.JobTemplate',
         outputs_key_field='id',
         outputs=results,
-        readable_output=tableToMarkdown(name='Results', t=results),
+        readable_output=tableToMarkdown(name='Job Templates List', t=context_data, headers=headers),
         raw_response=response)
 
 
@@ -182,11 +201,14 @@ def credentials_list(client: Client, args: dict) -> CommandResults:
             readable_output=f"No results were found for the following argument {str(args)}",
             raw_response=response
         )
+
+    context_data = results_output_data(results)
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Credential',
         outputs_key_field='id',
         outputs=results,
-        readable_output=tableToMarkdown(name='Results', t=results),
+        readable_output=tableToMarkdown(name='Credentials List', t=context_data, headers=headers),
         raw_response=response)
 
 
@@ -205,11 +227,13 @@ def job_template_launch(client: Client, args: dict) -> CommandResults:
     context_data = output_data(response)
     job_id = context_data.get('id', '')
     job_id_status = context_data.get('status', '')
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Job',
         outputs_key_field='id',
         outputs=context_data,
-        readable_output=tableToMarkdown(name=f'Job {job_id} status {job_id_status}', t=context_data, removeNull=True),
+        readable_output=tableToMarkdown(name=f'Job {job_id} status {job_id_status}', t=context_data, removeNull=True,
+                                        headers=headers),
         raw_response=response
     )
 
@@ -226,11 +250,13 @@ def job_relaunch(client: Client, args: dict):
     context_data = output_data(response)
     job_id = context_data.get('id', '')
     job_id_status = context_data.get('status', '')
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Job',
         outputs_key_field='id',
         outputs=response,
-        readable_output=tableToMarkdown(name=f'Job {job_id} status {job_id_status}', t=context_data, removeNull=True),
+        readable_output=tableToMarkdown(name=f'Job {job_id} status {job_id_status}', t=context_data, removeNull=True,
+                                        headers=headers),
         raw_response=response
     )
 
@@ -243,12 +269,15 @@ def cancel_job(client: Client, args: dict) -> CommandResults:
 
 
 def job_stdout(client: Client, args: dict) -> CommandResults:
+    print_output = True if args.get('print_output', 'True') == 'True' else False
     job_id = args.get('job_id', '')
     url_suffix = f'jobs/{job_id}/stdout/'
     params = {"format": "json"}
     response = client.api_request(method='GET', url_suffix=url_suffix, params=params)
     response['job_id'] = job_id
-    output_content = f'### Job {job_id} output ### \n\n' + response.get('content', '') + '\n'
+    output_content = ' '
+    if print_output:
+        output_content = f'### Job {job_id} output ### \n\n' + response.get('content', '') + '\n'
     return CommandResults(
         outputs_prefix='AnsibleAWX.JobStdout',
         outputs_key_field='job_id',
@@ -265,11 +294,13 @@ def job_status(client: Client, args: dict) -> CommandResults:
     context_data = output_data(response)
     job_id = context_data.get('id', '')
     job_id_status = context_data.get('status', '')
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Job',
         outputs_key_field='id',
         outputs=response,
-        readable_output=tableToMarkdown(name=f'Job {job_id} status {job_id_status}', t=context_data, removeNull=True),
+        readable_output=tableToMarkdown(name=f'Job {job_id} status {job_id_status}', t=context_data, removeNull=True,
+                                        headers=headers),
         raw_response=response
     )
 
@@ -285,11 +316,14 @@ def list_job_events(client: Client, args: dict) -> CommandResults:
             readable_output=f"No results were found for the following arguments {str(args)}",
             raw_response=response
         )
+
+    context_data = results_output_data(results)
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.JobEvents',
         outputs_key_field='id',
         outputs=results,
-        readable_output=tableToMarkdown(name='Results', t=results, removeNull=True),
+        readable_output=tableToMarkdown(name='Results', t=context_data, removeNull=True, headers=headers),
         raw_response=response
     )
 
@@ -305,14 +339,16 @@ def create_ad_hoc_command(client: Client, args: dict) -> CommandResults:
             "module_args": module_args}
     url_suffix = 'ad_hoc_commands/'
     response = client.api_request(method='POST', url_suffix=url_suffix, json_data=body, ok_codes=[201])
-    command_id = response.get('id', '')
-    command_status = response.get('status', '')
+    context_data = output_data(response)
+    command_id = context_data.get('id', '')
+    command_status = context_data.get('status', '')
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.AdhocCommand',
         outputs_key_field='id',
         outputs=response,
-        readable_output=tableToMarkdown(name=f'Ad hoc command - {command_id} status - {command_status}', t=response,
-                                        removeNull=True),
+        readable_output=tableToMarkdown(name=f'Ad hoc command - {command_id} status - {command_status}', t=context_data,
+                                        removeNull=True, headers=headers),
         raw_response=response
     )
 
@@ -321,14 +357,16 @@ def relaunch_ad_hoc_command(client: Client, args: dict) -> CommandResults:
     command_id = args.get("command_id")
     url_suffix = f'ad_hoc_commands/{command_id}/relaunch/'
     response = client.api_request(method='POST', url_suffix=url_suffix, ok_codes=[201])
-    command_id = response.get('id', '')
-    command_status = response.get('status', '')
+    context_data = output_data(response)
+    command_id = context_data.get('id', '')
+    command_status = context_data.get('status', '')
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.AdhocCommand',
         outputs_key_field='id',
         outputs=response,
-        readable_output=tableToMarkdown(name=f'Ad hoc command - {command_id} status - {command_status}', t=response,
-                                        removeNull=True),
+        readable_output=tableToMarkdown(name=f'Ad hoc command - {command_id} status - {command_status}', t=context_data,
+                                        removeNull=True, headers=headers),
         raw_response=response
     )
 
@@ -348,12 +386,15 @@ def cancel_ad_hoc_command(client: Client, args: dict) -> CommandResults:
 
 
 def ad_hoc_command_stdout(client: Client, args: dict) -> CommandResults:
+    print_output = True if args.get('print_output', 'True') == 'True' else False
     command_id = args.get('command_id', None)
     url_suffix = f'ad_hoc_commands/{command_id}/stdout/'
     params = {"format": "json"}
     response = client.api_request(method='GET', url_suffix=url_suffix, params=params)
     response['command_id'] = command_id
-    output_content = f'### Ad hoc command {command_id} output ### \n\n' + response.pop('content') + '\n'
+    output_content = ' '
+    if print_output:
+        output_content = f'### Ad hoc command {command_id} output ### \n\n' + response.pop('content') + '\n'
     return CommandResults(
         outputs_prefix='AnsibleAWX.AdhocCommandStdout',
         outputs_key_field='job_id',
@@ -367,15 +408,16 @@ def ad_hoc_command_status(client: Client, args: dict) -> CommandResults:
     command_id = args.get("command_id")
     url_suffix = f'ad_hoc_commands/{command_id}/'
     response = client.api_request(method='GET', url_suffix=url_suffix)
-    response.pop('job_env', None)
-    command_id = response.get('id', '')
-    command_status = response.get('status', '')
+    context_data = output_data(response)
+    command_id = context_data.get('id', '')
+    command_status = context_data.get('status', '')
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.AdhocCommand',
         outputs_key_field='id',
         outputs=response,
-        readable_output=tableToMarkdown(name=f'Ad hoc command - {command_id} status - {command_status}', t=response,
-                                        removeNull=True),
+        readable_output=tableToMarkdown(name=f'Ad hoc command - {command_id} status - {command_status}', t=context_data,
+                                        removeNull=True, headers=headers),
         raw_response=response
     )
 

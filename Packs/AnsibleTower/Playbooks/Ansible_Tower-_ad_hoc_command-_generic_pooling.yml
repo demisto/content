@@ -235,6 +235,9 @@ tasks:
         complex:
           root: AnsibleAWX.AdhocCommand
           accessor: id
+      print_output:
+        complex:
+          root: inputs.show_output
     separatecontext: false
     view: |-
       {
@@ -284,6 +287,12 @@ inputs:
   value: {}
   required: false
   description: Module arguments
+  playbookInputQuery:
+- key: show_output
+  value:
+    simple: "False"
+  required: false
+  description: Print output from ad hoc command running
   playbookInputQuery:
 - key: Interval
   value:

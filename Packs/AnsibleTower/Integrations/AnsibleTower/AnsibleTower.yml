@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 8
 description: Scale IT automation, manage complex deployments and speed productivity.
-display: AnsibleTower
+display: Ansible Tower
 name: AnsibleTower
 script:
   commands:
@@ -293,10 +293,21 @@ script:
     name: ansible-tower-job-cancel
   - arguments:
     - default: false
-      description: ''
+      description: Job id
       isArray: false
       name: job_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'True'
+      description: If true print the output
+      isArray: false
+      name: print_output
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
       secret: false
     deprecated: false
     description: Retrieve the stdout from running the given job
@@ -311,7 +322,7 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: ''
+      description: Job id
       isArray: false
       name: job_id
       required: true
@@ -453,6 +464,17 @@ script:
       isArray: false
       name: command_id
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'True'
+      description: If true prints the ad hoc command output
+      isArray: false
+      name: print_output
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
       secret: false
     deprecated: false
     description: Retrieve the stdout from running this ad hoc command.
