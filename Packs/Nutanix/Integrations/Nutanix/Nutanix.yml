@@ -109,7 +109,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: This is the Hello World integration for getting started.
+description: Nutanix Hypervisor abstracts and isolates the VMs and their programs from the underlying server hardware, enabling a more efficient use of physical resources, simpler maintenance and operations, and reduced costs.
 display: Nutanix
 name: Nutanix
 script:
@@ -214,8 +214,8 @@ script:
         to.
       name: transition
       predefined:
-      - ON
-      - OFF
+      - 'ON'
+      - 'OFF'
       - POWERCYCLE
       - RESET
       - PAUSE
