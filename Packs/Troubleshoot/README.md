@@ -17,9 +17,9 @@ that you can later submit to the [CortexXSOAR support site](https://support.palo
 * Configure a [Demisto REST API integration](https://xsoar.pan.dev/docs/reference/articles/integrations-and-incident-health-check#1-demisto-rest-api-integration) instance.
 * Create a new incident of type "Integration Troubleshooting"
 * **Troubleshoot type**:
-    * Use ***configuration*** if you fail to configure an integration (the test button returns an error). 
+    * Use ***I'm unable to configure an instance*** if you fail to configure an integration (the test button returns an error). 
     Note you must save this integration even if the test button fails.
-    * Use ***command*** if you fail to run a particular command.
+    * Use ***I have a problem with running a command*** if you fail to run a particular command.
 * **Instance Name**: The name of the instance to troubleshoot.
 * **Command Line**: Fill if you used the ***command*** as the **troubleshoot type**. (The command name with all its arguments.)
 * Create the incident.
