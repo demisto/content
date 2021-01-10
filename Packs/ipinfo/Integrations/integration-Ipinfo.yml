@@ -58,24 +58,39 @@ script:
         case 'ip':
             var o = sendRequest(base + args.ip + jsonSuffix, true);
 
-            var asn = o.asn.asn? o.asn.asn: o.org;
+            var asn = o.asn? o.asn.asn: o.org;
+            var asn_owner = o.asn? o.asn.name: '';
+            var organization = o.company? {Name:  o.company.name, Type:  o.company.type}: '';
+            var abuse = o.Abuse? {Address: o.abuse.address, Country: o.abuse.country, Name: o.abuse.name, Network: o.abuse.network, Phone: o.abuse.phone, Email: o.abuse.email}: '';
+            var feed_related_indicators = [o.hostname];
+            if(o.asn){
+                if(o.asn.domain){
+                    feed_related_indicators.push('o.asn.domain');
+            }}
+            if(o.company){
+                if(o.company.domain){
+                    feed_related_indicators.push('o.company.domain');
+            }}
             var tags = [];
-            if (o.privacy.hosting){
-                tags.push('hosting');
+            if(o.privacy){
+                if (o.privacy.hosting){
+                    tags.push('hosting');
+                }
+                if (o.privacy.proxy){
+                    tags.push('proxy');
+                }
+                if (o.privacy.tor){
+                    tags.push('tor');
+                }
+                if (o.privacy.vpn){
+                    tags.push('vpn');
+                }
             }
-            if (o.privacy.proxy){
-                tags.push('proxy');
-            }
-            if (o.privacy.tor){
-                tags.push('tor');
-            }
-            if (o.privacy.vpn){
-                tags.push('vpn');
-            }
-            var ec = {IP: {Address: o.ip, Hostname: o.hostname, ASN: asn, ASOwner: o.asn.name, Tags: tags, Organization: {Name:  o.company.name, Type:  o.company.type}, Geo: {
-                Location: o.loc, Country: o.country, Description: o.city + ', ' + o.region + ', ' + o.postal + ', ' + o.country}, Registrar: {Abuse: {
-                Address: o.abuse.address, Country: o.abuse.country, Name: o.abuse.name, Network: o.abuse.network, Phone: o.abuse.phone, Email: o.abuse.email}}, FeedRelatedIndicators: [o.asn.domain, o.company.domain, o.hostname]}};
+            var ec = {IP: {Address: o.ip, Hostname: o.hostname, ASN: asn, ASOwner: asn_owner, Tags: tags, Organization: organization, Geo: {
+                Location: o.loc, Country: o.country, Description: o.city + ', ' + o.region + ', ' + o.postal + ', ' + o.country}, Registrar: {Abuse: abuse},
+                FeedRelatedIndicators: feed_related_indicators}};
             ec.DBotScore = {Indicator: args.ip, Type: 'ip', Vendor: 'ipinfo', Score: 0};
+
             var reply = [{Type: entryTypes.note, Contents: o, ContentsFormat: formats.json, HumanReadable: objToMd(o), EntryContext: ec}];
             if (o.loc) {
                 var parts = o.loc.split(',');
@@ -146,6 +161,18 @@ script:
     - contextPath: IP.Organization.Type
       description: The Organization Type
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
     description: Check IP reputation (when information is available, returns a JSON
       with details).  Uses all configured Threat Intelligence feeds
   - name: ipinfo_field
