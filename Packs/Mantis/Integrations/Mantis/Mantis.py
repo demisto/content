@@ -142,7 +142,10 @@ def mantis_get_issue_by_id_command(client, args):
         Mantis
     """
     _id = args.get('id')
-    resp = client.get_issue(_id).get('issues')[0]
+    resp_issues = client.get_issue(_id).get('issues')
+    resp = {}
+    if len(resp_issues) > 0:
+        resp = resp_issues[0]
     issues = create_output_result(resp)
     readable_output = tableToMarkdown("Mantis Issue Details", issues, headers=TABLE_HEADERS)
 
