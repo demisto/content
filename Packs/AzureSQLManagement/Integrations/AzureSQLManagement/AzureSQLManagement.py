@@ -139,7 +139,7 @@ class Client:
 
 
 @logger
-def azure_sql_servers_list_command(client: Client, limit: str, offset: str) -> CommandResults:
+def azure_sql_servers_list_command(client: Client, limit: str = '50', offset: str = '0') -> CommandResults:
     """azure-sql-servers-list command: Returns a list of all servers
 
     :type client: ``Client``
@@ -156,8 +156,8 @@ def azure_sql_servers_list_command(client: Client, limit: str, offset: str) -> C
     """
 
     server_list = client.azure_sql_servers_list()
-    offset_int = int(offset) if offset else 0
-    limit_int = int(limit) if limit else 50
+    offset_int = int(offset)
+    limit_int = int(limit)
     server_list_values = copy.deepcopy(server_list.get('value', '')[offset_int:(offset_int + limit_int)])
     for server in server_list_values:
         properties = server.get('properties', {})
@@ -178,7 +178,7 @@ def azure_sql_servers_list_command(client: Client, limit: str, offset: str) -> C
 
 
 @logger
-def azure_sql_db_list_command(client: Client, server_name: str, limit: str, offset: str) -> CommandResults:
+def azure_sql_db_list_command(client: Client, server_name: str, limit: str = '50', offset: str = '0') -> CommandResults:
     """azure-sql-db-list command: Returns a list of all databases for server
 
     :type client: ``Client``
@@ -197,8 +197,8 @@ def azure_sql_db_list_command(client: Client, server_name: str, limit: str, offs
         offset: Offset in the data set. Default is 0.
     """
 
-    offset_int = int(offset) if offset else 0
-    limit_int = int(limit) if limit else 50
+    offset_int = int(offset)
+    limit_int = int(limit)
     database_list = client.azure_sql_db_list(server_name)
     database_list_values = copy.deepcopy(database_list.get('value', '')[offset_int:(offset_int + limit_int)])
     for db in database_list_values:
@@ -222,7 +222,7 @@ def azure_sql_db_list_command(client: Client, server_name: str, limit: str, offs
 
 @logger
 def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_name: str,
-                                           limit: str, offset: str) -> CommandResults:
+                                           limit: str = '50', offset: str = '0') -> CommandResults:
     """azure_sql_db_audit_policy_list command: Returns a list of auditing settings of a database
 
     :type client: ``Client``
@@ -242,8 +242,8 @@ def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_
         offset: Offset in the data set. Default is 0.
     """
 
-    offset_int = int(offset) if offset else 0
-    limit_int = int(limit) if limit else 50
+    offset_int = int(offset)
+    limit_int = int(limit)
     audit_list = client.azure_sql_db_audit_policy_list(server_name, db_name)
     audit_list_values = copy.deepcopy(audit_list.get('value', '')[offset_int:(offset_int + limit_int)])
     for db in audit_list_values:
