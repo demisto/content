@@ -314,10 +314,10 @@ List of all DataBases for server.
 #### Human Readable Output
 
 >### Database List
->|Kind|Managed By|Location|Id|Name|Type|Collation|Max Size Bytes|Status|Database Id|Creation Date|Current Service Objective Name|Requested Service Objective Name|Default Secondary Location|Catalog Collation|Zone Redundant|Read Scale|Read Replica Count|Storage Account Type|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| v12.0,system | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration | eastus | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/master | master | Microsoft.Sql/servers/databases | SQL_Latin1_General_CP1_CI_AS | 32212254720 | Online | 16b60b0c-53ef-4de0-b367-2c2bcc9617cd | 2020-12-15T14:29:43.72Z | System0 | System0 | westus | SQL_Latin1_General_CP1_CI_AS | false | Disabled | 0 | LRS |
->| v12.0,user |  | eastus | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db | sql-integration-db | Microsoft.Sql/servers/databases | SQL_Latin1_General_CP1_CI_AS | 268435456000 | Online | 5343c264-7cf0-47c4-8cbb-1593d2337b69 | 2020-12-15T14:31:06.663Z | S0 | S0 | westus | SQL_Latin1_General_CP1_CI_AS | false | Disabled | 0 | GRS |
+>|Id|Database Id|Name|Location|Status|Managed By|
+>|---|---|---|---|---|---|
+>| /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/master | 16b60b0c-53ef-4de0-b367-2c2bcc9617cd | master | eastus | Online | /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration |
+>| /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db | 5343c264-7cf0-47c4-8cbb-1593d2337b69 | sql-integration-db | eastus | Online |  |
 
 
 ### azure-sql-db-audit-policy-list
