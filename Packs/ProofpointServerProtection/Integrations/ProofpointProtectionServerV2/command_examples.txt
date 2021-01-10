@@ -1,0 +1,8 @@
+!proofpoint-pps-smart-search
+!proofpoint-pps-list-quarantined-messages
+!proofpoint-pps-release-message folder_name=HIPAA local_guid=4:2:6
+!proofpoint-pps-forward-message folder_name=HIPAA local_guid=4:2:6
+!proofpoint-pps-delete-message folder_name=HIPAA local_guid=4:2:6
+!proofpoint-pps-resubmit-message folder_name=HIPAA local_guid=4:2:6
+!proofpoint-pps-move-message folder_name=HIPAA local_guid=4:2:6 target_folder=PCI
+!proofpoint-pps-download-message guid=g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7
