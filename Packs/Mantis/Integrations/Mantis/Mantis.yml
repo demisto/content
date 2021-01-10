@@ -47,17 +47,17 @@ script:
       required: true
     name: mantis-get-issue-by-id
     outputs:
-    - contextPath: id
+    - contextPath: Mantis.Issue.id
       type: String
-    - contextPath: project
+    - contextPath: Mantis.Issue.project
       type: Unknown
-    - contextPath: category
+    - contextPath: Mantis.Issue.category
       type: Unknown
-    - contextPath: reporter
+    - contextPath: Mantis.Issue.reporter
       type: Unknown
-    - contextPath: status
+    - contextPath: Mantis.Issue.status
       type: Unknown
-    - contextPath: created_at
+    - contextPath: Mantis.Issue.created_at
       type: Unknown
   - arguments:
     - description: the project name
