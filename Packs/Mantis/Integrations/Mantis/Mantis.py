@@ -293,7 +293,7 @@ def main():
         elif demisto.command() == 'mantis-add-note':
             return_results(matis_create_note_command(client, args))
         elif demisto.command() == 'mantis-close-issue':
-            mantis_close_issue_command(client, args)
+            return_results(mantis_close_issue_command(client, args))
 
     # Log exceptions
     except Exception as e:
