@@ -1,0 +1,474 @@
+id: fedefed3-94bb-42bb-8486-ca3f08ed5b44
+version: 6
+vcShouldKeepItemLegacyProdMachine: false
+name: Nutanix-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: efd12d26-59a9-4718-80df-306dfbfa2609
+    type: start
+    task:
+      id: efd12d26-59a9-4718-80df-306dfbfa2609
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e5744269-9bf2-4973-8bfc-8e01e892876d
+    type: regular
+    task:
+      id: e5744269-9bf2-4973-8bfc-8e01e892876d
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c3a70108-2b78-42b0-8ed4-587d9171573d
+    type: regular
+    task:
+      id: c3a70108-2b78-42b0-8ed4-587d9171573d
+      version: -1
+      name: Nutanix Get hosts
+      description: Get the list of physical hosts configured in the cluster.
+      script: '|||nutanix-hypervisor-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      filter: {}
+      limit: {}
+      page: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9c539c25-512d-4bdf-83f1-8c30d7740560
+    type: regular
+    task:
+      id: 9c539c25-512d-4bdf-83f1-8c30d7740560
+      version: -1
+      name: Nutanix Get VMs
+      description: Get a list of virtual machines.
+      script: '|||nutanix-hypervisor-vms-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filter: {}
+      length: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ee134684-d12e-4e94-82fd-1e0c63075e41
+    type: condition
+    task:
+      id: ee134684-d12e-4e94-82fd-1e0c63075e41
+      version: -1
+      name: Is Virtual Machines List Empty?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: NutanixHypervisor.VM
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c4686785-4d07-437a-8cc0-9d4ca595d969
+    type: regular
+    task:
+      id: c4686785-4d07-437a-8cc0-9d4ca595d969
+      version: -1
+      name: Nutanix Get Alerts
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 770cae10-cf0a-4eeb-8932-09e735b47db7
+    type: regular
+    task:
+      id: 770cae10-cf0a-4eeb-8932-09e735b47db7
+      version: -1
+      name: 'Nutanix Change Power State '
+      description: Set power state of a virtual machine.  If the virtual machine is
+        being powered on and no host is specified, the scheduler will pick the one
+        with the most available CPU and memory that can support the Virtual Machine.
+        Note that no such host may not be available. If the virtual machine is being
+        power cycled, a different host can be specified to start it on. This is also
+        an asynchronous operation that results in the creation of a task object. The
+        UUID of this task object is returned as the response of this operation. This
+        task can be monitored by using the nutanix-hypervisor-task-poll command.
+      script: '|||nutanix-hypervisor-vm-powerstatus-change'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      host_uuid: {}
+      transition: {}
+      uuid:
+        complex:
+          root: NutanixHypervisor.VM
+          accessor: uuid
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: cb40e312-9d1e-4d32-8672-7701c551a150
+    type: regular
+    task:
+      id: cb40e312-9d1e-4d32-8672-7701c551a150
+      version: -1
+      name: Nutanix Task Poll For Power State
+      description: Poll tasks given by task_ids to check if they are ready. Returns
+        all the tasks from 'task_ids' list that are ready at the moment Nutanix service
+        was polled. In case no task is ready, waits until at least one task is ready,
+        unless given argument 'timeout_interval' which waits time_interval seconds
+        and in case no task had finished, returns a time out response.
+      script: '|||nutanix-hypervisor-task-poll'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      task_ids:
+        simple: ${NutanixHypervisor.VMPowerStatus.task_uuid}
+      timeout_interval: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: a21d6586-c5c4-49b4-83f0-4715d6e1f976
+    type: condition
+    task:
+      id: a21d6586-c5c4-49b4-83f0-4715d6e1f976
+      version: -1
+      name: Is Alert List Empty?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: a
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 39afbe34-78e6-4103-8bb1-09edae4afdfd
+    type: regular
+    task:
+      id: 39afbe34-78e6-4103-8bb1-09edae4afdfd
+      version: -1
+      name: Nutanix Acknowledge Alert
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: f68f45f0-50f2-4bc8-8d95-ab92d990ce7a
+    type: regular
+    task:
+      id: f68f45f0-50f2-4bc8-8d95-ab92d990ce7a
+      version: -1
+      name: Nutanix Resolve Alert
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3c8599a8-550b-4897-820f-0a7f54ce7ba7
+    type: regular
+    task:
+      id: 3c8599a8-550b-4897-820f-0a7f54ce7ba7
+      version: -1
+      name: Nutanix Acknowledge Alerts By Filters
+      description: Acknowledge alerts using a filters.
+      script: '|||nutanix-alerts-acknowledge-by-filter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      classifications: {}
+      end_time: {}
+      entity_type_ids: {}
+      entity_types: {}
+      impact_types: {}
+      limit: {}
+      severity: {}
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 7157a84c-903e-4e44-86a0-9a6c8fd357ce
+    type: regular
+    task:
+      id: 7157a84c-903e-4e44-86a0-9a6c8fd357ce
+      version: -1
+      name: Nutanix Resolve Alerts By Filters
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 58b0682f-6df2-4c19-8108-ea8c046cc10c
+    type: regular
+    task:
+      id: 58b0682f-6df2-4c19-8108-ea8c046cc10c
+      version: -1
+      name: Playbook Done
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2335,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
