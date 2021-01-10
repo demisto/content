@@ -1,6 +1,5 @@
 id: Sophos Firewall - Block URL
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Sophos Firewall - Block URL
 description: "this playbook add the URL to the Default Block URL Policy (the target
   policy can be changed as requested).\n\nPre-Requisite : \n\n1)Create a web policy
