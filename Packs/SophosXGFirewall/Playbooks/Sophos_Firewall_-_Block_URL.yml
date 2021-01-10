@@ -237,7 +237,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "no":
+      '#default#':
       - "2"
       "yes":
       - "21"
@@ -765,3 +765,5 @@ inputs:
   playbookInputQuery: null
 outputs: []
 fromversion: 5.0.0
+tests:
+ -  No tests
