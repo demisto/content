@@ -1,7 +1,4 @@
-from datetime import datetime
-
 from CommonServerPython import *
-
 # get current time
 now = datetime.now()
 
