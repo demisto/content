@@ -3310,7 +3310,8 @@
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
         "Phishing v2 - Test - Incident Starter": "Issue 26783",
-        "Phishing - Core - Test - Incident Starter": "Issue 26784"
+        "Phishing - Core - Test - Incident Starter": "Issue 26784",
+        "Process Email - Generic - Test - Incident Starter": "Issue 32459"
     },
     "skipped_integrations": {
         
@@ -3426,7 +3427,10 @@
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "Palo Alto Minemeld": "Issue #26878",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "CrowdStrike Falcon Intel v2": "License issues #32473",
+        "CrowdStrikeMalquery": "License issues #32473",
+        "CrowdstrikeFalcon": "License issues #32473"
     },
     "nightly_integrations": [
         "Lastline v2",
