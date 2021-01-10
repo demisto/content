@@ -148,9 +148,60 @@ script:
     description: Get a list of virtual machines.
     name: nutanix-hypervisor-vms-list
     outputs:
-    - contextPath: NutanixHypervisor.VM
-      description: Virtual Machines list.
-      type: string
+- contextPath: NutanixHypervisor.VM..affinity.policy
+      description: Affinity policy.
+      type: String
+    - contextPath: NutanixHypervisor.VM..affinity.host_uuids
+      description: TODO. # TODO
+      type: String
+    - contextPath: NutanixHypervisor.VM..allow_live_migrate
+      description: Does virtual machine allow live migrate.
+      type: Boolean
+    - contextPath: NutanixHypervisor.VM..gpus_assigned
+      description: Does virtual machine have gpus assigned.
+      type: Boolean
+    - contextPath: NutanixHypervisor.VM..boot.uefi_boot
+      description: Does UEFI boot.
+      type: Boolean
+    - contextPath: NutanixHypervisor.VM..ha_priority
+      description: HA priority.
+      type: Number
+    - contextPath: NutanixHypervisor.VM..host_uuid
+      description: Host uuid of the virtual machine.
+      type: String
+    - contextPath: NutanixHypervisor.VM..memory_mb
+      description: The memory size in mega bytes.
+      type: Number
+    - contextPath: NutanixHypervisor.VM..name
+      description: The name of the virtual machine.
+      type: String
+    - contextPath: NutanixHypervisor.VM..num_cores_per_vcpu
+      description: Number of cores per vcpu.
+      type: Number
+    - contextPath: NutanixHypervisor.VM..num_vcpus
+      description: Number of vcpus.
+      type: Number
+    - contextPath: NutanixHypervisor.VM..power_state
+      description: The virtual machine current power state.
+      type: String
+    - contextPath: NutanixHypervisor.VM..timezone
+      description: The virtual machine time zone.
+      type: String
+    - contextPath: NutanixHypervisor.VM..uuid
+      description: The uuid of the virtual machine.
+      type: String
+    - contextPath: NutanixHypervisor.VM..vm_features.AGENT_VM
+      description: Does virtual machine have the feature AGENT VM.
+      type: Boolean
+    - contextPath: NutanixHypervisor.VM..vm_features.VGA_CONSOLE
+      description: Does virtual machine have the feature VGA CONSOLE.
+      type: Boolean
+    - contextPath: NutanixHypervisor.VM..vm_logical_timestamp
+      description: The logical timestamp of the virtual machine.
+      type: Number
+    - contextPath: NutanixHypervisor.VM..machine_type
+      description: The machine type of the virtual machine.
+      type: String
   - arguments:
     - description: Id of the virtual machine to change its power status.
       name: uuid
@@ -184,9 +235,10 @@ script:
       by using the nutanix-hypervisor-task-poll command.
     name: nutanix-hypervisor-vm-powerstatus-change
     outputs:
-    - contextPath: NutanixHypervisor.VMPowerStatus
-      description: Power status of the virtual machine.
-      type: string
+    - contextPath: NutanixHypervisor.VMPowerStatus.task_uuid
+      description: The task uuid returned for the power status change request from Nutanix
+        service.
+      type: String
   - arguments:
     - description: The IDs of the tasks to poll
       name: task_ids
@@ -201,9 +253,57 @@ script:
       in case no task had finished, returns a time out response.
     name: nutanix-hypervisor-task-poll
     outputs:
-    - contextPath: NutanixHypervisor.Task
-      description: Task poll results
-      type: string
+    - contextPath: NutanixHypervisor.Task..uuid
+      description: The task uuid.
+      type: String
+    - contextPath: NutanixHypervisor.Task..meta_request.method_name
+      description: The name of the method performed for this task.
+      type: String
+    - contextPath: NutanixHypervisor.Task..meta_response.error_code
+      description: The Error code returned for the task.
+      type: Number
+    - contextPath: NutanixHypervisor.Task..meta_response.error_detail
+      description: The error details incase error code was not 0.
+      type: String
+    - contextPath: NutanixHypervisor.Task..create_time_usecs
+      description: The time task was created in epoch.
+      type: Number
+    - contextPath: NutanixHypervisor.Task..start_time_usecs
+      description: The start time of the task in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Task..complete_time_usecs
+      description: The completion time of the task in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Task..last_updated_time_usecs
+      description: The last update of the task in epoch time.
+      type: Number
+    - contextPath: NutanixHypervisor.Task..entity_list.entity_id
+      description: Id of the entity
+      type: String
+    - contextPath: NutanixHypervisor.Task..entity_list.entity_type
+      description: Type of the entity.
+      type: String
+    - contextPath: NutanixHypervisor.Task..entity_list.entity_name
+      description: The name of the entity.
+      type: Unknown
+    - contextPath: NutanixHypervisor.Task..operation_type
+      description: Operation type of the task.
+      type: String
+    - contextPath: NutanixHypervisor.Task..message
+      description: Message.
+      type: String
+    - contextPath: NutanixHypervisor.Task..percentage_complete
+      description: Completion percentage of the task.
+      type: Number
+    - contextPath: NutanixHypervisor.Task..progress_status
+      description: Progress status of the task (Succeeded, Failed, ...).
+      type: String
+    - contextPath: NutanixHypervisor.Task..subtask_uuid_list
+      description: The list of the uuids of the subtasks for this task.
+      type: String
+    - contextPath: NutanixHypervisor.Task..cluster_uuid
+      description: The uuid of the cluster.
+      type: String
   - arguments:
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
         created on or after the specified date/time will be retrieved. Time is expected
@@ -299,8 +399,15 @@ script:
     description: Acknowledge alert with the specified alert_id.
     name: nutanix-alert-acknowledge
     outputs:
-    - contextPath: NutanixHypervisor.Alert
-      description: ADD DESCRIPTION
+    - contextPath: NutanixHypervisor.Alert.id
+      description: Id of the alert to be acknowledged.
+      type: String
+    - contextPath: NutanixHypervisor.Alert.successful
+      description: Was acknowledge successful.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Alert.message
+      description: The message returned by the acknowledge task.
+      type: Unknown
   - arguments:
     - description: The id of the alert to resolve.
       name: alert_id
@@ -308,8 +415,15 @@ script:
     description: Resolve alert with the specified alert_id.
     name: nutanix-alert-resolve
     outputs:
-    - contextPath: NutanixHypervisor.Alert
-      description: ADD DESCRIPTION
+    - contextPath: NutanixHypervisor.Alert.id
+      description: Id of the alert to be resolved.
+      type: String
+    - contextPath: NutanixHypervisor.Alert.successful
+      description: Was resolve successful.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Alert.message
+      description: The message returned by the resolve task.
+      type: Unknown
   - arguments:
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
         created on or after the specified date/time will be acknowledged. Time is
@@ -358,8 +472,21 @@ script:
     description: Acknowledge alerts using a filters.
     name: nutanix-alerts-acknowledge-by-filter
     outputs:
-    - contextPath: NutanixHypervisor.Alert
+    - contextPath: NutanixHypervisor.Alert.num_successful_updates
+      description: The number of the successful alerts acknowledges.
+      type: Number
+    - contextPath: NutanixHypervisor.Alert.num_failed_updates
+      description: The number of the failed alerts to acknowledge.
+      type: Number
+    - contextPath: NutanixHypervisor.Alert.alert_status_list.id
       description: TODO
+      type: String
+    - contextPath: NutanixHypervisor.Alert.alert_status_list.successful
+      description: Was acknowledge for this task successful.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Alert.alert_status_list.message
+      description: Message returned by acknowledge operation.
+      type: Unknown
   - arguments:
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
         created on or after the specified date/time will be resolved. Time is expected
@@ -409,6 +536,22 @@ script:
       name: limit
     description: Resolve alerts using a filters.
     name: nutanix-alerts-resolve-by-filter
+    outputs:
+      - contextPath: NutanixHypervisor.Alert.num_successful_updates
+        description: The number of the successful alert resolves.
+        type: Number
+      - contextPath: NutanixHypervisor.Alert.num_failed_updates
+        description: The number of the failed alerts to resolve.
+        type: Number
+      - contextPath: NutanixHypervisor.Alert.alert_status_list.id
+        description: TODO
+        type: String
+      - contextPath: NutanixHypervisor.Alert.alert_status_list.successful
+        description: Was resolve for this task successful.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Alert.alert_status_list.message
+        description: Message returned by resolve operation.
+        type: Unknown
   dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   runonce: false

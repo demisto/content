@@ -683,7 +683,7 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
 
 
 def main() -> None:
-    command = 'nutanix-alerts-resolve-by-filter'
+    command = 'nutanix-alerts-acknowledge-by-filter'
     params = demisto.params()
 
     commands = {
