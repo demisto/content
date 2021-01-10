@@ -1,36 +1,36 @@
 args:
 - default: false
-  description: Parameters that changed and succeded running
+  description: Parameters that were changed and causes the integration to run successfully.
   isArray: true
   name: succeeded_changed_params
   required: false
   secret: false
 - default: false
-  description: All file entry IDs in the incident
+  description: All file entry IDs in the incident.
   isArray: true
   name: file_names
   required: false
   secret: false
 - default: false
-  description: The raw configuration output
+  description: The raw configuration output.
   isArray: false
   name: configuration
   required: true
   secret: false
 - default: false
-  description: The errors when testing instance
+  description: The errors when testing the instance.
   isArray: true
   name: errors
   required: false
   secret: false
 - default: false
-  description: Errors from ExecuteCommand automation.
+  description: Errors from the ExecuteCommand automation.
   isArray: true
   name: execute_command_errors
   required: false
   secret: false
-comment: Gets a command with arguments, validates the command and the arguments and
-  then parsing it to use in CortexXSOAR context. (Available from Cortex XSOAR 5.0.0).
+comment: Gets a command with arguments, validates the command and the arguments, and
+  then parses it to use in the Cortex XSOAR context. (Available from Cortex XSOAR 5.0.0.)
 commonfields:
   id: TroubleshootAggregateResults
   version: -1
@@ -38,10 +38,10 @@ enabled: false
 name: TroubleshootAggregateResults
 outputs:
 - contextPath: TroubleshootAggregateResults.configuration_file_name
-  description: The name which the configuration saved to.
+  description: The name of the file the configuration was saved to.
   type: String
 - contextPath: TroubleshootAggregateResults.summary_file_name
-  description: The name which the summary saved to.
+  description: The name of the file the summary was saved to.
   type: String
 script: '-'
 subtype: python3
@@ -54,3 +54,4 @@ dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+
