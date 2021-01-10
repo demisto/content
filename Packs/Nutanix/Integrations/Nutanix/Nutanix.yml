@@ -204,7 +204,7 @@ script:
       type: String
   - arguments:
     - description: Id of the virtual machine to change its power status.
-      name: uuid
+      name: vm_uuid
       required: true
     - description: If virtual machine is being powered 'on', this host will be chosen
         to run the virtual machine.
@@ -528,9 +528,6 @@ script:
     - description: TODO # TODO
       isArray: true
       name: entity_type_ids
-    - description: Page number in the query response, default is 1. When page is specified,
-        limit argument is required. TODO CHECK IF ARGUMENT LIMIT IS REQUIRED
-      name: page
     - description: Maximum number of alerts to resolve. Nutanix does not have max
         for limit, but a very high limit value will cause read timeout exception.
       name: limit

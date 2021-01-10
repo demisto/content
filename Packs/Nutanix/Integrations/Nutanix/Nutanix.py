@@ -275,9 +275,7 @@ def test_module_command(client: Client):
         CommandResults.
     """
     client.get_nutanix_hypervisor_hosts_list(None, None, None)
-    return CommandResults(
-        readable_output='ok'
-    )
+    demisto.results('ok')
 
 
 def fetch_incidents_command(client: Client, args: Dict):
@@ -683,7 +681,7 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
 
 
 def main() -> None:
-    command = 'nutanix-alerts-acknowledge-by-filter'
+    command = demisto.command()
     params = demisto.params()
 
     commands = {
