@@ -32,8 +32,8 @@ for i in list_data:
         remove.append(i['user'])
 
 # remove the users from the list.
-listData = [i for i in list_data if i['user'] not in remove]
+list_data = [i for i in list_data if i['user'] not in remove]
 
 # set the list, return results
-demisto.executeCommand("setList", {"listName": list_name, "listData": json.dumps(listData)})
+demisto.executeCommand("setList", {"listName": list_name, "listData": json.dumps(list_data)})
 demisto.results(f"Removed Users from Out of Office List {list_name}: {str(remove)}")

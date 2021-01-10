@@ -35,18 +35,18 @@ if "Item not found" in ooo_list:
 
 # check status of the list, and add/remove the user from it.
 if not ooo_list or ooo_list == [] or ooo_list == "":
-    listData = []
+    list_data = []
 else:
-    listData = json.loads(ooo_list)
+    list_data = json.loads(ooo_list)
 if option == "add":
     # check if user is already in the list, and remove, to allow updating
-    listData = [i for i in listData if not (i['user'] == username)]
-    listData.append({"user": username, "offuntil": off_until, "addedby": current_username})
+    list_data = [i for i in list_data if not (i['user'] == username)]
+    list_data.append({"user": username, "offuntil": off_until, "addedby": current_username})
 else:
     # remove the user from the list.
-    listData = [i for i in listData if not (i['user'] == username)]
+    list_data = [i for i in list_data if not (i['user'] == username)]
 
-demisto.executeCommand("setList", {"listName": list_name, "listData": json.dumps(listData)})
+demisto.executeCommand("setList", {"listName": list_name, "listData": json.dumps(list_data)})
 
 # welcome back, or see ya later!
 if option == "add":
