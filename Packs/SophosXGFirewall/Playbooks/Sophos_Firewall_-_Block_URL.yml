@@ -237,7 +237,7 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "no":
       - "2"
       "yes":
       - "21"
