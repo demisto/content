@@ -1,0 +1,222 @@
+{
+    "data": {
+        "events": [
+            {
+                "eventId": "df247df1-dd27-4bba-ac04-bc7d5dbf414c",
+                "description": "N/A",
+                "sourceApplication": "exchange",
+                "date": "2020-09-23T15:27:12.000Z",
+                "severity": 2,
+                "items": [
+                    {
+                        "itemId": "69cbe6b0-fd60-6105-bb2d-68f4674c353e",
+                        "externalId": "AAMkADgxMDU5NzE3LTRlNGYtNGFjYi1hNTJmLWY1YjM5ODQ1Y2E5NgBGAAAAAAAyMt_w8XvpQaRZaPiMzZYuBwAroGHPiMzEQIzBSxbb6ryCAAAAAAEJAAAroGHPiMzEQIzBSxbb6ryCAABg0QMsAAABEgAQAOUqLOJoaUtLue5eVbhb9gc=",
+                        "type": "Attachment",
+                        "name": null,
+                        "clusterUID": "2facd662-c6b4-cb10-6bcf-4ec937ae2b5a",
+                        "data": "{\"clusterId\":\"2facd662-c6b4-cb10-6bcf-4ec937ae2b5a\",\"sensitivity\":0.0}",
+                        "createdAt": "2020-09-23T15:28:02.783Z",
+                        "labels": [
+                            {
+                                "name": "Object Not Sensitive"
+                            },
+                            {
+                                "name": "Business & Other Information"
+                            }
+                        ]
+                    }
+                ],
+                "insights": []
+            },
+            {
+                "eventId": "cdff658f-1f8d-419e-956e-e62fb8503dd4",
+                "description": "N/A",
+                "sourceApplication": "exchange",
+                "date": "2020-09-23T15:27:12.000Z",
+                "severity": 2,
+                "items": [
+                    {
+                        "itemId": "1dedfb18-7d07-51cd-aab7-727bdc522fec",
+                        "externalId": "AAMkADgxMDU5NzE3LTRlNGYtNGFjYi1hNTJmLWY1YjM5ODQ1Y2E5NgBGAAAAAAAyMt_w8XvpQaRZaPiMzZYuBwAroGHPiMzEQIzBSxbb6ryCAAAAAAEJAAAroGHPiMzEQIzBSxbb6ryCAABg0QMmAAABEgAQANQzHB3y5n1Lj4LL81ZI2xM=",
+                        "type": "Attachment",
+                        "name": null,
+                        "clusterUID": "14378cce-a5eb-c72c-cdaa-ec4af6fe167a",
+                        "data": "{\"clusterId\":\"14378cce-a5eb-c72c-cdaa-ec4af6fe167a\",\"sensitivity\":0.0}",
+                        "createdAt": "2020-09-23T15:28:02.794Z",
+                        "labels": [
+                            {
+                                "name": "Object Not Sensitive"
+                            },
+                            {
+                                "name": "Business & Other Information"
+                            }
+                        ]
+                    }
+                ],
+                "insights": []
+            },
+            {
+                "eventId": "8d989390-81b8-4f27-a8d2-1254298764a8",
+                "description": "N/A",
+                "sourceApplication": "exchange",
+                "date": "2020-09-23T15:27:12.000Z",
+                "severity": 2,
+                "items": [
+                    {
+                        "itemId": "5e2de2b1-29b1-52d1-b52c-e8f96d5d71e2",
+                        "externalId": "AAMkADgxMDU5NzE3LTRlNGYtNGFjYi1hNTJmLWY1YjM5ODQ1Y2E5NgBGAAAAAAAyMt_w8XvpQaRZaPiMzZYuBwAroGHPiMzEQIzBSxbb6ryCAAAAAAEJAAAroGHPiMzEQIzBSxbb6ryCAABg0QMkAAABEgAQANYAOPWvW0RAlspRZnbn-Wo=",
+                        "type": "Attachment",
+                        "name": null,
+                        "clusterUID": "6b978a03-e67e-ef27-3750-3fb555c9ecd4",
+                        "data": "{\"clusterId\":\"6b978a03-e67e-ef27-3750-3fb555c9ecd4\",\"sensitivity\":0.0}",
+                        "createdAt": "2020-09-23T15:31:24.971Z",
+                        "labels": [
+                            {
+                                "name": "Object Not Sensitive"
+                            },
+                            {
+                                "name": "Business & Other Information"
+                            }
+                        ]
+                    }
+                ],
+                "insights": []
+            },
+            {
+                "eventId": "ad9de551-1914-4ea5-aa17-582bc4145b8f",
+                "description": "N/A",
+                "sourceApplication": "exchange",
+                "date": "2020-09-23T15:27:12.000Z",
+                "severity": 2,
+                "items": [
+                    {
+                        "itemId": "7f5942cd-5a46-cafd-da03-aecc765eebf3",
+                        "externalId": "AAMkADgxMDU5NzE3LTRlNGYtNGFjYi1hNTJmLWY1YjM5ODQ1Y2E5NgBGAAAAAAAyMt_w8XvpQaRZaPiMzZYuBwAroGHPiMzEQIzBSxbb6ryCAAAAAAEJAAAroGHPiMzEQIzBSxbb6ryCAABg0QMnAAABEgAQAP_tDxA2naRDvS7Lrgv2clk=",
+                        "type": "Attachment",
+                        "name": null,
+                        "clusterUID": "25ccbeda-287b-fcdd-c788-713ed745dea3",
+                        "data": "{\"clusterId\":\"25ccbeda-287b-fcdd-c788-713ed745dea3\",\"sensitivity\":0.0}",
+                        "createdAt": "2020-09-23T15:28:02.830Z",
+                        "labels": [
+                            {
+                                "name": "Object Not Sensitive"
+                            },
+                            {
+                                "name": "Business & Other Information"
+                            }
+                        ]
+                    }
+                ],
+                "insights": []
+            },
+            {
+                "eventId": "749ba2bd-1e3b-4c08-a440-21ce5eba2505",
+                "description": "N/A",
+                "sourceApplication": "exchange",
+                "date": "2020-09-23T15:27:12.000Z",
+                "severity": 2,
+                "items": [
+                    {
+                        "itemId": "8d498057-4c45-7440-f1a5-bedbd845c295",
+                        "externalId": "AAMkADgxMDU5NzE3LTRlNGYtNGFjYi1hNTJmLWY1YjM5ODQ1Y2E5NgBGAAAAAAAyMt_w8XvpQaRZaPiMzZYuBwAroGHPiMzEQIzBSxbb6ryCAAAAAAEJAAAroGHPiMzEQIzBSxbb6ryCAABg0QMqAAABEgAQAB5zANTHhCRPhPTwlf3BWH0=",
+                        "type": "Attachment",
+                        "name": null,
+                        "clusterUID": "19105f5e-03cd-7cad-f8a8-89e3c7ee9a8a",
+                        "data": "{\"clusterId\":\"19105f5e-03cd-7cad-f8a8-89e3c7ee9a8a\",\"sensitivity\":0.0}",
+                        "createdAt": "2020-09-23T15:29:43.022Z",
+                        "labels": [
+                            {
+                                "name": "Object Not Sensitive"
+                            },
+                            {
+                                "name": "Business & Other Information"
+                            }
+                        ]
+                    }
+                ],
+                "insights": []
+            },
+            {
+                "eventId": "73615252-ea11-4c2c-a90d-5e27a90b94e6",
+                "description": "N/A",
+                "sourceApplication": "exchange",
+                "date": "2020-09-23T15:27:12.000Z",
+                "severity": 2,
+                "items": [
+                    {
+                        "itemId": "70199ceb-6aab-9fef-803f-bcd331bd9f95",
+                        "externalId": "AAMkADgxMDU5NzE3LTRlNGYtNGFjYi1hNTJmLWY1YjM5ODQ1Y2E5NgBGAAAAAAAyMt_w8XvpQaRZaPiMzZYuBwAroGHPiMzEQIzBSxbb6ryCAAAAAAEJAAAroGHPiMzEQIzBSxbb6ryCAABg0QMlAAABEgAQAMszzNrrX-VIjn9lsK9Pe-M=",
+                        "type": "Attachment",
+                        "name": null,
+                        "clusterUID": "bd78fd05-833d-3ea6-ce3f-bf12246890ea",
+                        "data": "{\"clusterId\":\"bd78fd05-833d-3ea6-ce3f-bf12246890ea\",\"sensitivity\":0.0}",
+                        "createdAt": "2020-09-23T15:28:40.850Z",
+                        "labels": [
+                            {
+                                "name": "Object Not Sensitive"
+                            },
+                            {
+                                "name": "Business & Other Information"
+                            }
+                        ]
+                    }
+                ],
+                "insights": []
+            },
+            {
+                "eventId": "62d90c2c-4337-4e84-b0e3-f25d684fe3c9",
+                "description": "N/A",
+                "sourceApplication": "exchange",
+                "date": "2020-09-23T15:27:13.000Z",
+                "severity": 2,
+                "items": [
+                    {
+                        "itemId": "459af80e-7ed5-fdf4-5fe9-8cca106bed35",
+                        "externalId": "AAMkADgxMDU5NzE3LTRlNGYtNGFjYi1hNTJmLWY1YjM5ODQ1Y2E5NgBGAAAAAAAyMt_w8XvpQaRZaPiMzZYuBwAroGHPiMzEQIzBSxbb6ryCAAAAAAEJAAAroGHPiMzEQIzBSxbb6ryCAABg0QMoAAABEgAQAFcWBh7qIsNNsVAXu3y0W-A=",
+                        "type": "Attachment",
+                        "name": null,
+                        "clusterUID": "9af7753d-c27a-ef8b-a143-4e76cda49eac",
+                        "data": "{\"clusterId\":\"9af7753d-c27a-ef8b-a143-4e76cda49eac\",\"sensitivity\":0.0}",
+                        "createdAt": "2020-09-23T15:28:02.869Z",
+                        "labels": [
+                            {
+                                "name": "Object Not Sensitive"
+                            },
+                            {
+                                "name": "Business & Other Information"
+                            }
+                        ]
+                    }
+                ],
+                "insights": []
+            },
+            {
+                "eventId": "779f8d1a-2acf-484d-a260-3825d24b8760",
+                "description": "N/A",
+                "sourceApplication": "exchange",
+                "date": "2020-09-23T15:27:12.000Z",
+                "severity": 2,
+                "items": [
+                    {
+                        "itemId": "a5e2ef27-5a40-7ff1-df23-f13c30a09c88",
+                        "externalId": "AAMkADgxMDU5NzE3LTRlNGYtNGFjYi1hNTJmLWY1YjM5ODQ1Y2E5NgBGAAAAAAAyMt_w8XvpQaRZaPiMzZYuBwAroGHPiMzEQIzBSxbb6ryCAAAAAAEJAAAroGHPiMzEQIzBSxbb6ryCAABg0QMpAAABEgAQAKJpltpIZsJCmBSm2YQwlT0=",
+                        "type": "Attachment",
+                        "name": null,
+                        "clusterUID": "c5cd2593-3b5f-b9ba-90a9-2ece8355a868",
+                        "data": "{\"clusterId\":\"c5cd2593-3b5f-b9ba-90a9-2ece8355a868\",\"sensitivity\":0.0}",
+                        "createdAt": "2020-09-23T15:27:40.796Z",
+                        "labels": [
+                            {
+                                "name": "Object Not Sensitive"
+                            },
+                            {
+                                "name": "Business & Other Information"
+                            }
+                        ]
+                    }
+                ],
+                "insights": []
+            }
+        ]
+    }
+}
