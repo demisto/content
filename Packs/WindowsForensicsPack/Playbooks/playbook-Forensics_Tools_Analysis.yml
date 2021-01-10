@@ -77,8 +77,8 @@ tasks:
         path to parse.
       id: 1f2906b2-124b-45dc-872f-92e3a21cb918
       iscommand: false
-      name: b13bf482-216d-42da-8cae-1f8569928e8e
-      playbookId: b13bf482-216d-42da-8cae-1f8569928e8e
+      name: Regipy Data Analysis
+      playbookId: Regipy Data Analysis
       type: playbook
       version: -1
     taskid: 1f2906b2-124b-45dc-872f-92e3a21cb918

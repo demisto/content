@@ -51,8 +51,8 @@ tasks:
       brand: ""
       id: 1a6c5170-6559-4882-8004-0738f01ccd2c
       iscommand: false
-      name: cda9d27a-90b8-4f48-8bb0-23f157b95893
-      playbookId: cda9d27a-90b8-4f48-8bb0-23f157b95893
+      name: PS-Remote  Acquire Host Forensics
+      playbookId: PS-Remote  Acquire Host Forensics
       type: playbook
       version: -1
       description: ''
@@ -117,8 +117,8 @@ tasks:
         from a host. Such as registry files, memory dump files or PCAP files.
       id: 72dbc757-02eb-4596-867b-7afc22403afa
       iscommand: false
-      name: ef26de58-d77e-49fe-8672-93945c57235e
-      playbookId: ef26de58-d77e-49fe-8672-93945c57235e
+      name: Forensics Tools Analysis
+      playbookId: Forensics Tools Analysis
       type: playbook
       version: -1
     taskid: 72dbc757-02eb-4596-867b-7afc22403afa

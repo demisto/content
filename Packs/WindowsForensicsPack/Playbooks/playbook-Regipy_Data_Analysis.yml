@@ -90,7 +90,7 @@ tasks:
       id: 9a06e356-06b3-4383-82b1-9829d92a5e9c
       iscommand: false
       name: Regipy Data parsing
-      script: b4f5ed98-212f-4cb5-8cf0-af32110d7451
+      script: RegipyParseForensicData
       tags:
       - RegistryTable
       type: regular

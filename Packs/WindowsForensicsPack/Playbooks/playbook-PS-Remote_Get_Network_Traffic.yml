@@ -343,7 +343,7 @@ tasks:
       id: 3d838078-ef56-45a8-8b70-32ad3c4a028c
       iscommand: false
       name: Convert ETL to Pcap
-      script: 668bdfba-b330-4965-8b3e-f050d191bfd9
+      script: Etl2Pcap
       type: regular
       version: -1
       description: ''

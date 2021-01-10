@@ -83,8 +83,8 @@ tasks:
       brand: ""
       id: 64fa5d8c-1901-479e-8b87-047531a1e66f
       iscommand: false
-      name: af2f41b1-5ea1-4e8e-8e3d-dd1567a3bb42
-      playbookId: af2f41b1-5ea1-4e8e-8e3d-dd1567a3bb42
+      name: PS-Remote Get Registry
+      playbookId: PS-Remote Get Registry
       type: playbook
       version: -1
       description: ''
@@ -271,8 +271,8 @@ tasks:
       brand: ""
       id: d9113228-5d52-4882-877d-0bcc4646cb58
       iscommand: false
-      name: eec4a819-ebf1-467f-8c02-b9408daf3220
-      playbookId: eec4a819-ebf1-467f-8c02-b9408daf3220
+      name: PS-Remote Get Network Traffic
+      playbookId: PS-Remote Get Network Traffic
       type: playbook
       version: -1
       description: ''
@@ -301,8 +301,8 @@ tasks:
       brand: ""
       id: 10ef831d-6cb1-4b28-8914-d4f6f4ff0ab8
       iscommand: false
-      name: 39cab75a-bc8e-492d-8d28-0460a340a963
-      playbookId: 39cab75a-bc8e-492d-8d28-0460a340a963
+      name: PS-Remote Get MFT
+      playbookId: PS-Remote Get MFT
       type: playbook
       version: -1
       description: ''
