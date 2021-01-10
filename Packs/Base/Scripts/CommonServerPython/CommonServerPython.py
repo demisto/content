@@ -1131,7 +1131,7 @@ class IntegrationLogger(object):
         """
         http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
         data = text.split("send: b'")[1]
-        if data[0] in {'{', '<'}:
+        if data and data[0] in {'{', '<'}:
             # it is the request url query params/post body - will always come after we already have the url and headers
             # `<` is for xml body
             self.curl[-1] += "-d '{}".format(data)
