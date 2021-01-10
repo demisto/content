@@ -558,7 +558,7 @@ script:
           description: Link to the IOC on Virustotal and an abstraction of the number of detections;
             MITRE ATT&CK tactics and techniques.
           type: Unknown
-  dockerimage: demisto/sixgill:1.0.0.12410
+  dockerimage: demisto/sixgill:1.0.0.14946
   feed: false
   isfetch: false
   longRunning: false
