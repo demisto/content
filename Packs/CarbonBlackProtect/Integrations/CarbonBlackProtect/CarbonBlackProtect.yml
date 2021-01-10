@@ -2056,7 +2056,7 @@ script:
       default: false
       description: (Boolean) "True" if reputation approvals are enabled for this file. "False" if reputation approvals are disabled for this file.
       isArray: false
-      name: 'reputationApprovalsEnabled '
+      name: 'reputationApprovalsEnabled'
       predefined:
       - 'true'
       - 'false'
