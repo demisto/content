@@ -88,6 +88,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
 
     """
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
+        print(f"the PRODUCTION_PRIVATE_BUCKET is {GCPConfig.PRODUCTION_PRIVATE_BUCKET}")
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     else:
         index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
