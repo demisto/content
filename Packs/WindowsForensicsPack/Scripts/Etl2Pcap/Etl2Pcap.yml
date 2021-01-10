@@ -1,0 +1,24 @@
+comment: Receives an ETL file and converts it to a PCAP file.
+args:
+- description: The file entry ID of the ETL File
+  name: EntryID
+  required: true
+commonfields:
+  id: Etl2Pcap
+  version: -1
+dockerimage: demisto/etl2pcap:latest
+enabled: true
+name: Etl2Pcap
+outputs:
+- contextPath: EtlToPcap.NewFileName
+  description: The output file name
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

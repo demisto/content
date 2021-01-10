@@ -1,0 +1,65 @@
+args:
+- description: This entry id for the reg file.
+  name: entryID
+  required: true
+- auto: PREDEFINED
+  defaultValue: All
+  description: This argument allows the user to specify which of the following objects
+    in registry to parse. Default value is All
+  name: registryData
+  predefined:
+  - All
+  - None
+  - Users
+  - MachineStartup
+  - UserStartup
+  - MachineRunOnce
+  - UserRunOnce
+  - Services
+  - DelayedServices
+  - UserRecentApps
+  - Timezone
+  - Networks
+  - USB
+  - LastLoggedOnUser
+- description: This argument allows the user to specify which registry path to parse.
+    Try to keep your searches as exact as possible, for example registry_path=`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows
+    NT\CurrentVersion\AeDebug\AutoExclusionList`. Support comma-sep list.
+  name: customRegistryPaths
+comment: "This command uses the regipy tool to extract critical forensics data from\
+  \ a registry file. The essential values are specified by the argument. \n"
+commonfields:
+  id: RegipyParseForensicData
+  version: -1
+dockerimage: demisto/python3:3.8.5.11789
+enabled: true
+name: RegipyParseForensicData
+outputs:
+- contextPath: RegistryForensicDataRaw.Type
+  description: The registry data type. "Custom" for custom registry path
+- contextPath: RegistryForensicDataRaw.RegistryPath
+  description: The registry key path
+- contextPath: RegistryForensicDataRaw.RegistryKey
+  description: The registry key
+- contextPath: RegistryForensicDataRaw.RegistryValue
+  description: The registry value
+- contextPath: RegistryForensicData.Users.Sid
+  description: User SID
+- contextPath: RegistryForensicData.Users.Guid
+  description: User GUID
+- contextPath: RegistryForensicData.LastLoggedOnUser
+  description: Last log on users
+- contextPath: RegistryForensicData.TimeZone
+  description: 'Time zone '
+- contextPath: RegistryForensicData.Services.DisplayName
+  description: Service Name
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

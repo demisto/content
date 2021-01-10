@@ -1,0 +1,14 @@
+{
+    "name": "Windows Forensics Pack",
+    "description": "One of the most common issues when investigating an incident on a windows host is how to acquire the forensic evidence as quickly as possible as the incident is occurring. An analyst may need to login or remotely deploy an agent or applications such as Wireshark or begin copying files from the host. Often the investigation will take place after the malware was already executed and evidence deleted.\n\nThis pack provides an easy, quick and agentless method to acquire forensic data from windows hosts by leveraging builtin capabilities within windows such as Winrm and Powershell as the infrastructure and multiple other windows builtin capabilities for creating the evidence.\n\nThe common usecases we cover in this pack are acquiring a network capture file from a host, acquiring the MFT (Master File Table) and the hosts registry. Once the objects are created we upload them to XSOAR and analyze accordingly.\n",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-09-29T19:38:01Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

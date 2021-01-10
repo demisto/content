@@ -1,0 +1,291 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This playbook allows the user to analyze forensic evidence acquired from
+  a host. Such as registry files, memory dump files or PCAP files.
+id: Forensics Tools Analysis
+inputs:
+- description: The entryid for the PCAP file to analyze.
+  key: PcapEntryID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The entryid for the registry file to analyze.
+  key: RegistryEntryId
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Forensics Tools Analysis
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: acce8559-139e-4003-85dd-c85838101584
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: acce8559-139e-4003-85dd-c85838101584
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -190
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CustomRegistryPaths: {}
+      RegistryData:
+        simple: All
+      RegistryFileEntryID:
+        simple: ${inputs.RegistryEntryId}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook leverages the Regipy tool to perform registry analysis
+        and extract forensic artifacts.  The Automation includes common registry objects
+        to extract which are useful for analyzing registry or a user provides registry
+        path to parse.
+      id: 1f2906b2-124b-45dc-872f-92e3a21cb918
+      iscommand: false
+      name: b13bf482-216d-42da-8cae-1f8569928e8e
+      playbookId: b13bf482-216d-42da-8cae-1f8569928e8e
+      type: playbook
+      version: -1
+    taskid: 1f2906b2-124b-45dc-872f-92e3a21cb918
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 250
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 81cf33ce-5720-4545-81e4-bf8617668511
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 81cf33ce-5720-4545-81e4-bf8617668511
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.PcapEntryID
+          operator: isNotEmpty
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d9314b03-bd13-42f6-8ee4-e9ec0948e236
+      iscommand: false
+      name: Is there a PCAP file to analyze?
+      type: condition
+      version: -1
+      description: ''
+    taskid: d9314b03-bd13-42f6-8ee4-e9ec0948e236
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -30
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.RegistryEntryId
+          operator: isNotEmpty
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 85e48460-6d6f-423f-8bfe-1e691ebfe3b2
+      iscommand: false
+      name: Is there a registry file to analyze?
+      type: condition
+      version: -1
+      description: ''
+    taskid: 85e48460-6d6f-423f-8bfe-1e691ebfe3b2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": -30
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdvancedSearchFilter: {}
+      IPAddressToSearch: {}
+      InternalIPRange: {}
+      PcapFileEntryID:
+        simple: ${inputs.PcapEntryID}
+      ProtocolToSearch: {}
+      QueryOperator:
+        simple: and
+      RsaDecryptKeyEntryID:
+        complex:
+          accessor: EntryID
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: File.Name
+              operator: inList
+              right:
+                iscontext: true
+                value:
+                  simple: incident.pcapencryptionkey.name
+            - left:
+                iscontext: true
+                value:
+                  simple: File.Extension
+              operator: isEqualString
+              right:
+                value:
+                  simple: key
+          root: File
+      TCPPortsToSearch: {}
+      UDPPortsToSearch: {}
+      WpaPassword: {}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook is used to parse and search within PCAP files. Supported
+        file types are pcap, cap, pcapng. The playbook can handle one PCAP file per
+        incident. The user inputs which objects the playbook should search for in
+        the PCAP. The values to search are IP addresses, CIDR ranges, and TCP or UDP
+        ports or protocols. In the event that more than one input type was specified,
+        specify in the QueryOperator input (such as IP addresses and TCP ports) if
+        the PCAP filter query will use an AND or an OR operator between the inputs.  Another
+        option is to use advanced filters just like in Wireshark to use refined filters
+        or for objects not specified in other inputs. Additional inputs allow the
+        user to provide the WPA password for decrypting 802.11 (wireless) traffic
+        and adding an RSA certificate to decrypt SSL traffic. To display the results
+        within the relevant incident fields, the playbook needs to run in a PCAP Analysis
+        incident type. For handling of PCAP files larger than 30 MB, refer to the
+        PcapMinerV2 documentation.
+      id: 56a495ea-f4c6-41ed-8c54-db3b47bf0d52
+      iscommand: false
+      name: PCAP Search
+      playbookId: PCAP Search
+      type: playbook
+      version: -1
+    taskid: 56a495ea-f4c6-41ed-8c54-db3b47bf0d52
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 250
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 1320,
+        "x": -20,
+        "y": -190
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
