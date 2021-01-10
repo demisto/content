@@ -1,0 +1,35 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Hive"
+ ],
+ "caseInsensitive": true,
+ "cliName": "thehivecasetlp",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_casetlp",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Case TLP",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "WHITE",
+  "GREEN",
+  "AMBER",
+  "RED"
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

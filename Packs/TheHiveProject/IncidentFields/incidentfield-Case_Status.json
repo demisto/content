@@ -1,0 +1,34 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Hive"
+ ],
+ "caseInsensitive": true,
+ "cliName": "thehivecasestatus",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_casestatus",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Case Status",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "Open",
+  "Resolved",
+  "Deleted"
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

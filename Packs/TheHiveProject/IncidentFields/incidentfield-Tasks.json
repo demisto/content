@@ -1,0 +1,89 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Hive"
+ ],
+ "caseInsensitive": true,
+ "cliName": "thehivetasks",
+ "closeForm": false,
+ "columns": [
+  {
+   "displayName": "title",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "title",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 240
+  },
+  {
+   "displayName": "description",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "description",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 302
+  },
+  {
+   "displayName": "status",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "status",
+   "required": false,
+   "script": "",
+   "selectValues": [
+    "Waiting",
+    "InProgress",
+    "Completed",
+    "Cancel"
+   ],
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "flag",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "flag",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  }
+ ],
+ "content": true,
+ "defaultRows": [
+  {
+
+  }
+ ],
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_tasks",
+ "isReadOnly": true,
+ "locked": false,
+ "name": "Tasks",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "grid",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

@@ -1,0 +1,23 @@
+{
+ "id": "TheHive",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "vcShouldIgnore": false,
+ "locked": false,
+ "name": "Hive",
+ "prevName": "Hive",
+ "color": "#FB8C00",
+ "hours": 0,
+ "days": 0,
+ "weeks": 0,
+ "hoursR": 0,
+ "daysR": 0,
+ "weeksR": 0,
+ "system": false,
+ "readonly": false,
+ "default": false,
+ "autorun": false,
+ "disabled": false,
+ "reputationCalc": 0,
+ "layout": "2772b108-f1f6-43ad-829e-d3621f08f5ef"
+}

@@ -1,0 +1,125 @@
+{
+ "description": "Default outbound mapping for TheHive Project cases.",
+ "feed": false,
+ "id": "Hive_Outgoing",
+ "mapping": {
+  "Hive": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "resolutionStatus": {
+     "complex": null,
+     "simple": "caseresolutionstatus"
+    },
+    "status": {
+     "complex": null,
+     "simple": "casestatus"
+    },
+    "summary": {
+     "complex": null,
+     "simple": "casesummary"
+    },
+    "tlp": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "casetlp",
+      "transformers": [
+       {
+        "args": {
+         "input_values": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "WHITE,GREEN,AMBER,RED"
+          }
+         },
+         "mapped_values": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0,1,2,3"
+          }
+         }
+        },
+        "operator": "MapValuesTransformer"
+       },
+       {
+        "args": {
+
+        },
+        "operator": "round"
+       }
+      ]
+     },
+     "simple": ""
+    }
+   }
+  },
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "description": {
+     "complex": null,
+     "simple": "details"
+    },
+    "flag": {
+     "complex": null,
+     "simple": "flag"
+    },
+    "resolutionStatus": {
+     "complex": null,
+     "simple": "caseresolutionstatus"
+    },
+    "severity": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "severity",
+      "transformers": [
+       {
+        "args": {
+         "input_values": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0.5,0,1,2,3,4,5"
+          }
+         },
+         "mapped_values": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "1,1,1,2,3,3,3"
+          }
+         }
+        },
+        "operator": "MapValuesTransformer"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "status": {
+     "complex": null,
+     "simple": "casestatus"
+    },
+    "summary": {
+     "complex": null,
+     "simple": "casesummary"
+    },
+    "title": {
+     "complex": null,
+     "simple": "name"
+    }
+   }
+  }
+ },
+ "name": "Hive_Outgoing",
+ "type": "mapping-outgoing",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

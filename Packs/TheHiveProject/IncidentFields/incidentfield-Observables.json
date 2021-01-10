@@ -1,0 +1,123 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Hive"
+ ],
+ "caseInsensitive": true,
+ "cliName": "thehiveobservables",
+ "closeForm": false,
+ "columns": [
+  {
+   "displayName": "data",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "data",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 381
+  },
+  {
+   "displayName": "message",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "message",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 150
+  },
+  {
+   "displayName": "ioc",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "ioc",
+   "required": false,
+   "script": "",
+   "selectValues": [
+    "",
+    "true",
+    "false"
+   ],
+   "type": "shortText",
+   "width": 113
+  },
+  {
+   "displayName": "tlp",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "tlp",
+   "required": false,
+   "script": "",
+   "selectValues": [
+    "",
+    "",
+    "WHITE",
+    "GREEN",
+    "AMBER",
+    "RED"
+   ],
+   "type": "shortText",
+   "width": 113
+  },
+  {
+   "displayName": "sighted",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "sighted",
+   "required": false,
+   "script": "",
+   "selectValues": null,
+   "type": "shortText",
+   "width": 106
+  },
+  {
+   "displayName": "status",
+   "fieldCalcScript": "",
+   "isDefault": true,
+   "isReadOnly": true,
+   "key": "status",
+   "required": false,
+   "script": "",
+   "selectValues": [
+    "",
+    "Ok",
+    "Deleted"
+   ],
+   "type": "shortText",
+   "width": 102
+  }
+ ],
+ "content": true,
+ "defaultRows": [
+  {
+
+  }
+ ],
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_observables",
+ "isReadOnly": true,
+ "locked": false,
+ "name": "Observables",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "grid",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

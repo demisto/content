@@ -1,0 +1,164 @@
+{
+ "description": "Default incoming mapper for TheHive Project cases",
+ "feed": false,
+ "id": "Hive_Incoming",
+ "mapping": {
+  "Hive": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "Case Resolution Status": {
+     "complex": null,
+     "simple": "resolutionStatus"
+    },
+    "Case Status": {
+     "complex": null,
+     "simple": "status"
+    },
+    "Case Summary": {
+     "complex": null,
+     "simple": "summary"
+    },
+    "Case TLP": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "tlp",
+      "transformers": [
+       {
+        "args": {
+         "input_values": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0,1,2,3"
+          }
+         },
+         "mapped_values": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "WHITE,GREEN,AMBER,RED"
+          }
+         }
+        },
+        "operator": "MapValuesTransformer"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Hive Tasks": {
+     "complex": null,
+     "simple": "tasks"
+    },
+    "Observables": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "observables",
+      "transformers": [
+       {
+        "args": {
+         "input_values": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "tlp: 0,tlp: 1,tlp:2,tlp: 3"
+          }
+         },
+         "mapped_values": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "WHITE,GREEN,AMBER,RED"
+          }
+         }
+        },
+        "operator": "MapValuesTransformer"
+       },
+       {
+        "args": {
+
+        },
+        "operator": "ParseJSON"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Tasks": {
+     "complex": null,
+     "simple": "tasks"
+    }
+   }
+  },
+  "The Hive Case": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Hive Tasks": {
+     "complex": null,
+     "simple": "tasks"
+    }
+   }
+  },
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "Investigation Stage": {
+     "complex": null,
+     "simple": "status"
+    },
+    "dbotMirrorDirection": {
+     "complex": null,
+     "simple": "dbotMirrorDirection"
+    },
+    "dbotMirrorId": {
+     "complex": null,
+     "simple": "id"
+    },
+    "dbotMirrorInstance": {
+     "complex": null,
+     "simple": "dbotMirrorInstance"
+    },
+    "details": {
+     "complex": null,
+     "simple": "description"
+    },
+    "name": {
+     "complex": null,
+     "simple": "title"
+    },
+    "occurred": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "createdAt",
+      "transformers": [
+       {
+        "args": {
+
+        },
+        "operator": "TimeStampToDate"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "severity": {
+     "complex": null,
+     "simple": "severity"
+    }
+   }
+  }
+ },
+ "name": "Hive_Incoming",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

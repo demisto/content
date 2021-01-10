@@ -1,0 +1,37 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Hive"
+ ],
+ "caseInsensitive": true,
+ "cliName": "thehivecaseresolutionstatus",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_caseresolutionstatus",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Case Resolution Status",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "",
+  "Indeterminate",
+  "FalsePositive",
+  "TruePositive",
+  "Other",
+  "Duplicated"
+ ],
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}
