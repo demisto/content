@@ -233,7 +233,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false
@@ -245,5 +245,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests
+- Github IAM - Test Playbook
 fromversion: 6.0.0

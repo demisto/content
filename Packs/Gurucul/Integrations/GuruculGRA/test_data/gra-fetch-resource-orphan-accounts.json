@@ -1,0 +1,32 @@
+[
+   {
+      "id":149,
+      "name":"Acc1",
+      "type":null,
+      "created_on":"02/02/2020 10:00:00",
+      "department":null,
+      "description":"Mozilla/5.0 (Android 2.2; Windows; U; Windows NT 6.1; en-US) AppleWebKit/533.19.4 (KHTML, like Gecko) Version/5.0.3 Safari/533.19.4",
+      "resource":"Linux",
+      "domain":"quantcast.com",
+      "high_risk":null,
+      "is_orphan":"Yes",
+      "is_reassigned":null,
+      "risk_score":95,
+      "updated_on":null
+   },
+   {
+      "id":227,
+      "name":"Acc2",
+      "type":null,
+      "created_on":"02/09/2017 10:00:00",
+      "department":null,
+      "description":null,
+      "resource":"Linux",
+      "domain":"in",
+      "high_risk":null,
+      "is_orphan":"Yes",
+      "is_reassigned":null,
+      "risk_score":98,
+      "updated_on":"05/30/2020 01:01:12"
+   }
+]

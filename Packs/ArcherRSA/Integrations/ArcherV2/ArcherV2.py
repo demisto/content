@@ -1034,7 +1034,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
     search_value = args.get('searchValue')
     max_results = args.get('maxResults', 10)
     date_operator = args.get('dateOperator')
-    numeric_operator = args.get('numeric-operator')
+    numeric_operator = args.get('numericOperator')
     fields_to_display = argToList(args.get('fieldsToDisplay'))
     fields_to_get = argToList(args.get('fieldsToGet'))
     full_data = args.get('fullData', 'true') == 'true'
@@ -1147,18 +1147,20 @@ def fetch_incidents(
     # Build incidents
     incidents = list()
     # Encountered that sometimes, somehow, on of next_fetch is not UTC.
-    next_fetch = from_time.replace(tzinfo=timezone.utc)
+    last_fetch_time = from_time.replace(tzinfo=timezone.utc)
+    next_fetch = last_fetch_time
     for record in records:
         incident, incident_created_time = client.record_to_incident(record, app_id, fetch_param_id)
         # Encountered that sometimes, somehow, incident_created_time is not UTC.
         incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
-        if next_fetch <= incident_created_time:
-            next_fetch = incident_created_time
+        if last_fetch_time <= incident_created_time:
+            incidents.append(incident)
+            if next_fetch < incident_created_time:
+                next_fetch = incident_created_time
         else:
             demisto.debug(
                 f'The newly fetched incident is older than last fetch. {incident_created_time=} {next_fetch=}'
             )
-        incidents.append(incident)
     demisto.debug(f'Going out fetch incidents with {next_fetch=}, {len(incidents)=}')
     return incidents, next_fetch
 
