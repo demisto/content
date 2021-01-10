@@ -98,6 +98,7 @@ tasks:
     taskid: d1a15b59-9684-4095-883f-8f43154201c9
     type: title
     task:
+      description: ""
       id: d1a15b59-9684-4095-883f-8f43154201c9
       version: -1
       name: Done
