@@ -132,7 +132,11 @@ List of all servers.
 `azure-sql-servers-list`
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | The maximum number of servers returned to the War Room. Default is 50. | Optional | 
+| offset | Offset in the data set. Default is 0. | Optional | 
+
 
 #### Context Output
 
@@ -199,6 +203,8 @@ List of all DataBases for server.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | server_name | Server name. | Required | 
+| limit | The maximum number of DataBases returned to the War Room. Default is 50. | Optional | 
+| offset | (Int) Offset in the data set. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -328,6 +334,8 @@ Auditing settings of a database.
 | --- | --- | --- |
 | server_name | Server name. | Required | 
 | db_name | Database name. | Required | 
+| limit | The maximum number of DataBases audit policies returned to the War Room. Default is 50. | Optional | 
+| offset | (Int) Offset in the data set. Default is 0. | Optional | 
 
 
 #### Context Output
