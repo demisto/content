@@ -14,7 +14,7 @@ At end of the process you'll see a message that you've logged in successfully.
 
 #### Cortex XSOAR Azure App
 
-In order to use the Cortex XSOAR Azure application, use the default application ID (b911e858-56ff-4a4b-b029-6ee67675e2cb).
+In order to use the Cortex XSOAR Azure application, use the default application ID (8f9010bb-4efe-4cfa-a197-98a2694b7e0c).
 
 You only need to fill in your subscription ID and resource group name. You can find your resource group and subscription ID at Azure Portal.
 

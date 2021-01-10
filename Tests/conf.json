@@ -3215,11 +3215,6 @@
             "integrations": "FeedExpanse",
             "playbookID": "Feed Expanse Test",
             "fromversion": "6.0.0"
-        },
-        {
-            "integrations": "Azure SQL Management",
-            "playbookID": "Azure SQL - Test",
-            "fromversion": "5.0.0"
         }
     ],
     "skipped_tests": {

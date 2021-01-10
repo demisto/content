@@ -53,14 +53,14 @@ script:
     name: azure-sql-auth-test
   - arguments:
     - default: false
-      description: The maximum number of servers returned to the War Room. Default
+      description: (Int) The maximum number of servers returned to the War Room. Default
         is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Offset in the data set. Default is 0.
+      description: (Int) Offset in the data set. Default is 0.
       isArray: false
       name: offset
       required: false
@@ -83,16 +83,16 @@ script:
       description: Server Tags
       type: Unknown
     - contextPath: AzureSQL.Server.id
-      description: Server id
+      description: Server id.
       type: String
     - contextPath: AzureSQL.Server.name
-      description: Server name
+      description: Server name.
       type: String
     - contextPath: AzureSQL.Server.type
       description: Server type.
       type: String
     - contextPath: AzureSQL.Server.administratorLogin
-      description: username of server administrator
+      description: Username of server administrator.
       type: String
     - contextPath: AzureSQL.Server.version
       description: Server version
@@ -101,13 +101,13 @@ script:
       description: Server state
       type: String
     - contextPath: AzureSQL.Server.fullyQualifiedDomainName
-      description: servers fully qualified domain name
+      description: Servers fully qualified domain name.
       type: Unknown
     - contextPath: AzureSQL.Server.privateEndpointConnections
-      description: List of servers private endpoint connections
+      description: List of servers private endpoint connections.
       type: Unknown
     - contextPath: AzureSQL.Server.publicNetworkAccess
-      description: servers public endpoint access. The value is 'Enabled' or 'Disabled'.
+      description: Servers public endpoint access. The value is 'Enabled' or 'Disabled'.
       type: String
   - arguments:
     - default: false
@@ -117,7 +117,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The maximum number of DataBases returned to the War Room. Default
+      description: (Int) The maximum number of DataBases returned to the War Room. Default
         is 50.
       isArray: false
       name: limit
