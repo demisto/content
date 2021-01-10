@@ -3,7 +3,8 @@ commonfields:
   id: Azure SQL Management
   version: -1
 configuration:
-- display: Application ID
+- defaultvalue: 8f9010bb-4efe-4cfa-a197-98a2694b7e0c
+  display: Application ID
   hidden: false
   name: app_id
   required: true
@@ -80,7 +81,7 @@ script:
       description: Server location.
       type: String
     - contextPath: AzureSQL.Server.tags
-      description: Server Tags
+      description: Server Tags.
       type: Unknown
     - contextPath: AzureSQL.Server.id
       description: Server id.
@@ -95,10 +96,10 @@ script:
       description: Username of server administrator.
       type: String
     - contextPath: AzureSQL.Server.version
-      description: Server version
+      description: Server version.
       type: String
     - contextPath: AzureSQL.Server.state
-      description: Server state
+      description: Server state.
       type: String
     - contextPath: AzureSQL.Server.fullyQualifiedDomainName
       description: Servers fully qualified domain name.
@@ -117,8 +118,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: (Int) The maximum number of DataBases returned to the War Room. Default
-        is 50.
+      description: (Int) The maximum number of DataBases returned to the War Room.
+        Default is 50.
       isArray: false
       name: limit
       required: false
@@ -144,10 +145,10 @@ script:
       description: Database location.
       type: String
     - contextPath: AzureSQL.DB.id
-      description: Database id
+      description: Database id.
       type: String
     - contextPath: AzureSQL.DB.name
-      description: Database name
+      description: Database name.
       type: String
     - contextPath: AzureSQL.DB.type
       description: Database type.
@@ -162,7 +163,7 @@ script:
       description: Collation of catalog.
       type: String
     - contextPath: AzureSQL.DB.collation
-      description: Database collation
+      description: Database collation.
       type: String
     - contextPath: AzureSQL.DB.creationDate
       description: Creation date of the database, in ISO format.
@@ -202,20 +203,20 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: Server name
+      description: Server name.
       isArray: false
       name: server_name
       required: true
       secret: false
     - default: false
-      description: Database name
+      description: Database name.
       isArray: false
       name: db_name
       required: true
       secret: false
     - default: false
-      description: The maximum number of DataBases audit policies returned to the
-        War Room. Default is 50.
+      description: (Int) The maximum number of DataBases audit policies returned to
+        the War Room. Default is 50.
       isArray: false
       name: limit
       required: false
@@ -238,10 +239,10 @@ script:
       description: Kind of audit policy.
       type: String
     - contextPath: AzureSQL.DbAuditPolicy.id
-      description: Audit policy id
+      description: Audit policy id.
       type: String
     - contextPath: AzureSQL.DbAuditPolicy.name
-      description: Audit policy name
+      description: Audit policy name.
       type: String
     - contextPath: AzureSQL.DbAuditPolicy.type
       description: Database type.
@@ -251,29 +252,29 @@ script:
         Enabled" or "Disabled".
       type: Boolean
     - contextPath: AzureSQL.DbAuditPolicy.retentionDays
-      description: Number of days to keep in the audit logs in the storage account
+      description: Number of days to keep in the audit logs in the storage account.
       type: Number
     - contextPath: AzureSQL.DbAuditPolicy.state
-      description: Policy state
+      description: Policy state.
       type: String
     - contextPath: AzureSQL.DbAuditPolicy.storageAccountSubscriptionId
       description: storage subscription Id.
       type: String
   - arguments:
     - default: false
-      description: Server name
+      description: Server name.
       isArray: false
       name: server_name
       required: true
       secret: false
     - default: false
-      description: Database name
+      description: Database name.
       isArray: false
       name: db_name
       required: true
       secret: false
     deprecated: false
-    description: Threat detection policies of a database
+    description: Threat detection policy of a database.
     execution: false
     name: azure-sql-db-threat-policy-get
     outputs:
@@ -287,19 +288,19 @@ script:
       description: Threat Policy location.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.id
-      description: Threat Policy id
+      description: Threat Policy id.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.name
-      description: Threat Policy name
+      description: Threat Policy name.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.type
       description: Threat Policy type.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.state
-      description: Policy state
+      description: Policy state.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.creationTime
-      description: Policy creation Time
+      description: Policy creation Time.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.retentionDays
       description: Number of days to keep in the Threat Detection audit logs.
@@ -326,20 +327,21 @@ script:
       type: Unknown
   - arguments:
     - default: false
-      description: Server name
+      description: Server name.
       isArray: false
       name: server_name
       required: true
       secret: false
     - default: false
-      description: Database name
+      description: Database name.
       isArray: false
       name: db_name
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: set state 'Enable' or 'Disable'
+      description: Set state 'Enable' or 'Disable'. When state is Enabled, storage_endpoint
+        or is_azure_monitor_target_enabled are required.
       isArray: false
       name: state
       predefined:
@@ -349,14 +351,14 @@ script:
       secret: false
     - default: false
       description: Comma-separated Actions-Groups and Actions to audit. For all Possible
-        values see documentation.
+        values visit integration documentation at https://xsoar.pan.dev/.
       isArray: true
       name: audit_actions_groups
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is audit events are sent to Azure Monitor
+      description: Is audit events are sent to Azure Monitor.
       isArray: false
       name: is_azure_monitor_target_enabled
       predefined:
@@ -389,7 +391,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: identifier key of the auditing storage account
+      description: Identifier key of the auditing storage account.
       isArray: false
       name: storage_account_access_key
       required: false
@@ -416,10 +418,10 @@ script:
       description: Kind of audit policy.
       type: String
     - contextPath: AzureSQL.DbAuditPolicy.id
-      description: Audit policy id
+      description: Audit policy id.
       type: String
     - contextPath: AzureSQL.DbAuditPolicy.name
-      description: Audit policy name
+      description: Audit policy name.
       type: String
     - contextPath: AzureSQL.DbAuditPolicy.type
       description: Database type.
@@ -429,7 +431,7 @@ script:
         Enabled" or "Disabled".
       type: Boolean
     - contextPath: AzureSQL.DbAuditPolicy.retentionDays
-      description: Number of days to keep in the audit logs in the storage account
+      description: Number of days to keep in the audit logs in the storage account.
       type: Number
     - contextPath: AzureSQL.DbAuditPolicy.state
       description: Policy state
@@ -441,14 +443,14 @@ script:
       description: audit Actions And Groups to audit.
       type: Unknown
     - contextPath: AzureSQL.DbAuditPolicy.isStorageSecondaryKeyInUse
-      description: Is storageAccountAccessKey value is the storage's secondary key
+      description: Is storageAccountAccessKey value is the storage's secondary key.
       type: String
     - contextPath: AzureSQL.DbAuditPolicy.queueDelayMs
       description: Time in milliseconds that can elapse before audit actions are forced
         to be processed.
       type: String
     - contextPath: AzureSQL.DbAuditPolicy.storageAccountAccessKey
-      description: identifier key of the auditing storage account
+      description: identifier key of the auditing storage account.
       type: String
     - contextPath: AzureSQL.DbAuditPolicy.storageEndpoint
       description: Storage endpoint.
@@ -496,9 +498,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Comma-separated list of alerts that are disabled, or "none" to
-        disable no alerts. Possible values: Sql_Injection, Sql_Injection_Vulnerability,
-        Access_Anomaly, Data_Exfiltration, Unsafe_Action'
+      description: 'Comma-separated list of alerts that are disabled. Possible values:
+        None, Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration,
+        Unsafe_Action'
       isArray: true
       name: disabled_alerts
       required: false

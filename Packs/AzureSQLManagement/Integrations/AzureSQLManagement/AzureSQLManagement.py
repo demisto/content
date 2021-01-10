@@ -139,7 +139,7 @@ class Client:
 
 
 @logger
-def azure_sql_servers_list_command(client: Client, limit: str = '50', offset: str = '0') -> CommandResults:
+def azure_sql_servers_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """azure-sql-servers-list command: Returns a list of all servers
 
     :type client: ``Client``
@@ -156,8 +156,8 @@ def azure_sql_servers_list_command(client: Client, limit: str = '50', offset: st
     """
 
     server_list = client.azure_sql_servers_list()
-    offset_int = int(offset)
-    limit_int = int(limit)
+    offset_int = int(args.get('offset', '0'))
+    limit_int = int(args.get('limit', '50'))
     server_list_values = copy.deepcopy(server_list.get('value', '')[offset_int:(offset_int + limit_int)])
     for server in server_list_values:
         properties = server.get('properties', {})
@@ -178,7 +178,7 @@ def azure_sql_servers_list_command(client: Client, limit: str = '50', offset: st
 
 
 @logger
-def azure_sql_db_list_command(client: Client, server_name: str, limit: str = '50', offset: str = '0') -> CommandResults:
+def azure_sql_db_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """azure-sql-db-list command: Returns a list of all databases for server
 
     :type client: ``Client``
@@ -197,9 +197,9 @@ def azure_sql_db_list_command(client: Client, server_name: str, limit: str = '50
         offset: Offset in the data set. Default is 0.
     """
 
-    offset_int = int(offset)
-    limit_int = int(limit)
-    database_list = client.azure_sql_db_list(server_name)
+    offset_int = int(args.get('offset', '0'))
+    limit_int = int(args.get('limit', '50'))
+    database_list = client.azure_sql_db_list(args.get('server_name'))
     database_list_values = copy.deepcopy(database_list.get('value', '')[offset_int:(offset_int + limit_int)])
     for db in database_list_values:
         properties = db.get('properties', {})
@@ -221,8 +221,7 @@ def azure_sql_db_list_command(client: Client, server_name: str, limit: str = '50
 
 
 @logger
-def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_name: str,
-                                           limit: str = '50', offset: str = '0') -> CommandResults:
+def azure_sql_db_audit_policy_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """azure_sql_db_audit_policy_list command: Returns a list of auditing settings of a database
 
     :type client: ``Client``
@@ -241,9 +240,10 @@ def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_
         is 50.
         offset: Offset in the data set. Default is 0.
     """
-
-    offset_int = int(offset)
-    limit_int = int(limit)
+    server_name = args.get('server_name')
+    db_name = args.get('db_name')
+    offset_int = int(args.get('offset', '0'))
+    limit_int = int(args.get('limit', '50'))
     audit_list = client.azure_sql_db_audit_policy_list(server_name, db_name)
     audit_list_values = copy.deepcopy(audit_list.get('value', '')[offset_int:(offset_int + limit_int)])
     for db in audit_list_values:
@@ -410,7 +410,7 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, server_name
     disabled_alerts_list: List[str] = []
     if disabled_alerts:
         disabled_alerts_list = argToList(disabled_alerts)
-        if disabled_alerts_list[0] == 'none':
+        if disabled_alerts_list[0] == 'None':
             disabled_alerts_list = [""]
     email_addresses = email_addresses if not email_addresses else argToList(email_addresses)
 
@@ -494,31 +494,31 @@ def main() -> None:
                 'For more details press the (?) button.')
 
         elif command == 'azure-sql-servers-list':
-            return_results(azure_sql_servers_list_command(client, **args))
+            return_results(azure_sql_servers_list_command(client, args))
 
         elif command == 'azure-sql-db-list':
-            return_results(azure_sql_db_list_command(client, **args))
+            return_results(azure_sql_db_list_command(client, args))
 
         elif command == 'azure-sql-db-audit-policy-list':
-            return_results(azure_sql_db_audit_policy_list_command(client, **args))
+            return_results(azure_sql_db_audit_policy_list_command(client, args))
 
         elif command == 'azure-sql-db-audit-policy-create-update':
-            return_results(azure_sql_db_audit_policy_create_update_command(client, **args))
+            return_results(azure_sql_db_audit_policy_create_update_command(client, args))
 
         elif command == 'azure-sql-db-threat-policy-get':
-            return_results(azure_sql_db_threat_policy_get_command(client, **args))
+            return_results(azure_sql_db_threat_policy_get_command(client, args))
 
         elif command == 'azure-sql-db-threat-policy-create-update':
-            return_results(azure_sql_db_threat_policy_create_update_command(client, **args))
+            return_results(azure_sql_db_threat_policy_create_update_command(client, args))
 
         elif command == 'azure-sql-auth-start':
-            return_results(start_auth(client, **args))
+            return_results(start_auth(client))
 
         elif command == 'azure-sql-auth-complete':
-            return_results(complete_auth(client, **args))
+            return_results(complete_auth(client))
 
         elif command == 'azure-sql-auth-reset':
-            return_results(reset_auth(client, **args))
+            return_results(reset_auth(client))
 
         elif command == 'azure-sql-auth-test':
             return_results(test_connection(client))
