@@ -1,0 +1,142 @@
+args:
+- default: false
+  defaultValue: type
+  description: The name of the incident field where its type is stored. Default is
+    "type". Change this arguement only in case you use a custom field for specifying
+    incident type.
+  isArray: false
+  name: incidentTypeFieldName
+  required: false
+  secret: false
+- default: false
+  defaultValue: Phishing
+  description: A comma-separatetd list of incident types by which to filter. The default
+    is the current incident type. Specify "None" to ignore incident type from deduplication
+    logic.
+  isArray: false
+  name: incidentTypes
+  required: false
+  secret: false
+- default: false
+  defaultValue: 30 days ago
+  description: The start date by which to search for duplicated existing incidents.
+    Date format is the same as in the incidents query page. For example, "3 days ago",
+    ""2019-01-01T00:00:00 +0200").
+  isArray: false
+  name: exsitingIncidentsLookback
+  required: false
+  secret: false
+- default: false
+  description: Additional text by which to query incidents.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3000'
+  description: The maximum number of incidents to fetch. The default value is 3000.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: emailsubject
+  description: Subject of the email.
+  isArray: false
+  name: emailSubject
+  predefined:
+  - Subject of the email.
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbody
+  description: Body of the email.
+  isArray: false
+  name: emailBody
+  predefined:
+  - ''
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailbodyhtml
+  description: HTML body of the email.
+  isArray: false
+  name: emailBodyHTML
+  required: false
+  secret: false
+- default: false
+  defaultValue: emailfrom
+  description: 'Incident fields contains the email from value. '
+  isArray: false
+  name: emailFrom
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: All
+  description: Whether to compare the new incident to past closed or non closed incidents
+    only. Default is "All".
+  isArray: false
+  name: statusScope
+  predefined:
+  - All
+  - ClosedOnly
+  - NonClosedOnly
+  required: false
+  secret: false
+- default: false
+  defaultValue: '0.8'
+  description: Threshold to consider incident as duplication, number between 0-1
+  isArray: false
+  name: threshold
+  required: false
+  secret: true
+- default: false
+  defaultValue: '30'
+  description: The maximum number of incidents to display as part of the campaign.
+    If a cmpaign detected with higher number of incidents, results will contain only
+    this amount of incidents.
+  isArray: false
+  name: maxIncidentsToReturn
+  required: false
+  secret: false
+- default: false
+  defaultValue: '3'
+  description: Minimum number of incidents to consider as cmpaign. Default is "3".
+  isArray: false
+  name: minIncedentsForCampaign
+  required: false
+  secret: false
+- default: false
+  defaultValue: '2'
+  description: Minimum number of unique recipients at similar email incidents to consider
+    as cmpaign. Default is "2".
+  isArray: false
+  name: minUniqueRecipients
+  required: false
+  secret: false
+commonfields:
+  id: FindEmailsCampaign
+  version: -1
+enabled: false
+name: FindEmailsCampaign
+outputs:
+- contextPath: Campaign.isCampaignFound
+  description: Whether a campaign was found
+  type: Boolean
+- contextPath: Campaign.campaignIncidentsIds
+  description: The IDs of the incidents involved in the campaign
+  type: Unknown
+- contextPath: Campaign.mutualIndicatorsIds
+  description: The IDs of mututal indicators of incidents invovled in the campaign.
+  type: Unknown
+script: '-'
+subtype: python3
+system: false
+timeout: '0'
+type: python
+dockerimage: demisto/sklearn:1.0.0.15216
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
