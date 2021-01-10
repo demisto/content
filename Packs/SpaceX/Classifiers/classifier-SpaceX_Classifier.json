@@ -1,0 +1,23 @@
+{
+    "defaultIncidentType": "Space X Mission",
+    "description": "",
+    "feed": false,
+    "id": "Space X classifier",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "keyTypeMap": {
+        "mission": "Space X Mission"
+    },
+    "name": "SpaceX_Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "sortValues": null,
+    "transformer": {
+        "complex": null,
+        "simple": "mission_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

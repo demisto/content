@@ -1,0 +1,22 @@
+{
+    "defaultIncidentType": "",
+    "description": "",
+    "feed": false,
+    "id": "SpaceX_Incoming",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "keyTypeMap": {},
+    "name": "SpaceX_Incoming",
+    "propagationLabels": [
+        "all"
+    ],
+    "sortValues": null,
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "type": "mapping-incoming",
+    "unclassifiedCases": null,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

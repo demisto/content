@@ -1,0 +1,14 @@
+{
+    "name": "SpaceX",
+    "description": "SpaceX integration and incident type with layouts. Retrieves details all about SpaceX and their missions.\n\nIncident fetches are for future launches and they support mirroring too, to stay up to date with future news.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "https://www.dfir.co.uk",
+    "email": "adam.burt@dfir.co.uk",
+    "created": "2020-08-05T13:24:21Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

@@ -1,0 +1,410 @@
+{
+	"close": null,
+	"description": "",
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Mission Info",
+				"sections": [
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 106,
+								"id": "80012350-cc11-11ea-b0a9-e576b316a5f3",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Mission Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "spacexlaunchdateutc",
+								"height": 22,
+								"id": "e5a97a00-ccce-11ea-8078-cf88af71b783",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-b3fe28b0-cc11-11ea-b0a9-e576b316a5f3",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "spacexships",
+								"height": 106,
+								"id": "ba361bc0-cc11-11ea-b0a9-e576b316a5f3",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Ship Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-72f9e9c0-cc12-11ea-b0a9-e576b316a5f3",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "spacexrockets",
+								"height": 106,
+								"id": "7eb59b10-cc12-11ea-b0a9-e576b316a5f3",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Rocket Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-23b24250-ccc5-11ea-bdb9-5527704e87b7",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "name",
+								"height": 22,
+								"id": "2da0adb0-ccc5-11ea-bdb9-5527704e87b7",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 44,
+								"id": "2f63e180-ccc5-11ea-bdb9-5527704e87b7",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 22,
+								"id": "3165a4f0-ccc5-11ea-bdb9-5527704e87b7",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotmirrordirection",
+								"height": 22,
+								"id": "36e396d0-ccc5-11ea-bdb9-5527704e87b7",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"dbotMirrorDirection": {
+										"simple": "In"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 1,
+								"fieldId": "",
+								"height": 44,
+								"id": "42e61520-ccc5-11ea-bdb9-5527704e87b7",
+								"index": 4,
+								"name": "Enable mirroring (only inbound is supported)",
+								"scriptId": "Builtin|||setIncident",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "General Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-b45563a0-ccc5-11ea-bdb9-5527704e87b7",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "spacexpayloads",
+								"height": 22,
+								"id": "c14ffd90-ccc5-11ea-bdb9-5527704e87b7",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Payload Details",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-d38e6690-ccc5-11ea-bdb9-5527704e87b7",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "spacexsites",
+								"height": 22,
+								"id": "df963c10-ccc5-11ea-bdb9-5527704e87b7",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Site Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 6
+					},
+					{
+						"displayType": "CARD",
+						"h": 5,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-7bdd5340-cd0e-11ea-aca7-49090e508fea",
+						"items": [
+							{
+								"args": {
+									"type": {
+										"simple": "payload"
+									}
+								},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "",
+								"height": 53,
+								"id": "5548b2e0-cd10-11ea-aca7-49090e508fea",
+								"index": 0,
+								"listId": "caseinfoid-7bdd5340-cd0e-11ea-aca7-49090e508fea",
+								"name": "Get all payload details",
+								"scriptId": "9557abc6-2d5e-481e-8a3b-f0326317ee7b",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"type": {
+										"simple": "rocket"
+									}
+								},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "",
+								"height": 53,
+								"id": "56e43a70-cd10-11ea-aca7-49090e508fea",
+								"index": 1,
+								"listId": "caseinfoid-7bdd5340-cd0e-11ea-aca7-49090e508fea",
+								"name": "Get all rocket details",
+								"scriptId": "9557abc6-2d5e-481e-8a3b-f0326317ee7b",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "spacexfurtherdetails",
+								"height": 106,
+								"id": "9f383a80-cd0e-11ea-aca7-49090e508fea",
+								"index": 2,
+								"listId": "caseinfoid-7bdd5340-cd0e-11ea-aca7-49090e508fea",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"type": {
+										"simple": "ship"
+									}
+								},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "a80d46a0-cd0e-11ea-aca7-49090e508fea",
+								"index": 0,
+								"listId": "caseinfoid-7bdd5340-cd0e-11ea-aca7-49090e508fea",
+								"name": "Get all ship details",
+								"scriptId": "9557abc6-2d5e-481e-8a3b-f0326317ee7b",
+								"sectionItemType": "button",
+								"startCol": 1
+							},
+							{
+								"args": {
+									"type": {
+										"simple": "site"
+									}
+								},
+								"buttonClass": "primary",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 53,
+								"id": "4c2d60e0-cd0e-11ea-aca7-49090e508fea",
+								"index": 2,
+								"listId": "caseinfoid-7bdd5340-cd0e-11ea-aca7-49090e508fea",
+								"name": "Get all site details",
+								"scriptId": "9557abc6-2d5e-481e-8a3b-f0326317ee7b",
+								"sectionItemType": "button",
+								"startCol": 1
+							}
+						],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Further Details",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 3
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": null,
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "Space X Mission layout",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Space X Mission layout",
+	"packID": "affbee60-6879-4f47-8002-5b8820cc33bc",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

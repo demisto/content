@@ -1,0 +1,2907 @@
+category: Case Management
+commonfields:
+  id: Space-X
+  version: -1
+configuration:
+- additionalinfo: This does not really need to be changed.
+  defaultvalue: https://api.spacexdata.com/v3
+  display: Server URL (e.g. https://api.spacexdata.com/v3)
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Whether to mirror the information from SpaceX. This can be turned
+    on per incident also.
+  defaultvalue: "false"
+  display: Mirror
+  name: mirror
+  required: false
+  type: 8
+description: Open Source REST API for rocket, core, capsule, pad, and launch data,
+  created and maintained by the developers of the r/SpaceX organization.
+display: Space-X
+name: Space-X
+script:
+  commands:
+  - arguments: []
+    description: Returns the company info
+    name: spacex-get-company-info
+    outputs:
+    - contextPath: SpaceX.Company.Info.launch_sites
+      description: Launch sites
+      type: number
+    - contextPath: SpaceX.Company.Info.valuation
+      description: Valuation
+      type: number
+    - contextPath: SpaceX.Company.Info.founded
+      description: Founded
+      type: number
+    - contextPath: SpaceX.Company.Info.coo
+      description: COO
+      type: string
+    - contextPath: SpaceX.Company.Info.employees
+      description: Employees
+      type: number
+    - contextPath: SpaceX.Company.Info.summary
+      description: Summary
+      type: string
+    - contextPath: SpaceX.Company.Info.headquarters.address
+      description: Address
+      type: string
+    - contextPath: SpaceX.Company.Info.headquarters.city
+      description: City
+      type: string
+    - contextPath: SpaceX.Company.Info.headquarters.state
+      description: State
+      type: string
+    - contextPath: SpaceX.Company.Info.vehicles
+      description: Vehicles
+      type: number
+    - contextPath: SpaceX.Company.Info.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Company.Info.ceo
+      description: CEO
+      type: string
+    - contextPath: SpaceX.Company.Info.founder
+      description: Founder
+      type: string
+    - contextPath: SpaceX.Company.Info.cto_propulsion
+      description: CTO Propulsion
+      type: string
+    - contextPath: SpaceX.Company.Info.links.elon_twitter
+      description: Elon twitter
+      type: string
+    - contextPath: SpaceX.Company.Info.links.flickr
+      description: Flickr
+      type: string
+    - contextPath: SpaceX.Company.Info.links.twitter
+      description: Twitter
+      type: string
+    - contextPath: SpaceX.Company.Info.links.website
+      description: Website
+      type: string
+    - contextPath: SpaceX.Company.Info.cto
+      description: CTO
+      type: string
+    - contextPath: SpaceX.Company.Info.test_sites
+      description: Test sites
+      type: number
+  - arguments: []
+    description: Returns the details about the API
+    name: spacex-get-api-info
+  - arguments:
+    - description: Filter launches by mongo document id
+      name: flight_id
+    - description: 'Filter by start date (JavaScript date format eg: 2020-03-03)'
+      name: start
+    - description: Filter by end date
+      name: end
+    - description: Filter by flight number
+      name: flight_number
+    - description: Filter by launch year
+      name: launch_year
+    - description: 'Filter by utc launch date (UTC ISO timestamp, eg: 2017-06-23T19:10:000Z)'
+      name: launch_date_utc
+    - description: 'Filter by launch date (ISO timestamp, eg: 2017-06-23T19:10:000Z)'
+      name: launch_date_local
+    - auto: PREDEFINED
+      description: Filter by TBD launches
+      name: tbd
+      predefined:
+      - "true"
+      - "false"
+    - description: Filter by rocket ID
+      name: rocket_id
+    - description: Filter by rocket name
+      name: rocket_name
+    - description: Filter by rocket type
+      name: rocket_type
+    - description: Filter by core serial number
+      name: core_serial
+    - auto: PREDEFINED
+      description: Filter by successful core landings
+      name: land_success
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Filter by landing intention
+      name: landing_intent
+      predefined:
+      - "true"
+      - "false"
+    - description: Filter by landing method
+      name: landing_type
+    - description: Filter by landing vehicle
+      name: landing_vehicle
+    - description: Filter by capsule serial number
+      name: cap_serial
+    - description: Filter by number of previous core flights
+      name: core_flight
+    - auto: PREDEFINED
+      description: Filter launches by cores that used gridfins
+      name: gridfins
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Filter launches by cores that used landing legs
+      name: legs
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Filter launches by reused cores
+      name: core_reuse
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Filter launches by reused capsules
+      name: capsule_reuse
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Filter by reused fairings
+      name: fairings_reused
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Filter by fairing recovery attempts
+      name: fairings_recovery_attempt
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      description: Filter by recovered fairings
+      name: fairings_recovered
+      predefined:
+      - "true"
+      - "false"
+    - description: Filter by fairings ship used
+      name: fairings_ship
+    - description: Filter by launch site ID
+      name: site_id
+    - description: Filter by launch site name
+      name: site_name
+    - description: Filter by payload ID
+      name: payload_id
+    - description: Filter by NORAD ID
+      name: norad_id
+    - description: "\tFilter by launch payload customer"
+      name: customer
+    - description: Filter by payload nationality
+      name: nationality
+    - description: Filter by payload manufacturer
+      name: manufacturer
+    - description: Filter by payload type
+      name: payload_type
+    - description: Filter by payload orbit
+      name: orbit
+    - description: Filter by payload orbit reference system
+      name: reference_system
+    - description: Filter by payload orbit regime
+      name: regime
+    - description: Filter by payload orbit longitude
+      name: longitude
+    - description: Filter by payload orbit semi major axis
+      name: semi_major_axis_km
+    - description: Filter by payload orbit eccentricity
+      name: eccentricity
+    - description: Filter by payload orbit periapsis
+      name: periapsis_km
+    - description: Filter by payload orbit apoapsis
+      name: apoapsis_km
+    - description: Filter by payload orbit inclination
+      name: inclination_deg
+    - description: Filter by payload orbit period
+      name: period_min
+    - description: Filter by payload lifespan in years
+      name: lifespan_years
+    - description: 'Filter by payload orbit epoch (eg: 2018-08-07T06:57:16.000Z)'
+      name: epoch
+    - description: Filter by payload orbit mean motion
+      name: mean_motion
+    - description: Filter by payload orbit right ascension of the ascending node
+      name: raan
+    - auto: PREDEFINED
+      description: Filter by launch success
+      name: launch_success
+      predefined:
+      - "true"
+      - "false"
+    - description: Limit the results
+      name: limit
+    - description: Offset the results from this value
+      name: offset
+    description: Returns all launches (with optional filtering)
+    name: spacex-get-launches
+    outputs:
+    - contextPath: SpaceX.Launches.launch_date_source
+      description: Launch date source
+      type: string
+    - contextPath: SpaceX.Launches.timeline
+      description: Timeline
+      type: string
+    - contextPath: SpaceX.Launches.crew
+      description: Crew
+      type: string
+    - contextPath: SpaceX.Launches.last_wiki_revision
+      description: Last wiki revision
+      type: string
+    - contextPath: SpaceX.Launches.static_fire_date_unix
+      description: Static fire date (unix)
+      type: number
+    - contextPath: SpaceX.Launches.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Launches.last_ll_launch_date
+      description: Last ll launch date
+      type: date
+    - contextPath: SpaceX.Launches.launch_date_local
+      description: Launch date (local)
+      type: date
+    - contextPath: SpaceX.Launches.launch_year
+      description: Launch year
+      type: string
+    - contextPath: SpaceX.Launches.static_fire_date_utc
+      description: Static fire date (UTC)
+      type: date
+    - contextPath: SpaceX.Launches.launch_date_unix
+      description: Launch date (unix)
+      type: number
+    - contextPath: SpaceX.Launches.last_wiki_update
+      description: Last wiki update
+      type: date
+    - contextPath: SpaceX.Launches.last_date_update
+      description: Last date update
+      type: date
+    - contextPath: SpaceX.Launches.tentative_max_precision
+      description: Tentative max precision
+      type: string
+    - contextPath: SpaceX.Launches.last_wiki_launch_date
+      description: Last wiki launch date
+      type: date
+    - contextPath: SpaceX.Launches.rocket.rocket_id
+      description: Rocket ID
+      type: string
+    - contextPath: SpaceX.Launches.rocket.rocket_name
+      description: Rocket name
+      type: string
+    - contextPath: SpaceX.Launches.rocket.rocket_type
+      description: Rocket type
+      type: string
+    - contextPath: SpaceX.Launches.tbd
+      description: TBD
+      type: boolean
+    - contextPath: SpaceX.Launches.ships
+      description: Ships
+    - contextPath: SpaceX.Launches.launch_success
+      description: Launch success
+      type: boolean
+    - contextPath: SpaceX.Launches.flight_number
+      description: Flight number
+      type: number
+    - contextPath: SpaceX.Launches.is_tentative
+      description: Is tentative
+      type: boolean
+    - contextPath: SpaceX.Launches.links
+      description: Links
+    - contextPath: SpaceX.Launches.upcoming
+      description: Upcoming
+      type: boolean
+    - contextPath: SpaceX.Launches.launch_window
+      description: Launch window
+      type: number
+    - contextPath: SpaceX.Launches.mission_name
+      description: Mission name
+      type: string
+    - contextPath: SpaceX.Launches.launch_date_utc
+      description: Launch date (UTC)
+      type: date
+    - contextPath: SpaceX.Launches.last_ll_update
+      description: Last ll update
+      type: date
+  - arguments:
+    - description: Limit the results
+      name: limit
+    - description: Offset the results from this value
+      name: offset
+    description: Returns upcoming launches (with optional filtering)
+    name: spacex-get-upcoming-launches
+    outputs:
+    - contextPath: SpaceX.Launches.launch_date_source
+      description: Launch date source
+      type: string
+    - contextPath: SpaceX.Launches.timeline
+      description: Timeline
+      type: string
+    - contextPath: SpaceX.Launches.crew
+      description: Crew
+      type: string
+    - contextPath: SpaceX.Launches.last_wiki_revision
+      description: Last wiki revision
+      type: string
+    - contextPath: SpaceX.Launches.static_fire_date_unix
+      description: Static fire date (unix)
+      type: number
+    - contextPath: SpaceX.Launches.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Launches.last_ll_launch_date
+      description: Last ll launch date
+      type: date
+    - contextPath: SpaceX.Launches.launch_date_local
+      description: Launch date (local)
+      type: date
+    - contextPath: SpaceX.Launches.launch_year
+      description: Launch year
+      type: string
+    - contextPath: SpaceX.Launches.static_fire_date_utc
+      description: Static fire date (UTC)
+      type: date
+    - contextPath: SpaceX.Launches.launch_date_unix
+      description: Launch date (unix)
+      type: number
+    - contextPath: SpaceX.Launches.last_wiki_update
+      description: Last wiki update
+      type: date
+    - contextPath: SpaceX.Launches.last_date_update
+      description: Last date update
+      type: date
+    - contextPath: SpaceX.Launches.tentative_max_precision
+      description: Tentative max precision
+      type: string
+    - contextPath: SpaceX.Launches.last_wiki_launch_date
+      description: Last wiki launch date
+      type: date
+    - contextPath: SpaceX.Launches.rocket.rocket_id
+      description: Rocket ID
+      type: string
+    - contextPath: SpaceX.Launches.rocket.rocket_name
+      description: Rocket name
+      type: string
+    - contextPath: SpaceX.Launches.rocket.rocket_type
+      description: Rocket type
+      type: string
+    - contextPath: SpaceX.Launches.tbd
+      description: TBD
+      type: boolean
+    - contextPath: SpaceX.Launches.ships
+      description: Ships
+    - contextPath: SpaceX.Launches.launch_success
+      description: Launch success
+      type: boolean
+    - contextPath: SpaceX.Launches.flight_number
+      description: Flight number
+      type: number
+    - contextPath: SpaceX.Launches.is_tentative
+      description: Is tentative
+      type: boolean
+    - contextPath: SpaceX.Launches.links
+      description: Links
+    - contextPath: SpaceX.Launches.upcoming
+      description: Upcoming
+      type: boolean
+    - contextPath: SpaceX.Launches.launch_window
+      description: Launch window
+      type: number
+    - contextPath: SpaceX.Launches.mission_name
+      description: Mission name
+      type: string
+    - contextPath: SpaceX.Launches.launch_date_utc
+      description: Launch date (UTC)
+      type: date
+    - contextPath: SpaceX.Launches.last_ll_update
+      description: Last ll update
+      type: date
+  - arguments:
+    - description: Flight number
+      name: flight_number
+      required: true
+    description: Returns the details of a launch. This includes detailed information
+      such as rocket fairings and stages.
+    name: spacex-get-launch-details
+    outputs:
+    - contextPath: SpaceX.Launches.launch_date_source
+      description: Launch date source
+      type: string
+    - contextPath: SpaceX.Launches.timeline
+      description: Timeline
+      type: string
+    - contextPath: SpaceX.Launches.crew
+      description: Crew
+      type: string
+    - contextPath: SpaceX.Launches.last_wiki_revision
+      description: Last wiki revision
+      type: string
+    - contextPath: SpaceX.Launches.static_fire_date_unix
+      description: Static fire date (unix)
+      type: number
+    - contextPath: SpaceX.Launches.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Launches.last_ll_launch_date
+      description: Last ll launch date
+      type: date
+    - contextPath: SpaceX.Launches.launch_date_local
+      description: Launch date (local)
+      type: date
+    - contextPath: SpaceX.Launches.launch_year
+      description: Launch year
+      type: string
+    - contextPath: SpaceX.Launches.static_fire_date_utc
+      description: Static fire date (UTC)
+      type: date
+    - contextPath: SpaceX.Launches.launch_date_unix
+      description: Launch date (unix)
+      type: number
+    - contextPath: SpaceX.Launches.last_wiki_update
+      description: Last wiki update
+      type: date
+    - contextPath: SpaceX.Launches.last_date_update
+      description: Last date update
+      type: date
+    - contextPath: SpaceX.Launches.tentative_max_precision
+      description: Tentative max precision
+      type: string
+    - contextPath: SpaceX.Launches.last_wiki_launch_date
+      description: Last wiki launch date
+      type: date
+    - contextPath: SpaceX.Launches.rocket.rocket_id
+      description: Rocket ID
+      type: string
+    - contextPath: SpaceX.Launches.rocket.rocket_name
+      description: Rocket name
+      type: string
+    - contextPath: SpaceX.Launches.rocket.rocket_type
+      description: Rocket type
+      type: string
+    - contextPath: SpaceX.Launches.tbd
+      description: TBD
+      type: boolean
+    - contextPath: SpaceX.Launches.ships
+      description: Ships
+    - contextPath: SpaceX.Launches.launch_success
+      description: Launch success
+      type: boolean
+    - contextPath: SpaceX.Launches.flight_number
+      description: Flight number
+      type: number
+    - contextPath: SpaceX.Launches.is_tentative
+      description: Is tentative
+      type: boolean
+    - contextPath: SpaceX.Launches.links
+      description: Links
+    - contextPath: SpaceX.Launches.upcoming
+      description: Upcoming
+      type: boolean
+    - contextPath: SpaceX.Launches.launch_window
+      description: Launch window
+      type: number
+    - contextPath: SpaceX.Launches.mission_name
+      description: Mission name
+      type: string
+    - contextPath: SpaceX.Launches.launch_date_utc
+      description: Launch date (UTC)
+      type: date
+    - contextPath: SpaceX.Launches.last_ll_update
+      description: Last ll update
+      type: date
+    - contextPath: SpaceX.Launches.rocket.fairings.recovered
+      description: Fairing recovered
+      type: number
+    - contextPath: SpaceX.Launches.rocket.fairings.recovery_attempt
+      description: Recovery attempted
+      type: boolean
+    - contextPath: SpaceX.Launches.rocket.fairings.reused
+      description: Fairings reused
+      type: boolean
+    - contextPath: SpaceX.Launches.rocket.fairings.ship
+      description: Ship
+      type: string
+    - contextPath: SpaceX.Launches.rocket.first_stage.cores.landing_type
+      description: Landing type
+      type: string
+    - contextPath: SpaceX.Launches.rocket.first_stage.cores.landing_vehicle
+      description: Landing vehicle
+      type: string
+    - contextPath: SpaceX.Launches.rocket.first_stage.cores.landing_intent
+      description: Landing intent
+      type: boolean
+    - contextPath: SpaceX.Launches.rocket.first_stage.cores.legs
+      description: Legs
+      type: boolean
+    - contextPath: SpaceX.Launches.rocket.first_stage.cores.block
+      description: Block
+      type: number
+    - contextPath: SpaceX.Launches.rocket.first_stage.cores.gridfins
+      description: Grid fins
+      type: boolean
+    - contextPath: SpaceX.Launches.rocket.first_stage.cores.land_success
+      description: Land success
+      type: boolean
+    - contextPath: SpaceX.Launches.rocket.first_stage.cores.flight
+      description: Flight
+      type: number
+    - contextPath: SpaceX.Launches.rocket.first_stage.cores.reused
+      description: Reused
+      type: boolean
+    - contextPath: SpaceX.Launches.rocket.first_stage.cores.core_serial
+      description: Core serial
+      type: string
+    - contextPath: SpaceX.Launches.rocket.second_stage.block
+      description: Block
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.payload_mass_lbs
+      description: Payload mass (lbs)
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.norad_id
+      description: Norad ID
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit
+      description: Orbit
+      type: string
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.payload_type
+      description: Payload type
+      type: string
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.payload_id
+      description: Payload ID
+      type: string
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.reused
+      description: Reused
+      type: boolean
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.manufacturer
+      description: Manufacturer
+      type: string
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.payload_mass_kg
+      description: Payload mass (kg)
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.customers
+      description: Customers
+      type: unknown
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.arg_of_pericenter
+      description: Arg of pericenter
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.reference_system
+      description: Reference system
+      type: string
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.eccentricity
+      description: Eccentricity
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.epoch
+      description: Epoch
+      type: date
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.mean_anomaly
+      description: Mean anomaly
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.mean_anomaly
+      description: Inclination degree
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.semi_major_axis_km
+      description: Semi major axis (km)
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.regime
+      description: Regime
+      type: string
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.longitude
+      description: Longitude
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.mean_motion
+      description: Mean motion
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.apoapsis_km
+      description: Apoapsis (km)
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.period_min
+      description: Period (mins)
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.raan
+      description: Raan
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.lifespan_years
+      description: Lifespan (years)
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.orbit_params.periapsis_km
+      description: Periapsis (km)
+      type: number
+    - contextPath: SpaceX.Launches.rocket.second_stage.payloads.nationality
+      description: Nationality
+      type: string
+    - contextPath: SpaceX.Launches.telemetry
+      description: Telemetry
+    - contextPath: SpaceX.Launches.timeline.go_for_launch
+      description: Go for launch
+      type: number
+    - contextPath: SpaceX.Launches.timeline.center_core_landing
+      description: Center core landing
+      type: number
+    - contextPath: SpaceX.Launches.timeline.seco-1
+      description: Seco-1
+      type: number
+    - contextPath: SpaceX.Launches.timeline.seco-2
+      description: Seco-2
+      type: number
+    - contextPath: SpaceX.Launches.timeline.second_stage_restart
+      description: Second stage restart
+      type: number
+    - contextPath: SpaceX.Launches.timeline.meco
+      description: Meco
+      type: number
+    - contextPath: SpaceX.Launches.timeline.stage1_rp1_loading
+      description: Stage 1 RP1 loading
+      type: number
+    - contextPath: SpaceX.Launches.timeline.liftoff
+      description: Liftoff
+      type: number
+    - contextPath: SpaceX.Launches.timeline.stage2_rp1_loading
+      description: Stage2 RP1 loading
+      type: number
+    - contextPath: SpaceX.Launches.timeline.stage1_lox_loading
+      description: Stage1 LOX loading
+      type: number
+    - contextPath: SpaceX.Launches.timeline.side_core_sep
+      description: Side core separation
+      type: number
+    - contextPath: SpaceX.Launches.timeline.engine_chill
+      description: Engine chill
+      type: number
+    - contextPath: SpaceX.Launches.timeline.stage2_lox_loading
+      description: Stage2 LOX loading
+      type: number
+    - contextPath: SpaceX.Launches.timeline.fairing_deploy
+      description: Fairing deploy
+      type: number
+    - contextPath: SpaceX.Launches.timeline.ignition
+      description: Ignition
+      type: number
+    - contextPath: SpaceX.Launches.timeline.go_for_prop_loading
+      description: Go for prop loading
+      type: number
+    - contextPath: SpaceX.Launches.timeline.maxq
+      description: Maxq
+      type: number
+    - contextPath: SpaceX.Launches.timeline.beco
+      description: Beco
+      type: number
+    - contextPath: SpaceX.Launches.timeline.center_core_entry_burn
+      description: Center core entry burns
+      type: number
+    - contextPath: SpaceX.Launches.timeline.side_core_boostback
+      description: Side core bootsback
+      type: number
+    - contextPath: SpaceX.Launches.timeline.center_stage_sep
+      description: Center stage separation
+      type: number
+    - contextPath: SpaceX.Launches.timeline.prelaunch_checks
+      description: Pre-launch checks
+      type: number
+    - contextPath: SpaceX.Launches.timeline.side_core_entry_burn
+      description: Side core entry burn
+      type: number
+    - contextPath: SpaceX.Launches.timeline.payload_deploy
+      description: Payload deploy
+      type: number
+    - contextPath: SpaceX.Launches.timeline.webcast_liftoff
+      description: Webcast liftoff
+      type: number
+    - contextPath: SpaceX.Launches.timeline.second_stage_ignition
+      description: Second stage ignition
+      type: number
+    - contextPath: SpaceX.Launches.timeline.propellant_pressurization
+      description: Propellant pressurization
+      type: number
+    - contextPath: SpaceX.Launches.timeline.side_core_landing
+      description: Side core landing
+      type: number
+  - arguments: []
+    description: Returns the closest upcoming launch
+    name: spacex-get-next-launch
+    outputs:
+    - contextPath: SpaceX.Launches.launch_date_source
+      description: Launch date source
+      type: string
+    - contextPath: SpaceX.Launches.timeline
+      description: Timeline
+      type: string
+    - contextPath: SpaceX.Launches.crew
+      description: Crew
+      type: string
+    - contextPath: SpaceX.Launches.last_wiki_revision
+      description: Last wiki revision
+      type: string
+    - contextPath: SpaceX.Launches.static_fire_date_unix
+      description: Static fire date (unix)
+      type: number
+    - contextPath: SpaceX.Launches.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Launches.last_ll_launch_date
+      description: Last ll launch date
+      type: date
+    - contextPath: SpaceX.Launches.launch_date_local
+      description: Launch date (local)
+      type: date
+    - contextPath: SpaceX.Launches.launch_year
+      description: Launch year
+      type: string
+    - contextPath: SpaceX.Launches.static_fire_date_utc
+      description: Static fire date (UTC)
+      type: date
+    - contextPath: SpaceX.Launches.launch_date_unix
+      description: Launch date (unix)
+      type: number
+    - contextPath: SpaceX.Launches.last_wiki_update
+      description: Last wiki update
+      type: date
+    - contextPath: SpaceX.Launches.last_date_update
+      description: Last date update
+      type: date
+    - contextPath: SpaceX.Launches.tentative_max_precision
+      description: Tentative max precision
+      type: string
+    - contextPath: SpaceX.Launches.last_wiki_launch_date
+      description: Last wiki launch date
+      type: date
+    - contextPath: SpaceX.Launches.rocket.rocket_id
+      description: Rocket ID
+      type: string
+    - contextPath: SpaceX.Launches.rocket.rocket_name
+      description: Rocket name
+      type: string
+    - contextPath: SpaceX.Launches.rocket.rocket_type
+      description: Rocket type
+      type: string
+    - contextPath: SpaceX.Launches.tbd
+      description: TBD
+      type: boolean
+    - contextPath: SpaceX.Launches.ships
+      description: Ships
+    - contextPath: SpaceX.Launches.launch_success
+      description: Launch success
+      type: boolean
+    - contextPath: SpaceX.Launches.flight_number
+      description: Flight number
+      type: number
+    - contextPath: SpaceX.Launches.is_tentative
+      description: Is tentative
+      type: boolean
+    - contextPath: SpaceX.Launches.links
+      description: Links
+    - contextPath: SpaceX.Launches.upcoming
+      description: Upcoming
+      type: boolean
+    - contextPath: SpaceX.Launches.launch_window
+      description: Launch window
+      type: number
+    - contextPath: SpaceX.Launches.mission_name
+      description: Mission name
+      type: string
+    - contextPath: SpaceX.Launches.launch_date_utc
+      description: Launch date (UTC)
+      type: date
+    - contextPath: SpaceX.Launches.last_ll_update
+      description: Last ll update
+      type: date
+  - arguments:
+    - description: Flight number
+      name: flight_number
+      required: true
+    description: Returns any images for the specified launch.
+    name: spacex-get-launch-images
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    description: Returns all landing pads (with optional filtering)
+    name: spacex-get-landing-pads
+    outputs:
+    - contextPath: Landing pads:.successful_landings
+      description: Successful landings
+      type: number
+    - contextPath: Landing pads:.landing_type
+      description: Landing type
+      type: string
+    - contextPath: Landing pads:.details
+      description: Details
+      type: string
+    - contextPath: Landing pads:.attempted_landings
+      description: Attempted landings
+      type: number
+    - contextPath: Landing pads:.status
+      description: Status
+      type: string
+    - contextPath: Landing pads:.location.latitude
+      description: Latitude
+      type: number
+    - contextPath: Landing pads:.location.longitude
+      description: Longitude
+      type: number
+    - contextPath: Landing pads:.location.name
+      description: Name
+      type: string
+    - contextPath: Landing pads:.location.region
+      description: Region
+      type: string
+    - contextPath: Landing pads:.wikipedia
+      description: Wikipedia link
+      type: string
+    - contextPath: Landing pads:.id
+      description: ID
+      type: string
+    - contextPath: Landing pads:.full_name
+      description: Full name
+      type: string
+  - arguments:
+    - description: Landing pad ID
+      name: id
+      required: true
+    description: Returns the details of a specific landing pad
+    name: spacex-get-landing-pad
+    outputs:
+    - contextPath: SpaceX.LandingPads.successful_landings
+      description: Successful landings
+      type: number
+    - contextPath: SpaceX.LandingPads.landing_type
+      description: Landing type
+      type: string
+    - contextPath: SpaceX.LandingPads.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.LandingPads.attempted_landings
+      description: Attempted landings
+      type: number
+    - contextPath: SpaceX.LandingPads.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.LandingPads.location.latitude
+      description: Latitude
+      type: number
+    - contextPath: SpaceX.LandingPads.location.longitude
+      description: Longitude
+      type: number
+    - contextPath: SpaceX.LandingPads.location.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.LandingPads.location.region
+      description: Region
+      type: string
+    - contextPath: SpaceX.LandingPads.wikipedia
+      description: Wikipedia link
+      type: string
+    - contextPath: SpaceX.LandingPads.id
+      description: ID
+      type: string
+    - contextPath: SpaceX.LandingPads.full_name
+      description: Full name
+      type: string
+  - arguments: []
+    description: Get current roadster orbit data
+    name: spacex-get-roadster
+    outputs:
+    - contextPath: SpaceX.Roadster.inclination
+      description: Inclination
+      type: number
+    - contextPath: SpaceX.Roadster.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Roadster.mars_distance_km
+      description: Mars distance (km)
+      type: number
+    - contextPath: SpaceX.Roadster.apoapsis_au
+      description: Apoapsis
+      type: number
+    - contextPath: SpaceX.Roadster.norad_id
+      description: Norad ID
+      type: number
+    - contextPath: SpaceX.Roadster.eccentricity
+      description: Eccentricity
+      type: number
+    - contextPath: SpaceX.Roadster.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Roadster.speed_kph
+      description: Speed (km)
+      type: number
+    - contextPath: SpaceX.Roadster.launch_date_unix
+      description: Launch date (unix)
+      type: number
+    - contextPath: SpaceX.Roadster.speed_mph
+      description: Speed (mph)
+      type: number
+    - contextPath: SpaceX.Roadster.longitude
+      description: Longitude
+      type: number
+    - contextPath: SpaceX.Roadster.orbit_type
+      description: Orbit type
+      type: string
+    - contextPath: SpaceX.Roadster.epoch_jd
+      description: Epoch ID
+      type: number
+    - contextPath: SpaceX.Roadster.flickr_images
+      description: Flickr images
+    - contextPath: SpaceX.Roadster.earth_distance_mi
+      description: Earth distance (miles)
+      type: number
+    - contextPath: SpaceX.Roadster.periapsis_au
+      description: Periapsis
+      type: number
+    - contextPath: SpaceX.Roadster.period_days
+      description: Period (days)
+      type: number
+    - contextPath: SpaceX.Roadster.wikipedia
+      description: Wikipedia
+      type: string
+    - contextPath: SpaceX.Roadster.earth_distance_km
+      description: Earth distance (km)
+      type: number
+    - contextPath: SpaceX.Roadster.periapsis_arg
+      description: Periapsis
+      type: number
+    - contextPath: SpaceX.Roadster.video
+      description: Video
+      type: string
+    - contextPath: SpaceX.Roadster.semi_major_axis_au
+      description: Semi major axis
+      type: number
+    - contextPath: SpaceX.Roadster.launch_mass_kg
+      description: Launch mass (kg)
+      type: number
+    - contextPath: SpaceX.Roadster.mars_distance_mi
+      description: Mars distance (miles)
+      type: number
+    - contextPath: SpaceX.Roadster.launch_mass_lbs
+      description: Launch mass (lbs)
+      type: number
+    - contextPath: SpaceX.Roadster.launch_date_utc
+      description: Launch date (UTC)
+      type: date
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    description: Returns all missions (with optional filtering)
+    name: spacex-get-missions
+    outputs:
+    - contextPath: SpaceX.Missions.description
+      description: Description
+      type: string
+    - contextPath: SpaceX.Missions.manufacturers
+      description: Manufacturers
+    - contextPath: SpaceX.Missions.mission_id
+      description: Mission ID
+      type: string
+    - contextPath: SpaceX.Missions.mission_name
+      description: Mission name
+      type: string
+    - contextPath: SpaceX.Missions.payload_ids
+      description: Payload IDs
+    - contextPath: SpaceX.Missions.twitter
+      description: Twitter
+      type: string
+    - contextPath: SpaceX.Missions.website
+      description: Website
+      type: string
+    - contextPath: SpaceX.Missions.wikipedia
+      description: Wikipedia
+      type: string
+  - arguments:
+    - description: Mission ID
+      name: mission_id
+      required: true
+    description: Returns the details of a specified mission ID
+    name: spacex-get-mission
+    outputs:
+    - contextPath: SpaceX.Missions.description
+      description: Description
+      type: string
+    - contextPath: SpaceX.Missions.manufacturers
+      description: Manufacturers
+    - contextPath: SpaceX.Missions.mission_id
+      description: Mission ID
+      type: string
+    - contextPath: SpaceX.Missions.mission_name
+      description: Mission name
+      type: string
+    - contextPath: SpaceX.Missions.payload_ids
+      description: Payload IDs
+    - contextPath: SpaceX.Missions.twitter
+      description: Twitter
+      type: string
+    - contextPath: SpaceX.Missions.website
+      description: Website
+      type: string
+    - contextPath: SpaceX.Missions.wikipedia
+      description: Wikipedia
+      type: string
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    description: Returns all launch pad info (with optional filtering)
+    name: spacex-get-launch-pads
+    outputs:
+    - contextPath: SpaceX.LaunchPads.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.LaunchPads.successful_launches
+      description: Successful launches
+      type: number
+    - contextPath: SpaceX.LaunchPads.vehicles_launched
+      description: Vehicles launched
+    - contextPath: SpaceX.LaunchPads.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.LaunchPads.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.LaunchPads.site_id
+      description: Site ID
+      type: string
+    - contextPath: SpaceX.LaunchPads.attempted_launches
+      description: Attempted launches
+      type: number
+    - contextPath: SpaceX.LaunchPads.location.latitude
+      description: Latitude
+      type: number
+    - contextPath: SpaceX.LaunchPads.location.longitude
+      description: Longitude
+      type: number
+    - contextPath: SpaceX.LaunchPads.location.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.LaunchPads.location.region
+      description: Region
+      type: string
+    - contextPath: SpaceX.LaunchPads.wikipedia
+      description: Wikipedia
+      type: string
+    - contextPath: SpaceX.LaunchPads.site_name_long
+      description: Site name (long)
+      type: string
+    - contextPath: SpaceX.LaunchPads.id
+      description: ID
+      type: number
+  - arguments:
+    - description: Site ID
+      name: site_id
+      required: true
+    description: Returns the details of a launch pad
+    name: spacex-get-launch-pad
+    outputs:
+    - contextPath: SpaceX.LaunchPads.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.LaunchPads.successful_launches
+      description: Successful launches
+      type: number
+    - contextPath: SpaceX.LaunchPads.vehicles_launched
+      description: Vehicles launched
+    - contextPath: SpaceX.LaunchPads.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.LaunchPads.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.LaunchPads.site_id
+      description: Site ID
+      type: string
+    - contextPath: SpaceX.LaunchPads.attempted_launches
+      description: Attempted launches
+      type: number
+    - contextPath: SpaceX.LaunchPads.location.latitude
+      description: Latitude
+      type: number
+    - contextPath: SpaceX.LaunchPads.location.longitude
+      description: Longitude
+      type: number
+    - contextPath: SpaceX.LaunchPads.location.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.LaunchPads.location.region
+      description: Region
+      type: string
+    - contextPath: SpaceX.LaunchPads.wikipedia
+      description: Wikipedia
+      type: string
+    - contextPath: SpaceX.LaunchPads.site_name_long
+      description: Site name (long)
+      type: string
+    - contextPath: SpaceX.LaunchPads.id
+      description: ID
+      type: number
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    - auto: PREDEFINED
+      description: Change result sorting by setting value to any parameter in this
+        list
+      name: sort
+      predefined:
+      - ship_id
+      - ship_name
+      - ship_model
+      - ship_type
+      - role
+      - active
+      - imo
+      - mmsi
+      - abs
+      - class
+      - weight_lbs
+      - weight_kg
+      - year_built
+      - home_port
+      - status
+      - speed_kn
+      - course_deg
+      - latitude
+      - longitude
+      - successful_landings
+      - attempted_landings
+      - mission
+    - auto: PREDEFINED
+      description: Change result ordering
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: filter results by ship id
+      name: ship_id
+    - description: filter results by ship name
+      name: ship_name
+    - description: filter results by ship model
+      name: ship_model
+    - description: filter results by ship type
+      name: ship_type
+    - description: filter results by ship role
+      name: role
+    - auto: PREDEFINED
+      description: "filter results by active ships imo\t7434016\tinteger\tfilter results\
+        \ by imo id number mmsi\t367020820\tinteger\tfilter results by mmsi id number\
+        \ abs\t571252\tinteger\tfilter results by abs id number class\t7604342\tinteger\t\
+        filter results by class id number weight_lbs\t588000\tinteger\tfilter results\
+        \ by gross weight in lbs weight_kg\t266712\tinteger\tfilter results by gross\
+        \ weight in kg year_built\t2015\tinteger\tfilter results by year built home_port\t\
+        Port of Los Angeles\tstring\tfilter results by home port status\tStopped\t\
+        string\tfilter results by ship status speed_kn\t9\tinteger\tfilter results\
+        \ by current ship speed course_deg\t57\tinteger\tfilter results by current\
+        \ ship course in degrees latitude\t25.98623\tfloat\tfilter results by current\
+        \ ship latitude longitude\t-97.3115\tfloat\tfilter results by current ship\
+        \ longitude successful_landings\t2\tinteger\tfilter results by successful\
+        \ landings attempted_landings\t8\tinteger\tfilter results by current attempted\
+        \ landings mission\tCRS-7\tstring\tfilter results by mission involved in"
+      name: active
+      predefined:
+      - "true"
+      - "false"
+    - description: filter results by imo id number
+      name: imo
+    - description: filter results by mmsi id number
+      name: mmsi
+    - description: filter results by abs id number
+      name: abs
+    - description: filter results by class id number
+      name: class
+    - description: filter results by gross weight in lbs
+      name: weight_lbs
+    - description: filter results by gross weight in kg
+      name: weight_kg
+    - description: filter results by year built
+      name: year_built
+    - description: filter results by home port
+      name: home_port
+    - description: filter results by ship status
+      name: status
+    - description: filter results by current ship speed
+      name: speed_kn
+    - description: filter results by current ship course in degrees
+      name: course_deg
+    - description: filter results by current ship latitude
+      name: latitude
+    - description: filter results by current ship longitude
+      name: longitude
+    - description: filter results by successful landings
+      name: successful_landings
+    - description: filter results by current attempted landings
+      name: attempted_landings
+    - description: filter results by mission involved in
+      name: mission
+    description: Returns all ships (with optional filtering)
+    name: spacex-get-ships
+    outputs:
+    - contextPath: SpaceX.Ships.successful_landings
+      description: Successful landings
+      type: number
+    - contextPath: SpaceX.Ships.home_port
+      description: Home port
+      type: string
+    - contextPath: SpaceX.Ships.course_deg
+      description: Course deg
+      type: number
+    - contextPath: SpaceX.Ships.weight_kg
+      description: Weight (kg)
+      type: number
+    - contextPath: SpaceX.Ships.successful_catches
+      description: Successful catches
+      type: number
+    - contextPath: SpaceX.Ships.active
+      description: Active
+      type: boolean
+    - contextPath: SpaceX.Ships.ship_model
+      description: Ship model
+      type: string
+    - contextPath: SpaceX.Ships.missions.flight
+      description: Flight
+      type: string
+    - contextPath: SpaceX.Ships.missions.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Ships.position.latitude
+      description: Latitude
+      type: number
+    - contextPath: SpaceX.Ships.position.longitude
+      description: Longitude
+      type: number
+    - contextPath: SpaceX.Ships.imo
+      description: IMO
+      type: number
+    - contextPath: SpaceX.Ships.ship_name
+      description: Ship name
+      type: string
+    - contextPath: SpaceX.Ships.url
+      description: URL
+      type: string
+    - contextPath: SpaceX.Ships.attempted_landings
+      description: Attempted landings
+      type: number
+    - contextPath: SpaceX.Ships.abs
+      description: ABS
+      type: number
+    - contextPath: SpaceX.Ships.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.Ships.weight_lbs
+      description: Weight (lbs)
+      type: number
+    - contextPath: SpaceX.Ships.attempted_catches
+      description: Attempted catches
+      type: number
+    - contextPath: SpaceX.Ships.mmsi
+      description: MMSI
+      type: number
+    - contextPath: SpaceX.Ships.class
+      description: Class
+      type: number
+    - contextPath: SpaceX.Ships.speed_kn
+      description: Speed
+      type: number
+    - contextPath: SpaceX.Ships.image
+      description: Image
+      type: string
+    - contextPath: SpaceX.Ships.year_built
+      description: Year built
+      type: number
+    - contextPath: SpaceX.Ships.roles
+      description: Roles
+    - contextPath: SpaceX.Ships.ship_type
+      description: Ship type
+      type: string
+    - contextPath: SpaceX.Ships.ship_id
+      description: Ship ID
+      type: string
+  - arguments:
+    - description: Ship ID
+      name: ship_id
+      required: true
+    description: Returns the details of a ship
+    name: spacex-get-ship
+    outputs:
+    - contextPath: SpaceX.Ships.successful_landings
+      description: Successful landings
+      type: number
+    - contextPath: SpaceX.Ships.home_port
+      description: Home port
+      type: string
+    - contextPath: SpaceX.Ships.course_deg
+      description: Course deg
+      type: number
+    - contextPath: SpaceX.Ships.weight_kg
+      description: Weight (kg)
+      type: number
+    - contextPath: SpaceX.Ships.successful_catches
+      description: Successful catches
+      type: number
+    - contextPath: SpaceX.Ships.active
+      description: Active
+      type: boolean
+    - contextPath: SpaceX.Ships.ship_model
+      description: Ship model
+      type: string
+    - contextPath: SpaceX.Ships.missions.flight
+      description: Flight
+      type: string
+    - contextPath: SpaceX.Ships.missions.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Ships.position.latitude
+      description: Latitude
+      type: number
+    - contextPath: SpaceX.Ships.position.longitude
+      description: Longitude
+      type: number
+    - contextPath: SpaceX.Ships.imo
+      description: IMO
+      type: number
+    - contextPath: SpaceX.Ships.ship_name
+      description: Ship name
+      type: string
+    - contextPath: SpaceX.Ships.url
+      description: URL
+      type: string
+    - contextPath: SpaceX.Ships.attempted_landings
+      description: Attempted landings
+      type: number
+    - contextPath: SpaceX.Ships.abs
+      description: ABS
+      type: number
+    - contextPath: SpaceX.Ships.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.Ships.weight_lbs
+      description: Weight (lbs)
+      type: number
+    - contextPath: SpaceX.Ships.attempted_catches
+      description: Attempted catches
+      type: number
+    - contextPath: SpaceX.Ships.mmsi
+      description: MMSI
+      type: number
+    - contextPath: SpaceX.Ships.class
+      description: Class
+      type: number
+    - contextPath: SpaceX.Ships.speed_kn
+      description: Speed
+      type: number
+    - contextPath: SpaceX.Ships.image
+      description: Image
+      type: string
+    - contextPath: SpaceX.Ships.year_built
+      description: Year built
+      type: number
+    - contextPath: SpaceX.Ships.roles
+      description: Roles
+    - contextPath: SpaceX.Ships.ship_type
+      description: Ship type
+      type: string
+    - contextPath: SpaceX.Ships.ship_id
+      description: Ship ID
+      type: string
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    - auto: PREDEFINED
+      description: Change result sorting by setting value to any parameter in this
+        list
+      name: sort
+      predefined:
+      - capsule_serial
+      - capsule_id
+      - status
+      - original_launch
+      - mission
+      - landings
+      - type
+      - reuse_count
+    - auto: PREDEFINED
+      description: Change result ordering
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: Filter by capsule serial
+      name: capsule_serial
+    - description: Filter by capsule id
+      name: capsule_id
+    - description: Filter by capsule status
+      name: status
+    - description: Filter by capsule original launch date
+      name: original_launch
+    - description: Filter by capsule mission
+      name: mission
+    - description: Filter by capsule landings
+      name: landings
+    - description: Filter by capsule type
+      name: type
+    - description: Filter by number of times the capsule was reused
+      name: reuse_count
+    description: Returns all capsules (with optional filtering)
+    name: spacex-get-capsules
+    outputs:
+    - contextPath: SpaceX.Capsules.original_launch
+      description: Original launch
+      type: date
+    - contextPath: SpaceX.Capsules.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Capsules.reuse_count
+      description: Reuse count
+      type: number
+    - contextPath: SpaceX.Capsules.capsule_serial
+      description: Capsule serial
+      type: string
+    - contextPath: SpaceX.Capsules.original_launch_unix
+      description: Original launch (unix)
+      type: number
+    - contextPath: SpaceX.Capsules.missions.flight
+      description: Flight
+      type: number
+    - contextPath: SpaceX.Capsules.missions.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Capsules.capsule_id
+      description: Capsule ID
+      type: string
+    - contextPath: SpaceX.Capsules.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.Capsules.type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Capsules.landings
+      description: Landings
+      type: number
+  - arguments:
+    - description: Capsule Serial
+      name: capsule_serial
+      required: true
+    description: Returns the details of a capsule
+    name: spacex-get-capsule
+    outputs:
+    - contextPath: SpaceX.Capsules.original_launch
+      description: Original launch
+      type: date
+    - contextPath: SpaceX.Capsules.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Capsules.reuse_count
+      description: Reuse count
+      type: number
+    - contextPath: SpaceX.Capsules.capsule_serial
+      description: Capsule serial
+      type: string
+    - contextPath: SpaceX.Capsules.original_launch_unix
+      description: Original launch (unix)
+      type: number
+    - contextPath: SpaceX.Capsules.missions.flight
+      description: Flight
+      type: number
+    - contextPath: SpaceX.Capsules.missions.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Capsules.capsule_id
+      description: Capsule ID
+      type: string
+    - contextPath: SpaceX.Capsules.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.Capsules.type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Capsules.landings
+      description: Landings
+      type: number
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    - auto: PREDEFINED
+      description: Change result sorting by setting value to any parameter in this
+        list
+      name: sort
+      predefined:
+      - capsule_serial
+      - capsule_id
+      - status
+      - original_launch
+      - mission
+      - landings
+      - type
+      - reuse_count
+    - auto: PREDEFINED
+      description: Change result ordering
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: Filter by capsule serial
+      name: capsule_serial
+    - description: Filter by capsule id
+      name: capsule_id
+    - description: Filter by capsule status
+      name: status
+    - description: Filter by capsule original launch date
+      name: original_launch
+    - description: Filter by capsule mission
+      name: mission
+    - description: Filter by capsule landings
+      name: landings
+    - description: Filter by capsule type
+      name: type
+    - description: Filter by number of times the capsule was reused
+      name: reuse_count
+    description: Lists capsules that haven't launched yet (with optional filtering)
+    name: spacex-get-upcoming-capsules
+    outputs:
+    - contextPath: SpaceX.Capsules.original_launch
+      description: Original launch
+      type: date
+    - contextPath: SpaceX.Capsules.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Capsules.reuse_count
+      description: Reuse count
+      type: number
+    - contextPath: SpaceX.Capsules.capsule_serial
+      description: Capsule serial
+      type: string
+    - contextPath: SpaceX.Capsules.original_launch_unix
+      description: Original launch (unix)
+      type: number
+    - contextPath: SpaceX.Capsules.missions.flight
+      description: Flight
+      type: number
+    - contextPath: SpaceX.Capsules.missions.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Capsules.capsule_id
+      description: Capsule ID
+      type: string
+    - contextPath: SpaceX.Capsules.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.Capsules.type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Capsules.landings
+      description: Landings
+      type: number
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    - auto: PREDEFINED
+      description: Change result sorting by setting value to any parameter in this
+        list
+      name: sort
+      predefined:
+      - capsule_serial
+      - capsule_id
+      - status
+      - original_launch
+      - mission
+      - landings
+      - type
+      - reuse_count
+    - auto: PREDEFINED
+      description: Change result ordering
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: Filter by capsule serial
+      name: capsule_serial
+    - description: Filter by capsule id
+      name: capsule_id
+    - description: Filter by capsule status
+      name: status
+    - description: Filter by capsule original launch date
+      name: original_launch
+    - description: Filter by capsule mission
+      name: mission
+    - description: Filter by capsule landings
+      name: landings
+    - description: Filter by capsule type
+      name: type
+    - description: Filter by number of times the capsule was reused
+      name: reuse_count
+    description: Lists capsules that have launched (with optional filtering)
+    name: spacex-get-past-capsules
+    outputs:
+    - contextPath: SpaceX.Capsules.original_launch
+      description: Original launch
+      type: date
+    - contextPath: SpaceX.Capsules.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Capsules.reuse_count
+      description: Reuse count
+      type: number
+    - contextPath: SpaceX.Capsules.capsule_serial
+      description: Capsule serial
+      type: string
+    - contextPath: SpaceX.Capsules.original_launch_unix
+      description: Original launch (unix)
+      type: number
+    - contextPath: SpaceX.Capsules.missions.flight
+      description: Flight
+      type: number
+    - contextPath: SpaceX.Capsules.missions.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Capsules.capsule_id
+      description: Capsule ID
+      type: string
+    - contextPath: SpaceX.Capsules.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.Capsules.type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Capsules.landings
+      description: Landings
+      type: number
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    - auto: PREDEFINED
+      description: Change result sorting by setting value to any parameter in this
+        list
+      name: sort
+      predefined:
+      - capsule_serial
+      - capsule_id
+      - status
+      - original_launch
+      - mission
+      - landings
+      - type
+      - reuse_count
+    - auto: PREDEFINED
+      description: Change result ordering
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: Filter by core serial
+      name: core_serial
+    - description: Filter by core block number
+      name: block
+    - description: Filter by capsule status
+      name: status
+    - description: Filter by capsule original launch date
+      name: original_launch
+    - description: Filter by capsule mission
+      name: mission
+    - description: Filter by number of times the core was reused
+      name: reuse_count
+    - description: Filter by RTLS attempted landings
+      name: rtls_attempts
+    - description: Filter by RTLS successful landings
+      name: rtls_landings
+    - description: Filter by ASDS attempted landings
+      name: asds_attempts
+    - description: Filter by ASDS successful landings
+      name: asds_landings
+    - description: Filter by water landings
+      name: water_landing
+    description: Returns all cores (with optional filtering)
+    name: spacex-get-cores
+    outputs:
+    - contextPath: SpaceX.Cores.original_launch
+      description: Oringal launch
+      type: date
+    - contextPath: SpaceX.Cores.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Cores.asds_attempts
+      description: ASDS attempts
+      type: number
+    - contextPath: SpaceX.Cores.reuse_count
+      description: Reuse count
+      type: number
+    - contextPath: SpaceX.Cores.original_launch_unix
+      description: Original launch (unix)
+      type: number
+    - contextPath: SpaceX.Cores.missions.flight
+      description: Flight
+      type: number
+    - contextPath: SpaceX.Cores.missions.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Cores.block
+      description: Block
+      type: number
+    - contextPath: SpaceX.Cores.water_landing
+      description: Water landing
+      type: boolean
+    - contextPath: SpaceX.Cores.rtls_landings
+      description: RTLS landings
+      type: number
+    - contextPath: SpaceX.Cores.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.Cores.core_serial
+      description: Core serial
+      type: string
+    - contextPath: SpaceX.Cores.asds_landings
+      description: ASDS landings
+      type: number
+    - contextPath: SpaceX.Cores.rtls_attempts
+      description: RTLS attempts
+      type: number
+  - arguments:
+    - description: Core Serial
+      name: core_serial
+      required: true
+    description: Returns the details of a core
+    name: spacex-get-core
+    outputs:
+    - contextPath: SpaceX.Cores.original_launch
+      description: Oringal launch
+      type: date
+    - contextPath: SpaceX.Cores.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Cores.asds_attempts
+      description: ASDS attempts
+      type: number
+    - contextPath: SpaceX.Cores.reuse_count
+      description: Reuse count
+      type: number
+    - contextPath: SpaceX.Cores.original_launch_unix
+      description: Original launch (unix)
+      type: number
+    - contextPath: SpaceX.Cores.missions.flight
+      description: Flight
+      type: number
+    - contextPath: SpaceX.Cores.missions.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Cores.block
+      description: Block
+      type: number
+    - contextPath: SpaceX.Cores.water_landing
+      description: Water landing
+      type: boolean
+    - contextPath: SpaceX.Cores.rtls_landings
+      description: RTLS landings
+      type: number
+    - contextPath: SpaceX.Cores.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.Cores.core_serial
+      description: Core serial
+      type: string
+    - contextPath: SpaceX.Cores.asds_landings
+      description: ASDS landings
+      type: number
+    - contextPath: SpaceX.Cores.rtls_attempts
+      description: RTLS attempts
+      type: number
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    - auto: PREDEFINED
+      description: Change result sorting by setting value to any parameter in this
+        list
+      name: sort
+      predefined:
+      - capsule_serial
+      - capsule_id
+      - status
+      - original_launch
+      - mission
+      - landings
+      - type
+      - reuse_count
+    - auto: PREDEFINED
+      description: Change result ordering
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: Filter by core serial
+      name: core_serial
+    - description: Filter by core block number
+      name: block
+    - description: Filter by capsule status
+      name: status
+    - description: Filter by capsule original launch date
+      name: original_launch
+    - description: Filter by capsule mission
+      name: mission
+    - description: Filter by number of times the core was reused
+      name: reuse_count
+    - description: Filter by RTLS attempted landings
+      name: rtls_attempts
+    - description: Filter by RTLS successful landings
+      name: rtls_landings
+    - description: Filter by ASDS attempted landings
+      name: asds_attempts
+    - description: Filter by ASDS successful landings
+      name: asds_landings
+    - description: Filter by water landings
+      name: water_landing
+    description: Lists cores that haven't launched yet (with optional filtering)
+    name: spacex-get-upcoming-cores
+    outputs:
+    - contextPath: SpaceX.Cores.original_launch
+      description: Oringal launch
+      type: date
+    - contextPath: SpaceX.Cores.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Cores.asds_attempts
+      description: ASDS attempts
+      type: number
+    - contextPath: SpaceX.Cores.reuse_count
+      description: Reuse count
+      type: number
+    - contextPath: SpaceX.Cores.original_launch_unix
+      description: Original launch (unix)
+      type: number
+    - contextPath: SpaceX.Cores.missions.flight
+      description: Flight
+      type: number
+    - contextPath: SpaceX.Cores.missions.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Cores.block
+      description: Block
+      type: number
+    - contextPath: SpaceX.Cores.water_landing
+      description: Water landing
+      type: boolean
+    - contextPath: SpaceX.Cores.rtls_landings
+      description: RTLS landings
+      type: number
+    - contextPath: SpaceX.Cores.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.Cores.core_serial
+      description: Core serial
+      type: string
+    - contextPath: SpaceX.Cores.asds_landings
+      description: ASDS landings
+      type: number
+    - contextPath: SpaceX.Cores.rtls_attempts
+      description: RTLS attempts
+      type: number
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    - auto: PREDEFINED
+      description: Change result sorting by setting value to any parameter in this
+        list
+      name: sort
+      predefined:
+      - capsule_serial
+      - capsule_id
+      - status
+      - original_launch
+      - mission
+      - landings
+      - type
+      - reuse_count
+    - auto: PREDEFINED
+      description: Change result ordering
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: Filter by core serial
+      name: core_serial
+    - description: Filter by core block number
+      name: block
+    - description: Filter by capsule status
+      name: status
+    - description: Filter by capsule original launch date
+      name: original_launch
+    - description: Filter by capsule mission
+      name: mission
+    - description: Filter by number of times the core was reused
+      name: reuse_count
+    - description: Filter by RTLS attempted landings
+      name: rtls_attempts
+    - description: Filter by RTLS successful landings
+      name: rtls_landings
+    - description: Filter by ASDS attempted landings
+      name: asds_attempts
+    - description: Filter by ASDS successful landings
+      name: asds_landings
+    - description: Filter by water landings
+      name: water_landing
+    description: Lists cores that have launched (with optional filtering)
+    name: spacex-get-past-cores
+    outputs:
+    - contextPath: SpaceX.Cores.original_launch
+      description: Oringal launch
+      type: date
+    - contextPath: SpaceX.Cores.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.Cores.asds_attempts
+      description: ASDS attempts
+      type: number
+    - contextPath: SpaceX.Cores.reuse_count
+      description: Reuse count
+      type: number
+    - contextPath: SpaceX.Cores.original_launch_unix
+      description: Original launch (unix)
+      type: number
+    - contextPath: SpaceX.Cores.missions.flight
+      description: Flight
+      type: number
+    - contextPath: SpaceX.Cores.missions.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Cores.block
+      description: Block
+      type: number
+    - contextPath: SpaceX.Cores.water_landing
+      description: Water landing
+      type: boolean
+    - contextPath: SpaceX.Cores.rtls_landings
+      description: RTLS landings
+      type: number
+    - contextPath: SpaceX.Cores.status
+      description: Status
+      type: string
+    - contextPath: SpaceX.Cores.core_serial
+      description: Core serial
+      type: string
+    - contextPath: SpaceX.Cores.asds_landings
+      description: ASDS landings
+      type: number
+    - contextPath: SpaceX.Cores.rtls_attempts
+      description: RTLS attempts
+      type: number
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    description: Returns all dragon capsules (with optional filtering)
+    name: spacex-get-dragons
+    outputs:
+    - contextPath: SpaceX.Dragons.active
+      description: Active
+      type: boolean
+    - contextPath: SpaceX.Dragons.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Dragons.dry_mass_lb
+      description: Dry mass (lbs)
+      type: number
+    - contextPath: SpaceX.Dragons.diameter.feet
+      description: Feet
+      type: number
+    - contextPath: SpaceX.Dragons.diameter.meters
+      description: Meters
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.amount
+      description: Amount
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.fuel_1
+      description: Fuel 1
+      type: string
+    - contextPath: SpaceX.Dragons.thrusters.fuel_2
+      description: Fuel 2
+      type: string
+    - contextPath: SpaceX.Dragons.thrusters.isp
+      description: ISP
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.pods
+      description: Pods
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.thrust.kN
+      description: Thrust (kN)
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.thrust.lbf
+      description: Thrust (lbs)
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Dragons.orbit_duration_yr
+      description: Orbit duraton (years)
+      type: number
+    - contextPath: SpaceX.Dragons.flickr_images
+      description: Flickr images
+      type: unknown
+    - contextPath: SpaceX.Dragons.launch_payload_mass.kg
+      description: Mass (kg)
+      type: number
+    - contextPath: SpaceX.Dragons.launch_payload_mass.lb
+      description: Mass (lbs)
+      type: number
+    - contextPath: SpaceX.Dragons.return_payload_vol.cubic_feet
+      description: Cubic feet
+      type: number
+    - contextPath: SpaceX.Dragons.dry_mass_kg
+      description: Dry mass (kg)
+      type: number
+    - contextPath: SpaceX.Dragons.height_w_trunk.feet
+      description: Feet
+      type: number
+    - contextPath: SpaceX.Dragons.height_w_trunk.meters
+      description: Meters
+      type: number
+    - contextPath: SpaceX.Dragons.trunk.cargo.solar_array
+      description: Solar array
+      type: number
+    - contextPath: SpaceX.Dragons.trunk.cargo.unpressurized_cargo
+      description: Unpressurized cargo
+      type: boolean
+    - contextPath: SpaceX.Dragons.trunk.trunk_volume.cubic_feet
+      description: Cubic feet
+      type: number
+    - contextPath: SpaceX.Dragons.trunk.trunk_volume.cubic_meters
+      description: Cubic meters
+      type: number
+    - contextPath: SpaceX.Dragons.return_payload_mass.kg
+      description: Mass (kg)
+      type: number
+    - contextPath: SpaceX.Dragons.return_payload_mass.lb
+      description: Mass (lbs)
+      type: number
+    - contextPath: SpaceX.Dragons.launch_payload_vol.cubic_feet
+      description: Cubic feet
+      type: number
+    - contextPath: SpaceX.Dragons.launch_payload_vol.cubic_meters
+      description: Cubic meters
+      type: number
+    - contextPath: SpaceX.Dragons.wikipedia
+      description: Wikipedia
+      type: string
+    - contextPath: SpaceX.Dragons.heat_shield.dev_partner
+      description: Development partner
+      type: string
+    - contextPath: SpaceX.Dragons.heat_shield.material
+      description: Material
+      type: string
+    - contextPath: SpaceX.Dragons.heat_shield.size_meters
+      description: Size (meters)
+      type: number
+    - contextPath: SpaceX.Dragons.heat_shield.temp_degrees
+      description: Temperature (degrees)
+      type: number
+    - contextPath: SpaceX.Dragons.crew_capacity
+      description: Crew capacity
+      type: number
+    - contextPath: SpaceX.Dragons.type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Dragons.id
+      description: ID
+      type: string
+    - contextPath: SpaceX.Dragons.sidewall_angle_deg
+      description: Sidewall angle (degrees)
+      type: number
+    - contextPath: SpaceX.Dragons.description
+      description: Description
+      type: string
+    - contextPath: SpaceX.Dragons.pressurized_capsule.payload_volume.cubic_feet
+      description: Volume (cubic feet)
+      type: number
+    - contextPath: SpaceX.Dragons.pressurized_capsule.payload_volume.cubic_meters
+      description: Volume (cubic meters)
+      type: number
+    - contextPath: SpaceX.Dragons.first_flight
+      description: First flight
+      type: string
+  - arguments:
+    - description: Dragon ID
+      name: dragon_id
+      required: true
+    description: Returns the details of a dragon capsule
+    name: spacex-get-dragon
+    outputs:
+    - contextPath: SpaceX.Dragons.active
+      description: Active
+      type: boolean
+    - contextPath: SpaceX.Dragons.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Dragons.dry_mass_lb
+      description: Dry mass (lbs)
+      type: number
+    - contextPath: SpaceX.Dragons.diameter.feet
+      description: Feet
+      type: number
+    - contextPath: SpaceX.Dragons.diameter.meters
+      description: Meters
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.amount
+      description: Amount
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.fuel_1
+      description: Fuel 1
+      type: string
+    - contextPath: SpaceX.Dragons.thrusters.fuel_2
+      description: Fuel 2
+      type: string
+    - contextPath: SpaceX.Dragons.thrusters.isp
+      description: ISP
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.pods
+      description: Pods
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.thrust.kN
+      description: Thrust (kN)
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.thrust.lbf
+      description: Thrust (lbs)
+      type: number
+    - contextPath: SpaceX.Dragons.thrusters.type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Dragons.orbit_duration_yr
+      description: Orbit duraton (years)
+      type: number
+    - contextPath: SpaceX.Dragons.flickr_images
+      description: Flickr images
+      type: unknown
+    - contextPath: SpaceX.Dragons.launch_payload_mass.kg
+      description: Mass (kg)
+      type: number
+    - contextPath: SpaceX.Dragons.launch_payload_mass.lb
+      description: Mass (lbs)
+      type: number
+    - contextPath: SpaceX.Dragons.return_payload_vol.cubic_feet
+      description: Cubic feet
+      type: number
+    - contextPath: SpaceX.Dragons.dry_mass_kg
+      description: Dry mass (kg)
+      type: number
+    - contextPath: SpaceX.Dragons.height_w_trunk.feet
+      description: Feet
+      type: number
+    - contextPath: SpaceX.Dragons.height_w_trunk.meters
+      description: Meters
+      type: number
+    - contextPath: SpaceX.Dragons.trunk.cargo.solar_array
+      description: Solar array
+      type: number
+    - contextPath: SpaceX.Dragons.trunk.cargo.unpressurized_cargo
+      description: Unpressurized cargo
+      type: boolean
+    - contextPath: SpaceX.Dragons.trunk.trunk_volume.cubic_feet
+      description: Cubic feet
+      type: number
+    - contextPath: SpaceX.Dragons.trunk.trunk_volume.cubic_meters
+      description: Cubic meters
+      type: number
+    - contextPath: SpaceX.Dragons.return_payload_mass.kg
+      description: Mass (kg)
+      type: number
+    - contextPath: SpaceX.Dragons.return_payload_mass.lb
+      description: Mass (lbs)
+      type: number
+    - contextPath: SpaceX.Dragons.launch_payload_vol.cubic_feet
+      description: Cubic feet
+      type: number
+    - contextPath: SpaceX.Dragons.launch_payload_vol.cubic_meters
+      description: Cubic meters
+      type: number
+    - contextPath: SpaceX.Dragons.wikipedia
+      description: Wikipedia
+      type: string
+    - contextPath: SpaceX.Dragons.heat_shield.dev_partner
+      description: Development partner
+      type: string
+    - contextPath: SpaceX.Dragons.heat_shield.material
+      description: Material
+      type: string
+    - contextPath: SpaceX.Dragons.heat_shield.size_meters
+      description: Size (meters)
+      type: number
+    - contextPath: SpaceX.Dragons.heat_shield.temp_degrees
+      description: Temperature (degrees)
+      type: number
+    - contextPath: SpaceX.Dragons.crew_capacity
+      description: Crew capacity
+      type: number
+    - contextPath: SpaceX.Dragons.type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Dragons.id
+      description: ID
+      type: string
+    - contextPath: SpaceX.Dragons.sidewall_angle_deg
+      description: Sidewall angle (degrees)
+      type: number
+    - contextPath: SpaceX.Dragons.description
+      description: Description
+      type: string
+    - contextPath: SpaceX.Dragons.pressurized_capsule.payload_volume.cubic_feet
+      description: Volume (cubic feet)
+      type: number
+    - contextPath: SpaceX.Dragons.pressurized_capsule.payload_volume.cubic_meters
+      description: Volume (cubic meters)
+      type: number
+    - contextPath: SpaceX.Dragons.first_flight
+      description: First flight
+      type: string
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    - auto: PREDEFINED
+      description: Change result sorting by setting value to any parameter in this
+        list
+      name: sort
+      predefined:
+      - id
+      - start
+      - end
+      - flight_number
+    - auto: PREDEFINED
+      description: Change result ordering
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: Filter by historical event id
+      name: id
+    - description: Filter by start date (include both start and end to filter by date
+        range) format is yyyy-mm-dd
+      name: start
+    - description: Filter by end date (include both start and end to filter by date
+        range) format is yyyy-mm-dd
+      name: end
+    - description: Filter by historical event flight number
+      name: flight_number
+    description: Returns all historical events (with optional filtering)
+    name: spacex-get-historical-events
+    outputs:
+    - contextPath: SpaceX.History.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.History.event_date_unix
+      description: Event date (unix)
+      type: number
+    - contextPath: SpaceX.History.event_date_utc
+      description: Event date (UTC)
+      type: date
+    - contextPath: SpaceX.History.flight_number
+      description: Flight number
+      type: number
+    - contextPath: SpaceX.History.id
+      description: Event ID
+      type: number
+    - contextPath: SpaceX.History.links
+      description: Links
+      type: unknown
+  - arguments:
+    - description: Historical event ID
+      name: event_id
+      required: true
+    description: Returns the details of a historical event
+    name: spacex-get-historical-event
+    outputs:
+    - contextPath: SpaceX.History.details
+      description: Details
+      type: string
+    - contextPath: SpaceX.History.event_date_unix
+      description: Event date (unix)
+      type: number
+    - contextPath: SpaceX.History.event_date_utc
+      description: Event date (UTC)
+      type: date
+    - contextPath: SpaceX.History.flight_number
+      description: Flight number
+      type: number
+    - contextPath: SpaceX.History.id
+      description: Event ID
+      type: number
+    - contextPath: SpaceX.History.links
+      description: Links
+      type: unknown
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    - auto: PREDEFINED
+      description: Change result sorting by setting value to any parameter in this
+        list
+      name: sort
+      predefined:
+      - flight_id
+      - start
+      - flight_number
+      - launch_year
+      - launch_date_utc
+      - launch_date_local
+      - rocket_id
+      - rocket_name
+      - rocket_type
+      - core_serial
+      - land_success
+      - landing_intent
+      - landing_type
+      - landing_vehicle
+      - cap_serial
+      - core_flight
+      - block
+      - core_reuse
+      - capsule_reuse
+      - fairings_reused
+      - fairings_recovery_attempt
+      - fairings_recovered
+      - fairings_ship
+      - site_id
+      - site_name
+      - payload_id
+      - norad_id
+      - customer
+      - nationality
+      - manufacturer
+      - payload_type
+      - orbit
+      - reference_system
+      - regime
+      - longitude
+      - semi_major_axis_km
+      - eccentricity
+      - periapsis_km
+      - apoapsis_km
+      - inclination_deg
+      - period_min
+      - lifespan_years
+      - epoch
+      - mean_motion
+      - raan
+      - launch_success
+    - auto: PREDEFINED
+      description: Change result ordering
+      name: order
+      predefined:
+      - asc
+      - desc
+    - description: Filter by flight id
+      name: flight_id
+    - description: Filter by start date (use with end to proviode a date range) format
+        is yyyy-mm-dd
+      name: start
+    - description: Filter by end date (use with start to proviode a date range) format
+        is yyyy-mm-dd
+      name: end
+    - description: Filter by flight number
+      name: flight_number
+    - description: Filter by launch year
+      name: launch_year
+    - description: Filter by utc launch date
+      name: launch_date_utc
+    - description: Filter by local launch date
+      name: launch_date_local
+    - description: Filter by rocket ID
+      name: rocket_id
+    - description: Filter by rocket name
+      name: rocket_name
+    - description: Filter by rocket type
+      name: rocket_type
+    - description: Filter by core serial number
+      name: core_serial
+    - description: Filter by successful core landings
+      name: land_success
+    - description: Filter by landing intention
+      name: landing_intent
+    - description: Filter by landing method
+      name: landing_type
+    - description: Filter by landing vehicle
+      name: landing_vehicle
+    - description: Filter by capsule serial number
+      name: cap_serial
+    - description: Filter by number of previous core flights
+      name: core_flight
+    - description: Filter by core block number
+      name: block
+    - description: Filter launches by reused cores
+      name: core_reuse
+    - description: Filter launches by reused capsules
+      name: capsule_reuse
+    - description: Filter by reused fairings
+      name: fairings_reused
+    - description: Filter by fairing recovery attempts
+      name: fairings_recovery_attempt
+    - description: Filter by recovered fairings
+      name: fairings_recovered
+    - description: Filter by fairings ship used
+      name: fairings_ship
+    - description: Filter by launch site ID
+      name: site_id
+    - description: Filter by launch site ID
+      name: site_name
+    - description: Filter by payload ID
+      name: payload_id
+    - description: Filter by NORAD ID
+      name: norad_id
+    - description: Filter by launch payload customer
+      name: customer
+    - description: Filter by payload nationality
+      name: nationality
+    - description: Filter by payload manufacturer
+      name: manufacturer
+    - description: Filter by payload type
+      name: payload_type
+    - description: Filter by payload orbit
+      name: orbit
+    - description: Filter by payload orbit reference system
+      name: reference_system
+    - description: Filter by payload orbit regime
+      name: regime
+    - description: Filter by payload orbit longitude
+      name: longitude
+    - description: Filter by payload orbit semi major axis
+      name: semi_major_axis_km
+    - description: Filter by payload orbit eccentricity
+      name: eccentricity
+    - description: Filter by payload orbit periapsis
+      name: periapsis_km
+    - description: Filter by payload orbit apoapsis
+      name: apoapsis_km
+    - description: Filter by payload orbit inclination
+      name: inclination_deg
+    - description: Filter by payload orbit period
+      name: period_min
+    - description: Filter by payload lifespan in years
+      name: lifespan_years
+    - description: Filter by payload orbit epoch
+      name: epoch
+    - description: Filter by payload orbit mean motion
+      name: mean_motion
+    - description: Filter by payload orbit right ascension of the ascending node
+      name: raan
+    - description: Filter by launch success
+      name: launch_success
+    description: Returns all payloads (with optional filtering)
+    name: spacex-get-payloads
+  - arguments:
+    - description: Payload ID
+      name: payload_id
+      required: true
+    description: Retrieves the details of a payload
+    name: spacex-get-payload
+  - arguments:
+    - description: Limit results returned, defaults to all documents returned
+      name: limit
+    - description: Offset or skip results from the beginning of the query
+      name: offset
+    description: Returns all rockets (with optional filtering)
+    name: spacex-get-rockets
+    outputs:
+    - contextPath: SpaceX.Rockets.boosters
+      description: Boosters
+      type: number
+    - contextPath: SpaceX.Rockets.rocket_type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Rockets.rocket_id
+      description: Rocket iD
+      type: string
+    - contextPath: SpaceX.Rockets.active
+      description: Active
+      type: boolean
+    - contextPath: SpaceX.Rockets.cost_per_launch
+      description: Cost per launch
+      type: number
+    - contextPath: SpaceX.Rockets.height.feet
+      description: Height (feet)
+      type: number
+    - contextPath: SpaceX.Rockets.height.meters
+      description: Height (meters)
+      type: number
+    - contextPath: SpaceX.Rockets.payload_weights.id
+      description: ID
+      type: string
+    - contextPath: SpaceX.Rockets.payload_weights.kg
+      description: Kg
+      type: number
+    - contextPath: SpaceX.Rockets.payload_weights.lb
+      description: Lbs
+      type: number
+    - contextPath: SpaceX.Rockets.payload_weights.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Rockets.diameter.feet
+      description: Diameter (feet)
+      type: number
+    - contextPath: SpaceX.Rockets.diameter.meters
+      description: Diameter (meters)
+      type: number
+    - contextPath: SpaceX.Rockets.landing_legs.material
+      description: Material
+      type: string
+    - contextPath: SpaceX.Rockets.landing_legs.number
+      description: Number
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.burn_time_sec
+      description: Burn time (seconds)
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.engines
+      description: Engines
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.fuel_amount_tons
+      description: Fuel amount (tons)
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.reusable
+      description: Reusable
+      type: boolean
+    - contextPath: SpaceX.Rockets.first_stage.thrust_sea_level.kN
+      description: kN
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.thrust_sea_level.lbf
+      description: Lbf
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.thrust_vacuum.kN
+      description: kN
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.thrust_vacuum.lbf
+      description: Lbf
+      type: number
+    - contextPath: SpaceX.Rockets.flickr_images
+      description: Flickr images
+      type: unknown
+    - contextPath: SpaceX.Rockets.engines.engine_loss_max
+      description: Engine loss max
+      type: number
+    - contextPath: SpaceX.Rockets.engines.isp.sea_level
+      description: Sea level
+      type: number
+    - contextPath: SpaceX.Rockets.engines.isp.vacuum
+      description: Vacuum
+      type: number
+    - contextPath: SpaceX.Rockets.engines.number
+      description: Number
+      type: number
+    - contextPath: SpaceX.Rockets.engines.layout
+      description: Layout
+      type: string
+    - contextPath: SpaceX.Rockets.engines.thrust_sea_level.kN
+      description: kN
+      type: number
+    - contextPath: SpaceX.Rockets.engines.thrust_sea_level.lbf
+      description: Lbf
+      type: number
+    - contextPath: SpaceX.Rockets.engines.thrust_to_weight
+      description: Thrust to weight
+      type: number
+    - contextPath: SpaceX.Rockets.engines.propellant_1
+      description: Propellant 1
+      type: string
+    - contextPath: SpaceX.Rockets.engines.version
+      description: Version
+      type: string
+    - contextPath: SpaceX.Rockets.engines.propellant_2
+      description: Propellant 2
+      type: string
+    - contextPath: SpaceX.Rockets.engines.type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Rockets.engines.thrust_vacuum.kN
+      description: kN
+      type: number
+    - contextPath: SpaceX.Rockets.engines.thrust_vacuum.lbf
+      description: Lbf
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.burn_time_sec
+      description: Burn time (seconds)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.engines
+      description: Engines
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.fuel_amount_tons
+      description: Fuel amount (tons)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.payloads.composite_fairing.diameter.feet
+      description: Diameter (feet)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.payloads.composite_fairing.diameter.meters
+      description: Diameter (meters)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.payloads.composite_fairing.height.feet
+      description: Height (feet)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.payloads.composite_fairing.height.meters
+      description: Height (meters)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.payloads.option_1
+      description: Option 1
+      type: string
+    - contextPath: SpaceX.Rockets.second_stage.reusable
+      description: Reusable
+      type: boolean
+    - contextPath: SpaceX.Rockets.second_stage.thrust.kN
+      description: kN
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.thrust.lbf
+      description: Lbf
+      type: number
+    - contextPath: SpaceX.Rockets.mass.kg
+      description: Mass (Kg)
+      type: number
+    - contextPath: SpaceX.Rockets.mass.lb
+      description: Mass (lbs)
+      type: number
+    - contextPath: SpaceX.Rockets.stages
+      description: Stages
+      type: number
+    - contextPath: SpaceX.Rockets.rocket_name
+      description: Rocket name
+      type: string
+    - contextPath: SpaceX.Rockets.country
+      description: Country
+      type: string
+    - contextPath: SpaceX.Rockets.wikipedia
+      description: Wikipedia
+      type: string
+    - contextPath: SpaceX.Rockets.id
+      description: ID
+      type: number
+    - contextPath: SpaceX.Rockets.description
+      description: Description
+      type: string
+    - contextPath: SpaceX.Rockets.company
+      description: Company
+      type: string
+    - contextPath: SpaceX.Rockets.success_rate_pct
+      description: Success rate (percent)
+      type: number
+    - contextPath: SpaceX.Rockets.first_flight
+      description: First flight
+      type: string
+  - arguments:
+    - description: Rocket ID
+      name: rocket_id
+      required: true
+    description: Returns the details of a rocket
+    name: spacex-get-rocket
+    outputs:
+    - contextPath: SpaceX.Rockets.boosters
+      description: Boosters
+      type: number
+    - contextPath: SpaceX.Rockets.rocket_type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Rockets.rocket_id
+      description: Rocket iD
+      type: string
+    - contextPath: SpaceX.Rockets.active
+      description: Active
+      type: boolean
+    - contextPath: SpaceX.Rockets.cost_per_launch
+      description: Cost per launch
+      type: number
+    - contextPath: SpaceX.Rockets.height.feet
+      description: Height (feet)
+      type: number
+    - contextPath: SpaceX.Rockets.height.meters
+      description: Height (meters)
+      type: number
+    - contextPath: SpaceX.Rockets.payload_weights.id
+      description: ID
+      type: string
+    - contextPath: SpaceX.Rockets.payload_weights.kg
+      description: Kg
+      type: number
+    - contextPath: SpaceX.Rockets.payload_weights.lb
+      description: Lbs
+      type: number
+    - contextPath: SpaceX.Rockets.payload_weights.name
+      description: Name
+      type: string
+    - contextPath: SpaceX.Rockets.diameter.feet
+      description: Diameter (feet)
+      type: number
+    - contextPath: SpaceX.Rockets.diameter.meters
+      description: Diameter (meters)
+      type: number
+    - contextPath: SpaceX.Rockets.landing_legs.material
+      description: Material
+      type: string
+    - contextPath: SpaceX.Rockets.landing_legs.number
+      description: Number
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.burn_time_sec
+      description: Burn time (seconds)
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.engines
+      description: Engines
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.fuel_amount_tons
+      description: Fuel amount (tons)
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.reusable
+      description: Reusable
+      type: boolean
+    - contextPath: SpaceX.Rockets.first_stage.thrust_sea_level.kN
+      description: kN
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.thrust_sea_level.lbf
+      description: Lbf
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.thrust_vacuum.kN
+      description: kN
+      type: number
+    - contextPath: SpaceX.Rockets.first_stage.thrust_vacuum.lbf
+      description: Lbf
+      type: number
+    - contextPath: SpaceX.Rockets.flickr_images
+      description: Flickr images
+      type: unknown
+    - contextPath: SpaceX.Rockets.engines.engine_loss_max
+      description: Engine loss max
+      type: number
+    - contextPath: SpaceX.Rockets.engines.isp.sea_level
+      description: Sea level
+      type: number
+    - contextPath: SpaceX.Rockets.engines.isp.vacuum
+      description: Vacuum
+      type: number
+    - contextPath: SpaceX.Rockets.engines.number
+      description: Number
+      type: number
+    - contextPath: SpaceX.Rockets.engines.layout
+      description: Layout
+      type: string
+    - contextPath: SpaceX.Rockets.engines.thrust_sea_level.kN
+      description: kN
+      type: number
+    - contextPath: SpaceX.Rockets.engines.thrust_sea_level.lbf
+      description: Lbf
+      type: number
+    - contextPath: SpaceX.Rockets.engines.thrust_to_weight
+      description: Thrust to weight
+      type: number
+    - contextPath: SpaceX.Rockets.engines.propellant_1
+      description: Propellant 1
+      type: string
+    - contextPath: SpaceX.Rockets.engines.version
+      description: Version
+      type: string
+    - contextPath: SpaceX.Rockets.engines.propellant_2
+      description: Propellant 2
+      type: string
+    - contextPath: SpaceX.Rockets.engines.type
+      description: Type
+      type: string
+    - contextPath: SpaceX.Rockets.engines.thrust_vacuum.kN
+      description: kN
+      type: number
+    - contextPath: SpaceX.Rockets.engines.thrust_vacuum.lbf
+      description: Lbf
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.burn_time_sec
+      description: Burn time (seconds)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.engines
+      description: Engines
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.fuel_amount_tons
+      description: Fuel amount (tons)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.payloads.composite_fairing.diameter.feet
+      description: Diameter (feet)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.payloads.composite_fairing.diameter.meters
+      description: Diameter (meters)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.payloads.composite_fairing.height.feet
+      description: Height (feet)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.payloads.composite_fairing.height.meters
+      description: Height (meters)
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.payloads.option_1
+      description: Option 1
+      type: string
+    - contextPath: SpaceX.Rockets.second_stage.reusable
+      description: Reusable
+      type: boolean
+    - contextPath: SpaceX.Rockets.second_stage.thrust.kN
+      description: kN
+      type: number
+    - contextPath: SpaceX.Rockets.second_stage.thrust.lbf
+      description: Lbf
+      type: number
+    - contextPath: SpaceX.Rockets.mass.kg
+      description: Mass (Kg)
+      type: number
+    - contextPath: SpaceX.Rockets.mass.lb
+      description: Mass (lbs)
+      type: number
+    - contextPath: SpaceX.Rockets.stages
+      description: Stages
+      type: number
+    - contextPath: SpaceX.Rockets.rocket_name
+      description: Rocket name
+      type: string
+    - contextPath: SpaceX.Rockets.country
+      description: Country
+      type: string
+    - contextPath: SpaceX.Rockets.wikipedia
+      description: Wikipedia
+      type: string
+    - contextPath: SpaceX.Rockets.id
+      description: ID
+      type: number
+    - contextPath: SpaceX.Rockets.description
+      description: Description
+      type: string
+    - contextPath: SpaceX.Rockets.company
+      description: Company
+      type: string
+    - contextPath: SpaceX.Rockets.success_rate_pct
+      description: Success rate (percent)
+      type: number
+    - contextPath: SpaceX.Rockets.first_flight
+      description: First flight
+      type: string
+  dockerimage: demisto/python3:3.8.6.14516
+  isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
