@@ -2,7 +2,7 @@ id: Integration Troubleshooting
 version: -1
 name: Integration Troubleshooting
 description: Troubleshoot a problem with either an integration's configuration or
-  running a command.
+  with running a command.
 starttaskid: "0"
 tasks:
   "0":
@@ -40,7 +40,7 @@ tasks:
       id: 9d711b27-5bbe-409b-8fd0-37e63d13346e
       version: -1
       name: Get Instance Parameters
-      description: Gets an integration's parameters
+      description: Gets an instance's parameters.
       scriptName: TroubleshootGetInstanceParameters
       type: regular
       iscommand: false
@@ -73,7 +73,7 @@ tasks:
       id: 8a3446c6-2b3b-483e-8c45-183bcf69e531
       version: -1
       name: Run command
-      description: TroubleshootExecuteCommand
+      description: Run and troublshoot the command.
       scriptName: TroubleshootExecuteCommand
       type: regular
       iscommand: false
@@ -146,7 +146,7 @@ tasks:
       id: 4e292f56-20ad-422e-8459-4c4dbe7ea2e7
       version: -1
       name: Run Test button to check configuration
-      description: Check Instance Parameters
+      description: Check the instance parameters.
       scriptName: TroubleshootTestInstance
       type: regular
       iscommand: false
@@ -182,7 +182,7 @@ tasks:
       id: aafc0454-fb2c-449b-8d71-258ac8d799a7
       version: -1
       name: Run with insecure
-      description: Check Instance Parameters
+      description: Run the integration with the insecure option.
       scriptName: TroubleshootTestInstance
       type: regular
       iscommand: false
@@ -220,8 +220,8 @@ tasks:
     task:
       id: 01b54815-28a1-4e15-86eb-03e0cd762cee
       version: -1
-      name: Is deprecated integration?
-      description: Is deprecated integration?
+      name: Is integration deprecated?
+      description: Is the integration deprecated?
       type: condition
       iscommand: false
       brand: ""
@@ -260,8 +260,8 @@ tasks:
     task:
       id: ecaa8205-e8b2-421e-8aa3-6a1eee0d4d32
       version: -1
-      name: Is Docker Image Exists?
-      description: Is Docker Image Exists
+      name: Does Docker Image Exist?
+      description: Does the Docker image exist?
       scriptName: TroubleshootIsDockerImageExists
       type: regular
       iscommand: false
@@ -295,7 +295,7 @@ tasks:
       id: d2d55b96-16a2-445f-84ac-a8c3ee16567a
       version: -1
       name: Is system integration?
-      description: Is system integration?
+      description: Is this a system integration?
       type: condition
       iscommand: false
       brand: ""
@@ -363,7 +363,7 @@ tasks:
       id: 206fe04b-47d5-4a49-8250-d8742d1cf334
       version: -1
       name: Is Python Integration?
-      description: Is Python Integration?
+      description: Is this a Python integration?
       type: condition
       iscommand: false
       brand: ""
@@ -405,8 +405,8 @@ tasks:
     task:
       id: 8cadf26f-75ae-4eb9-86e0-7f73438387bd
       version: -1
-      name: Print error on missing docker image.
-      description: Prints an error entry with a given message
+      name: Print error on missing Docker image.
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -416,7 +416,7 @@ tasks:
       - "19"
     scriptarguments:
       message:
-        simple: 'Could not find the docker image. Try to manually download it. '
+        simple: 'Could not find the Docker image. Try to manually download it. '
     continueonerror: true
     separatecontext: false
     view: |-
@@ -439,7 +439,7 @@ tasks:
       id: b31d57a5-c4cd-4252-8d43-4921eed21783
       version: -1
       name: Print success
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -449,7 +449,7 @@ tasks:
       - "19"
     scriptarguments:
       value:
-        simple: The command succeed when changing the 'Proxy' value. Try to change
+        simple: The command succeeds when changing the 'Proxy' value. Try changing
           it and see if the problem persists.
     separatecontext: false
     view: |-
@@ -472,7 +472,7 @@ tasks:
       id: 9ecf90a6-8022-4c35-8691-331bf62c831e
       version: -1
       name: Print error on a custom integration
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -482,7 +482,7 @@ tasks:
       - "19"
     scriptarguments:
       message:
-        simple: This is not a verified XSOAR integration. Try to use an official integration
+        simple: This is not a verified XSOAR integration. Use an official integration
           instead.
     continueonerror: true
     separatecontext: false
@@ -505,8 +505,8 @@ tasks:
     task:
       id: 932b35f6-22d2-4748-864e-e4a575aa5d8f
       version: -1
-      name: Print error on unsupported integration
-      description: Prints an error entry with a given message
+      name: Print error for unsupported integration
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -516,8 +516,7 @@ tasks:
       - "19"
     scriptarguments:
       message:
-        simple: This is a deprecated integration. Try to get a supported integration
-          integration.
+        simple: This is a deprecated integration. Use a supported integration.
     continueonerror: true
     separatecontext: false
     view: |-
@@ -540,7 +539,7 @@ tasks:
       id: 91117ea1-cb7d-4acd-8011-e4e0dc497f63
       version: -1
       name: Print Success
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to  War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -550,8 +549,8 @@ tasks:
       - "19"
     scriptarguments:
       value:
-        simple: The command succeed when changing the 'Insecure' (Trust any certificate,
-          not secure) value. Try to change it and see if the problem persists.
+        simple: The command succeeds when changing the 'Insecure' (Trust any certificate,
+          not secure) value. Try changing it and see if the problem persists.
     separatecontext: false
     view: |-
       {
@@ -573,7 +572,7 @@ tasks:
       id: 3d09629c-3105-4037-85b6-cc3a51d14738
       version: -1
       name: Generate Summary
-      description: Aggregate Results
+      description: Aggregate the results.
       scriptName: TroubleshootAggregateResults
       type: regular
       iscommand: false
@@ -638,7 +637,7 @@ tasks:
       id: 086cce9a-c2c3-496b-898d-0649e64b54d2
       version: -1
       name: Check if it exists
-      description: Check if it exists
+      description: Check if the Docker image exists.
       type: condition
       iscommand: false
       brand: ""
@@ -677,8 +676,8 @@ tasks:
     task:
       id: 819b59d8-cc0e-487c-885c-c762b6015394
       version: -1
-      name: Is Test succeed?
-      description: Is Test succeed?
+      name: Did Test succeed?
+      description: Did the integration Test succeed?
       type: condition
       iscommand: false
       brand: ""
@@ -717,8 +716,9 @@ tasks:
     task:
       id: 1b34a222-1005-427c-8926-a669b1c3822e
       version: -1
-      name: Is insecure change worked?
-      description: Is insecure change worked?
+      name: Did insecure change work?
+      description: Did changing the 'Insecure' (Trust any certificate,
+          not secure) value work?
       type: condition
       iscommand: false
       brand: ""
@@ -767,8 +767,8 @@ tasks:
     task:
       id: 7d5c09f8-8667-4d5f-81f0-35e66591d69f
       version: -1
-      name: Is proxy change worked?
-      description: Is insecure change worked?
+      name: Did proxy change work?
+      description: Did changing the 'Proxy' value work?
       type: condition
       iscommand: false
       brand: ""
@@ -818,7 +818,7 @@ tasks:
       id: bd69eb4c-085b-4efb-85fc-fda6f23a778d
       version: -1
       name: Zip all files
-      description: Zip a file and upload to war room
+      description: Zip a file and upload it to the War Room.
       scriptName: ZipFile
       type: regular
       iscommand: false
@@ -866,8 +866,8 @@ tasks:
     task:
       id: bf562983-8479-43bd-8363-f6f863a0c917
       version: -1
-      name: What is the troubleshoot type?
-      description: What is the troubleshoot type?
+      name: What is the troubleshooting type?
+      description: What is the troubleshooting type (command or integration)?
       type: condition
       iscommand: false
       brand: ""
@@ -888,7 +888,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: I have a problem with running a command
+              simple: I have a problem with running a command.
     - label: configuration
       condition:
       - - operator: isEqualString
@@ -899,7 +899,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: I'm unable to configure an instance
+              simple: I'm unable to configure an instance.
     view: |-
       {
         "position": {
@@ -920,7 +920,7 @@ tasks:
       id: 40b200da-11b1-4590-8f19-2b16db46aed3
       version: -1
       name: Is command available?
-      description: Get Command and Args
+      description: Get the command and arguments.
       scriptName: TroubleshootGetCommandandArgs
       type: regular
       iscommand: false
@@ -955,8 +955,8 @@ tasks:
     task:
       id: 44cebb67-c8c0-4247-804f-623e8caf4ae7
       version: -1
-      name: Is Demisto REST API integration is configured?
-      description: Is Demisto REST API integration is configured?
+      name: Is Demisto REST API integration configured?
+      description: Is the Demisto REST API integration configured?
       type: condition
       iscommand: false
       brand: ""
@@ -1008,15 +1008,15 @@ tasks:
       id: 4c1724a2-927c-485b-8c8b-fea9c418047b
       version: -1
       name: Print error
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       message:
-        simple: Demisto REST API integration is not configured. Please configure the
-          integration to use this playbook.
+        simple: The Demisto REST API integration is not configured. Configure the
+          integration in order to use this playbook.
     separatecontext: false
     view: |-
       {
@@ -1063,7 +1063,8 @@ tasks:
       id: 09db14ae-7d44-4e58-81a6-20627815216a
       version: -1
       name: Is running with insecure checked?
-      description: Checking if the insecure checkbox on the incident field checked.
+      description: Checks if the incident's 'Insecure' (Trust any certificate,
+          not secure) value is selected.
       type: condition
       iscommand: false
       brand: ""
@@ -1102,7 +1103,7 @@ tasks:
       id: e1fa6549-0609-476a-8f3d-cf638dea8315
       version: -1
       name: Read summary into incident
-      description: Load the contents of a file into context.
+      description: Load the contents of the summary file into the context.
       scriptName: ReadFile
       type: regular
       iscommand: false
@@ -1182,7 +1183,7 @@ tasks:
       id: 1e731ef6-21c7-41b7-8c60-536235c3da7d
       version: -1
       name: Get server logs
-      description: Download files from Demisto server
+      description: Download files from the Cortex XSOAR server.
       script: '|||demisto-api-download'
       type: regular
       iscommand: true
@@ -1216,7 +1217,7 @@ tasks:
       id: 366eb325-2867-407e-80bf-41390a19b702
       version: -1
       name: Get advanced parameters
-      description: send HTTP GET requests
+      description: Send HTTP GET requests.
       script: '|||demisto-api-get'
       type: regular
       iscommand: true
@@ -1250,7 +1251,7 @@ tasks:
       id: eb4104d3-6791-48c5-842d-4e3421a7eb8f
       version: -1
       name: Is proxy defined?
-      description: Check if there's proxy on advanced configuration.
+      description: Check if there is a proxy in the advanced configuration.
       type: condition
       iscommand: false
       brand: ""
@@ -1297,7 +1298,7 @@ tasks:
       id: 7aef4f16-c5a7-47c9-8606-f01114c42d23
       version: -1
       name: Run with proxy
-      description: Check Instance Parameters
+      description: Check the instance parameters.
       scriptName: TroubleshootTestInstance
       type: regular
       iscommand: false
@@ -1335,8 +1336,8 @@ tasks:
     task:
       id: e81a23bd-a3b4-4f8e-8cf7-ca281b75afcc
       version: -1
-      name: Check if docker error
-      description: Checks if there's a docker error in the test module.
+      name: Check if Docker error
+      description: Check if there is a Docker error in the test module.
       type: condition
       iscommand: false
       brand: ""
@@ -1390,7 +1391,7 @@ inputs:
       root: incident
       accessor: instancename
   required: true
-  description: The name of the instance to check
+  description: The name of the instance to check.
   playbookInputQuery:
 - key: troubleshoottype
   value:
@@ -1406,7 +1407,7 @@ inputs:
       root: incident
       accessor: commandline
   required: false
-  description: The full command to run. as in "!vt-comments-get resource=www.example.com"
+  description: The full command to run, for example, "!vt-comments-get resource=www.example.com"
   playbookInputQuery:
 - key: insecure
   value:
@@ -1414,7 +1415,7 @@ inputs:
       root: incident
       accessor: runwithinsecure
   required: false
-  description: Should run with insecure flag changed?
+  description: Whether to run with changing the insecure flag.
   playbookInputQuery:
 outputs: []
 tests:
