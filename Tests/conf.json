@@ -3311,7 +3311,8 @@
         "FeedThreatConnect-Test": "Issue 32317",
         "Phishing v2 - Test - Incident Starter": "Issue 26783",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
-        "Process Email - Generic - Test - Incident Starter": "Issue 32459"
+        "Process Email - Generic - Test - Incident Starter": "Issue 32459",
+        "HelloWorldPremium_Scan-Test": "Issue 32512"
     },
     "skipped_integrations": {
         
