@@ -23,6 +23,9 @@ For more information, please refer to the [Identity Lifecycle Management article
 | create_if_not_exists | Automatically create user if not found in update and enable commands | False |
 | mapper_in | Incoming Mapper | True |
 | mapper_out | Outgoing Mapper | True |
+| localesidkey | Default Local Sid Key | False |
+| emailencodingkey | Default Email Encoding Key | False |
+| languagelocalekey | Default Language Locale Key | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -31,7 +34,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### iam-create-user
 ***
 Creates a user.
-
+In order to create a user some mandatory fields are required, such as Local Sid Key, Email Encoding Key and Language Locale Key
+that can be set as default in the integration's param, ProfileId and Time Zone Sid Key should be mapped using a suitable transformer,
+for example, look at the demo transformers scripts - DemoGenerateTimeZone and DemoGenerateProfileId.
+Please create your own transformers and map the fitting values to them.
 
 #### Base Command
 
