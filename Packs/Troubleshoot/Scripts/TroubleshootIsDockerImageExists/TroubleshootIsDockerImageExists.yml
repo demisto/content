@@ -5,7 +5,8 @@ args:
   name: docker_image
   required: true
   secret: false
-comment: Gets a Docker image and checks if it exists on the machine running Cortex XSOAR.
+comment: Gets a Docker image and checks if it exists on the machine running Cortex
+  XSOAR.
 commonfields:
   id: TroubleshootIsDockerImageExists
   version: -1

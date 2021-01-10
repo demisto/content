@@ -62,8 +62,8 @@ outputs:
   description: "The file extension, for example: 'xls'."
   type: String
 - contextPath: File.Type
-  description: The file type, as determined by libmagic (same as displayed in the file
-    entries).
+  description: The file type, as determined by libmagic (same as displayed in the
+    file entries).
   type: String
 script: '-'
 subtype: python3

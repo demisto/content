@@ -26,18 +26,20 @@ outputs:
   description: Whether "Is fetch" is configured.
   type: Boolean
 - contextPath: InstanceParameters.proxy
-  description: Whether "use proxy" is selected. If any parameter is not called proxy, it will be
-    wrong.
-  type: Boolean
-- contextPath: InstanceParameters.proxy_key
-  description: The proxy key in which insecure is hosted. Can be null if no key is found.
-  type: String
-- contextPath: InstanceParameters.insecure
-  description: Whether "use unsecure connection" is selected. If any parameter is not called insecure,
+  description: Whether "use proxy" is selected. If any parameter is not called proxy,
     it will be wrong.
   type: Boolean
+- contextPath: InstanceParameters.proxy_key
+  description: The proxy key in which insecure is hosted. Can be null if no key is
+    found.
+  type: String
+- contextPath: InstanceParameters.insecure
+  description: Whether "use unsecure connection" is selected. If any parameter is
+    not called insecure, it will be wrong.
+  type: Boolean
 - contextPath: InstanceParameters.insecure_key
-  description: The insecure key in which insecure is hosted. Can be null if no key is found.
+  description: The insecure key in which insecure is hosted. Can be null if no key
+    is found.
   type: String
 - contextPath: InstanceParameters.type
   description: The type of the integration. Can be JavaScript or Python.

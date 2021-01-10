@@ -11,8 +11,8 @@ args:
   name: command_line
   required: false
   secret: false
-comment: Gets a command with its arguments, validates the command and the arguments, and
-  then parses it to use in the Cortex XSOAR context.
+comment: Gets a command with its arguments, validates the command and the arguments,
+  and then parses it to use in the Cortex XSOAR context.
 commonfields:
   id: TroubleshootGetCommandandArgs
   version: -1

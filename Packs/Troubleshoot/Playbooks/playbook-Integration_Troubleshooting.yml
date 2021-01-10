@@ -717,8 +717,8 @@ tasks:
       id: 1b34a222-1005-427c-8926-a669b1c3822e
       version: -1
       name: Did insecure change work?
-      description: Did changing the 'Insecure' (Trust any certificate,
-          not secure) value work?
+      description: Did changing the 'Insecure' (Trust any certificate, not secure)
+        value work?
       type: condition
       iscommand: false
       brand: ""
@@ -1063,8 +1063,8 @@ tasks:
       id: 09db14ae-7d44-4e58-81a6-20627815216a
       version: -1
       name: Is running with insecure checked?
-      description: Checks if the incident's 'Insecure' (Trust any certificate,
-          not secure) value is selected.
+      description: Checks if the incident's 'Insecure' (Trust any certificate, not
+        secure) value is selected.
       type: condition
       iscommand: false
       brand: ""
