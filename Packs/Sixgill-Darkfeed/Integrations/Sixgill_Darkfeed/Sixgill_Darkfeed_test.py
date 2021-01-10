@@ -3,7 +3,7 @@ import pytest
 import json
 
 import demistomock as demisto
-raise Exception("intended exception")
+
 bundle_index = 0
 submitted_indicators = 0
 mocked_get_token_response = '''{"access_token": "fababfafbh"}'''
