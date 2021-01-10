@@ -1,6 +1,7 @@
 args:
 - default: false
-  description: Instance parameters. Can be acquired from the GetInstanceParameter command.
+  description: Instance parameters. Can be acquired from the GetInstanceParameter
+    command.
   isArray: false
   name: parameters
   required: true

@@ -17,16 +17,13 @@
  "name": "Run with 'insecure'",
  "neverSetAsRequired": false,
  "ownerOnly": false,
- "propagationLabels": [
-  "all"
- ],
  "required": false,
  "sla": 0,
  "system": false,
  "threshold": 72,
  "type": "boolean",
  "unmapped": false,
- "unsearchable": true,
+ "unsearchable": false,
  "useAsKpi": false,
  "version": -1,
  "fromVersion": "5.0.0"
