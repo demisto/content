@@ -637,7 +637,7 @@ script:
     description: Retrieve forensics artifacts from Illusive's forensics
     execution: false
     name: illusive-get-forensics-artifacts
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: true
   longRunning: false

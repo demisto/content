@@ -42,6 +42,9 @@ class Client(BaseClient):
                 * regex_string_extractor will extract the first match from the value_from_feed,
                 Use None to get the full value of the field.
                 * string_formatter will format the data in your preferred way, Use None to get the extracted field.
+            3. 'indicator_field': ('value_from_feed', 'field_mapper_function')
+                * field_mapper_function will accept as an argument 'value_from_feed' and return the data
+                in your preferred way.
         :param fieldnames: list of field names in the file. If *null* the values in the first row of the file are
             used as names. Default: *null*
         :param insecure: boolean, if *false* feed HTTPS server certificate is verified. Default: *false*
@@ -151,8 +154,10 @@ class Client(BaseClient):
             response = self.get_feed_content_divided_to_lines(url, r)
             if self.feed_url_to_config:
                 fieldnames = self.feed_url_to_config.get(url, {}).get('fieldnames', [])
+                skip_first_line = self.feed_url_to_config.get(url, {}).get('skip_first_line', False)
             else:
                 fieldnames = self.fieldnames
+                skip_first_line = False
             if self.ignore_regex is not None:
                 response = filter(  # type: ignore
                     lambda x: self.ignore_regex.match(x) is None,  # type: ignore
@@ -164,6 +169,9 @@ class Client(BaseClient):
                 fieldnames=fieldnames,
                 **self.dialect
             )
+
+            if skip_first_line:
+                next(csvreader)
 
             results.append({url: csvreader})
 
@@ -230,9 +238,15 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
     for key, field in mapping.items():
         regex_extractor = None
         formatter_string = None
+        field_mapper_function = None
 
-        if isinstance(field, tuple):
+        # case 'value_from_feed', regex_string_extractor, string_formatter
+        if isinstance(field, tuple) and len(field) == 3:
             field, regex_extractor, formatter_string = field
+
+        # case 'value_from_feed', 'field_mapper_function'
+        elif isinstance(field, tuple) and len(field) == 2:
+            field, field_mapper_function = field
 
         if not raw_json.get(field):  # type: ignore
             continue
@@ -245,7 +259,9 @@ def create_fields_mapping(raw_json: Dict[str, Any], mapping: Dict[str, Union[Tup
             except Exception:
                 field_value = raw_json[field]  # type: ignore
 
-        fields_mapping[key] = formatter_string.format(field_value) if formatter_string else field_value
+        field_value = formatter_string.format(field_value) if formatter_string else field_value
+        field_value = field_mapper_function(field_value) if field_mapper_function else field_value
+        fields_mapping[key] = field_value
 
         if key in ['firstseenbysource', 'lastseenbysource']:
             fields_mapping[key] = date_format_parsing(fields_mapping[key])
@@ -262,7 +278,8 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
             mapping = config.get(url, {}).get('mapping', {})
             for item in reader:
                 raw_json = dict(item)
-                value = item.get(client.value_field)
+                fields_mapping = create_fields_mapping(raw_json, mapping) if mapping else {}
+                value = item.get(client.value_field) or fields_mapping.get('Value')
                 if not value and len(item) > 1:
                     value = next(iter(item.values()))
                 if value:
@@ -275,7 +292,7 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                         'value': value,
                         'type': indicator_type,
                         'rawJSON': raw_json,
-                        'fields': create_fields_mapping(raw_json, mapping) if mapping else {}
+                        'fields': fields_mapping
                     }
                     indicator['fields']['tags'] = client.tags
 
