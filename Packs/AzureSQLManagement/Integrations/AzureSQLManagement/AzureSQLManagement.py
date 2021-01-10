@@ -487,25 +487,41 @@ def main() -> None:
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
         )
-        commands = {
-            'azure-sql-servers-list': azure_sql_servers_list_command,
-            'azure-sql-db-list': azure_sql_db_list_command,
-            'azure-sql-db-audit-policy-list': azure_sql_db_audit_policy_list_command,
-            'azure-sql-db-audit-policy-create-update': azure_sql_db_audit_policy_create_update_command,
-            'azure-sql-db-threat-policy-get': azure_sql_db_threat_policy_get_command,
-            'azure-sql-db-threat-policy-create-update': azure_sql_db_threat_policy_create_update_command,
-            'azure-sql-auth-start': start_auth,
-            'azure-sql-auth-complete': complete_auth,
-            'azure-sql-auth-reset': reset_auth,
-        }
         if command == 'test-module':
-            return_error("Please run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to log in."
-                         " For more details press the (?) button.")
+            return_error(
+                'Please run `!azure-sql-auth-start` and `!azure-sql-auth-complete` to log in. '
+                'You can validate the connection by running `!azure-sql-auth-test`\n '
+                'For more details press the (?) button.')
 
-        if command == 'azure-sql-auth-test':
+        elif command == 'azure-sql-servers-list':
+            return_results(azure_sql_servers_list_command(client, **args))
+
+        elif command == 'azure-sql-db-list':
+            return_results(azure_sql_db_list_command(client, **args))
+
+        elif command == 'azure-sql-db-audit-policy-list':
+            return_results(azure_sql_db_audit_policy_list_command(client, **args))
+
+        elif command == 'azure-sql-db-audit-policy-create-update':
+            return_results(azure_sql_db_audit_policy_create_update_command(client, **args))
+
+        elif command == 'azure-sql-db-threat-policy-get':
+            return_results(azure_sql_db_threat_policy_get_command(client, **args))
+
+        elif command == 'azure-sql-db-threat-policy-create-update':
+            return_results(azure_sql_db_threat_policy_create_update_command(client, **args))
+
+        elif command == 'azure-sql-auth-start':
+            return_results(start_auth(client, **args))
+
+        elif command == 'azure-sql-auth-complete':
+            return_results(complete_auth(client, **args))
+
+        elif command == 'azure-sql-auth-reset':
+            return_results(reset_auth(client, **args))
+
+        elif command == 'azure-sql-auth-test':
             return_results(test_connection(client))
-        else:
-            return_results(commands[command](client, **args))
 
     # Log exceptions and return errors
     except Exception as e:
