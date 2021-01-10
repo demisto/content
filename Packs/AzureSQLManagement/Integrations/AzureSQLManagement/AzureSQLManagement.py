@@ -166,6 +166,7 @@ def azure_sql_servers_list_command(client: Client, limit: str = '50', offset: st
             del server['properties']
 
     human_readable = tableToMarkdown(name='Servers List', t=server_list_values,
+                                     headers=['name', 'state', 'id', 'location'],
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
@@ -208,7 +209,7 @@ def azure_sql_db_list_command(client: Client, server_name: str, limit: str = '50
             del db['properties']
 
     human_readable = tableToMarkdown(name='Database List', t=database_list_values,
-                                     headers=[key for key in database_list_values[0] if key != 'sku' and key != 'currentSku'],
+                                     headers=['name', 'status'],
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
