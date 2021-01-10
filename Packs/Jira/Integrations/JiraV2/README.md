@@ -14,7 +14,7 @@ For more information about manage syntax, see the https://support.atlassian.com/
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Jira v2.
-3. __Authentiction__: As of June 2019, Basic authentication with passwords for Jira is no longer supported, please use an API Token or OAuth 1.0.
+3. __Authentiction__: As of June 2019, Basic authentication using passwords for Jira is no longer supported, please use an API Token or OAuth 1.0.
 4. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Jira URL, for example: https://demisto.atlassian.net/__
