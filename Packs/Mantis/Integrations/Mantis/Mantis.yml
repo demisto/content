@@ -28,76 +28,123 @@ configuration:
   name: token
   required: true
   type: 4
-description: This is the Hello World integration for getting started.
+description: create and update issues in MantisBT,MantisBT is a popular free web-based
+  bug tracking system
 display: Mantis
 name: Mantis
 script:
   commands:
   - arguments:
-    - description: The name of whom you want to say hello to.
-      name: name
-    description: Hello command - prints hello to anyone
-    name: helloworld-say-hello
-    outputs:
-    - contextPath: hello
-      description: Should be Hello **something** here
-      type: String
-  - arguments:
-    - name: id
+    - default: false
+      description: Mantis issue to get details of
+      isArray: false
+      name: id
       required: true
+      secret: false
+    deprecated: false
+    description: get details of the mantis issue
+    execution: false
     name: mantis-get-issue-by-id
     outputs:
     - contextPath: Mantis.Issue.id
+      description: id ofthe issue created
       type: String
     - contextPath: Mantis.Issue.project
+      description: project under which issue is created
       type: Unknown
     - contextPath: Mantis.Issue.category
+      description: category under which issue is created
       type: Unknown
     - contextPath: Mantis.Issue.reporter
+      description: reporter of the issue
       type: Unknown
     - contextPath: Mantis.Issue.status
+      description: status of the issues created
       type: Unknown
     - contextPath: Mantis.Issue.created_at
+      description: time  at which issue created
       type: Unknown
   - arguments:
-    - description: the project name
+    - default: false
+      description: project name to  create issue under
+      isArray: false
       name: project
       required: true
-    - description: category name for the issue
+      secret: false
+    - default: false
+      description: category name for the issue
+      isArray: false
       name: category
       required: true
-    - name: summary
+      secret: false
+    - default: false
+      description: summary of the issue
+      isArray: false
+      name: summary
       required: true
-    - name: description
+      secret: false
+    - default: false
+      description: Description for the issue
+      isArray: false
+      name: description
       required: true
+      secret: false
+    deprecated: false
+    description: create a Mantis issue
+    execution: false
     name: mantis-create-issue
-  - arguments: []
+  - deprecated: false
     description: get a list of mantis issues
+    execution: false
     name: mantis-get-issues
   - arguments:
-    - name: id
+    - default: false
+      description: Mantis issue to add a Note
+      isArray: false
+      name: id
       required: true
-    - name: text
+      secret: false
+    - default: false
+      description: note text
+      isArray: false
+      name: text
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: public
+      description: select view_state defailt is public
+      isArray: false
       name: view_state
       predefined:
       - public
       - private
       required: true
+      secret: false
+    deprecated: false
+    description: add Note to a Mantis issue
+    execution: false
     name: mantis-add-note
   - arguments:
-    - description: issue Id to close
+    - default: false
+      description: Mantis issue Id to close
+      isArray: false
       name: id
       required: true
+      secret: false
+    deprecated: false
+    description: close a Mantis issue
+    execution: false
     name: mantis-close-issue
   dockerimage: demisto/python3:3.9.1.14969
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0

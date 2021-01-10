@@ -3,9 +3,9 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
-import json
-
-import dateparser
+# import json
+#
+# import dateparser
 import requests
 
 # Disable insecure warnings
@@ -23,7 +23,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url, verify=True, proxy=False, headers=None):
-        super().__init__(base_url, verify=True, proxy=False, headers=headers)
+        super().__init__(base_url, verify=verify, proxy=False, headers=headers)
 
     def get_issue(self, _id: str):
         issue = self._http_request(
@@ -80,7 +80,7 @@ def test_module(client):
     }
     result = client.get_issues(params)
     if "issues" in result:
-       return 'ok'
+        return 'ok'
     else:
         return_error(result)
 
@@ -198,7 +198,10 @@ def matis_create_note_command(client, args):
         }
     }
     resp = client.create_note(_id, body)
-    return 'Note successfully added'
+    if 'note' in resp:
+        return 'Note successfully added'
+    else:
+        return_error(str(resp))
 
 
 def fetch_incidents(client, last_run, first_fetch_time):
@@ -214,34 +217,8 @@ def fetch_incidents(client, last_run, first_fetch_time):
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
-
-    # Handle first time fetch
-    if last_fetch is None:
-        last_fetch, _ = dateparser.parse(first_fetch_time)
-    else:
-        last_fetch = dateparser.parse(last_fetch)
-
-    latest_created_time = last_fetch
-    incidents = []
-    items = client.list_incidents()
-    for item in items:
-        incident_created_time = dateparser.parse(item['created_time'])
-        incident = {
-            'name': item['description'],
-            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
-            'rawJSON': json.dumps(item)
-        }
-
-        incidents.append(incident)
-
-        # Update last run and add incident if the incident is newer than last fetch
-        if incident_created_time > latest_created_time:
-            latest_created_time = incident_created_time
-
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
-    return next_run, incidents
+    incidents = [1, 2, 3]
+    return last_run, incidents
 
 
 def main():
