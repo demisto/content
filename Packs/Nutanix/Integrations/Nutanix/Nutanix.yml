@@ -70,7 +70,7 @@ configuration:
   name: alert_type_uuids
   required: false
   type: 0
-- additionalinfo: TODO
+- additionalinfo: TODO # TODO
   display: Entity Id
   name: entity_id
   required: false
@@ -99,7 +99,7 @@ configuration:
   name: classifications
   required: false
   type: 0
-- additionalinfo: TODO
+- additionalinfo: TODO # TODO
   display: ""
   name: entity_type_ids
   required: false
@@ -285,7 +285,7 @@ script:
       type: String
     - contextPath: NutanixHypervisor.Task..entity_list.entity_name
       description: The name of the entity.
-      type: Unknown
+      type: String
     - contextPath: NutanixHypervisor.Task..operation_type
       description: Operation type of the task.
       type: String
@@ -407,7 +407,7 @@ script:
       type: Boolean
     - contextPath: NutanixHypervisor.Alert.message
       description: The message returned by the acknowledge task.
-      type: Unknown
+      type: String
   - arguments:
     - description: The id of the alert to resolve.
       name: alert_id
@@ -423,7 +423,7 @@ script:
       type: Boolean
     - contextPath: NutanixHypervisor.Alert.message
       description: The message returned by the resolve task.
-      type: Unknown
+      type: String
   - arguments:
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
         created on or after the specified date/time will be acknowledged. Time is
@@ -463,7 +463,7 @@ script:
         the entity type, it returns 404 response.'
       isArray: true
       name: entity_types
-    - description: TODO
+    - description: TODO # TODO
       isArray: true
       name: entity_type_ids
     - description: Maximum number of alerts to acknowledge. Nutanix does not have
@@ -479,14 +479,14 @@ script:
       description: The number of the failed alerts to acknowledge.
       type: Number
     - contextPath: NutanixHypervisor.Alert.alert_status_list.id
-      description: TODO
+      description: TODO # TODO
       type: String
     - contextPath: NutanixHypervisor.Alert.alert_status_list.successful
       description: Was acknowledge for this task successful.
       type: Boolean
     - contextPath: NutanixHypervisor.Alert.alert_status_list.message
       description: Message returned by acknowledge operation.
-      type: Unknown
+      type: String
   - arguments:
     - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
         created on or after the specified date/time will be resolved. Time is expected
@@ -525,12 +525,9 @@ script:
         Host, Disk, Storage Container, Cluster]. If Nutanix service can''t recognize
         the entity type, it returns 404 response.'
       name: entity_types
-    - description: TODO
+    - description: TODO # TODO
       isArray: true
       name: entity_type_ids
-    - description: Page number in the query response, default is 1. When page is specified,
-        limit argument is required. TODO CHECK IF ARGUMENT LIMIT IS REQUIRED
-      name: page
     - description: Maximum number of alerts to resolve. Nutanix does not have max
         for limit, but a very high limit value will cause read timeout exception.
       name: limit
@@ -551,7 +548,7 @@ script:
         type: Boolean
       - contextPath: NutanixHypervisor.Alert.alert_status_list.message
         description: Message returned by resolve operation.
-        type: Unknown
+        type: String
   dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   runonce: false
