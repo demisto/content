@@ -1,23 +1,23 @@
 args:
 - default: false
-  description: The command to run
+  description: The command to run.
   isArray: false
   name: command
   required: true
   secret: false
 - default: false
-  description: Argumnets to the command
+  description: The arguments of the command.
   isArray: false
   name: arguments
   required: false
   secret: false
 - default: false
-  description: The instance name
+  description: The instance name.
   isArray: false
   name: instance_name
   required: true
   secret: false
-comment: Executes a command in Cortex XSOAR with debug mode and pulls logs from the
+comment: Executes a command in Cortex XSOAR in debug mode and pulls logs from the
   command execution.
 commonfields:
   id: TroubleshootExecuteCommand
@@ -26,13 +26,13 @@ enabled: false
 name: TroubleshootExecuteCommand
 outputs:
 - contextPath: TroubleshootExecuteCommand.command
-  description: The command executed
+  description: The command executed.
   type: String
 - contextPath: TroubleshootExecuteCommand.instance_name
-  description: On which instance the command executed
+  description: On which instance of the integration the command executed.
   type: String
 - contextPath: TroubleshootExecuteCommand.Error
-  description: The errors from the command
+  description: The errors from the command.
   type: String
 - contextPath: File.Name
   description: The full file name (including file extension).
@@ -62,7 +62,7 @@ outputs:
   description: "The file extension, for example: 'xls'."
   type: String
 - contextPath: File.Type
-  description: The file type, as determined by libmagic (same as displayed in file
+  description: The file type, as determined by libmagic (same as displayed in the file
     entries).
   type: String
 script: '-'
