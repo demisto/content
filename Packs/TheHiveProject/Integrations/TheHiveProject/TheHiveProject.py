@@ -1,11 +1,9 @@
-from pprint import pprint
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Dict
 
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
-
 
 ''' CONSTANTS '''
 
@@ -43,7 +41,7 @@ SCHEMA = {
             "startDate": 1595342693106,
             "status": "Ok",
             "tags": [
-                    "asd"
+                "asd"
             ],
             "tlp": 1,
             "updatedAt": 1595346351088,
@@ -86,7 +84,6 @@ SCHEMA = {
     "updatedAt": 1595346352635,
     "updatedBy": "xsoar"
 }
-
 
 ''' CLIENT CLASS '''
 
@@ -131,9 +128,10 @@ class Client(BaseClient):
             return cases
 
     def update_case(self, case_id: str = None, updates: dict = None):
-        res = self._http_request('PATCH', f'case/{case_id}', ok_codes=[200, 201, 404], data=updates, resp_type='response')
+        res = self._http_request('PATCH', f'case/{case_id}', ok_codes=[200, 201, 404], data=updates,
+                                 resp_type='response')
         if res.status_code != 200:
-            return(res.status_code, res.text)
+            return (res.status_code, res.text)
         else:
             case = res.json()
             return case
@@ -141,7 +139,7 @@ class Client(BaseClient):
     def create_case(self, details: dict = None):
         res = self._http_request('POST', 'case', ok_codes=[200, 201, 404], data=details, resp_type='response')
         if res.status_code not in [200, 201]:
-            return(res.status_code, res.text)
+            return (res.status_code, res.text)
         else:
             case = res.json()
             return case
@@ -150,14 +148,14 @@ class Client(BaseClient):
         url = f'case/{case_id}/force' if permanent else f'case/{case_id}'
         res = self._http_request('DELETE', url, ok_codes=[200, 201, 204, 404], resp_type='response', timeout=360)
         if res.status_code not in [200, 201, 204]:
-            return(res.status_code, res.text)
+            return (res.status_code, res.text)
         else:
             return res.status_code
 
     def get_linked_cases(self, case_id: str = None):
         res = self._http_request(f'GET', 'case/{case_id}/links', ok_codes=[200, 201, 204, 404], resp_type='response')
         if res.status_code not in [200, 201, 204]:
-            return(res.status_code, res.text)
+            return (res.status_code, res.text)
         else:
             return res.json()
 
@@ -165,14 +163,15 @@ class Client(BaseClient):
         res = self._http_request(f'POST', f'case/{first_case_id}/_merge/{second_case_id}',
                                  ok_codes=[200, 201, 204, 404], resp_type='response')
         if res.status_code not in [200, 201, 204]:
-            return(res.status_code, res.text)
+            return (res.status_code, res.text)
         else:
             return res.json()
 
     def get_tasks(self, case_id: str = None):
         data = {"id": case_id}
         tasks = list()
-        res = self._http_request(f'POST', f'case/task/_search', data=data, ok_codes=[200, 201, 204, 404], resp_type='response')
+        res = self._http_request(f'POST', f'case/task/_search', data=data, ok_codes=[200, 201, 204, 404],
+                                 resp_type='response')
         if res.status_code != 200:
             return None
         tasks = [x for x in res.json() if x['_parent'] == case_id]
@@ -223,7 +222,8 @@ class Client(BaseClient):
         return data
 
     def update_task(self, task_id: str = None, updates: dict = {}):
-        res = self._http_request('PATCH', f'case/task/{task_id}', ok_codes=[200, 201], data=updates, resp_type='response')
+        res = self._http_request('PATCH', f'case/task/{task_id}', ok_codes=[200, 201], data=updates,
+                                 resp_type='response')
         if res.status_code not in [200, 201]:
             return_error(res.text)
         return res.json()
@@ -264,7 +264,8 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def output_results(title: str = None, outputs: [dict, list] = None, headers: [str, list] = None, outputs_prefix: str = None, outputs_key_field: [str, list] = None, human_readable: bool = True):
+def output_results(title: str = None, outputs: [dict, list] = None, headers: [str, list] = None,
+                   outputs_prefix: str = None, outputs_key_field: [str, list] = None, human_readable: bool = True):
     if title and outputs and headers and human_readable:
         md = tableToMarkdown(title, outputs, headers)
     else:
@@ -578,7 +579,6 @@ def update_remote_system_command(client: Client, args: dict = None, params: dict
     case_id = args.get('remoteId')
     status = args.get('status')
     if incident_changed:
-
         # Apply the updates
         client.update_case(case_id=case_id, updates=changes)
     return case_id
@@ -729,7 +729,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

@@ -3,1423 +3,1427 @@ commonfields:
   id: TheHive Project
   version: -1
 configuration:
-- additionalinfo: Ensure to include the port number with the URL
-  defaultvalue: https://soar.monstersofhack.com:9000
-  display: Host (e.g. https://soar.monstersofhack.com:9000)
-  name: url
-  required: true
-  type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- display: API Key
-  name: apiKey
-  required: true
-  type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-- additionalinfo: Select whether you would like cases to mirror in, out, in both directions
-    or disabled.
-  display: Case mirroring
-  name: mirror
-  options:
-  - Disabled
-  - In
-  - Out
-  - Both
-  required: true
-  type: 15
+  - additionalinfo: Ensure to include the port number with the URL
+    defaultvalue: http://IP_OF_VM:9000
+    display: Host (e.g. http://IP_OF_VM:9000)
+    name: url
+    required: true
+    type: 0
+  - display: Fetch incidents
+    name: isFetch
+    required: false
+    type: 8
+  - display: Incident type
+    name: incidentType
+    required: false
+    type: 13
+  - display: API Key
+    name: apiKey
+    required: true
+    type: 4
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+  - additionalinfo: Select whether you would like cases to mirror in, out, in both directions
+      or disabled.
+    display: Case mirroring
+    name: mirror
+    options:
+      - Disabled
+      - In
+      - Out
+      - Both
+    required: true
+    type: 15
 description: Integration with The Hive Project Security Incident Response Platform.
 display: TheHive Project
 name: TheHive Project
 script:
   commands:
-  - arguments:
-    - description: Limit the number of results
-      name: limit
-    description: List cases.
-    name: thehive-list-cases
-    outputs:
-    - contextPath: TheHive.Cases._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
-    - contextPath: TheHive.Cases.caseId
-      description: Case ID
-      type: number
-    - contextPath: TheHive.Cases.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tlp
-      description: TLP
-      type: number
-    - contextPath: TheHive.Cases.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tags
-      description: Tags
-    - contextPath: TheHive.Cases._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.description
-      description: Description
-      type: string
-    - contextPath: TheHive.Cases.severity
-      description: Severity
-      type: number
-    - contextPath: TheHive.Cases.pap
-      description: PAP
-      type: number
-    - contextPath: TheHive.Cases.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.tasks.order
-      description: Order
-      type: number
-    - contextPath: TheHive.Cases.tasks.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tasks._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases.tasks._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks.group
-      description: Group
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
-      type: string
-  - arguments:
-    - description: ID
-      name: id
-      required: true
-    description: Get a case
-    name: thehive-get-case
-    outputs:
-    - contextPath: TheHive.Cases._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
-    - contextPath: TheHive.Cases.caseId
-      description: Case ID
-      type: number
-    - contextPath: TheHive.Cases.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tlp
-      description: TLP
-      type: number
-    - contextPath: TheHive.Cases.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tags
-      description: Tags
-    - contextPath: TheHive.Cases._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.description
-      description: Description
-      type: string
-    - contextPath: TheHive.Cases.severity
-      description: Severity
-      type: number
-    - contextPath: TheHive.Cases.pap
-      description: PAP
-      type: number
-    - contextPath: TheHive.Cases.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.tasks.order
-      description: Order
-      type: number
-    - contextPath: TheHive.Cases.tasks.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tasks._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases.tasks._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks.group
-      description: Group
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
-      type: string
-  - arguments:
-    - description: Title
-      name: title
-    - description: Description
-      name: description
-    - auto: PREDEFINED
-      description: 'Severity (defaul = 2: medium)'
-      name: severity
-      predefined:
-      - "1"
-      - "2"
-      - "3"
-    - description: Start date
-      name: startDate
-    - description: Owner
-      name: owner
-    - auto: PREDEFINED
-      description: Flag of the case (default is false)
-      name: flag
-      predefined:
-      - "false"
-      - "true"
-    - auto: PREDEFINED
-      description: 'TLP (default is 2: amber)'
-      name: tlp
-      predefined:
-      - "0"
-      - "1"
-      - "2"
-      - "3"
-    - description: Case tags
-      name: tags
-    - auto: PREDEFINED
-      description: Resolution status (Indeterminate, FalsePositive, TruePositive,
-        Other or Duplicated)
-      name: resolutionStatus
-      predefined:
-      - Indeterminate
-      - FalsePositive
-      - TruePositive
-      - Other
-      - Duplicated
-    - auto: PREDEFINED
-      description: Impact status
-      name: impactStatus
-      predefined:
-      - NoImpact
-      - WithImpact
-      - NotApplicable
-    - description: Summary
-      name: summary
-    - description: End date
-      name: endDate
-    - description: Metrics
-      name: metrics
-    description: Search cases
-    name: thehive-search-cases
-    outputs:
-    - contextPath: TheHive.Cases._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
-    - contextPath: TheHive.Cases.caseId
-      description: Case ID
-      type: number
-    - contextPath: TheHive.Cases.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tlp
-      description: TLP
-      type: number
-    - contextPath: TheHive.Cases.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tags
-      description: Tags
-    - contextPath: TheHive.Cases._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.description
-      description: Description
-      type: string
-    - contextPath: TheHive.Cases.severity
-      description: Severity
-      type: number
-    - contextPath: TheHive.Cases.pap
-      description: PAP
-      type: number
-    - contextPath: TheHive.Cases.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.tasks.order
-      description: Order
-      type: number
-    - contextPath: TheHive.Cases.tasks.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tasks._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases.tasks._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks.group
-      description: Group
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
-      type: string
-  - arguments:
-    - description: ID
-      name: id
-      required: true
-    - description: Title
-      name: title
-    - description: Description
-      name: description
-    - auto: PREDEFINED
-      description: Severity
-      name: severity
-      predefined:
-      - "1"
-      - "2"
-      - "3"
-    - description: Start date
-      name: startDate
-    - description: Owner
-      name: owner
-    - auto: PREDEFINED
-      description: Flag
-      name: flag
-      predefined:
-      - "true"
-      - "false"
-    - auto: PREDEFINED
-      description: TLP
-      name: tlp
-      predefined:
-      - WHITE
-      - GREEN
-      - AMBER
-      - RED
-    - description: Tags (can be CSV)
-      name: tags
-    - auto: PREDEFINED
-      description: Resolution status
-      name: resolutionStatus
-      predefined:
-      - Indeterminate
-      - FalsePositive
-      - TruePositive
-      - Other
-      - Duplicated
-    - auto: PREDEFINED
-      description: Impact status
-      name: impactStatus
-      predefined:
-      - NoImpact
-      - WithImpact
-      - NotApplicable
-    - description: Summary
-      name: summary
-    - description: End date
-      name: endDate
-    - description: Metrics
-      name: metrics
-    - auto: PREDEFINED
-      description: Status
-      name: status
-      predefined:
-      - Open
-      - Resolved
-      - Deleted
-    - auto: PREDEFINED
-      description: Resolution Status
-      name: resolutionStatus
-      predefined:
-      - Indeterminate
-      - FalsePositive
-      - TruePositive
-      - Other
-      - Duplicated
-    description: Update a case
-    name: thehive-update-case
-    outputs:
-    - contextPath: TheHive.Cases._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
-    - contextPath: TheHive.Cases.caseId
-      description: Case ID
-      type: number
-    - contextPath: TheHive.Cases.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tlp
-      description: TLP
-      type: number
-    - contextPath: TheHive.Cases.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tags
-      description: Tags
-    - contextPath: TheHive.Cases._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.description
-      description: Description
-      type: string
-    - contextPath: TheHive.Cases.severity
-      description: Severity
-      type: number
-    - contextPath: TheHive.Cases.pap
-      description: PAP
-      type: number
-    - contextPath: TheHive.Cases.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.tasks.order
-      description: Order
-      type: number
-    - contextPath: TheHive.Cases.tasks.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tasks._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases.tasks._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks.group
-      description: Group
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
-      type: string
-  - arguments:
-    - description: Title
-      name: title
-      required: true
-    - description: Description
-      name: description
-      required: true
-    - auto: PREDEFINED
-      description: Severity 9default = 2)
-      name: severity
-      predefined:
-      - "1"
-      - "2"
-      - "3"
-    - description: Start date (default = now)
-      name: startDate
-    - description: Owner
-      name: owner
-      required: true
-    - auto: PREDEFINED
-      description: Flag (defaul = false)
-      name: flag
-      predefined:
-      - "false"
-      - "true"
-    - auto: PREDEFINED
-      description: TLP (default = 2)
-      name: tlp
-      predefined:
-      - "0"
-      - "1"
-      - "2"
-      - "3"
-    - description: Tags (can be CSV)
-      name: tags
-    - description: Resolution status
-      name: resolutionStatus
-    - auto: PREDEFINED
-      description: Imapct status
-      name: impactStatus
-      predefined:
-      - NoImpact
-      - WithImpact
-      - qNotApplicable
-    - description: Summary
-      name: summary
-    - description: End date
-      name: endDate
-    - description: Metrics
-      name: metrics
-    description: Create a new case
-    name: thehive-create-case
-    outputs:
-    - contextPath: TheHive.Cases._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
-    - contextPath: TheHive.Cases.caseId
-      description: Case ID
-      type: number
-    - contextPath: TheHive.Cases.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tlp
-      description: TLP
-      type: number
-    - contextPath: TheHive.Cases.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tags
-      description: Tags
-    - contextPath: TheHive.Cases._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.description
-      description: Description
-      type: string
-    - contextPath: TheHive.Cases.severity
-      description: Severity
-      type: number
-    - contextPath: TheHive.Cases.pap
-      description: PAP
-      type: number
-    - contextPath: TheHive.Cases.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.tasks.order
-      description: Order
-      type: number
-    - contextPath: TheHive.Cases.tasks.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tasks._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases.tasks._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks.group
-      description: Group
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
-      type: string
-  - arguments:
-    - description: Case ID
-      name: id
-      required: true
-    - auto: PREDEFINED
-      defaultValue: "false"
-      description: Permanently removes the case (cannot be undone)
-      name: permanent
-      predefined:
-      - "false"
-      - "true"
-    description: Removes a case
-    name: thehive-remove-case
-  - arguments:
-    - description: Case ID
-      name: id
-      required: true
-    description: Get linked cases
-    name: thehive-get-linked-cases
-    outputs:
-    - contextPath: TheHive.Cases._routing
-      description: Routing
-      type: string
-    - contextPath: TheHive.Cases._parent
-      description: Parent
-      type: string
-    - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
-    - contextPath: TheHive.Cases.caseId
-      description: Case ID
-      type: number
-    - contextPath: TheHive.Cases.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tlp
-      description: TLP
-      type: number
-    - contextPath: TheHive.Cases.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tags
-      description: Tags
-    - contextPath: TheHive.Cases._type
-      description: Type
-      type: string
-    - contextPath: TheHive.Cases._version
-      description: Version
-      type: number
-    - contextPath: TheHive.Cases._id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.description
-      description: Description
-      type: string
-    - contextPath: TheHive.Cases.severity
-      description: Severity
-      type: number
-    - contextPath: TheHive.Cases.pap
-      description: PAP
-      type: number
-    - contextPath: TheHive.Cases.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks._routing
-      description: Routing
-      type: string
-    - contextPath: TheHive.Cases.tasks._parent
-      description: Parent ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.tasks.order
-      description: Order
-      type: number
-    - contextPath: TheHive.Cases.tasks.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tasks._type
-      description: Type
-      type: string
-    - contextPath: TheHive.Cases.tasks._version
-      description: Version
-      type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks.group
-      description: Group
-      type: string
-  - arguments:
-    - description: First case ID
-      name: firstCaseID
-      required: true
-    - description: Second case ID
-      name: secondCaseID
-      required: true
-    description: Merges 2 cases
-    name: thehive-merge-cases
-    outputs:
-    - contextPath: TheHive.Cases._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.customFields
-      description: Custom Fields
-    - contextPath: TheHive.Cases.caseId
-      description: Case ID
-      type: number
-    - contextPath: TheHive.Cases.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tlp
-      description: TLP
-      type: number
-    - contextPath: TheHive.Cases.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tags
-      description: Tags
-    - contextPath: TheHive.Cases._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.description
-      description: Description
-      type: string
-    - contextPath: TheHive.Cases.severity
-      description: Severity
-      type: number
-    - contextPath: TheHive.Cases.pap
-      description: PAP
-      type: number
-    - contextPath: TheHive.Cases.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Cases.tasks.order
-      description: Order
-      type: number
-    - contextPath: TheHive.Cases.tasks.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Cases.tasks._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Cases.tasks._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Cases.tasks.group
-      description: Group
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.message
-      description: Message
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._type
-      description: Type
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Cases.tasks.logs.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Cases.tasks.logs.createdBy
-      description: Created by
-      type: string
-  - arguments:
-    - description: Case ID
-      name: id
-      required: true
-    description: Get the tasks of a case
-    name: thehive-get-case-tasks
-  - arguments:
-    - name: id
-      required: true
-      description: Task ID
-    description: Get a specific task.
-    name: thehive-get-task
-    outputs:
-    - contextPath: TheHive.Tasks._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Tasks._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Tasks.flag
-      description: Flagged
-      type: boolean
-    - contextPath: TheHive.Tasks.order
-      description: Order
-      type: number
-    - contextPath: TheHive.Tasks.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Tasks.title
-      description: Title
-      type: string
-    - contextPath: TheHive.Tasks._type
-      description: _type
-      type: string
-    - contextPath: TheHive.Tasks._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Tasks._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Tasks.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Tasks.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Tasks.createdBy
-      description: Created by
-      type: string
-    - contextPath: TheHive.Tasks.group
-      description: Group
-      type: string
-    - contextPath: TheHive.Tasks.logs.message
-      description: Message
-      type: string
-    - contextPath: TheHive.Tasks.logs._routing
-      description: _routing
-      type: string
-    - contextPath: TheHive.Tasks.logs._parent
-      description: _parent
-      type: string
-    - contextPath: TheHive.Tasks.logs.startDate
-      description: Start date
-      type: number
-    - contextPath: TheHive.Tasks.logs.status
-      description: Status
-      type: string
-    - contextPath: TheHive.Tasks.logs.owner
-      description: Owner
-      type: string
-    - contextPath: TheHive.Tasks.logs._type
-      description: Type
-      type: string
-    - contextPath: TheHive.Tasks.logs._version
-      description: _version
-      type: number
-    - contextPath: TheHive.Tasks.logs._id
-      description: _id
-      type: string
-    - contextPath: TheHive.Tasks.logs.id
-      description: ID
-      type: string
-    - contextPath: TheHive.Tasks.logs.createdAt
-      description: Created at
-      type: number
-    - contextPath: TheHive.Tasks.logs.createdBy
-      description: Task ID
-      type: string
-  - arguments:
-    - description: Log ID
-      name: id
-      required: true
-    description: Retrieves an attachment from a log.
-    name: thehive-get-attachment
-  - arguments:
-    - description: Task ID
-      name: id
-      required: true
-    - description: Title
-      name: title
-      required: true
-    - auto: PREDEFINED
-      defaultValue: Waiting
-      description: Status
-      name: status
-      predefined:
-      - Waiting
-      - InProgress
-      - Completed
-      - Cancel
-      required: true
-    - auto: PREDEFINED
-      defaultValue: "false"
-      description: Flag
-      name: flag
-      predefined:
-      - "false"
-      - "true"
-      required: true
-    - description: Owner
-      name: owner
-    - description: Description
-      name: description
-    - description: Start date
-      name: startDate
-    - description: End date
-      name: endDate
-    description: Updates a task.
-    name: thehive-update-task
-  - arguments: []
-    description: Get a list of users
-    name: thehive-list-users
-  - arguments:
-    - description: User ID
-      name: id
-      required: true
-    description: Get a single user
-    name: thehive-get-user
-  - arguments:
-    - description: Login username
-      name: login
-      required: true
-    - description: Name
-      name: name
-      required: true
-    - defaultValue: read
-      description: 'Roles (CSV: can be read, write, admin)'
-      name: roles
-      required: true
-    - description: Password
-      name: password
-      required: true
-    description: Create a new user
-    name: thehive-create-local-user
-  - arguments:
-    - description: User ID
-      name: id
-      required: true
-    description: Block a user
-    name: thehive-block-user
-  - arguments:
-    - description: Case ID
-      name: id
-    description: List observables for a case.
-    name: thehive-list-observables
-  - arguments:
-    - description: Case ID
-      name: id
-      required: true
-    - description: Data
-      name: data
-      required: true
-    - auto: PREDEFINED
-      defaultValue: other
-      description: Data type
-      name: dataType
-      predefined:
-      - autonomous-system
-      - domain
-      - file
-      - filename
-      - fqdn
-      - hash
-      - ip
-      - mail
-      - mail_subject
-      - other
-      - regexp
-      - registry
-      - uri_path
-      - url
-      - user-agent
-      required: true
-    - description: Message
-      name: message
-      required: true
-    - description: Start date
-      name: startDate
-    - auto: PREDEFINED
-      description: TLP
-      name: tlp
-      predefined:
-      - WHITE
-      - GREEN
-      - AMBER
-      - RED
-    - auto: PREDEFINED
-      description: Is IOC?
-      name: ioc
-      predefined:
-      - "true"
-      - "false"
-    - auto: PREDEFINED
-      description: Status
-      name: status
-      predefined:
-      - Ok
-      - Deleted
-    description: Creates an observable.
-    name: thehive-create-observable
-  - arguments:
-    - description: Observable ID
-      name: id
-      required: true
-    - description: Message
-      name: message
-      required: true
-    - auto: PREDEFINED
-      description: TLP
-      name: tlp
-      predefined:
-      - WHITE
-      - GREEN
-      - AMBER
-      - RED
-    - auto: PREDEFINED
-      description: Is IOC?
-      name: ioc
-      predefined:
-      - "true"
-      - "false"
-    - auto: PREDEFINED
-      description: Status
-      name: status
-      predefined:
-      - Ok
-      - Deleted
-    description: Update an observable
-    name: thehive-update-observable
-  dockerimage: demisto/python3:3.8.6.14516
+    - arguments:
+        - description: Limit the number of results
+          name: limit
+      description: List cases.
+      name: thehive-list-cases
+      outputs:
+        - contextPath: TheHive.Cases._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.customFields
+          description: Custom Fields
+        - contextPath: TheHive.Cases.caseId
+          description: Case ID
+          type: number
+        - contextPath: TheHive.Cases.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tlp
+          description: TLP
+          type: number
+        - contextPath: TheHive.Cases.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tags
+          description: Tags
+        - contextPath: TheHive.Cases._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.description
+          description: Description
+          type: string
+        - contextPath: TheHive.Cases.severity
+          description: Severity
+          type: number
+        - contextPath: TheHive.Cases.pap
+          description: PAP
+          type: number
+        - contextPath: TheHive.Cases.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.tasks.order
+          description: Order
+          type: number
+        - contextPath: TheHive.Cases.tasks.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tasks._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases.tasks._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks.group
+          description: Group
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.message
+          description: Message
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._type
+          description: Type
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.createdBy
+          description: Created by
+          type: string
+    - arguments:
+        - description: ID
+          name: id
+          required: true
+      description: Get a case
+      name: thehive-get-case
+      outputs:
+        - contextPath: TheHive.Cases._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.customFields
+          description: Custom Fields
+        - contextPath: TheHive.Cases.caseId
+          description: Case ID
+          type: number
+        - contextPath: TheHive.Cases.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tlp
+          description: TLP
+          type: number
+        - contextPath: TheHive.Cases.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tags
+          description: Tags
+        - contextPath: TheHive.Cases._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.description
+          description: Description
+          type: string
+        - contextPath: TheHive.Cases.severity
+          description: Severity
+          type: number
+        - contextPath: TheHive.Cases.pap
+          description: PAP
+          type: number
+        - contextPath: TheHive.Cases.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.tasks.order
+          description: Order
+          type: number
+        - contextPath: TheHive.Cases.tasks.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tasks._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases.tasks._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks.group
+          description: Group
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.message
+          description: Message
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._type
+          description: Type
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.createdBy
+          description: Created by
+          type: string
+    - arguments:
+        - description: Title
+          name: title
+        - description: Description
+          name: description
+        - auto: PREDEFINED
+          description: 'Severity (defaul = 2: medium)'
+          name: severity
+          predefined:
+            - "1"
+            - "2"
+            - "3"
+        - description: Start date
+          name: startDate
+        - description: Owner
+          name: owner
+        - auto: PREDEFINED
+          description: Flag of the case (default is false)
+          name: flag
+          predefined:
+            - "false"
+            - "true"
+        - auto: PREDEFINED
+          description: 'TLP (default is 2: amber)'
+          name: tlp
+          predefined:
+            - "0"
+            - "1"
+            - "2"
+            - "3"
+        - description: Case tags
+          name: tags
+        - auto: PREDEFINED
+          description: Resolution status (Indeterminate, FalsePositive, TruePositive,
+            Other or Duplicated)
+          name: resolutionStatus
+          predefined:
+            - Indeterminate
+            - FalsePositive
+            - TruePositive
+            - Other
+            - Duplicated
+        - auto: PREDEFINED
+          description: Impact status
+          name: impactStatus
+          predefined:
+            - NoImpact
+            - WithImpact
+            - NotApplicable
+        - description: Summary
+          name: summary
+        - description: End date
+          name: endDate
+        - description: Metrics
+          name: metrics
+      description: Search cases
+      name: thehive-search-cases
+      outputs:
+        - contextPath: TheHive.Cases._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.customFields
+          description: Custom Fields
+        - contextPath: TheHive.Cases.caseId
+          description: Case ID
+          type: number
+        - contextPath: TheHive.Cases.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tlp
+          description: TLP
+          type: number
+        - contextPath: TheHive.Cases.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tags
+          description: Tags
+        - contextPath: TheHive.Cases._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.description
+          description: Description
+          type: string
+        - contextPath: TheHive.Cases.severity
+          description: Severity
+          type: number
+        - contextPath: TheHive.Cases.pap
+          description: PAP
+          type: number
+        - contextPath: TheHive.Cases.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.tasks.order
+          description: Order
+          type: number
+        - contextPath: TheHive.Cases.tasks.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tasks._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases.tasks._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks.group
+          description: Group
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.message
+          description: Message
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._type
+          description: Type
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.createdBy
+          description: Created by
+          type: string
+    - arguments:
+        - description: ID
+          name: id
+          required: true
+        - description: Title
+          name: title
+        - description: Description
+          name: description
+        - auto: PREDEFINED
+          description: Severity
+          name: severity
+          predefined:
+            - "1"
+            - "2"
+            - "3"
+        - description: Start date
+          name: startDate
+        - description: Owner
+          name: owner
+        - auto: PREDEFINED
+          description: Flag
+          name: flag
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: TLP
+          name: tlp
+          predefined:
+            - WHITE
+            - GREEN
+            - AMBER
+            - RED
+        - description: Tags (can be CSV)
+          name: tags
+        - auto: PREDEFINED
+          description: Resolution status
+          name: resolutionStatus
+          predefined:
+            - Indeterminate
+            - FalsePositive
+            - TruePositive
+            - Other
+            - Duplicated
+        - auto: PREDEFINED
+          description: Impact status
+          name: impactStatus
+          predefined:
+            - NoImpact
+            - WithImpact
+            - NotApplicable
+        - description: Summary
+          name: summary
+        - description: End date
+          name: endDate
+        - description: Metrics
+          name: metrics
+        - auto: PREDEFINED
+          description: Status
+          name: status
+          predefined:
+            - Open
+            - Resolved
+            - Deleted
+        - auto: PREDEFINED
+          description: Resolution Status
+          name: resolutionStatus
+          predefined:
+            - Indeterminate
+            - FalsePositive
+            - TruePositive
+            - Other
+            - Duplicated
+      description: Update a case
+      name: thehive-update-case
+      outputs:
+        - contextPath: TheHive.Cases._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.customFields
+          description: Custom Fields
+        - contextPath: TheHive.Cases.caseId
+          description: Case ID
+          type: number
+        - contextPath: TheHive.Cases.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tlp
+          description: TLP
+          type: number
+        - contextPath: TheHive.Cases.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tags
+          description: Tags
+        - contextPath: TheHive.Cases._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.description
+          description: Description
+          type: string
+        - contextPath: TheHive.Cases.severity
+          description: Severity
+          type: number
+        - contextPath: TheHive.Cases.pap
+          description: PAP
+          type: number
+        - contextPath: TheHive.Cases.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.tasks.order
+          description: Order
+          type: number
+        - contextPath: TheHive.Cases.tasks.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tasks._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases.tasks._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks.group
+          description: Group
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.message
+          description: Message
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._type
+          description: Type
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.createdBy
+          description: Created by
+          type: string
+    - arguments:
+        - description: Title
+          name: title
+          required: true
+        - description: Description
+          name: description
+          required: true
+        - auto: PREDEFINED
+          description: Severity 9default = 2)
+          name: severity
+          predefined:
+            - "1"
+            - "2"
+            - "3"
+        - description: Start date (default = now)
+          name: startDate
+        - description: Owner
+          name: owner
+          required: true
+        - auto: PREDEFINED
+          description: Flag (defaul = false)
+          name: flag
+          predefined:
+            - "false"
+            - "true"
+        - auto: PREDEFINED
+          description: TLP (default = 2)
+          name: tlp
+          predefined:
+            - "0"
+            - "1"
+            - "2"
+            - "3"
+        - description: Tags (can be CSV)
+          name: tags
+        - description: Resolution status
+          name: resolutionStatus
+        - auto: PREDEFINED
+          description: Imapct status
+          name: impactStatus
+          predefined:
+            - NoImpact
+            - WithImpact
+            - qNotApplicable
+        - description: Summary
+          name: summary
+        - description: End date
+          name: endDate
+        - description: Metrics
+          name: metrics
+      description: Create a new case
+      name: thehive-create-case
+      outputs:
+        - contextPath: TheHive.Cases._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.customFields
+          description: Custom Fields
+        - contextPath: TheHive.Cases.caseId
+          description: Case ID
+          type: number
+        - contextPath: TheHive.Cases.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tlp
+          description: TLP
+          type: number
+        - contextPath: TheHive.Cases.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tags
+          description: Tags
+        - contextPath: TheHive.Cases._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.description
+          description: Description
+          type: string
+        - contextPath: TheHive.Cases.severity
+          description: Severity
+          type: number
+        - contextPath: TheHive.Cases.pap
+          description: PAP
+          type: number
+        - contextPath: TheHive.Cases.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.tasks.order
+          description: Order
+          type: number
+        - contextPath: TheHive.Cases.tasks.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tasks._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases.tasks._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks.group
+          description: Group
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.message
+          description: Message
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._type
+          description: Type
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.createdBy
+          description: Created by
+          type: string
+    - arguments:
+        - description: Case ID
+          name: id
+          required: true
+        - auto: PREDEFINED
+          defaultValue: "false"
+          description: Permanently removes the case (cannot be undone)
+          name: permanent
+          predefined:
+            - "false"
+            - "true"
+      description: Removes a case
+      name: thehive-remove-case
+    - arguments:
+        - description: Case ID
+          name: id
+          required: true
+      description: Get linked cases
+      name: thehive-get-linked-cases
+      outputs:
+        - contextPath: TheHive.Cases._routing
+          description: Routing
+          type: string
+        - contextPath: TheHive.Cases._parent
+          description: Parent
+          type: string
+        - contextPath: TheHive.Cases.customFields
+          description: Custom Fields
+        - contextPath: TheHive.Cases.caseId
+          description: Case ID
+          type: number
+        - contextPath: TheHive.Cases.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tlp
+          description: TLP
+          type: number
+        - contextPath: TheHive.Cases.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tags
+          description: Tags
+        - contextPath: TheHive.Cases._type
+          description: Type
+          type: string
+        - contextPath: TheHive.Cases._version
+          description: Version
+          type: number
+        - contextPath: TheHive.Cases._id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.description
+          description: Description
+          type: string
+        - contextPath: TheHive.Cases.severity
+          description: Severity
+          type: number
+        - contextPath: TheHive.Cases.pap
+          description: PAP
+          type: number
+        - contextPath: TheHive.Cases.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks._routing
+          description: Routing
+          type: string
+        - contextPath: TheHive.Cases.tasks._parent
+          description: Parent ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.tasks.order
+          description: Order
+          type: number
+        - contextPath: TheHive.Cases.tasks.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tasks._type
+          description: Type
+          type: string
+        - contextPath: TheHive.Cases.tasks._version
+          description: Version
+          type: number
+        - contextPath: TheHive.Cases.tasks._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks.group
+          description: Group
+          type: string
+    - arguments:
+        - description: First case ID
+          name: firstCaseID
+          required: true
+        - description: Second case ID
+          name: secondCaseID
+          required: true
+      description: Merges 2 cases
+      name: thehive-merge-cases
+      outputs:
+        - contextPath: TheHive.Cases._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.customFields
+          description: Custom Fields
+        - contextPath: TheHive.Cases.caseId
+          description: Case ID
+          type: number
+        - contextPath: TheHive.Cases.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tlp
+          description: TLP
+          type: number
+        - contextPath: TheHive.Cases.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tags
+          description: Tags
+        - contextPath: TheHive.Cases._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.description
+          description: Description
+          type: string
+        - contextPath: TheHive.Cases.severity
+          description: Severity
+          type: number
+        - contextPath: TheHive.Cases.pap
+          description: PAP
+          type: number
+        - contextPath: TheHive.Cases.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Cases.tasks.order
+          description: Order
+          type: number
+        - contextPath: TheHive.Cases.tasks.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Cases.tasks._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Cases.tasks._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Cases.tasks.group
+          description: Group
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.message
+          description: Message
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._type
+          description: Type
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Cases.tasks.logs.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Cases.tasks.logs.createdBy
+          description: Created by
+          type: string
+    - arguments:
+        - description: Case ID
+          name: id
+          required: true
+      description: Get the tasks of a case
+      name: thehive-get-case-tasks
+    - arguments:
+        - name: id
+          required: true
+          description: Task ID
+      description: Get a specific task.
+      name: thehive-get-task
+      outputs:
+        - contextPath: TheHive.Tasks._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Tasks._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Tasks.flag
+          description: Flagged
+          type: boolean
+        - contextPath: TheHive.Tasks.order
+          description: Order
+          type: number
+        - contextPath: TheHive.Tasks.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Tasks.title
+          description: Title
+          type: string
+        - contextPath: TheHive.Tasks._type
+          description: _type
+          type: string
+        - contextPath: TheHive.Tasks._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Tasks._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Tasks.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Tasks.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Tasks.createdBy
+          description: Created by
+          type: string
+        - contextPath: TheHive.Tasks.group
+          description: Group
+          type: string
+        - contextPath: TheHive.Tasks.logs.message
+          description: Message
+          type: string
+        - contextPath: TheHive.Tasks.logs._routing
+          description: _routing
+          type: string
+        - contextPath: TheHive.Tasks.logs._parent
+          description: _parent
+          type: string
+        - contextPath: TheHive.Tasks.logs.startDate
+          description: Start date
+          type: number
+        - contextPath: TheHive.Tasks.logs.status
+          description: Status
+          type: string
+        - contextPath: TheHive.Tasks.logs.owner
+          description: Owner
+          type: string
+        - contextPath: TheHive.Tasks.logs._type
+          description: Type
+          type: string
+        - contextPath: TheHive.Tasks.logs._version
+          description: _version
+          type: number
+        - contextPath: TheHive.Tasks.logs._id
+          description: _id
+          type: string
+        - contextPath: TheHive.Tasks.logs.id
+          description: ID
+          type: string
+        - contextPath: TheHive.Tasks.logs.createdAt
+          description: Created at
+          type: number
+        - contextPath: TheHive.Tasks.logs.createdBy
+          description: Task ID
+          type: string
+    - arguments:
+        - description: Log ID
+          name: id
+          required: true
+      description: Retrieves an attachment from a log.
+      name: thehive-get-attachment
+    - arguments:
+        - description: Task ID
+          name: id
+          required: true
+        - description: Title
+          name: title
+          required: true
+        - auto: PREDEFINED
+          defaultValue: Waiting
+          description: Status
+          name: status
+          predefined:
+            - Waiting
+            - InProgress
+            - Completed
+            - Cancel
+          required: true
+        - auto: PREDEFINED
+          defaultValue: "false"
+          description: Flag
+          name: flag
+          predefined:
+            - "false"
+            - "true"
+          required: true
+        - description: Owner
+          name: owner
+        - description: Description
+          name: description
+        - description: Start date
+          name: startDate
+        - description: End date
+          name: endDate
+      description: Updates a task.
+      name: thehive-update-task
+    - arguments: [ ]
+      description: Get a list of users
+      name: thehive-list-users
+    - arguments:
+        - description: User ID
+          name: id
+          required: true
+      description: Get a single user
+      name: thehive-get-user
+    - arguments:
+        - description: Login username
+          name: login
+          required: true
+        - description: Name
+          name: name
+          required: true
+        - defaultValue: read
+          description: 'Roles (CSV: can be read, write, admin)'
+          name: roles
+          required: true
+        - description: Password
+          name: password
+          required: true
+      description: Create a new user
+      name: thehive-create-local-user
+    - arguments:
+        - description: User ID
+          name: id
+          required: true
+      description: Block a user
+      name: thehive-block-user
+    - arguments:
+        - description: Case ID
+          name: id
+      description: List observables for a case.
+      name: thehive-list-observables
+    - arguments:
+        - description: Case ID
+          name: id
+          required: true
+        - description: Data
+          name: data
+          required: true
+        - auto: PREDEFINED
+          defaultValue: other
+          description: Data type
+          name: dataType
+          predefined:
+            - autonomous-system
+            - domain
+            - file
+            - filename
+            - fqdn
+            - hash
+            - ip
+            - mail
+            - mail_subject
+            - other
+            - regexp
+            - registry
+            - uri_path
+            - url
+            - user-agent
+          required: true
+        - description: Message
+          name: message
+          required: true
+        - description: Start date
+          name: startDate
+        - auto: PREDEFINED
+          description: TLP
+          name: tlp
+          predefined:
+            - WHITE
+            - GREEN
+            - AMBER
+            - RED
+        - auto: PREDEFINED
+          description: Is IOC?
+          name: ioc
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Status
+          name: status
+          predefined:
+            - Ok
+            - Deleted
+      description: Creates an observable.
+      name: thehive-create-observable
+    - arguments:
+        - description: Observable ID
+          name: id
+          required: true
+        - description: Message
+          name: message
+          required: true
+        - auto: PREDEFINED
+          description: TLP
+          name: tlp
+          predefined:
+            - WHITE
+            - GREEN
+            - AMBER
+            - RED
+        - auto: PREDEFINED
+          description: Is IOC?
+          name: ioc
+          predefined:
+            - "true"
+            - "false"
+        - auto: PREDEFINED
+          description: Status
+          name: status
+          predefined:
+            - Ok
+            - Deleted
+      description: Update an observable
+      name: thehive-update-observable
+    - deprecated: false
+      description: Returns the list of fields.
+      execution: false
+      name: get-mapping-fields
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -1430,4 +1434,4 @@ script:
   type: python
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
