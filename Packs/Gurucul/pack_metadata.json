@@ -1,0 +1,27 @@
+{
+    "name": "Gurucul Risk Analytics",
+    "description": "Gurucul Risk Analytics (GRA) is a Unified Security and Risk Analytics platform.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Gurucul",
+    "url": "https://www.gurucul.com",
+    "email": "support@gurucul.com",
+    "githubUser": "graadmin",
+    "created": "2020-12-02T18:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        }
+    }
+}
