@@ -20,8 +20,8 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| SOC_manager_Email | In case that the Shift manager debriefing section will be left empty when a new shift handover incident is opened, an Email will be send to this address to provide Shift manager debriefing. |  | Optional |
-| Shift manager debriefing  | The incident field that will provide the shift manager debriefing in the layout. |  | Optional |
+| SOC_manager_Email | In case that the Shift manager briefing section will be left empty when a new shift handover incident is created, an Email will be send to this address to provide Shift manager briefing. |  | Optional |
+| Shift manager briefing  | The incident field that will provide the shift manager briefing for the layout. |  | Optional |
 
 ## Playbook Outputs
 ---
