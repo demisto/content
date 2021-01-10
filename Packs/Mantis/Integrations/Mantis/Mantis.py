@@ -125,7 +125,7 @@ def mantis_close_issue_command(client, args):
     _id = args.get("id")
     resp = client.close_issue(_id)
     if 'issues' in resp:
-        return_results(f"Issue {_id} has been closed")
+        return f"Issue {_id} has been closed"
     else:
         return_error(resp)
 
