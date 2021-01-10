@@ -44,21 +44,72 @@ class Client(BaseClient):
             json_data=request_params
         )
 
+    def get_list(self, endpoint: str):
+        """Get entry types using the API endpoint"""
+
+        return self._http_request(
+            method='GET',
+            url_suffix=f"{endpoint}",
+        )
+
+
+''' HELPER FUNCTIONS '''
+
+
+def command_with_all_fields_readable_list(results, result_name, output_prefix, outputs_key_field='id') -> CommandResults:
+    """Get entry types list from TOPdesk"""
+
+    if len(results) == 0:
+        return CommandResults(readable_output=f'No {result_name} found')
+
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} {result_name}', results)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_NAME}.{output_prefix}',
+        outputs_key_field=outputs_key_field,
+        outputs=results
+    )
+
 
 ''' COMMAND FUNCTIONS '''
 
 
 def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Get customers list from TOPdesk"""
+    """Get persons list from TOPdesk"""
 
-    persons = client.get_userss(users_type="persons",
-                                start=args.get('start', None),
-                                page_size=args.get('page_size', None),
-                                query=args.get('query', None))
+    persons = client.get_users(users_type="persons",
+                               start=args.get('start', None),
+                               page_size=args.get('page_size', None),
+                               query=args.get('query', None))
     if len(persons) == 0:
         return CommandResults(readable_output='No persons found')
 
-    readable_output = tableToMarkdown('id', persons)
+    headers = ['id', 'dynamicName', 'phoneNumber', 'mobileNumber', 'fax', 'email',
+               'jobTitle', 'department', 'city', 'departmentFree', 'branch', 'location',
+               'tasLoginName', 'status', 'clientReferenceNumber']
+
+    readable_persons = []
+    for person in persons:
+        readable_persons.append({
+            'id': person.get('id'),
+            'dynamicName': person.get('dynamicName'),
+            'phoneNumber': person.get('phoneNumber'),
+            'mobileNumber': person.get('mobileNumber'),
+            'fax': person.get('fax'),
+            'email': person.get('email'),
+            'jobTitle': person.get('jobTitle'),
+            'department': person.get('department'),
+            'city': person.get('city'),
+            'departmentFree': person.get('departmentFree'),
+            'branch': person.get('branch'),
+            'location': person.get('location'),
+            'tasLoginName': person.get('tasLoginName'),
+            'status': person.get('status'),
+            'clientReferenceNumber': person.get('clientReferenceNumber')
+        })
+
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} persons', readable_persons, headers=headers)
 
     return CommandResults(
         readable_output=readable_output,
@@ -78,7 +129,31 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
     if len(operators) == 0:
         return CommandResults(readable_output='No operators found')
 
-    readable_output = tableToMarkdown('id', operators)
+    headers = ['id', 'dynamicName', 'phoneNumber', 'mobileNumber', 'fax', 'email',
+               'jobTitle', 'department', 'city', 'departmentFree', 'branch', 'location',
+               'tasLoginName', 'status', 'clientReferenceNumber']
+
+    readable_operators = []
+    for operator in operators:
+        readable_operators.append({
+            'id': operator.get('id'),
+            'dynamicName': operator.get('dynamicName'),
+            'phoneNumber': operator.get('phoneNumber'),
+            'mobileNumber': operator.get('mobileNumber'),
+            'fax': operator.get('fax'),
+            'email': operator.get('email'),
+            'jobTitle': operator.get('jobTitle'),
+            'department': operator.get('department'),
+            'city': operator.get('city'),
+            'departmentFree': operator.get('departmentFree'),
+            'branch': operator.get('branch'),
+            'location': operator.get('location'),
+            'tasLoginName': operator.get('tasLoginName'),
+            'status': operator.get('status'),
+            'clientReferenceNumber': operator.get('clientReferenceNumber')
+        })
+
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} operators', readable_operators, headers=headers)
 
     return CommandResults(
         readable_output=readable_output,
@@ -86,6 +161,33 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs_key_field='id',
         outputs=operators
     )
+
+
+def entry_types_command(client: Client) -> CommandResults:
+    """Get entry types list from TOPdesk"""
+    entry_types = client.get_list('/incidents/entry_types')
+    return command_with_all_fields_readable_list(results=entry_types,
+                                                 result_name='entry types',
+                                                 output_prefix='entryType',
+                                                 outputs_key_field='id')
+
+
+def call_types_command(client: Client) -> CommandResults:
+    """Get call types list from TOPdesk"""
+    call_types = client.get_list("/incidents/call_types")
+    return command_with_all_fields_readable_list(results=call_types,
+                                                 result_name='call types',
+                                                 output_prefix='callType',
+                                                 outputs_key_field='id')
+
+
+def categories_command(client: Client) -> CommandResults:
+    """Get categories list from TOPdesk"""
+    categories = client.get_list("/incidents/categories")
+    return command_with_all_fields_readable_list(results=categories,
+                                                 result_name='categories',
+                                                 output_prefix='category',
+                                                 outputs_key_field='id')
 
 
 def test_module(client: Client) -> str:
@@ -134,6 +236,15 @@ def main() -> None:
 
         elif demisto.command() == 'topdesk-operators-list':
             return_results(list_operators_command(client, demisto.args()))
+
+        elif demisto.command() == 'topdesk-entry-types-list':
+            return_results(entry_types_command(client))
+
+        elif demisto.command() == 'topdesk-call-types-list':
+            return_results(call_types_command(client))
+
+        elif demisto.command() == 'topdesk-categories-list':
+            return_results(categories_command(client))
 
     # Log exceptions and return errors
     except Exception as e:
