@@ -498,6 +498,7 @@ def get_updated_private_packs(private_index_path, index_folder_path):
     with open(os.path.join(private_index_path, f"{GCPConfig.INDEX_NAME}.json")) as private_index_file:
         private_index_json = json.load(private_index_file)
     private_packs = private_index_json.get("packs", {})
+    print(f"in get_updated_private_packs  private_packs are : {private_packs}")
 
     for pack in private_packs:
         private_pack_id = pack.get('id')
@@ -549,6 +550,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                           "r") as metadata_file:
                     metadata = json.load(metadata_file)
             if metadata:
+                print(f"LOOK HERE :  {metadata.get('contentCommitHash')}, vendorNAME: {metadata.get('vendorName')} ")
                 private_packs.append({
                     'id': metadata.get('id') if not is_changed_private_pack else metadata.get('name'),
                     'price': metadata.get('price'),
@@ -559,6 +561,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
 
+    print(f"return value private_packs is {private_packs}")
     return private_packs
 
 
