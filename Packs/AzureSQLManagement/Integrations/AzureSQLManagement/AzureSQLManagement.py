@@ -208,7 +208,7 @@ def azure_sql_db_list_command(client: Client, server_name: str, limit: str = '50
             del db['properties']
 
     human_readable = tableToMarkdown(name='Database List', t=database_list_values,
-                                     headers=['name', 'status'],
+                                     headers=['id', 'databaseId', 'name', 'location', 'status', 'managedBy'],
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
