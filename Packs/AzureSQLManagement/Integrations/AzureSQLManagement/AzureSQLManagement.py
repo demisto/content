@@ -139,11 +139,14 @@ class Client:
 
 
 @logger
-def azure_sql_servers_list_command(client: Client) -> CommandResults:
+def azure_sql_servers_list_command(client: Client, limit: str, offset: str) -> CommandResults:
     """azure-sql-servers-list command: Returns a list of all servers
 
     :type client: ``Client``
     :param client: AzureSQLManagement client to use
+    :param limit: The maximum number of servers returned to the War Room. Default
+        is 50.
+    :param offset: Offset in the data set. Default is 0.
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
@@ -153,7 +156,9 @@ def azure_sql_servers_list_command(client: Client) -> CommandResults:
     """
 
     server_list = client.azure_sql_servers_list()
-    server_list_values = copy.deepcopy(server_list.get('value', ''))
+    offset_int = int(offset) if offset else 0
+    limit_int = int(limit) if limit else 50
+    server_list_values = copy.deepcopy(server_list.get('value', '')[offset_int:(offset_int + limit_int)])
     for server in server_list_values:
         properties = server.get('properties', {})
         if properties:
@@ -173,7 +178,7 @@ def azure_sql_servers_list_command(client: Client) -> CommandResults:
 
 
 @logger
-def azure_sql_db_list_command(client: Client, server_name: str) -> CommandResults:
+def azure_sql_db_list_command(client: Client, server_name: str, limit: str, offset: str) -> CommandResults:
     """azure-sql-db-list command: Returns a list of all databases for server
 
     :type client: ``Client``
@@ -187,10 +192,15 @@ def azure_sql_db_list_command(client: Client, server_name: str) -> CommandResult
 
     Args:
         server_name: server name for which we want to receive list of databases
+        limit: The maximum number of databases returned to the War Room. Default
+        is 50.
+        offset: Offset in the data set. Default is 0.
     """
 
+    offset_int = int(offset) if offset else 0
+    limit_int = int(limit) if limit else 50
     database_list = client.azure_sql_db_list(server_name)
-    database_list_values = copy.deepcopy(database_list.get('value', ''))
+    database_list_values = copy.deepcopy(database_list.get('value', '')[offset_int:(offset_int + limit_int)])
     for db in database_list_values:
         properties = db.get('properties', {})
         if properties:
@@ -211,7 +221,8 @@ def azure_sql_db_list_command(client: Client, server_name: str) -> CommandResult
 
 
 @logger
-def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_name: str) -> CommandResults:
+def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_name: str,
+                                           limit: str, offset: str) -> CommandResults:
     """azure_sql_db_audit_policy_list command: Returns a list of auditing settings of a database
 
     :type client: ``Client``
@@ -226,10 +237,15 @@ def azure_sql_db_audit_policy_list_command(client: Client, server_name: str, db_
     Args:
         server_name: server name for which we want to receive list of auditing settings
         db_name: database for which we want to receive list of auditing settings
+        limit: The maximum number of audit policies returned to the War Room. Default
+        is 50.
+        offset: Offset in the data set. Default is 0.
     """
 
+    offset_int = int(offset) if offset else 0
+    limit_int = int(limit) if limit else 50
     audit_list = client.azure_sql_db_audit_policy_list(server_name, db_name)
-    audit_list_values = copy.deepcopy(audit_list.get('value', ''))
+    audit_list_values = copy.deepcopy(audit_list.get('value', '')[offset_int:(offset_int + limit_int)])
     for db in audit_list_values:
         properties = db.get('properties', {})
         if properties:

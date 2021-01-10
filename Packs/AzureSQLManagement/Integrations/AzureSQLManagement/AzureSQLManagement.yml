@@ -51,7 +51,21 @@ script:
     description: Tests the connectivity to the Azure SQL Management.
     execution: false
     name: azure-sql-auth-test
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: The maximum number of servers returned to the War Room. Default
+        is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Offset in the data set. Default is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
     description: List of all servers.
     execution: false
     name: azure-sql-servers-list
@@ -101,6 +115,19 @@ script:
       isArray: false
       name: server_name
       required: true
+      secret: false
+    - default: false
+      description: The maximum number of DataBases returned to the War Room. Default
+        is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: (Int) Offset in the data set. Default is 0.
+      isArray: false
+      name: offset
+      required: false
       secret: false
     deprecated: false
     description: List of all DataBases for server.
@@ -185,6 +212,19 @@ script:
       isArray: false
       name: db_name
       required: true
+      secret: false
+    - default: false
+      description: The maximum number of DataBases audit policies returned to the
+        War Room. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: (Int) Offset in the data set. Default is 0.
+      isArray: false
+      name: offset
+      required: false
       secret: false
     deprecated: false
     description: Auditing settings of a database.
@@ -464,8 +504,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Comma-separated list of e-mail addresses to which the alert is
-        sent.'
+      description: Comma-separated list of e-mail addresses to which the alert is
+        sent.
       isArray: true
       name: email_addresses
       required: false
@@ -476,8 +516,8 @@ script:
       isArray: false
       name: email_account_admins
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       required: false
       secret: false
     - auto: PREDEFINED
