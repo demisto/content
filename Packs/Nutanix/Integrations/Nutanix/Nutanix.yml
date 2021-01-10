@@ -141,7 +141,7 @@ script:
         Nutanix the following way: Return all virtual machines s.t (machine type ==
         pc AND power_state != off) OR ha_priority == 0.'
       name: filter
-    - description: Number of virtual machines to retrieve. Possible values 1-9223372036854775807.
+    - description: Number of virtual machines to retrieve.
       name: length
     - description: The offset to start retrieving virtual machines.
       name: offset
@@ -206,8 +206,7 @@ script:
     - description: Id of the virtual machine to change its power status.
       name: vm_uuid
       required: true
-    - description: If virtual machine is being powered 'on', this host will be chosen
-        to run the virtual machine.
+    - description: If virtual machine is being transitioned with 'ON' or 'POWERCYCLE', this host will be chosen to run the virtual machine.
       name: host_uuid
     - auto: PREDEFINED
       description: The new power state to which you want to transfer the virtual machine
@@ -231,13 +230,13 @@ script:
       that no such host may not be available. If the virtual machine is being power
       cycled, a different host can be specified to start it on. This is also an asynchronous
       operation that results in the creation of a task object. The UUID of this task
-      object is returned as the response of this operation. This task can be monitored
+      object is returned as the response of this operation. With this task uuid, this task status can be monitored
       by using the nutanix-hypervisor-task-poll command.
     name: nutanix-hypervisor-vm-powerstatus-change
     outputs:
     - contextPath: NutanixHypervisor.VMPowerStatus.task_uuid
-      description: The task uuid returned for the power status change request from Nutanix
-        service.
+      description: The task uuid returned by Nutanix service for the power status change request. With this task uuid the task status can be monitored
+        by using the nutanix-hypervisor-task-poll command.
       type: String
   - arguments:
     - description: The IDs of the tasks to poll
@@ -305,11 +304,11 @@ script:
       description: The uuid of the cluster.
       type: String
   - arguments:
-    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
         created on or after the specified date/time will be retrieved. Time is expected
         to be in UTC.
       name: start_time
-    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
         created on or before the specified date/time will be retrieved. Time is expected
         to be in UTC.
       name: end_time
@@ -425,11 +424,11 @@ script:
       description: The message returned by the resolve task.
       type: String
   - arguments:
-    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
         created on or after the specified date/time will be acknowledged. Time is
         expected to be in UTC.
       name: start_time
-    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
         created on or before the specified date/time will be acknowledged. Time is
         expected to be in UTC.
       name: end_time
@@ -488,11 +487,11 @@ script:
       description: Message returned by acknowledge operation.
       type: String
   - arguments:
-    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
         created on or after the specified date/time will be resolved. Time is expected
         to be in UTC.
       name: start_time
-    - description: A date in the format 2020-12-31T23:59:00. Only alerts that were
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
         created on or before the specified date/time will be resolved. Time is expected
         to be in UTC.
       name: end_time
