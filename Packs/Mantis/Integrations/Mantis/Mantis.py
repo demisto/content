@@ -118,7 +118,7 @@ def mantis_get_all_issues_command(client, args):
             outputs_key_field=TABLE_HEADERS,
             outputs=issues
         )
-        return_results(results)
+        return results
 
 
 def mantis_close_issue_command(client, args):
