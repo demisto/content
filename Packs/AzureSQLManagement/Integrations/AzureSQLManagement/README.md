@@ -17,7 +17,7 @@ At end of the process you'll see a message that you've logged in successfully.
 In order to use the Cortex XSOAR Azure application, use the default application ID (8f9010bb-4efe-4cfa-a197-98a2694b7e0c).
 
 You only need to fill in your subscription ID and resource group name. You can find your resource group and 
-subscription ID at Azure Portal Home Page -> SQL servers -> your server -> At Overview you will have Resourse group and Subscription ID.
+subscription ID at Azure Portal Home Page -> SQL servers -> your server -> At Overview you will have Resource group and Subscription ID.
 
 #### Self-Deployed Azure App
 
