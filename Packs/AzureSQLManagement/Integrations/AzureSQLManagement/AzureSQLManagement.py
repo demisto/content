@@ -127,19 +127,16 @@ class Client:
 
 @logger
 def azure_sql_servers_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    """azure-sql-servers-list command: Returns a list of all servers
+    """azure-sql-servers-list command returns a list of all servers
 
-    :type client: ``Client``
-    :param client: AzureSQLManagement client to use
-    :param limit: The maximum number of servers returned to the War Room. Default
-        is 50.
-    :param offset: Offset in the data set. Default is 0.
+    Args:
+        client: AzureSQLManagement Client to use
+        limit: The maximum number of servers returned to the War Room. Default is 50.
+        offset: Offset in the data set. Default is 0.
 
-    :return:
+    Returns:
         A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains a scan status
-
-    :rtype: ``CommandResults``
+        that contains a list of all servers
     """
     offset_int = int(args.get('offset', '0'))
     limit_int = int(args.get('limit', '50'))
@@ -167,22 +164,18 @@ def azure_sql_servers_list_command(client: Client, args: Dict[str, str]) -> Comm
 
 @logger
 def azure_sql_db_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    """azure-sql-db-list command: Returns a list of all databases for server
-
-    :type client: ``Client``
-    :param client: AzureSQLManagement client to use
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains a scan status
-
-    :rtype: ``CommandResults``
+    """azure-sql-db-list command returns a list of all databases for server
 
     Args:
+        client: AzureSQLManagement Client to use
         server_name: server name for which we want to receive list of databases
         limit: The maximum number of databases returned to the War Room. Default
         is 50.
         offset: Offset in the data set. Default is 0.
+
+    Returns:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains a list of all databases for server
     """
 
     offset_int = int(args.get('offset', '0'))
@@ -212,23 +205,20 @@ def azure_sql_db_list_command(client: Client, args: Dict[str, str]) -> CommandRe
 
 @logger
 def azure_sql_db_audit_policy_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    """azure_sql_db_audit_policy_list command: Returns a list of auditing settings of a database
-
-    :type client: ``Client``
-    :param client: AzureSQLManagement client to use
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains a scan status
-
-    :rtype: ``CommandResults``
+    """azure_sql_db_audit_policy_list command returns a list of auditing settings of a database
 
     Args:
+        client: AzureSQLManagement Client to use
         server_name: server name for which we want to receive list of auditing settings
         db_name: database for which we want to receive list of auditing settings
         limit: The maximum number of audit policies returned to the War Room. Default
         is 50.
         offset: Offset in the data set. Default is 0.
+
+    Returns:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains a list of auditing settings of a database
+
     """
     server_name = args.get('server_name')
     db_name = args.get('db_name')
@@ -255,19 +245,11 @@ def azure_sql_db_audit_policy_list_command(client: Client, args: Dict[str, str])
 
 @logger
 def azure_sql_db_audit_policy_create_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    """azure_sql_db_audit_policy_create_update command: Upadate and create audit policies related to the server
+    """azure_sql_db_audit_policy_create_update command upadates and creates audit policies related to the server
     and database
 
-    :type client: ``Client``
-    :param client: AzureSQLManagement client to use
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains a scan status
-
-    :rtype: ``CommandResults``
-
     Args:
+        client: AzureSQLManagement Client to use
         server_name: server name for which we want to create or update auditing settings
         db_name: database for which we want to create or update auditing settings
         state: state of the policy
@@ -280,6 +262,10 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, args: Dict[s
         storage_account_access_key: identifier key of the auditing storage account
         storage_account_subscription_id: storage subscription Id
         storage_endpoint: Storage endpoint.
+
+    Returns:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains an updated audit policy
 
     """
 
@@ -323,20 +309,16 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, args: Dict[s
 
 @logger
 def azure_sql_db_threat_policy_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    """azure_sql_db_threat_policy_get command: Returns a threat detection policies of a database
-
-    :type client: ``Client``
-    :param client: AzureSQLManagement client to use
-
-    :return:
-        A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains a scan status
-
-    :rtype: ``CommandResults``
+    """azure_sql_db_threat_policy_get command returns a threat detection policy of a database
 
     Args:
+        client: AzureSQLManagement Client to use
         server_name: server name for which we want to receive threat detection policies
         db_name: database for which we want to receive threat detection policies
+
+    Returns:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains a threat detection policy of a database
     """
     server_name = args.get('server_name')
     db_name = args.get('db_name')
@@ -361,19 +343,11 @@ def azure_sql_db_threat_policy_get_command(client: Client, args: Dict[str, str])
 
 @logger
 def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
-    """azure_sql_db_audit_policy_create_update command: Upadate and create audit policies related to the server
+    """azure_sql_db_audit_policy_create_update command upadates and creates threat policy related to the server
         and database
 
-        :type client: ``Client``
-        :param client: AzureSQLManagement client to use
-
-        :return:
-            A ``CommandResults`` object that is then passed to ``return_results``,
-            that contains a scan status
-
-        :rtype: ``CommandResults``
-
         Args:
+            client: AzureSQLManagement Client to use
             server_name: server name for which we want to create or update auditing settings
             db_name: database for which we want to create or update auditing settings
             state: satate of the policy
@@ -386,6 +360,10 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
             storage_account_access_key: identifier key of the auditing storage account
             use_server_default: Whether to use the default server policy or not.
             storage_endpoint: Storage endpoint.
+
+        Returns:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains an updated threat policy
 
         """
     server_name = args['server_name']
