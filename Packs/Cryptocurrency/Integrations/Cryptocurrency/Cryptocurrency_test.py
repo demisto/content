@@ -31,6 +31,7 @@ def test_main__without_address_type(mocker, crypto, expected):
        - Returns List of CommandResults object with the expected data
        """
     mocker.patch.object(demisto, 'args', return_value={'crypto': crypto})
+    mocker.patch.object(demisto, 'params', return_value={'reliability': 'B - Usually reliable'})
     mocker.patch.object(demisto, 'command', return_value='crypto')
     mocker.patch.object(demisto, 'results')
     main()
@@ -53,9 +54,10 @@ def test_main__with_address_type(mocker):
         'DBotScore('
         'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
             {'Indicator': 'bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'Type': 'cryptocurrency',
-             'Vendor': 'Cryptocurrency', 'Score': 2, 'Reliability': 'B - Usually reliable'}]
+             'Vendor': 'Cryptocurrency', 'Score': 2, 'Reliability': 'A - Completely reliable'}]
     }
     mocker.patch.object(demisto, 'args', return_value={'crypto': crypto, 'address_type': 'bitcoin'})
+    mocker.patch.object(demisto, 'params', return_value={'reliability': 'A - Completely reliable'})
     mocker.patch.object(demisto, 'command', return_value='crypto')
     mocker.patch.object(demisto, 'results')
     main()
