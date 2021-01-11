@@ -401,7 +401,7 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
             storage_endpoint: Storage endpoint.
 
         """
-    server_name = args.get('server_name')
+    server_name = args['server_name']
     db_name = args.get('db_name')
     state = args.get('state')
     retention_days = args.get('retention_days', '')
