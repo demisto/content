@@ -777,6 +777,7 @@ def get_packs_summary(packs_list):
 
     """
     successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
+    print(f"in get_packs_summary > successful_packs are: {successful_packs} ")
     skipped_packs = [pack for pack in packs_list if
                      pack.status == PackStatus.PACK_ALREADY_EXISTS.name
                      or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name]
@@ -973,6 +974,7 @@ def main():
     upload_id_set(storage_bucket, id_set_path)
 
     # get the lists of packs divided by their status
+    packs_list.extend(updated_private_packs)
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
