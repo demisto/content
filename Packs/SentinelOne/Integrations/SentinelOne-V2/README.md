@@ -1,5 +1,5 @@
 End point protection
-This integration was integrated and tested with version xx of SentinelOne V2
+
 ## Configure SentinelOne V2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

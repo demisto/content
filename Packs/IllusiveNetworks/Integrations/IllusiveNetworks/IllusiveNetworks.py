@@ -584,7 +584,7 @@ def delete_deceptive_servers_command(client: Client, args: dict) -> Tuple:
 def get_incidents_command(client: Client, args: dict) -> Tuple:
     incident_id = args.get("incident_id")
     has_forensics = args.get("has_forensics", None)
-    host_names = argToList(args.get('host_names'))
+    host_names = argToList(args.get('hostnames'))
     limit = args.get("limit", 10)
     offset = args.get("offset", 0)
     start_date = args.get("start_date", None)

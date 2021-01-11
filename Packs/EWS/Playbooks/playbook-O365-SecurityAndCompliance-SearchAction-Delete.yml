@@ -1,355 +1,22 @@
-id: O365 - Security And Compliance - Search Action - Delete
-version: -1
-name: O365 - Security And Compliance - Search Action - Delete
 description: |-
   This playbook performs the following steps:
   1. Creates a new compliance search action Purge - Hard or Soft.
   2. Waits for the compliance search action to complete.
   3. Retrieves the delete search action.
-starttaskid: "0"
-tasks:
-  "0":
-    id: "0"
-    taskid: c6f4105e-de9e-4f21-8f03-9fa3f3d68ba6
-    type: start
-    task:
-      id: c6f4105e-de9e-4f21-8f03-9fa3f3d68ba6
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "1":
-    id: "1"
-    taskid: 99c91b4d-3b24-4451-87cf-b913ef28cc4b
-    type: regular
-    task:
-      id: 99c91b4d-3b24-4451-87cf-b913ef28cc4b
-      version: -1
-      name: Search action - Hard delete
-      description: After you create a content search using the !o365-sc-new-search
-        command and run it using the !o365-sc-start-search command, you assign a search
-        action to the search using the !o365-sc-new-search-action command.
-      script: '|||o365-sc-new-search-action'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      action:
-        simple: Purge
-      purge_type:
-        simple: HardDelete
-      search_name:
-        complex:
-          root: inputs.search_name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 30,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "3":
-    id: "3"
-    taskid: 26863f80-1e92-4308-852f-776438bac123
-    type: playbook
-    task:
-      id: 26863f80-1e92-4308-852f-776438bac123
-      version: -1
-      name: Waiting for delete operation to complete
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      AdditionalPollingCommandArgNames: {}
-      AdditionalPollingCommandArgValues: {}
-      Ids:
-        complex:
-          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
-          accessor: Name
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: search_action_name
-      PollingCommandName:
-        simple: o365-sc-get-search-action
-      Timeout:
-        simple: "10"
-      dt:
-        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status &&  val.Status
-          == "InProgress" || val.Status == "Starting" || val.Status == "Purging")
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: d1ed7ae5-902a-4e35-848f-7ba81129bcf9
-    type: title
-    task:
-      id: d1ed7ae5-902a-4e35-848f-7ba81129bcf9
-      version: -1
-      name: Search action completed.
-      type: title
-      iscommand: false
-      brand: ""
-      description: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 925
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 639b4a44-9d7f-444d-821b-8fbcd4013457
-    type: condition
-    task:
-      id: 639b4a44-9d7f-444d-821b-8fbcd4013457
-      version: -1
-      name: Perform a hard delete on the compliance search results?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      '#default#':
-      - "8"
-      Hard delete:
-      - "1"
-      Soft delete:
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: Hard delete
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.delete_type
-                transformers:
-                - operator: toUpperCase
-            iscontext: true
-          right:
-            value:
-              simple: HARD
-    - label: Soft delete
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.delete_type
-                transformers:
-                - operator: toUpperCase
-            iscontext: true
-          right:
-            value:
-              simple: SOFT
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "6":
-    id: "6"
-    taskid: 51c3a18f-f252-4a4c-893f-c6274048264a
-    type: regular
-    task:
-      id: 51c3a18f-f252-4a4c-893f-c6274048264a
-      version: -1
-      name: Search action - Soft delete.
-      description: After you create a content search using the !o365-sc-new-search
-        command and run it using the !o365-sc-start-search command, you assign a search
-        action to the search using the !o365-sc-new-search-action command.
-      script: '|||o365-sc-new-search-action'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      action:
-        simple: Purge
-      purge_type:
-        simple: SoftDelete
-      search_name:
-        complex:
-          root: inputs.search_name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 6d749512-d68b-465d-8543-8c31f1200b94
-    type: regular
-    task:
-      id: 6d749512-d68b-465d-8543-8c31f1200b94
-      version: -1
-      name: Get the search action.
-      description: Get the compliance search action from the Security & Compliance Center.
-      script: '|||o365-sc-get-search-action'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      export:
-        simple: "true"
-      limit: {}
-      results: {}
-      search_action_name:
-        complex:
-          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
-          accessor: Name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 240,
-          "y": 760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "8":
-    id: "8"
-    taskid: c934dc98-9fbe-4a31-8306-464511500f3d
-    type: regular
-    task:
-      id: c934dc98-9fbe-4a31-8306-464511500f3d
-      version: -1
-      name: Error - Invalid delete_type parameter.
-      description: Print an error entry with a given message.
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: delete_type parameter should be Soft or Hard.
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": -500,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-view: |-
-  {
-    "linkLabelsPosition": {
-      "5_1_Hard delete": 0.48,
-      "5_6_Soft delete": 0.54
-    },
-    "paper": {
-      "dimensions": {
-        "height": 940,
-        "width": 1370,
-        "x": -500,
-        "y": 50
-      }
-    }
-  }
+id: O365 - Security And Compliance - Search Action - Delete
 inputs:
-- key: search_name
-  value: {}
+- description: The name of the compliance search.
+  key: search_name
+  playbookInputQuery:
   required: true
-  description: The name of the compliance search.
-  playbookInputQuery: null
-- key: delete_type
+  value: {}
+- description: 'Purge type. Possible values are: "Soft" and "Hard". Default is "Soft".'
+  key: delete_type
+  playbookInputQuery:
+  required: true
   value:
     simple: Soft
-  required: true
-  description: 'Purge type. Possible values are: "Soft" and "Hard". Default is "Soft".'
-  playbookInputQuery: null
+name: O365 - Security And Compliance - Search Action - Delete
 outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.Action
   description: Security and compliance search action type. Either "Purge" or "Preview".
@@ -469,6 +136,346 @@ outputs:
   description: Security and compliance search action Tenant ID.
   type: String
 sourceplaybookid: O365 - Security And Compliance - Search Action
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ef9beba1-fef3-4475-89b9-31c25d768d72
+      iscommand: false
+      name: ""
+      version: -1
+      description: ""
+    taskid: ef9beba1-fef3-4475-89b9-31c25d768d72
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: Purge
+      purge_type:
+        simple: HardDelete
+      retry-count:
+        simple: "10"
+      search_name:
+        complex:
+          root: inputs.search_name
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: After you create a content search using the !o365-sc-new-search
+        command and run it using the !o365-sc-start-search command, you assign a search
+        action to the search using the !o365-sc-new-search-action command.
+      id: 3ca34222-609f-4072-89f2-38c38f12bf3c
+      iscommand: true
+      name: Search action - Hard delete
+      script: '|||o365-sc-new-search-action'
+      type: regular
+      version: -1
+    taskid: 3ca34222-609f-4072-89f2-38c38f12bf3c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 410
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: search_action_name
+      PollingCommandName:
+        simple: o365-sc-get-search-action
+      Timeout:
+        simple: "10"
+      dt:
+        simple: O365.SecurityAndCompliance.ContentSearch.SearchAction(val.Status &&  val.Status
+          == "InProgress" || val.Status == "Starting" || val.Status == "Purging")
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: dc521027-5cc0-48d7-85ba-e1da11e1cff5
+      iscommand: false
+      name: Waiting for delete operation to complete
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: dc521027-5cc0-48d7-85ba-e1da11e1cff5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 600
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a0952765-7686-4a51-8341-9b67eaf925f2
+      iscommand: false
+      name: Search action completed.
+      type: title
+      version: -1
+      description: ""
+    taskid: a0952765-7686-4a51-8341-9b67eaf925f2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 925
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.delete_type
+                transformers:
+                - operator: toUpperCase
+          operator: isEqualString
+          right:
+            value:
+              simple: HARD
+      label: Hard delete
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.delete_type
+                transformers:
+                - operator: toUpperCase
+          operator: isEqualString
+          right:
+            value:
+              simple: SOFT
+      label: Soft delete
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      Hard delete:
+      - "1"
+      Soft delete:
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a0b2fe95-1349-4379-8684-0601ef705510
+      iscommand: false
+      name: Perform a hard delete on the compliance search results?
+      type: condition
+      version: -1
+      description: ""
+    taskid: a0b2fe95-1349-4379-8684-0601ef705510
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: Purge
+      purge_type:
+        simple: SoftDelete
+      retry-count:
+        simple: "10"
+      search_name:
+        complex:
+          root: inputs.search_name
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: After you create a content search using the !o365-sc-new-search
+        command and run it using the !o365-sc-start-search command, you assign a search
+        action to the search using the !o365-sc-new-search-action command.
+      id: 849b3d7c-5f6c-40b7-8f2b-066e5bf14d6e
+      iscommand: true
+      name: Search action - Soft delete.
+      script: '|||o365-sc-new-search-action'
+      type: regular
+      version: -1
+    taskid: 849b3d7c-5f6c-40b7-8f2b-066e5bf14d6e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 410
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      export:
+        simple: "true"
+      limit: {}
+      results: {}
+      retry-count:
+        simple: "10"
+      search_action_name:
+        complex:
+          accessor: Name
+          root: O365.SecurityAndCompliance.ContentSearch.SearchAction
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the compliance search action from the Security & Compliance
+        Center.
+      id: a366b3b2-a1b5-498b-84c5-ea740e05437c
+      iscommand: true
+      name: Get the search action.
+      script: '|||o365-sc-get-search-action'
+      type: regular
+      version: -1
+    taskid: a366b3b2-a1b5-498b-84c5-ea740e05437c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 760
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: delete_type parameter should be Soft or Hard.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Print an error entry with a given message.
+      id: 5188bc1a-4187-4f4d-8a1c-215de4714c73
+      iscommand: false
+      name: Error - Invalid delete_type parameter.
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 5188bc1a-4187-4f4d-8a1c-215de4714c73
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_1_Hard delete": 0.48,
+      "5_6_Soft delete": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 1370,
+        "x": -500,
+        "y": 50
+      }
+    }
+  }
 fromversion: 5.5.0
 tests:
-  - O365-SecurityAndCompliance-Test
+- O365-SecurityAndCompliance-Test

@@ -1,4 +1,3 @@
-elasticcommonfields: {}
 id: Tenable.io test
 version: -1
 name: Tenable.io test
@@ -9,12 +8,12 @@ tasks:
     taskid: 62e769aa-1e67-45a6-8486-5639a888ccc5
     type: start
     task:
-      elasticcommonfields: {}
       id: 62e769aa-1e67-45a6-8486-5639a888ccc5
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -22,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 50
         }
       }
@@ -36,7 +35,6 @@ tasks:
     taskid: d5184e1e-2ad8-4800-8aa3-53d52d6f514f
     type: regular
     task:
-      elasticcommonfields: {}
       id: d5184e1e-2ad8-4800-8aa3-53d52d6f514f
       version: -1
       name: tenable-io-list-scans
@@ -45,9 +43,45 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
     scriptarguments:
       folderId: {}
       lastModifiedDate: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9634a316-8a3b-4465-81fe-57ffad58de35
+    type: regular
+    task:
+      id: 9634a316-8a3b-4465-81fe-57ffad58de35
+      version: -1
+      name: tenable-io-get-scan-status
+      description: 'Check the status of a specific scan using its ID. The status can
+        hold following possible values : Running, Completed and Empty (Ready to run).'
+      script: '|||tenable-io-get-scan-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      scanId:
+        simple: "7"
     separatecontext: false
     view: |-
       {
@@ -61,42 +95,11 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: 9634a316-8a3b-4465-81fe-57ffad58de35
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: 9634a316-8a3b-4465-81fe-57ffad58de35
-      version: -1
-      name: tenable-io-get-scan-status
-      description: 'Check the status of a specific scan using its ID. The status can hold following possible values : Running, Completed and Empty (Ready to run).'
-      script: '|||tenable-io-get-scan-status'
-      type: regular
-      iscommand: true
-      brand: ""
-    scriptarguments:
-      scanId:
-        simple: "10"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 370
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "3":
     id: "3"
     taskid: a35b2c05-a636-44a5-81f1-78ca8515d361
     type: regular
     task:
-      elasticcommonfields: {}
       id: a35b2c05-a636-44a5-81f1-78ca8515d361
       version: -1
       name: tenable-io-get-scan-report
@@ -114,13 +117,13 @@ tasks:
       info:
         simple: "yes"
       scanId:
-        simple: "25"
+        simple: "7"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -133,7 +136,6 @@ tasks:
     taskid: 24ff10a9-0083-4901-8445-8e30269ce776
     type: regular
     task:
-      elasticcommonfields: {}
       id: 24ff10a9-0083-4901-8445-8e30269ce776
       version: -1
       name: DeleteContext
@@ -144,9 +146,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
       - "2"
-      - "3"
     scriptarguments:
       all:
         simple: "yes"
@@ -158,7 +158,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 195
         }
       }
@@ -172,7 +172,6 @@ tasks:
     taskid: ade32dca-adc8-4d9e-8b64-4d69592c9392
     type: regular
     task:
-      elasticcommonfields: {}
       id: ade32dca-adc8-4d9e-8b64-4d69592c9392
       version: -1
       name: tenable-io-get-vulnerability-details
@@ -191,8 +190,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 720
+          "x": 50,
+          "y": 1070
         }
       }
     note: false
@@ -205,11 +204,11 @@ tasks:
     taskid: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
     type: regular
     task:
-      elasticcommonfields: {}
       id: ba50515f-f1cb-4bf9-85ee-78917ce6d9c3
       version: -1
       name: tenable-io-get-vulnerabilities-by-asset
-      description: Get a list of up to 5000 of the vulnerabilities recorded for a given asset. By default, this list is sorted by vulnerability count, descending.
+      description: Get a list of up to 5000 of the vulnerabilities recorded for a
+        given asset. By default, this list is sorted by vulnerability count, descending.
       script: '|||tenable-io-get-vulnerabilities-by-asset'
       type: regular
       iscommand: true
@@ -221,14 +220,14 @@ tasks:
       assetId: {}
       dateRange: {}
       hostname:
-        simple: debian8628.aspadmin.net
+        simple: ec2-52-31-207-79.eu-west-1.compute.amazonaws.com
       ip: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 545
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -236,13 +235,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
-        "width": 1240,
+        "height": 1115,
+        "width": 380,
         "x": 50,
         "y": 50
       }
@@ -251,3 +251,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

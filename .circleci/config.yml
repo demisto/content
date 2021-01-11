@@ -46,9 +46,11 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.12.0"
+      CONTENT_VERSION: "21.1.0"
       SERVER_VERSION: "6.0.0"
-      GIT_SHA1: "c49eabe52f748c4e2a3a5bdd1ab64ccf3c12a83b" # guardrails-disable-line disable-secrets-detection
+      # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
+      DONT_CACHE_LAST_RESPONSE: "true"
+      GIT_SHA1: "f18e964994f46475e5f0057c0981d8aade06b03c" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -133,7 +135,11 @@ references:
         echo "=== sourcing $BASH_ENV ==="
         source $BASH_ENV
         sudo mkdir -p -m 777 $CIRCLE_ARTIFACTS/
+
+        # Creating new clean logs folder
+        rm -rf $CIRCLE_ARTIFACTS/logs
         mkdir -p $CIRCLE_ARTIFACTS/logs
+
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/lastest_server_build_scripts/*
         chmod +x ./Tests/Marketplace/*
@@ -230,13 +236,8 @@ references:
         python3 ./Tests/scripts/destroy_instances.py $CIRCLE_ARTIFACTS ./env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
 
         export PSWD=$(jq .serverLogsZipPassword < $(cat secret_conf_path) | cut -d \" -f 2)
-        zip -P $PSWD $CIRCLE_ARTIFACTS/ServerLogs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
+        zip -P $PSWD -j $CIRCLE_ARTIFACTS/Logs.zip $CIRCLE_ARTIFACTS/server*.log || ((($? > 0)) && echo "Didn’t find any server logs, skipping this stage" && exit 0)
         rm -f $CIRCLE_ARTIFACTS/server*.log
-        if [ -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log ];
-        then
-            zip -P $PSWD $CIRCLE_ARTIFACTS/logs/Run_Tests.zip $CIRCLE_ARTIFACTS/logs/Run_Tests.log
-            rm -f $CIRCLE_ARTIFACTS/logs/Run_Tests.log
-        fi
       when: always
 
   persist_to_workspace: &persist_to_workspace
@@ -309,6 +310,23 @@ references:
       command: |
         demisto-sdk create-id-set -o ./Tests/id_set.json
         cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
+
+  merge_public_and_private_id_sets: &merge_public_and_private_id_sets
+    run:
+      name: Merge public and private ID sets
+      when: always
+      command: |
+        GCS_PATH=$(mktemp)
+        echo "$GCS_MARKET_KEY" > "$GCS_PATH"
+        gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+
+        # Download private ID set
+        gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
+        gcloud auth revoke --all
+        rm $GCS_PATH
+
+        # Merge public and private ID sets
+        demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
 
   build_content_descriptor: &build_content_descriptor
     run:
@@ -544,6 +562,7 @@ jobs:
       - *prepare_environment
       - *secrets
       - *create_id_set
+      - *merge_public_and_private_id_sets
       - *update_tests_step
       - *validate_files_and_yaml
       - run:
@@ -639,6 +658,10 @@ jobs:
                 name: Prepare Content Packs For Testing
                 when: always
                 command: |
+                  if [ -n "$NIGHTLY" ] ; then
+                    echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
+                    exit 0
+                  fi
                   ./Tests/scripts/prepare_content_packs_for_testing.sh
                   echo "$CIRCLE_BUILD_NUM" > create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
             - run:
