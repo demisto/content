@@ -65,7 +65,7 @@
 					},
 					"simple": ""
 				},
-				"Account Name:": {
+				"Account Name": {
 					"complex": {
 						"accessor": "account",
 						"filters": [],
@@ -77,56 +77,6 @@
 				"Alert ID": {
 					"complex": null,
 					"simple": "id"
-				},
-				"Alert Policy Description": {
-					"complex": null,
-					"simple": "policy.description"
-				},
-				"Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Alert Status": {
-					"complex": null,
-					"simple": "status"
-				},
-				"Alert Time": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertTime",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "TimeStampToDate"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Compliance Metadata": {
-					"complex": {
-						"accessor": "complianceMetadata",
-						"filters": [],
-						"root": "policy",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
 				},
 				"First Seen": {
 					"complex": {
@@ -183,10 +133,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Deleted?": {
-					"complex": null,
-					"simple": "policy.deleted"
-				},
 				"Policy Description": {
 					"complex": {
 						"accessor": "description",
@@ -204,10 +150,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Policy Name": {
-					"complex": null,
-					"simple": "policy.name"
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -227,10 +169,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Remediable?": {
-					"complex": null,
-					"simple": "policy.remediable"
-				},
 				"Policy Severity": {
 					"complex": {
 						"accessor": "severity",
@@ -245,19 +183,6 @@
 						"accessor": "policyType",
 						"filters": [],
 						"root": "policy",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"PolicyID": {
-					"complex": null,
-					"simple": "policy.policyId"
-				},
-				"Prisma Cloud Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
 						"transformers": []
 					},
 					"simple": ""
@@ -411,10 +336,6 @@
 					},
 					"simple": ""
 				},
-				"Subscription AssignedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.assignedBy"
-				},
 				"Subscription Created By": {
 					"complex": {
 						"accessor": "data.properties.metadata.createdBy",
@@ -432,14 +353,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Subscription CreatedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdBy"
-				},
-				"Subscription CreatedOn": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdOn"
 				},
 				"Subscription Description": {
 					"complex": {
@@ -477,7 +390,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedBy": {
+				"Subscription Updated By": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedBy",
 						"filters": [],
@@ -486,7 +399,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedOn": {
+				"Subscription Updated On": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedOn",
 						"filters": [],
@@ -566,56 +479,6 @@
 					"complex": null,
 					"simple": "id"
 				},
-				"Alert Policy Description": {
-					"complex": null,
-					"simple": "policy.description"
-				},
-				"Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Alert Status": {
-					"complex": null,
-					"simple": "status"
-				},
-				"Alert Time": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertTime",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "TimeStampToDate"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Compliance Metadata": {
-					"complex": {
-						"accessor": "complianceMetadata",
-						"filters": [],
-						"root": "policy",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
 				"First Seen": {
 					"complex": {
 						"accessor": "",
@@ -671,10 +534,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Deleted?": {
-					"complex": null,
-					"simple": "policy.deleted"
-				},
 				"Policy Description": {
 					"complex": {
 						"accessor": "description",
@@ -692,10 +551,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Policy Name": {
-					"complex": null,
-					"simple": "policy.name"
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -715,10 +570,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Remediable?": {
-					"complex": null,
-					"simple": "policy.remediable"
-				},
 				"Policy Severity": {
 					"complex": {
 						"accessor": "severity",
@@ -733,19 +584,6 @@
 						"accessor": "policyType",
 						"filters": [],
 						"root": "policy",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"PolicyID": {
-					"complex": null,
-					"simple": "policy.policyId"
-				},
-				"Prisma Cloud Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
 						"transformers": []
 					},
 					"simple": ""
@@ -899,10 +737,6 @@
 					},
 					"simple": ""
 				},
-				"Subscription AssignedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.assignedBy"
-				},
 				"Subscription Created By": {
 					"complex": {
 						"accessor": "data.properties.metadata.createdBy",
@@ -920,14 +754,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Subscription CreatedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdBy"
-				},
-				"Subscription CreatedOn": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdOn"
 				},
 				"Subscription Description": {
 					"complex": {
@@ -965,7 +791,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedBy": {
+				"Subscription Updated By": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedBy",
 						"filters": [],
@@ -974,7 +800,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedOn": {
+				"Subscription Updated On": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedOn",
 						"filters": [],
@@ -1054,56 +880,6 @@
 					"complex": null,
 					"simple": "id"
 				},
-				"Alert Policy Description": {
-					"complex": null,
-					"simple": "policy.description"
-				},
-				"Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Alert Status": {
-					"complex": null,
-					"simple": "status"
-				},
-				"Alert Time": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertTime",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "TimeStampToDate"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Compliance Metadata": {
-					"complex": {
-						"accessor": "complianceMetadata",
-						"filters": [],
-						"root": "policy",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
 				"First Seen": {
 					"complex": {
 						"accessor": "",
@@ -1159,10 +935,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Deleted?": {
-					"complex": null,
-					"simple": "policy.deleted"
-				},
 				"Policy Description": {
 					"complex": {
 						"accessor": "description",
@@ -1180,10 +952,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Policy Name": {
-					"complex": null,
-					"simple": "policy.name"
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -1203,10 +971,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Remediable?": {
-					"complex": null,
-					"simple": "policy.remediable"
-				},
 				"Policy Severity": {
 					"complex": {
 						"accessor": "severity",
@@ -1221,19 +985,6 @@
 						"accessor": "policyType",
 						"filters": [],
 						"root": "policy",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"PolicyID": {
-					"complex": null,
-					"simple": "policy.policyId"
-				},
-				"Prisma Cloud Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
 						"transformers": []
 					},
 					"simple": ""
@@ -1387,10 +1138,6 @@
 					},
 					"simple": ""
 				},
-				"Subscription AssignedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.assignedBy"
-				},
 				"Subscription Created By": {
 					"complex": {
 						"accessor": "data.properties.metadata.createdBy",
@@ -1408,14 +1155,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Subscription CreatedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdBy"
-				},
-				"Subscription CreatedOn": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdOn"
 				},
 				"Subscription Description": {
 					"complex": {
@@ -1453,7 +1192,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedBy": {
+				"Subscription Updated By": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedBy",
 						"filters": [],
@@ -1462,7 +1201,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedOn": {
+				"Subscription Updated On": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedOn",
 						"filters": [],
@@ -1542,56 +1281,6 @@
 					"complex": null,
 					"simple": "id"
 				},
-				"Alert Policy Description": {
-					"complex": null,
-					"simple": "policy.description"
-				},
-				"Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Alert Status": {
-					"complex": null,
-					"simple": "status"
-				},
-				"Alert Time": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertTime",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "TimeStampToDate"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Compliance Metadata": {
-					"complex": {
-						"accessor": "complianceMetadata",
-						"filters": [],
-						"root": "policy",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
 				"First Seen": {
 					"complex": {
 						"accessor": "",
@@ -1647,10 +1336,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Deleted?": {
-					"complex": null,
-					"simple": "policy.deleted"
-				},
 				"Policy Description": {
 					"complex": {
 						"accessor": "description",
@@ -1668,10 +1353,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Policy Name": {
-					"complex": null,
-					"simple": "policy.name"
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -1691,10 +1372,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Remediable?": {
-					"complex": null,
-					"simple": "policy.remediable"
-				},
 				"Policy Severity": {
 					"complex": {
 						"accessor": "severity",
@@ -1709,19 +1386,6 @@
 						"accessor": "policyType",
 						"filters": [],
 						"root": "policy",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"PolicyID": {
-					"complex": null,
-					"simple": "policy.policyId"
-				},
-				"Prisma Cloud Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
 						"transformers": []
 					},
 					"simple": ""
@@ -1875,10 +1539,6 @@
 					},
 					"simple": ""
 				},
-				"Subscription AssignedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.assignedBy"
-				},
 				"Subscription Created By": {
 					"complex": {
 						"accessor": "data.properties.metadata.createdBy",
@@ -1896,14 +1556,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Subscription CreatedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdBy"
-				},
-				"Subscription CreatedOn": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdOn"
 				},
 				"Subscription Description": {
 					"complex": {
@@ -1941,7 +1593,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedBy": {
+				"Subscription Updated By": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedBy",
 						"filters": [],
@@ -1950,7 +1602,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedOn": {
+				"Subscription Updated On": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedOn",
 						"filters": [],
@@ -2030,56 +1682,6 @@
 					"complex": null,
 					"simple": "id"
 				},
-				"Alert Policy Description": {
-					"complex": null,
-					"simple": "policy.description"
-				},
-				"Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Alert Status": {
-					"complex": null,
-					"simple": "status"
-				},
-				"Alert Time": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertTime",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "TimeStampToDate"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Compliance Metadata": {
-					"complex": {
-						"accessor": "complianceMetadata",
-						"filters": [],
-						"root": "policy",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
 				"First Seen": {
 					"complex": {
 						"accessor": "",
@@ -2135,10 +1737,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Deleted?": {
-					"complex": null,
-					"simple": "policy.deleted"
-				},
 				"Policy Description": {
 					"complex": {
 						"accessor": "description",
@@ -2156,10 +1754,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Policy Name": {
-					"complex": null,
-					"simple": "policy.name"
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -2179,10 +1773,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Remediable?": {
-					"complex": null,
-					"simple": "policy.remediable"
-				},
 				"Policy Severity": {
 					"complex": {
 						"accessor": "severity",
@@ -2197,19 +1787,6 @@
 						"accessor": "policyType",
 						"filters": [],
 						"root": "policy",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"PolicyID": {
-					"complex": null,
-					"simple": "policy.policyId"
-				},
-				"Prisma Cloud Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
 						"transformers": []
 					},
 					"simple": ""
@@ -2363,10 +1940,6 @@
 					},
 					"simple": ""
 				},
-				"Subscription AssignedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.assignedBy"
-				},
 				"Subscription Created By": {
 					"complex": {
 						"accessor": "data.properties.metadata.createdBy",
@@ -2384,14 +1957,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Subscription CreatedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdBy"
-				},
-				"Subscription CreatedOn": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdOn"
 				},
 				"Subscription Description": {
 					"complex": {
@@ -2429,7 +1994,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedBy": {
+				"Subscription Updated By": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedBy",
 						"filters": [],
@@ -2438,7 +2003,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedOn": {
+				"Subscription Updated On": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedOn",
 						"filters": [],
@@ -2513,56 +2078,6 @@
 					"complex": null,
 					"simple": "id"
 				},
-				"Alert Policy Description": {
-					"complex": null,
-					"simple": "policy.description"
-				},
-				"Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Alert Status": {
-					"complex": null,
-					"simple": "status"
-				},
-				"Alert Time": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertTime",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "TimeStampToDate"
-							}
-						]
-					},
-					"simple": ""
-				},
-				"Compliance Metadata": {
-					"complex": {
-						"accessor": "complianceMetadata",
-						"filters": [],
-						"root": "policy",
-						"transformers": [
-							{
-								"args": {},
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					},
-					"simple": ""
-				},
 				"First Seen": {
 					"complex": {
 						"accessor": "",
@@ -2618,10 +2133,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Deleted?": {
-					"complex": null,
-					"simple": "policy.deleted"
-				},
 				"Policy Description": {
 					"complex": {
 						"accessor": "description",
@@ -2639,10 +2150,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Policy Name": {
-					"complex": null,
-					"simple": "policy.name"
 				},
 				"Policy Recommendation": {
 					"complex": {
@@ -2662,10 +2169,6 @@
 					},
 					"simple": ""
 				},
-				"Policy Remediable?": {
-					"complex": null,
-					"simple": "policy.remediable"
-				},
 				"Policy Severity": {
 					"complex": {
 						"accessor": "severity",
@@ -2680,19 +2183,6 @@
 						"accessor": "policyType",
 						"filters": [],
 						"root": "policy",
-						"transformers": []
-					},
-					"simple": ""
-				},
-				"PolicyID": {
-					"complex": null,
-					"simple": "policy.policyId"
-				},
-				"Prisma Cloud Alert Rules": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "alertRules",
 						"transformers": []
 					},
 					"simple": ""
@@ -2846,10 +2336,6 @@
 					},
 					"simple": ""
 				},
-				"Subscription AssignedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.assignedBy"
-				},
 				"Subscription Created By": {
 					"complex": {
 						"accessor": "data.properties.metadata.createdBy",
@@ -2867,14 +2353,6 @@
 						"transformers": []
 					},
 					"simple": ""
-				},
-				"Subscription CreatedBy": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdBy"
-				},
-				"Subscription CreatedOn": {
-					"complex": null,
-					"simple": "resource.data.properties.metadata.createdOn"
 				},
 				"Subscription Description": {
 					"complex": {
@@ -2912,7 +2390,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedBy": {
+				"Subscription Updated By": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedBy",
 						"filters": [],
@@ -2921,7 +2399,7 @@
 					},
 					"simple": ""
 				},
-				"Subscription UpdatedOn": {
+				"Subscription Updated On": {
 					"complex": {
 						"accessor": "data.properties.metadata.updatedOn",
 						"filters": [],
