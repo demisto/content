@@ -36,8 +36,8 @@ else:
                     diff = shift_to - datetime.today()
                     hours = math.floor(diff.seconds / 3600)
                     minutes = round(diff.seconds / 60 % 60)
-                    text_widget = f'{hours:02d}:{minutes:02d}'
+                    text_widget = f'{hours:02d} : {minutes:02d}'
                     break
 
-widget = TextWidget(text=f'Time left to the shift: {text_widget}')
+widget = TextWidget(text=f'Time to next shift (Hours : Minutes)\n # {text_widget}')
 return_results(widget)
