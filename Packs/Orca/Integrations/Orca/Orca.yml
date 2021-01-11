@@ -24,6 +24,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  display: Max fetch
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -48,9 +49,9 @@ script:
     deprecated: false
     description: Get the alerts on cloud assets
     execution: false
-    name: get-alerts
+    name: orca-get-alerts
     outputs:
-    - contextPath: Orca.AlertManager.Alerts
+    - contextPath: Orca.Manager.Alerts
       description: All alerts
       type: String
   - arguments:
@@ -63,15 +64,11 @@ script:
     deprecated: false
     description: Get Description of An asset
     execution: false
-    name: get-asset
+    name: orca-get-asset
     outputs:
     - contextPath: Orca.Manager.Asset
       description: Asset description
       type: String
-  - deprecated: false
-    description: fetches orca alerts
-    execution: false
-    name: fetch-incidents
   dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true

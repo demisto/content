@@ -13,7 +13,7 @@
     "id": "incident_cloudaccount",
     "isReadOnly": false,
     "locked": false,
-    "name": "Cloud Account",
+    "name": "Orca Cloud Account",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
@@ -25,5 +25,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.0.0"
+    "fromVersion": ".0.0"
 }

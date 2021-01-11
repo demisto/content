@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 from typing import Any, Dict, Union, Optional
 
-ORCA_API_DNS_NAME = "https://api.orcasecurity.io/api"
+ORCA_API_DNS_NAME = "https://orcadeveden-internal-dev.orcasecurity.net/api"
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
@@ -59,7 +59,7 @@ class OrcaClient:
         except DemistoException:
             return f"could not find {asset_unique_id}"
 
-        if 'error' in response:
+        if 'error' in response or not response:
             return "Asset Not Found"
 
         return response
@@ -120,11 +120,13 @@ def main() -> None:
             proxy=True)
 
         orca_client = OrcaClient(client=client)
-        if command == "get-alerts":
+        if command == "orca-get-alerts":
             alerts = orca_client.get_alerts_by_type(alert_type=demisto.args().get('alert_type'))
+            if not alerts:
+                return_results(f"Alerts with type {demisto.args().get('alert_type')} does not exist")
             return_results(alerts)
 
-        elif command == "get-asset":
+        elif command == "orca-get-asset":
             asset = orca_client.get_asset(asset_unique_id=demisto.args()['asset_unique_id'])
             return_results(asset)
 
@@ -132,7 +134,7 @@ def main() -> None:
             fetch_incidents(orca_client)
 
         else:
-            raise NotImplementedError(f'{command} is not an existing Tripwire command')
+            raise NotImplementedError(f'{command} is not an existing orca command')
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
