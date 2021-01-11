@@ -11,6 +11,6 @@
         "IT Services"
     ],
     "tags": [],
-    "useCases": [],
+    "useCases": ["IT Services"],
     "keywords": []
 }
