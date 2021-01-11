@@ -406,15 +406,8 @@ def relaunch_ad_hoc_command(client: Client, args: dict) -> CommandResults:
 def cancel_ad_hoc_command(client: Client, args: dict) -> CommandResults:
     command_id = args.get("command_id")
     url_suffix = f'ad_hoc_commands/{command_id}/cancel/'
-    try:
-        client.api_request(method='POST', url_suffix=url_suffix, empty_valid_codes=[202], return_empty_response=True)
-        return ad_hoc_command_status(client, args)
-    except DemistoException as e:
-        if e.res.status_code == 405:
-            response = client.api_request(method='GET', url_suffix=url_suffix)
-            error_msg = f"{response}. Error: {e.message}"
-            raise DemistoException(error_msg, e)
-        raise DemistoException(e)
+    client.api_request(method='POST', url_suffix=url_suffix, empty_valid_codes=[202], return_empty_response=True)
+    return ad_hoc_command_status(client, args)
 
 
 def ad_hoc_command_stdout(client: Client, args: dict) -> CommandResults:
