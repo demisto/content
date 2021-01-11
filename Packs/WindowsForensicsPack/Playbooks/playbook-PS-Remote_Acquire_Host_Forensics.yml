@@ -7,7 +7,7 @@ description: This playbook allows the user to gather multiple forensic data from
   export by using the PS remote automation which enables to connect to a windows host
   without the need to install any 3rd party tools using just native Windows management
   tools.
-id: PS-Remote  Acquire Host Forensics
+id: PS-Remote Acquire Host Forensics
 inputs:
 - description: This input specifies whether to capture network traffic on the host.
   key: GetNetworkTraffic
@@ -27,7 +27,7 @@ inputs:
   required: false
   value:
     simple: "true"
-name: PS-Remote  Acquire Host Forensics
+name: PS-Remote Acquire Host Forensics
 outputs:
 - contextPath: PcapDetails
   description: Pcap file details.

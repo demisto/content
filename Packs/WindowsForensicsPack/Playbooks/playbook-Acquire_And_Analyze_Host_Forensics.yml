@@ -51,8 +51,8 @@ tasks:
       brand: ""
       id: 1a6c5170-6559-4882-8004-0738f01ccd2c
       iscommand: false
-      name: PS-Remote  Acquire Host Forensics
-      playbookId: PS-Remote  Acquire Host Forensics
+      name: PS-Remote Acquire Host Forensics
+      playbookId: PS-Remote Acquire Host Forensics
       type: playbook
       version: -1
       description: ''
