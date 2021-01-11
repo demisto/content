@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Nutanix Hypervisor
+  id: Nutanix
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
@@ -109,9 +109,11 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: Nutanix Hypervisor abstracts and isolates the VMs and their programs from the underlying server hardware, enabling a more efficient use of physical resources, simpler maintenance and operations, and reduced costs.
-display: Nutanix
-name: Nutanix
+description: Nutanix Hypervisor abstracts and isolates the VMs and their programs
+  from the underlying server hardware, enabling a more efficient use of physical resources,
+  simpler maintenance and operations, and reduced costs.
+display: Nutanix Hypervisor
+name: Nutanix Hypervisor
 script:
   commands:
   - arguments:
@@ -206,7 +208,8 @@ script:
     - description: Id of the virtual machine to change its power status.
       name: vm_uuid
       required: true
-    - description: If virtual machine is being transitioned with 'ON' or 'POWERCYCLE', this host will be chosen to run the virtual machine.
+    - description: If virtual machine is being transitioned with 'ON' or 'POWERCYCLE',
+        this host will be chosen to run the virtual machine.
       name: host_uuid
     - auto: PREDEFINED
       description: The new power state to which you want to transfer the virtual machine
@@ -230,13 +233,14 @@ script:
       that no such host may not be available. If the virtual machine is being power
       cycled, a different host can be specified to start it on. This is also an asynchronous
       operation that results in the creation of a task object. The UUID of this task
-      object is returned as the response of this operation. With this task uuid, this task status can be monitored
-      by using the nutanix-hypervisor-task-poll command.
+      object is returned as the response of this operation. With this task uuid, this
+      task status can be monitored by using the nutanix-hypervisor-task-poll command.
     name: nutanix-hypervisor-vm-powerstatus-change
     outputs:
     - contextPath: NutanixHypervisor.VMPowerStatus.task_uuid
-      description: The task uuid returned by Nutanix service for the power status change request. With this task uuid the task status can be monitored
-        by using the nutanix-hypervisor-task-poll command.
+      description: The task uuid returned by Nutanix service for the power status
+        change request. With this task uuid the task status can be monitored by using
+        the nutanix-hypervisor-task-poll command.
       type: String
   - arguments:
     - description: The IDs of the tasks to poll
@@ -304,13 +308,13 @@ script:
       description: The uuid of the cluster.
       type: String
   - arguments:
-    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
-        created on or after the specified date/time will be retrieved. Time is expected
-        to be in UTC.
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00).
+        Only alerts that were created on or after the specified date/time will be
+        retrieved. Time is expected to be in UTC.
       name: start_time
-    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
-        created on or before the specified date/time will be retrieved. Time is expected
-        to be in UTC.
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00).
+        Only alerts that were created on or before the specified date/time will be
+        retrieved. Time is expected to be in UTC.
       name: end_time
     - auto: PREDEFINED
       description: If resolved is True, retrieves alerts that have been resolved.
@@ -424,13 +428,13 @@ script:
       description: The message returned by the resolve task.
       type: String
   - arguments:
-    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
-        created on or after the specified date/time will be acknowledged. Time is
-        expected to be in UTC.
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00).
+        Only alerts that were created on or after the specified date/time will be
+        acknowledged. Time is expected to be in UTC.
       name: start_time
-    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
-        created on or before the specified date/time will be acknowledged. Time is
-        expected to be in UTC.
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00).
+        Only alerts that were created on or before the specified date/time will be
+        acknowledged. Time is expected to be in UTC.
       name: end_time
     - auto: PREDEFINED
       description: Comma separated list. Acknowledge alerts that their severity level
@@ -487,13 +491,13 @@ script:
       description: Message returned by acknowledge operation.
       type: String
   - arguments:
-    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
-        created on or after the specified date/time will be resolved. Time is expected
-        to be in UTC.
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00).
+        Only alerts that were created on or after the specified date/time will be
+        resolved. Time is expected to be in UTC.
       name: start_time
-    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were
-        created on or before the specified date/time will be resolved. Time is expected
-        to be in UTC.
+    - description: A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00).
+        Only alerts that were created on or before the specified date/time will be
+        resolved. Time is expected to be in UTC.
       name: end_time
     - auto: PREDEFINED
       description: Comma separated list. Resolve alerts that their severity level
@@ -533,21 +537,21 @@ script:
     description: Resolve alerts using a filters.
     name: nutanix-alerts-resolve-by-filter
     outputs:
-      - contextPath: NutanixHypervisor.Alert.num_successful_updates
-        description: The number of the successful alert resolves.
-        type: Number
-      - contextPath: NutanixHypervisor.Alert.num_failed_updates
-        description: The number of the failed alerts to resolve.
-        type: Number
-      - contextPath: NutanixHypervisor.Alert.alert_status_list.id
-        description: TODO
-        type: String
-      - contextPath: NutanixHypervisor.Alert.alert_status_list.successful
-        description: Was resolve for this task successful.
-        type: Boolean
-      - contextPath: NutanixHypervisor.Alert.alert_status_list.message
-        description: Message returned by resolve operation.
-        type: String
+    - contextPath: NutanixHypervisor.Alert.num_successful_updates
+      description: The number of the successful alert resolves.
+      type: Number
+    - contextPath: NutanixHypervisor.Alert.num_failed_updates
+      description: The number of the failed alerts to resolve.
+      type: Number
+    - contextPath: NutanixHypervisor.Alert.alert_status_list.id
+      description: TODO
+      type: String
+    - contextPath: NutanixHypervisor.Alert.alert_status_list.successful
+      description: Was resolve for this task successful.
+      type: Boolean
+    - contextPath: NutanixHypervisor.Alert.alert_status_list.message
+      description: Message returned by resolve operation.
+      type: String
   dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   runonce: false
