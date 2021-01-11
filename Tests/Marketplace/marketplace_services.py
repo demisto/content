@@ -1857,7 +1857,6 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         updated_private_packs (list) : The list of all private packs that were updated
 
     """
-    print("start of store packs")
     packs_results = load_json(packs_results_file_path)
     packs_results[stage] = dict()
 
@@ -1888,14 +1887,11 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         logging.debug(f"Successful packs {successful_packs_dict}")
 
     if updated_private_packs:
-        print("In store_successful_and_failed_packs_in_ci_artifacts > updated_private_packs not empty ")
         successful_private_packs_dict = {
             BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS: {pack_name: {} for pack_name in updated_private_packs}
         }
         packs_results[stage].update(successful_private_packs_dict)
         logging.debug(f"Successful private packs {successful_private_packs_dict}")
-        print(f"Successful private packs {successful_private_packs_dict}")
-        print(f"this is pack_results: {packs_results}")
 
     if packs_results:
         json_write(packs_results_file_path, packs_results)

@@ -492,7 +492,6 @@ def get_updated_private_packs(private_packs, index_folder_path):
 
     for pack in private_packs:
         private_pack_id = pack.get('id')
-        print(f"current private pack id is : {private_pack_id}")
         new_private_commit_hash = pack.get('contentCommitHash', "")
 
         old_private_commit_hash = ""
@@ -500,13 +499,12 @@ def get_updated_private_packs(private_packs, index_folder_path):
             if public_pack.get('id') == private_pack_id:
                 old_private_commit_hash = public_pack.get('contentCommitHash', "")
 
-        print(f"new private pack commit hash : {new_private_commit_hash}, old commit: {old_private_commit_hash}")
+        #print(f"new private pack commit hash : {new_private_commit_hash}, old commit: {old_private_commit_hash}")
         private_pack_was_updated = new_private_commit_hash != old_private_commit_hash
         if private_pack_was_updated:
-            print("there is a new change")
+            #print("there is a new change")
             updated_private_packs.append(private_pack_id)
 
-    print(f"updated_private_packs are : {updated_private_packs}")
     return updated_private_packs
 
 
@@ -551,7 +549,6 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
 
-    print(f"return value private_packs is {private_packs}")
     return private_packs
 
 
@@ -777,7 +774,6 @@ def get_packs_summary(packs_list):
 
     """
     successful_packs = [pack for pack in packs_list if pack.status == PackStatus.SUCCESS.name]
-    print(f"in get_packs_summary > successful_packs are: {successful_packs} ")
     skipped_packs = [pack for pack in packs_list if
                      pack.status == PackStatus.PACK_ALREADY_EXISTS.name
                      or pack.status == PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name]
@@ -985,7 +981,6 @@ def main():
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
-    print("end of summary")
 
 
 if __name__ == '__main__':
