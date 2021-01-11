@@ -27,7 +27,7 @@ if demisto.command() == 'yolo-coco-process-image':
     except Exception as ex:
         return_error("Failed to load file entry with entryid: {}. Error: {}".format(entry_id, ex))
 
-    args["image"] = file_result['path']
+    args["image"] = file_result.get(‘path’)
     # load the COCO class labels our YOLO model was trained on
     labelsPath = os.path.sep.join([args["yolo"], "coco.names"])
     os.environ['DISPLAY'] = ':0'
