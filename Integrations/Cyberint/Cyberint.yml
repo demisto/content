@@ -255,7 +255,7 @@ script:
     deprecated: false
     description: List alerts according to parameters
     execution: false
-    name: cyberint-list-alerts
+    name: cyberint-alerts-fetch
     outputs:
     - contextPath: Cyberint.Alert.ref_id
       description: Reference ID of the alert.
@@ -301,13 +301,13 @@ script:
       type: String
     - contextPath: Cyberint.Alert.acknowledged_date
       description: Date in which the alert was acknowledged.
-      type: String
+      type: Date
     - contextPath: Cyberint.Alert.acknowledged_by.email
       description: User which has acknowledged the alert.
       type: String
     - contextPath: Cyberint.Alert.publish_date
       description: Date in which the alert was published.
-      type: String
+      type: Date
     - contextPath: Cyberint.Alert.title
       description: Title of the alert.
       type: String
@@ -382,7 +382,7 @@ script:
       type: String
     - contextPath: Cyberint.Alert.modification_date
       description: Date the alert was last modified.
-      type: String
+      type: Date
     - contextPath: Cyberint.Alert.closure_date
       description: Date the alert was closed.
       type: String
@@ -434,7 +434,7 @@ script:
     deprecated: false
     description: Update the status of one or more alerts.
     execution: false
-    name: cyberint-update-alerts
+    name: cyberint-alerts-status-update
     outputs:
     - contextPath: Cyberint.Alert.ref_id
       description: Reference ID of the alert.

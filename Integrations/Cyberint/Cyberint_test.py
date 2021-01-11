@@ -15,7 +15,7 @@ def load_mock_response(file_name: str) -> dict:
         return json.loads(json_file.read())
 
 
-def test_cyberint_list_alerts_command(requests_mock):
+def test_cyberint_alerts_fetch_command(requests_mock):
     """
     Scenario: List alerts
     Given:
@@ -27,17 +27,17 @@ def test_cyberint_list_alerts_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from Cyberint import Client, cyberint_list_alerts_command
+    from Cyberint import Client, cyberint_alerts_fetch_command
     mock_response = load_mock_response('list_alerts.json')
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
-    result = cyberint_list_alerts_command(client, {})
+    result = cyberint_alerts_fetch_command(client, {})
     assert len(result.outputs) == 3
     assert result.outputs_prefix == 'Cyberint.Alert'
     assert result.outputs[0].get('ref_id') == 'ARG-3'
 
 
-def test_cyberint_update_alerts_command(requests_mock):
+def test_cyberint_alerts_status_update_command(requests_mock):
     """
     Scenario: Update alert statuses.
     Given:
@@ -50,16 +50,16 @@ def test_cyberint_update_alerts_command(requests_mock):
      - Ensure outputs prefix is correct.
      - Ensure a sample value from the API matches what is generated in the context.
     """
-    from Cyberint import Client, cyberint_update_alerts_command
+    from Cyberint import Client, cyberint_alerts_status_update
     mock_response = {}
     requests_mock.put(f'{BASE_URL}/api/v1/alerts/status', json=mock_response)
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
-    result = cyberint_update_alerts_command(client, {'alert_ref_ids': 'alert1',
+    result = cyberint_alerts_status_update(client, {'alert_ref_ids': 'alert1',
                                                      'status': 'acknowledged'})
     assert len(result.outputs) == 1
     assert result.outputs_prefix == 'Cyberint.Alert'
     assert result.outputs[0].get('ref_id') == 'alert1'
-    result = cyberint_update_alerts_command(client, {'alert_ref_ids': 'alert1,alert2',
+    result = cyberint_alerts_status_update(client, {'alert_ref_ids': 'alert1,alert2',
                                                      'status': 'acknowledged'})
     assert len(result.outputs) == 2
     assert result.outputs_prefix == 'Cyberint.Alert'
@@ -149,8 +149,8 @@ def test_set_date_pair():
          - Ensure dates return match what is needed (correct format)
     """
     from Cyberint import set_date_pair
-    start_time = '2020-12-01T00:00:00'
-    end_time = '2020-12-05T00:00:00'
+    start_time = '2020-12-01T00:00:00Z'
+    end_time = '2020-12-05T00:00:00Z'
     assert set_date_pair(start_time, end_time, None) == (start_time, end_time)
     range = '3 Days'
     assert set_date_pair(start_time, end_time, range) == (datetime.strftime(datetime.now() -

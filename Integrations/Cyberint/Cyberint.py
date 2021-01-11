@@ -22,13 +22,13 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, access_token: str, verify_ssl: bool, proxy: bool):
         """
-        API Client constructor.
+        Client for CyberInt RESTful API.
 
         Args:
             base_url (str): URL to access when getting alerts.
             access_token (str): Access token for authentication.
-            verify_ssl (bool): Whether or not to verify SSL.
-            proxy (bool): Whether or not to use proxy
+            verify_ssl (bool): specifies whether to verify the SSL certificate or not.
+            proxy (bool): specifies if to use XSOAR proxy settings.
         """
         headers = {'Content-Type': 'application/json'}
         self._cookies = {'access_token': access_token}
@@ -40,19 +40,19 @@ class Client(BaseClient):
                     environments: Optional[List[str]], statuses: Optional[List[str]],
                     severities: Optional[List[str]], types: Optional[List[str]]) -> Dict:
         """
-        List alerts according to parameters.
+        Retrieve a list of alerts according to parameters.
 
         Args:
-            page (str): N. of page to return.
+            page (str): Index of page to return.
             page_size (str): Size of the page to return.
-            created_date_from (str): ISO-Formatted creation date minimum.
-            created_date_to (str): ISO-Formatted creation date maximum.
-            modification_date_from (str): ISO-Formatted modification date minimum.:
-            modification_date_to (str): ISO-Formatted modification date maximum.:
-            environments (list(str)): Environments in which the alerts were created
-            statuses (list(str)): Statuses of the alerts
-            severities (list(str)): Severities of the alerts.
-            types (list(str)): Types of the alerts,
+            created_date_from (str): Minimal ISO-Formatted creation date.
+            created_date_to (str): Maximal ISO-Formatted creation date.
+            modification_date_from (str): Minimal ISO-Formatted modification date.
+            modification_date_to (str): Maximal ISO-Formatted modification date.
+            environments (list(str)): Environments in which the alerts were created.
+            statuses (list(str)): Alerts statuses.
+            severities (list(str)): Alerts severities.
+            types (list(str)): Alerts type.
 
         Returns:
             response (Response): API response from Cyberint.
@@ -98,17 +98,34 @@ def test_module(client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-
+    return_value = None
     try:
         result = client.list_alerts(*([None] * 10))
         if result:
-            return 'ok'
-        return f'Unidentified error in retrieving test response: {str(result)}'
+            return_value = 'ok'
     except DemistoException as exception:
         if 'Invalid token or token expired' in str(exception):
-            return 'Error verifying access token and / or environment, make sure the ' \
-                   'configuration parameters are correct.'
-        return str(exception)
+            return_value = 'Error verifying access token and / or environment, make sure the ' \
+                           'configuration parameters are correct.'
+        else:
+            return_value = str(exception)
+    finally:
+        return return_value
+
+
+def verify_input_date_format(date: str) -> str:
+    """
+    Make sure a date entered by the user is in the correct string format (with a Z at the end).
+
+    Args:
+        date (str): Date string given by the user. Can be None.
+
+    Returns:
+        str: Fixed date in the same format as the one needed by the API.
+    """
+    if date and not date.endswith('Z'):
+        date += 'Z'
+    return date
 
 
 def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
@@ -130,18 +147,16 @@ def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
                                                 date_format=DATE_FORMAT, utc=False)
         return start_date, end_date
     min_date = datetime.fromisocalendar(2020, 2, 1)
-    start_date_arg = start_date_arg + 'Z' if (start_date_arg and start_date_arg[-1] != 'Z') \
-        else start_date_arg
-    end_date_arg = end_date_arg + 'Z' if (end_date_arg and end_date_arg[-1] != 'Z') \
-        else end_date_arg
+    start_date_arg = verify_input_date_format(start_date_arg)
+    end_date_arg = verify_input_date_format(end_date_arg)
     if start_date_arg and not end_date_arg:
-        return start_date_arg, datetime.strftime(datetime.now(), DATE_FORMAT)
-    if end_date_arg and not start_date_arg:
-        return datetime.strftime(min_date, DATE_FORMAT), end_date_arg
+        end_date_arg = datetime.strftime(datetime.now(), DATE_FORMAT)
+    elif end_date_arg and not start_date_arg:
+        start_date_arg = datetime.strftime(min_date, DATE_FORMAT)
     return start_date_arg, end_date_arg
 
 
-def cyberint_list_alerts_command(client: Client, args: dict) -> CommandResults:
+def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
     """
     List alerts on cyberint according to parameters.
 
@@ -168,14 +183,14 @@ def cyberint_list_alerts_command(client: Client, args: dict) -> CommandResults:
     table_headers = ['ref_id', 'title', 'status', 'severity', 'created_date', 'type',
                      'environment']
     readable_output = f'Total alerts: {total_alerts}\nCurrent page: {args.get("page", 1)}\n'
-    readable_output += tableToMarkdown(name='Found alerts:', t=alerts, headers=table_headers,
+    readable_output += tableToMarkdown(name='CyberInt alerts:', t=alerts, headers=table_headers,
                                        removeNull=True)
     return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
                           readable_output=readable_output, raw_response=result,
                           outputs=alerts)
 
 
-def cyberint_update_alerts_command(client: Client, args: dict) -> CommandResults:
+def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
     """
         Update the status of one or more alerts
 
@@ -196,8 +211,8 @@ def cyberint_update_alerts_command(client: Client, args: dict) -> CommandResults
     for alert_id in alert_ids:
         outputs.append({'ref_id': alert_id, 'status': status, 'closure_reason': closure_reason})
 
-    readable_output = tableToMarkdown(name='Alerts Updated', t=outputs, headers=table_headers,
-                                      removeNull=True)
+    readable_output = tableToMarkdown(name='CyberInt alerts updated information:', t=outputs,
+                                      headers=table_headers, removeNull=True)
     return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
                           readable_output=readable_output, raw_response=response,
                           outputs=outputs)
@@ -223,6 +238,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     Returns:
         Tuple of next_run (seconds timestamp) and the incidents list
     """
+    #  Start by setting the time to fetch from.
     last_fetch_timestamp = last_run.get('last_fetch', None)
     if last_fetch_timestamp:
         last_fetch_date = datetime.fromtimestamp(last_fetch_timestamp / 1000)
@@ -232,10 +248,12 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         last_fetch = first_fetch_date
     incidents = []
     next_run = last_fetch
+    #  Send the API request to fetch the alerts.
     alerts = client.list_alerts('1', max_fetch, datetime.strftime(last_fetch, DATE_FORMAT),
                                 datetime.strftime(datetime.now(), DATE_FORMAT), None, None,
                                 fetch_environment, fetch_status, fetch_severity, fetch_type)
     for alert in alerts.get('alerts', []):
+        #  Create the XS0AR incident.
         alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
         alert_id = alert.get('ref_id')
         alert_title = alert.get('title')
@@ -246,6 +264,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         }
         incidents.append(incident)
     if incidents:
+        #  Update the time for the next fetch so that there won't be duplicates.
         last_incident_time = incidents[0].get('occurred', '')
         next_run = datetime.strptime(last_incident_time, DATE_FORMAT)
     next_run += timedelta(seconds=1)
@@ -260,16 +279,11 @@ def main():
     params = demisto.params()
     access_token = params.get('access_token')
     environment = params.get('environment')
-    fetch_environment = argToList(params.get('fetch_environment', ''))
-    fetch_status = params.get('fetch_status', [])
-    fetch_type = params.get('fetch_type', [])
-    fetch_severity = params.get('fetch_severity', [])
-    max_fetch = int(params.get('max_fetch', '50'))
+
     verify_certificate = not params.get('insecure', False)
     first_fetch_time = params.get('fetch_time', '3 days').strip()
     proxy = params.get('proxy', False)
     base_url = f'https://{environment}.cyberint.io/alert/'
-
     demisto.info(f'Command being called is {demisto.command()}')
     try:
         client = Client(
@@ -280,21 +294,31 @@ def main():
 
         if demisto.command() == 'test-module':
             result = test_module(client)
-            demisto.results(result)
+            return_results(result)
 
         elif demisto.command() == 'fetch-incidents':
+            fetch_environment = argToList(params.get('fetch_environment', ''))
+            fetch_status = params.get('fetch_status', [])
+            fetch_type = params.get('fetch_type', [])
+            fetch_severity = params.get('fetch_severity', [])
+            max_fetch = int(params.get('max_fetch', '50'))
             next_run, incidents = fetch_incidents(
                 client, demisto.getLastRun(), first_fetch_time, fetch_severity, fetch_status,
                 fetch_type, fetch_environment, max_fetch)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'cyberint-list-alerts':
-            return_results(cyberint_list_alerts_command(client, demisto.args()))
+        elif demisto.command() == 'cyberint-alerts-fetch':
+            return_results(cyberint_alerts_fetch_command(client, demisto.args()))
 
-        elif demisto.command() == 'cyberint-update-alerts':
-            return_results(cyberint_update_alerts_command(client, demisto.args()))
+        elif demisto.command() == 'cyberint-alerts-status-update':
+            return_results(cyberint_alerts_status_update(client, demisto.args()))
     except Exception as e:
+        if 'Invalid token or token expired' in str(e):
+            return_error('Error verifying access token and / or environment, make sure the '
+                         'configuration parameters are correct.')
+        if 'datetime' in str(e).lower():
+            return_error('Invalid time specified, make sure the arguments are correctly formatted.')
         return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
