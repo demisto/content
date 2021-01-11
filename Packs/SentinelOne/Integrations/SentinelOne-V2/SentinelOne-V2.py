@@ -1,12 +1,14 @@
+from typing import Callable
+
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 
 import json
 import requests
-from distutils.util import strtobool
+import traceback
+
 from dateutil.parser import parse
 
 # Disable insecure warnings
@@ -14,126 +16,400 @@ requests.packages.urllib3.disable_warnings()
 
 ''' GLOBALS '''
 
-TOKEN: str
-SERVER: str
-FETCH_TIME: str
-BASE_URL: str
-FETCH_THREAT_RANK: int
-FETCH_LIMIT: int
-USE_SSL: bool
-HEADERS: dict
+IS_VERSION_2_1: bool
 
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params={}, data=None):
-    LOG(f'Attempting {method} request to {BASE_URL + url_suffix}\nWith params:{params}\nWith body:\n{data}')
-    res = requests.request(
-        method,
-        BASE_URL + url_suffix,
-        verify=USE_SSL,
-        params=params,
-        data=data,
-        headers=HEADERS
-    )
-    if res.status_code not in {200}:
-        try:
-            errors = ''
-            for error in res.json().get('errors'):
-                errors += f"\n{error.get('detail', '')}"
-            raise Exception(
-                f'Error in API call to Sentinel One [{res.status_code}] - [{res.reason}] \n'
-                f'Error details: [{errors}]'
+def get_threats_outputs(threats, rank: int = 0):
+    for threat in threats:
+        threat_rank = int(threat.get('rank') or 0)
+        if IS_VERSION_2_1 or threat_rank >= rank:
+            threat_info = threat.get('threatInfo', {}) if IS_VERSION_2_1 else threat
+            agent_realtime_info = threat.get('agentRealtimeInfo', {}) if IS_VERSION_2_1 else threat
+            entry = {
+                'ID': threat.get('id'),
+                'AgentComputerName': agent_realtime_info.get('agentComputerName'),
+                'CreatedDate': threat_info.get('createdAt') if IS_VERSION_2_1 else threat_info.get('createdDate'),
+                'SiteID': agent_realtime_info.get('siteId'),
+                'SiteName': agent_realtime_info.get('siteName'),
+                'Classification': threat_info.get('classification'),
+                'ClassificationSource': threat_info.get('classificationSource'),
+                'MitigationStatus': threat_info.get('mitigationStatus'),
+                'AgentID': agent_realtime_info.get('agentId'),
+                'ConfidenceLevel': threat_info.get('confidenceLevel'),
+                'FileContentHash': threat_info.get('sha1') if IS_VERSION_2_1 else threat_info.get('fileContentHash'),
+                'ThreatName': threat_info.get('threatName'),
+                'FileSha256': threat_info.get('fileSha256'),
+                'AgentOsType': agent_realtime_info.get('agentOsType'),
+                'FilePath': threat_info.get('filePath'),
+                'Username': threat_info.get('processUser') if IS_VERSION_2_1 else threat_info.get('username'),
+                'Description': threat_info.get('description'),  # Only available in 2.0
+                'FileDisplayName': threat.get('fileDisplayName'),  # Only available in 2.0
+                'Rank': threat_info.get('rank'),  # Only available in 2.0
+                'MarkedAsBenign': threat_info.get('markedAsBenign'),  # Only available in 2.0
+                'InQuarantine': threat_info.get('inQuarantine'),  # Only available in 2.0
+                'FileMaliciousContent': threat_info.get('fileMaliciousContent'),  # Only available in 2.0
+            }
+            remove_nulls_from_dictionary(entry)
+            yield entry
+
+
+def get_agents_outputs(agents):
+    for agent in agents:
+        entry = {
+            'ID': agent.get('id'),
+            'NetworkStatus': agent.get('networkStatus'),
+            'AgentVersion': agent.get('agentVersion'),
+            'IsDecommissioned': agent.get('isDecommissioned'),
+            'IsActive': agent.get('isActive'),
+            'LastActiveDate': agent.get('lastActiveDate'),
+            'RegisteredAt': agent.get('registeredAt'),
+            'ExternalIP': agent.get('externalIp'),
+            'ThreatCount': agent.get('activeThreats'),
+            'EncryptedApplications': agent.get('encryptedApplications'),
+            'OSName': agent.get('osName'),
+            'ComputerName': agent.get('computerName'),
+            'Domain': agent.get('domain'),
+            'CreatedAt': agent.get('createdAt'),
+            'SiteName': agent.get('siteName'),
+        }
+        remove_nulls_from_dictionary(entry)
+        yield entry
+
+
+class Client(BaseClient):
+    """
+    Client will implement the service API, and should not contain any Demisto logic.
+    Should only do requests and return data.
+    """
+
+    def get_activities_request(self, created_after: str = None, user_emails: str = None, group_ids=None,
+                               created_until: str = None,
+                               activities_ids=None, include_hidden: str = None, created_before: str = None,
+                               threats_ids=None,
+                               activity_types=None, user_ids=None, created_from: str = None,
+                               created_between: str = None, agent_ids=None,
+                               limit: str = '50'):
+        params = assign_params(
+            created_at__gt=created_after,
+            userEmails=user_emails,
+            groupIds=argToList(group_ids),
+            created_at__lte=created_until,
+            ids=argToList(activities_ids),
+            includeHidden=include_hidden,
+            created_at__lt=created_before,
+            threatIds=argToList(threats_ids),
+            activityTypes=argToList(activity_types),
+            userIds=argToList(user_ids),
+            created_at__gte=created_from,
+            createdAt_between=created_between,
+            agentIds=argToList(agent_ids),
+            limit=int(limit), )
+        response = self._http_request(method='GET', url_suffix='activities', params=params)
+        return response.get('data', {})
+
+    def get_threats_request(self, content_hash=None, mitigation_status=None, created_before=None, created_after=None,
+                            created_until=None, created_from=None, resolved='false', display_name=None, query=None,
+                            threat_ids=None, limit=20, classifications=None):
+        keys_to_ignore = ['displayName__like' if IS_VERSION_2_1 else 'displayName']
+
+        params = assign_params(
+            contentHashes=argToList(content_hash),
+            mitigationStatuses=argToList(mitigation_status),
+            createdAt__lt=created_before,
+            createdAt__gt=created_after,
+            createdAt__lte=created_until,
+            createdAt__gte=created_from,
+            resolved=argToBoolean(resolved),
+            displayName__like=display_name,
+            displayName=display_name,
+            query=query,
+            ids=argToList(threat_ids),
+            limit=int(limit),
+            classifications=argToList(classifications),
+            keys_to_ignore=keys_to_ignore,
+        )
+        response = self._http_request(method='GET', url_suffix='threats', params=params)
+        return response.get('data', {})
+
+    def mark_as_threat_request(self, threat_ids, target_scope):
+        endpoint_url = 'threats/mark-as-threat'
+
+        payload = {
+            "filter": {
+                "ids": threat_ids
+            },
+            "data": {
+                "targetScope": target_scope
+            }
+        }
+
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def mitigate_threat_request(self, threat_ids, action):
+        endpoint_url = f'threats/mitigate/{action}'
+
+        payload = {
+            "filter": {
+                "ids": threat_ids
+            }
+        }
+
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def resolve_threat_request(self, threat_ids):
+        endpoint_url = 'threats/mark-as-resolved'
+
+        payload = {
+            "filter": {
+                "ids": threat_ids
+            }
+        }
+
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def get_groups_request(self, params: dict):
+        response = self._http_request(method='GET', url_suffix='groups', params=params)
+        return response.get('data', {})
+
+    def delete_group_request(self, group_id=None):
+        endpoint_url = f'groups/{group_id}'
+        response = self._http_request(method='DELETE', url_suffix=endpoint_url)
+        return response.get('data', {})
+
+    def get_sites_request(self, params):
+        response = self._http_request(method='GET', url_suffix='sites', params=params)
+        return response.get('data', {})
+
+    def move_agent_request(self, group_id, agents_id):
+        endpoint_url = f'groups/{group_id}/move-agents'
+
+        payload = {
+            "filter": {
+                "ids": agents_id
+            }
+        }
+
+        response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def get_agent_processes_request(self, agents_ids=None):
+        """
+        [DEPRECATED BY S1] Returns empty array. To get processes of an Agent, see Applications.
+
+        """
+        endpoint_url = 'agents/processes'
+
+        params = {
+            'ids': agents_ids
+        }
+
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        return response.get('data', {})
+
+    def get_site_request(self, site_id):
+        endpoint_url = f'sites/{site_id}'
+        response = self._http_request(method='GET', url_suffix=endpoint_url)
+        return response.get('data', {})
+
+    def reactivate_site_request(self, site_id):
+        endpoint_url = f'sites/{site_id}/reactivate'
+        response = self._http_request(method='PUT', url_suffix=endpoint_url)
+        return response.get('data', {})
+
+    def get_threat_summary_request(self, site_ids=None, group_ids=None):
+        endpoint_url = 'private/threats/summary'
+        params = {
+            "siteIds": site_ids,
+            "groupIds": group_ids
+        }
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        return response.get('data', {})
+
+    def list_agents_request(self, params: dict):
+        response = self._http_request(method='GET', url_suffix='agents', params=params)
+        return response.get('data', {})
+
+    def get_agent_request(self, agent_ids):
+        params = {
+            "ids": agent_ids
+        }
+
+        response = self._http_request(method='GET', url_suffix='agents', params=params)
+        return response.get('data', {})
+
+    def connect_to_network_request(self, agent_ids):
+        endpoint_url = 'agents/actions/connect'
+
+        payload = {
+            'filter': {
+                'ids': agent_ids
+            }
+        }
+
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def disconnect_from_network_request(self, agents_id):
+        endpoint_url = 'agents/actions/disconnect'
+
+        payload = {
+            'filter': {
+                'ids': agents_id
+            }
+        }
+
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def broadcast_message_request(self, message, filters):
+        endpoint_url = 'agents/actions/broadcast'
+
+        payload = {
+            'data': {
+                'message': message
+            },
+            'filter': filters
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+
+        return response.get('data', {})
+
+    def uninstall_agent_request(self, query, agent_id=None, group_id=None):
+        endpoint_url = 'agents/actions/uninstall'
+        payload = {
+            'filter': assign_params(
+                query=query,
+                ids=agent_id,
+                groupIds=group_id,
             )
-        except Exception as error:
-            raise error
-    try:
-        return res.json()
-    except Exception:
-        return None
+        }
+
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def shutdown_agents_request(self, query, agent_id=None, group_id=None):
+        endpoint_url = 'agents/actions/shutdown'
+        payload = {
+            'filter': assign_params(
+                query=query,
+                ids=agent_id,
+                groupIds=group_id
+            )
+        }
+
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def create_query_request(self, query, from_date, to_date):
+        endpoint_url = 'dv/init-query'
+        payload = {
+            'query': query,
+            'fromDate': from_date,
+            'toDate': to_date
+        }
+
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {}).get('queryId')
+
+    def get_events_request(self, query_id=None, limit=None):
+        endpoint_url = 'dv/events'
+
+        params = {
+            'query_id': query_id,
+            'limit': limit
+        }
+
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        return response.get('data', {})
+
+    def get_processes_request(self, query_id=None, limit=None):
+        endpoint_url = 'dv/events/process'
+        params = {
+            'query_id': query_id,
+            'limit': limit
+        }
+
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        return response.get('data', {})
+
+    def get_hash_reputation_request(self, hash_):
+        endpoint_url = f'hashes/{hash_}/reputation'
+        response = self._http_request(method='GET', url_suffix=endpoint_url)
+        return response
+
+    def get_hash_classification_request(self, hash_):
+        """
+        [DEPRECATED by S1] IN BOTH 2.0 and 2.1
+        """
+        endpoint_url = f'hashes/{hash_}/classification'
+        response = self._http_request(method='GET', url_suffix=endpoint_url)
+        return response
+
+    def get_exclusions_request(self, item_ids=None, os_types=None, exclusion_type: str = None, limit: int = 10):
+        endpoint_url = 'exclusions'
+
+        params = {
+            "ids": item_ids,
+            "osTypes": os_types,
+            "type": exclusion_type,
+            "limit": limit
+        }
+
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        return response.get('data', {})
+
+    def create_exclusion_item_request(self, exclusion_type, exclusion_value, os_type, description=None,
+                                      exclusion_mode=None, path_exclusion_type=None, group_ids=None, site_ids=None):
+        payload = {
+            "filter": {
+                "groupIds": group_ids,
+                "siteIds": site_ids
+            },
+            "data": assign_params(
+                type=exclusion_type,
+                value=exclusion_value,
+                osType=os_type,
+                description=description,
+                mode=exclusion_mode,
+                pathExclusionType=path_exclusion_type
+            )
+        }
+
+        response = self._http_request(method='POST', url_suffix='exclusions', json_data=payload)
+        if 'data' in response:
+            return response.get('data')[0]
+        return {}
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
+def test_module(client: Client, args: dict):
     """
     Performs basic get request to get activities types.
     """
-    http_request('GET', 'activities/types')
-    return True
+    try:
+        client._http_request(method='GET', url_suffix='activities/types')
+    except Exception as e:
+        raise DemistoException(f"Test failed. Please verify the URL and Token parameters.\nReason:\n{e}")
+    return 'ok'
 
 
-def get_activities_request(created_after=None, user_emails=None, group_ids=None, created_until=None,
-                           activities_ids=None, include_hidden=None, created_before=None, threats_ids=None,
-                           activity_types=None, user_ids=None, created_from=None, created_between=None, agent_ids=None,
-                           limit=None):
-    endpoint_url = 'activities'
-
-    params = {
-        'created_at__gt': created_after,
-        'userEmails': user_emails,
-        'groupIds': group_ids,
-        'created_at__lte': created_until,
-        'ids': activities_ids,
-        'includeHidden': include_hidden,
-        'created_at__lt': created_before,
-        'threatIds': threats_ids,
-        'activityTypes': activity_types,
-        'userIds': user_ids,
-        'created_at__gte': created_from,
-        'createdAt_between': created_between,
-        'agentIds': agent_ids,
-        'limit': limit
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def get_activities_command():
+def get_activities_command(client: Client, args: dict) -> CommandResults:
     """
     Get a list of activities.
     """
-    context = {}
     context_entries = []
-    contents = []
-    headers = ['ID', 'Primary description', 'Data', 'User ID', 'Created at', 'Updated at', 'Threat ID']
+    headers = ['ID', 'PrimaryDescription', 'Data', 'UserID', 'CreatedAt', 'ThreatID', 'UpdatedAt']
+    activities = client.get_activities_request(**args)
 
-    created_after = demisto.args().get('created_after')
-    user_emails = demisto.args().get('user_emails')
-    group_ids = argToList(demisto.args().get('group_ids', []))
-    created_until = demisto.args().get('created_until')
-    activities_ids = argToList(demisto.args().get('activities_ids', []))
-    include_hidden = demisto.args().get('include_hidden')
-    created_before = demisto.args().get('created_before')
-    threats_ids = argToList(demisto.args().get('threats_ids', []))
-    activity_types = argToList(demisto.args().get('activity_types', []))
-    user_ids = argToList(demisto.args().get('user_ids', []))
-    created_from = demisto.args().get('created_from')
-    created_between = demisto.args().get('created_between')
-    agent_ids = argToList(demisto.args().get('agent_ids', []))
-    limit = int(demisto.args().get('limit', 50))
-
-    activities = get_activities_request(created_after, user_emails, group_ids, created_until, activities_ids,
-                                        include_hidden, created_before, threats_ids,
-                                        activity_types, user_ids, created_from, created_between, agent_ids, limit)
     if activities:
         for activity in activities:
-            contents.append({
-                'ID': activity.get('id'),
-                'Created at': activity.get('createdAt'),
-                'Primary description': activity.get('primaryDescription'),
-                'User ID': activity.get('userId'),
-                'Data': activity.get('data'),
-                'Threat ID': activity.get('threatId'),
-                'Updated at': activity.get('updatedAt')
-            })
-
             context_entries.append({
                 'Hash': activity.get('hash'),
                 'ActivityType': activity.get('activityType'),
@@ -151,134 +427,65 @@ def get_activities_command():
                 'UpdatedAt': activity.get('updatedAt'),
                 'Description': activity.get('description'),
                 'AgentID': activity.get('agentId'),
-                'SiteID': activity.get('siteId')
+                'SiteID': activity.get('siteId'),
             })
 
-        context['SentinelOne.Activity(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One Activities', contents, headers, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One Activities', context_entries, headers=headers, removeNull=True,
+                                        headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.Activity',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=activities)
 
 
-def get_groups_request(group_type=None, group_ids=None, group_id=None, is_default=None, name=None, query=None,
-                       rank=None, limit=None):
-    endpoint_url = 'groups'
-
-    params = {
-        'type': group_type,
-        'groupIds': group_ids,
-        'id': group_id,
-        'isDefault': is_default,
-        'name': name,
-        'query': query,
-        'rank': rank,
-        'limit': limit
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def get_groups_command():
+def get_groups_command(client: Client, args: dict) -> CommandResults:
     """
     Gets the group data.
     """
 
-    context = {}
-    contents = []
-    headers = ['ID', 'Name', 'Type', 'Creator', 'Creator ID', 'Created at', 'Rank']
+    headers = ['id', 'name', 'type', 'creator', 'creatorId', 'createdAt', 'rank']
 
-    group_type = demisto.args().get('group_type')
-    group_id = demisto.args().get('id')
-    group_ids = argToList(demisto.args().get('group_ids', []))
-    is_default = demisto.args().get('is_default')
-    name = demisto.args().get('name')
-    query = demisto.args().get('query')
-    rank = demisto.args().get('rank')
-    limit = int(demisto.args().get('limit', 50))
+    query_params = assign_params(
+        type=args.get('group_type'),
+        id=args.get('id'),
+        groupIds=argToList(args.get('group_ids')),
+        isDefault=args.get('is_default'),
+        name=args.get('name'),
+        query=args.get('query'),
+        rank=args.get('rank'),
+        limit=int(args.get('limit', 50)),
+    )
+    groups = client.get_groups_request(query_params)
 
-    groups = get_groups_request(group_type, group_id, group_ids, is_default, name, query, rank, limit)
-    if groups:
-        for group in groups:
-            contents.append({
-                'ID': group.get('id'),
-                'Type': group.get('type'),
-                'Name': group.get('name'),
-                'Creator ID': group.get('creatorId'),
-                'Creator': group.get('creator'),
-                'Created at': group.get('createdAt'),
-                'Rank': group.get('rank')
-            })
-
-        context['SentinelOne.Group(val.ID && val.ID === obj.ID)'] = groups
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One Groups', contents, headers, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One Groups', groups, headers, headerTransform=pascalToSpace,
+                                        removeNull=True),
+        outputs_prefix='SentinelOne.Group',
+        outputs_key_field='ID',
+        outputs=groups,
+        raw_response=groups)
 
 
-def delete_group_request(group_id=None):
-    endpoint_url = f'groups/{group_id}'
-
-    response = http_request('DELETE', endpoint_url)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def delete_group():
+def delete_group(client: Client, args: dict) -> str:
     """
     Deletes a group by ID.
     """
-    group_id = demisto.args().get('group_id')
-
-    delete_group_request(group_id)
-    demisto.results('The group was deleted successfully')
-
-
-def move_agent_request(group_id, agents_id):
-    endpoint_url = f'groups/{group_id}/move-agents'
-
-    payload = {
-        "filter": {
-            "agentIds": agents_id
-        }
-    }
-
-    response = http_request('PUT', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
+    group_id = args.get('group_id')
+    response = client.delete_group_request(group_id)
+    if response.get('success'):
+        return f'Group: {group_id} was deleted successfully'
+    return f'The deletion of group: {group_id} has failed'
 
 
-def move_agent_to_group_command():
+def move_agent_to_group_command(client: Client, args: dict) -> CommandResults:
     """
     Move agents to a new group.
     """
-    group_id = demisto.args().get('group_id')
-    agents_id = argToList(demisto.args().get('agents_ids', []))
-    context = {}
+    group_id = args.get('group_id')
+    agents_id = argToList(args.get('agents_ids', []))
 
-    agents_groups = move_agent_request(group_id, agents_id)
+    agents_groups = client.move_agent_request(group_id, agents_id)
 
     # Parse response into context & content entries
     if agents_groups.get('agentsMoved') and int(agents_groups.get('agentsMoved')) > 0:
@@ -286,41 +493,22 @@ def move_agent_to_group_command():
     else:
         agents_moved = False
     date_time_utc = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
-    context_entries = contents = {
+    context_entries = {
         'Date': date_time_utc,
         'AgentsMoved': agents_groups.get('agentsMoved'),
-        'AffectedAgents': agents_moved
+        'AffectedAgents': agents_moved,
     }
 
-    context['SentinelOne.Agent(val.Date && val.Date === obj.Date)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Moved Agents \n' + 'Total of: ' + str(
-            agents_groups.get('AgentsMoved')) + ' agents were Moved successfully', contents, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Sentinel One - Moved Agents\nTotal of: {agents_groups.get("AgentsMoved", 0)}'
+                                        f'agents were Moved successfully', context_entries, removeNull=True),
+        outputs_prefix='SentinelOne.Agent',
+        outputs_key_field='Date',
+        outputs=context_entries,
+        raw_response=agents_groups)
 
 
-def get_agent_processes_request(agents_ids=None):
-    endpoint_url = 'agents/processes'
-
-    params = {
-        'ids': agents_ids
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def get_agent_processes():
+def get_agent_processes(client: Client, args: dict):
     """
     Retrieve running processes for a specific agent.
     Note: This feature is obsolete and an empty array will always be returned
@@ -328,9 +516,9 @@ def get_agent_processes():
     headers = ['ProcessName', 'StartTime', 'Pid', 'MemoryUsage', 'CpuUsage', 'ExecutablePath']
     contents = []
     context = {}
-    agents_ids = demisto.args().get('agents_ids')
+    agents_ids = args.get('agents_ids')
 
-    processes = get_agent_processes_request(agents_ids)
+    processes = client.get_agent_processes_request(agents_ids)
 
     if processes:
         for process in processes:
@@ -340,7 +528,7 @@ def get_agent_processes():
                 'MemoryUsage': process.get('memoryUsage'),
                 'StartTime': process.get('startTime'),
                 'ExecutablePath': process.get('executablePath'),
-                'Pid': process.get('pid')
+                'Pid': process.get('pid'),
             })
         context['SentinelOne.Agent(val.Pid && val.Pid === obj.Pid)'] = processes
 
@@ -354,414 +542,182 @@ def get_agent_processes():
     })
 
 
-def get_threats_command():
+def get_threats_command(client: Client, args: dict) -> CommandResults:
     """
     Gets a list of threats.
+    Rank only relevant for API version 2.0
     """
-    # Init main vars
-    contents = []
-    context = {}
-    context_entries = []
+    headers = ['ID', 'AgentComputerName', 'CreatedDate', 'SiteID', 'SiteName', 'Classification', 'MitigationStatus',
+               'ConfidenceLevel' if IS_VERSION_2_1 else 'Rank', 'AgentID', 'FileContentHash', 'MarkedAsBenign']
 
-    # Get arguments
-    content_hash = demisto.args().get('content_hash')
-    mitigation_status = argToList(demisto.args().get('mitigation_status'))
-    created_before = demisto.args().get('created_before')
-    created_after = demisto.args().get('created_after')
-    created_until = demisto.args().get('created_until')
-    created_from = demisto.args().get('created_from')
-    resolved = bool(strtobool(demisto.args().get('resolved', 'false')))
-    display_name = demisto.args().get('display_name')
-    query = demisto.args().get('query', '')
-    threat_ids = argToList(demisto.args().get('threat_ids', []))
-    limit = int(demisto.args().get('limit', 20))
-    classifications = argToList(demisto.args().get('classifications', []))
-    rank = int(demisto.args().get('rank', 0))
+    threats = client.get_threats_request(**args)
+    outputs = list(get_threats_outputs(threats, int(args.get('rank', 0)))) if threats else None
 
-    # Make request and get raw response
-    threats = get_threats_request(content_hash, mitigation_status, created_before, created_after, created_until,
-                                  created_from, resolved, display_name, query, threat_ids, limit, classifications)
-
-    # Parse response into context & content entries
-    if threats:
-        for threat in threats:
-            threat_rank = threat.get('rank')
-            try:
-                threat_rank = int(threat_rank)
-            except TypeError:
-                threat_rank = 0
-            if not rank or (rank and threat_rank >= rank):
-                contents.append({
-                    'ID': threat.get('id'),
-                    'Agent Computer Name': threat.get('agentComputerName'),
-                    'Created Date': threat.get('createdDate'),
-                    'Site ID': threat.get('siteId'),
-                    'Classification': threat.get('classification'),
-                    'Mitigation Status': threat.get('mitigationStatus'),
-                    'Agent ID': threat.get('agentId'),
-                    'Site Name': threat.get('siteName'),
-                    'Rank': threat.get('rank'),
-                    'Marked As Benign': threat.get('markedAsBenign'),
-                    'File Content Hash': threat.get('fileContentHash')
-                })
-                context_entries.append({
-                    'ID': threat.get('id'),
-                    'AgentComputerName': threat.get('agentComputerName'),
-                    'CreatedDate': threat.get('createdDate'),
-                    'SiteID': threat.get('siteId'),
-                    'Classification': threat.get('classification'),
-                    'MitigationStatus': threat.get('mitigationStatus'),
-                    'AgentID': threat.get('agentId'),
-                    'Rank': threat.get('rank'),
-                    'MarkedAsBenign': threat.get('markedAsBenign'),
-                    'FileContentHash': threat.get('fileContentHash'),
-                    'InQuarantine': threat.get('inQuarantine'),
-                    'FileMaliciousContent': threat.get('fileMaliciousContent'),
-                    'ThreatName': threat.get('threatName'),
-                    'FileSha256': threat.get('fileSha256'),
-                    'AgentOsType': threat.get('agentOsType'),
-                    'Description': threat.get('description'),
-                    'FileDisplayName': threat.get('fileDisplayName'),
-                    'FilePath': threat.get('filePath'),
-                    'Username': threat.get('username')
-
-                })
-
-        context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': threats,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Getting Threat List \n' + 'Provides summary information and '
-                                                                                   'details for all the threats that '
-                                                                                   'matched your search criteria.',
-                                         contents, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            'Sentinel One - Getting Threat List', outputs,
+            metadata='Provides summary information and details for all the threats that matched your search criteria.',
+            headers=headers, headerTransform=pascalToSpace, removeNull=True),
+        outputs_prefix='SentinelOne.Threat',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=threats)
 
 
-def get_threats_request(content_hash=None, mitigation_status=None, created_before=None, created_after=None,
-                        created_until=None, created_from=None, resolved=None, display_name=None, query=None,
-                        threat_ids=None, limit=None, classifications=None):
-    endpoint_url = 'threats'
-
-    params = {
-        'contentHash': content_hash,
-        'mitigationStatuses': mitigation_status,
-        'createdAt__lt': created_before,
-        'createdAt__gt': created_after,
-        'createdAt__lte': created_until,
-        'createdAt__gte': created_from,
-        'resolved': resolved,
-        'displayName__like': display_name,
-        'query': query,
-        'ids': threat_ids,
-        'limit': limit,
-        'classifications': classifications,
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def get_hash_command():
+def get_hash_command(client: Client, args: dict) -> CommandResults:
     """
-    Get hash reputation and classification.
+    Get hash reputation.
+    Removed hash classification since SentinelOne has deprecated it - Breaking BC.
     """
-    # Init main vars
-    headers = ['Hash', 'Rank', 'ClassificationSource', 'Classification']
-    # Get arguments
-    hash_ = demisto.args().get('hash')
+    hash_ = args.get('hash')
     type_ = get_hash_type(hash_)
     if type_ == 'Unknown':
-        return_error('Enter a valid hash format.')
-    # Make request and get raw response
-    hash_reputation = get_hash_reputation_request(hash_)
+        raise DemistoException('Enter a valid hash format.')
+
+    hash_reputation = client.get_hash_reputation_request(hash_)
     reputation = hash_reputation.get('data', {})
     contents = {
         'Rank': reputation.get('rank'),
-        'Hash': hash_
-    }
-    # try get classification - might return 404 (classification is not mandatory)
-    try:
-        hash_classification = get_hash_classification_request(hash_)
-        classification = hash_classification.get('data', {})
-        contents['ClassificationSource'] = classification.get('classificationSource')
-        contents['Classification'] = classification.get('classification')
-    except ValueError as e:
-        if '404' in str(e):  # handling case classification not found for the specific hash
-            contents['Classification'] = 'No classification was found.'
-        else:
-            raise e
-
-    # Parse response into context & content entries
-    title = 'Sentinel One - Hash Reputation and Classification \n' + \
-            'Provides hash reputation (rank from 0 to 10):'
-
-    context = {
-        'SentinelOne.Hash(val.Hash && val.Hash === obj.Hash)': contents
+        'Hash': hash_,
     }
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, headers, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Hash Reputation\nProvides hash reputation (rank from 0 to 10):',
+                                        contents, removeNull=True),
+        outputs_prefix='SentinelOne.Hash',
+        outputs_key_field='Hash',
+        outputs=contents,
+        raw_response=hash_reputation)
 
 
-def get_hash_reputation_request(hash_):
-    endpoint_url = f'hashes/{hash_}/reputation'
-
-    response = http_request('GET', endpoint_url)
-    return response
-
-
-def get_hash_classification_request(hash_):
-    endpoint_url = f'hashes/{hash_}/classification'
-
-    response = http_request('GET', endpoint_url)
-    return response
-
-
-def mark_as_threat_command():
+def mark_as_threat_command(client: Client, args: dict) -> CommandResults:
     """
     Mark suspicious threats as threats
     """
-    # Init main vars
-    headers = ['ID', 'Marked As Threat']
-    contents = []
-    context = {}
     context_entries = []
 
-    # Get arguments
-    threat_ids = argToList(demisto.args().get('threat_ids'))
-    target_scope = demisto.args().get('target_scope')
+    threat_ids = argToList(args.get('threat_ids'))
+    target_scope = args.get('target_scope')
 
     # Make request and get raw response
-    affected_threats = mark_as_threat_request(threat_ids, target_scope)
+    affected_threats = client.mark_as_threat_request(threat_ids, target_scope)
 
     # Parse response into context & content entries
     if affected_threats.get('affected') and int(affected_threats.get('affected')) > 0:
-        title = 'Total of ' + str(affected_threats.get('affected')) + ' provided threats were marked successfully'
+        title = f'Total of {affected_threats.get("affected")} provided threats were marked successfully'
         affected = True
     else:
         affected = False
         title = 'No threats were marked'
     for threat_id in threat_ids:
-        contents.append({
-            'Marked As Threat': affected,
-            'ID': threat_id,
-        })
         context_entries.append({
             'MarkedAsThreat': affected,
             'ID': threat_id,
         })
 
-    context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Marking suspicious threats as threats \n' + title, contents,
-                                         headers, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Marking suspicious threats as threats \n' + title,
+                                        context_entries, headerTransform=pascalToSpace, removeNull=True),
+        outputs_prefix='SentinelOne.Threat',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=affected_threats)
 
 
-def mark_as_threat_request(threat_ids, target_scope):
-    endpoint_url = 'threats/mark-as-threat'
-
-    payload = {
-        "filter": {
-            "ids": threat_ids
-        },
-        "data": {
-            "targetScope": target_scope
-        }
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def mitigate_threat_command():
+def mitigate_threat_command(client: Client, args: dict) -> CommandResults:
     """
     Apply a mitigation action to a group of threats
     """
-    # Init main vars
-    headers = ['ID', 'Mitigation Action', 'Mitigated']
     contents = []
-    context = {}
     context_entries = []
 
     # Get arguments
-    threat_ids = argToList(demisto.args().get('threat_ids'))
-    action = demisto.args().get('action')
+    threat_ids = argToList(args.get('threat_ids'))
+    action = args.get('action')
 
     # Make request and get raw response
-    mitigated_threats = mitigate_threat_request(threat_ids, action)
+    mitigated_threats = client.mitigate_threat_request(threat_ids, action)
 
     # Parse response into context & content entries
     if mitigated_threats.get('affected') and int(mitigated_threats.get('affected')) > 0:
         mitigated = True
-        title = 'Total of ' + str(mitigated_threats.get('affected')) + ' provided threats were mitigated successfully'
+        meta = f'Total of {mitigated_threats.get("affected")} provided threats were mitigated successfully'
     else:
         mitigated = False
-        title = 'No threats were mitigated'
+        meta = 'No threats were mitigated'
     for threat_id in threat_ids:
         contents.append({
             'Mitigated': mitigated,
             'ID': threat_id,
-            'Mitigation Action': action
+            'Mitigation Action': action,
         })
         context_entries.append({
             'Mitigated': mitigated,
             'ID': threat_id,
             'Mitigation': {
                 'Action': action
-            }
+            },
         })
 
-    context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Mitigating threats \n' + title, contents, headers,
-                                         removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Mitigating threats', contents, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.Threat',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=mitigated_threats)
 
 
-def mitigate_threat_request(threat_ids, action):
-    endpoint_url = f'threats/mitigate/{action}'
-
-    payload = {
-        "filter": {
-            "ids": threat_ids
-        }
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def resolve_threat_command():
+def resolve_threat_command(client: Client, args: dict) -> CommandResults:
     """
     Mark threats as resolved
     """
-    # Init main vars
-    contents = []
-    context = {}
     context_entries = []
 
-    # Get arguments
-    threat_ids = argToList(demisto.args().get('threat_ids'))
+    threat_ids = argToList(args.get('threat_ids'))
 
     # Make request and get raw response
-    resolved_threats = resolve_threat_request(threat_ids)
+    resolved_threats = client.resolve_threat_request(threat_ids)
 
     # Parse response into context & content entries
     if resolved_threats.get('affected') and int(resolved_threats.get('affected')) > 0:
         resolved = True
-        title = 'Total of ' + str(resolved_threats.get('affected')) + ' provided threats were resolved successfully'
+        title = f'Total of {resolved_threats.get("affected")} provided threats were resolved successfully'
     else:
         resolved = False
         title = 'No threats were resolved'
 
     for threat_id in threat_ids:
-        contents.append({
-            'Resolved': resolved,
-            'ID': threat_id
-        })
         context_entries.append({
             'Resolved': resolved,
-            'ID': threat_id
+            'ID': threat_id,
         })
 
-    context['SentinelOne.Threat(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Resolving threats \n' + title, contents, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Resolving threats\n' + title, context_entries, removeNull=True),
+        outputs_prefix='SentinelOne.Threat',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=resolved_threats)
 
 
-def resolve_threat_request(threat_ids):
-    endpoint_url = 'threats/mark-as-resolved'
-
-    payload = {
-        "filter": {
-            "ids": threat_ids
-        }
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def get_white_list_command():
+def get_white_list_command(client: Client, args: dict) -> CommandResults:
     """
     List all white items matching the input filter
     """
-    # Init main vars
-    contents = []
-    context = {}
     context_entries = []
 
     # Get arguments
-    item_ids = argToList(demisto.args().get('item_ids', []))
-    os_types = argToList(demisto.args().get('os_types', []))
-    exclusion_type = demisto.args().get('exclusion_type')
-    limit = int(demisto.args().get('limit', 10))
+    item_ids = argToList(args.get('item_ids', []))
+    os_types = argToList(args.get('os_types', []))
+    exclusion_type = args.get('exclusion_type')
+    limit = int(args.get('limit', 10))
 
     # Make request and get raw response
-    exclusion_items = get_white_list_request(item_ids, os_types, exclusion_type, limit)
+    exclusion_items = client.get_exclusions_request(item_ids, os_types, exclusion_type, limit)
 
     # Parse response into context & content entries
     if exclusion_items:
         for exclusion_item in exclusion_items:
-            contents.append({
-                'ID': exclusion_item.get('id'),
-                'Type': exclusion_item.get('type'),
-                'CreatedAt': exclusion_item.get('createdAt'),
-                'Value': exclusion_item.get('value'),
-                'Source': exclusion_item.get('source'),
-                'UserID': exclusion_item.get('userId'),
-                'UpdatedAt': exclusion_item.get('updatedAt'),
-                'OsType': exclusion_item.get('osType'),
-                'UserName': exclusion_item.get('userName'),
-                'Mode': exclusion_item.get('mode')
-            })
             context_entries.append({
                 'ID': exclusion_item.get('id'),
                 'Type': exclusion_item.get('type'),
@@ -772,166 +728,89 @@ def get_white_list_command():
                 'UpdatedAt': exclusion_item.get('updatedAt'),
                 'OsType': exclusion_item.get('osType'),
                 'UserName': exclusion_item.get('userName'),
-                'Mode': exclusion_item.get('mode')
+                'Mode': exclusion_item.get('mode'),
             })
 
-        context['SentinelOne.Exclusions(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Listing exclusion items \n'
-                                         + 'provides summary information and details for all the exclusion items that '
-                                           'matched your search criteria.', contents, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Listing exclusion items', context_entries, removeNull=True,
+                                        metadata='Provides summary information and details for all the exclusion items'
+                                                 ' that matched your search criteria.'),
+        outputs_prefix='SentinelOne.Exclusions',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=exclusion_items)
 
 
-def get_white_list_request(item_ids, os_types, exclusion_type, limit):
-    endpoint_url = 'exclusions'
-
-    params = {
-        "ids": item_ids,
-        "osTypes": os_types,
-        "type": exclusion_type,
-        "limit": limit
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def create_white_item_command():
+def create_white_item_command(client: Client, args: dict):
     """
     Create white item.
     """
-    # Init main vars
-    contents = []
-    context = {}
     context_entries = []
     title = ''
 
-    # Get arguments
-    group_ids = argToList(demisto.args().get('group_ids', []))
-    site_ids = argToList(demisto.args().get('site_ids', []))
-    exclusion_type = demisto.args().get('exclusion_type')
-    exclusion_value = demisto.args().get('exclusion_value')
-    os_type = demisto.args().get('os_type')
-    description = demisto.args().get('description')
-    exclusion_mode = demisto.args().get('exclusion_mode')
-    path_exclusion_type = demisto.args().get('path_exclusion_type')
+    group_ids = argToList(args.get('group_ids', []))
+    site_ids = argToList(args.get('site_ids', []))
+    exclusion_type = args.get('exclusion_type')
+    exclusion_value = args.get('exclusion_value')
+    os_type = args.get('os_type')
+    description = args.get('description')
+    exclusion_mode = args.get('exclusion_mode')
+    path_exclusion_type = args.get('path_exclusion_type')
+
+    if not (group_ids or site_ids):
+        raise DemistoException("You must provide either group_ids or site_ids.")
 
     # Make request and get raw response
-    new_item = create_exclusion_item_request(exclusion_type, exclusion_value, os_type, description, exclusion_mode,
-                                             path_exclusion_type, group_ids, site_ids)
+    new_item = client.create_exclusion_item_request(exclusion_type, exclusion_value, os_type, description,
+                                                    exclusion_mode, path_exclusion_type, group_ids, site_ids)
 
     # Parse response into context & content entries
     if new_item:
         title = 'Sentinel One - Adding an exclusion item \n' + \
                 'The provided item was successfully added to the exclusion list'
-        contents.append({
-            'ID': new_item.get('id'),
-            'Type': new_item.get('type'),
-            'Created At': new_item.get('createdAt')
-        })
         context_entries.append({
             'ID': new_item.get('id'),
             'Type': new_item.get('type'),
-            'CreatedAt': new_item.get('createdAt')
+            'CreatedAt': new_item.get('createdAt'),
         })
 
-        context['SentinelOne.Exclusion(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown(title, context_entries, removeNull=True, headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.Exclusion',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=new_item)
 
 
-def create_exclusion_item_request(exclusion_type, exclusion_value, os_type, description, exclusion_mode,
-                                  path_exclusion_type, group_ids, site_ids):
-    endpoint_url = 'exclusions'
-
-    payload = {
-        "filter": {
-            "groupIds": group_ids,
-            "siteIds": site_ids
-        },
-        "data": {
-            "type": exclusion_type,
-            "value": exclusion_value,
-            "osType": os_type,
-            "description": description,
-            "mode": exclusion_mode
-        }
-    }
-
-    if path_exclusion_type:
-        payload['data']['pathExclusionType'] = path_exclusion_type
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')[0]
-    return {}
-
-
-def get_sites_command():
+def get_sites_command(client: Client, args: dict) -> CommandResults:
     """
     List all sites with filtering options
     """
-    # Init main vars
-    contents = []
-    context = {}
     context_entries = []
 
-    # Get arguments
-    updated_at = demisto.args().get('updated_at')
-    query = demisto.args().get('query')
-    site_type = demisto.args().get('site_type')
-    features = demisto.args().get('features')
-    state = demisto.args().get('state')
-    suite = demisto.args().get('suite')
-    admin_only = bool(strtobool(demisto.args().get('admin_only', 'false')))
-    account_id = demisto.args().get('account_id')
-    site_name = demisto.args().get('site_name')
-    created_at = demisto.args().get('created_at')
-    limit = int(demisto.args().get('limit', 50))
-    site_ids = argToList(demisto.args().get('site_ids', []))
+    query_params = assign_params(
+        updatedAt=args.get('updated_at'),
+        query=args.get('query'),
+        siteType=args.get('site_type'),
+        features=args.get('features'),
+        state=args.get('state'),
+        suite=args.get('suite'),
+        # HTTP 500 - server internal error when passing admin_only.
+        adminOnly=argToBoolean(args.get('admin_only')) if args.get('admin_only') else None,
+        accountId=args.get('account_id'),
+        name=args.get('site_name'),
+        createdAt=args.get('created_at'),
+        limit=int(args.get('limit', 50)),
+        siteIds=argToList(args.get('site_ids')),
+    )
 
     # Make request and get raw response
-    sites, all_sites = get_sites_request(updated_at, query, site_type, features, state, suite, admin_only, account_id,
-                                         site_name, created_at, limit, site_ids)
+    raw_response = client.get_sites_request(query_params)
+    sites, all_sites = raw_response.get('sites'), raw_response.get('allSites')
 
     # Parse response into context & content entries
     if sites:
         for site in sites:
-            contents.append({
-                'ID': site.get('id'),
-                'Creator': site.get('creator'),
-                'Name': site.get('name'),
-                'Type': site.get('siteType'),
-                'Account Name': site.get('accountName'),
-                'State': site.get('state'),
-                'Health Status': site.get('healthStatus'),
-                'Suite': site.get('suite'),
-                'Created At': site.get('createdAt'),
-                'Expiration': site.get('expiration'),
-                'Unlimited Licenses': site.get('unlimitedLicenses'),
-                'Total Licenses': all_sites.get('totalLicenses'),
-                'Active Licenses': all_sites.get('activeLicenses')
-            })
             context_entries.append({
                 'ID': site.get('id'),
                 'Creator': site.get('creator'),
@@ -945,88 +824,34 @@ def get_sites_command():
                 'Expiration': site.get('expiration'),
                 'UnlimitedLicenses': site.get('unlimitedLicenses'),
                 'TotalLicenses': all_sites.get('totalLicenses'),
-                'ActiveLicenses': all_sites.get('activeLicenses')
+                'ActiveLicenses': all_sites.get('activeLicenses'),
             })
 
-        context['SentinelOne.Site(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - Gettin List of Sites \n' + 'Provides summary information and '
-                                                                                    'details for all sites that matched'
-                                                                                    ' your search criteria.', contents,
-                                         removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Getting List of Sites', context_entries, removeNull=True,
+                                        metadata='Provides summary information and details for all sites that matched '
+                                                 'your search criteria.', headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.Site',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=raw_response)
 
 
-def get_sites_request(updated_at, query, site_type, features, state, suite, admin_only, account_id, site_name,
-                      created_at, limit, site_ids):
-    endpoint_url = 'sites'
-
-    params = {
-        "updatedAt": updated_at,
-        "query": query,
-        "siteType": site_type,
-        "features": features,
-        "state": state,
-        "suite": suite,
-        "adminOnly": admin_only,
-        "accountId": account_id,
-        "name": site_name,
-        "createdAt": created_at,
-        "limit": limit,
-        "siteIds": site_ids
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data').get('sites'), response.get('data').get('allSites')
-    return {}
-
-
-def get_site_command():
+def get_site_command(client: Client, args: dict) -> CommandResults:
     """
     Get a specific site by ID
     """
     # Init main vars
-    contents = []
-    context = {}
     context_entries = []
-    title = ''
 
     # Get arguments
-    site_id = demisto.args().get('site_id')
+    site_id = args.get('site_id')
 
     # Make request and get raw response
-    site = get_site_request(site_id)
+    site = client.get_site_request(site_id)
 
     # Parse response into context & content entries
     if site:
-        title = 'Sentinel One - Summary About Site: ' + site_id + '\n' + \
-                'Provides summary information and details for specific site ID'
-        contents.append({
-            'ID': site.get('id'),
-            'Creator': site.get('creator'),
-            'Name': site.get('name'),
-            'Type': site.get('siteType'),
-            'Account Name': site.get('accountName'),
-            'State': site.get('state'),
-            'Health Status': site.get('healthStatus'),
-            'Suite': site.get('suite'),
-            'Created At': site.get('createdAt'),
-            'Expiration': site.get('expiration'),
-            'Unlimited Licenses': site.get('unlimitedLicenses'),
-            'Total Licenses': site.get('totalLicenses'),
-            'Active Licenses': site.get('activeLicenses'),
-            'AccountID': site.get('accountId'),
-            'IsDefault': site.get('isDefault')
-        })
         context_entries.append({
             'ID': site.get('id'),
             'Creator': site.get('creator'),
@@ -1042,608 +867,284 @@ def get_site_command():
             'TotalLicenses': site.get('totalLicenses'),
             'ActiveLicenses': site.get('activeLicenses'),
             'AccountID': site.get('accountId'),
-            'IsDefault': site.get('isDefault')
+            'IsDefault': site.get('isDefault'),
         })
 
-        context['SentinelOne.Site(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def get_site_request(site_id):
-    endpoint_url = f'sites/{site_id}'
-
-    response = http_request('GET', endpoint_url)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Sentinel One - Summary About Site: {site_id}', context_entries,
+                                        removeNull=True,
+                                        metadata='Provides summary information and details for specific site ID',
+                                        headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.Site',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=site)
 
 
-def reactivate_site_command():
+def reactivate_site_command(client: Client, args: dict) -> CommandResults:
     """
     Reactivate specific site by ID
     """
     # Init main vars
     context = {}
-    title = ''
 
     # Get arguments
-    site_id = demisto.args().get('site_id')
+    site_id = args.get('site_id')
 
     # Make request and get raw response
-    site = reactivate_site_request(site_id)
+    site = client.reactivate_site_request(site_id)
 
     # Parse response into context & content entries
     if site:
-        title = 'Sentinel One - Reactivated Site: ' + site_id + '\n' + 'Site has been reactivated successfully'
-        contents = {
+        context = {
             'ID': site.get('id'),
-            'Reactivated': site.get('success')
-        }
-        context_entries = {
-            'ID': site.get('id'),
-            'Reactivated': site.get('success')
+            'Reactivated': site.get('success'),
         }
 
-        context['SentinelOne.Site(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown(f'Sentinel One - Reactivated Site: {site_id}', context, removeNull=True),
+        outputs_prefix='SentinelOne.Site',
+        outputs_key_field='ID',
+        outputs=context,
+        raw_response=site)
 
 
-def reactivate_site_request(site_id):
-    endpoint_url = f'sites/{site_id}/reactivate'
-
-    response = http_request('PUT', endpoint_url)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if response.get('data'):
-        return response.get('data')
-    return {}
-
-
-def get_threat_summary_command():
+def get_threat_summary_command(client: Client, args: dict) -> CommandResults:
     """
     Get dashboard threat summary
     """
     # Init main vars
-    context = {}
-    title = ''
+    context_entries = {}
 
-    # Get arguments
-    site_ids = argToList(demisto.args().get('site_ids', []))
-    group_ids = argToList(demisto.args().get('group_ids', []))
+    site_ids = argToList(args.get('site_ids'))
+    group_ids = argToList(args.get('group_ids'))
 
     # Make request and get raw response
-    threat_summary = get_threat_summary_request(site_ids, group_ids)
+    threat_summary = client.get_threat_summary_request(site_ids, group_ids)
 
     # Parse response into context & content entries
     if threat_summary:
-        title = 'Sentinel One - Dashboard Threat Summary'
-        contents = {
-            'Active': threat_summary.get('active'),
-            'Total': threat_summary.get('total'),
-            'Mitigated': threat_summary.get('mitigated'),
-            'Suspicious': threat_summary.get('suspicious'),
-            'Blocked': threat_summary.get('blocked')
-        }
-
         context_entries = {
-            'Active': threat_summary.get('active'),
+            'InProgress': threat_summary.get('inProgress'),
+            'MaliciousNotResolved': threat_summary.get('maliciousNotResolved'),
+            'NotMitigated': threat_summary.get('notMitigated'),
+            'NotMitigatedNotResolved': threat_summary.get('notMitigatedNotResolved'),
+            'NotResolved': threat_summary.get('notResolved'),
+            'Resolved': threat_summary.get('resolved'),
+            'SuspiciousNotMitigatedNotResolved': threat_summary.get('suspiciousNotMitigatedNotResolved'),
+            'SuspiciousNotResolved': threat_summary.get('suspiciousNotResolved'),
             'Total': threat_summary.get('total'),
-            'Mitigated': threat_summary.get('mitigated'),
-            'Suspicious': threat_summary.get('suspicious'),
-            'Blocked': threat_summary.get('blocked')
         }
 
-        context['SentinelOne.Threat(val && val === obj)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-        'EntryContext': context
-    })
-
-
-def get_threat_summary_request(site_ids, group_ids):
-    endpoint_url = 'private/threats/summary'
-
-    params = {
-        "siteIds": site_ids,
-        "groupIds": group_ids
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Dashboard Threat Summary', context_entries, removeNull=True,
+                                        headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.Threat',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=threat_summary)
 
 
 # Agents Commands
 
 
-def list_agents_command():
+def list_agents_command(client: Client, args: dict) -> CommandResults:
     """
     List all agents matching the input filter
     """
-    # Init main vars
-    contents = []
-    context = {}
-    context_entries = []
-
     # Get arguments
-    active_threats = demisto.args().get('min_active_threats')
-    computer_name = demisto.args().get('computer_name')
-    scan_status = demisto.args().get('scan_status')
-    os_type = demisto.args().get('os_type')
-    created_at = demisto.args().get('created_at')
+    query_params = assign_params(
+        active_threats=args.get('min_active_threats'),
+        computer_name=args.get('computer_name'),
+        scan_status=args.get('scan_status'),
+        os_type=args.get('os_type'),
+        created_at=args.get('created_at'),
+    )
 
     # Make request and get raw response
-    agents = list_agents_request(active_threats, computer_name, scan_status, os_type, created_at)
+    agents = client.list_agents_request(query_params)
 
     # Parse response into context & content entries
-    if agents:
-        for agent in agents:
-            contents.append({
-                'ID': agent.get('id'),
-                'Network Status': agent.get('networkStatus'),
-                'Agent Version': agent.get('agentVersion'),
-                'Is Decomissioned': agent.get('isDecommissioned'),
-                'Is Active': agent.get('isActive'),
-                'Last ActiveDate': agent.get('lastActiveDate'),
-                'Registered At': agent.get('registeredAt'),
-                'External IP': agent.get('externalIp'),
-                'Threat Count': agent.get('activeThreats'),
-                'Encrypted Applications': agent.get('encryptedApplications'),
-                'OS Name': agent.get('osName'),
-                'Computer Name': agent.get('computerName'),
-                'Domain': agent.get('domain'),
-                'Created At': agent.get('createdAt'),
-                'Site Name': agent.get('siteName')
-            })
-            context_entries.append({
-                'ID': agent.get('id'),
-                'NetworkStatus': agent.get('networkStatus'),
-                'AgentVersion': agent.get('agentVersion'),
-                'IsDecomissioned': agent.get('isDecommissioned'),
-                'IsActive': agent.get('isActive'),
-                'LastActiveDate': agent.get('lastActiveDate'),
-                'RegisteredAt': agent.get('registeredAt'),
-                'ExternalIP': agent.get('externalIp'),
-                'ThreatCount': agent.get('activeThreats'),
-                'EncryptedApplications': agent.get('encryptedApplications'),
-                'OSName': agent.get('osName'),
-                'ComputerName': agent.get('computerName'),
-                'Domain': agent.get('domain'),
-                'CreatedAt': agent.get('createdAt'),
-                'SiteName': agent.get('siteName')
-            })
+    context_entries = list(get_agents_outputs(agents)) if agents else None
 
-        context['SentinelOne.Agents(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Sentinel One - List of Agents \n Provides summary information and details for'
-                                         ' all the agents that matched your search criteria',
-                                         contents, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - List of Agents', context_entries, headerTransform=pascalToSpace,
+                                        removeNull=True, metadata='Provides summary information and details for all'
+                                                                  ' the agents that matched your search criteria'),
+        outputs_prefix='SentinelOne.Agents',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=agents)
 
 
-def list_agents_request(active_threats, computer_name, scan_status, os_type, created_at):
-    endpoint_url = 'agents'
-
-    params = {
-        "activeThreats__gt": active_threats,
-        "computerName": computer_name,
-        "scanStatus": scan_status,
-        "osType": os_type,
-        "createdAt__gte": created_at
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
-
-
-def get_agent_command():
+def get_agent_command(client: Client, args: dict) -> CommandResults:
     """
     Get single agent via ID
     """
-    # Init main vars
-    contents = []
-    context = {}
-    context_entries = []
-    title = ''
-
     # Get arguments
-    agent_id = demisto.args().get('agent_id')
+    agent_ids = argToList(args.get('agent_id'))
 
     # Make request and get raw response
-    agent = get_agent_request(agent_id)
+    agents = client.get_agent_request(agent_ids)
 
     # Parse response into context & content entries
-    if agent:
-        title = 'Sentinel One - Get Agent Details \nProvides details for the following agent ID : ' + agent_id
-        contents.append({
-            'ID': agent.get('id'),
-            'Network Status': agent.get('networkStatus'),
-            'Agent Version': agent.get('agentVersion'),
-            'Is Decomissioned': agent.get('isDecommissioned'),
-            'Is Active': agent.get('isActive'),
-            'Last ActiveDate': agent.get('lastActiveDate'),
-            'Registered At': agent.get('registeredAt'),
-            'External IP': agent.get('externalIp'),
-            'Threat Count': agent.get('activeThreats'),
-            'Encrypted Applications': agent.get('encryptedApplications'),
-            'OS Name': agent.get('osName'),
-            'Computer Name': agent.get('computerName'),
-            'Domain': agent.get('domain'),
-            'Created At': agent.get('createdAt'),
-            'Site Name': agent.get('siteName')
-        })
-        context_entries.append({
-            'ID': agent.get('id'),
-            'NetworkStatus': agent.get('networkStatus'),
-            'AgentVersion': agent.get('agentVersion'),
-            'IsDecomissioned': agent.get('isDecommissioned'),
-            'IsActive': agent.get('isActive'),
-            'LastActiveDate': agent.get('lastActiveDate'),
-            'RegisteredAt': agent.get('registeredAt'),
-            'ExternalIP': agent.get('externalIp'),
-            'ThreatCount': agent.get('activeThreats'),
-            'EncryptedApplications': agent.get('encryptedApplications'),
-            'OSName': agent.get('osName'),
-            'ComputerName': agent.get('computerName'),
-            'Domain': agent.get('domain'),
-            'CreatedAt': agent.get('createdAt'),
-            'SiteName': agent.get('siteName')
-        })
+    context_entries = list(get_agents_outputs(agents)) if agents else None
 
-        context['SentinelOne.Agent(val.ID && val.ID === obj.ID)'] = context_entries
-
-    demisto.results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, contents, removeNull=True),
-        'EntryContext': context
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Get Agent Details', context_entries,
+                                        headerTransform=pascalToSpace, removeNull=True),
+        outputs_prefix='SentinelOne.Agent',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=agents)
 
 
-def get_agent_request(agent_id):
-    endpoint_url = 'agents'
-
-    params = {
-        "ids": [agent_id]
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')[0]
-    return {}
-
-
-def connect_to_network_request(agents_id):
-    endpoint_url = 'agents/actions/connect'
-
-    payload = {
-        'filter': {
-            'ids': agents_id
-        }
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response
-    return {}
-
-
-def connect_agent_to_network():
+def connect_agent_to_network(client: Client, args: dict) -> Union[CommandResults, str]:
     """
     Sends a "connect to network" command to all agents matching the input filter.
     """
-    # Get arguments
-    agents_id = demisto.args().get('agent_id')
+    agent_ids = argToList(args.get('agent_id'))
 
     # Make request and get raw response
-    agents = connect_to_network_request(agents_id)
-    agents_affected = agents.get('data', {}).get('affected', 0)
+    raw_response = client.connect_to_network_request(agent_ids)
+    agents_affected = raw_response.get('affected', 0)
 
     # Parse response into context & content entries
     if agents_affected > 0:
-        network_status = get_agent_request(agents_id)
-        contents = {
-            'NetworkStatus': network_status.get('networkStatus'),
-            'ID': agents_id
-        }
-    else:
-        return_error('No agents were connected to the network.')
+        agents = client.list_agents_request({'ids': agent_ids})
+        contents = [{
+            'NetworkStatus': agent.get('networkStatus'),
+            'ID': agent.get('id')
+        } for agent in agents]
 
-    context = {
-        'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
-    }
+        return CommandResults(
+            readable_output=f'{agents_affected} agent(s) successfully connected to the network.',
+            outputs_prefix='SentinelOne.Agent',
+            outputs_key_field='ID',
+            outputs=contents,
+            raw_response=raw_response)
 
-    return_outputs(
-        f'{agents_affected} agent(s) successfully connected to the network.',
-        context,
-        agents
-    )
+    return 'No agents were connected to the network.'
 
 
-def disconnect_from_network_request(agents_id):
-    endpoint_url = 'agents/actions/disconnect'
-
-    payload = {
-        'filter': {
-            'ids': agents_id
-        }
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    else:
-        return response
-
-
-def disconnect_agent_from_network():
+def disconnect_agent_from_network(client: Client, args: dict) -> Union[CommandResults, str]:
     """
     Sends a "disconnect from network" command to all agents matching the input filter.
     """
-    # Get arguments
-    agents_id = demisto.args().get('agent_id')
+    agent_ids = argToList(args.get('agent_id'))
 
     # Make request and get raw response
-    agents = disconnect_from_network_request(agents_id)
-    agents_affected = agents.get('data', {}).get('affected', 0)
+    raw_response = client.disconnect_from_network_request(agent_ids)
+    agents_affected = raw_response.get('affected', 0)
 
-    # Parse response into context & content entries
     if agents_affected > 0:
-        network_status = get_agent_request(agents_id)
-        contents = {
-            'NetworkStatus': network_status.get('networkStatus'),
-            'ID': agents_id
-        }
-    else:
-        return_error('No agents were disconnected from the network.')
+        agents = client.list_agents_request({'ids': agent_ids})
+        contents = [{
+            'NetworkStatus': agent.get('networkStatus'),
+            'ID': agent.get('id')
+        } for agent in agents]
 
-    context = {
-        'SentinelOne.Agent(val.ID && val.ID === obj.ID)': contents
-    }
+        return CommandResults(
+            readable_output=f'{agents_affected} agent(s) successfully disconnected from the network.',
+            outputs_prefix='SentinelOne.Agent',
+            outputs_key_field='ID',
+            outputs=contents,
+            raw_response=raw_response)
 
-    return_outputs(
-        f'{agents_affected} agent(s) successfully disconnected from the network.',
-        context,
-        agents
-    )
+    return 'No agents were disconnected from the network.'
 
 
-def broadcast_message_request(message, is_active=None, group_id=None, agent_id=None, domain=None):
-    filters = {}
-    endpoint_url = 'agents/actions/broadcast'
-
-    if is_active:
-        filters['isActive'] = is_active
-    if group_id:
-        filters['groupIds'] = group_id
-    if agent_id:
-        filters['ids'] = agent_id
-    if domain:
-        filters['domains'] = domain
-
-    payload = {
-        'data': {
-            'message': message
-        },
-        'filter': filters
-    }
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    else:
-        return response
-
-
-def broadcast_message():
+def broadcast_message(client: Client, args: dict) -> str:
     """
     Broadcasts a message to all agents matching the input filter.
     """
-    message = demisto.args().get('message')
-    is_active = bool(demisto.args().get('active_agent'))
-    group_id = demisto.args().get('group_id')
-    agent_id = demisto.args().get('agent_id')
-    domain = demisto.args().get('domain')
+    message = args.get('message')
+    filters = assign_params(
+        isActive=argToBoolean(args.get('active_agent', 'false')),
+        groupIds=argToList(args.get('group_id')),
+        ids=argToList(args.get('agent_id')),
+        domains=argToList(args.get('domain')),
+    )
 
-    broadcast_message = broadcast_message_request(message, is_active=is_active, group_id=group_id, agent_id=agent_id,
-                                                  domain=domain)
+    response = client.broadcast_message_request(message, filters)
 
-    agents_affected = broadcast_message.get('data', {}).get('affected', 0)
+    agents_affected = response.get('affected', 0)
     if agents_affected > 0:
-        demisto.results('The message was successfully delivered to the agent(s)')
-    else:
-        return_error('No messages were sent. Verify that the inputs are correct.')
+        return 'The message was successfully delivered to the agent(s)'
+
+    return 'No messages were sent. Verify that the inputs are correct.'
 
 
-def shutdown_agents_request(query, agent_id, group_id):
-    endpoint_url = 'agents/actions/shutdown'
-    filters = {}
-
-    if query:
-        filters['query'] = query
-    if agent_id:
-        filters['ids'] = agent_id
-    if group_id:
-        filters['groupIds'] = group_id
-
-    payload = {
-        'filter': filters
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    else:
-        return response
-
-
-def shutdown_agents():
+def shutdown_agents(client: Client, args: dict) -> str:
     """
     Sends a shutdown command to all agents matching the input filter
     """
-    query = demisto.args().get('query', '')
+    query = args.get('query', '')
 
-    agent_id = argToList(demisto.args().get('agent_id'))
-    group_id = argToList(demisto.args().get('group_id'))
+    agent_id = argToList(args.get('agent_id'))
+    group_id = argToList(args.get('group_id'))
     if not (agent_id or group_id):
-        return_error('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
+        raise DemistoException('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
 
-    affected_agents = shutdown_agents_request(query, agent_id, group_id)
-    agents = affected_agents.get('data', {}).get('affected', 0)
-    if agents > 0:
-        demisto.results(f'Shutting down {agents} agent(s).')
-    else:
-        return_error('No agents were shutdown.')
+    response = client.shutdown_agents_request(query, agent_id, group_id)
+    affected_agents = response.get('affected', 0)
+    if affected_agents > 0:
+        return f'Shutting down {affected_agents} agent(s).'
 
-
-def uninstall_agent_request(query=None, agent_id=None, group_id=None):
-    endpoint_url = 'agents/actions/uninstall'
-    filters = {}
-
-    if query:
-        filters['query'] = query
-    if agent_id:
-        filters['ids'] = agent_id
-    if group_id:
-        filters['groupIds'] = group_id
-
-    payload = {
-        'filter': filters
-    }
-
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    else:
-        return response
+    return 'No agents were shutdown.'
 
 
-def uninstall_agent():
+def uninstall_agent(client: Client, args: dict) -> str:
     """
     Sends an uninstall command to all agents matching the input filter.
     """
-    query = demisto.args().get('query', '')
+    query = args.get('query', '')
 
-    agent_id = argToList(demisto.args().get('agent_id'))
-    group_id = argToList(demisto.args().get('group_id'))
+    agent_id = argToList(args.get('agent_id'))
+    group_id = argToList(args.get('group_id'))
     if not (agent_id or group_id):
-        return_error('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
+        raise DemistoException('Expecting at least one of the following arguments to filter by: agent_id, group_id.')
 
-    affected_agents = shutdown_agents_request(query, agent_id, group_id)
-    agents = affected_agents.get('data', {}).get('affected', 0)
-    if agents > 0:
-        demisto.results(f' Uninstall was sent to {agents} agent(s).')
-    else:
-        return_error('No agents were affected.')
+    response = client.uninstall_agent_request(query, agent_id, group_id)
+    affected_agents = response.get('affected', 0)
+    if affected_agents > 0:
+        return f'Uninstall was sent to {affected_agents} agent(s).'
+    return 'No agents were affected.'
 
 
 # Event Commands
 
-def create_query_request(query, from_date, to_date):
-    endpoint_url = 'dv/init-query'
-    payload = {
-        'query': query,
-        'fromDate': from_date,
-        'toDate': to_date
-    }
+def create_query(client: Client, args: dict) -> CommandResults:
+    query = args.get('query')
+    from_date = args.get('from_date')
+    to_date = args.get('to_date')
 
-    response = http_request('POST', endpoint_url, data=json.dumps(payload))
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    else:
-        return response.get('data', {}).get('queryId')
-
-
-def create_query():
-    query = demisto.args().get('query')
-    from_date = demisto.args().get('from_date')
-    to_date = demisto.args().get('to_date')
-
-    query_id = create_query_request(query, from_date, to_date)
+    query_id = client.create_query_request(query, from_date, to_date)
 
     context_entries = {
         'Query': query,
         'FromDate': from_date,
         'ToDate': to_date,
-        'QueryID': query_id
+        'QueryID': query_id,
     }
-
-    context = {
-        'SentinelOne.Query(val.QueryID && val.QueryID === obj.QueryID)': context_entries
-    }
-    return_outputs('The query ID is ' + str(query_id), context, query_id)
-
-
-def get_events_request(query_id=None, limit=None):
-    endpoint_url = 'dv/events'
-
-    params = {
-        'query_id': query_id,
-        'limit': limit
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
+    return CommandResults(
+        readable_output=f'The query ID is {query_id}',
+        outputs_prefix='SentinelOne.Query',
+        outputs_key_field='QueryID',
+        outputs=context_entries,
+        raw_response=query_id)
 
 
-def get_events():
+def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
     """
     Get all Deep Visibility events from query
     """
     contents = []
     event_standards = []
-    headers = ['EventType', 'AgentName', 'SiteName', 'User', 'Time', 'AgentOS', 'ProcessID', 'ProcessUID',
-               'ProcessName', 'MD5', 'SHA256']
-    query_id = demisto.args().get('query_id')
-    limit = int(demisto.args().get('limit'))
+    query_id = args.get('query_id')
+    limit = int(args.get('limit', 50))
 
-    events = get_events_request(query_id, limit)
+    events = client.get_events_request(query_id, limit)
     if events:
         for event in events:
             contents.append({
@@ -1654,10 +1155,10 @@ def get_events():
                 'Time': event.get('processStartTime'),
                 'AgentOS': event.get('agentOs'),
                 'ProcessID': event.get('pid'),
-                'ProcessUID': event.get('processUniqueKey'),
+                'ProcessUID': event.get('srcProcUid') if IS_VERSION_2_1 else event.get('processUniqueKey'),
                 'ProcessName': event.get('processName'),
                 'MD5': event.get('md5'),
-                'SHA256': event.get('sha256')
+                'SHA256': event.get('sha256'),
             })
 
             event_standards.append({
@@ -1668,42 +1169,26 @@ def get_events():
 
         context = {
             'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents,
-            'Event': event_standards
+            'Event(val.ID && val.ID === obj.ID)': event_standards
         }
+        return CommandResults(
+            readable_output=tableToMarkdown('SentinelOne Events', contents, removeNull=True),
+            outputs=context,
+            raw_response=events)
 
-        return_outputs(tableToMarkdown('SentinelOne Events', contents, headers, removeNull=True), context, events)
-    else:
-        demisto.results('No events were found.')
-
-
-def get_processes_request(query_id=None, limit=None):
-    endpoint_url = 'dv/events/process'
-
-    params = {
-        'query_id': query_id,
-        'limit': limit
-    }
-
-    response = http_request('GET', endpoint_url, params)
-    if response.get('errors'):
-        return_error(response.get('errors'))
-    if 'data' in response:
-        return response.get('data')
-    return {}
+    return 'No events were found.'
 
 
-def get_processes():
+def get_processes(client: Client, args: dict) -> CommandResults:
     """
     Get Deep Visibility events from query by event type - process
     """
     contents = []
-    headers = ['EventType', 'AgentName', 'SiteName', 'User', 'Time', 'ParentProcessID', 'ParentProcessUID',
-               'ProcessName', 'ParentProcessName', 'ProcessDisplayName', 'ProcessID', 'ProcessUID',
-               'SHA1', 'CMD', 'SubsystemType', 'IntegrityLevel', 'ParentProcessStartTime']
-    query_id = demisto.args().get('query_id')
-    limit = int(demisto.args().get('limit'))
 
-    processes = get_events_request(query_id, limit)
+    query_id = args.get('query_id')
+    limit = int(args.get('limit', 50))
+
+    processes = client.get_processes_request(query_id, limit)
     if processes:
         for process in processes:
             contents.append({
@@ -1716,38 +1201,37 @@ def get_processes():
                 'ParentProcessUID': process.get('parentProcessUniqueKey'),
                 'ParentProcessName': process.get('parentProcessName'),
                 'ProcessID': process.get('pid'),
-                'ProcessUID': process.get('processUniqueKey'),
+                'ProcessUID': process.get('srcProcUid') if IS_VERSION_2_1 else process.get('processUniqueKey'),
                 'ProcessName': process.get('processName'),
                 'ProcessDisplayName': process.get('processDisplayName'),
                 'SHA1': process.get('processImageSha1Hash'),
                 'CMD': process.get('"processCmd'),
                 'SubsystemType': process.get('processSubSystem'),
                 'IntegrityLevel': process.get('processIntegrityLevel'),
-                'ParentProcessStartTime': process.get('parentProcessStartTime')
+                'ParentProcessStartTime': process.get('parentProcessStartTime'),
             })
 
-        context = {
-            'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents
-        }
-
-        return_outputs(tableToMarkdown('SentinelOne Processes', contents, headers, removeNull=True), context, processes)
-
-    else:
-        demisto.results('No processes were found.')
+    return CommandResults(
+        readable_output=tableToMarkdown('SentinelOne Processes', contents, removeNull=True),
+        outputs_prefix='SentinelOne.Event',
+        outputs_key_field='ProcessID',
+        outputs=contents,
+        raw_response=processes)
 
 
-def fetch_incidents():
+def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_threat_rank: int):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('time')
 
     # handle first time fetch
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
+        last_fetch, _ = parse_date_range(first_fetch, to_timestamp=True)
 
     current_fetch = last_fetch
     incidents = []
     last_fetch_date_string = timestamp_to_datestring(last_fetch, '%Y-%m-%dT%H:%M:%S.%fZ')
-    threats = get_threats_request(limit=FETCH_LIMIT, created_after=last_fetch_date_string)
+
+    threats = client.get_threats_request(limit=fetch_limit, created_after=last_fetch_date_string)
     for threat in threats:
         rank = threat.get('rank')
         try:
@@ -1755,11 +1239,10 @@ def fetch_incidents():
         except TypeError:
             rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if rank >= FETCH_THREAT_RANK:
+        if rank >= fetch_threat_rank:
             incident = threat_to_incident(threat)
             date_occurred_dt = parse(incident['occurred'])
             incident_date = date_to_timestamp(date_occurred_dt, '%Y-%m-%dT%H:%M:%S.%fZ')
-            # update last run
             if incident_date > last_fetch:
                 incidents.append(incident)
 
@@ -1770,106 +1253,107 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
-def threat_to_incident(threat):
-    incident = {}
-    incident['name'] = 'Sentinel One Threat: ' + str(threat.get('classification', 'Not classified'))
-    incident['occurred'] = threat.get('createdDate')
-    incident['rawJSON'] = json.dumps(threat)
+def threat_to_incident(threat) -> dict:
+    occurred_key = 'createdDate'
+    threat_info = threat
+    if IS_VERSION_2_1:
+        threat_info = threat.get('threatInfo', {})
+        occurred_key = 'createdAt'
+
+    incident = {
+        'name': f'Sentinel One Threat: {threat_info.get("classification", "Not classified")}',
+        'occurred': threat_info.get(occurred_key),
+        'rawJSON': json.dumps(threat)}
     return incident
 
 
 def main():
-    ''' PARSE INTEGRATION PARAMETERS '''
+    """ PARSE INTEGRATION PARAMETERS """
 
-    global TOKEN, SERVER, USE_SSL, FETCH_TIME
-    global FETCH_THREAT_RANK, FETCH_LIMIT, BASE_URL, HEADERS
+    global IS_VERSION_2_1
 
-    TOKEN = demisto.params().get('token')
-    SERVER = demisto.params().get('url')[:-1] if (demisto.params().get('url')
-                                                  and demisto.params().get('url').endswith('/')) \
-        else demisto.params().get('url')
-    USE_SSL = not demisto.params().get('insecure', False)
-    FETCH_TIME = demisto.params().get('fetch_time', '3 days')
-    FETCH_THREAT_RANK = int(demisto.params().get('fetch_threat_rank', 0))
-    FETCH_LIMIT = int(demisto.params().get('fetch_limit', 10))
-    BASE_URL = SERVER + '/web/api/v2.0/'
-    HEADERS = {
-        'Authorization': 'ApiToken ' + TOKEN if TOKEN else 'ApiToken',
+    params = demisto.params()
+    token = params.get('token')
+    api_version = params.get('api_version', '2.1')
+    server = params.get('url').rstrip('/')
+    base_url = urljoin(server, f'/web/api/v{api_version}/')
+    use_ssl = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+
+    IS_VERSION_2_1 = api_version == '2.1'
+
+    first_fetch_time = params.get('fetch_time', '3 days')
+    fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
+    fetch_limit = int(params.get('fetch_limit', 10))
+
+    headers = {
+        'Authorization': 'ApiToken ' + token if token else 'ApiToken',
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
 
-    ''' COMMANDS MANAGER / SWITCH PANEL '''
+    commands: Dict[str, Dict[str, Callable]] = {
+        'common': {
+            'test-module': test_module,
+            'sentinelone-get-activities': get_activities_command,
+            'sentinelone-get-threats': get_threats_command,
+            'sentinelone-mitigate-threat': mitigate_threat_command,
+            'sentinelone-get-hash': get_hash_command,
+            'sentinelone-get-white-list': get_white_list_command,
+            'sentinelone-create-white-list-item': create_white_item_command,
+            'sentinelone-get-sites': get_sites_command,
+            'sentinelone-get-site': get_site_command,
+            'sentinelone-reactivate-site': reactivate_site_command,
+            'sentinelone-list-agents': list_agents_command,
+            'sentinelone-get-agent': get_agent_command,
+            'sentinelone-get-groups': get_groups_command,
+            'sentinelone-move-agent': move_agent_to_group_command,
+            'sentinelone-delete-group': delete_group,
+            'sentinelone-connect-agent': connect_agent_to_network,
+            'sentinelone-disconnect-agent': disconnect_agent_from_network,
+            'sentinelone-broadcast-message': broadcast_message,
+            'sentinelone-get-events': get_events,
+            'sentinelone-create-query': create_query,
+            'sentinelone-get-processes': get_processes,
+            'sentinelone-shutdown-agent': shutdown_agents,
+            'sentinelone-uninstall-agent': uninstall_agent,
+        },
+        '2.0': {
+            'sentinelone-mark-as-threat': mark_as_threat_command,
+            'sentinelone-resolve-threat': resolve_threat_command,
+            'sentinelone-agent-processes': get_agent_processes,
+        },
+        '2.1': {
+            'sentinelone-threat-summary': get_threat_summary_command,
+        },
+    }
 
-    LOG('command is %s' % (demisto.command()))
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+    demisto.info(f'Command being called is {demisto.command()}')
+    command = demisto.command()
 
     try:
-        handle_proxy()
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration test button.
-            test_module()
-            demisto.results('ok')
-        elif demisto.command() == 'fetch-incidents':
-            fetch_incidents()
-        elif demisto.command() == 'sentinelone-get-activities':
-            get_activities_command()
-        elif demisto.command() == 'sentinelone-get-threats':
-            get_threats_command()
-        elif demisto.command() == 'sentinelone-mark-as-threat':
-            mark_as_threat_command()
-        elif demisto.command() == 'sentinelone-mitigate-threat':
-            mitigate_threat_command()
-        elif demisto.command() == 'sentinelone-resolve-threat':
-            resolve_threat_command()
-        elif demisto.command() == 'sentinelone-threat-summary':
-            get_threat_summary_command()
-        elif demisto.command() == 'sentinelone-get-hash':
-            get_hash_command()
-        elif demisto.command() == 'sentinelone-get-white-list':
-            get_white_list_command()
-        elif demisto.command() == 'sentinelone-create-white-list-item':
-            create_white_item_command()
-        elif demisto.command() == 'sentinelone-get-sites':
-            get_sites_command()
-        elif demisto.command() == 'sentinelone-get-site':
-            get_site_command()
-        elif demisto.command() == 'sentinelone-reactivate-site':
-            reactivate_site_command()
-        elif demisto.command() == 'sentinelone-list-agents':
-            list_agents_command()
-        elif demisto.command() == 'sentinelone-get-agent':
-            get_agent_command()
-        elif demisto.command() == 'sentinelone-get-groups':
-            get_groups_command()
-        elif demisto.command() == 'sentinelone-move-agent':
-            move_agent_to_group_command()
-        elif demisto.command() == 'sentinelone-delete-group':
-            delete_group()
-        elif demisto.command() == 'sentinelone-agent-processes':
-            get_agent_processes()
-        elif demisto.command() == 'sentinelone-connect-agent':
-            connect_agent_to_network()
-        elif demisto.command() == 'sentinelone-disconnect-agent':
-            disconnect_agent_from_network()
-        elif demisto.command() == 'sentinelone-broadcast-message':
-            broadcast_message()
-        elif demisto.command() == 'sentinelone-get-events':
-            get_events()
-        elif demisto.command() == 'sentinelone-create-query':
-            create_query()
-        elif demisto.command() == 'sentinelone-get-processes':
-            get_processes()
-        elif demisto.command() == 'sentinelone-shutdown-agent':
-            shutdown_agents()
-        elif demisto.command() == 'sentinelone-uninstall-agent':
-            uninstall_agent()
+        client = Client(
+            base_url=base_url,
+            verify=use_ssl,
+            headers=headers,
+            proxy=proxy,
+        )
+
+        if command == 'fetch-incidents':
+            fetch_incidents(client, fetch_limit, first_fetch_time, fetch_threat_rank)
+
+        else:
+            if command in commands['common']:
+                return_results(commands['common'][command](client, demisto.args()))
+            elif command in commands[api_version]:
+                return_results(commands[api_version][command](client, demisto.args()))
+            else:
+                raise NotImplementedError(f'The {command} command is not supported for API version {api_version}')
 
     except Exception as e:
-        if demisto.command() == 'fetch-incidents':
-            LOG(str(e))
-            raise
-        else:
-            return_error(e)
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
