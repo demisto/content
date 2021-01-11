@@ -1,0 +1,24 @@
+comment: Retrieves users that are currently out of office.
+commonfields:
+  id: GetUsersOOO
+  version: -1
+name: GetUsersOOO
+script: ''
+type: python
+tags:
+- Shift Management
+- widget
+enabled: true
+args:
+- name: listname
+  description: Optionally pass in a different XSOAR list to run this automation against
+    (defaults to OOO List)
+  defaultValue: OOO List
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.1.14969
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
