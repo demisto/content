@@ -982,7 +982,7 @@ def main():
         updated_private_packs
     )
 
-    successful_packs.append(updated_private_packs)
+    successful_packs.extend(updated_private_packs)
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
     print("end of summary")
