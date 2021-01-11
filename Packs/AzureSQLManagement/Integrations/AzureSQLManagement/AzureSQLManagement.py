@@ -141,26 +141,27 @@ def azure_sql_servers_list_command(client: Client, args: Dict[str, str]) -> Comm
 
     :rtype: ``CommandResults``
     """
-
-    server_list = client.azure_sql_servers_list()
     offset_int = int(args.get('offset', '0'))
     limit_int = int(args.get('limit', '50'))
-    server_list_values = copy.deepcopy(server_list.get('value', '')[offset_int:(offset_int + limit_int)])
-    for server in server_list_values:
-        properties = server.get('properties', {})
-        if properties:
+
+    server_list_raw = client.azure_sql_servers_list()
+
+    server_list_fixed = copy.deepcopy(server_list_raw.get('value', '')[offset_int:(offset_int + limit_int)])
+    for server in server_list_fixed:
+        # properties = server.get('properties', {})
+        if properties := server.get('properties', {}):
             server.update(properties)
             del server['properties']
 
-    human_readable = tableToMarkdown(name='Servers List', t=server_list_values,
+    human_readable = tableToMarkdown(name='Servers List', t=server_list_fixed,
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='AzureSQL.Server',
         outputs_key_field='id',
-        outputs=server_list_values,
-        raw_response=server_list
+        outputs=server_list_fixed,
+        raw_response=server_list_raw
     )
 
 
