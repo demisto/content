@@ -1,7 +1,6 @@
 {
  "id": "incident_jiraattachments",
  "version": -1,
- "modified": "2020-12-31T14:44:42.389685+02:00",
  "name": "Jira Attachments",
  "ownerOnly": false,
  "cliName": "jiraattachments",
