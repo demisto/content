@@ -65,7 +65,7 @@ def main():
 
     text_pre_process_args = copy.deepcopy(d_args)
     text_pre_process_args['inputType'] = 'json_b64_string'
-    text_pre_process_args['input'] = base64.b64encode(incidents.encode('utf-8'))
+    text_pre_process_args['input'] = base64.b64encode(incidents.encode('utf-8')).decode('ascii')
     text_pre_process_args['preProcessType'] = 'nlp'
     email_body_fields = [text_pre_process_args.get("emailbody"), text_pre_process_args.get("emailbodyhtml")]
     email_body = "|".join([x for x in email_body_fields if x])
@@ -80,7 +80,7 @@ def main():
     demisto.results(res)
     train_model_args = copy.deepcopy(d_args)
     train_model_args['inputType'] = 'json_b64_string'
-    train_model_args['input'] = base64.b64encode(processed_text_data.encode('utf-8'))
+    train_model_args['input'] = base64.b64encode(processed_text_data.encode('utf-8')).decode('ascii')
     train_model_args['overrideExistingModel'] = 'true'
     res = demisto.executeCommand("DBotTrainTextClassifierV2", train_model_args)
     demisto.results(res)
