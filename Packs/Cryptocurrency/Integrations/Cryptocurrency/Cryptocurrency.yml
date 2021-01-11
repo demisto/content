@@ -2,7 +2,20 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Cryptocurrency
   version: -1
-configuration: []
+configuration:
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: B - Usually reliable
+  display: Source Reliability
+  name: reliability
+  options:
+    - A - Completely reliable
+    - B - Usually reliable
+    - C - Fairly reliable
+    - D - Not usually reliable
+    - E - Unreliable
+    - F - Reliability cannot be judged
+  required: false
+  type: 15
 description: Cryptocurrency will help classify Cryptocurrency indicators as suspicious when ingested.
 display: Cryptocurrency
 name: Cryptocurrency

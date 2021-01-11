@@ -5,20 +5,20 @@ import demistomock as demisto
 
 @pytest.mark.parametrize(
     'crypto,expected',
-    [('bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i',
+    [('bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i',
       {'Cryptocurrency(val.Address && val.Address == obj.Address)': [
-          {'Address': 'bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'AddressType': 'bitcoin'}],
+          {'Address': 'bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'AddressType': 'bitcoin'}],
           'DBotScore('
           'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
-              {'Indicator': 'bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'Type': 'cryptocurrency',
-               'Vendor': 'Cryptocurrency', 'Score': 2}]}),
-     ('bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9,1ANNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i',
+              {'Indicator': 'bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'Type': 'cryptocurrency',
+               'Vendor': 'Cryptocurrency', 'Score': 2, 'Reliability': 'B - Usually reliable'}]}),
+     ('bitcoin:1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9,1ANNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i',
       {'Cryptocurrency(val.Address && val.Address == obj.Address)': [
-          {'Address': 'bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9', 'AddressType': 'bitcoin'}],
+          {'Address': 'bitcoin:1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9', 'AddressType': 'bitcoin'}],
           'DBotScore('
           'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
-              {'Indicator': 'bitcoin-1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9', 'Type': 'cryptocurrency',
-               'Vendor': 'Cryptocurrency', 'Score': 2}]})
+              {'Indicator': 'bitcoin:1Q1pE5vPGEEMqRcVRMbtBK842Y6Pzo6nK9', 'Type': 'cryptocurrency',
+               'Vendor': 'Cryptocurrency', 'Score': 2, 'Reliability': 'B - Usually reliable'}]})
      ]
 )
 def test_main__without_address_type(mocker, crypto, expected):
@@ -49,11 +49,11 @@ def test_main__with_address_type(mocker):
        """
     crypto = '1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i'
     expected = {'Cryptocurrency(val.Address && val.Address == obj.Address)': [
-        {'Address': 'bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'AddressType': 'bitcoin'}],
+        {'Address': 'bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'AddressType': 'bitcoin'}],
         'DBotScore('
         'val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
-            {'Indicator': 'bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'Type': 'cryptocurrency',
-             'Vendor': 'Cryptocurrency', 'Score': 2}]
+            {'Indicator': 'bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i', 'Type': 'cryptocurrency',
+             'Vendor': 'Cryptocurrency', 'Score': 2, 'Reliability': 'B - Usually reliable'}]
     }
     mocker.patch.object(demisto, 'args', return_value={'crypto': crypto, 'address_type': 'bitcoin'})
     mocker.patch.object(demisto, 'command', return_value='crypto')

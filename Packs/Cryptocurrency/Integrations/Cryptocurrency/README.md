@@ -1,13 +1,15 @@
+Cryptocurrency will help classify Cryptocurrency indicators as suspicious when ingested.
 ## Configure Cryptocurrency on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-
 2. Search for Cryptocurrency.
-
 3. Click **Add instance** to create and configure a new integration instance.
 
-4. Click **Test** to validate the URLs, token, and connection.
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | reliability | Source Reliability | False |
 
+4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -24,7 +26,7 @@ Return Cryptocurrency reputation.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | crypto | List of cryptocurrency addresses. | Optional | 
-| address_type | The cryptocurrency address type, if known. e.g. 'bitcoin' | Optional | 
+| address_type | The cryptocurrency address type, if known. e.g. 'bitcoin'. Possible values are: bitcoin. | Optional | 
 
 
 #### Context Output
@@ -40,40 +42,29 @@ Return Cryptocurrency reputation.
 
 
 #### Command Example
-```!crypto crypto=bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i```
+```!crypto crypto=bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i```
 
 #### Context Example
 ```json
 {
     "Cryptocurrency": {
-        "Address": "bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
+        "Address": "bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
         "AddressType": "bitcoin"
     },
     "DBotScore": {
-        "Indicator": "bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
+        "Indicator": "bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
+        "Reliability": "B - Usually reliable",
         "Score": 2,
         "Type": "cryptocurrency",
         "Vendor": "Cryptocurrency"
     }
 }
 ```
-#### Command Example
-```!crypto crypto=1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i address_type=bitcoin```
 
-#### Context Example
-```json
-{
-    "Cryptocurrency": {
-        "Address": "bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
-        "AddressType": "bitcoin"
-    },
-    "DBotScore": {
-        "Indicator": "bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i",
-        "Score": 2,
-        "Type": "cryptocurrency",
-        "Vendor": "Cryptocurrency"
-    }
-}
-```
 #### Human Readable Output
->Cryptocurrency reputation for address bitcoin-1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i was set to Suspicious.
+
+>### Cryptocurrency reputation for bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i
+>|Address|Cryptocurrency Address Type|Reputation|
+>|---|---|---|
+>| bitcoin:1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i | bitcoin | Suspicious |
+

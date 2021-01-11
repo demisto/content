@@ -23,7 +23,7 @@ SCORE = {
 }
 
 
-def get_bitcoin_reputation(addresses) -> List[CommandResults]:
+def get_bitcoin_reputation(addresses, reliability) -> List[CommandResults]:
     command_results: List[CommandResults] = []
     score = 2
     for address in addresses:
@@ -32,6 +32,7 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
             indicator_type=DBotScoreType.CRYPTOCURRENCY,
             integration_name=INTEGRATION_NAME,  # Vendor
             score=score,  # Suspicious
+            reliability=reliability,
         )
         crypto_context = Common.Cryptocurrency(
             address=address,
@@ -55,30 +56,31 @@ def get_bitcoin_reputation(addresses) -> List[CommandResults]:
     return command_results
 
 
-def crypto_reputation_command(args: Dict[str, str]):
+def crypto_reputation_command(args: Dict[str, str], reliability: str):
     crypto_addresses = argToList(args.get('crypto', ''))
 
     # For cases the command was executed by a playbook/user and the addresses received are verified
     # Stripping the `bitcoin` prefix from the given addresses (if exists) then add it to match the convention.
     if args.get('address_type') == BITCOIN:
-        bitcoin_addresses = [f'bitcoin-{address.lstrip("bitcoin-")}' for address in crypto_addresses]
+        bitcoin_addresses = [f'bitcoin:{address.lstrip("bitcoin:")}' for address in crypto_addresses]
 
     else:
         bitcoin_addresses = [address for address in crypto_addresses if BITCOIN in address]
 
-    result = get_bitcoin_reputation(bitcoin_addresses)
+    result = get_bitcoin_reputation(bitcoin_addresses, reliability)
 
     return result
 
 
 def main():
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.info(f'Command being called is {demisto.command()}')
+    reliability = demisto.params()['reliability']
     try:
         if demisto.command() == 'test-module':
             return_results('ok')
 
         elif demisto.command() == 'crypto':
-            return_results(crypto_reputation_command(demisto.args()))
+            return_results(crypto_reputation_command(demisto.args(), reliability))
 
     # Log exceptions and return errors
     except Exception as e:
