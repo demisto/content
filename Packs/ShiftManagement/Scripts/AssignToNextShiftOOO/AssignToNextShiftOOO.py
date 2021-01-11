@@ -7,10 +7,14 @@ users_on_call = demisto.executeCommand("getUsers", {"onCall": "true"})[0]['Conte
 if not users_on_call:
     return_error("No users on shift")
 
-# get the out of office list, and the current xsoar users
 list_name = demisto.getArg("listname")
-list_info = json.loads(demisto.executeCommand("getList", {"listName": list_name})[0]['Contents'])
-list_info = [i['user'] for i in list_info]
+
+# get OOO users
+ooo_list = demisto.executeCommand("GetUsersOOO", {"listname": list_name})
+if isError(ooo_list[0]):
+    return_results(ooo_list[0])
+list_info = ooo_list[0].get('Contents').get('ShiftManagment.OOOUsers')
+list_info = [i['username'] for i in list_info]
 
 # Build list of available users
 non_OOO_list = []
