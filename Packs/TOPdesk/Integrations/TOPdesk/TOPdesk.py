@@ -27,7 +27,7 @@ class Client(BaseClient):
                             query: Optional[str] = None) -> Dict[str, Any]:
         """Get list of objects that support start, page_size and query arguments."""
 
-        allowed_list_type = ["persons", "operators", "branches"]
+        allowed_list_type = ["persons", "operators", "branches", "incidents"]
         if list_type not in allowed_list_type:
             raise ValueError(f"Cannot get list of type {list_type}.\n "
                              f"Only {allowed_list_type} are allowed.")
@@ -273,6 +273,12 @@ def add_filter_to_query(query, filter_name, args):
     return query
 
 
+def replace_none(value, replacement):
+    if value:
+        return value
+    return replacement
+
+
 def incidents_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Get list of incidents from TOPdesk"""
 
@@ -345,20 +351,20 @@ def incidents_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
             'Responded': incident.get('responded', None),
             'Response Date': incident.get('responseDate', None),
             'Call Number': incident.get('number', None),  # not sure
-            'Caller Name': incident.get('caller', {}).get('dynamicName', None),
-            'Customer (Caller)': incident.get('caller', {}).get('branch', {}).get('name', {}),
-            'Call Type': incident.get('callType', {}).get('name', None),
-            'Status': incident.get('processingStatus', {}).get('name', None),
+            'Caller Name': replace_none(incident.get('caller', {}), {}).get('dynamicName', None),
+            'Customer (Caller)': replace_none(replace_none(incident.get('caller', {}), {}).get('branch', {}), {}).get('name', None),
+            'Call Type': replace_none(incident.get('callType', {}), {}).get('name', None),
+            'Status': replace_none(incident.get('processingStatus', {}), {}).get('name', None),
             'Operator': incident.get('operator', None),
             'Completed': incident.get('completed', None),
             'Closed': incident.get('closed', None),
             'Target Date': incident.get('targetDate', None),
-            'Impact': incident.get('impact', {}).get('name', None),
-            'Category': incident.get('category', {}).get('name', None),
-            'Subcategory': incident.get('subcategory', {}).get('name', None),
-            'SLA Target Date': incident.get('sla', {}).get('targetDate', None),
-            'Operator Group': incident.get('subcategory', {}).get('name', None),
-            '(De-)escalation Operator': incident.get('escalationOperator', {}).get('name', None)
+            'Impact': replace_none(incident.get('impact', {}), {}).get('name', None),
+            'Category': replace_none(incident.get('category', {}), {}).get('name', None),
+            'Subcategory': replace_none(incident.get('subcategory', {}), {}).get('name', None),
+            'SLA Target Date': replace_none(incident.get('sla', {}), {}).get('targetDate', None),
+            'Operator Group': replace_none(incident.get('subcategory', {}), {}).get('name', None),
+            '(De-)escalation Operator': replace_none(incident.get('escalationOperator', {}), {}).get('name', None)
         }
 
         readable_branches.append(readable_branch)
