@@ -437,7 +437,7 @@ def build_rep_markdown(ent: Dict[str, Any], entity_type: str) -> str:
             }
             for x, detail in evidence.items()
         ]
-        evid_table.sort(key=lambda x: x.get("Level"), reverse=True)
+        evid_table.sort(key=lambda x: x.get("Level"), reverse=True) # type: ignore
         markdown.append(
             tableToMarkdown(
                 "Risk Rules Triggered",
