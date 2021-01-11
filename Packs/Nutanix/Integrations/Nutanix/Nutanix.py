@@ -573,7 +573,6 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
 def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     """
     Acknowledges all of the Alerts which matches the filters if given.
-    Only alerts that have not been resolved can be acknowledged. TODO CHECK
     - start_time: Acknowledge alerts that their creation time have been after 'start_time'.
     - end_time: Acknowledge alerts that their creation time have been before 'end_time'.
     - severity: Acknowledge any alerts that their severity level matches one of the severities in severity list.

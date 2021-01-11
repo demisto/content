@@ -339,7 +339,7 @@ Get a list of virtual machines.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NutanixHypervisor.VM..affinity.policy | String | Affinity policy. | 
-| NutanixHypervisor.VM..affinity.host_uuids | String | TODO. | 
+| NutanixHypervisor.VM..affinity.host_uuids | String | List of host uuids of the affinity.. | 
 | NutanixHypervisor.VM..allow_live_migrate | Boolean | Does virtual machine allow live migrate. | 
 | NutanixHypervisor.VM..gpus_assigned | Boolean | Does virtual machine have gpus assigned. | 
 | NutanixHypervisor.VM..boot.uefi_boot | Boolean | Does UEFI boot. | 
@@ -877,7 +877,7 @@ make sure the user you are using have at least cluster admin permissions
 | --- | --- | --- |
 | NutanixHypervisor.Alert.num_successful_updates | Number | The number of the successful alerts acknowledges. | 
 | NutanixHypervisor.Alert.num_failed_updates | Number | The number of the failed alerts to acknowledge. | 
-| NutanixHypervisor.Alert.alert_status_list.id | String | TODO | 
+| NutanixHypervisor.Alert.alert_status_list.id | String | Id of the status of the alert. | 
 | NutanixHypervisor.Alert.alert_status_list.successful | Boolean | Was acknowledge for this task successful. | 
 | NutanixHypervisor.Alert.alert_status_list.message | String | Message returned by acknowledge operation. | 
 
@@ -946,7 +946,7 @@ make sure the user you are using have at least cluster admin permissions
 | --- | --- | --- |
 | NutanixHypervisor.Alert.num_successful_updates | Number | The number of the successful alert resolves. | 
 | NutanixHypervisor.Alert.num_failed_updates | Number | The number of the failed alerts to resolve. | 
-| NutanixHypervisor.Alert.alert_status_list.id | String | TODO | 
+| NutanixHypervisor.Alert.alert_status_list.id | String | Id of the status of the alert. | 
 | NutanixHypervisor.Alert.alert_status_list.successful | Boolean | Was resolve for this task successful. | 
 | NutanixHypervisor.Alert.alert_status_list.message | String | Message returned by resolve operation. | 
 

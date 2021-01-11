@@ -154,7 +154,7 @@ script:
       description: Affinity policy.
       type: String
     - contextPath: NutanixHypervisor.VM..affinity.host_uuids
-      description: TODO. # TODO
+      description: List of host uuids of the affinity.
       type: String
     - contextPath: NutanixHypervisor.VM..allow_live_migrate
       description: Does virtual machine allow live migrate.
@@ -482,7 +482,7 @@ script:
       description: The number of the failed alerts to acknowledge.
       type: Number
     - contextPath: NutanixHypervisor.Alert.alert_status_list.id
-      description: TODO # TODO
+      description: Id of the status of the alert.
       type: String
     - contextPath: NutanixHypervisor.Alert.alert_status_list.successful
       description: Was acknowledge for this task successful.
@@ -544,7 +544,7 @@ script:
       description: The number of the failed alerts to resolve.
       type: Number
     - contextPath: NutanixHypervisor.Alert.alert_status_list.id
-      description: TODO
+      description: Id of the status of the alert.
       type: String
     - contextPath: NutanixHypervisor.Alert.alert_status_list.successful
       description: Was resolve for this task successful.
