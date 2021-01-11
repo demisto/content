@@ -41,13 +41,9 @@ class BucketUploadFlow(object):
     FAILED_PACKS = "failed_packs"
     STATUS = "status"
     AGGREGATED = "aggregated"
-    IMAGES = 'images'
-    AUTHOR = 'author'
-    INTEGRATIONS = 'integrations'
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
     BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
     UPLOAD_JOB_NAME = "Upload Packs To Marketplace"
-    INTEGRATION_DIR_REGEX = r"^integration-(.+).yml$"
 
 
 class GCPConfig(object):
@@ -197,8 +193,6 @@ class Pack(object):
         self._bucket_url = None  # URL of where the pack was uploaded.
         self._aggregated = False  # weather the pack's rn was aggregated or not.
         self._aggregation_str = ""  # the aggregation string msg when the pack versions are aggregated
-        self._uploaded_author_image = False  # whether the pack author image was uploaded or not
-        self._uploaded_integration_images = []  # the list of all integration images that were uploaded for the pack
 
     @property
     def name(self):
@@ -363,24 +357,6 @@ class Pack(object):
         """ str: pack aggregated release notes or not.
         """
         return self._aggregation_str
-
-    @property
-    def uploaded_author_image(self):
-        """ bool: whether the pack author image was uploaded or not.
-        """
-        return self._uploaded_author_image
-
-    @uploaded_author_image.setter
-    def uploaded_author_image(self, uploaded_author_image):
-        """ bool: whether the pack author image was uploaded or not.
-        """
-        self._uploaded_author_image = uploaded_author_image
-
-    @property
-    def uploaded_integration_images(self):
-        """ str: the list of uploaded integration images
-        """
-        return self._uploaded_integration_images
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -1031,7 +1007,7 @@ class Pack(object):
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]" \
+            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]"\
                               f" => {latest_release_notes}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
@@ -1185,8 +1161,7 @@ class Pack(object):
                 return task_status
         else:
             task_status = False
-            logging.error(
-                f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
+            logging.error(f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
 
         return task_status and self.is_changelog_exists()
 
@@ -1526,8 +1501,7 @@ class Pack(object):
             pack_file_path (str): full path to the target yml_path integration yml to search integration image.
 
         Returns:
-            dict: path to temporary integration image, display name of the integrations and the basename of
-            the integration in content_pack.zip.
+            dict: path to temporary integration image and display name of the integrations.
 
         """
         image_data = {}
@@ -1553,7 +1527,6 @@ class Pack(object):
 
             self._remove_files_list.append(temp_image_name)  # add temporary file to tracking list
             image_data['image_path'] = temp_image_path
-            image_data['integration_path_basename'] = os.path.basename(pack_file_path)
 
             logging.info(f"Created temporary integration {image_data['display_name']} image for {self._pack_name} pack")
 
@@ -1561,8 +1534,10 @@ class Pack(object):
 
     def _search_for_images(self, target_folder):
         """ Searches for png files in targeted folder.
+
         Args:
             target_folder (str): full path to directory to search.
+
         Returns:
             list: list of dictionaries that include image path and display name of integration, example:
             [{'image_path': image_path, 'display_name': integration_display_name},...]
@@ -1604,36 +1579,13 @@ class Pack(object):
         finally:
             return task_status, exists_in_index
 
-    @staticmethod
-    def need_to_upload_integration_image(image_data: dict, integration_dirs: list, unified_integrations: list):
-        """ Checks whether needs to upload the integration image or not.
-        We upload in one of the two cases:
-        1. The integration_path_basename is one of the integration dirs detected
-        2. The integration_path_basename is one of the added/modified unified integrations
-
-        Args:
-            image_data (dict): path to temporary integration image, display name of the integrations and the basename of
-            the integration in content_pack.zip.
-            integration_dirs (list): The list of integrations to search in for images
-            unified_integrations (list): The list of unified integrations to upload their image
-
-        Returns:
-            bool: True if we need to upload the image or not
-        """
-        integration_path_basename = image_data['integration_path_basename']
-        return any([
-            re.findall(BucketUploadFlow.INTEGRATION_DIR_REGEX, integration_path_basename)[0] in integration_dirs,
-            integration_path_basename in unified_integrations
-        ])
-
-    def upload_integration_images(self, storage_bucket, diff_files_list):
+    def upload_integration_images(self, storage_bucket):
         """ Uploads pack integrations images to gcs.
 
         The returned result of integration section are defined in issue #19786.
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): google storage bucket where image will be uploaded.
-            diff_files_list (list): The list of all modified/added files found in the diff
 
         Returns:
             bool: whether the operation succeeded.
@@ -1641,24 +1593,13 @@ class Pack(object):
 
         """
         task_status = True
-        integration_images = []
-        integration_dirs = []
-        unified_integrations = []
+        uploaded_integration_images = []
 
         try:
-            # detect added/modified integration images
-            for file in diff_files_list:
-                if self.is_integration_image(file.a_path):
-                    # the integration dir name will show up in the unified integration file path in content_packs.zip
-                    integration_dirs.append(os.path.basename(os.path.dirname(file.a_path)))
-                elif self.is_unified_integration(file.a_path):
-                    # if the file found in the diff is a unified integration we upload its image
-                    unified_integrations.append(os.path.basename(file.a_path))
-
             pack_local_images = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
 
             if not pack_local_images:
-                return integration_images  # return empty list if no images were found
+                return uploaded_integration_images  # returned empty list if not images found
 
             pack_storage_root_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name)
 
@@ -1671,13 +1612,9 @@ class Pack(object):
                 image_storage_path = os.path.join(pack_storage_root_path, image_name)
                 pack_image_blob = storage_bucket.blob(image_storage_path)
 
-                if self.need_to_upload_integration_image(image_data, integration_dirs, unified_integrations):
-                    # upload the image if needed
-                    logging.info(f"Uploading image: {image_name} of integration: {image_data.get('display_name')} "
-                                 f"from pack: {self._pack_name}")
-                    with open(image_path, "rb") as image_file:
-                        pack_image_blob.upload_from_file(image_file)
-                    self._uploaded_integration_images.append(image_name)
+                logging.info(f"Uploading {self._pack_name} pack integration image: {image_name}")
+                with open(image_path, "rb") as image_file:
+                    pack_image_blob.upload_from_file(image_file)
 
                 if GCPConfig.USE_GCS_RELATIVE_PATH:
                     image_gcs_path = urllib.parse.quote(
@@ -1685,73 +1622,62 @@ class Pack(object):
                 else:
                     image_gcs_path = pack_image_blob.public_url
 
-                integration_images.append({
+                uploaded_integration_images.append({
                     'name': image_data.get('display_name', ''),
                     'imagePath': image_gcs_path
                 })
 
-            if self._uploaded_integration_images:
-                logging.info(f"Uploaded {len(self._uploaded_integration_images)} images for {self._pack_name} pack.")
-        except Exception as e:
+            logging.info(f"Uploaded {len(pack_local_images)} images for {self._pack_name} pack.")
+        except Exception:
             task_status = False
-            logging.exception(f"Failed to upload {self._pack_name} pack integration images. Additional Info: {str(e)}")
+            logging.exception(f"Failed to upload {self._pack_name} pack integration images")
         finally:
-            return task_status, integration_images
+            return task_status, uploaded_integration_images
 
-    def copy_integration_images(self, production_bucket, build_bucket, images_data):
+    def copy_integration_images(self, production_bucket, build_bucket):
         """ Copies all pack's integration images from the build bucket to the production bucket
 
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
             build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
-            images_data (dict): The images data structure from Prepare Content step
 
         Returns:
             bool: Whether the operation succeeded.
 
         """
         task_status = True
-        num_copied_images = 0
-        err_msg = f"Failed copying {self._pack_name} pack integrations images."
-        pc_uploaded_integration_images = images_data.get(self._pack_name, {}).get(BucketUploadFlow.INTEGRATIONS, [])
 
-        for image_name in pc_uploaded_integration_images:
-            build_bucket_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, image_name)
-            build_bucket_image_blob = build_bucket.blob(build_bucket_image_path)
+        build_integration_images_blobs = [f for f in
+                                          build_bucket.list_blobs(
+                                              prefix=os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name)
+                                          )
+                                          if is_integration_image(os.path.basename(f.name))]
 
-            if not build_bucket_image_blob.exists():
-                logging.error(f"Found changed/added integration image {image_name} in content repo but "
-                              f"{build_bucket_image_path} does not exist in build bucket")
-                task_status = False
-            else:
-                logging.info(f"Copying {self._pack_name} pack integration image: {image_name}")
-                try:
-                    copied_blob = build_bucket.copy_blob(
-                        blob=build_bucket_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
-                    )
-                    if not copied_blob.exists():
-                        logging.error(f"Copy {self._pack_name} integration image: {build_bucket_image_blob.name} "
-                                      f"blob to {copied_blob.name} blob failed.")
-                        task_status = False
-                    else:
-                        num_copied_images += 1
-
-                except Exception as e:
-                    logging.exception(f"{err_msg}. Additional Info: {str(e)}")
-                    return False
+        for integration_image_blob in build_integration_images_blobs:
+            image_name = os.path.basename(integration_image_blob.name)
+            logging.info(f"Uploading {self._pack_name} pack integration image: {image_name}")
+            # We upload each image object taken from the build bucket into the production bucket
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=integration_image_blob, destination_bucket=production_bucket,
+                    new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, image_name)
+                )
+                task_status = task_status and copied_blob.exists()
+                if not task_status:
+                    logging.error(f"Upload {self._pack_name} integration image: {integration_image_blob.name} blob to "
+                                  f"{copied_blob.name} blob failed.")
+            except Exception as e:
+                logging.exception(f"Failed copying {image_name}. Additional Info: {str(e)}")
+                return False
 
         if not task_status:
-            logging.error(err_msg)
+            logging.error(f"Failed to upload {self._pack_name} pack integration images.")
         else:
-            if num_copied_images == 0:
-                logging.info(f"No added/modified integration images were detected in {self._pack_name} pack.")
-            else:
-                logging.success(f"Copied {num_copied_images} images for {self._pack_name} pack.")
+            logging.success(f"Uploaded {len(build_integration_images_blobs)} images for {self._pack_name} pack.")
 
         return task_status
 
-    def upload_author_image(self, storage_bucket, diff_files_list):
+    def upload_author_image(self, storage_bucket):
         """ Uploads pack author image to gcs.
 
         Searches for `Author_image.png` and uploads author image to gcs. In case no such image was found,
@@ -1759,7 +1685,6 @@ class Pack(object):
 
         Args:
             storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where author image will be uploaded.
-            diff_files_list (list): The list of all modified/added files found in the diff
 
         Returns:
             bool: whether the operation succeeded.
@@ -1773,17 +1698,12 @@ class Pack(object):
             author_image_path = os.path.join(self._pack_path, Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
 
             if os.path.exists(author_image_path):
-                # detect added/modified author image
                 image_to_upload_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name,
                                                             Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
                 pack_author_image_blob = storage_bucket.blob(image_to_upload_storage_path)
 
-                if any(self.is_author_image(file.a_path) for file in diff_files_list):
-                    # upload the image if needed
-                    with open(author_image_path, "rb") as author_image_file:
-                        pack_author_image_blob.upload_from_file(author_image_file)
-                    self._uploaded_author_image = True
-                    logging.success(f"Uploaded successfully {self._pack_name} pack author image")
+                with open(author_image_path, "rb") as author_image_file:
+                    pack_author_image_blob.upload_from_file(author_image_file)
 
                 if GCPConfig.USE_GCS_RELATIVE_PATH:
                     author_image_storage_path = urllib.parse.quote(
@@ -1791,6 +1711,7 @@ class Pack(object):
                 else:
                     author_image_storage_path = pack_author_image_blob.public_url
 
+                logging.success(f"Uploaded successfully {self._pack_name} pack author image")
             elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
                 author_image_storage_path = os.path.join(GCPConfig.IMAGES_BASE_PATH, GCPConfig.BASE_PACK,
                                                          Pack.AUTHOR_IMAGE_NAME)  # disable-secrets-detection
@@ -1813,7 +1734,7 @@ class Pack(object):
         finally:
             return task_status, author_image_storage_path
 
-    def copy_author_image(self, production_bucket, build_bucket, images_data):
+    def copy_author_image(self, production_bucket, build_bucket):
         """ Copies pack's author image from the build bucket to the production bucket
 
         Searches for `Author_image.png`, In case no such image was found, default Base pack image path is used and
@@ -1822,43 +1743,42 @@ class Pack(object):
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
             build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
-            images_data (dict): The images data structure from Prepare Content step
 
         Returns:
             bool: Whether the operation succeeded.
 
         """
-        if images_data.get(self._pack_name, {}).get(BucketUploadFlow.AUTHOR, False):
+        task_status = True
 
-            build_author_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-            build_author_image_blob = build_bucket.blob(build_author_image_path)
+        build_author_image_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+        build_author_image_blob = build_bucket.blob(build_author_image_path)
 
-            if build_author_image_blob.exists():
-                try:
-                    copied_blob = build_bucket.copy_blob(
-                        blob=build_author_image_blob, destination_bucket=production_bucket,
-                        new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-                    )
-                    if not copied_blob.exists():
-                        logging.error(f"Failed copying {self._pack_name} pack author image.")
-                        return False
-                    else:
-                        logging.success(f"Copied successfully {self._pack_name} pack author image.")
-                        return True
-
-                except Exception as e:
-                    logging.exception(f"Failed copying {Pack.AUTHOR_IMAGE_NAME} for {self._pack_name} pack. "
-                                      f"Additional Info: {str(e)}")
-                    return False
-
-            else:
-                logging.error(f"Found changed/added author image in content repo for {self._pack_name} pack but "
-                              f"image does not exist in build bucket in path {build_author_image_path}.")
+        if build_author_image_blob.exists():
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=build_author_image_blob, destination_bucket=production_bucket,
+                    new_name=os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
+                )
+                task_status = task_status and copied_blob.exists()
+            except Exception as e:
+                logging.exception(f"Failed copying {Pack.AUTHOR_IMAGE_NAME}. Additional Info: {str(e)}")
                 return False
 
+        elif self.support_type == Metadata.XSOAR_SUPPORT:  # use default Base pack image for xsoar supported packs
+            logging.info((f"Skipping uploading of {self._pack_name} pack author image "
+                          f"and use default {GCPConfig.BASE_PACK} pack image"))
+            return task_status
         else:
-            logging.info(f"No added/modified author image was detected in {self._pack_name} pack.")
-            return True
+            logging.info(f"Skipping uploading of {self._pack_name} pack author image. The pack is defined as "
+                         f"{self.support_type} support type")
+            return task_status
+
+        if not task_status:
+            logging.error(f"Failed uploading {self._pack_name} pack author image.")
+        else:
+            logging.success(f"Uploaded successfully {self._pack_name} pack author image")
+
+        return task_status
 
     def cleanup(self):
         """ Finalization action, removes extracted pack folder.
@@ -1893,49 +1813,12 @@ class Pack(object):
         else:
             return False, str()
 
-    def is_integration_image(self, file_path: str):
-        """ Indicates whether a file_path is an integration image or not
-        Args:
-            file_path (str): The file path
-        Returns:
-            bool: True if the file is an integration image or False otherwise
-        """
-        return all([
-            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name)),
-            file_path.endswith('.png'),
-            'image' in os.path.basename(file_path.lower()),
-            os.path.basename(file_path) != Pack.AUTHOR_IMAGE_NAME
-        ])
-
-    def is_author_image(self, file_path: str):
-        """ Indicates whether a file_path is an author image or not
-        Args:
-            file_path (str): The file path
-        Returns:
-            bool: True if the file is an author image or False otherwise
-        """
-        return file_path == os.path.join(PACKS_FOLDER, self._pack_name, Pack.AUTHOR_IMAGE_NAME)
-
-    def is_unified_integration(self, file_path: str):
-        """ Indicates whether a file_path is a unified integration yml file or not
-        Args:
-            file_path (str): The file path
-        Returns:
-            bool: True if the file is a unified integration or False otherwise
-        """
-        return all([
-            file_path.startswith(os.path.join(PACKS_FOLDER, self._pack_name, PackFolders.INTEGRATIONS.value)),
-            os.path.basename(os.path.dirname(file_path)) == PackFolders.INTEGRATIONS.value,
-            os.path.basename(file_path).startswith('integration'),
-            os.path.basename(file_path).endswith('.yml')
-        ])
-
 
 # HELPER FUNCTIONS
 
 
-def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) -> Tuple[dict, dict, dict]:
-    """ Loads the packs_results.json file to get the successful and failed packs together with uploaded images dicts
+def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) -> Tuple[dict, dict]:
+    """ Loads the packs_results.json file to get the successful and failed packs dicts
 
     Args:
         packs_results_file_path (str): The path to the file
@@ -1945,21 +1828,18 @@ def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) ->
     Returns:
         dict: The successful packs dict
         dict: The failed packs dict
-        dict: The images data dict
 
     """
     if os.path.exists(packs_results_file_path):
         packs_results_file = load_json(packs_results_file_path)
-        stage = packs_results_file.get(stage, {})
-        successful_packs_dict = stage.get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
-        failed_packs_dict = stage.get(BucketUploadFlow.FAILED_PACKS, {})
-        images_data_dict = stage.get(BucketUploadFlow.IMAGES, {})
-        return successful_packs_dict, failed_packs_dict, images_data_dict
-    return {}, {}, {}
+        successful_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
+        failed_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.FAILED_PACKS, {})
+        return successful_packs_dict, failed_packs_dict
+    return {}, {}
 
 
 def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
-                                                      failed_packs: list, images_data: dict = None):
+                                                      failed_packs: list):
     """ Write the successful and failed packs to the correct section in the packs_results.json file
 
     Args:
@@ -1968,7 +1848,6 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         successful_packs (list): The list of all successful packs
         failed_packs (list): The list of all failed packs
-        images_data (dict): A dict containing all images that were uploaded for each pack
 
     """
     packs_results = load_json(packs_results_file_path)
@@ -1999,10 +1878,6 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         }
         packs_results[stage].update(successful_packs_dict)
         logging.debug(f"Successful packs {successful_packs_dict}")
-
-    if images_data:
-        packs_results[stage].update({BucketUploadFlow.IMAGES: images_data})
-        logging.debug(f"Images data {images_data}")
 
     if packs_results:
         json_write(packs_results_file_path, packs_results)
@@ -2039,6 +1914,19 @@ def json_write(file_path: str, data: Union[list, dict]):
     """
     with open(file_path, "w") as f:
         f.write(json.dumps(data, indent=4))
+
+
+def is_integration_image(file_name):
+    """ Indicates whether a file_name in pack directory (in the bucket) is an integration image or not
+
+    Args:
+        file_name (str): The file name
+
+    Returns:
+        bool: True if the file is an integration image or False otherwise
+
+    """
+    return file_name.endswith('.png') and 'author' not in file_name.lower()
 
 
 def init_storage_client(service_account=None):
