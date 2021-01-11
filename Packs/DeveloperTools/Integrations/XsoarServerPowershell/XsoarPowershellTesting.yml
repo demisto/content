@@ -1,17 +1,17 @@
 category: Messaging
 commonfields:
-  id: XsoarServerPowershell
+  id: XsoarPowershellTesting
   version: -1
 configuration: []
-description: This integration allows interacting with XSOAR server.
-display: XSOAR Server Powershell
-name: XsoarServerPowershell
+description: Powershell Integration for testing that Powershell support is working as expected.
+display: XSOAR Powershell Testing
+name: XsoarPowershellTesting
 script:
   commands:
   - deprecated: false
     description: Get integration context.
     execution: false
-    name: xsoar-get-integration-context
+    name: pwsh-test-get-integration-context
     outputs:
       - contextPath: XSOAR.IntegrationContext.Value
         description: Integration context value.
@@ -26,7 +26,7 @@ script:
     deprecated: false
     description: Set integration context.
     execution: false
-    name: xsoar-set-integration-context
+    name: pwsh-test-set-integration-context
   dockerimage: demisto/powershell-ubuntu:7.0.3.12001
   isfetch: false
   longRunning: false
@@ -36,4 +36,4 @@ script:
   type: powershell
 fromversion: 5.5.0
 tests:
-- XsoarServerPowershell-Test
+- XsoarPowershellTesting-Test

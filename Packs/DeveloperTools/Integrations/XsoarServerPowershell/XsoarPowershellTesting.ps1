@@ -1,12 +1,12 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
-$script:INTEGRATION_NAME = "XSOAR Server Powershell"
-$script:COMMAND_PREFIX = "xsoar"
+$script:INTEGRATION_NAME = "Xsoar Powershell Testing"
+$script:COMMAND_PREFIX = "pwsh-test"
 $script:INTEGRATION_ENTRY_CONTEX = "XSOAR"
 
 #### HELPER FUNCTIONS ####
 
-function SetIntegrationContextCommand() {
+function TestModuleCommand() {
     # Raw response
     $raw_response = @{}
     # Human readable

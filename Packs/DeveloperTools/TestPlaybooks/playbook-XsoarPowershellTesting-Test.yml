@@ -1,6 +1,6 @@
-id: XsoarServerPowershell-Test
+id: XsoarPowershellTesting-Test
 version: -1
-name: XsoarServerPowershell-Test
+name: XsoarPowershellTesting-Test
 description: This playbook test basic powershell XSOAR server functionallity.
 starttaskid: "0"
 tasks:
@@ -39,10 +39,10 @@ tasks:
       version: -1
       name: Set integration context
       description: Set integration context.
-      script: XsoarServerPowershell|||xsoar-set-integration-context
+      script: XsoarPowershellTesting|||pwsh-test-set-integration-context
       type: regular
       iscommand: true
-      brand: XsoarServerPowershell
+      brand: XsoarPowershellTesting
     nexttasks:
       '#none#':
       - "2"
@@ -72,10 +72,10 @@ tasks:
       version: -1
       name: Get integration context
       description: Get integration context.
-      script: XsoarServerPowershell|||xsoar-get-integration-context
+      script: XsoarPowershellTesting|||pwsh-test-get-integration-context
       type: regular
       iscommand: true
-      brand: XsoarServerPowershell
+      brand: XsoarPowershellTesting
     nexttasks:
       '#none#':
       - "3"
@@ -139,7 +139,7 @@ tasks:
     task:
       id: 75cfaaa1-e31e-49f3-8bcc-1d999e312fd7
       version: -1
-      name: FInished succefully
+      name: Finished succefully
       type: title
       iscommand: false
       brand: ""
