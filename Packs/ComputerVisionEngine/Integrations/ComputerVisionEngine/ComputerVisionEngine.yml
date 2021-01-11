@@ -49,7 +49,7 @@ script:
       description: The key holds down the information about detected objects in the
         picture
       type: Unknown
-  dockerimage: magicpl/yolo-coco:0.6
+  dockerimage: devtesting/coco-loco:1.0.0.1610382777
   feed: false
   isfetch: false
   longRunning: false
