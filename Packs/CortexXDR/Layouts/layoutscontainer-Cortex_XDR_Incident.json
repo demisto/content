@@ -1,10 +1,4 @@
 {
-    "id": "Cortex XDR Incident",
-    "group": "incident",
-    "name": "Cortex XDR Incident",
-    "description": "",
-    "version": -1,
-    "fromVersion": "6.0.0",
     "detailsV2": {
         "tabs": [
             {
@@ -100,7 +94,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -157,7 +153,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -176,7 +174,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -195,7 +195,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -205,8 +207,8 @@
                         "static": false,
                         "type": "evidence",
                         "w": 1,
-                        "x": 0,
-                        "y": 6
+                        "x": 1,
+                        "y": 8
                     },
                     {
                         "displayType": "ROW",
@@ -214,7 +216,9 @@
                         "hideName": false,
                         "i": "1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -307,7 +311,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -394,30 +398,12 @@
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "xdralertcount",
-                                "height": 24,
-                                "id": "53bb4440-ac7a-11e9-a30b-53d47e1ea7d7",
-                                "index": 1,
-                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
-                                "startCol": 2
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "xdrstatusv2",
                                 "height": 24,
                                 "id": "4f80f5f0-ac7a-11e9-a30b-53d47e1ea7d7",
                                 "index": 2,
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "xdrhighseverityalertcount",
-                                "height": 24,
-                                "id": "407735a0-ac7b-11e9-a30b-53d47e1ea7d7",
-                                "index": 2,
-                                "startCol": 2
                             },
                             {
                                 "endCol": 2,
@@ -428,12 +414,20 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 4,
-                                "fieldId": "xdrmediumseverityalertcount",
+                                "endCol": 2,
+                                "fieldId": "xdrseverity",
                                 "height": 24,
-                                "id": "42b2a6b0-ac7b-11e9-a30b-53d47e1ea7d7",
+                                "id": "6d8c0030-ac7a-11e9-a30b-53d47e1ea7d7",
                                 "index": 3,
-                                "startCol": 2
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "xdrmanualseverity",
+                                "height": 24,
+                                "id": "c40c7ac0-ac89-11e9-a30b-53d47e1ea7d7",
+                                "index": 3,
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -444,20 +438,72 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 4,
-                                "fieldId": "xdrlowseverityalertcount",
-                                "height": 24,
-                                "id": "440ae3b0-ac7b-11e9-a30b-53d47e1ea7d7",
-                                "index": 4,
-                                "startCol": 2
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "xdrusercount",
                                 "height": 24,
                                 "id": "b1232bc0-ac89-11e9-a30b-53d47e1ea7d7",
                                 "index": 5,
                                 "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "xdrnotes",
+                                "height": 24,
+                                "id": "8f040360-ac8a-11e9-a30b-53d47e1ea7d7",
+                                "index": 6,
+                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xdrurl",
+                                "height": 24,
+                                "id": "df4e1380-aef4-11e9-896e-b72bc9d2cace",
+                                "index": 7,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "xdralertcount",
+                                "height": 24,
+                                "id": "53bb4440-ac7a-11e9-a30b-53d47e1ea7d7",
+                                "index": 1,
+                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xdrhighseverityalerts",
+                                "height": 24,
+                                "id": "407735a0-ac7b-11e9-a30b-53d47e1ea7d7",
+                                "index": 2,
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xdrmediumseverityalerts",
+                                "height": 24,
+                                "id": "42b2a6b0-ac7b-11e9-a30b-53d47e1ea7d7",
+                                "index": 3,
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xdrlowseverityalerts",
+                                "height": 24,
+                                "id": "440ae3b0-ac7b-11e9-a30b-53d47e1ea7d7",
+                                "index": 4,
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xdrassignedusername",
+                                "height": 24,
+                                "id": "34c76d60-ac8a-11e9-a30b-53d47e1ea7d7",
+                                "index": 5,
+                                "startCol": 2
                             },
                             {
                                 "dropEffect": "move",
@@ -471,16 +517,6 @@
                             },
                             {
                                 "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "xdrnotes",
-                                "height": 24,
-                                "id": "8f040360-ac8a-11e9-a30b-53d47e1ea7d7",
-                                "index": 6,
-                                "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "xdrassigneduseremail",
                                 "height": 24,
@@ -488,14 +524,6 @@
                                 "index": 6,
                                 "listId": "d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                                 "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "xdrurl",
-                                "height": 24,
-                                "id": "df4e1380-aef4-11e9-896e-b72bc9d2cace",
-                                "index": 7,
-                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -512,7 +540,9 @@
                         "h": 2,
                         "hideName": false,
                         "i": "1vduzkpmlh-6f1661f0-ad44-11e9-a569-716c95c51bfe",
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -530,7 +560,9 @@
                         "h": 2,
                         "hideName": false,
                         "i": "1vduzkpmlh-5cc7f260-ad4f-11e9-a2d3-c520aeb407da",
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -548,7 +580,9 @@
                         "h": 2,
                         "hideName": false,
                         "i": "1vduzkpmlh-11cd1fd0-ad52-11e9-a2d3-c520aeb407da",
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -563,79 +597,96 @@
                         "y": 2
                     },
                     {
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
-						"i": "1vduzkpmlh-27575a40-dbd3-11ea-816e-f14862061e21",
-						"items": [
-							{
-								"endCol": 2,
-								"fieldId": "dbotmirrorid",
-								"height": 22,
-								"id": "617e48f0-dbd3-11ea-816e-f14862061e21",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotmirrorinstance",
-								"height": 22,
-								"id": "675fb790-dbd3-11ea-816e-f14862061e21",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "dbotmirrordirection",
-								"height": 22,
-								"id": "63fa6c80-dbd3-11ea-816e-f14862061e21",
-								"index": 2,
-								"listId": "1vduzkpmlh-27575a40-dbd3-11ea-816e-f14862061e21",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dbotmirrorlastsync",
-								"height": 22,
-								"id": "6b9cec10-dbd3-11ea-816e-f14862061e21",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "incomingmirrorerror",
-								"height": 44,
-								"id": "04fd6b70-dbd7-11ea-816e-f14862061e21",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "outgoingmirrorerror",
-								"height": 44,
-								"id": "079f1860-dbd7-11ea-816e-f14862061e21",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxH": null,
-						"maxW": 1,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Mirroring Information",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 8
-					}
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-27575a40-dbd3-11ea-816e-f14862061e21",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotmirrorid",
+                                "height": 22,
+                                "id": "617e48f0-dbd3-11ea-816e-f14862061e21",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotmirrorinstance",
+                                "height": 22,
+                                "id": "675fb790-dbd3-11ea-816e-f14862061e21",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotmirrordirection",
+                                "height": 22,
+                                "id": "63fa6c80-dbd3-11ea-816e-f14862061e21",
+                                "index": 2,
+                                "listId": "1vduzkpmlh-27575a40-dbd3-11ea-816e-f14862061e21",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotmirrorlastsync",
+                                "height": 22,
+                                "id": "6b9cec10-dbd3-11ea-816e-f14862061e21",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incomingmirrorerror",
+                                "height": 44,
+                                "id": "04fd6b70-dbd7-11ea-816e-f14862061e21",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "outgoingmirrorerror",
+                                "height": 44,
+                                "id": "079f1860-dbd7-11ea-816e-f14862061e21",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Mirroring Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "h": 2,
+                        "i": "1vduzkpmlh-c037a9b0-5412-11eb-830f-fbfa6e45cb4e",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    }
                 ],
                 "type": "custom"
             },
@@ -650,7 +701,9 @@
                         "hideName": false,
                         "i": "swtuqptgvs-067d4900-98b4-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -662,8 +715,12 @@
                             ],
                             "lastId": "",
                             "pageSize": 100,
-                            "tags": [],
-                            "users": []
+                            "tags": [
+
+                            ],
+                            "users": [
+
+                            ]
                         },
                         "queryType": "warRoomFilter",
                         "readOnly": true,
@@ -679,7 +736,9 @@
                         "hideName": false,
                         "i": "swtuqptgvs-cc557320-98b7-11e9-b34a-852d068f44fe",
                         "isVisible": true,
-                        "items": [],
+                        "items": [
+
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -692,7 +751,7 @@
                         "type": "indicators",
                         "w": 2,
                         "x": 0,
-                        "y": 9
+                        "y": 11
                     },
                     {
                         "displayType": "ROW",
@@ -701,11 +760,14 @@
                         "i": "swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 6,
                                 "fieldId": "xdralerts",
-                                "height": 110,
+                                "height": 106,
                                 "id": "1b6eb1e0-cc9a-11e9-afca-8792f3871db0",
                                 "index": 0,
+                                "listId": "swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
@@ -747,15 +809,17 @@
                     {
                         "displayType": "ROW",
                         "h": 3,
+                        "hideItemTitleOnlyOne": false,
                         "hideName": false,
                         "i": "swtuqptgvs-3604e0b0-cc9a-11e9-afca-8792f3871db0",
                         "items": [
                             {
                                 "endCol": 6,
                                 "fieldId": "xdrnetworkartifacts",
-                                "height": 110,
+                                "height": 106,
                                 "id": "498825c0-cc9a-11e9-afca-8792f3871db0",
                                 "index": 0,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
@@ -768,6 +832,32 @@
                         "w": 3,
                         "x": 0,
                         "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "swtuqptgvs-4309fd80-453a-11eb-bfbf-0d0f7ea2cc09",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "xdrdevicecontrolviolations",
+                                "height": 106,
+                                "id": "67898ea0-453a-11eb-bfbf-0d0f7ea2cc09",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "XDR Endpoint Device Control Violations",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 9
                     }
                 ],
                 "type": "custom"
@@ -798,5 +888,12 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "group": "incident",
+    "id": "Cortex XDR Incident",
+    "name": "Cortex XDR Incident",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
 }
