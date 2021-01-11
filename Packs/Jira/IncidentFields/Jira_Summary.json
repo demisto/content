@@ -1,7 +1,6 @@
 {
  "id": "incident_jirasummary",
  "version": -1,
- "modified": "2020-12-31T14:57:09.918091+02:00",
  "name": "Jira Summary",
  "ownerOnly": false,
  "description": "The issue's summary",
