@@ -75,35 +75,6 @@ class TestHelpers:
         output = insert_id(input_str)
         assert output == expected_output, 'failed to insert uuid'
 
-    data_test_get_first_fetch = [
-        ('1 hour', 1),
-        ('1 day', 24),
-        ('1 week', 24 * 7),
-        ('2 hours', 2),
-        ('2 days', 48),
-        ('2 weeks', 2 * 24 * 7)
-    ]
-
-    @pytest.mark.parametrize('first_fetch_str, expected_output', data_test_get_first_fetch)
-    def test_get_first_fetch(self, first_fetch_str, expected_output):
-        assert expected_output == get_first_fetch(first_fetch_str)
-
-    data_test_get_first_fetch_error_msg = [
-        ('hour', 'first_fetch is not in the correct format (e.g. <number> <time unit>).'),
-        ('', 'first_fetch is not in the correct format (e.g. <number> <time unit>).'),
-        ('x hour', 'first_fetch is not in the correct format (e.g. <number> <time unit>).'),
-        ('8 years', 'years is not an allowed time unit (allowed units are day, days, hour, hours, week, weeks).')
-    ]
-
-    @pytest.mark.parametrize('first_fetch_str, expected_error', data_test_get_first_fetch_error_msg)
-    def test_get_first_fetch_error_msg(self, first_fetch_str, expected_error):
-        try:
-            get_first_fetch(first_fetch_str)
-        except DemistoException as error:
-            assert str(error) == expected_error
-        else:
-            raise Exception
-
     data_test_ssl_files_checker = [
         ('test_data/rsa/2048b-rsa-example-keypair.pem', 'test_data/rsa/2048b-rsa-example-cert.pem')
     ]
@@ -219,68 +190,6 @@ class TestSafeDataGet:
         assert output == expected_output
 
 
-class TestSetList:
-    data_test_without_duplicate = [[], [1, 2, 3, 4]]
-
-    @pytest.mark.parametrize('input_list', data_test_without_duplicate)
-    def test_append_without_duplicate(self, input_list):
-        set_list = SetList()
-        for element in input_list:
-            set_list.append(element)
-        assert set_list.list == input_list
-
-    data_test_with_duplicate = [
-        ([1, 1, 2, 2, 3, 4], [1, 2, 3, 4]),
-        ([1.5, 1.5, 1.5, 1.5], [1.5])
-    ]
-
-    @pytest.mark.parametrize('input_list, expected_list', data_test_with_duplicate)
-    def test_append_with_duplicate(self, input_list, expected_list):
-        set_list = SetList()
-        for element in input_list:
-            set_list.append(element)
-        assert set_list.list == expected_list
-
-    @pytest.mark.parametrize('input_list', data_test_without_duplicate)
-    def test_extend_without_duplicate(self, input_list):
-        set_list = SetList()
-        set_list.extend(input_list)
-        assert set_list.list == input_list
-
-    @pytest.mark.parametrize('input_list, expected_list', data_test_with_duplicate)
-    def test_extend_with_duplicate(self, input_list, expected_list):
-        set_list = SetList()
-        set_list.extend(input_list)
-        assert set_list.list == expected_list
-
-    data_test_using_extract_without_duplicate = [
-        (
-            [{'test1': 'test'}, {'test2': 'test'}],
-            lambda x: json.dumps(x)
-        )
-    ]
-
-    @pytest.mark.parametrize('input_list, extract', data_test_using_extract_without_duplicate)
-    def test_using_extract_without_duplicate(self, input_list, extract):
-        set_list = SetList(extract)
-        set_list.extend(input_list)
-        assert set_list.list == input_list
-
-    data_test_using_extract_with_duplicate = [
-        (
-            [{'test1': 'test'}, {'test2': 'test'}, {'test1': 'test'}],
-            lambda x: json.dumps(x),
-            [{'test1': 'test'}, {'test2': 'test'}]
-        )
-    ]
-
-    @pytest.mark.parametrize('input_list, extract, expected_list', data_test_using_extract_with_duplicate)
-    def test_extend_using_extract_with_duplicate(self, input_list, extract, expected_list):
-        set_list = SetList(extract)
-        set_list.extend(input_list)
-        assert set_list.list == expected_list
-
-
 class TestIndicators:
 
     @staticmethod
@@ -376,10 +285,8 @@ class TestCommandTestModule:
 
     def test_command_test_module(self, mocker):
         self.mock_data(mocker)
-        return_results = mocker.patch('DHS_Feed.return_results')
         self.data = {'taxii_11:Discovery_Response': {'taxii_11:Service_Instance': ['somthing']}}
-        command_test_module(self.client, '', '', '')
-        return_results.assert_called_with('ok')
+        assert command_test_module(self.client, '', '', '') == 'ok'
 
     def test_command_test_module_with_invalid_credential(self, mocker):
         self.mock_data(mocker)

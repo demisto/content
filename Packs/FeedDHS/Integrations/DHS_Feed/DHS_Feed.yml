@@ -1,4 +1,4 @@
-category: Utilities
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: DHS Feed
   version: -1
@@ -122,7 +122,7 @@ configuration:
   name: feedIncremental
   required: false
   type: 8
-description: This is the Hello World integration for getting started.
+description: The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, among the Federal Government.
 display: 'DHS Feed'
 name: 'DHS Feed'
 script:
@@ -142,7 +142,7 @@ script:
       - AMBER
       - GREEN
       - WHITE
-      description: TLP color.
+      description: filter by TLP color.
       isArray: false
       name: tlp_color
       required: false
@@ -161,7 +161,7 @@ script:
     - contextPath: DHS.tlp
       description: the traffic lighte prorotocol.
       type: string
-  dockerimage: demisto/xml-feed:1.0.0.13966
+  dockerimage: demisto/xml-feed:1.0.0.15261
   feed: true
   isfetch: false
   longRunning: false
