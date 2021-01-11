@@ -175,11 +175,10 @@ def report_address_command(params: Dict, args: Dict) -> CommandResults:
                                                   description=description)
 
     if argToBoolean(http_response.get('success')):
-        raise DemistoException('failing on purpose')
-        # return CommandResults(
-        #     readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
-        #                     f' was reported to BitcoinAbuse service'
-        # )
+        return CommandResults(
+            readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
+                            f' was reported to BitcoinAbuse service'
+        )
     else:
         failure_message = http_response.get('response')
         raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
