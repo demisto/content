@@ -67,6 +67,7 @@ def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, 
     assert demisto.results.call_args[0][0]['Contents'] == \
            'You must provide at least one of the following: project_key or project_name'
 
+
 def test_issue_query_command_no_issues(mocker):
     """
     Given
