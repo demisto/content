@@ -1,15 +1,15 @@
 id: fedefed3-94bb-42bb-8486-ca3f08ed5b44
-version: 13
+version: 16
 vcShouldKeepItemLegacyProdMachine: false
 name: Nutanix-test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 820c9c94-2bf4-4e77-8cfe-96d0d17e5ef1
+    taskid: 93e77ae8-a710-40f2-87bd-e74f3ddf61c9
     type: start
     task:
-      id: 820c9c94-2bf4-4e77-8cfe-96d0d17e5ef1
+      id: 93e77ae8-a710-40f2-87bd-e74f3ddf61c9
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: d685992f-8fc3-49bd-811a-bc62040cc9c7
+    taskid: 59bcd0ac-2110-42b7-89f2-af88286318d9
     type: regular
     task:
-      id: d685992f-8fc3-49bd-811a-bc62040cc9c7
+      id: 59bcd0ac-2110-42b7-89f2-af88286318d9
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -68,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 742dbce9-0d17-4d3b-86ee-04e27ddad58f
+    taskid: a1e6c12b-6038-4eea-892a-c3afb28daaf9
     type: regular
     task:
-      id: 742dbce9-0d17-4d3b-86ee-04e27ddad58f
+      id: a1e6c12b-6038-4eea-892a-c3afb28daaf9
       version: -1
       name: Nutanix Get hosts
       description: Get the list of physical hosts configured in the cluster.
@@ -101,10 +101,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 2f725f02-a03b-49b3-80c2-457d41d91173
+    taskid: 03732104-8bbb-44a3-8473-6fcc770e489b
     type: regular
     task:
-      id: 2f725f02-a03b-49b3-80c2-457d41d91173
+      id: 03732104-8bbb-44a3-8473-6fcc770e489b
       version: -1
       name: Nutanix Get VMs
       description: Get a list of virtual machines.
@@ -134,10 +134,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: fd1f8160-860f-4aa7-823e-2b47ca2948d3
+    taskid: 55a8dfd3-0ffa-4409-8b87-7dc0ba91bc2b
     type: condition
     task:
-      id: fd1f8160-860f-4aa7-823e-2b47ca2948d3
+      id: 55a8dfd3-0ffa-4409-8b87-7dc0ba91bc2b
       version: -1
       name: Is Virtual Machines List Empty?
       type: condition
@@ -171,10 +171,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: cdcf461f-d524-4231-8019-20dcba98bb08
+    taskid: 9ebe5bc0-1124-4ea6-8407-ecfc2f879e19
     type: regular
     task:
-      id: cdcf461f-d524-4231-8019-20dcba98bb08
+      id: 9ebe5bc0-1124-4ea6-8407-ecfc2f879e19
       version: -1
       name: Nutanix Get Alerts
       description: Get the list of Alerts generated in the cluster which matches the
@@ -215,10 +215,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: e31ef5c0-4f44-4ce7-80ec-9d8d35e16bac
+    taskid: bfabf971-f860-4cb9-8bf0-984b10be1d41
     type: regular
     task:
-      id: e31ef5c0-4f44-4ce7-80ec-9d8d35e16bac
+      id: bfabf971-f860-4cb9-8bf0-984b10be1d41
       version: -1
       name: 'Nutanix Change Power State '
       description: Set power state of a virtual machine.  If the virtual machine is
@@ -267,10 +267,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: aa08d897-a4fa-4bd1-8366-6f3ec1dfb1af
+    taskid: c5a906f2-ae98-4d0b-8ce3-5265775dae26
     type: regular
     task:
-      id: aa08d897-a4fa-4bd1-8366-6f3ec1dfb1af
+      id: c5a906f2-ae98-4d0b-8ce3-5265775dae26
       version: -1
       name: Nutanix Task Poll For Power State
       description: Poll tasks given by task_ids to check if they are ready. Returns
@@ -304,10 +304,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 6bc3f53c-89dd-43b5-8663-5a62437ada5b
+    taskid: d6f91668-9e49-4c20-8651-3b37ae649d88
     type: condition
     task:
-      id: 6bc3f53c-89dd-43b5-8663-5a62437ada5b
+      id: d6f91668-9e49-4c20-8651-3b37ae649d88
       version: -1
       name: Is Alert List Empty?
       type: condition
@@ -325,7 +325,7 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: NutanixHypervisor.Alerts
+              simple: NutanixHypervisor.Alerts.id
             iscontext: true
     view: |-
       {
@@ -341,10 +341,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 0b62b122-719f-4a6f-8c3f-8d9c1fdc63fe
+    taskid: 361f3d05-1b91-4253-8c2f-f4064c28b52e
     type: regular
     task:
-      id: 0b62b122-719f-4a6f-8c3f-8d9c1fdc63fe
+      id: 361f3d05-1b91-4253-8c2f-f4064c28b52e
       version: -1
       name: Nutanix Acknowledge Alert
       description: Acknowledge alert with the specified alert_id.
@@ -357,7 +357,11 @@ tasks:
       - "10"
     scriptarguments:
       alert_id:
-        simple: WAIT_FOR_CONTEXT_PATH_FROM_ARSENY
+        complex:
+          root: NutanixHypervisor.Alerts
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -373,10 +377,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: b795829f-cac4-4fbd-8d97-4a9a35f7214f
+    taskid: 086a7c85-c6d6-4f34-82bc-6e497c8b245d
     type: regular
     task:
-      id: b795829f-cac4-4fbd-8d97-4a9a35f7214f
+      id: 086a7c85-c6d6-4f34-82bc-6e497c8b245d
       version: -1
       name: Nutanix Resolve Alert
       description: Resolve alert with the specified alert_id.
@@ -389,7 +393,11 @@ tasks:
       - "11"
     scriptarguments:
       alert_id:
-        simple: WAIT_FOR_CONTEXT_PATH_FROM_ARSENY
+        complex:
+          root: NutanixHypervisor.Alerts
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     view: |-
       {
@@ -405,10 +413,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 12505de5-ad70-4d72-89c7-7a3bab17b3cf
+    taskid: 2866c946-7e06-4cda-8ae7-28d5b5eb8623
     type: regular
     task:
-      id: 12505de5-ad70-4d72-89c7-7a3bab17b3cf
+      id: 2866c946-7e06-4cda-8ae7-28d5b5eb8623
       version: -1
       name: Nutanix Acknowledge Alerts By Filters
       description: Acknowledge alerts using a filters.
@@ -443,10 +451,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 5fbbc105-8fcf-4b90-8211-204bb5c8de82
+    taskid: f88c5093-36ab-424c-8eb7-fa126caa0fd3
     type: regular
     task:
-      id: 5fbbc105-8fcf-4b90-8211-204bb5c8de82
+      id: f88c5093-36ab-424c-8eb7-fa126caa0fd3
       version: -1
       name: Nutanix Resolve Alerts By Filters
       description: Resolve alerts using a filters.
@@ -481,13 +489,13 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: b8fde65e-7746-48cc-88f0-68c8a4601553
-    type: regular
+    taskid: d4421db5-1cdb-424a-8207-7ee41f52cbc8
+    type: title
     task:
-      id: b8fde65e-7746-48cc-88f0-68c8a4601553
+      id: d4421db5-1cdb-424a-8207-7ee41f52cbc8
       version: -1
       name: Playbook Done
-      type: regular
+      type: title
       iscommand: false
       brand: ""
     separatecontext: false
@@ -508,7 +516,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2340,
+        "height": 2310,
         "width": 492.5,
         "x": 50,
         "y": 50
