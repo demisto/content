@@ -500,3 +500,32 @@ class TestArcherV2:
         incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
         assert last_fetch == next_fetch
         assert not incidents, 'Should not get new incidents.'
+
+    def test_fetch_got_exact_same_time(self, mocker):
+        """
+        Given:
+            last_fetch is in the exact same time as the incident
+
+        When:
+            Fetching incidents
+
+        Then:
+            Check that the next fetch is equals last fetch (no new incident)
+            Check that no incidents brought back
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        date_time_reported = '2018-03-01T10:02:00.000Z'
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported'
+        }
+        record = copy.deepcopy(INCIDENT_RECORD)
+        record['record']['Date/Time Reported'] = date_time_reported
+        record['raw']['Field'][1]['@xmlConvertedValue'] = date_time_reported
+        last_fetch = get_fetch_time(
+            {'last_fetch': date_time_reported}, params.get('fetch_time', '3 days')
+        )
+        mocker.patch.object(client, 'search_records', return_value=([record], {}))
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
+        assert last_fetch == next_fetch
+        assert not incidents, 'Should not get new incidents.'
