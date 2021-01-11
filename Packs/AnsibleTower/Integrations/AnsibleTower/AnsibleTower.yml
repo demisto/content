@@ -86,7 +86,7 @@ script:
       type: String
     - contextPath: AnsibleAWX.Inventory.host_filter
       description: 'Filter that will be applied to the hosts of this inventory'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.Inventory.variables
       description: 'Inventory variables in JSON or YAML format'
       type: String
@@ -98,7 +98,7 @@ script:
       type: Number
     - contextPath: AnsibleAWX.Inventory.insights_credential
       description: 'Credentials to be used by hosts belonging to this inventory when accessing Red Hat Insights API'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.Inventory.pending_deletion
       description: 'Flag indicating the inventory is being deleted'
       type: Boolean
@@ -180,10 +180,10 @@ script:
       type: Number
     - contextPath: AnsibleAWX.Host.insights_system_id
       description: 'Red Hat Insights host unique identifier'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.Host.ansible_facts_modified
       description: 'The date and time ansible_facts was last modified'
-      type: Unknown
+      type: Date
   - arguments:
     - default: false
       description: The value used by the remote inventory source to uniquely identify
@@ -375,7 +375,7 @@ script:
       type: Boolean
     - contextPath: AnsibleAWX.JobTemplate.next_job_run
       description: 'Timestamp of next job run'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.JobTemplate.status
       description: 'Status - new, pending, waiting, running, successful, failed, error, canceled, never updated'
       type: String
@@ -390,7 +390,7 @@ script:
       type: Boolean
     - contextPath: AnsibleAWX.JobTemplate.custom_virtualenv
       description: 'Local absolute file path containing a custom Python virtualenv to use'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.JobTemplate.credential
       description: 'Credential id that allow Tower to access the node this job will be ran against'
       type: Number
@@ -451,7 +451,7 @@ script:
       type: String
     - contextPath: AnsibleAWX.Credential.organization
       description: 'Inherit permissions from organization roles'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.Credential.credential_type
       description: 'Specify the type of credential you want to create'
       type: Number
@@ -678,7 +678,7 @@ script:
       type: Boolean
     - contextPath: AnsibleAWX.Job.started
       description: 'The date and time the job was queued for starting'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.Job.finished
       description: 'The date and time the job finished execution'
       type: Date
@@ -708,7 +708,7 @@ script:
       type: String
     - contextPath: AnsibleAWX.Job.instance_group
       description: 'The Instance group the job was run under'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.Job.credential
       description: 'Credential id that allow Tower to access the node this job will be ran against'
       type: Number
@@ -1153,7 +1153,7 @@ script:
       type: Date
     - contextPath: AnsibleAWX.AdhocCommand.finished
       description: 'The date and time the job finished execution'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.AdhocCommand.elapsed
       description: 'Elapsed time in seconds that the job ran'
       type: Number
@@ -1231,10 +1231,10 @@ script:
       type: Boolean
     - contextPath: AnsibleAWX.AdhocCommand.started
       description: 'The date and time the job was queued for starting'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.AdhocCommand.finished
       description: 'The date and time the job finished execution'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.AdhocCommand.elapsed
       description: 'Elapsed time in seconds that the job ran'
       type: Number
@@ -1312,10 +1312,10 @@ script:
       type: Boolean
     - contextPath: AnsibleAWX.AdhocCommand.started
       description: 'The date and time the job was queued for starting'
-      type: Unknown
+      type: 
     - contextPath: AnsibleAWX.AdhocCommand.finished
       description: 'The date and time the job finished execution'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.AdhocCommand.elapsed
       description: 'Elapsed time in seconds that the job ran'
       type: Number
@@ -1434,10 +1434,10 @@ script:
       type: Boolean
     - contextPath: AnsibleAWX.AdhocCommand.started
       description: 'The date and time the job was queued for starting'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.AdhocCommand.finished
       description: 'The date and time the job finished execution'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.AdhocCommand.elapsed
       description: 'Elapsed time in seconds that the job ran'
       type: Number
