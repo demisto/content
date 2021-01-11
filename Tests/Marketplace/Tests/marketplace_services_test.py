@@ -605,8 +605,7 @@ This is visible
         build_number = "5555"
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=True,
-                                                               initial_release=False)
+                                                               build_number=build_number, new_version=True)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
@@ -625,8 +624,7 @@ This is visible
         build_number = "5555"
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False,
-                                                               initial_release=False)
+                                                               build_number=build_number, new_version=False)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
@@ -692,7 +690,7 @@ This is visible
        """
         from Tests.Marketplace.marketplace_services import os
         mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
-        pack_created_date = dummy_pack._handle_pack_create_date(is_changelog_exist)
+        pack_created_date = dummy_pack._get_pack_creation_date(is_changelog_exist)
         if is_changelog_exist == 'changelog_exist':
             os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
         assert pack_created_date == expected_date

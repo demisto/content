@@ -1413,7 +1413,7 @@ class Pack(object):
             if packs_statistic_df is not None:
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
-            self._create_date = self._handle_pack_create_date(index_folder_path)
+            self._create_date = self._get_pack_creation_date(index_folder_path)
             formatted_metadata = self._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
@@ -1435,7 +1435,7 @@ class Pack(object):
         finally:
             return task_status
 
-    def _handle_pack_create_date(self, index_folder_path):
+    def _get_pack_creation_date(self, index_folder_path):
         """ Gets the pack created date.
         Args:
             index_folder_path (str): downloaded index folder directory path.
@@ -1453,9 +1453,9 @@ class Pack(object):
                     changelog = json.load(changelog_file)
             except json.JSONDecodeError:
                 changelog = {}
-        init_changelog_version = changelog.get(Pack.PACK_INITIAL_VERSION, {})
-        init_changelog_released_date = init_changelog_version.get('released',
-                                                                  datetime.utcnow().strftime(Metadata.DATE_FORMAT))
+        initial_changelog_version = changelog.get(Pack.PACK_INITIAL_VERSION, {})
+        init_changelog_released_date = initial_changelog_version.get('released',
+                                                                     datetime.utcnow().strftime(Metadata.DATE_FORMAT))
         return init_changelog_released_date
 
     def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
