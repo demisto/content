@@ -1,45 +1,33 @@
 from __future__ import print_function
 
+import argparse
+import datetime
+import json
 import logging
 import os
 import re
-import sys
-import json
-import time
-import argparse
-import threading
 import subprocess
-from time import sleep
-import datetime
+import sys
+import threading
+import time
+from contextlib import contextmanager
 from distutils.version import LooseVersion
+from queue import Queue
+from time import sleep
 from typing import Union, Any
 
-import pytz
-
-from google.cloud import storage
-from google.api_core.exceptions import PreconditionFailed
-from queue import Queue
-from contextlib import contextmanager
-
-import urllib3
-import requests
 import demisto_client.demisto_api
+import pytz
+import requests
+import urllib3
+from google.api_core.exceptions import PreconditionFailed
+from google.cloud import storage
+from slack import WebClient as SlackClient
 
+from Tests.mock_server import MITMProxy, run_with_mock, RESULT
 from Tests.scripts.utils.log_util import ParallelLoggingManager
-
-try:
-    """
-    Those dual-imports are required as Slack updated their sdk and it breaks BC.
-    `from slack import...` is for new slack and local runs.
-    `from slackclient import...` is for old slack and running in CircleCI (old slack in docker image)
-    """
-    from slack import WebClient as SlackClient  # New slack
-except ModuleNotFoundError:
-    from slackclient import SlackClient  # Old slack
-
-from Tests.mock_server import MITMProxy, AMIConnection, run_with_mock, RESULT
-from Tests.test_integration import Docker, check_integration
 from Tests.test_dependencies import get_used_integrations, get_tests_allocation_for_threads
+from Tests.test_integration import Docker, check_integration
 from demisto_sdk.commands.common.constants import FILTER_CONF, PB_Status
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -289,11 +277,11 @@ def send_slack_message(slack, chanel, text, user_name, as_user):
     sc = SlackClient(slack)
     sc.api_call(
         "chat.postMessage",
-        channel=chanel,
-        username=user_name,
-        as_user=as_user,
-        text=text,
-        mrkdwn='true'
+        json={'channel': chanel,
+              'username': user_name,
+              'as_user': as_user,
+              'text': text,
+              'mrkdwn': 'true'}
     )
 
 
@@ -383,10 +371,21 @@ def mock_run(conf_json_test_details, tests_queue, tests_settings, c, demisto_use
     # Mock recording - no mock file or playback failure.
     c = demisto_client.configure(base_url=c.api_client.configuration.host,
                                  api_key=c.api_client.configuration.api_key, verify_ssl=False)
-    run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user,
-                   demisto_pass, proxy, failed_playbooks, integrations, playbook_id,
-                   succeed_playbooks, test_message, test_options, slack, circle_ci,
-                   build_number, server_url, build_name)
+    succeed = run_and_record(conf_json_test_details, tests_queue, tests_settings, c, demisto_user,
+                             demisto_pass, proxy, failed_playbooks, integrations, playbook_id,
+                             succeed_playbooks, test_message, test_options, slack, circle_ci,
+                             build_number, server_url, build_name)
+    if succeed:
+        logging_manager.info('Running another playback attempt on the new record to verify that the record is valid')
+        with run_with_mock(proxy, playbook_id) as result_holder:
+            status, _ = check_integration(c, server_url, demisto_user, demisto_pass, integrations,
+                                          playbook_id, logging_manager, test_options,
+                                          is_mock_run=True)
+            result_holder[RESULT] = status == PB_Status.COMPLETED
+        if status != PB_Status.COMPLETED:
+            logging_manager.warning(
+                'Playback on newly created record has failed, see the following link for help\n'
+                'https://confluence.paloaltonetworks.com/display/DemistoContent/Debug+Proxy-Related+Test+Failures')
     logging_manager.info(f'------ Test {test_message} end ------\n')
 
 
@@ -447,10 +446,12 @@ def notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, serv
     if user_id:
         sc.api_call(
             "chat.postMessage",
-            channel=user_id,
-            username="Content CircleCI",
-            as_user="False",
-            text=text
+            json={
+                'channel': user_id,
+                'username': 'Content CircleCI',
+                'as_user': 'False',
+                'text': text
+            }
         )
 
 
@@ -788,8 +789,6 @@ def execute_testing(tests_settings,
 
     proxy = None
     if is_ami:
-        ami = AMIConnection(server_ip)
-        ami.clone_mock_data()
         proxy = MITMProxy(server_ip, logging_manager, build_number=build_number, branch_name=build_name)
 
     failed_playbooks = []

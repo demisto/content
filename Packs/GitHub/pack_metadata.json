@@ -2,7 +2,7 @@
     "name": "GitHub",
     "description": "Integration to GitHub API",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,7 +14,7 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "IAM-Scim": {
+        "IAM-SCIM": {
             "mandatory": true,
             "display_name": "IAM Scim"
         }

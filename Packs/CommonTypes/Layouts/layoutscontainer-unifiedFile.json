@@ -158,7 +158,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "signatureoriginalname",
+                                "fieldId": "signature",
                                 "height": 24,
                                 "id": "40a3c970-a2ef-11e9-a74b-a79deb2f5d2a",
                                 "index": 6,
