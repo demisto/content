@@ -1,0 +1,14 @@
+!gra-fetch-users page=1 max=25
+!gra-fetch-accounts page=1 max=25
+!gra-fetch-active-resource-accounts resource_name="Linux"  page=1 max=25
+!gra-fetch-user-accounts employee_id="AB1234"  page=1 max=25
+!gra-fetch-resource-highrisk-accounts resource_name="Linux"  page=1 max=25
+!gra-fetch-hpa  page=1 max=25
+!gra-fetch-resource-hpa resource_name="Linux"  page=1 max=25
+!gra-fetch-orphan-accounts  page=1 max=25
+!gra-fetch-resource-orphan-accounts resource_name="Linux"  page=1 max=25
+!gra-user-activities employee_id="AB1234"  page=1 max=25
+!gra-fetch-users-details employee_id="AB1234"
+!gra-highRisk-users  page=1 max=25
+!gra-cases status="OPEN" page=1 max=25
+!gra-user-anomalies employeeId="AB1234"  page=1 max=25
