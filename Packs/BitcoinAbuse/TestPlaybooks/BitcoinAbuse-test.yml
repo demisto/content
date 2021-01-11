@@ -1,15 +1,15 @@
 id: BitcoinAbuse-test
-version: 2
+version: 4
 vcShouldKeepItemLegacyProdMachine: false
 name: BitcoinAbuse-test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 87cde748-1aad-4153-8dd5-9f9e35e5ea75
+    taskid: 9e37ba5e-21dd-4843-82b4-e3a92c91d67a
     type: start
     task:
-      id: 87cde748-1aad-4153-8dd5-9f9e35e5ea75
+      id: 9e37ba5e-21dd-4843-82b4-e3a92c91d67a
       version: -1
       name: ""
       iscommand: false
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: a5bbfb9c-cee7-4a07-88f2-55d03237daed
+    taskid: 0258c3d4-6f11-4b85-8e16-3b8be7c18527
     type: regular
     task:
-      id: a5bbfb9c-cee7-4a07-88f2-55d03237daed
+      id: 0258c3d4-6f11-4b85-8e16-3b8be7c18527
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -68,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 52fcc4c9-2466-4b63-8b55-3094347e8a28
+    taskid: e6825cb1-1546-41ca-8342-2f80e29db553
     type: regular
     task:
-      id: 52fcc4c9-2466-4b63-8b55-3094347e8a28
+      id: e6825cb1-1546-41ca-8342-2f80e29db553
       version: -1
       name: Bitcoin Report Address
       description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other'
@@ -82,7 +82,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     scriptarguments:
       abuse_type:
         simple: bitcoin tumbler
@@ -108,10 +108,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 912b954f-9f47-42dc-819e-66369cda7af5
+    taskid: 7a98e68d-6c96-4706-8ec8-51f4d968c93a
     type: title
     task:
-      id: 912b954f-9f47-42dc-819e-66369cda7af5
+      id: 7a98e68d-6c96-4706-8ec8-51f4d968c93a
       version: -1
       name: Playbook Done
       type: title
@@ -122,7 +122,39 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 520
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 79ef3259-319d-4051-8e65-90625f310e51
+    type: regular
+    task:
+      id: 79ef3259-319d-4051-8e65-90625f310e51
+      version: -1
+      name: Bitcoin Get Indicators
+      description: Gets indicators from the feed.
+      script: '|||bitcoinabuse-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -135,7 +167,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 535,
+        "height": 735,
         "width": 380,
         "x": 50,
         "y": 50
@@ -144,4 +176,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.5.0

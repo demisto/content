@@ -69,13 +69,12 @@ configuration:
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
-    - RED
-    - AMBER
-    - GREEN
-    - WHITE
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
   required: false
   type: 15
-  defaultvalue: WHITE
 - defaultvalue: '1440'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -85,9 +84,9 @@ configuration:
   name: feedExpirationInterval
   type: 1
   required: false
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this
-    feed. This means that if an indicator from this feed is on the exclusion list, the
-    indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -113,7 +112,9 @@ script:
     - description: Description of the abuse.
       name: description
     - auto: PREDEFINED
-      description: Type of abuse. The "abuse_type_other" field is required when the value of the "abuse_type" field is "other". Possible values are "ransomware", "darknet market", "bitcoin tumber", "blackmail scam", "sextortion", and "other"
+      description: Type of abuse. The "abuse_type_other" field is required when the
+        value of the "abuse_type" field is "other". Possible values are "ransomware",
+        "darknet market", "bitcoin tumber", "blackmail scam", "sextortion", and "other"
       name: abuse_type
       predefined:
       - ransomware
@@ -123,13 +124,19 @@ script:
       - sextortion
       - other
       required: true
-    - description: Description of the abuse type. The "abuse_type_other" field is required when
-        the value of the "abuse_type" field is "other".
+    - description: Description of the abuse type. The "abuse_type_other" field is
+        required when the value of the "abuse_type" field is "other".
       name: abuse_type_other
-    description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is
-      required when 'abuse_type' is other
+    description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field
+      is required when 'abuse_type' is other
     name: bitcoinabuse-report-address
-  dockerimage: demisto/python3:3.8.6.14516
+  - arguments:
+    - defaultValue: "50"
+      description: The maximum number of results to return. The default value is 50.
+      name: limit
+    description: Gets indicators from the feed.
+    name: bitcoinabuse-get-indicators
+  dockerimage: demisto/python3:3.9.1.14969
   feed: true
   isFetchSamples: true
   runonce: false

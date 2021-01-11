@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CSVFeedApiModule import *
 from CommonServerPython import *  # noqa: F401
+from enum import Enum
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -45,6 +46,12 @@ READER_CONFIG = {
         'abusetype': ('abuse_type_id', lambda abuse_type_id: abuse_type_id_to_name.get(abuse_type_id))
     }
 }
+
+
+class IndicatorsCommandType(Enum):
+    TEST_MODULE = 0
+    FETCH = 1
+    GET = 2
 
 
 class BitcoinAbuseClient(BaseClient):
@@ -202,18 +209,29 @@ def build_params_for_csv_module(params: Dict):
     return params
 
 
-def fetch_indicators(params: Dict, test_module: bool):
+def indicator_commands(params: Dict, args: Dict, command_type: IndicatorsCommandType):
     """
      Wrapper which calls to CSVFeedApiModule for fetching indicators from Bitcoin Abuse download csv feed.
     Args:
         params (Dict): Demisto params.
-        test_module (bool): Indicates if command is test_module command
+        args (Dict): Demisto arguments.
+        command_type (IndicatorsCommandType): Indicates if command is test_module/get-indicators/fetch-indicators.
 
     Returns:
         - Throws exception if an invalid api key was given or error occurred during the call to Bitcoin Abuse service
-        - Fetches indicators if the call to Bitcoin Abuse service was successful and command is not test module
+        - Fetches indicators if the call to Bitcoin Abuse service was successful and command is fetch-indicators
         - 'ok' if the call to Bitcoin Abuse service was successful and command is test_module
+        - Returns indicators if the call to Bitcoin Abuse service was successful and
+          command is bitcoinabuse-get-indicators.
     """
+
+    indicators_name_to_count_dict: Dict[str, int] = dict()
+
+    def update_indicator_occurrences(indicator_obj: Dict) -> None:
+        indicator_name = indicator_obj['value']
+        updated_count = indicators_name_to_count_dict.get(indicator_name, 0) + 1
+        indicators_name_to_count_dict[indicator_name] = updated_count
+
     params = build_params_for_csv_module(params)
     csv_module_client = Client(**params)
 
@@ -226,15 +244,13 @@ def fetch_indicators(params: Dict, test_module: bool):
 
     assure_valid_response(indicators)
 
-    indicators_without_duplicates = set()
+    indicators_without_duplicates = []
     have_fetched_first_time = argToBoolean(demisto.getIntegrationContext().get('have_fetched_first_time', False))
 
     # in every fetch apart from first fetch, we are only fetching one csv file, so we know there aren't any duplicates
     if have_fetched_first_time:
         for indicator in indicators:
-            updated_count = indicator.get('fields').get('count', 0) + 1
-            indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
-            indicator['fields']['count'] = updated_count
+            update_indicator_occurrences(indicator)
         indicators_without_duplicates = indicators
 
     # in first fetch according to configurations, we might fetch more than one csv file, so we need to remove duplicates
@@ -244,17 +260,32 @@ def fetch_indicators(params: Dict, test_module: bool):
             try:
                 indicator_id = int(indicator['rawJSON']['id'])
                 if indicator_id not in indicators_ids:
-                    indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
+                    update_indicator_occurrences(indicator)
                     indicators_without_duplicates.append(indicator)
                     indicators_ids.add(indicator_id)
             except ValueError:
                 demisto.debug(f'The following indicator was found invalid and was skipped: {indicator}')
 
-    if not test_module:
+    for indicator in indicators_without_duplicates:
+        indicator_count = indicators_name_to_count_dict.get(indicator['value'])
+        indicator['fields']['count'] = indicator_count
+        indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
+
+    if command_type == IndicatorsCommandType.FETCH:
         # we submit the indicators in batches
         for b in batch(indicators_without_duplicates, batch_size=2000):
             demisto.createIndicators(b)  # type: ignore
         demisto.setIntegrationContext({'have_fetched_first_time': True})
+
+    elif command_type == IndicatorsCommandType.GET:
+        limit = arg_to_number(args.get('limit'), 'limit')
+        truncated_indicators_list = indicators_without_duplicates[:limit]
+        return CommandResults(
+            readable_output=tableToMarkdown('Indicators', truncated_indicators_list,
+                                            headers=['value', 'type', 'fields']),
+            raw_response=truncated_indicators_list
+        )
+
     else:
         demisto.results('ok')
 
@@ -266,10 +297,13 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            fetch_indicators(demisto.params(), test_module=True)
+            indicator_commands(demisto.params(), demisto.args(), command_type=IndicatorsCommandType.TEST_MODULE)
 
         elif command == 'fetch-indicators':
-            fetch_indicators(demisto.params(), test_module=False)
+            indicator_commands(demisto.params(), demisto.args(), command_type=IndicatorsCommandType.FETCH)
+
+        elif command == 'bitcoinabuse-get-indicators':
+            return_results(indicator_commands(demisto.params(), demisto.args(), command_type=IndicatorsCommandType.GET))
 
         elif command == 'bitcoinabuse-report-address':
             return_results(report_address_command(demisto.params(), demisto.args()))
