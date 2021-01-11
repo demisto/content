@@ -1448,11 +1448,9 @@ class Pack(object):
         changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
         changelog = {}
         if os.path.exists(changelog_index_path):
-            try:
-                with open(changelog_index_path, "r") as changelog_file:
-                    changelog = json.load(changelog_file)
-            except json.JSONDecodeError:
-                changelog = {}
+            with open(changelog_index_path, "r") as changelog_file:
+                changelog = json.load(changelog_file)
+
         initial_changelog_version = changelog.get(Pack.PACK_INITIAL_VERSION, {})
         init_changelog_released_date = initial_changelog_version.get('released',
                                                                      datetime.utcnow().strftime(Metadata.DATE_FORMAT))
