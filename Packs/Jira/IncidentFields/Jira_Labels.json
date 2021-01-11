@@ -1,7 +1,6 @@
 {
  "id": "incident_jiralabels",
  "version": -1,
- "modified": "2020-12-31T14:45:15.721835+02:00",
  "name": "Jira Labels",
  "ownerOnly": false,
  "description": "A CSV list of labels",
