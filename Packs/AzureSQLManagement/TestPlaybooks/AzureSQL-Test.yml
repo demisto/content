@@ -495,7 +495,7 @@ tasks:
     task:
       id: 81a71563-34bd-45a8-8ce9-84b6731552c9
       version: -1
-      name: Check retention days equals 5
+      name: Check retention days equals 0
       type: condition
       iscommand: false
       brand: ""
