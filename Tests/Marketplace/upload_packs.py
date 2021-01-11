@@ -480,12 +480,19 @@ def update_index_with_priced_packs(private_storage_bucket: Any, extract_destinat
 
 
 def get_updated_private_packs(private_packs, index_folder_path):
-    """
-    todo: add docstring
+    """ Checks for updated private packs by compering contentCommitHash between public index json and private pack
+    metadata files.
+
+    Args:
+        private_packs (list): List of dicts containing pack metadata information.
+        index_folder_path (str): The public index folder path.
+
+    Returns:
+        updated_private_packs (list) : a list of all private packs id's that were updated.
+
     """
     updated_private_packs = []
-    # open public index
-    public_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
+
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as public_index_file:
         public_index_json = json.load(public_index_file)
     public_packs = public_index_json.get("packs", {})
@@ -493,16 +500,13 @@ def get_updated_private_packs(private_packs, index_folder_path):
     for pack in private_packs:
         private_pack_id = pack.get('id')
         new_private_commit_hash = pack.get('contentCommitHash', "")
-
         old_private_commit_hash = ""
         for public_pack in public_packs:
             if public_pack.get('id') == private_pack_id:
                 old_private_commit_hash = public_pack.get('contentCommitHash', "")
 
-        #print(f"new private pack commit hash : {new_private_commit_hash}, old commit: {old_private_commit_hash}")
         private_pack_was_updated = new_private_commit_hash != old_private_commit_hash
         if private_pack_was_updated:
-            #print("there is a new change")
             updated_private_packs.append(private_pack_id)
 
     return updated_private_packs
