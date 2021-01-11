@@ -580,7 +580,7 @@ def build_triage_markdown(context_data: Dict[str, Any], context: str) -> str:
             }
             for x in entity["rule"]["evidence"]
         ]
-        table.sort(key=lambda x: x.get("Level"), reverse=True) # type: ignore
+        table.sort(key=lambda x: x.get("Level"), reverse=True)  # type: ignore
         tables.append(
             "\n".join(
                 [

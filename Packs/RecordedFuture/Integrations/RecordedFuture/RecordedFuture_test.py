@@ -71,7 +71,7 @@ class RFTest(unittest.TestCase):
     @vcr.use_cassette()
     def test_intelligence(self) -> None:
         resp = enrich_command(self.client, "184.168.221.96", "ip", True, True)
-        context = resp.to_context()["EntryContext"]['RecordedFuture.IP(val.name == obj.name)'] # noqa
+        context = resp.to_context()["EntryContext"]['RecordedFuture.IP(val.name == obj.name)']  # noqa
 
         self.assertIsInstance(resp, CommandResults)
         # rules are concatenated
@@ -87,8 +87,8 @@ class RFTest(unittest.TestCase):
 
     @vcr.use_cassette()
     def test_intelligence_profile(self) -> None:
-        """Will fetch related entities even if related_entities param is false""" # noqa
-        resp = enrich_command(self.client, "184.168.221.96", "ip", False, False, "Vulnerability Analyst") # noqa
+        """Will fetch related entities even if related_entities param is false"""  # noqa
+        resp = enrich_command(self.client, "184.168.221.96", "ip", False, False, "Vulnerability Analyst")  # noqa
         self.assertIsInstance(resp, CommandResults)
         data = resp.raw_response['data']
 
@@ -136,7 +136,7 @@ class RFTest(unittest.TestCase):
         context = resp.to_context()["Contents"]
         self.assertEqual("phishing", context["context"])
         scores = [e for e in context['entities'] if e['score'] == 0]
-        self.assertEqual(len(scores), 0, "Response contains entities with zero score") # noqa
+        self.assertEqual(len(scores), 0, "Response contains entities with zero score")  # noqa
 
     @requests_mock.Mocker()
     def test_get_alerting_rules(self, m) -> None:
@@ -170,7 +170,7 @@ class RFTest(unittest.TestCase):
         """Alert related to credential leaks"""
         resp = get_alert_single_command(self.client, "fzpmIG")
         self.assertTrue(resp.get('HumanReadable'))
-        context = resp['EntryContext']['RecordedFuture.SingleAlert(val.ID === obj.id)'] # noqa
+        context = resp['EntryContext']['RecordedFuture.SingleAlert(val.ID === obj.id)']  # noqa
         entity = context['flat_entities'][0]
 
         self.assertIn('documents', context.keys())
