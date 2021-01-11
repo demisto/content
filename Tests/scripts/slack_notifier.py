@@ -126,6 +126,7 @@ def get_attachments_for_unit_test(build_url, is_sdk_build=False):
 
 
 def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_file_path=None):
+    print("in get_attachments_for_bucket_upload_flow")
     steps_fields = get_entities_fields(entity_title="Failed Steps")
     color = 'good' if not steps_fields else 'danger'
     title = f'{BucketUploadFlow.BUCKET_UPLOAD_BUILD_TITLE} - Success' if not steps_fields \
@@ -156,6 +157,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
                 "short": False
             }]
         if successful_private_packs_dict:
+            print("in successful_private_packs_dict in slack_notifier")
             steps_fields += [{
                 "title": "Successful Private Packs:",
                 "value": "\n".join([pack_name for pack_name in {*successful_private_packs_dict}]),

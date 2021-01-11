@@ -974,7 +974,6 @@ def main():
     upload_id_set(storage_bucket, id_set_path)
 
     # get the lists of packs divided by their status
-    packs_list.extend(updated_private_packs)
     successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
@@ -984,7 +983,6 @@ def main():
         updated_private_packs
     )
 
-    successful_packs.extend(updated_private_packs)
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs, not is_bucket_upload_flow)
     print("end of summary")
