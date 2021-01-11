@@ -37,9 +37,9 @@ tasks:
     task:
       id: 858c776e-b669-4e04-83be-ed140852829a
       version: -1
-      name: AnsibleTower_job_launch_generic
-      playbookName: AnsibleTowerJobLaunchGeneric
-      playbookID: AnsibleTowerJobLaunchGeneric
+      name: Ansible Tower launch job
+      playbookName: Launch Job - Ansible Tower
+      playbookID: Launch Job - Ansible Tower
       type: playbook
       iscommand: false
       brand: ""

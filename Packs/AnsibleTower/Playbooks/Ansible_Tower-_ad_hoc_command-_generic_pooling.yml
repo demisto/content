@@ -1,6 +1,6 @@
-id: AnsibleTowerAdhocCommandGeneric
+id: Launch Adhoc Command Generic - Ansible Tower
 version: -1
-name: AnsibleTowerAdhocCommandGeneric
+name: Launch Adhoc Command Generic - Ansible Tower
 starttaskid: "0"
 tasks:
   "0":
@@ -314,8 +314,9 @@ outputs:
 - contextPath: AnsibleAWX.JobStdout.content
   description: job content output
 fromversion: 5.0.0
-description: Generic pooling playbook for run ad hoc commands, then check the job
-  status and the stdout
+description: Generic pooling playbook for runing ad hoc commands. Ad-hoc commands in Ansible allow you to execute simple
+  tasks at the command line against one or all of your hosts. This playbook first launch an ad hoc command, then report the status of the task
+  when finish running and at the end return the output of the task.
 tests:
   -  No tests
 

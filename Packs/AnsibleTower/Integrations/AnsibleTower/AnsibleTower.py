@@ -264,7 +264,7 @@ def job_template_launch(client: Client, args: dict) -> CommandResults:
         outputs_prefix='AnsibleAWX.Job',
         outputs_key_field='id',
         outputs=context_data,
-        readable_output=tableToMarkdown(name=f'Job {job_id} status {job_id_status}', t=context_data, removeNull=True,
+        readable_output=tableToMarkdown(name=f'Job: {job_id} status is: {job_id_status}', t=context_data, removeNull=True,
                                         headers=headers),
         raw_response=response
     )
@@ -301,7 +301,7 @@ def cancel_job(client: Client, args: dict) -> CommandResults:
 
 
 def job_stdout(client: Client, args: dict) -> CommandResults:
-    print_output = True if args.get('print_output', 'True') == 'True' else False
+    print_output = argToBoolean(args.get('print_output', 'True'))
     text_filter = args.get('text_filter', '')
     job_id = args.get('job_id', '')
     url_suffix = f'jobs/{job_id}/stdout/'
@@ -418,12 +418,12 @@ def cancel_ad_hoc_command(client: Client, args: dict) -> CommandResults:
 
 
 def ad_hoc_command_stdout(client: Client, args: dict) -> CommandResults:
-    print_output = True if args.get('print_output', 'True') == 'True' else False
+    print_output = argToBoolean(args.get('print_output', 'True'))
     text_filter = args.get('text_filter', '')
     command_id = args.get('command_id', None)
     url_suffix = f'ad_hoc_commands/{command_id}/stdout/'
-    params = {"format": "json"}
-    response = client.api_request(method='GET', url_suffix=url_suffix, params=params)
+    request_params = {"format": "json"}
+    response = client.api_request(method='GET', url_suffix=url_suffix, params=request_params)
     response['command_id'] = command_id
     output_text = output_content(response.get('content', ''), print_output, text_filter,
                                  f'### Ad hoc command {command_id} output ### \n\n')
