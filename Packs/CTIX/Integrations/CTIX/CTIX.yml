@@ -756,7 +756,7 @@ script:
       description: Additional enhanced data about the Threat Data Object fetched by
         the CTIX application
     description: Return File Details.
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   runonce: false
   subtype: python3
 tests:
