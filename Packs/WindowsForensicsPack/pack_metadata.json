@@ -7,8 +7,32 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-09-29T19:38:01Z",
-    "categories": [],
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [
+        "windows",
+        "forensics"
+    ],
+    "dependencies": {
+        "PowershellRemoting": {
+            "mandatory": true,
+            "display_name": "Powershell Remoting"
+        },
+        "PcapAnalysis": {
+            "mandatory": true,
+            "display_name": "PCAP Analysis"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "displayedImages": [
+        "PowershellRemoting",
+        "PcapAnalysis",
+        "CommonTypes"
+    ]
 }
