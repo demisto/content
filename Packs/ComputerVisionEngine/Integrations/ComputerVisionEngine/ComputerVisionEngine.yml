@@ -49,7 +49,7 @@ script:
       description: The key holds down the information about detected objects in the
         picture
       type: Unknown
-  dockerimage: devtesting/coco-loco:1.0.0.1610382777
+  dockerimage: devdemisto/coco-loco:1.0.0.15356
   feed: false
   isfetch: false
   longRunning: false
