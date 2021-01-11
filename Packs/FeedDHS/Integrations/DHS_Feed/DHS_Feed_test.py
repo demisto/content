@@ -105,7 +105,7 @@ class TestHelpers:
             temp_input_private.extend(input_key.split('\n')[-7:])
             ssl_files_checker(input_public, '\n'.join(temp_input_private))
         except ValueError as error:
-            assert str(error) == 'Could not deserialize key data.'
+            assert str(error) == 'Could not deserialize key data. The data may be in an incorrect format or it may be encrypted with an unsupported algorithm.'
         else:
             raise Exception
 
