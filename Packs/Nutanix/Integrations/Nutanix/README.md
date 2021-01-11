@@ -406,7 +406,6 @@ Get a list of virtual machines.
 >| policy: AFFINITY<br/>host_uuids: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | false | uefi_boot: false | false | 0 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | AGENT_VM: false<br/>VGA_CONSOLE: true | 86 |
 
 ### nutanix-hypervisor-vm-powerstatus-change
-
 ***
 Set power state of a virtual machine. If the virtual machine is being powered on and no host is specified, the scheduler
 will pick the one with the most available CPU and memory that can support the Virtual Machine. Note that no such host
@@ -414,6 +413,12 @@ may not be available. If the virtual machine is being power cycled, a different 
 This is also an asynchronous operation that results in the creation of a task object. The UUID of this task object is
 returned as the response of this operation. With this task uuid, this task status can be monitored by using the
 nutanix-hypervisor-task-poll command.
+
+### Important
+The following command requires cluster admin or higher permissions,
+in case you want to use this command,
+make sure the usern you are using have at least cluster admin permissions 
+(Found in Nutanix Settings in "Users And Roles" Category)
 
 #### Base Command
 
@@ -734,6 +739,12 @@ Get the list of Alerts generated in the cluster which matches the filters if giv
 ***
 Acknowledge alert with the specified alert_id.
 
+### Important
+The following command requires cluster admin or higher permissions,
+in case you want to use this command,
+make sure the user you are using have at least cluster admin permissions
+(Permissions are found in Nutanix Settings in "Users And Roles" Category)
+
 #### Base Command
 
 `nutanix-alert-acknowledge`
@@ -782,6 +793,12 @@ Acknowledge alert with the specified alert_id.
 ***
 Resolve alert with the specified alert_id.
 
+### Important
+The following command requires cluster admin or higher permissions,
+in case you want to use this command,
+make sure the user you are using have at least cluster admin permissions
+(Permissions are found in Nutanix Settings in "Users And Roles" Category)
+
 #### Base Command
 
 `nutanix-alert-resolve`
@@ -829,6 +846,13 @@ Resolve alert with the specified alert_id.
 
 ***
 Acknowledge alerts using a filters.
+
+### Important
+The following command requires cluster admin or higher permissions,
+in case you want to use this command,
+make sure the user you are using have at least cluster admin permissions
+(Permissions are found in Nutanix Settings in "Users And Roles" Category)
+
 
 #### Base Command
 
@@ -892,6 +916,12 @@ Acknowledge alerts using a filters.
 
 ***
 Resolve alerts using a filters.
+
+### Important
+The following command requires cluster admin or higher permissions,
+in case you want to use this command,
+make sure the user you are using have at least cluster admin permissions
+(Permissions are found in Nutanix Settings in "Users And Roles" Category)
 
 #### Base Command
 

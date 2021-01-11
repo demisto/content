@@ -389,8 +389,8 @@ script:
       filters if given.
     name: nutanix-alerts-list
     outputs:
-    - contextPath: NutanixHypervisor.Alerts
-      description: ADD DESCRIPTION
+    - contextPath: NutanixHypervisor.Alerts.id
+      description: The Id of the alert.
   - arguments:
     - description: The id of the alert to acknowledge.
       name: alert_id
