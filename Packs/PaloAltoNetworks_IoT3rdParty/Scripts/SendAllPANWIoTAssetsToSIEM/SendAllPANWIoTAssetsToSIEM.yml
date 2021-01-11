@@ -31,7 +31,7 @@ dockerimage: demisto/python3:3.9.1.14969
 enabled: true
 name: SendAllPANWIoTAssetsToSIEM
 runas: DBotWeakRole
-runonce: false
+runonce: true
 script: ''
 scripttarget: 0
 subtype: python3

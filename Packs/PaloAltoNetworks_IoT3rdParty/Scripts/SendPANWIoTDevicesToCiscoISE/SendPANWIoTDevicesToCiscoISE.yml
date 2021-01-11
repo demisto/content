@@ -23,7 +23,7 @@ outputs:
 - contextPath: PaloAltoIoTIntegrationBase.Status
   description: total count of devices updated or created on ISE
 runas: DBotRole
-runonce: false
+runonce: true
 script: ''
 scripttarget: 0
 subtype: python3

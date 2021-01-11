@@ -13,5 +13,27 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": []
+    "githubUser": [],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "cisco-ise": {
+            "mandatory": true,
+            "display_name": "Cisco ISE"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "ServiceNow": {
+            "mandatory": true,
+            "display_name": "ServiceNow"
+        },
+        "Syslog": {
+            "mandatory": true,
+            "display_name": "Syslog Sender"
+        }
+    }
 }

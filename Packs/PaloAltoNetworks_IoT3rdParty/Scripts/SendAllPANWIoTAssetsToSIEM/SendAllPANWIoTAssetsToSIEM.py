@@ -281,7 +281,7 @@ def get_all_panw_iot_assets_and_send_to_siem(asset_type):
         size = len(asset_list)
         for asset in asset_list:
             cef = convert_single_asset_to_cef(asset, asset_type)
-            send_asset_syslog(f'{count} - {cef}')
+            send_asset_syslog(cef)
             count += 1
 
         if size >= page_size:
