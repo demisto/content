@@ -1,6 +1,6 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
-$script:INTEGRATION_NAME = "Xsoar Powershell Testing"
+$script:INTEGRATION_NAME = "XSOAR Powershell Testing"
 $script:COMMAND_PREFIX = "pwsh-test"
 $script:INTEGRATION_ENTRY_CONTEX = "XSOAR"
 
