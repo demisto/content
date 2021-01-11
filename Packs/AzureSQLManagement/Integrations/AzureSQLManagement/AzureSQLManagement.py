@@ -298,8 +298,8 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, args: Dict[s
     db_name = args.get('db_name')
     state = args.get('state')
     audit_actions_groups = argToList(args.get('audit_actions_groups', ''))
-    is_azure_monitor_target_enabled = argToBoolean(args.get('is_azure_monitor_target_enabled', ''))
-    is_storage_secondary_key_in_use = argToBoolean(args.get('is_storage_secondary_key_in_use', ''))
+    is_azure_monitor_target_enabled = args.get('is_azure_monitor_target_enabled', '')
+    is_storage_secondary_key_in_use = args.get('is_storage_secondary_key_in_use', '')
     queue_delay_ms = args.get('queue_delay_ms', '')
     retention_days = args.get('retention_days', '')
     storage_account_access_key = args.get('storage_account_access_key', '')
@@ -373,14 +373,7 @@ def azure_sql_db_threat_policy_get_command(client: Client, args: Dict[str, str])
 
 
 @logger
-def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[str, str],
-
-                                                     disabled_alerts: str = '',
-                                                     email_account_admins: str = '',
-                                                     email_addresses: str = '',
-                                                    storage_account_access_key: str = '',
-                                                     use_server_default: str = '',
-                                                     ) -> CommandResults:
+def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """azure_sql_db_audit_policy_create_update command: Upadate and create audit policies related to the server
         and database
 
