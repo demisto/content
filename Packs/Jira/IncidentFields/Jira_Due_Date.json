@@ -1,7 +1,6 @@
 {
  "id": "incident_jiraduedate",
  "version": -1,
- "modified": "2020-12-31T14:45:06.109219+02:00",
  "name": "Jira Due Date",
  "ownerOnly": false,
  "description": "The due date for the issue (in the format 2018-03-11)",
