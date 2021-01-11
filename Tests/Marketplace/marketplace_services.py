@@ -1894,7 +1894,8 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         }
         packs_results[stage].update(successful_private_packs_dict)
         logging.debug(f"Successful private packs {successful_private_packs_dict}")
-
+        print(f"Successful private packs {successful_private_packs_dict}")
+        print(f"this is pack_results: {packs_results}")
 
     if packs_results:
         json_write(packs_results_file_path, packs_results)
