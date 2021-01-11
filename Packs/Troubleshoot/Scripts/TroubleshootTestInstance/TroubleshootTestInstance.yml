@@ -43,6 +43,7 @@ fromversion: 5.0.0
 dependson:
   must:
   - demisto-api-put
+  - demisto-api-post
 tests:
 - No tests (auto formatted)
 
