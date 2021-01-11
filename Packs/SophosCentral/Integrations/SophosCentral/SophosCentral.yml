@@ -1638,7 +1638,7 @@ script:
     - contextPath: SophosCentral.DetectedExploit.thumbprint
       description: Matches [0-9a-zA-Z]{64}.
       type: String
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: true
   longRunning: false

@@ -1132,12 +1132,6 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the file being uploaded
-      isArray: false
-      name: filename
-      required: true
-      secret: false
-    - default: false
       description: The name for the threat source
       isArray: false
       name: name
@@ -1806,7 +1800,7 @@ script:
     - contextPath: Uptycs.PostedQuery.name
       description: name of query
       type: string
-  dockerimage: demisto/uptycs:1.0.0.10664
+  dockerimage: demisto/uptycs:1.0.0.12410
   isfetch: true
   runonce: true
   script: '-'
