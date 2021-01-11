@@ -57,7 +57,7 @@ def output_data(response: dict) -> dict:
                      'allow_simultaneous', 'force_handlers', 'forks', 'unified_job_template', 'use_fact_cache',
                      'verbosity', 'has_inventory_sources', 'last_job_host_summary', 'has_active_failures',
                      'total_hosts', 'hosts_with_active_failures', 'total_groups', 'start_at_task',
-                     'has_active_failures','host_status_counts', 'playbook_counts', 'range', 'event_data', 'parent',
+                     'has_active_failures', 'host_status_counts', 'playbook_counts', 'range', 'event_data', 'parent',
                      'role', 'play']
 
     context_data = {}
