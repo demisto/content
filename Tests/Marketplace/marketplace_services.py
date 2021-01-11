@@ -146,7 +146,8 @@ class PackStatus(enum.Enum):
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
-    FAILED_DECRYPT_PACK = "Failed to decrypt pack, which means the pack is not encrypted"
+    FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
+                          " which should be encrypted, seems not to be encrypted."
 
 
 class Pack(object):
@@ -782,12 +783,13 @@ class Pack(object):
             if stdout:
                 logging.info(str(stdout))
             if stderr:
-                logging.error("Error while trying to decrypt pack.")
+                logging.error(f"Error: Premium pack {self. _pack_name} should be encrypted, but isn't.")
                 return False
             return True
 
         except subprocess.CalledProcessError as error:
             logging.exception(f"Error while trying to decrypt pack. {error}")
+            return False
 
     def is_pack_encrypted(self, encrypted_zip_pack_path, decryption_key):
         """ Checks if the pack is encrypted by trying to decrypt it.
@@ -799,10 +801,7 @@ class Pack(object):
         Returns:
             bool: whether the pack is encrypted.
         """
-        task_status = False
-        if self.decrypt_pack(encrypted_zip_pack_path, decryption_key):
-            task_status = True
-        return task_status
+        return self.decrypt_pack(encrypted_zip_pack_path, decryption_key)
 
     def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
         """ Zips pack folder.
