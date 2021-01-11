@@ -18,6 +18,6 @@
  "autorun": false,
  "disabled": false,
  "reputationCalc": 0,
- "layout": "Jira Incident",
- "fromVersion": "5.0.0"
+ "layout": "Jira Incident Layout",
+ "fromVersion": "6.0.0"
 }

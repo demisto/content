@@ -1,5 +1,4 @@
 {
- "description": "Jira Incident Layout",
  "detailsV2": {
   "tabs": [
    {
@@ -72,6 +71,10 @@
         "startCol": 0
        }
       ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
       "moved": false,
       "name": "Case Details",
       "static": false,
@@ -82,6 +85,10 @@
      {
       "h": 2,
       "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
       "moved": false,
       "name": "Notes",
       "static": false,
@@ -94,6 +101,10 @@
       "displayType": "ROW",
       "h": 2,
       "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
       "moved": false,
       "name": "Work Plan",
       "static": false,
@@ -107,6 +118,10 @@
       "h": 2,
       "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
       "isVisible": true,
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
       "moved": false,
       "name": "Linked Incidents",
       "static": false,
@@ -119,6 +134,10 @@
       "displayType": "ROW",
       "h": 2,
       "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
       "moved": false,
       "name": "Child Incidents",
       "static": false,
@@ -131,6 +150,10 @@
       "displayType": "ROW",
       "h": 2,
       "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
       "moved": false,
       "name": "Evidence",
       "static": false,
@@ -144,6 +167,10 @@
       "h": 2,
       "hideName": false,
       "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
       "moved": false,
       "name": "Team Members",
       "static": false,
@@ -156,6 +183,10 @@
       "displayType": "ROW",
       "h": 2,
       "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+      "maxH": null,
+      "maxW": 2,
+      "minH": 1,
+      "minW": 2,
       "moved": false,
       "name": "Indicators",
       "query": "",
@@ -217,6 +248,10 @@
         "startCol": 1
        }
       ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
       "moved": false,
       "name": "Timeline Information",
       "static": false,
@@ -258,6 +293,10 @@
         "startCol": 0
        }
       ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
       "moved": false,
       "name": "Closing Information",
       "static": false,
@@ -281,6 +320,10 @@
         "startCol": 0
        }
       ],
+      "maxH": null,
+      "maxW": 1,
+      "minH": 1,
+      "minW": 1,
       "moved": false,
       "name": "Investigation Data",
       "static": false,
@@ -416,7 +459,8 @@
         "startCol": 0
        }
       ],
-      "maxW": 3,
+      "maxH": null,
+      "maxW": 1,
       "minH": 1,
       "minW": 1,
       "moved": false,
@@ -457,9 +501,10 @@
   ]
  },
  "group": "incident",
- "id": "Jira Incident",
- "name": "Jira Incident",
+ "id": "Jira Incident Layout",
+ "name": "Jira Incident Layout",
  "system": false,
  "version": -1,
- "fromVersion": "6.0.0"
+ "fromVersion": "6.0.0",
+ "description": ""
 }
