@@ -145,7 +145,6 @@ def azure_sql_servers_list_command(client: Client, args: Dict[str, str]) -> Comm
 
     server_list_fixed = copy.deepcopy(server_list_raw.get('value', '')[offset_int:(offset_int + limit_int)])
     for server in server_list_fixed:
-        # properties = server.get('properties', {})
         if properties := server.get('properties', {}):
             server.update(properties)
             del server['properties']
