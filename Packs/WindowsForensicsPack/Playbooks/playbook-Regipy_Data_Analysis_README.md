@@ -33,4 +33,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Regipy Data Analysis](Insert the link to your image here)
+![Regipy Data Analysis](https://raw.githubusercontent.com/demisto/content/de089a9171d269062404ac77a7e5988c9127c495/Packs/WindowsForensicsPack/doc_files/Regipy_Data_Analysis.png)
