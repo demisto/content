@@ -1,7 +1,6 @@
 {
  "id": "incident_jirastatus",
  "version": -1,
- "modified": "2020-12-31T14:46:05.34838+02:00",
  "name": "Jira Status",
  "ownerOnly": false,
  "description": "The name of the status",
