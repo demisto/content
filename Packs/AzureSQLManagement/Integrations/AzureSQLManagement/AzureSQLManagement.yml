@@ -54,14 +54,15 @@ script:
     name: azure-sql-auth-test
   - arguments:
     - default: false
-      description: (Int) The maximum number of servers returned to the War Room. Default
-        is 50.
+      defaultValue: '50'
+      description: (Int) The maximum number of servers returned to the War Room.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: (Int) Offset in the data set. Default is 0.
+      defaultValue: '0'
+      description: '(Int) Offset in the data set. '
       isArray: false
       name: offset
       required: false
@@ -118,14 +119,15 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: '50'
       description: (Int) The maximum number of DataBases returned to the War Room.
-        Default is 50.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: (Int) Offset in the data set. Default is 0.
+      defaultValue: '0'
+      description: '(Int) Offset in the data set. '
       isArray: false
       name: offset
       required: false
@@ -215,14 +217,16 @@ script:
       required: true
       secret: false
     - default: false
+      defaultValue: '50'
       description: (Int) The maximum number of DataBases audit policies returned to
-        the War Room. Default is 50.
+        the War Room.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: (Int) Offset in the data set. Default is 0.
+      defaultValue: '0'
+      description: (Int) Offset in the data set.
       isArray: false
       name: offset
       required: false
