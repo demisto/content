@@ -1,7 +1,6 @@
 {
  "id": "incident_jirapriority",
  "version": -1,
- "modified": "2020-12-31T14:45:31.61617+02:00",
  "name": "Jira Priority",
  "ownerOnly": false,
  "description": "The issue's priority",
