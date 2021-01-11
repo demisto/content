@@ -1,7 +1,7 @@
 id: Recorded Future File Reputation
 version: -1
 name: Recorded Future File Reputation
-description: File reputation using Recorded Future SOAR Enrichment
+description: File reputation using Recorded Future SOAR enrichment
 starttaskid: "0"
 tasks:
   "0":
@@ -69,7 +69,7 @@ tasks:
       id: 35a895eb-d8ec-4fd6-8b25-eb7f23b7da9e
       version: -1
       name: Get MD5 reputation
-      description: Get a quick indicator of the risk associated with a file.
+      description: Get a quick indication of the risk associated with a file.
       script: Recorded Future v2|||file
       type: regular
       iscommand: true
@@ -212,7 +212,7 @@ tasks:
       id: fad9cc52-fc61-4eb3-80c4-70a4af1ac54c
       version: -1
       name: Get SHA-256 reputation
-      description: Get a quick indicator of the risk associated with a file.
+      description: Get a quick indication of the risk associated with a file.
       script: Recorded Future v2|||file
       type: regular
       iscommand: true
@@ -288,7 +288,7 @@ tasks:
       id: eb590faf-6a42-4447-8f10-f09b45b979a7
       version: -1
       name: Get SHA-1 reputation
-      description: Get a quick indicator of the risk associated with a file.
+      description: Get a quick indication of the risk associated with a file.
       script: Recorded Future v2|||file
       type: regular
       iscommand: true
@@ -541,7 +541,7 @@ inputs:
       root: File
       accessor: MD5
   required: false
-  description: File MD5 hash to get reputation of.
+  description: MD5 hash for which to get the reputation.
   playbookInputQuery:
 - key: SHA256
   value:
@@ -549,7 +549,7 @@ inputs:
       root: File
       accessor: SHA256
   required: false
-  description: File SHA-256 hash to get reputation of.
+  description: SHA-256 hash for which to get the reputation.
   playbookInputQuery:
 - key: SHA1
   value:
@@ -557,7 +557,7 @@ inputs:
       root: File
       accessor: SHA1
   required: false
-  description: File SHA-1 hash to get reputation of.
+  description: SHA-1 hash for which to get reputation.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
@@ -603,22 +603,22 @@ outputs:
   description: Recorded Future Hash Risk Level
   type: string
 - contextPath: RecordedFuture.File.Evidence.rule
-  description: Recorded Risk Rule Name
+  description: Recorded Future Risk Rule Name
   type: string
 - contextPath: RecordedFuture.File.Evidence.mitigation
-  description: Recorded Risk Rule Mitigation
+  description: Recorded Future Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.File.Evidence.description
-  description: Recorded Risk Rule description
+  description: Recorded Future Risk Rule description
   type: string
 - contextPath: RecordedFuture.File.Evidence.timestamp
-  description: Recorded Risk Rule timestamp
+  description: Recorded Future Risk Rule timestamp
   type: date
 - contextPath: RecordedFuture.File.Evidence.level
-  description: Recorded Risk Rule Level
+  description: Recorded Future Risk Rule Level
   type: number
 - contextPath: RecordedFuture.File.Evidence.ruleid
-  description: Recorded Risk Rule ID
+  description: Recorded Future Risk Rule ID
   type: string
 - contextPath: RecordedFuture.File.name
   description: Hash

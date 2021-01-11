@@ -1,7 +1,7 @@
 id: Recorded Future File Intelligence
 version: -1
 name: Recorded Future File Intelligence
-description: File Enrichment using Recorded Future Intelligence
+description: File enrichment using Recorded Future intelligence
 starttaskid: "0"
 tasks:
   "0":
@@ -69,7 +69,7 @@ tasks:
       id: 46717e9e-cbd6-4608-89f1-f9063ba12d18
       version: -1
       name: Get MD5 reputation
-      description: Get threat intelligence for an IP, domain, cve, url or file.
+      description: Get threat intelligence for an IP, domain, CVE, URL or file.
       script: Recorded Future v2|||recordedfuture-intelligence
       type: regular
       iscommand: true
@@ -217,7 +217,7 @@ tasks:
       id: b962d2d8-b0bb-4f67-808e-22b37331dd63
       version: -1
       name: Get SHA-256 reputation
-      description: Get threat intelligence for an IP, domain, cve, url or file.
+      description: Get threat intelligence for an IP, domain, CVE, URL or file.
       script: Recorded Future v2|||recordedfuture-intelligence
       type: regular
       iscommand: true
@@ -298,7 +298,7 @@ tasks:
       id: 24a11895-e064-426b-8d92-844ea6142077
       version: -1
       name: Get SHA-1 reputation
-      description: Get threat intelligence for an IP, domain, cve, url or file.
+      description: Get threat intelligence for an IP, domain, CVE, URL or file.
       script: Recorded Future v2|||recordedfuture-intelligence
       type: regular
       iscommand: true
@@ -740,7 +740,7 @@ outputs:
   description: Recorded Future Related Domain Name ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedInternetDomainName.name
-  description: Recorded Future Related Domain Name
+  description: Recorded Future Related Domain Name Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedInternetDomainName.type
   description: Recorded Future Related Domain Name Type
@@ -779,79 +779,79 @@ outputs:
   description: Recorded Future Related Hash Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedHash.type
-  description: Recorded Future Related Type
+  description: Recorded Future Related Hash Type
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedTechnology.count
-  description: Recorded Future Related Count
+  description: Recorded Future Related Technology Count
   type: number
 - contextPath: RecordedFuture.File.relatedEntities.RelatedTechnology.id
-  description: Recorded Future Related ID
+  description: Recorded Future Related Technology ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedTechnology.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Technology Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedTechnology.type
-  description: Recorded Future Related Type
+  description: Recorded Future Related Technology Type
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedEmailAddress.count
-  description: Recorded Future Related Count
+  description: Recorded Future Related Email Address Count
   type: number
 - contextPath: RecordedFuture.File.relatedEntities.RelatedEmailAddress.id
-  description: Recorded Future Related ID
+  description: Recorded Future Related Email Address ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedEmailAddress.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Email Address Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedEmailAddress.type
-  description: Recorded Future Related Type
+  description: Recorded Future Related Email Address Type
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedAttackVector.count
-  description: Recorded Future Related Count
+  description: Recorded Future Related Attack Vector Count
   type: number
 - contextPath: RecordedFuture.File.relatedEntities.RelatedAttackVector.id
-  description: Recorded Future Related ID
+  description: Recorded Future Related Attack Vector ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedAttackVector.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Attack Vector Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedAttackVector.type
-  description: Recorded Future Related Type
+  description: Recorded Future Related Attack Vector Type
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedMalwareCategory.count
-  description: Recorded Future Related Count
+  description: Recorded Future Related Malware Category Count
   type: number
 - contextPath: RecordedFuture.File.relatedEntities.RelatedMalwareCategory.id
-  description: Recorded Future Related ID
+  description: Recorded Future Related Malware Category ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedMalwareCategory.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Malware Category Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedMalwareCategory.type
-  description: Recorded Future Related Type
+  description: Recorded Future Related Malware Category Type
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedOperations.count
-  description: Recorded Future Related Count
+  description: Recorded Future Related Operations Count
   type: number
 - contextPath: RecordedFuture.File.relatedEntities.RelatedOperations.id
-  description: Recorded Future Related ID
+  description: Recorded Future Related Operations ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedOperations.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Operations Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedOperations.type
-  description: Recorded Future Related Type
+  description: Recorded Future Related Operations Type
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedCompany.count
-  description: Recorded Future Related Count
+  description: Recorded Future Related Company Count
   type: number
 - contextPath: RecordedFuture.File.relatedEntities.RelatedCompany.id
-  description: Recorded Future Related ID
+  description: Recorded Future Related Company ID
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedCompany.name
-  description: Recorded Future Related Name
+  description: Recorded Future Related Company Name
   type: string
 - contextPath: RecordedFuture.File.relatedEntities.RelatedCompany.type
-  description: Recorded Future Related Type
+  description: Recorded Future Related Company Type
   type: string
 tests:
 - Recorded Future Test Playbook

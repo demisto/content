@@ -1,7 +1,7 @@
 id: Recorded Future IP Reputation
 version: -1
 name: Recorded Future IP Reputation
-description: IP address reputation using Recorded Future SOAR Enrichment
+description: IP address reputation using Recorded Future SOAR enrichment
 starttaskid: "0"
 tasks:
   "0":
@@ -420,7 +420,7 @@ outputs:
   description: Recorded Future IP Risk Level
   type: string
 - contextPath: RecordedFuture.IP.Evidence.rule
-  description: Recorded Risk Rule Name
+  description: Recorded Future Risk Rule Name
   type: string
 - contextPath: RecordedFuture.IP.Evidence.mitigation
   description: Recorded Future Risk Rule Mitigation

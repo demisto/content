@@ -1,7 +1,7 @@
 id: Recorded Future CVE Intelligence
 version: -1
 name: Recorded Future CVE Intelligence
-description: CVE Enrichment using Recorded Future Intelligence
+description: CVE enrichment using Recorded Future intelligence
 starttaskid: "0"
 tasks:
   "0":
@@ -414,247 +414,247 @@ outputs:
   description: Risk Criticality
   type: number
 - contextPath: RecordedFuture.CVE.criticalityLabel
-  description: Risk Criticality Label
+  description: Risk criticality label
   type: string
 - contextPath: RecordedFuture.CVE.riskString
-  description: Risk String
+  description: Risk string
   type: string
 - contextPath: RecordedFuture.CVE.riskSummary
-  description: Risk Summary
+  description: Risk summary
   type: string
 - contextPath: RecordedFuture.CVE.rules
-  description: Risk Rules
+  description: Risk rules
   type: string
 - contextPath: RecordedFuture.CVE.score
-  description: Risk Score
+  description: Risk score
   type: number
 - contextPath: RecordedFuture.CVE.firstSeen
-  description: Evidence First Seen
+  description: Evidence first seen
   type: date
 - contextPath: RecordedFuture.CVE.lastSeen
   description: Evidence Last Seen
   type: date
 - contextPath: RecordedFuture.CVE.intelCard
-  description: Recorded Future Intelligence Card URL
+  description: Recorded Future intelligence card URL
   type: string
 - contextPath: RecordedFuture.CVE.type
-  description: Entity Type
+  description: Entity type
   type: string
 - contextPath: RecordedFuture.CVE.name
   description: Entity
   type: string
 - contextPath: RecordedFuture.CVE.id
-  description: Recorded Future Entity ID
+  description: Recorded Future entity ID
   type: string
 - contextPath: RecordedFuture.CVE.metrics.type
-  description: Recorded Future Metrics Type
+  description: Recorded Future metrics type
   type: String
 - contextPath: RecordedFuture.CVE.metrics.value
-  description: Recorded Future Metrics Value
+  description: Recorded Future metrics value
   type: Number
 - contextPath: RecordedFuture.CVE.threatLists.description
-  description: Recorded Future Threat List Description
+  description: Recorded Future threat list description
   type: String
 - contextPath: RecordedFuture.CVE.threatLists.id
-  description: Recorded Future Threat List ID
+  description: Recorded Future threat list ID
   type: String
 - contextPath: RecordedFuture.CVE.threatLists.name
-  description: Recorded Future Threat List Name
+  description: Recorded Future threat list name
   type: String
 - contextPath: RecordedFuture.CVE.threatLists.type
-  description: Recorded Future Threat List Type
+  description: Recorded Future threat list type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedAttacker.count
-  description: Recorded Future Related Count
+  description: Recorded Future related count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedAttacker.id
-  description: Recorded Future Related ID
+  description: Recorded Future related ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedAttacker.name
-  description: Recorded Future Related Name
+  description: Recorded Future related name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedAttacker.type
-  description: Recorded Future Related Type
+  description: Recorded Future related type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedTarget.count
-  description: Recorded Future Related Count
+  description: Recorded Future related entity count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedTarget.id
-  description: Recorded Future Related ID
+  description: Recorded Future related entity ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedTarget.name
-  description: Recorded Future Related Name
+  description: Recorded Future related target name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedTarget.type
-  description: Recorded Future Related Type
+  description: Recorded Future related target type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedThreatActor.count
-  description: Recorded Future Related Count
+  description: Recorded Future related threat actor count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedThreatActor.id
-  description: Recorded Future Related ID
+  description: Recorded Future related threat actor ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedThreatActor.name
-  description: Recorded Future Related Name
+  description: Recorded Future related threat actor name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedThreatActor.type
-  description: Recorded Future Related Type
+  description: Recorded Future related threat actor type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedMalware.count
-  description: Recorded Future Related Count
+  description: Recorded Future related malware count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedMalware.id
-  description: Recorded Future Related ID
+  description: Recorded Future related malware ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedMalware.name
-  description: Recorded Future Related Name
+  description: Recorded Future related malware name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedMalware.type
-  description: Recorded Future Related Type
+  description: Recorded Future related malware type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.count
-  description: Recorded Future Related Count
+  description: Recorded Future related vulnerability count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.id
-  description: Recorded Future Related ID
+  description: Recorded Future related vulnerability ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.name
-  description: Recorded Future Related Name
+  description: Recorded Future related vulnerability name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCyberVulnerability.type
-  description: Recorded Future Related Type
+  description: Recorded Future related vulnerability type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedIpAddress.count
-  description: Recorded Future Related Count
+  description: Recorded Future related IP address Count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedIpAddress.id
-  description: Recorded Future Related ID
+  description: Recorded Future related IP address ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedIpAddress.name
-  description: Recorded Future Related Name
+  description: Recorded Future related IP address Name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedIpAddress.type
-  description: Recorded Future Related Type
+  description: Recorded Future related IP address type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.count
-  description: Recorded Future Related Count
+  description: Recorded Future related domain name count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.id
-  description: Recorded Future Related ID
+  description: Recorded Future related domain name ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.name
-  description: Recorded Future Related Name
+  description: Recorded Future related domain name name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedInternetDomainName.type
-  description: Recorded Future Related Type
+  description: Recorded Future related domain name type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedProduct.count
-  description: Recorded Future Related Count
+  description: Recorded Future related product count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedProduct.id
-  description: Recorded Future Related ID
+  description: Recorded Future related product ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedProduct.name
-  description: Recorded Future Related Name
+  description: Recorded Future related product name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedProduct.type
-  description: Recorded Future Related Type
+  description: Recorded Future related product type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCountries.count
-  description: Recorded Future Related Count
+  description: Recorded Future related countries count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCountries.id
-  description: Recorded Future Related ID
+  description: Recorded Future related countries ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCountries.name
-  description: Recorded Future Related Name
+  description: Recorded Future related countries name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCountries.type
-  description: Recorded Future Related Type
+  description: Recorded Future related countries' type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedHash.count
-  description: Recorded Future Related Count
+  description: Recorded Future related hash count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedHash.id
-  description: Recorded Future Related ID
+  description: Recorded Future related hash ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedHash.name
-  description: Recorded Future Related Name
+  description: Recorded Future related hash name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedHash.type
-  description: Recorded Future Related Type
+  description: Recorded Future related hash type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedTechnology.count
-  description: Recorded Future Related Count
+  description: Recorded Future related technology count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedTechnology.id
-  description: Recorded Future Related ID
+  description: Recorded Future related technology ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedTechnology.name
-  description: Recorded Future Related Name
+  description: Recorded Future related technology name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedTechnology.type
-  description: Recorded Future Related Type
+  description: Recorded Future related technology type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.count
-  description: Recorded Future Related Count
+  description: Recorded Future related email address count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.id
-  description: Recorded Future Related ID
+  description: Recorded Future related email address ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.name
-  description: Recorded Future Related Name
+  description: Recorded Future related email address name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedEmailAddress.type
-  description: Recorded Future Related Type
+  description: Recorded Future related email address type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedAttackVector.count
-  description: Recorded Future Related Count
+  description: Recorded Future related attack vector count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedAttackVector.id
-  description: Recorded Future Related ID
+  description: Recorded Future related attack vector ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedAttackVector.name
-  description: Recorded Future Related Name
+  description: Recorded Future related attack vector name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedAttackVector.type
-  description: Recorded Future Related Type
+  description: Recorded Future related attack vector type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.count
-  description: Recorded Future Related Count
+  description: Recorded Future related malware category count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.id
-  description: Recorded Future Related ID
+  description: Recorded Future related malware category ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.name
-  description: Recorded Future Related Name
+  description: Recorded Future related malware category name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedMalwareCategory.type
-  description: Recorded Future Related Type
+  description: Recorded Future related malware category type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedOperations.count
-  description: Recorded Future Related Count
+  description: Recorded Future related operations count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedOperations.id
-  description: Recorded Future Related ID
+  description: Recorded Future related operations ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedOperations.name
-  description: Recorded Future Related Name
+  description: Recorded Future related operations name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedOperations.type
-  description: Recorded Future Related Type
+  description: Recorded Future related operations type
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCompany.count
-  description: Recorded Future Related Count
+  description: Recorded Future related company count
   type: Number
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCompany.id
-  description: Recorded Future Related ID
+  description: Recorded Future related company ID
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCompany.name
-  description: Recorded Future Related Name
+  description: Recorded Future related company name
   type: String
 - contextPath: RecordedFuture.CVE.relatedEntities.RelatedCompany.type
-  description: Recorded Future Related Type
+  description: Recorded Future related company type
   type: String
 tests:
 - Recorded Future Test Playbook

@@ -1,7 +1,7 @@
 id: Recorded Future Domain Intelligence
 version: -1
 name: Recorded Future Domain Intelligence
-description: Domain Enrichment using Recorded Future Intelligence
+description: Domain enrichment using Recorded Future intelligence
 starttaskid: "0"
 tasks:
   "0":
@@ -163,7 +163,7 @@ tasks:
       id: ee31f6ce-5751-4049-85a3-d3fc1b55eaf1
       version: -1
       name: Get domain intelligence from Recorded Future
-      description: Get threat intelligence for an IP, domain, cve, url or file.
+      description: Get threat intelligence for an IP, domain, CVE, URL or file.
       script: Recorded Future v2|||recordedfuture-intelligence
       type: regular
       iscommand: true

@@ -1,7 +1,7 @@
 id: Recorded Future URL Reputation
 version: -1
 name: Recorded Future URL Reputation
-description: URL reputation using Recorded Future SOAR Enrichment
+description: URL reputation using Recorded Future SOAR enrichment
 starttaskid: "0"
 tasks:
   "0":
@@ -193,7 +193,7 @@ tasks:
       id: 025dc93f-d522-4986-8da8-894942710d88
       version: -1
       name: Get URL reputation from Recorded Future
-      description: Get a quick indicator of the risk associated with a URL.
+      description: Get a quick indication of the risk associated with a URL.
       script: Recorded Future v2|||url
       type: regular
       iscommand: true
@@ -416,22 +416,22 @@ outputs:
   description: Recorded Future URL Risk Level
   type: string
 - contextPath: RecordedFuture.URL.Evidence.rule
-  description: Recorded Risk Rule Name
+  description: Recorded Future Risk Rule Name
   type: string
 - contextPath: RecordedFuture.URL.Evidence.mitigation
-  description: Recorded Risk Rule Mitigation
+  description: Recorded Future Risk Rule Mitigation
   type: string
 - contextPath: RecordedFuture.URL.Evidence.description
-  description: Recorded Risk Rule description
+  description: Recorded Future Risk Rule description
   type: string
 - contextPath: RecordedFuture.URL.Evidence.timestamp
-  description: Recorded Risk Rule timestamp
+  description: Recorded Future Risk Rule timestamp
   type: date
 - contextPath: RecordedFuture.URL.Evidence.level
-  description: Recorded Risk Rule Level
+  description: Recorded Future Risk Rule Level
   type: number
 - contextPath: RecordedFuture.URL.Evidence.ruleid
-  description: Recorded Risk Rule ID
+  description: Recorded Future Risk Rule ID
   type: string
 - contextPath: RecordedFuture.URL.name
   description: URL

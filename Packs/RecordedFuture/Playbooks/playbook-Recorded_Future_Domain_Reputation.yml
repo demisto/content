@@ -1,7 +1,7 @@
 id: Recorded Future Domain Reputation
 version: -1
 name: Recorded Future Domain Reputation
-description: Domain reputation using Recorded Future SOAR Enrichment
+description: Domain reputation using Recorded Future SOAR enrichment
 starttaskid: "0"
 tasks:
   "0":
@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: Is there a domain to get reputation of?
       description: Checks whether the playbook's input contains at least one domain
-        name to get reputation of.
+        name for which to get the reputation.
       type: condition
       iscommand: false
       brand: ""
@@ -163,7 +163,7 @@ tasks:
       id: f70a438e-3494-4fa6-859a-a304ff7e553f
       version: -1
       name: Get domain reputation from Recorded Future
-      description: Get a quick indicator of the risk associated with a domain.
+      description: Get a quick indication of the risk associated with a domain.
       script: Recorded Future v2|||domain
       type: regular
       iscommand: true
@@ -405,10 +405,10 @@ outputs:
   description: The actual score
   type: number
 - contextPath: Domain.Malicious.Vendor
-  description: For malicious Domains, the vendor that made the decision
+  description: For malicious domains, the vendor that made the decision
   type: string
 - contextPath: Domain.Malicious.Description
-  description: For malicious Domains, the reason that the vendor made the decision
+  description: For malicious domains, the reason that the vendor made the decision
   type: string
 - contextPath: Domain.Name
   description: Domain name

@@ -1,7 +1,7 @@
 id: Recorded Future CVE Reputation
 version: -1
 name: Recorded Future CVE Reputation
-description: CVE reputation with Recorded Future SOAR Enrichment
+description: CVE reputation with Recorded Future SOAR enrichment
 starttaskid: "0"
 tasks:
   "0":
@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: Is there a CVE ID to get reputation of?
       description: Checks whether the playbook's input contains at least one domain
-        name to get reputation of.
+        name for which to retrieve the reputation.
       type: condition
       iscommand: false
       brand: ""
@@ -163,7 +163,7 @@ tasks:
       id: b4ebb4f7-615c-465b-8927-9b23e38dbe53
       version: -1
       name: Get CVE reputation from Recorded Future
-      description: Get a quick indicator of the risk associated with a CVE.
+      description: Get a quick indicator of the risk associated with a specific CVE.
       script: Recorded Future v2|||cve
       type: regular
       iscommand: true
@@ -386,7 +386,7 @@ inputs:
       root: CVE
       accessor: ID
   required: false
-  description: The CVE ID to get reputation of.
+  description: The CVE ID for which to get the reputation.
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
@@ -405,37 +405,37 @@ outputs:
   description: Vulnerability name
   type: string
 - contextPath: RecordedFuture.CVE.riskLevel
-  description: Recorded Future Vulnerability Risk Level
+  description: Recorded Future vulnerability risk level
   type: string
 - contextPath: RecordedFuture.CVE.riskScore
-  description: Risk Score
+  description: Risk score
   type: number
 - contextPath: RecordedFuture.CVE.Evidence.rule
-  description: Recorded Risk Rule Name
+  description: Recorded Future risk rule name
   type: string
 - contextPath: RecordedFuture.CVE.Evidence.mitigation
-  description: Recorded Risk Rule Mitigation
+  description: Recorded Future risk rule mitigation
   type: string
 - contextPath: RecordedFuture.CVE.Evidence.description
-  description: Recorded Risk Rule description
+  description: Recorded Future risk rule description
   type: string
 - contextPath: RecordedFuture.CVE.Evidence.timestamp
-  description: Recorded Risk Rule timestamp
+  description: Recorded Future risk rule timestamp
   type: date
 - contextPath: RecordedFuture.CVE.Evidence.level
-  description: Recorded Risk Rule Level
+  description: Recorded Future risk rule level
   type: number
 - contextPath: RecordedFuture.CVE.Evidence.ruleid
-  description: Recorded Risk Rule ID
+  description: Recorded Future risk rule ID
   type: string
 - contextPath: RecordedFuture.CVE.name
   description: Vulnerability name
   type: string
 - contextPath: RecordedFuture.CVE.maxRules
-  description: Maximum count of Recorded Future Vulnerability Risk Rules
+  description: Maximum count of Recorded Future vulnerability risk rules
   type: number
 - contextPath: RecordedFuture.CVE.ruleCount
-  description: Number of triggered Recorded Future Vulnerability Risk Rules
+  description: Number of triggered Recorded Future vulnerability risk rules
   type: number
 tests:
 - Recorded Future Test Playbook
