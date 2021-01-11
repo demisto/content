@@ -25,10 +25,8 @@ def mock_client(mocker, http_request_result=None):
 
 def test_azure_sql_servers_list_command(mocker):
     """
-        Given:
-            - azure_sql_servers_list command
         When:
-            - Retrieving list of all sql servers
+            - Retrieving list of all sql servers using azure_sql_servers_list command
         Then
             - Assert the returned markdown and context data are as expected.
         """
@@ -42,10 +40,9 @@ def test_azure_sql_servers_list_command(mocker):
 def test_azure_sql_db_list_command(mocker):
     """
         Given:
-            - azure_sql_db_list command
             - server_name
         When:
-            - Retrieving list of all databases related to the server
+            - Retrieving list of all databases related to the server using the azure_sql_db_list command
         Then
             - Assert the returned markdown and context data are as expected.
         """
@@ -60,11 +57,11 @@ def test_azure_sql_db_list_command(mocker):
 def test_azure_sql_db_audit_policy_list_command(mocker):
     """
         Given:
-            - azure_sql_db_audit_policy_list command
             - server_name
             - db_name
         When:
-            - Retrieving list of all audit policies related to the server and database
+            - Retrieving list of all audit policies related to the server and database using
+            azure_sql_db_audit_policy_list command
         Then
             - Assert the returned markdown and context data are as expected.
         """
@@ -79,11 +76,11 @@ def test_azure_sql_db_audit_policy_list_command(mocker):
 def test_azure_sql_db_threat_policy_get_command(mocker):
     """
         Given:
-            - azure_sql_db_threat_policy_get command
             - server_name
             - db_name
         When:
-            - Retrieving a threat detection policies of a database related to the server and database
+            - Retrieving a threat detection policies of a database related to the server and database using
+            azure_sql_db_threat_policy_get command
         Then
             - Assert the returned markdown and context data are as expected.
         """
@@ -98,11 +95,11 @@ def test_azure_sql_db_threat_policy_get_command(mocker):
 def test_azure_sql_db_audit_policy_create_update_command(mocker):
     """
         Given:
-            - azure_sql_db_audit_policy_create_update command
             - server_name
             - db_name
         When:
-            - Creating or Updating an audi policies of a database related to the server and database
+            - Creating or Updating an audi policies of a database related to the server and database using
+            azure_sql_db_audit_policy_create_update command
         Then
             - Assert the returned markdown and context data are as expected.
         """
@@ -123,11 +120,11 @@ def test_azure_sql_db_audit_policy_create_update_command(mocker):
 def test_azure_sql_db_threat_policy_create_update_command(mocker):
     """
         Given:
-            - azure_sql_db_threat_policy_create_update command
             - server_name
             - db_name
         When:
-            - Creating or Updating a threat detection policies of a database related to the server and database
+            - Creating or Updating a threat detection policies of a database related to the server and database using
+            azure_sql_db_threat_policy_create_update command
         Then
             - Assert the returned markdown and context data are as expected.
         """
