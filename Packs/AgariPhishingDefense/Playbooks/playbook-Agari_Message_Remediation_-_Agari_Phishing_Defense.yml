@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 7d00ca8b-39f9-42b6-8af1-e7f821ad22d1
+    taskid: be3da475-9f8d-4ec7-8f50-29409ec6649c
     type: start
     task:
-      id: 7d00ca8b-39f9-42b6-8af1-e7f821ad22d1
+      id: be3da475-9f8d-4ec7-8f50-29409ec6649c
       version: -1
       name: ""
       iscommand: false
@@ -18,13 +18,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "35"
+      - "1"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 810,
-          "y": -150
+          "y": 0
         }
       }
     note: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 828d459a-9bfd-42c6-8dc2-154aa469cb88
+    taskid: 8387f110-b132-411d-8f0f-7e6357076463
     type: condition
     task:
-      id: 828d459a-9bfd-42c6-8dc2-154aa469cb88
+      id: 8387f110-b132-411d-8f0f-7e6357076463
       version: -1
       name: Is APD Global Message ID not empty?
       description: Check if APD Global Message ID is present or not.
@@ -46,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "43"
       "yes":
       - "33"
       - "34"
@@ -74,10 +74,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 54f8509a-4957-4300-8d52-fbc92003aee3
+    taskid: 2b82ffe9-342c-4080-8e14-713c6f7b6369
     type: title
     task:
-      id: 54f8509a-4957-4300-8d52-fbc92003aee3
+      id: 2b82ffe9-342c-4080-8e14-713c6f7b6369
       version: -1
       name: Done
       type: title
@@ -88,8 +88,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 5080
+          "x": 1470,
+          "y": 5660
         }
       }
     note: false
@@ -99,10 +99,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: c945f811-1394-4174-8071-be4d320c6413
+    taskid: 24bbeb18-785a-480f-874e-0d1b726f665e
     type: playbook
     task:
-      id: c945f811-1394-4174-8071-be4d320c6413
+      id: 24bbeb18-785a-480f-874e-0d1b726f665e
       version: -1
       name: Process Email - Generic
       description: Add email details to the relevant context entities and handle the
@@ -164,10 +164,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: ec654f65-442f-4f3f-8fff-9b228b5b1956
+    taskid: 99d4e6f0-0d09-4cfc-82bc-8950528e2741
     type: playbook
     task:
-      id: ec654f65-442f-4f3f-8fff-9b228b5b1956
+      id: 99d4e6f0-0d09-4cfc-82bc-8950528e2741
       version: -1
       name: Extract Indicators From File - Generic v2
       description: |-
@@ -217,10 +217,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: f0623565-12b4-4948-87f1-74a21569acf4
+    taskid: 613a16bb-8408-4425-8e34-d491967b09d6
     type: playbook
     task:
-      id: f0623565-12b4-4948-87f1-74a21569acf4
+      id: 613a16bb-8408-4425-8e34-d491967b09d6
       version: -1
       name: Detonate File - Generic
       description: Detonate file through active integrations that support file detonation
@@ -259,10 +259,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: b39afcbe-4963-480b-8b39-b8af11380995
+    taskid: 5bbdd92d-06e2-4156-8aff-f234e378e4e8
     type: title
     task:
-      id: b39afcbe-4963-480b-8b39-b8af11380995
+      id: 5bbdd92d-06e2-4156-8aff-f234e378e4e8
       version: -1
       name: Indicator Enrichment
       type: title
@@ -287,10 +287,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: e3d9bd71-2498-4dec-8cbd-7641f0148de7
+    taskid: 705c5360-53cf-4a14-8540-579021588fe9
     type: title
     task:
-      id: e3d9bd71-2498-4dec-8cbd-7641f0148de7
+      id: 705c5360-53cf-4a14-8540-579021588fe9
       version: -1
       name: Investigation
       type: title
@@ -315,10 +315,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: c638ab1e-d957-472a-8ef3-d0a002c3908f
+    taskid: be2ed8e4-fba8-44f5-8c7c-0505f17b9184
     type: condition
     task:
-      id: c638ab1e-d957-472a-8ef3-d0a002c3908f
+      id: be2ed8e4-fba8-44f5-8c7c-0505f17b9184
       version: -1
       name: Should the email be authenticated?
       description: Whether the email should be authenticated using authenticityscore
@@ -367,10 +367,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: 093e84db-d5f5-4990-835b-014b9c620116
+    taskid: 439af56d-b2c9-49ee-82b9-a04e6d5d3b97
     type: title
     task:
-      id: 093e84db-d5f5-4990-835b-014b9c620116
+      id: 439af56d-b2c9-49ee-82b9-a04e6d5d3b97
       version: -1
       name: Email Authenticity Check
       type: title
@@ -395,10 +395,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: d02e8922-5038-4c02-8b50-05f2397e9032
+    taskid: 2d2b427f-15a5-4cfb-82bf-0d35654aa5d6
     type: playbook
     task:
-      id: d02e8922-5038-4c02-8b50-05f2397e9032
+      id: 2d2b427f-15a5-4cfb-82bf-0d35654aa5d6
       version: -1
       name: Calculate Severity - Generic v2
       description: |-
@@ -460,10 +460,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 90099f12-c3ad-4e79-8850-ba4e7301f749
+    taskid: 77619b5f-6dab-4094-8835-c991f60153eb
     type: regular
     task:
-      id: 90099f12-c3ad-4e79-8850-ba4e7301f749
+      id: 77619b5f-6dab-4094-8835-c991f60153eb
       version: -1
       name: Authenticate email
       description: Checks the authenticity of an email based on the email's SPF, DMARC,
@@ -516,10 +516,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: 8c9f555f-d94c-44d6-8c4f-4a51a7f0dacc
+    taskid: 646388fd-6bab-4cbf-8ed4-341813af8f7f
     type: regular
     task:
-      id: 8c9f555f-d94c-44d6-8c4f-4a51a7f0dacc
+      id: 646388fd-6bab-4cbf-8ed4-341813af8f7f
       version: -1
       name: Save authenticity check result to incident field
       description: Change the properties of an incident
@@ -1349,10 +1349,10 @@ tasks:
     quietmode: 0
   "19":
     id: "19"
-    taskid: 64caffa7-37c3-428d-8f3e-b8503c30b56a
+    taskid: 907bb1e8-839e-403a-8de5-7f0db41434f2
     type: regular
     task:
-      id: 64caffa7-37c3-428d-8f3e-b8503c30b56a
+      id: 907bb1e8-839e-403a-8de5-7f0db41434f2
       version: -1
       name: Assign to analyst
       description: |
@@ -1389,10 +1389,10 @@ tasks:
     quietmode: 0
   "20":
     id: "20"
-    taskid: ca0b61ec-4f06-4bf6-8307-0faee64c1a7e
+    taskid: 2b5a295e-53e9-40a1-849d-0e44ba37bd30
     type: condition
     task:
-      id: ca0b61ec-4f06-4bf6-8307-0faee64c1a7e
+      id: 2b5a295e-53e9-40a1-849d-0e44ba37bd30
       version: -1
       name: Is the email malicious?
       description: Determines if the email is malicious based on the calculated severity.
@@ -1432,10 +1432,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: 422c8845-73e6-49e5-8970-e73a94d2887f
+    taskid: 9b69065f-fd7b-44bf-81b0-6061d67fd901
     type: title
     task:
-      id: 422c8845-73e6-49e5-8970-e73a94d2887f
+      id: 9b69065f-fd7b-44bf-81b0-6061d67fd901
       version: -1
       name: Undetermined
       type: title
@@ -1460,10 +1460,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 158323e4-aeef-4366-8eba-3bf09e5777d0
+    taskid: ee97ce07-73b3-46c6-8e52-952f2533e775
     type: title
     task:
-      id: 158323e4-aeef-4366-8eba-3bf09e5777d0
+      id: ee97ce07-73b3-46c6-8e52-952f2533e775
       version: -1
       name: Email is Malicious
       type: title
@@ -1488,10 +1488,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 7dda4bce-f9dd-4815-8a55-7e802caec775
+    taskid: c71b3432-1ca7-41a0-8633-52ae0518029d
     type: regular
     task:
-      id: 7dda4bce-f9dd-4815-8a55-7e802caec775
+      id: c71b3432-1ca7-41a0-8633-52ae0518029d
       version: -1
       name: Manually review the incident
       description: Review the incident to determine if the email that the user reported
@@ -1517,10 +1517,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 873db3bb-cb5f-4ade-817a-705b9bc671e3
+    taskid: f5639230-5f9b-4a3b-8507-3a5423bc7bf1
     type: condition
     task:
-      id: 873db3bb-cb5f-4ade-817a-705b9bc671e3
+      id: f5639230-5f9b-4a3b-8507-3a5423bc7bf1
       version: -1
       name: Is the email malicious?
       description: Is the email that the user reported malicious?
@@ -1529,7 +1529,7 @@ tasks:
       brand: ""
     nexttasks:
       "No":
-      - "2"
+      - "43"
       "YES":
       - "25"
     separatecontext: false
@@ -1547,10 +1547,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 845c2f37-e4ad-4572-881f-540d53b0b2bf
+    taskid: d7db20ce-b62d-43fd-83ad-dfbd14859802
     type: title
     task:
-      id: 845c2f37-e4ad-4572-881f-540d53b0b2bf
+      id: d7db20ce-b62d-43fd-83ad-dfbd14859802
       version: -1
       name: Remeditation
       type: title
@@ -1559,7 +1559,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "32"
+      - "35"
     separatecontext: false
     view: |-
       {
@@ -1575,10 +1575,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: 2821c98e-098f-47c5-8d40-1368f0ca8f2f
+    taskid: be601c32-73ea-4a28-86d4-85663a4247b7
     type: title
     task:
-      id: 2821c98e-098f-47c5-8d40-1368f0ca8f2f
+      id: be601c32-73ea-4a28-86d4-85663a4247b7
       version: -1
       name: User Enrichment
       type: title
@@ -1603,10 +1603,10 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: 75d6fa3f-9b7a-4c37-8d09-12dfdf7b0ed6
+    taskid: 40a3f4f0-ce09-4c72-830c-91f137385aec
     type: regular
     task:
-      id: 75d6fa3f-9b7a-4c37-8d09-12dfdf7b0ed6
+      id: 40a3f4f0-ce09-4c72-830c-91f137385aec
       version: -1
       name: Store the email address of the reporting user
       description: Store the email address of the user that reported the incident.
@@ -1642,10 +1642,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: 8e356737-75f0-4c3e-8dc7-64fa96a21541
+    taskid: 3ffb71b8-3c99-4cac-8502-26c94b0a495e
     type: playbook
     task:
-      id: 8e356737-75f0-4c3e-8dc7-64fa96a21541
+      id: 3ffb71b8-3c99-4cac-8502-26c94b0a495e
       version: -1
       name: Email Address Enrichment - Generic v2.1
       description: |-
@@ -1692,10 +1692,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 5e0e24e0-c8d9-4cf3-8bdb-de56c7c3996b
+    taskid: dcd1ed14-bccb-463f-8592-11358f8b3592
     type: regular
     task:
-      id: 5e0e24e0-c8d9-4cf3-8bdb-de56c7c3996b
+      id: dcd1ed14-bccb-463f-8592-11358f8b3592
       version: -1
       name: Save reporter email address in field
       description: Saves the email address of the reporter of the email, in an incident
@@ -2097,10 +2097,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 224c5140-f20a-4ece-835a-03b74693e341
+    taskid: a01dd461-cdb2-432b-8803-9c3a4abf1c56
     type: playbook
     task:
-      id: 224c5140-f20a-4ece-835a-03b74693e341
+      id: a01dd461-cdb2-432b-8803-9c3a4abf1c56
       version: -1
       name: Remediate Message - Agari Phishing Defense
       description: Remediates a given message id.
@@ -2110,7 +2110,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "43"
     scriptarguments:
       auto_remediation:
         complex:
@@ -2130,8 +2130,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 4860
+          "x": 940,
+          "y": 5150
         }
       }
     note: false
@@ -2141,10 +2141,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 5b43cb82-c384-424e-8fb5-56a2916b1dcb
+    taskid: 9e7b01a9-e32b-4077-8323-a1929a6009ac
     type: condition
     task:
-      id: 5b43cb82-c384-424e-8fb5-56a2916b1dcb
+      id: 9e7b01a9-e32b-4077-8323-a1929a6009ac
       version: -1
       name: Is User Enrichment enable?
       description: Is User Enrichment (based on input) Enable?
@@ -2153,7 +2153,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "43"
       "yes":
       - "27"
     separatecontext: false
@@ -2184,10 +2184,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: c2c002cd-87cd-4db0-8887-9300c2dfb917
+    taskid: daedbaeb-7dd3-4e54-8e9c-461ba8399843
     type: playbook
     task:
-      id: c2c002cd-87cd-4db0-8887-9300c2dfb917
+      id: daedbaeb-7dd3-4e54-8e9c-461ba8399843
       version: -1
       name: Retrieve Email Data - Agari Phishing Defense
       description: Retrieve Email Data from one of the Integrations of Gmail, Mail
@@ -2226,10 +2226,10 @@ tasks:
     quietmode: 0
   "35":
     id: "35"
-    taskid: 2c6dc44f-c815-4671-80a8-67cd3a7e4bcd
+    taskid: f0792a4c-fbdd-43a3-8bfd-6ad30f743964
     type: condition
     task:
-      id: 2c6dc44f-c815-4671-80a8-67cd3a7e4bcd
+      id: f0792a4c-fbdd-43a3-8bfd-6ad30f743964
       version: -1
       name: Is APD Internal Message ID not empty?
       description: Check if APD Internal Message ID is present or not.
@@ -2238,9 +2238,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "43"
       "yes":
-      - "1"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2254,8 +2254,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 810,
-          "y": -10
+          "x": 830,
+          "y": 4850
         }
       }
     note: false
@@ -2265,10 +2265,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: ff93ff5d-9cb6-4408-8d5e-37af4b96e146
+    taskid: 3b8c10b9-6fdc-42e0-8468-63d40db17cd7
     type: condition
     task:
-      id: ff93ff5d-9cb6-4408-8d5e-37af4b96e146
+      id: 3b8c10b9-6fdc-42e0-8468-63d40db17cd7
       version: -1
       name: Is APD Message Trust Score not empty?
       description: Is APD Message Trust Score not empty?
@@ -2305,10 +2305,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: ebdba332-4c2d-48f4-879b-081b9d84fee6
+    taskid: 6a69cc6b-1897-4df8-8725-16f0c977b17b
     type: condition
     task:
-      id: ebdba332-4c2d-48f4-879b-081b9d84fee6
+      id: 6a69cc6b-1897-4df8-8725-16f0c977b17b
       version: -1
       name: Is APD Message Trust Score Untrusted, Suspicious or Trusted?
       description: Is APD Message Trust Score Untrusted, Suspicious or Trusted?
@@ -2384,10 +2384,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 54249e02-eb32-49d2-8771-43524553b185
+    taskid: b97cc4a9-0146-4244-8623-a72513356ab7
     type: regular
     task:
-      id: 54249e02-eb32-49d2-8771-43524553b185
+      id: b97cc4a9-0146-4244-8623-a72513356ab7
       version: -1
       name: Set Email Authenticity variable to Fail
       description: Set Email Authenticity variable to Fail
@@ -2421,10 +2421,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 1d3b20f3-47ec-4c2d-8838-513f1386b616
+    taskid: 373eac64-8385-45ac-84e5-eae2469d6473
     type: regular
     task:
-      id: 1d3b20f3-47ec-4c2d-8838-513f1386b616
+      id: 373eac64-8385-45ac-84e5-eae2469d6473
       version: -1
       name: Set Email Authenticity variable to Suspicious
       description: Set Email Authenticity variable to Suspicious
@@ -2458,10 +2458,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: ee1f1263-7dc2-4f0f-8660-6a9a6c4248a4
+    taskid: 1698da71-7789-4be3-8cef-3c35726738cf
     type: regular
     task:
-      id: ee1f1263-7dc2-4f0f-8660-6a9a6c4248a4
+      id: 1698da71-7789-4be3-8cef-3c35726738cf
       version: -1
       name: Set Email Authenticity variable to Pass
       description: Set Email Authenticity variable to Pass
@@ -2494,10 +2494,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: 083768c3-00a4-4ee3-8743-b3d4b2626a52
+    taskid: b94f0aa8-6d36-49a1-8a25-79e57d6cfbe3
     type: regular
     task:
-      id: 083768c3-00a4-4ee3-8743-b3d4b2626a52
+      id: b94f0aa8-6d36-49a1-8a25-79e57d6cfbe3
       version: -1
       name: Set Email Authenticity variable to value generated by Authenticate Email
       description: Set Email Authenticity variable to value generated by Authenticate
@@ -2533,10 +2533,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 51294a44-2c05-488e-873c-c974b7264535
+    taskid: 600ba820-7d2f-4553-8fba-c8aa06f9e299
     type: playbook
     task:
-      id: 51294a44-2c05-488e-873c-c974b7264535
+      id: 600ba820-7d2f-4553-8fba-c8aa06f9e299
       version: -1
       name: Entity Enrichment - Phishing v2
       playbookName: Entity Enrichment - Phishing v2
@@ -2625,18 +2625,56 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "43":
+    id: "43"
+    taskid: ec94a6b6-fb48-49ce-81ed-380ff00e4213
+    type: regular
+    task:
+      id: ec94a6b6-fb48-49ce-81ed-380ff00e4213
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 5460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {
-      "1_2_#default#": 0.16,
+      "1_43_#default#": 0.16,
       "20_22_Malicious": 0.77
     },
     "paper": {
       "dimensions": {
-        "height": 5295,
+        "height": 5725,
         "width": 3840,
         "x": -1220,
-        "y": -150
+        "y": 0
       }
     }
   }
@@ -2677,7 +2715,7 @@ inputs:
   playbookInputQuery:
 - key: AutoRemeditaion
   value:
-    simple: "true"
+    simple: "false"
   required: false
   description: Whether Automatic remediate message or not.
   playbookInputQuery:

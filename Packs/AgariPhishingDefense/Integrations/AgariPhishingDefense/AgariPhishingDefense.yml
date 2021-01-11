@@ -33,9 +33,10 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Fetches policy event actions such as "deliver", "mark-spam", "move",
-    "inbox", "delete", "none". Fetches all types of actions by default.
-  display: Policy Action
+- additionalinfo: Apply the filter to fetch policy events having actions such as "deliver",
+    "mark-spam", "move", "inbox", "delete", "none". Fetches all types of actions by
+    default.
+  display: Policy action taken
   hidden: false
   name: fetch_policy_actions
   options:
@@ -58,10 +59,10 @@ configuration:
   - Message Alert
   required: false
   type: 15
-- additionalinfo: "Syntax: field.operator(operand) {and/or field.operator(operand)}.\
-    \ \n\nExample: created_at.after(2020-11-11T09:16:44Z) or id.eq(537557694)."
-  display: Fetches policy events to limit the amount of data. Can be applied to specific
-    fields
+- additionalinfo: "Syntax: field.operator(operand) {and/or field.operator(operand)}\
+    \ \n\nExample: created_at.after(2020-11-11T09:16:44Z) or id.eq(537557694)"
+  display: Fetches policy events as per the filter to limit the amount of data. Can
+    be applied to specific fields.
   hidden: false
   name: policy_filter
   required: false

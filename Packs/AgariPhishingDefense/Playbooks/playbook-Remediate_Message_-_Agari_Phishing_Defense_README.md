@@ -1,4 +1,6 @@
 Remediates a given message id.
+Supported Cortex XSOAR versions: 5.0.0 and later.
+
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -22,7 +24,7 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | id | Id of message to remediate. | incident.apdinternalmessageid | Required |
 | auto_remediation | Flag for whether to automatically remediate or not. | true | Optional |
-| remediate_action | Action for remediation. | delete | Optional |
+| remediate_action | Action for remediation. | move | Optional |
 
 ## Playbook Outputs
 ---

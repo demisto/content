@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 4ddd93ab-b35c-4c95-8bf0-e6d3a7504da8
+    taskid: e613675e-6bab-466e-8756-a675685b9d71
     type: start
     task:
-      id: 4ddd93ab-b35c-4c95-8bf0-e6d3a7504da8
+      id: e613675e-6bab-466e-8756-a675685b9d71
       version: -1
       name: ""
       iscommand: false
@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 390,
+          "y": 0
         }
       }
     note: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 960956f7-ab14-4452-8937-e03e47672037
+    taskid: fb1898ef-3db3-4a89-8ec4-5e5601729baf
     type: regular
     task:
-      id: 960956f7-ab14-4452-8937-e03e47672037
+      id: fb1898ef-3db3-4a89-8ec4-5e5601729baf
       version: -1
       name: Remediate message
       description: Remediate suspected message.
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 580
+          "y": 710
         }
       }
     note: false
@@ -69,10 +69,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 3fa2a144-69f3-482b-8959-9cb431a22c64
+    taskid: 63140734-a6d7-4dc9-80e4-996c26317fa4
     type: title
     task:
-      id: 3fa2a144-69f3-482b-8959-9cb431a22c64
+      id: 63140734-a6d7-4dc9-80e4-996c26317fa4
       version: -1
       name: Done
       type: title
@@ -83,8 +83,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 770
+          "x": 390,
+          "y": 1020
         }
       }
     note: false
@@ -94,10 +94,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 12c06e53-aceb-42ec-81e1-63bf5ea642f1
+    taskid: 6ac0d42a-d553-416d-89bb-55ae1aa0f795
     type: condition
     task:
-      id: 12c06e53-aceb-42ec-81e1-63bf5ea642f1
+      id: 6ac0d42a-d553-416d-89bb-55ae1aa0f795
       version: -1
       name: Is remediation auto?
       description: Is remediation auto?
@@ -106,7 +106,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "5"
       "yes":
       - "4"
     separatecontext: false
@@ -123,8 +123,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 190
+          "x": 390,
+          "y": 160
         }
       }
     note: false
@@ -134,10 +134,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 2e908c5f-95a9-40c7-83d1-4199aaf400c8
+    taskid: 58c547ca-3de4-4d5b-8314-ff463dc15c9c
     type: condition
     task:
-      id: 2e908c5f-95a9-40c7-83d1-4199aaf400c8
+      id: 58c547ca-3de4-4d5b-8314-ff463dc15c9c
       version: -1
       name: Is Agari Phishing Defense Integration Enable?
       description: Is Agari Phishing Defense Integration Enable?
@@ -181,7 +181,37 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 390
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 136fbcaa-1f57-49c4-84c5-704a17e82057
+    type: condition
+    task:
+      id: 136fbcaa-1f57-49c4-84c5-704a17e82057
+      version: -1
+      name: Do Auto Remediate Message?
+      description: Do Auto Remediate Message?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "NO":
+      - "2"
+      "YES":
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 340
         }
       }
     note: false
@@ -191,13 +221,15 @@ tasks:
     quietmode: 0
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "3_5_#default#": 0.9
+    },
     "paper": {
       "dimensions": {
-        "height": 785,
-        "width": 610,
+        "height": 1085,
+        "width": 780,
         "x": 220,
-        "y": 50
+        "y": 0
       }
     }
   }
@@ -218,7 +250,7 @@ inputs:
   playbookInputQuery:
 - key: remediate_action
   value:
-    simple: delete
+    simple: move
   required: false
   description: Action for remediation.
   playbookInputQuery:
