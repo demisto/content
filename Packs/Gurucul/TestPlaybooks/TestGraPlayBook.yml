@@ -1,0 +1,1541 @@
+id: TestGraPlayBook
+name: TestGraPlayBook
+version: -1
+fromversion: '5.0.0'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: '0'
+    type: start
+    task:
+      id: '0'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '1'
+    type: regular
+    task:
+      id: '1'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '2'
+    type: regular
+    task:
+      id: '2'
+      version: -1
+      name: gra-fetch-users
+      description: ''
+      script: '|||gra-fetch-users'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: '3'
+    type: condition
+    task:
+      id: '3'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.firstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.middleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.lastName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.employeeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.riskScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.userRisk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.manager
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.joiningDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Users.exitDate
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '4'
+    type: regular
+    task:
+      id: '4'
+      version: -1
+      name: gra-fetch-accounts
+      description: ''
+      script: '|||gra-fetch-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: '5'
+    type: condition
+    task:
+      id: '5'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.created_on
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.high_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.is_orphan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.is_reassigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Accounts.updated_on
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '6'
+    type: regular
+    task:
+      id: '6'
+      version: -1
+      name: gra-fetch-active-resource-accounts
+      description: ''
+      script: '|||gra-fetch-active-resource-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '7'
+    type: condition
+    task:
+      id: '7'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.created_on
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.high_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.is_orphan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.is_reassigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Active.Resource.Accounts.updated_on
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: '8'
+    type: regular
+    task:
+      id: '8'
+      version: -1
+      name: gra-fetch-user-accounts
+      description: ''
+      script: '|||gra-fetch-user-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: '9'
+    type: condition
+    task:
+      id: '9'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.created_on
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.high_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.is_orphan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.is_reassigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Accounts.risk_score
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: '10'
+    type: regular
+    task:
+      id: '10'
+      version: -1
+      name: gra-fetch-resource-highrisk-accounts
+      description: ''
+      script: '|||gra-fetch-resource-highrisk-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: '11'
+    type: condition
+    task:
+      id: '11'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.created_on
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.high_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.is_orphan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.is_reassigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Highrisk.Accounts.updated_on
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: '12'
+    type: regular
+    task:
+      id: '12'
+      version: -1
+      name: gra-fetch-hpa
+      description: ''
+      script: '|||gra-fetch-hpa'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: '13'
+    type: condition
+    task:
+      id: '13'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.created_on
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.high_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.is_orphan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.is_reassigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Hpa.updated_on
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: '14'
+    type: regular
+    task:
+      id: '14'
+      version: -1
+      name: gra-fetch-resource-hpa
+      description: ''
+      script: '|||gra-fetch-resource-hpa'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: '15'
+    type: condition
+    task:
+      id: '15'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.created_on
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.high_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.is_orphan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.is_reassigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Hpa.updated_on
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: 16
+    taskid: '16'
+    type: regular
+    task:
+      id: '16'
+      version: -1
+      name: gra-fetch-orphan-accounts
+      description: ''
+      script: '|||gra-fetch-orphan-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '17':
+    id: '17'
+    taskid: '17'
+    type: condition
+    task:
+      id: '17'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.created_on
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.high_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.is_orphan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.is_reassigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Orphan.Accounts.updated_on
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '18':
+    id: 18
+    taskid: '18'
+    type: regular
+    task:
+      id: '18'
+      version: -1
+      name: gra-fetch-resource-orphan-accounts
+      description: ''
+      script: '|||gra-fetch-resource-orphan-accounts'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '19':
+    id: '19'
+    taskid: '19'
+    type: condition
+    task:
+      id: '19'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '20'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.created_on
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.high_risk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.is_orphan
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.is_reassigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Resource.Orphan.Accounts.updated_on
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '20':
+    id: 20
+    taskid: '20'
+    type: regular
+    task:
+      id: '20'
+      version: -1
+      name: gra-user-activities
+      description: ''
+      script: '|||gra-user-activities'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '21':
+    id: '21'
+    taskid: '21'
+    type: condition
+    task:
+      id: '21'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Activity.employee_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Activity.account_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Activity.resource_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Activity.event_desc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Activity.event_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Activity.risk_score
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '22':
+    id: 22
+    taskid: '22'
+    type: regular
+    task:
+      id: '22'
+      version: -1
+      name: gra-fetch-users-details
+      description: ''
+      script: '|||gra-fetch-users-details'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '23':
+    id: '23'
+    taskid: '23'
+    type: condition
+    task:
+      id: '23'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '24'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.firstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.middleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.lastName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.employeeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.riskScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.userRisk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.manager
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.joingDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.exitDate
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 4600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '24':
+    id: 24
+    taskid: '24'
+    type: regular
+    task:
+      id: '24'
+      version: -1
+      name: gra-highRisk-users
+      description: ''
+      script: '|||gra-highRisk-users'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 4800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '25':
+    id: '25'
+    taskid: '25'
+    type: condition
+    task:
+      id: '25'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '26'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.firstName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.middleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.lastName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.employeeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.riskScore
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.userRisk
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.department
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.phone
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.manager
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.joiningDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Highrisk.Users.exitDate
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '26':
+    id: 26
+    taskid: '26'
+    type: regular
+    task:
+      id: '26'
+      version: -1
+      name: gra-cases
+      description: ''
+      script: '|||gra-cases'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '27':
+    id: '27'
+    taskid: '27'
+    type: condition
+    task:
+      id: '27'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '28'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Cases.entityId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Cases.entityTypeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Cases.entity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Cases.caseId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Cases.openDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Cases.ownerId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Cases.ownerType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Cases.ownerName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Cases.riskDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.Cases.status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '28':
+    id: 28
+    taskid: '28'
+    type: regular
+    task:
+      id: '28'
+      version: -1
+      name: gra-user-anomalies
+      description: ''
+      script: '|||gra-user-anomalies'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 5600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '29':
+    id: '29'
+    taskid: '29'
+    type: condition
+    task:
+      id: '29'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Gra.User.Anomalies.anomaly_name
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 5800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '30':
+    id: '30'
+    taskid: '30'
+    type: title
+    task:
+      id: '30'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 6000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width":
+  380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: test
