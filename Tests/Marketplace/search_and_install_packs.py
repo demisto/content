@@ -332,10 +332,13 @@ def install_packs(client: demisto_client,
             result_object = ast.literal_eval(response_data)
             message = result_object.get('message', '')
             raise Exception(f'Failed to install packs - with status code {status_code}\n{message}')
-    except Exception:
-        logging.exception('The request to install packs has failed.')
+    except Exception as e:
+        logging.exception(f'The request to install packs has failed. Additional info: {str(e)}')
         global SUCCESS_FLAG
         SUCCESS_FLAG = False
+
+    finally:
+        return SUCCESS_FLAG
 
 
 def search_pack_and_its_dependencies(client: demisto_client,
@@ -441,12 +444,13 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     install_packs(client, host, all_packs, is_nightly=True)
 
 
-def install_all_content_packs(client: demisto_client, host: str):
+def install_all_content_packs(client: demisto_client, host: str, server_version: str):
     """ Iterates over the packs currently located in the Packs directory. Wrapper for install_packs.
     Retrieving the latest version of each pack from the metadata file in content repo.
 
     :param client: Demisto-py client to connect to the server.
     :param host: FQDN of the server.
+    :param server_version: The version of the server the packs are installed on.
     :return: None. Prints the response from the server in the build.
     """
     all_packs = []
@@ -458,8 +462,11 @@ def install_all_content_packs(client: demisto_client, host: str):
             with open(metadata_path, 'r') as json_file:
                 pack_metadata = json.load(json_file)
                 pack_version = pack_metadata.get('currentVersion')
-            all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
-    install_packs(client, host, all_packs)
+                server_min_version = pack_metadata.get('serverMinVersion', '6.0.0')
+            # Check if the server version is greater than the minimum server version required for this pack:
+            if 'Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version):
+                all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
+    return install_packs(client, host, all_packs)
 
 
 def upload_zipped_packs(client: demisto_client,

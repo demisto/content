@@ -14,21 +14,25 @@ For more information about manage syntax, see the https://support.atlassian.com/
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Jira v2.
-3. Click __Add instance__ to create and configure a new integration instance.
+3. __Authentiction__: As of June 2019, Basic authentication using passwords for Jira is no longer supported, please use an API Token or OAuth 1.0.
+4. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Jira URL, for example: https://demisto.atlassian.net/__
-    * _______________ Basic Authentication ____________
-
-Username__
-    * __Password (Deprecated - Use API token)__
-    * __API token__
+    *  ______________ Basic Authentication ________________
+    
+        To use basic authentication, follow [this tutorial](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) to get the API token. Authorizing using basic authentication requires:
+    
+        * __Username__
+        * __Password (Deprecated)__
+        * __API token__
+        
     * ____________________ OAuth 1.0 __________________
+           
+      To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access Token. Authorizing using OAuth1.0 requires:
 
-For OAuth: See the https://developer.atlassian.com/server/jira/platform/oauth/
-
-ConsumerKey__
-    * __AccessToken__
-    * __PrivateKey__
+        * __ConsumerKey__
+        * __AccessToken__
+        * __PrivateKey__
     * __Query (in JQL) for fetching incidents__
     * __Issue index to start fetching incidents from__
     * __Trust any certificate (not secure)__

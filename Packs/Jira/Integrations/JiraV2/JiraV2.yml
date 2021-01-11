@@ -8,7 +8,7 @@ configuration:
   required: true
   type: 0
 - display: |-
-    _____________ Basic Authentication ____________
+    ______________ Basic Authentication _____________
 
     Username
   name: username
@@ -33,8 +33,12 @@ configuration:
 - display: AccessToken
   name: accessToken
   required: false
+<<<<<<< HEAD
   type: 0
 - display: PrivateKey
+=======
+- display: PrivateKey (PKCS8 format)
+>>>>>>> origin/master
   name: privateKey
   required: false
   type: 14
@@ -580,8 +584,8 @@ script:
       the current incident, it's here for debugging purposes.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/oauthlib:1.0.0.14319
   feed: false
+  dockerimage: demisto/oauthlib:1.0.0.15261
   isfetch: true
   ismappable: true
   isremotesyncin: true
