@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Nutanix
+  id: Nutanix Hypervisor
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
