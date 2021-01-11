@@ -1,4 +1,4 @@
-category: Messaging
+category: Utilities
 commonfields:
   id: XsoarPowershellTesting
   version: -1
