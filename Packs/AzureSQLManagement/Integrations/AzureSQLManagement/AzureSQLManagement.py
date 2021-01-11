@@ -87,21 +87,14 @@ class Client:
                                                 storage_account_access_key: str,
                                                 storage_account_subscription_id: str,
                                                 storage_endpoint: str):
-        arg_list = {
-            "state": state,
-            "auditActionsAndGroups": audit_actions_groups,
-            "isAzureMonitorTargetEnabled": is_azure_monitor_target_enabled,
-            "isStorageSecondaryKeyInUse": is_storage_secondary_key_in_use,
-            "queueDelayMs": queue_delay_ms,
-            "retentionDays": retention_days,
-            "storageAccountAccessKey": storage_account_access_key,
-            "storageAccountSubscriptionId": storage_account_subscription_id,
-            "storageEndpoint": storage_endpoint
-        }
-        properties = {}
-        for arg_key, arg_val in arg_list.items():
-            if arg_val:
-                properties[arg_key] = arg_val
+        properties = assign_params(state=state, auditActionsAndGroups=audit_actions_groups,
+                                   isAzureMonitorTargetEnabled=is_azure_monitor_target_enabled,
+                                   isStorageSecondaryKeyInUse=is_storage_secondary_key_in_use,
+                                   queueDelayMs=queue_delay_ms,
+                                   retentionDays=retention_days,
+                                   storageAccountAccessKey=storage_account_access_key,
+                                   storageAccountSubscriptionId=storage_account_subscription_id,
+                                   storageEndpoint=storage_endpoint)
 
         request_body = {'properties': properties} if properties else {}
 
@@ -410,9 +403,8 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
     storage_account_access_key = args.get('storage_account_access_key', '')
     use_server_default = args.get('use_server_default', '')
     storage_endpoint = args.get('storage_endpoint', '')
-    disabled_alerts = argToList(args.get('disabled_alerts', ''))
-    if disabled_alerts and disabled_alerts[0] == 'None':
-        disabled_alerts = [""]
+    disabled_alerts = [""] if 'None' in argToList(args.get('disabled_alerts', '')) \
+        else argToList(args.get('disabled_alerts', ''))
 
     response = client.azure_sql_db_threat_policy_create_update(server_name=server_name, db_name=db_name, state=state,
                                                                disabled_alerts=disabled_alerts,
