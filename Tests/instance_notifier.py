@@ -3,7 +3,7 @@ import json
 import logging
 
 import demisto_client
-from slackclient import SlackClient
+from slack import WebClient as SlackClient
 
 from Tests.configure_and_test_integration_instances import update_content_on_demisto_instance
 from Tests.scripts.utils.log_util import install_simple_logging
