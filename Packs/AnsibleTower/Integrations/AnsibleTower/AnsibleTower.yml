@@ -1150,7 +1150,7 @@ script:
       type: Boolean
     - contextPath: AnsibleAWX.AdhocCommand.started
       description: 'The date and time the job was queued for starting'
-      type: Unknown
+      type: Date
     - contextPath: AnsibleAWX.AdhocCommand.finished
       description: 'The date and time the job finished execution'
       type: Unknown
