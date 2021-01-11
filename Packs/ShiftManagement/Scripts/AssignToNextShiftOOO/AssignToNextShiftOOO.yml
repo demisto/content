@@ -14,9 +14,7 @@ args:
   required: false
   secret: false
 comment: |-
-  Randomly assigns the incidents to users on call (requires shift management) and users on call. This automation works with the other Out of Office automations to ensure only available users get assigned.
-
-  Incident Ids should be passed in as a comma separated list.
+  Randomly assigns the incidents to users on call (requires shift management) and users on call. This is an example automation for reassigning a large number of Incidents to the next shift. This automation works with the other Out of Office automations to ensure only available users get assigned. Incident Ids should be passed in as a comma separated list.
 commonfields:
   id: AssignToNextShiftOOO
   version: -1

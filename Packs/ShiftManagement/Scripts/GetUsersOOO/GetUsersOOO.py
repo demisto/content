@@ -36,8 +36,9 @@ else:
     # keep only ooo users in users_list
     users_list = list(filter(lambda x: x['username'] in ooo_users, users_list))
 
+entry_context = {"ShiftManagment.OOOUsers": users_list}
 if users_list:
     hr = tableToMarkdown('Out of office users', users_list)
 else:
     hr = 'No analyst is out of office today.'
-return_outputs(hr, {})
+return_outputs(hr, entry_context)

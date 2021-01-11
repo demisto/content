@@ -1,39 +1,61 @@
-commonfields:
-  id: AssignAnalystToIncidentOOO
-  version: -1
-name: AssignAnalystToIncidentOOO
-script: ''
-type: python
-tags:
-- Shift Management
-- ooo
+args:
+- default: false
+  description: The optional list of roles we want to assign users from. Can accept
+    arrays or comma separated list. Leave empty to fetch all users.
+  isArray: true
+  name: roles
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: Set to true to assign only user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
+  isArray: false
+  name: oncall
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
+- default: false
+  defaultValue: OOO List
+  description: Optionally specify the XSOAR list name to verify against (default is
+    OOO List)
+  isArray: false
+  name: listname
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  isArray: false
+  name: assignAll
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
 comment: |-
   Assign analyst to incident with consideration of PTO, OOO, or Disabled Users.
 
   Users can use the OutOfOffice automation to add or remove themselves from the list.
+commonfields:
+  id: AssignAnalystToIncidentOOO
+  version: -1
 enabled: true
-args:
-- name: roles
-  description: The optional list of roles we want to assign users from. Can accept
-    arrays or comma separated list. Leave empty to fetch all users.
-  isArray: true
-- name: oncall
-  auto: PREDEFINED
-  predefined:
-  - "true"
-  - "false"
-  description: Set to true to assign only user that is currently on shift. Requires
-    Cortex XSOAR v5.5 or later.
-  defaultValue: "false"
-- name: listname
-  description: Optionally specify the XSOAR list name to verify against (default is
-    OOO List)
-  defaultValue: OOO List
-scripttarget: 0
+name: AssignAnalystToIncidentOOO
+script: '-'
 subtype: python3
-runonce: false
+system: false
+tags:
+- Shift Management
+- ooo
+timeout: '0'
+type: python
 dockerimage: demisto/python3:3.9.1.14969
 runas: DBotRole
-fromversion: 5.5.0
+runonce: false
 tests:
 - No tests (auto formatted)
+fromversion: 5.5.0
