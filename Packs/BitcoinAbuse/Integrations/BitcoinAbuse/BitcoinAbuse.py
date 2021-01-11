@@ -37,7 +37,7 @@ READER_CONFIG = {
     'skip_first_line': True,
     'indicator_type': 'Cryptocurrency Address',
     'mapping': {
-        'Value': ('address', None, 'bitcoin-{}'),
+        'Value': ('address', None, 'bitcoin:{}'),
         'rawaddress': 'address',
         'countryname': 'from_country',
         'creationdate': 'created_at',
@@ -226,13 +226,15 @@ def fetch_indicators(params: Dict, test_module: bool):
 
     assure_valid_response(indicators)
 
-    indicators_without_duplicates = []
+    indicators_without_duplicates = set()
     have_fetched_first_time = argToBoolean(demisto.getIntegrationContext().get('have_fetched_first_time', False))
 
     # in every fetch apart from first fetch, we are only fetching one csv file, so we know there aren't any duplicates
     if have_fetched_first_time:
         for indicator in indicators:
+            updated_count = indicator.get('fields').get('count', 0) + 1
             indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
+            indicator['fields']['count'] = updated_count
         indicators_without_duplicates = indicators
 
     # in first fetch according to configurations, we might fetch more than one csv file, so we need to remove duplicates
