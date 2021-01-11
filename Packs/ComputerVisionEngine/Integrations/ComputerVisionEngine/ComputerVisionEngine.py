@@ -62,7 +62,6 @@ if demisto.command() == 'yolo-coco-process-image':
 
     layerOutputs = net.forward(ln)
 
-
     # initialize our lists of detected bounding boxes, confidences, and
     # class IDs, respectively
     boxes = []
@@ -122,7 +121,7 @@ if demisto.command() == 'yolo-coco-process-image':
             cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
             text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])
             if LABELS[classIDs[i]] in output_keys.keys():
-                if isinstance(output_keys[LABELS[classIDs[i]]],float):
+                if isinstance(output_keys[LABELS[classIDs[i]]], float):
                     tmp_list = [output_keys[LABELS[classIDs[i]]]]
                 else:
                     tmp_list = output_keys[LABELS[classIDs[i]]]
@@ -154,11 +153,3 @@ if demisto.command() == 'yolo-coco-process-image':
     }
     demisto.results(demisto_entry)
     sys.exit(0)
-
-
-
-
-
-
-
-
