@@ -33,12 +33,8 @@ configuration:
 - display: AccessToken
   name: accessToken
   required: false
-<<<<<<< HEAD
   type: 0
-- display: PrivateKey
-=======
 - display: PrivateKey (PKCS8 format)
->>>>>>> origin/master
   name: privateKey
   required: false
   type: 14
