@@ -108,6 +108,15 @@
                 "index": 7,
                 "sectionItemType": "field",
                 "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "count",
+                "height": 22,
+                "id": "9fa3c850-542b-11eb-9400-6b6990df09e4",
+                "index": 8,
+                "sectionItemType": "field",
+                "startCol": 0
               }
             ],
             "maxW": 3,
@@ -555,7 +564,7 @@
                 "fieldId": "abusetype",
                 "height": 22,
                 "id": "42e85db0-4909-11eb-acee-9dee112485f0",
-                "index": 15,
+                "index": 14,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -564,7 +573,7 @@
                 "fieldId": "creationdate",
                 "height": 22,
                 "id": "4c3f6b10-4909-11eb-acee-9dee112485f0",
-                "index": 16,
+                "index": 15,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -573,7 +582,7 @@
                 "fieldId": "cryptocurrencyaddresstype",
                 "height": 22,
                 "id": "4a2e3e50-4909-11eb-acee-9dee112485f0",
-                "index": 17,
+                "index": 16,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -582,7 +591,7 @@
                 "fieldId": "detectionengines",
                 "height": 22,
                 "id": "3c363190-4909-11eb-acee-9dee112485f0",
-                "index": 18,
+                "index": 17,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -591,7 +600,7 @@
                 "fieldId": "countryname",
                 "height": 22,
                 "id": "56265c60-4909-11eb-acee-9dee112485f0",
-                "index": 19,
+                "index": 18,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -600,6 +609,15 @@
                 "fieldId": "rawaddress",
                 "height": 22,
                 "id": "5ab31070-4909-11eb-acee-9dee112485f0",
+                "index": 19,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "count",
+                "height": 22,
+                "id": "a42fb910-542b-11eb-9400-6b6990df09e4",
                 "index": 20,
                 "sectionItemType": "field",
                 "startCol": 0
