@@ -1,5 +1,8 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
+# remove progress messages such as [oo  ] - used to hide archiving operations
+$global:ProgressPreference = 'SilentlyContinue'
+
 $script:INTEGRATION_NAME = "PowerShell Remoting"
 $script:COMMAND_PREFIX = "ps-remote"
 $script:INTEGRATION_ENTRY_CONTEX = "PsRemote"
@@ -8,7 +11,8 @@ $script:INSECURE_WARNING = "Unix does not currently support CA or CN checks."
 #### HELPER FUNCTIONS ####
 
 function CreateNewSession {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope = 'Function')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Function')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUsernameAndPasswordParams', '', Scope='Function')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
     param([string]$fqdn_list, [string]$username, [string]$password, [bool]$insecure, [bool]$ssl, [string]$auth_method)
 
@@ -83,10 +87,12 @@ class RemotingClient
     [bool]$proxy
 
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUsernameAndPasswordParams', '', Scope='Function')]
     RemotingClient([string]$hostname, [string]$username, [string]$password, [string]$domain, [string]$dns,
                    [string]$ip_hosts, [string]$auth_method, [bool]$insecure, [bool]$ssl, [bool]$proxy)
     {
         # set the container's resolv.conf to use to provided dns
+        # http://manpages.ubuntu.com/manpages/xenial/man5/resolv.conf.5.html
         if ($dns)
         {
             "nameserver $dns" | Set-Content -Path \etc\resolv.conf
@@ -196,7 +202,7 @@ class RemotingClient
         }
         $temp = $script:Demisto.UniqueFile()
         $file_name = $script:Demisto.Investigation().id + "_" + $temp + ".ps1"
-        echo $remote_command | Out-File -FilePath $file_name
+        $remote_command | Out-File -FilePath $file_name
         $result = Invoke-Command -Session $this.session -FilePath $file_name
         return $result
     <#
@@ -259,7 +265,7 @@ class RemotingClient
 
             if ($volume -ne 0)
             {
-                $Win32_Volume = Get-WmiObject -Class Win32_Volume -Filter "DriveLetter LIKE '$( $volume ):'"
+                $Win32_Volume = Get-CimInstance -Class Win32_Volume -Filter "DriveLetter LIKE '$( $volume ):'"
                 if ($Win32_Volume.FileSystem -ne "NTFS")
                 {
                     Write-Error "$volume is not an NTFS filesystem."
@@ -268,7 +274,7 @@ class RemotingClient
             }
             else
             {
-                $Win32_Volume = Get-WmiObject -Class Win32_Volume -Filter "DriveLetter LIKE '$( $env:SystemDrive )'"
+                $Win32_Volume = Get-CimInstance -Class Win32_Volume -Filter "DriveLetter LIKE '$( $env:SystemDrive )'"
                 if ($Win32_Volume.FileSystem -ne "NTFS")
                 {
                     Write-Error "$env:SystemDrive is not an NTFS filesystem."
@@ -450,13 +456,15 @@ class RemotingClient
     }
 }
 
-function TestModuleCommand ([RemotingClient]$client, [string]$hostname) {
-    $raw_response = $client.InvokeCommandInSession('$PSVersionTable')
+function TestModuleCommand {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
+    param([RemotingClient]$client)
+
+    $tmp = $client.InvokeCommandInSession('$PSVersionTable')
 
     $human_readable = "ok"
-    $entry_context = $null
 
-    return $human_readable, $entry_context, $null
+    return $human_readable, $null, $null
 }
 
 function InvokeCommandCommand([RemotingClient]$client, [string]$command)
@@ -535,7 +543,7 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
     $entry_context = @{
         PsRemoteDownloadedFile = @{
             FileName = $file_name_leaf;
-            FileSize = Get-Item $file_name | % { [math]::ceiling($_.length / 1kb) };
+            FileSize = Get-Item $file_name | ForEach-Object { [math]::ceiling($_.length / 1kb) };
             FileSHA1 = (Get-FileHash $file_name -Algorithm SHA1).Hash;
             FileSHA256 = (Get-FileHash $file_name -Algorithm SHA256).Hash;
             FileMD5 = (Get-FileHash $file_name -Algorithm MD5).Hash;
@@ -561,8 +569,7 @@ function StartETLCommand([RemotingClient]$client, [string]$etl_path, [string]$et
     $command = "netsh trace start capture=yes traceFile=$etl_path maxsize=$etl_max_size overwrite=$overwrite $etl_filter"
     $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
-    $title = "You have executed the start ETL command successfully `n"
-    $EntryContext = @{
+    $entry_context = @{
         $script:INTEGRATION_ENTRY_CONTEX = @{
             CommandResult = $raw_result
             EtlFilePath = $etl_path
@@ -570,7 +577,7 @@ function StartETLCommand([RemotingClient]$client, [string]$etl_path, [string]$et
         }
     }
 
-    $human_readable = $title + $raw_result
+    $human_readable = $raw_result
 
     return $human_readable, $entry_context, $raw_result
 }
@@ -580,7 +587,7 @@ function StopETLCommand([RemotingClient]$client)
     $command = 'netsh trace stop'
     $raw_results = $client.InvokeCommandInSession($command)
     $client.CloseSession()
-    $etl_path = echo $raw_results | Select-String -Pattern "File location = "
+    $etl_path = $raw_results | Select-String -Pattern "File location = "
     if ($etl_path)
     {
         # clean "File location = "
@@ -607,7 +614,7 @@ function StopETLCommand([RemotingClient]$client)
     return $human_readable, $entry_context, $raw_result
 }
 
-function ExportRegistryCommand($client, $reg_key_hive, $output_file_path)
+function ExportRegistryCommand([RemotingClient]$client, [string]$reg_key_hive, [string]$output_file_path)
 {
     $command = if ($reg_key_hive -eq 'all') {"regedit /e $output_file_path"} else {"reg export $reg_key_hive $output_file_path"}
     $raw_results = $client.InvokeCommandInSession($command)
@@ -626,7 +633,7 @@ function ExportRegistryCommand($client, $reg_key_hive, $output_file_path)
     return $human_readable, $entry_context, $raw_result
 }
 
-function UploadFileCommand($client, $entry_id, $dst_path, $zip_file, $check_hash)
+function UploadFileCommand([RemotingClient]$client, [string]$entry_id, [string]$dst_path, [string]$zip_file, [string]$check_hash)
 {
     $src_path = $script:Demisto.GetFilePath($entry_id).path
     $file_exists = Test-Path $src_path -PathType Leaf
@@ -667,7 +674,7 @@ function UploadFileCommand($client, $entry_id, $dst_path, $zip_file, $check_hash
         PsRemoteUploadedFile = @{
             FilePath = $dst_path
             FileName = $file_name_leaf;
-            FileSize = Get-Item $src_path | % { [math]::ceiling($_.length / 1kb) };
+            FileSize = Get-Item $src_path | ForEach-Object { [math]::ceiling($_.length / 1kb) };
             FileSHA1 = (Get-FileHash $src_path -Algorithm SHA1).Hash;
             FileSHA256 = (Get-FileHash $src_path -Algorithm SHA256).Hash;
             FileMD5 = (Get-FileHash $src_path -Algorithm MD5).Hash;
@@ -679,7 +686,7 @@ function UploadFileCommand($client, $entry_id, $dst_path, $zip_file, $check_hash
     return $human_readable, $entry_context, $null
 }
 
-function ExportMFTCommand($client, $volume, $output_file_path)
+function ExportMFTCommand([RemotingClient]$client, [string]$volume, [string]$output_file_path)
 {
     $raw_response = $client.ExportMFT($volume, $output_file_path)
     $client.CloseSession()
@@ -698,7 +705,7 @@ function ExportMFTCommand($client, $volume, $output_file_path)
 function Main
 {
     $command = $Demisto.GetCommand()
-    $args = $Demisto.Args()
+    $command_args = $Demisto.Args()
     $params = $Demisto.Params()
     <#
         Proxy currently isn't supported by PWSH New-Pssession, However further effort might yield an implementation,
@@ -710,9 +717,9 @@ function Main
 
     try
     {
-        $hostname = if ($command -eq 'test-module') {ArgToList $params.hostname } else {ArgToList $args.host}
+        $hostname = if ($command -eq 'test-module') {ArgToList $params.hostname } else {ArgToList $command_args.host}
         # ip_hosts is expected as an optional input for every command other than test-module
-        $ip_hosts = $args.ip
+        $ip_hosts = $command_args.ip
         if (-not($hostname -or $ip_hosts)) {
             throw 'Please provide "hostname" or "ip"".'
         }
@@ -726,30 +733,30 @@ function Main
         switch ($command)
         {
             "test-module" {
-                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $client $hostname
+                ($human_readable, $entry_context, $raw_response) = TestModuleCommand $client
             }
             "$script:COMMAND_PREFIX-command" {
-                ($human_readable, $entry_context, $raw_response) = InvokeCommandCommand $client $args.command
+                ($human_readable, $entry_context, $raw_response) = InvokeCommandCommand $client $command_args.command
             }
             "$script:COMMAND_PREFIX-download-file" {
-                $FileResult = DownloadFileCommand $client $args.path $args.zip_file $args.check_hash
+                DownloadFileCommand -client $client -path $command_args.path -zip_file $command_args.zip_file -check_hash $command_args.check_hash
                 return
             }
             "$script:COMMAND_PREFIX-etl-create-start" {
-                ($human_readable, $entry_context, $raw_response) = StartETLCommand $client $args.etl_path $args.etl_filter $args.etl_max_size $args.etl_time_limit $args.overwrite
+                ($human_readable, $entry_context, $raw_response) = StartETLCommand -client $client -etl_path $command_args.etl_path -etl_filter $command_args.etl_filter -etl_max_size $command_args.etl_max_size -etl_time_limit $command_args.etl_time_limit -overwrite $command_args.overwrite
             }
             "$script:COMMAND_PREFIX-etl-create-stop" {
                 ($human_readable, $entry_context, $raw_response) = StopETLCommand $client
             }
             "$script:COMMAND_PREFIX-export-registry" {
-                ($human_readable, $entry_context, $raw_response) = ExportRegistryCommand $client $args.reg_key_hive $args.file_path
+                ($human_readable, $entry_context, $raw_response) = ExportRegistryCommand -client $client -reg_key_hive $command_args.reg_key_hive -output_file_path $command_args.file_path
             }
             "$script:COMMAND_PREFIX-upload-file" {
                 # to be tested
-                ($human_readable, $entry_context, $raw_response) = UploadFileCommand $client $args.entry_id $args.path $args.zip_file $args.check_hash
+                ($human_readable, $entry_context, $raw_response) = UploadFileCommand -client $client -entry_id $command_args.entry_id -dst_path $command_args.path -zip_file $command_args.zip_file -check_hash $command_args.check_hash
             }
             "$script:COMMAND_PREFIX-export-mft" {
-                ($human_readable, $entry_context, $raw_response) = ExportMFTCommand $client $args.volume $args.output_path
+                ($human_readable, $entry_context, $raw_response) = ExportMFTCommand -client $client -volume $command_args.volume -output_file_path $command_args.output_path
             }
             Default {
                 $Demisto.Error("Unsupported command was entered: $command.")
@@ -760,10 +767,10 @@ function Main
     }
     catch
     {
-        $Demisto.debug("Integration: $script:INTEGRATION_NAME Command: $command Arguments: $( $args | ConvertTo-Json ) Error: $( $_.Exception.Message )")
+        $Demisto.debug("Integration: $script:INTEGRATION_NAME Command: $command Arguments: $( $command_args | ConvertTo-Json ) Error: $( $_.Exception.Message )")
         if ($command -ne "test-module")
         {
-            ReturnError "Error:Integration: $script:INTEGRATION_NAME Command: $command Arguments: $( $args | ConvertTo-Json ) Error: $( $_.Exception )" | Out-Null
+            ReturnError "Error:Integration: $script:INTEGRATION_NAME Command: $command Arguments: $( $command_args | ConvertTo-Json ) Error: $( $_.Exception )" | Out-Null
         }
         else
         {

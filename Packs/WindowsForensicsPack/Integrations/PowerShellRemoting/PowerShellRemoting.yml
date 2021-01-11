@@ -46,7 +46,7 @@ description: "PowerShell Remoting is a comprehensive built-in remoting subsystem
   \ to windows hosts and executing commands in the created session.\nThe integration\
   \ includes out of the box commands which supports agentless forensics for remote\
   \ hosts "
-display: PowerShell Remoting
+display: PowerShell Remoting (Beta)
 name: PowerShell Remoting
 script:
   commands:

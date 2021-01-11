@@ -1,4 +1,3 @@
-import os
 import subprocess
 import uuid
 
@@ -11,8 +10,7 @@ def etl_to_pcap(etl_file_path, output_file_path):
     output_file_path = os.path.abspath("./" + output_file_path)
     cmd = ["python", "/var/opt/etl/etl2pcap.py", etl_file_path, output_file_path]
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = p.communicate()
-    # demisto.results(stdout)
+    p.communicate()
 
 
 def get_file_name(entry_id):
@@ -24,8 +22,7 @@ def get_file_name(entry_id):
         return os.path.splitext(res.get('Name', ''))[0]
 
 
-if __name__ in ['__main__', '__builtin__', 'builtins']:
-
+def main():
     entry_id = demisto.args()['EntryID']
     res = demisto.getFilePath(entry_id)
     if not res or res.get('path') is None:
@@ -44,3 +41,7 @@ if __name__ in ['__main__', '__builtin__', 'builtins']:
             }
         }
         demisto.results(entry)
+
+
+if __name__ in ['__main__', '__builtin__', 'builtins']:
+    main()
