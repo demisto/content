@@ -14,7 +14,7 @@ Use the Export Indicators Service integration to provide an endpoint with a list
     * __Name__: a textual name for the integration instance.
     * __Indicator Query__: The query to run to update its list. To view expected results, you can run the following command from the Demisto CLI
     `!findIndicators query=<your query>`
-    * __Outbound Format__: The default format of the entries in the service. Supported formats: text, json, json-seq, csv, XSAOR json, XSAOR json-seq, XSOAR csv, PAN-OS URL, Symantec ProxySG and McAfee Web Gateway.
+    * __Outbound Format__: The default format of the entries in the service. Supported formats: text, json, json-seq, csv, XSOAR json, XSOAR json-seq, XSOAR csv, PAN-OS URL, Symantec ProxySG and McAfee Web Gateway.
     * __List Size__: Max amount of entries in the service instance.
     * __Update On Demand Only__: When set to true, will only update the service indicators via **eis-update** command.
     * __Refresh Rate__: How often to refresh the export indicators list (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3
