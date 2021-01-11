@@ -295,30 +295,29 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, args: Dict[s
     storage_account_subscription_id = args.get('storage_account_subscription_id', '')
     storage_endpoint = args.get('storage_endpoint', '')
 
-    response = client.azure_sql_db_audit_policy_create_update(server_name=server_name, db_name=db_name, state=state,
-                                                              audit_actions_groups=audit_actions_groups,
-                                                              is_azure_monitor_target_enabled=is_azure_monitor_target_enabled,
-                                                              is_storage_secondary_key_in_use=is_storage_secondary_key_in_use,
-                                                              queue_delay_ms=queue_delay_ms,
-                                                              retention_days=retention_days,
-                                                              storage_account_access_key=storage_account_access_key,
-                                                              storage_account_subscription_id=storage_account_subscription_id,
-                                                              storage_endpoint=storage_endpoint)
-    response_hr = copy.deepcopy(response)
-    properties = response_hr.get('properties', {})
-    if properties:
-        response_hr.update(properties)
-        del response_hr['properties']
+    raw_response = client.azure_sql_db_audit_policy_create_update(server_name=server_name, db_name=db_name, state=state,
+                                                                  audit_actions_groups=audit_actions_groups,
+                                                                  is_azure_monitor_target_enabled=is_azure_monitor_target_enabled,
+                                                                  is_storage_secondary_key_in_use=is_storage_secondary_key_in_use,
+                                                                  queue_delay_ms=queue_delay_ms,
+                                                                  retention_days=retention_days,
+                                                                  storage_account_access_key=storage_account_access_key,
+                                                                  storage_account_subscription_id=storage_account_subscription_id,
+                                                                  storage_endpoint=storage_endpoint)
+    fixed_response = copy.deepcopy(raw_response)
+    if properties := fixed_response.get('properties', {}):
+        fixed_response.update(properties)
+        del fixed_response['properties']
 
-    human_readable = tableToMarkdown(name='Create Or Update Database Auditing Settings', t=response_hr,
+    human_readable = tableToMarkdown(name='Create Or Update Database Auditing Settings', t=fixed_response,
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='AzureSQL.DbAuditPolicy',
         outputs_key_field='id',
-        outputs=response_hr,
-        raw_response=response
+        outputs=fixed_response,
+        raw_response=raw_response
     )
 
 
@@ -341,23 +340,22 @@ def azure_sql_db_threat_policy_get_command(client: Client, args: Dict[str, str])
     """
     server_name = args.get('server_name')
     db_name = args.get('db_name')
-    threat_list = client.azure_sql_db_threat_policy_get(server_name, db_name)
-    threat = copy.deepcopy(threat_list)
+    threat_raw = client.azure_sql_db_threat_policy_get(server_name, db_name)
+    threat_fixed = copy.deepcopy(threat_raw)
 
-    properties = threat.get('properties', {})
-    if properties:
-        threat.update(properties)
-        del threat['properties']
+    if properties := threat_fixed.get('properties', {}):
+        threat_fixed.update(properties)
+        del threat_fixed['properties']
 
-    human_readable = tableToMarkdown(name='Database Threat Detection Policies', t=threat,
+    human_readable = tableToMarkdown(name='Database Threat Detection Policies', t=threat_fixed,
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='AzureSQL.DBThreatPolicy',
         outputs_key_field='id',
-        outputs=threat,
-        raw_response=threat_list
+        outputs=threat_fixed,
+        raw_response=threat_raw
     )
 
 
@@ -402,29 +400,29 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
     disabled_alerts = [""] if 'None' in argToList(args.get('disabled_alerts', '')) \
         else argToList(args.get('disabled_alerts', ''))
 
-    response = client.azure_sql_db_threat_policy_create_update(server_name=server_name, db_name=db_name, state=state,
-                                                               disabled_alerts=disabled_alerts,
-                                                               email_account_admins=email_account_admins,
-                                                               email_addresses=email_addresses,
-                                                               retention_days=retention_days,
-                                                               storage_account_access_key=storage_account_access_key,
-                                                               use_server_default=use_server_default,
-                                                               storage_endpoint=storage_endpoint)
-    response_hr = copy.deepcopy(response)
-    properties = response_hr.get('properties', {})
-    if properties:
-        response_hr.update(properties)
-        del response_hr['properties']
+    raw_response = client.azure_sql_db_threat_policy_create_update(server_name=server_name, db_name=db_name,
+                                                                   state=state,
+                                                                   retention_days=retention_days,
+                                                                   disabled_alerts=disabled_alerts,
+                                                                   email_account_admins=email_account_admins,
+                                                                   email_addresses=email_addresses,
+                                                                   storage_account_access_key=storage_account_access_key,
+                                                                   use_server_default=use_server_default,
+                                                                   storage_endpoint=storage_endpoint)
+    fixed_response = copy.deepcopy(raw_response)
+    if properties := fixed_response.get('properties', {}):
+        fixed_response.update(properties)
+        del fixed_response['properties']
 
-    human_readable = tableToMarkdown(name='Create Or Update Database Threat Detection Policies', t=response_hr,
+    human_readable = tableToMarkdown(name='Create Or Update Database Threat Detection Policies', t=fixed_response,
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='AzureSQL.DBThreatPolicy',
         outputs_key_field='id',
-        outputs=response_hr,
-        raw_response=response
+        outputs=fixed_response,
+        raw_response=raw_response
     )
 
 
