@@ -3259,7 +3259,7 @@
         "SentinelOne": "No instance",
         "Vectra v2": "No instance",
         "Awake Security": "Issue 23376",
-        "ExtraHop": "No license, issue 23731"
+        "ExtraHop": "No license, issue 23731",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
         "IronDefense": "Test depends on making requests to a non-public API",
