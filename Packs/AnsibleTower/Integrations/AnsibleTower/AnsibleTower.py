@@ -53,9 +53,12 @@ def output_data(response: dict) -> dict:
     remove_fields = ['ask_diff_mode_on_launch', 'ask_variables_on_launch', 'ask_limit_on_launch',
                      'ask_tags_on_launch', 'ask_skip_tags_on_launch', 'ask_job_type_on_launch',
                      'ask_verbosity_on_launch', 'ask_inventory_on_launch', 'ask_credential_on_launch', 'job_env', 'job',
-                     'job_slice_number', 'job_slice_count', 'event_processing_finished', 'diff_mode', 'elapsed',
+                     'job_slice_number', 'job_slice_count', 'event_processing_finished', 'diff_mode',
                      'allow_simultaneous', 'force_handlers', 'forks', 'unified_job_template', 'use_fact_cache',
-                     'verbosity', 'has_inventory_sources', 'last_job_host_summary']
+                     'verbosity', 'has_inventory_sources', 'last_job_host_summary', 'has_active_failures',
+                     'total_hosts', 'hosts_with_active_failures', 'total_groups', 'start_at_task',
+                     'has_active_failures','host_status_counts', 'playbook_counts', 'range', 'event_data', 'parent',
+                     'role', 'play']
 
     context_data = {}
     for key in response:
@@ -134,7 +137,7 @@ def inventories_list(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='AnsibleAWX.Inventory',
         outputs_key_field='id',
-        outputs=results,
+        outputs=context_data,
         readable_output=tableToMarkdown(name='Inventories List', t=context_data, removeNull=True, headers=headers),
         raw_response=results
     )
@@ -159,7 +162,7 @@ def hosts_list(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='AnsibleAWX.Host',
         outputs_key_field='id',
-        outputs=results,
+        outputs=context_data,
         readable_output=tableToMarkdown(name='Hosts List', t=context_data, removeNull=True, headers=headers),
         raw_response=response)
 
@@ -177,7 +180,7 @@ def create_host(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='AnsibleAWX.Host',
         outputs_key_field='id',
-        outputs=response,
+        outputs=context_data,
         readable_output=tableToMarkdown(name='Created Host', t=context_data, removeNull=True),
         raw_response=response
     )
@@ -217,7 +220,7 @@ def templates_list(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='AnsibleAWX.JobTemplate',
         outputs_key_field='id',
-        outputs=results,
+        outputs=context_data,
         readable_output=tableToMarkdown(name='Job Templates List', t=context_data, headers=headers),
         raw_response=response)
 
@@ -239,7 +242,7 @@ def credentials_list(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='AnsibleAWX.Credential',
         outputs_key_field='id',
-        outputs=results,
+        outputs=context_data,
         readable_output=tableToMarkdown(name='Credentials List', t=context_data, headers=headers),
         raw_response=response)
 
@@ -286,7 +289,7 @@ def job_relaunch(client: Client, args: dict):
     return CommandResults(
         outputs_prefix='AnsibleAWX.Job',
         outputs_key_field='id',
-        outputs=response,
+        outputs=context_data,
         readable_output=tableToMarkdown(name=f'Job {job_id} status {job_id_status}', t=context_data, removeNull=True,
                                         headers=headers),
         raw_response=response
@@ -330,7 +333,7 @@ def job_status(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='AnsibleAWX.Job',
         outputs_key_field='id',
-        outputs=response,
+        outputs=context_data,
         readable_output=tableToMarkdown(name=f'Job {job_id} status {job_id_status}', t=context_data, removeNull=True,
                                         headers=headers),
         raw_response=response
@@ -354,7 +357,7 @@ def list_job_events(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='AnsibleAWX.JobEvents',
         outputs_key_field='id',
-        outputs=results,
+        outputs=context_data,
         readable_output=tableToMarkdown(name='Results', t=context_data, removeNull=True, headers=headers),
         raw_response=response
     )
@@ -378,7 +381,7 @@ def create_ad_hoc_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='AnsibleAWX.AdhocCommand',
         outputs_key_field='id',
-        outputs=response,
+        outputs=context_data,
         readable_output=tableToMarkdown(name=f'Ad hoc command - {command_id} status - {command_status}', t=context_data,
                                         removeNull=True, headers=headers),
         raw_response=response
@@ -396,7 +399,7 @@ def relaunch_ad_hoc_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='AnsibleAWX.AdhocCommand',
         outputs_key_field='id',
-        outputs=response,
+        outputs=context_data,
         readable_output=tableToMarkdown(name=f'Ad hoc command - {command_id} status - {command_status}', t=context_data,
                                         removeNull=True, headers=headers),
         raw_response=response
@@ -440,7 +443,7 @@ def ad_hoc_command_status(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='AnsibleAWX.AdhocCommand',
         outputs_key_field='id',
-        outputs=response,
+        outputs=context_data,
         readable_output=tableToMarkdown(name=f'Ad hoc command - {command_id} status - {command_status}', t=context_data,
                                         removeNull=True, headers=headers),
         raw_response=response

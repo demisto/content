@@ -40,7 +40,7 @@ script:
       secret: false
     - default: true
       defaultValue: '50'
-      description: Default page size is 50
+      description: Page size, default value is 50
       isArray: false
       name: page_size
       required: false
@@ -52,10 +52,56 @@ script:
       name: search
       required: false
       secret: false
-    deprecated: false
+      deprecated: false
     description: Retrieve the list of inventories
     execution: false
     name: ansible-tower-inventories-list
+    outputs:
+    - contextPath: AnsibleAWX.Inventory.id
+      description: 'Database ID for this inventory'
+      type: Number
+    - contextPath: AnsibleAWX.Inventory.type
+      description: 'Data type for this inventory'
+      type: String
+    - contextPath: AnsibleAWX.Inventory.url
+      description: 'URL for this inventory'
+      type: String
+    - contextPath: AnsibleAWX.Inventory.created
+      description: 'Timestamp when this inventory was created'
+      type: Date
+    - contextPath: AnsibleAWX.Inventory.modified
+      description: 'Timestamp when this inventory was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.Inventory.name
+      description: 'Name of this inventory'
+      type: String
+    - contextPath: AnsibleAWX.Inventory.description
+      description: 'Optional description of this inventory'
+      type: String
+    - contextPath: AnsibleAWX.Inventory.organization
+      description: 'Organization containing this inventory'
+      type: Number
+    - contextPath: AnsibleAWX.Inventory.kind
+      description: 'Kind of inventory being represented'
+      type: String
+    - contextPath: AnsibleAWX.Inventory.host_filter
+      description: 'Filter that will be applied to the hosts of this inventory'
+      type: Unknown
+    - contextPath: AnsibleAWX.Inventory.variables
+      description: 'Inventory variables in JSON or YAML format'
+      type: String
+    - contextPath: AnsibleAWX.Inventory.total_inventory_sources
+      description: 'Total number of external inventory sources configured within this inventory'
+      type: Number
+    - contextPath: AnsibleAWX.Inventory.inventory_sources_with_failures
+      description: 'Number of external inventory sources in this inventory with failures'
+      type: Number
+    - contextPath: AnsibleAWX.Inventory.insights_credential
+      description: 'Credentials to be used by hosts belonging to this inventory when accessing Red Hat Insights API'
+      type: Unknown
+    - contextPath: AnsibleAWX.Inventory.pending_deletion
+      description: 'Flag indicating the inventory is being deleted'
+      type: Boolean
   - arguments:
     - default: false
       description: Host id, to retrieve a specific host
@@ -76,15 +122,11 @@ script:
       name: page
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: true
+    - default: true
       defaultValue: '50'
-      description: page size
+      description: Page size, default value is 50
       isArray: false
       name: page_size
-      predefined:
-      - Use the search query string parameter to perform a case-insensitive search
-        within all designated text fields of a model.
       required: false
       secret: false
     - default: false
@@ -99,6 +141,49 @@ script:
       the host under the specific inventory
     execution: false
     name: ansible-tower-hosts-list
+    outputs:
+    - contextPath: AnsibleAWX.Host.id
+      description: 'Database ID for this host.'
+      type: Number
+    - contextPath: AnsibleAWX.Host.type
+      description: ' Data type for this host'
+      type: String
+    - contextPath: AnsibleAWX.Host.url
+      description: 'URL for this host'
+      type: String
+    - contextPath: AnsibleAWX.Host.created
+      description: 'Timestamp when this host was created.'
+      type: Date
+    - contextPath: AnsibleAWX.Host.modified
+      description: 'Timestamp when this host was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.Host.name
+      description: 'Name of this host'
+      type: String
+    - contextPath: AnsibleAWX.Host.description
+      description: 'Optional description of this host'
+      type: String
+    - contextPath: AnsibleAWX.Host.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.Host.enabled
+      description: 'Is this host online and available for running jobs?'
+      type: Boolean
+    - contextPath: AnsibleAWX.Host.instance_id
+      description: 'The value used by the remote inventory source to uniquely identify the host'
+      type: String
+    - contextPath: AnsibleAWX.Host.variables
+      description: 'Host variables in JSON or YAML format'
+      type: String
+    - contextPath: AnsibleAWX.Host.last_job
+      description: 'Last job id ran on that host'
+      type: Number
+    - contextPath: AnsibleAWX.Host.insights_system_id
+      description: 'Red Hat Insights host unique identifier'
+      type: Unknown
+    - contextPath: AnsibleAWX.Host.ansible_facts_modified
+      description: 'The date and time ansible_facts was last modified'
+      type: Unknown
   - arguments:
     - default: false
       description: The value used by the remote inventory source to uniquely identify
@@ -130,6 +215,52 @@ script:
     description: Create a host under the given inventory id and with the given name
     execution: false
     name: ansible-tower-host-create
+    outputs:
+    - contextPath: AnsibleAWX.Host.id
+      description: 'Database ID for this host.'
+      type: Number
+    - contextPath: AnsibleAWX.Host.type
+      description: ' Data type for this host'
+      type: String
+    - contextPath: AnsibleAWX.Host.url
+      description: 'URL for this host'
+      type: String
+    - contextPath: AnsibleAWX.Host.created
+      description: 'Timestamp when this host was created.'
+      type: Date
+    - contextPath: AnsibleAWX.Host.modified
+      description: 'Timestamp when this host was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.Host.name
+      description: 'Name of this host'
+      type: String
+    - contextPath: AnsibleAWX.Host.description
+      description: 'Optional description of this host'
+      type: String
+    - contextPath: AnsibleAWX.Host.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.Host.enabled
+      description: 'Is this host online and available for running jobs?'
+      type: Boolean
+    - contextPath: AnsibleAWX.Host.instance_id
+      description: 'The value used by the remote inventory source to uniquely identify the host'
+      type: String
+    - contextPath: AnsibleAWX.Host.variables
+      description: 'Host variables in JSON or YAML format'
+      type: String
+  - contextPath: AnsibleAWX.Host.has_active_failures
+      description: '(field)'
+      type: Boolean
+    - contextPath: AnsibleAWX.Host.last_job
+      description: '(id)'
+      type: Number
+    - contextPath: AnsibleAWX.Host.insights_system_id
+      description: 'Red Hat Insights host unique identifier'
+      type: String
+    - contextPath: AnsibleAWX.Host.ansible_facts_modified
+      description: 'The date and time ansible_facts was last modified'
+      type: Date
   - arguments:
     - default: false
       description: host is to delete
@@ -141,6 +272,13 @@ script:
     description: Delete host
     execution: false
     name: ansible-tower-host-delete
+    outputs:
+    - contextPath: AnsibleAWX.Host.id
+      description: 'Database ID for this host'
+      type: Number
+    - contextPath: AnsibleAWX.Host.Deleted
+      description: 'Indicates if this host wes deleted'
+      type: Boolean
   - arguments:
     - default: false
       description: Inventory id to list all jobs that are managed with hosts under
@@ -158,7 +296,7 @@ script:
       secret: false
     - default: true
       defaultValue: '50'
-      description: Default page size is 50
+      description: Page size, default value is 50
       isArray: false
       name: page_size
       required: false
@@ -180,6 +318,82 @@ script:
     description: Retrieve the list of job templates
     execution: false
     name: ansible-tower-job-templates-list
+    outputs:
+    - contextPath: AnsibleAWX.JobTemplate.id
+      description: 'Database ID for this job template'
+      type: Number
+    - contextPath: AnsibleAWX.JobTemplate.type
+      description: 'Data type for this job template'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.url
+      description: 'URL for this job template'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.created
+      description: 'Timestamp when this job template was created'
+      type: Date
+    - contextPath: AnsibleAWX.JobTemplate.modified
+      description: 'Timestamp when this job template was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.JobTemplate.name
+      description: 'Name of this job template'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.description
+      description: 'Optional description of this job template'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.job_type
+      description: 'Choice- run/check'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.JobTemplate.project
+      description: 'Project id'
+      type: Number
+    - contextPath: AnsibleAWX.JobTemplate.playbook
+      description: 'Playbook name'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.limit
+      description: 'Provide a host pattern to further constraint the list of hosts that will managed or affected by the playbook'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.extra_vars
+      description: 'Extra command line variables that were passed to the playbook'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.job_tags
+      description: 'Job tags- tags are useful when you have a large playbook, and you want to run a specific part if a play or task'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.skip_tags
+      description: 'Skip tags- tags are useful when you have a large playbook, and you want to run a specific part if a play or task'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.timeout
+      description: 'The amount of time (in seconds) to run before the task is canceled'
+      type: Number
+    - contextPath: AnsibleAWX.JobTemplate.last_job_run
+      description: 'Timestamp when was the last job run'
+      type: Date
+    - contextPath: AnsibleAWX.JobTemplate.last_job_failed
+      description: 'Boolean indicates if last job fail'
+      type: Boolean
+    - contextPath: AnsibleAWX.JobTemplate.next_job_run
+      description: 'Timestamp of next job run'
+      type: Unknown
+    - contextPath: AnsibleAWX.JobTemplate.status
+      description: 'Status - new, pending, waiting, running, successful, failed, error, canceled, never updated'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.host_config_key
+      description: 'The host config key that ran the job'
+      type: String
+    - contextPath: AnsibleAWX.JobTemplate.survey_enabled
+      description: 'Whether the job template survey enabled'
+      type: Boolean
+    - contextPath: AnsibleAWX.JobTemplate.become_enabled
+      description: 'Whether the job template become enabled'
+      type: Boolean
+    - contextPath: AnsibleAWX.JobTemplate.custom_virtualenv
+      description: 'Local absolute file path containing a custom Python virtualenv to use'
+      type: Unknown
+    - contextPath: AnsibleAWX.JobTemplate.credential
+      description: 'Credential id that allow Tower to access the node this job will be ran against'
+      type: Number
   - arguments:
     - default: false
       description: id of a specific credential.
@@ -196,7 +410,7 @@ script:
       secret: false
     - default: true
       defaultValue: '50'
-      description: Default page size is 50
+      description: Page size, default value is 50
       isArray: false
       name: page_size
       required: false
@@ -213,6 +427,37 @@ script:
       specific one
     execution: false
     name: ansible-tower-credentials-list
+    outputs:
+    - contextPath: AnsibleAWX.Credential.id
+      description: 'Database ID for this credential'
+      type: Number
+    - contextPath: AnsibleAWX.Credential.type
+      description: 'Data type for this credential'
+      type: String
+    - contextPath: AnsibleAWX.Credential.url
+      description: 'URL for this credential'
+      type: String
+    - contextPath: AnsibleAWX.Credential.created
+      description: 'Timestamp when this credential was created'
+      type: Date
+    - contextPath: AnsibleAWX.Credential.modified
+      description: 'Timestamp when this credential was last modified.'
+      type: Date
+    - contextPath: AnsibleAWX.Credential.name
+      description: 'Name of this credential'
+      type: String
+    - contextPath: AnsibleAWX.Credential.description
+      description: 'Optional description of this credential'
+      type: String
+    - contextPath: AnsibleAWX.Credential.organization
+      description: 'Inherit permissions from organization roles'
+      type: Unknown
+    - contextPath: AnsibleAWX.Credential.credential_type
+      description: 'Specify the type of credential you want to create'
+      type: Number
+    - contextPath: AnsibleAWX.Credential.inputs.username
+      description: 'Username'
+      type: String
   - arguments:
     - default: false
       description: job template id  to launch
@@ -246,11 +491,101 @@ script:
     name: ansible-tower-job-launch
     outputs:
     - contextPath: AnsibleAWX.Job.id
-      description: Job id
-      type: Unknown
+      description: 'Database ID for this job'
+      type: Number
+    - contextPath: AnsibleAWX.Job.type
+      description: 'Data type for this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.url
+      description: 'URL for this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.created
+      description: 'Timestamp when this job was created'
+      type: Date
+    - contextPath: AnsibleAWX.Job.modified
+      description: 'Timestamp when this job was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.Job.name
+      description: 'Name of this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.description
+      description: 'Optional description of this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_type
+      description: 'Job type- run/check'
+      type: String
+    - contextPath: AnsibleAWX.Job.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.Job.project
+      description: 'Project id'
+      type: Number
+    - contextPath: AnsibleAWX.Job.playbook
+      description: 'Playbook name'
+      type: String
+    - contextPath: AnsibleAWX.Job.limit
+      description: 'Provide a host pattern to further constraint the list of hosts that will managed or affected by the playbook'
+      type: String
+    - contextPath: AnsibleAWX.Job.extra_vars
+      description: 'Extra command line variables that were passed to the playbook'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_tags
+      description: 'Job tags- tags are useful when you have a large playbook, and you want to run a specific part if a play or task'
+      type: String
+    - contextPath: AnsibleAWX.Job.skip_tags
+      description: 'Skip tags- tags are useful when you have a large playbook, and you want to run a specific part if a play or task'
+      type: String
+    - contextPath: AnsibleAWX.Job.timeout
+      description: 'The amount of time (in seconds) to run before the task is canceled'
+      type: Number
+    - contextPath: AnsibleAWX.Job.launch_type
+      description: 'Launch type- manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, scm'
+      type: String
     - contextPath: AnsibleAWX.Job.status
-      description: Job status
-      type: Unknown
+      description: 'Status - new, pending, waiting, running, successful, failed, error, canceled, never updated'
+      type: String
+    - contextPath: AnsibleAWX.Job.failed
+      description: 'Whether the job failed'
+      type: Boolean
+    - contextPath: AnsibleAWX.Job.started
+      description: 'The date and time the job was queued for starting'
+      type: Date
+    - contextPath: AnsibleAWX.Job.finished
+      description: 'The date and time the job finished execution'
+      type: Date
+    - contextPath: AnsibleAWX.Job.job_args
+      description: 'Job arguments'
+      type: String
+    - contextPath: AnsibleAWX.Job.elapsed
+      description: 'Elapsed time in seconds that the job ran'
+      type: Number
+    - contextPath: AnsibleAWX.Job.job_cwd
+      description: 'CWD of the job'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_explanation
+      description: 'A status field to indicate the state of the job if it was not able to run and capture stdout'
+      type: String
+    - contextPath: AnsibleAWX.Job.execution_node
+      description: 'The node the job executed on'
+      type: String
+    - contextPath: AnsibleAWX.Job.controller_node
+      description: 'The instance that managed the isolated execution environment'
+      type: String
+    - contextPath: AnsibleAWX.Job.result_traceback
+      description: 'result traceback'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_template
+      description: 'Job template id of this job'
+      type: Number
+    - contextPath: AnsibleAWX.Job.scm_revision
+      description: 'The SCM Revision from the Project used for this job, if available'
+      type: String
+    - contextPath: AnsibleAWX.Job.instance_group
+      description: 'The Instance group the job was run under'
+      type: Number
+    - contextPath: AnsibleAWX.Job.credential
+      description: 'Credential id that allow Tower to access the node this job will be ran against'
+      type: Number
   - arguments:
     - default: false
       description: job id to relaunch
@@ -280,6 +615,103 @@ script:
     description: Relaunch a job
     execution: false
     name: ansible-tower-job-relaunch
+    outputs:
+    - contextPath: AnsibleAWX.Job.id
+      description: 'Database ID for this job'
+      type: Number
+    - contextPath: AnsibleAWX.Job.type
+      description: 'Data type for this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.url
+      description: 'URL for this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.elapsed
+      description: 'Elapsed time in seconds that the job ran'
+      type: Number
+    - contextPath: AnsibleAWX.Job.created
+      description: 'Timestamp when this job was created'
+      type: Date
+    - contextPath: AnsibleAWX.Job.modified
+      description: 'Timestamp when this job was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.Job.name
+      description: 'Name of this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.description
+      description: 'Optional description of this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_type
+      description: 'Job type- run/check'
+      type: String
+    - contextPath: AnsibleAWX.Job.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.Job.project
+      description: 'Project id'
+      type: Number
+    - contextPath: AnsibleAWX.Job.playbook
+      description: 'Playbook name'
+      type: String
+    - contextPath: AnsibleAWX.Job.limit
+      description: 'Provide a host pattern to further constraint the list of hosts that will managed or affected by the playbook'
+      type: String
+    - contextPath: AnsibleAWX.Job.extra_vars
+      description: 'Extra command line variables that were passed to the playbook'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_tags
+      description: 'Job tags- tags are useful when you have a large playbook, and you want to run a specific part if a play or task'
+      type: String
+    - contextPath: AnsibleAWX.Job.skip_tags
+      description: 'Skip tags- tags are useful when you have a large playbook, and you want to run a specific part if a play or task'
+      type: String
+    - contextPath: AnsibleAWX.Job.timeout
+      description: 'The amount of time (in seconds) to run before the task is canceled'
+      type: Number
+    - contextPath: AnsibleAWX.Job.launch_type
+      description: 'Launch type- manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, scm'
+      type: String
+    - contextPath: AnsibleAWX.Job.status
+      description: 'Status - new, pending, waiting, running, successful, failed, error, canceled, never updated'
+      type: String
+    - contextPath: AnsibleAWX.Job.failed
+      description: 'Whether the job failed'
+      type: Boolean
+    - contextPath: AnsibleAWX.Job.started
+      description: 'The date and time the job was queued for starting'
+      type: Unknown
+    - contextPath: AnsibleAWX.Job.finished
+      description: 'The date and time the job finished execution'
+      type: Date
+    - contextPath: AnsibleAWX.Job.job_args
+      description: 'Job arguments'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_cwd
+      description: 'CWD of the job'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_explanation
+      description: 'A status field to indicate the state of the job if it was not able to run and capture stdout'
+      type: String
+    - contextPath: AnsibleAWX.Job.execution_node
+      description: 'The node the job executed on'
+      type: String
+    - contextPath: AnsibleAWX.Job.controller_node
+      description: 'The instance that managed the isolated execution environment'
+      type: String
+    - contextPath: AnsibleAWX.Job.result_traceback
+      description: 'result traceback'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_template
+      description: 'Job template id of this job'
+      type: Number
+    - contextPath: AnsibleAWX.Job.scm_revision
+      description: 'The SCM Revision from the Project used for this job, if available'
+      type: String
+    - contextPath: AnsibleAWX.Job.instance_group
+      description: 'The Instance group the job was run under'
+      type: Unknown
+    - contextPath: AnsibleAWX.Job.credential
+      description: 'Credential id that allow Tower to access the node this job will be ran against'
+      type: Number
   - arguments:
     - default: false
       description: job id to cancel
@@ -291,6 +723,103 @@ script:
     description: Cancel a pending or running job
     execution: false
     name: ansible-tower-job-cancel
+    outputs:
+    - contextPath: AnsibleAWX.Job.id
+      description: 'Database ID for this job'
+      type: Number
+    - contextPath: AnsibleAWX.Job.type
+      description: 'Data type for this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.url
+      description: 'URL for this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.created
+      description: 'Timestamp when this job was created'
+      type: Date
+    - contextPath: AnsibleAWX.Job.modified
+      description: 'Timestamp when this job was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.Job.name
+      description: 'Name of this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.description
+      description: 'Optional description of this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_type
+      description: 'Job type- run/check'
+      type: String
+    - contextPath: AnsibleAWX.Job.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.Job.project
+      description: 'Project id'
+      type: Number
+    - contextPath: AnsibleAWX.Job.playbook
+      description: 'Playbook name'
+      type: String
+    - contextPath: AnsibleAWX.Job.limit
+      description: 'Provide a host pattern to further constraint the list of hosts that will managed or affected by the playbook'
+      type: String
+    - contextPath: AnsibleAWX.Job.extra_vars
+      description: 'Extra command line variables that were passed to the playbook'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_tags
+      description: 'Job tags- tags are useful when you have a large playbook, and you want to run a specific part if a play or task'
+      type: String
+    - contextPath: AnsibleAWX.Job.skip_tags
+      description: 'Skip tags- tags are useful when you have a large playbook, and you want to run a specific part if a play or task'
+      type: String
+    - contextPath: AnsibleAWX.Job.timeout
+      description: 'The amount of time (in seconds) to run before the task is canceled'
+      type: Number
+    - contextPath: AnsibleAWX.Job.launch_type
+      description: 'Launch type- manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, scm'
+      type: String
+    - contextPath: AnsibleAWX.Job.status
+      description: 'Status - new, pending, waiting, running, successful, failed, error, canceled, never updated'
+      type: String
+    - contextPath: AnsibleAWX.Job.failed
+      description: 'Whether the job failed'
+      type: Boolean
+    - contextPath: AnsibleAWX.Job.started
+      description: 'The date and time the job was queued for starting'
+      type: Date
+    - contextPath: AnsibleAWX.Job.finished
+      description: 'The date and time the job finished execution'
+      type: Date
+    - contextPath: AnsibleAWX.Job.elapsed
+      description: 'Elapsed time in seconds that the job ran'
+      type: Number
+    - contextPath: AnsibleAWX.Job.job_args
+      description: 'Job arguments'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_cwd
+      description: 'CWD of the job'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_explanation
+      description: 'A status field to indicate the state of the job if it was not able to run and capture stdout'
+      type: String
+    - contextPath: AnsibleAWX.Job.execution_node
+      description: 'The node the job executed on'
+      type: String
+    - contextPath: AnsibleAWX.Job.controller_node
+      description: 'The instance that managed the isolated execution environment'
+      type: String
+    - contextPath: AnsibleAWX.Job.result_traceback
+      description: 'result traceback'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_template
+      description: 'Job template id of this job'
+      type: Number
+    - contextPath: AnsibleAWX.Job.scm_revision
+      description: 'The SCM Revision from the Project used for this job, if available'
+      type: String
+    - contextPath: AnsibleAWX.Job.instance_group
+      description: 'The Instance group the job was run under'
+      type: Number
+    - contextPath: AnsibleAWX.Job.credential
+      description: 'Credential id that allow Tower to access the node this job will be ran against'
+      type: Number
   - arguments:
     - default: false
       description: Job id
@@ -310,7 +839,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Filter lines from the stdout for lines including the string provided. For example, enter 'success' to filter all of the stdout lines containing this word.
+      description: Filter lines from the stdout for lines including the string provided.
+        For example, enter 'success' to filter all of the stdout lines containing
+        this word.
       isArray: false
       name: text_filter
       required: false
@@ -322,10 +853,10 @@ script:
     outputs:
     - contextPath: AnsibleAWX.JobStdout.job_id
       description: Job id
-      type: Unknown
+      type: Number
     - contextPath: AnsibleAWX.JobStdout.content
-      description: job content output
-      type: Unknown
+      description: 'Stdout content'
+      type: String
   - arguments:
     - default: false
       description: Job id
@@ -346,11 +877,101 @@ script:
     name: ansible-tower-job-status
     outputs:
     - contextPath: AnsibleAWX.Job.id
-      description: Job id
-      type: Unknown
+      description: 'Database ID for this job'
+      type: Number
+    - contextPath: AnsibleAWX.Job.type
+      description: 'Data type for this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.url
+      description: 'URL for this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.created
+      description: 'Timestamp when this job was created'
+      type: Date
+    - contextPath: AnsibleAWX.Job.modified
+      description: 'Timestamp when this job was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.Job.name
+      description: 'Name of this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.description
+      description: 'Optional description of this job'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_type
+      description: 'Job type- run/check'
+      type: String
+    - contextPath: AnsibleAWX.Job.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.Job.project
+      description: 'Project id'
+      type: Number
+    - contextPath: AnsibleAWX.Job.playbook
+      description: 'Playbook name'
+      type: String
+    - contextPath: AnsibleAWX.Job.limit
+      description: 'Provide a host pattern to further constraint the list of hosts that will managed or affected by the playbook'
+      type: String
+    - contextPath: AnsibleAWX.Job.extra_vars
+      description: 'Extra command line variables that were passed to the playbook'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_tags
+      description: 'Job tags- tags are useful when you have a large playbook, and you want to run a specific part if a play or task'
+      type: String
+    - contextPath: AnsibleAWX.Job.skip_tags
+      description: 'Skip tags- tags are useful when you have a large playbook, and you want to run a specific part if a play or task'
+      type: String
+    - contextPath: AnsibleAWX.Job.timeout
+      description: 'The amount of time (in seconds) to run before the task is canceled'
+      type: Number
+    - contextPath: AnsibleAWX.Job.launch_type
+      description: 'Launch type- manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, scm'
+      type: String
     - contextPath: AnsibleAWX.Job.status
-      description: Job status
-      type: Unknown
+      description: 'Status - new, pending, waiting, running, successful, failed, error, canceled, never updated'
+      type: String
+    - contextPath: AnsibleAWX.Job.failed
+      description: 'Whether the job failed'
+      type: Boolean
+    - contextPath: AnsibleAWX.Job.started
+      description: 'The date and time the job was queued for starting'
+      type: Date
+    - contextPath: AnsibleAWX.Job.finished
+      description: 'The date and time the job finished execution'
+      type: Date
+    - contextPath: AnsibleAWX.Job.elapsed
+      description: 'Elapsed time in seconds that the job ran'
+      type: Number
+    - contextPath: AnsibleAWX.Job.job_args
+      description: 'Job arguments'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_cwd
+      description: 'CWD of the job'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_explanation
+      description: 'A status field to indicate the state of the job if it was not able to run and capture stdout'
+      type: String
+    - contextPath: AnsibleAWX.Job.execution_node
+      description: 'The node the job executed on'
+      type: String
+    - contextPath: AnsibleAWX.Job.controller_node
+      description: 'The instance that managed the isolated execution environment'
+      type: String
+    - contextPath: AnsibleAWX.Job.result_traceback
+      description: 'result traceback'
+      type: String
+    - contextPath: AnsibleAWX.Job.job_template
+      description: 'Job template id of this job'
+      type: Number
+    - contextPath: AnsibleAWX.Job.scm_revision
+      description: 'The SCM Revision from the Project used for this job, if available'
+      type: String
+    - contextPath: AnsibleAWX.Job.instance_group
+      description: 'The Instance group the job was run under'
+      type: Number
+    - contextPath: AnsibleAWX.Job.credential
+      description: 'Credential id that allow Tower to access the node this job will be ran against'
+      type: Number
   - arguments:
     - default: false
       description: job event id
@@ -367,7 +988,7 @@ script:
       secret: false
     - default: true
       defaultValue: '50'
-      description: Default size is 50
+      description: Page size, default value is 50
       isArray: false
       name: page_size
       required: false
@@ -383,6 +1004,70 @@ script:
     description: Retrieve the list of job events.
     execution: false
     name: ansible-tower-job-events-list
+    outputs:
+    - contextPath: AnsibleAWX.JobEvents.id
+      description: 'Database ID for this job event'
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.type
+      description: ' Data type for this job event'
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.url
+      description: 'URL for this job event'
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.created
+      description: 'Timestamp when this job event was created'
+      type: Date
+    - contextPath: AnsibleAWX.JobEvents.modified
+      description: 'Timestamp when this job event was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.JobEvents.job
+      description: 'Job id'
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.event
+      description: 'The specific event. Example - runner_on_failed (Host Failed), runner_on_start (Host Started) etc.'
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.counter
+      description: 'Job event counter'
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.event_display
+      description: 'Event display. Example- Playbook Started'
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.event_level
+      description: 'Number represent the event level'
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.failed
+      description: 'Whether the job failed'
+      type: Boolean
+    - contextPath: AnsibleAWX.JobEvents.changed
+      description: 'Whether the job changed'
+      type: Boolean
+    - contextPath: AnsibleAWX.JobEvents.uuid
+      description: 'uuid of the job event'
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.parent_uuid
+      description: 'parent uuid'
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.host
+      description: 'Host id associated to the event'
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.host_name
+      description: 'Host name associated to the event'
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.playbook
+      description: 'Playbook name of this job'
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.task
+      description: 'Task name'
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.stdout
+      description: 'Stdout of the job'
+      type: String
+    - contextPath: AnsibleAWX.JobEvents.start_line
+      description: 'Start line number of execution'
+      type: Number
+    - contextPath: AnsibleAWX.JobEvents.end_line
+      description: 'End line number of execution'
+      type: Number
   - arguments:
     - default: false
       description: inventory id
@@ -437,11 +1122,74 @@ script:
     name: ansible-tower-adhoc-command-launch
     outputs:
     - contextPath: AnsibleAWX.AdhocCommand.id
-      description: Ad hoc command id
-      type: Unknown
+      description: 'Database ID for this ad hoc command'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.type
+      description: 'Data type for this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.url
+      description: 'URL for this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.created
+      description: 'Timestamp when this ad hoc command was created'
+      type: Date
+    - contextPath: AnsibleAWX.AdhocCommand.modified
+      description: 'Timestamp when this ad hoc command was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.AdhocCommand.name
+      description: 'Name of this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.launch_type
+      description: 'Launch type- manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, scm'
+      type: String
     - contextPath: AnsibleAWX.AdhocCommand.status
-      description: 'Ad hoc command status '
+      description: 'Status - new, pending, waiting, running, successful, failed, error, canceled, never updated'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.failed
+      description: 'Whether the job failed'
+      type: Boolean
+    - contextPath: AnsibleAWX.AdhocCommand.started
+      description: 'The date and time the job was queued for starting'
       type: Unknown
+    - contextPath: AnsibleAWX.AdhocCommand.finished
+      description: 'The date and time the job finished execution'
+      type: Unknown
+    - contextPath: AnsibleAWX.AdhocCommand.elapsed
+      description: 'Elapsed time in seconds that the job ran'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.job_explanation
+      description: 'A status field to indicate the state of the job if it was not able to run and capture stdout'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.execution_node
+      description: 'The node the job executed on'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.controller_node
+      description: 'The instance that managed the isolated execution environment'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.job_type
+      description: 'Job type- run/check'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.limit
+      description: 'Provide a host pattern to further constraint the list of hosts that will managed or affected by the playbook'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.credential
+      description: 'Credential id that allow Tower to access the node this job will be ran against'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.module_name
+      description: 'Selected module name'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.module_args
+      description: 'Module arguments'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.extra_vars
+      description: 'Extra variables needed for that module running'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.become_enabled
+      description: 'Whether the ad hoc command become enabled'
+      type: Boolean
   - arguments:
     - default: false
       description: command id
@@ -453,6 +1201,76 @@ script:
     description: Launch a new job to run the ad hoc command
     execution: false
     name: ansible-tower-adhoc-command-relaunch
+    outputs:
+    - contextPath: AnsibleAWX.AdhocCommand.id
+      description: 'Database ID for this ad hoc command'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.type
+      description: 'Data type for this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.url
+      description: 'URL for this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.created
+      description: 'Timestamp when this ad hoc command was created'
+      type: Date
+    - contextPath: AnsibleAWX.AdhocCommand.modified
+      description: 'Timestamp when this ad hoc command was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.AdhocCommand.name
+      description: 'Name of this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.launch_type
+      description: 'Launch type- manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, scm'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.status
+      description: 'Status - new, pending, waiting, running, successful, failed, error, canceled, never updated'
+      type: String
+   - contextPath: AnsibleAWX.AdhocCommand.failed
+      description: 'Whether the job failed'
+      type: Boolean
+    - contextPath: AnsibleAWX.AdhocCommand.started
+      description: 'The date and time the job was queued for starting'
+      type: Unknown
+    - contextPath: AnsibleAWX.AdhocCommand.finished
+      description: 'The date and time the job finished execution'
+      type: Unknown
+    - contextPath: AnsibleAWX.AdhocCommand.elapsed
+      description: 'Elapsed time in seconds that the job ran'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.job_explanation
+      description: 'A status field to indicate the state of the job if it was not able to run and capture stdout'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.execution_node
+      description: 'The node the job executed on'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.controller_node
+      description: 'The instance that managed the isolated execution environment'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.job_type
+      description: 'Job type- run/check'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.limit
+      description: 'Provide a host pattern to further constraint the list of hosts that will managed or affected by the playbook'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.credential
+      description: 'Credential id that allow Tower to access the node this job will be ran against'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.module_name
+      description: 'Selected module name'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.module_args
+      description: 'Module arguments'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.extra_vars
+      description: 'Extra variables needed for that module running'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.become_enabled
+      description: 'Whether the ad hoc command become enabled'
+      type: Boolean
   - arguments:
     - default: false
       description: command id to cancel
@@ -464,6 +1282,85 @@ script:
     description: Cancel a job of the given ad hoc command
     execution: false
     name: ansible-tower-adhoc-command-cancel
+    outputs:
+    - contextPath: AnsibleAWX.AdhocCommand.id
+      description: 'Database ID for this ad hoc command'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.type
+      description: 'Data type for this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.url
+      description: 'URL for this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.created
+      description: 'Timestamp when this ad hoc command was created'
+      type: Date
+    - contextPath: AnsibleAWX.AdhocCommand.modified
+      description: 'Timestamp when this ad hoc command was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.AdhocCommand.name
+      description: 'Name of this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.launch_type
+      description: 'Launch type- manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, scm'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.status
+      description: 'Status - new, pending, waiting, running, successful, failed, error, canceled, never updated'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.failed
+      description: 'Whether the job failed'
+      type: Boolean
+    - contextPath: AnsibleAWX.AdhocCommand.started
+      description: 'The date and time the job was queued for starting'
+      type: Unknown
+    - contextPath: AnsibleAWX.AdhocCommand.finished
+      description: 'The date and time the job finished execution'
+      type: Unknown
+    - contextPath: AnsibleAWX.AdhocCommand.elapsed
+      description: 'Elapsed time in seconds that the job ran'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.job_args
+      description: 'Job arguments'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.job_cwd
+      description: 'CWD of the job'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.job_explanation
+      description: 'A status field to indicate the state of the job if it was not able to run and capture stdout'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.execution_node
+      description: 'The node the job executed on'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.controller_node
+      description: 'The instance that managed the isolated execution environment'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.result_traceback
+      description: 'result traceback'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.job_type
+      description: 'Job type- run/check'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.limit
+      description: 'Provide a host pattern to further constraint the list of hosts that will managed or affected by the playbook'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.credential
+      description: 'Credential id that allow Tower to access the node this job will be ran against'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.module_name
+      description: 'Selected module name'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.module_args
+      description: 'Module arguments'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.extra_vars
+      description: 'Extra variables needed for that module running'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.become_enabled
+      description: 'Whether the ad hoc command become enabled'
+      type: Boolean
   - arguments:
     - default: false
       description: command id
@@ -492,6 +1389,10 @@ script:
     description: Retrieve the stdout from running this ad hoc command.
     execution: false
     name: ansible-tower-adhoc-command-stdout
+    outputs:
+    - contextPath: AnsibleAWX.AdhocCommandStdout.content
+      description: 'Stdout content'
+      type: String
   - arguments:
     - default: false
       description: Command id
@@ -503,6 +1404,85 @@ script:
     description: Retrieve a single ad hoc command status
     execution: false
     name: ansible-tower-adhoc-command-status
+    outputs:
+    - contextPath: AnsibleAWX.AdhocCommand.id
+      description: 'Database ID for this ad hoc command'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.type
+      description: 'Data type for this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.url
+      description: 'URL for this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.created
+      description: 'Timestamp when this ad hoc command was created'
+      type: Date
+    - contextPath: AnsibleAWX.AdhocCommand.modified
+      description: 'Timestamp when this ad hoc command was last modified'
+      type: Date
+    - contextPath: AnsibleAWX.AdhocCommand.name
+      description: 'Name of this ad hoc command'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.launch_type
+      description: 'Launch type- manual, relaunch, callback, scheduled, dependency, workflow, webhook, sync, scm'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.status
+      description: 'Status - new, pending, waiting, running, successful, failed, error, canceled, never updated'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.failed
+      description: 'Whether the job failed'
+      type: Boolean
+    - contextPath: AnsibleAWX.AdhocCommand.started
+      description: 'The date and time the job was queued for starting'
+      type: Unknown
+    - contextPath: AnsibleAWX.AdhocCommand.finished
+      description: 'The date and time the job finished execution'
+      type: Unknown
+    - contextPath: AnsibleAWX.AdhocCommand.elapsed
+      description: 'Elapsed time in seconds that the job ran'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.job_args
+      description: 'Job arguments'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.job_cwd
+      description: 'CWD of the job'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.job_explanation
+      description: 'A status field to indicate the state of the job if it was not able to run and capture stdout'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.execution_node
+      description: 'The node the job executed on'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.controller_node
+      description: 'The instance that managed the isolated execution environment'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.result_traceback
+      description: 'result traceback'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.job_type
+      description: 'Job type- run/check'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.inventory
+      description: 'Inventory id'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.limit
+      description: 'Provide a host pattern to further constraint the list of hosts that will managed or affected by the playbook'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.credential
+      description: 'Credential id that allow Tower to access the node this job will be ran against'
+      type: Number
+    - contextPath: AnsibleAWX.AdhocCommand.module_name
+      description: 'Selected module name'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.module_args
+      description: 'Module arguments'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.extra_vars
+      description: 'Extra variables needed for that module running'
+      type: String
+    - contextPath: AnsibleAWX.AdhocCommand.become_enabled
+      description: 'Whether the ad hoc command become enabled'
+      type: Boolean
   dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
