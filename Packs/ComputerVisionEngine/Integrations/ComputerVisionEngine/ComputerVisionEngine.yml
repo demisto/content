@@ -31,14 +31,14 @@ script:
       description: minimum probability to filter weak detections
       isArray: false
       name: confidence
-      required: true
+      required: false
       secret: false
     - default: false
       defaultValue: '0.3'
-      description: threshold when applying non-maxima suppres
+      description: threshold when applying non-maxima suppression
       isArray: false
       name: threshold
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: Detect objects on an picture using the yolo-coco ML
