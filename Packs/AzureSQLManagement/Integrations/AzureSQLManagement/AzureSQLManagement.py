@@ -265,14 +265,7 @@ def azure_sql_db_audit_policy_list_command(client: Client, args: Dict[str, str])
 
 
 @logger
-def azure_sql_db_audit_policy_create_update_command(client: Client, server_name: str, db_name: str,
-                                                    state: str, audit_actions_groups: str = None,
-                                                    is_azure_monitor_target_enabled: str = None,
-                                                    is_storage_secondary_key_in_use: str = None,
-                                                    queue_delay_ms: str = None,
-                                                    retention_days: str = None, storage_account_access_key: str = None,
-                                                    storage_account_subscription_id: str = None,
-                                                    storage_endpoint: str = None) -> CommandResults:
+def azure_sql_db_audit_policy_create_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """azure_sql_db_audit_policy_create_update command: Upadate and create audit policies related to the server
     and database
 
@@ -301,11 +294,17 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, server_name:
 
     """
 
-    audit_actions_groups = audit_actions_groups if not audit_actions_groups else argToList(audit_actions_groups)
-    is_azure_monitor_target_enabled = is_azure_monitor_target_enabled if not is_azure_monitor_target_enabled \
-        else argToBoolean(is_azure_monitor_target_enabled)
-    is_storage_secondary_key_in_use = is_storage_secondary_key_in_use if not is_storage_secondary_key_in_use \
-        else argToBoolean(is_storage_secondary_key_in_use)
+    server_name = args.get('server_name')
+    db_name = args.get('db_name')
+    state = args.get('state')
+    audit_actions_groups = argToList(args.get('audit_actions_groups', ''))
+    is_azure_monitor_target_enabled = argToBoolean(args.get('is_azure_monitor_target_enabled', ''))
+    is_storage_secondary_key_in_use = argToBoolean(args.get('is_storage_secondary_key_in_use', ''))
+    queue_delay_ms = args.get('queue_delay_ms', '')
+    retention_days = args.get('retention_days', '')
+    storage_account_access_key = args.get('storage_account_access_key', '')
+    storage_account_subscription_id = args.get('storage_account_subscription_id', '')
+    storage_endpoint = args.get('storage_endpoint', '')
 
     response = client.azure_sql_db_audit_policy_create_update(server_name=server_name, db_name=db_name, state=state,
                                                               audit_actions_groups=audit_actions_groups,
@@ -335,7 +334,7 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, server_name:
 
 
 @logger
-def azure_sql_db_threat_policy_get_command(client: Client, server_name: str, db_name: str) -> CommandResults:
+def azure_sql_db_threat_policy_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """azure_sql_db_threat_policy_get command: Returns a threat detection policies of a database
 
     :type client: ``Client``
@@ -351,7 +350,8 @@ def azure_sql_db_threat_policy_get_command(client: Client, server_name: str, db_
         server_name: server name for which we want to receive threat detection policies
         db_name: database for which we want to receive threat detection policies
     """
-
+    server_name = args.get('server_name')
+    db_name = args.get('db_name')
     threat_list = client.azure_sql_db_threat_policy_get(server_name, db_name)
     threat = copy.deepcopy(threat_list)
 
@@ -373,13 +373,14 @@ def azure_sql_db_threat_policy_get_command(client: Client, server_name: str, db_
 
 
 @logger
-def azure_sql_db_threat_policy_create_update_command(client: Client, server_name: str, db_name: str,
-                                                     state: str, disabled_alerts: str = '',
+def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[str, str],
+
+                                                     disabled_alerts: str = '',
                                                      email_account_admins: str = '',
                                                      email_addresses: str = '',
-                                                     retention_days: str = '', storage_account_access_key: str = '',
+                                                    storage_account_access_key: str = '',
                                                      use_server_default: str = '',
-                                                     storage_endpoint: str = '') -> CommandResults:
+                                                     ) -> CommandResults:
     """azure_sql_db_audit_policy_create_update command: Upadate and create audit policies related to the server
         and database
 
@@ -407,15 +408,21 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, server_name
             storage_endpoint: Storage endpoint.
 
         """
-    disabled_alerts_list: List[str] = []
-    if disabled_alerts:
-        disabled_alerts_list = argToList(disabled_alerts)
-        if disabled_alerts_list[0] == 'None':
-            disabled_alerts_list = [""]
-    email_addresses = email_addresses if not email_addresses else argToList(email_addresses)
+    server_name = args.get('server_name')
+    db_name = args.get('db_name')
+    state = args.get('state')
+    retention_days = args.get('retention_days', '')
+    email_account_admins = args.get('email_account_admins', '')
+    email_addresses = argToList(args.get('email_addresses', ''))
+    storage_account_access_key = args.get('storage_account_access_key', '')
+    use_server_default = args.get('use_server_default', '')
+    storage_endpoint = args.get('storage_endpoint', '')
+    disabled_alerts = argToList(args.get('disabled_alerts', ''))
+    if disabled_alerts and disabled_alerts[0] == 'None':
+        disabled_alerts = [""]
 
     response = client.azure_sql_db_threat_policy_create_update(server_name=server_name, db_name=db_name, state=state,
-                                                               disabled_alerts=disabled_alerts_list,
+                                                               disabled_alerts=disabled_alerts,
                                                                email_account_admins=email_account_admins,
                                                                email_addresses=email_addresses,
                                                                retention_days=retention_days,
