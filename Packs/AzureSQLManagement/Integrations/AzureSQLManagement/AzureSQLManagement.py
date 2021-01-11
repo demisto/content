@@ -187,15 +187,17 @@ def azure_sql_db_list_command(client: Client, args: Dict[str, str]) -> CommandRe
 
     offset_int = int(args.get('offset', '0'))
     limit_int = int(args.get('limit', '50'))
-    database_list = client.azure_sql_db_list(args.get('server_name'))
-    database_list_values = copy.deepcopy(database_list.get('value', '')[offset_int:(offset_int + limit_int)])
-    for db in database_list_values:
+
+    database_list_raw = client.azure_sql_db_list(args.get('server_name'))
+    database_list_fixed = copy.deepcopy(database_list_raw.get('value', '')[offset_int:(offset_int + limit_int)])
+
+    for db in database_list_fixed:
         properties = db.get('properties', {})
         if properties:
             db.update(properties)
             del db['properties']
 
-    human_readable = tableToMarkdown(name='Database List', t=database_list_values,
+    human_readable = tableToMarkdown(name='Database List', t=database_list_fixed,
                                      headers=['id', 'databaseId', 'name', 'location', 'status', 'managedBy'],
                                      headerTransform=pascalToSpace, removeNull=True)
 
@@ -203,8 +205,8 @@ def azure_sql_db_list_command(client: Client, args: Dict[str, str]) -> CommandRe
         readable_output=human_readable,
         outputs_prefix='AzureSQL.DB',
         outputs_key_field='id',
-        outputs=database_list_values,
-        raw_response=database_list
+        outputs=database_list_fixed,
+        raw_response=database_list_raw
     )
 
 
@@ -232,23 +234,22 @@ def azure_sql_db_audit_policy_list_command(client: Client, args: Dict[str, str])
     db_name = args.get('db_name')
     offset_int = int(args.get('offset', '0'))
     limit_int = int(args.get('limit', '50'))
-    audit_list = client.azure_sql_db_audit_policy_list(server_name, db_name)
-    audit_list_values = copy.deepcopy(audit_list.get('value', '')[offset_int:(offset_int + limit_int)])
-    for db in audit_list_values:
-        properties = db.get('properties', {})
-        if properties:
+    audit_list_raw = client.azure_sql_db_audit_policy_list(server_name, db_name)
+    audit_list_fixed = copy.deepcopy(audit_list_raw.get('value', '')[offset_int:(offset_int + limit_int)])
+    for db in audit_list_fixed:
+        if properties := db.get('properties', {}):
             db.update(properties)
             del db['properties']
 
-    human_readable = tableToMarkdown(name='Database Audit Settings', t=audit_list_values,
+    human_readable = tableToMarkdown(name='Database Audit Settings', t=audit_list_fixed,
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='AzureSQL.DbAuditPolicy',
         outputs_key_field='id',
-        outputs=audit_list_values,
-        raw_response=audit_list
+        outputs=audit_list_fixed,
+        raw_response=audit_list_raw
     )
 
 
