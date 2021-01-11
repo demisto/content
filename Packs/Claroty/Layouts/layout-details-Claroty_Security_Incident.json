@@ -296,14 +296,6 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "clarotydepartment",
-								"height": 24,
-								"id": "20a7b6b0-501c-11ea-bd57-b106752e2e78",
-								"index": 0,
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
 								"fieldId": "clarotycategory",
 								"height": 24,
 								"id": "fde294b0-5269-11ea-8b07-bf84a27b9e16",

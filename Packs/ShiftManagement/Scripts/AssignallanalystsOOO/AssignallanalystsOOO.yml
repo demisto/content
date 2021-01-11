@@ -1,0 +1,37 @@
+commonfields:
+  id: AssignallanalystsOOO
+  version: -1
+name: AssignallanalystsOOO
+script: ''
+type: python
+tags:
+- Shift Management
+comment: |-
+  Assign all the analysts to incident with consideration of PTO, OOO, or Disabled Users.
+  Users can use the OutOfOffice automation to add or remove themselves from the list.
+enabled: true
+args:
+- name: roles
+  description: The optional list of roles we want to assign users from. Can accept
+    arrays or comma separated list. Leave empty to fetch all users.
+  isArray: true
+- name: oncall
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true to assign only user that is currently on shift. Requires
+    Cortex XSOAR v5.5 or later.
+  defaultValue: "false"
+- name: listname
+  description: Optionally specify the XSOAR list name to verify against (default is
+    OOO List)
+  defaultValue: OOO List
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.1.14969
+runas: DBotRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
