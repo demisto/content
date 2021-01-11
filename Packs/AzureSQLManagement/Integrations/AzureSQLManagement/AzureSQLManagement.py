@@ -108,20 +108,14 @@ class Client:
                                                  email_addresses: List[str], retention_days: str,
                                                  storage_account_access_key: str,
                                                  use_server_default: str, storage_endpoint: str):
-        arg_list = {
-            "state": state,
-            "retentionDays": retention_days,
-            "storageAccountAccessKey": storage_account_access_key,
-            "storageEndpoint": storage_endpoint,
-            "disabledAlerts": disabled_alerts,
-            "emailAccountAdmins": email_account_admins,
-            "emailAddresses": email_addresses,
-            "useServerDefault": use_server_default
-        }
-        properties = {}
-        for arg_key, arg_val in arg_list.items():
-            if arg_val:
-                properties[arg_key] = arg_val
+        properties = assign_params(state=state,
+                                   retentionDays=retention_days,
+                                   storageAccountAccessKey=storage_account_access_key,
+                                   storageEndpoint=storage_endpoint,
+                                   disabledAlerts=disabled_alerts,
+                                   emailAccountAdmins=email_account_admins,
+                                   emailAddresses=email_addresses,
+                                   useServerDefault=use_server_default)
 
         request_body = {'properties': properties} if properties else {}
 
