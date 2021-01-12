@@ -111,14 +111,14 @@ EXPECTED_UPDATE_TICKET = {
         'ID': 'sys_id', 'Summary': 'Trouble getting to Oregon mail server',
         'Number': 'INC0000039', 'CreatedOn': '2019-09-05 00:42:29', 'Active': 'true', 'OpenedAt': '2019-09-05 00:41:01',
         'OpenedBy': 'test', 'Creator': 'test',
-        'Priority': '4 - Low', 'State': '1'
+        'Priority': '4 - Low', 'State': '1', 'Impact': '2'
     }
 }
 EXPECTED_UPDATE_TICKET_SC_REQ = {
     'ServiceNow.Ticket(val.ID===obj.ID)': {
         'ID': '1234', 'Summary': 'Microsoft Access', 'Number': 'RITM0010028', 'CreatedOn': '2020-04-16 15:33:00',
         'Active': 'true', 'OpenedAt': '2020-04-16 15:33:00', 'OpenedBy': 'admin',
-        'Creator': 'admin', 'Priority': '4 - Low', 'State': '1'
+        'Creator': 'admin', 'Priority': '4 - Low', 'State': '1', 'Approval': 'requested'
     }
 }
 EXPECTED_UPDATE_TICKET_ADDITIONAL = {
@@ -126,14 +126,14 @@ EXPECTED_UPDATE_TICKET_ADDITIONAL = {
         'ID': '1234', 'Summary': 'Trouble getting to Oregon mail server', 'Number': 'INC0000039',
         'CreatedOn': '2019-09-05 00:42:29', 'Active': 'true', 'OpenedAt': '2019-09-05 00:41:01',
         'approval': 'rejected', 'OpenedBy': 'admin', 'Creator': 'admin',
-        'Priority': '5 - Planning', 'State': '1'
+        'Priority': '5 - Planning', 'State': '1', 'Severity': '3', 'Approval: rejected'
     }
 }
 EXPECTED_CREATE_TICKET = {
     'Ticket(val.ID===obj.ID)': {
         'ID': 'sys_id', 'Number': 'INC0010007', 'CreatedOn': '2020-04-06 13:04:44',
         'Active': 'true', 'OpenedAt': '2020-04-06 13:04:44', 'OpenedBy': 'test',
-        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1'
+        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1', 'Severity': '3'
     },
     'ServiceNow.Ticket(val.ID===obj.ID)': {
         'ID': 'sys_id', 'Number': 'INC0010007', 'CreatedOn': '2020-04-06 13:04:44',
