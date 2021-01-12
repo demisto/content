@@ -1,0 +1,27 @@
+{
+    "revision": "1972",
+    "modified": "2021-01-10T08:21:52Z",
+    "packs": [
+        {
+            "id": "A",
+            "price": 10,
+            "vendorId": "A_id",
+            "vendorName": "A_name"
+        },
+        {
+            "id": "B",
+            "price": 10,
+            "vendorId": "B_id",
+            "vendorName": "B_name",
+            "contentCommitHash": "111"
+        },
+        {
+            "id": "C",
+            "price": 10,
+            "vendorId": "C_id",
+            "vendorName": "C_name",
+            "contentCommitHash": "111"
+        }
+    ],
+    "commit": ""
+}

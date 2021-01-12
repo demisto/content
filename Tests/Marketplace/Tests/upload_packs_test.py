@@ -1,6 +1,9 @@
+import json
+import os
+
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_names
+from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs
 
 
 # disable-secrets-detection-start
@@ -495,3 +498,61 @@ class TestCleanPacks:
 
         assert not skipped_cleanup
         shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
+
+
+class TestUpdatedPrivatePacks:
+
+    @staticmethod
+    def get_pack_metadata():
+        metadata_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'metadata.json')
+        with open(metadata_path, 'r') as metadata_file:
+            pack_metadata = json.load(metadata_file)
+
+        return pack_metadata
+
+    @staticmethod
+    def get_index_folder_path():
+        index_json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
+        return index_json_path
+
+    def test_content_commit_hash_diff(self):
+        """
+         Scenario: as part of upload packs flow, we want to find all private packs that were updated during current
+         build run.
+
+         Given
+         - valid public index json
+         - valid 3 metadata of private packs
+
+         When
+         - 2 packs were not updated during current build run
+         - 1 pack was updated during current build run - has (in metadata file) an updated different contentCommitHash
+
+         Then
+         - Ensure that only the last pack was recognized as updated private pack
+         """
+
+        index_folder_path = self.get_index_folder_path()
+        private_packs = []
+
+        # index json has no contentCommitHash for this pack
+        metadata_no_commit_hash = self.get_pack_metadata()
+        metadata_no_commit_hash.update({"contentCommitHash": ""})
+        metadata_no_commit_hash.update({"id": "A"})
+        private_packs.append(metadata_no_commit_hash)
+
+        # index json has the same contentCommitHash for this pack (nothing was updated)
+        metadata_not_updated_commit_hash = self.get_pack_metadata()
+        metadata_not_updated_commit_hash.update({"contentCommitHash": "111"})
+        metadata_not_updated_commit_hash.update({"id": "B"})
+        private_packs.append(metadata_not_updated_commit_hash)
+
+        # index json has an old contentCommitHash for this pack (should be recognize as an updated pack)
+        metadata_updated_commit_hash = self.get_pack_metadata()
+        metadata_updated_commit_hash.update({"contentCommitHash": "222"})
+        metadata_updated_commit_hash.update({"id": "C"})
+        private_packs.append(metadata_updated_commit_hash)
+
+        updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
+        assert len(updated_private_packs) == 1
+        assert updated_private_packs[0] == "C" and updated_private_packs[0] != "A" and updated_private_packs[0] != "B"
