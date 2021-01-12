@@ -1014,7 +1014,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields_keys)
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
-               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments', 'Test_noy']
+               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
     if additional_fields:
         headers.extend(additional_fields_keys)
     human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr_,
