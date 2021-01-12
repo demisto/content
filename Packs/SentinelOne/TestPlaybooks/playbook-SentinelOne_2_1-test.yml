@@ -1349,19 +1349,27 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 39b84878-5bcb-4e9e-8e83-b474651aac90
-    type: regular
+    taskid: 1e3d88bc-c9b8-4be0-8c08-730a1e2558cd
+    type: condition
     task:
-      id: 39b84878-5bcb-4e9e-8e83-b474651aac90
+      id: 1e3d88bc-c9b8-4be0-8c08-730a1e2558cd
       version: -1
-      name: Verify Results - TODO COMPLETE
-      type: regular
+      name: Verify Results
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      "yes":
       - "38"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: SentinelOne.Threat.Total
+            iscontext: true
     view: |-
       {
         "position": {
