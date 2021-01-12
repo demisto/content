@@ -1,22 +1,23 @@
-End point protection
-
+Use the SentinelOne integratation to send requests to your Management Server and responds with data pulled from Agents or from the management database.
+This integration was integrated and tested with versions 2.0 and 2.1 of SentinelOne
 ## Configure SentinelOne V2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for SentinelOne V2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| url | Server URL \(e.g., https://usea1.sentinelone.net\) | True |
-| token | API Token | True |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| fetch_time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
-| fetch_threat_rank | Minimum risk score for importing incidents \(0-10\), where 0 is low risk and 10 is high risk | False |
-| fetch_limit | Fetch limit: the maximum number of incidents to fetch | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | url | Server URL \(e.g., https://usea1.sentinelone.net\) | True |
+    | token | API Token | True |
+    | api_version | API Version. | True |
+    | insecure | Trust any certificate \(not secure\) | False |
+    | proxy | Use system proxy settings | False |
+    | isFetch | Fetch incidents | False |
+    | incidentType | Incident type | False |
+    | fetch_time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
+    | fetch_threat_rank | Minimum risk score for importing incidents \(0-10\), where 0 is low risk and 10 is high risk. Relevant for API version 2.0. | False |
+    | fetch_limit | Fetch limit: the maximum number of incidents to fetch | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -35,8 +36,8 @@ Returns all agents that match the specified criteria.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | computer_name | Filter by computer name. | Optional | 
-| scan_status | CSV list of scan statuses by which to filter the results, for example: "started,aborted". | Optional | 
-| os_type | Included OS types, for example: "windows". | Optional | 
+| scan_status | A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted". Possible values are: started, none, finished, aborted. | Optional | 
+| os_type | Included OS types, for example: "windows". Possible values are: windows, windows_legacy, macos, linux. | Optional | 
 | created_at | Endpoint created at timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | min_active_threats | Minimum number of threats for an agent. | Optional | 
 
@@ -48,7 +49,7 @@ Returns all agents that match the specified criteria.
 | SentinelOne.Agents.NetworkStatus | string | The agent network status. | 
 | SentinelOne.Agents.ID | string | The agent ID. | 
 | SentinelOne.Agents.AgentVersion | string | The agent software version. | 
-| SentinelOne.Agents.IsDecomissioned | boolean | Whether the agent is decommissioned. | 
+| SentinelOne.Agents.IsDecommissioned | boolean | Whether the agent is decommissioned. | 
 | SentinelOne.Agents.IsActive | boolean | Whether the agent is active. | 
 | SentinelOne.Agents.LastActiveDate | date | The last active date of the agent | 
 | SentinelOne.Agents.RegisteredAt | date | The registration date of the agent. | 
@@ -63,10 +64,41 @@ Returns all agents that match the specified criteria.
 
 
 #### Command Example
-``` ```
+```!sentinelone-list-agents```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Agents": {
+            "AgentVersion": "3.1.3.38",
+            "ComputerName": "EC2AMAZ-AJ0KANC",
+            "CreatedAt": "2019-06-27T08:01:05.571895Z",
+            "Domain": "WORKGROUP",
+            "EncryptedApplications": false,
+            "ExternalIP": "8.88.8.8",
+            "ID": "657613730168123595",
+            "IsActive": false,
+            "IsDecommissioned": true,
+            "LastActiveDate": "2020-02-20T00:26:33.955830Z",
+            "NetworkStatus": "connecting",
+            "OSName": "Windows Server 2016",
+            "RegisteredAt": "2019-06-27T08:01:05.567249Z",
+            "SiteName": "demisto",
+            "ThreatCount": 0
+        }
+    }
+}
+```
+
 
 #### Human Readable Output
 
+>### Sentinel One - List of Agents
+>Provides summary information and details for all the agents that matched your search criteria
+>|Agent Version|Computer Name|Created At|Domain|Encrypted Applications|External IP|ID|Is Active|Is Decommissioned|Last Active Date|Network Status|OS Name|Registered At|Site Name|Threat Count|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 3.1.3.38 | EC2AMAZ-AJ0KANC | 2019-06-27T08:01:05.571895Z | WORKGROUP | false | 8.88.8.8 | 657613730168123595 | false | true | 2020-02-20T00:26:33.955830Z | connecting | Windows Server 2016 | 2019-06-27T08:01:05.567249Z | demisto | 0 |
 
 
 ### sentinelone-create-white-list-item
@@ -81,13 +113,13 @@ Creates an exclusion item that matches the specified input filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| exclusion_type | Exclusion item type. Can be "file_type", "path", "white_hash", "certificate", or "browser". | Required | 
+| exclusion_type | Exclusion item type. Can be "file_type", "path", "white_hash", "certificate", or "browser". Possible values are: file_type, path, white_hash, certificate, browser. | Required | 
 | exclusion_value | Value of the exclusion item for the exclusion list. | Required | 
-| os_type | OS type. Can be "windows", "windows_legacy", "macos", or "linux". OS type is required for hash exclusions. | Required | 
+| os_type | OS type. Can be "windows", "windows_legacy", "macos", or "linux". OS type is required for hash exclusions. Possible values are: windows, windows_legacy.macos, linux. | Required | 
 | description | Description for adding the item. | Optional | 
-| exclusion_mode | Exclusion mode (path exclusion only). Can be "suppress", "disable_in_process_monitor_deep", "disable_in_process_monitor", "disable_all_monitors", or "disable_all_monitors_deep". | Optional | 
+| exclusion_mode | Exclusion mode (path exclusion only). Can be "suppress", "disable_in_process_monitor_deep", "disable_in_process_monitor", "disable_all_monitors", or "disable_all_monitors_deep". Possible values are: suppress, disable_in_process_monitor_deep, disable_in_process_monitor, disable_all_monitors, disable_all_monitors_deep. | Optional | 
 | path_exclusion_type | Excluded path for a path exclusion list. | Optional | 
-| group_ids | CSV list of group IDs by which to filter. Can be "site_ids" or "group_ids". | Optional | 
+| group_ids | A comma-separated list of group IDs by which to filter. Can be "site_ids" or "group_ids". | Optional | 
 
 
 #### Context Output
@@ -97,13 +129,6 @@ Creates an exclusion item that matches the specified input filter.
 | SentinelOne.Exclusions.ID | string | The whitelisted entity ID. | 
 | SentinelOne.Exclusions.Type | string | The whitelisted item type. | 
 | SentinelOne.Exclusions.CreatedAt | date | Time when the whitelist item was created. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### sentinelone-get-white-list
@@ -119,9 +144,9 @@ Lists all exclusion items that match the specified input filter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | item_ids | List of IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
-| os_types | CSV list of OS types by which to filter, for example: "windows, linux". | Optional | 
-| exclusion_type | Exclusion type. Can be "file_type", "path", "white_hash", "certificate", "browser". | Optional | 
-| limit | The maximum number of items to return. | Optional | 
+| os_types | A comma-separated list of OS types by which to filter, for example: "windows, linux". Possible values are: windows, windows_legacy, macos, linux. | Optional | 
+| exclusion_type | Exclusion type. Can be "file_type", "path", "white_hash", "certificate", "browser". Possible values are: file_type, path, white_hash, certificate, browser. | Optional | 
+| limit | The maximum number of items to return. Default is 10. | Optional | 
 
 
 #### Context Output
@@ -137,14 +162,39 @@ Lists all exclusion items that match the specified input filter.
 | SentinelOne.Exclusions.UpdatedAt | date | Timestamp when the item was updated | 
 | SentinelOne.Exclusions.OsType | string | OS type. | 
 | SentinelOne.Exclusions.UserName | string | User name of the user that added the item. | 
-| SentinelOne.Exclusions.Mode | string | CSV list of modes by which to filter \(ath exclusions only\), for example: "suppress". | 
+| SentinelOne.Exclusions.Mode | string | A comma-separated list of modes by which to filter \(ath exclusions only\), for example: "suppress". | 
 
 
 #### Command Example
-``` ```
+```!sentinelone-get-white-list os_types=windows exclusion_type=path```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Exclusions": {
+            "CreatedAt": "2020-10-25T14:09:58.928251Z",
+            "ID": "1010040403583584993",
+            "Mode": "suppress",
+            "OsType": "windows",
+            "Source": "user",
+            "Type": "path",
+            "UpdatedAt": "2020-10-25T14:09:58.921789Z",
+            "UserID": "475482955872052394",
+            "UserName": "XSOAR User",
+            "Value": "*/test/"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sentinel One - Listing exclusion items
+>Provides summary information and details for all the exclusion items that matched your search criteria.
+>|CreatedAt|ID|Mode|OsType|Source|Type|UpdatedAt|UserID|UserName|Value|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 2020-10-25T14:09:58.928251Z | 1010040403583584993 | suppress | windows | user | path | 2020-10-25T14:09:58.921789Z | 475482955872052394 | XSOAR User | */test/ |
 
 
 ### sentinelone-get-hash
@@ -168,15 +218,30 @@ Get file reputation by a SHA1 hash.
 | --- | --- | --- |
 | SentinelOne.Hash.Rank | Number | The hash reputation \(1-10\). | 
 | SentinelOne.Hash.Hash | String | The content hash. | 
-| SentinelOne.Hash.Classification | String | The hash classification. | 
-| SentinelOne.Hash.Classification Source | String | The hash classification source. | 
 
 
 #### Command Example
-``` ```
+```!sentinelone-get-hash hash=3395856ce81f2b7382dee72602f798b642f14140```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Hash": {
+            "Hash": "3395856ce81f2b7382dee72602f798b642f14140",
+            "Rank": "7"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sentinel One - Hash Reputation
+>Provides hash reputation (rank from 0 to 10):
+>|Hash|Rank|
+>|---|---|
+>| 3395856ce81f2b7382dee72602f798b642f14140 | 7 |
 
 
 ### sentinelone-get-threats
@@ -192,18 +257,18 @@ Returns threats according to specified filters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | content_hash | The content hash of the threat. | Optional | 
-| mitigation_status | CSV list of mitigation statuses. Can be "mitigated", "active", "blocked", "suspicious", "pending", or "suspicious_resolved". | Optional | 
+| mitigation_status | A comma-separated list of mitigation statuses. Can be "mitigated", "active", "blocked", "suspicious", "pending", or "suspicious_resolved". Possible values are: mitigated, active, blocked, suspicious, pending, suspicious_resolved. | Optional | 
 | created_before | Searches for threats created before this date, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | created_after | Searches for threats created after this date, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | created_until | Searches for threats created on or before this date, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | created_from | Search for threats created on or after this date, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
-| resolved | Whether to only return resolved threats. | Optional | 
-| display_name | Threat display name. Can be a partial display name, not an exact match. | Optional | 
-| limit | The maximum number of threats to return. Default is 20. | Optional | 
+| resolved | Whether to only return resolved threats. Possible values are: false, true. Default is false. | Optional | 
+| display_name | Threat display name. For API version 2.0 can be a partial display name, not an exact match. | Optional | 
+| limit | The maximum number of threats to return. Default is 20. Default is 20. | Optional | 
 | query | Full free-text search for fields. Can be "content_hash", "file_display_name", "file_path", "computer_name", or "uuid". | Optional | 
-| threat_ids | CSV list of threat IDs, for example: "225494730938493804,225494730938493915". | Optional | 
-| classifications |  CSV list of threat classifications to search, for example: "Malware", "Network", "Benign". | Optional | 
-| rank | Risk level threshold to retrieve (1-10). | Optional | 
+| threat_ids | A comma-separated list of threat IDs, for example: "225494730938493804,225494730938493915". | Optional | 
+| classifications |  CSV list of threat classifications to search, for example: "Malware", "Network", "Benign". Possible values are: Engine, Static, Cloud, Behavioral. | Optional | 
+| rank | Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only. | Optional | 
 
 
 #### Context Output
@@ -215,17 +280,70 @@ Returns threats according to specified filters.
 | SentinelOne.Threat.CreatedDate | Date | File created date. | 
 | SentinelOne.Threat.SiteID | String | The site ID. | 
 | SentinelOne.Threat.Classification | string | Classification name. | 
+| SentinelOne.Threat.ClassificationSource | string | Source of the threat Classification. | 
+| SentinelOne.Threat.ConfidenceLevel | string | SentinelOne threat confidence level. | 
+| SentinelOne.Threat.FileSha256 | string | SHA256 hash of file content. | 
 | SentinelOne.Threat.MitigationStatus | String | The agent status. | 
 | SentinelOne.Threat.AgentID | String | The agent ID. | 
 | SentinelOne.Threat.Rank | Number | Number representing cloud reputation \(1-10\). | 
-| SentinelOne.Threat.MarkedAsBenign | Boolean | Whether the threat is marked as benign. | 
+| SentinelOne.Threat.MarkedAsBenign | Boolean | Whether the threat is marked as benign. Relevant for version 2.0 only. | 
 
 
 #### Command Example
-``` ```
+```!sentinelone-get-threats resolved=true```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Threat": [
+            {
+                "AgentComputerName": "EC2AMAZ-AJ0KANC",
+                "AgentID": "657613730168123595",
+                "AgentOsType": "windows",
+                "Classification": "Malware",
+                "ClassificationSource": "Static",
+                "ConfidenceLevel": "malicious",
+                "CreatedDate": "2019-09-15T12:05:49.095889Z",
+                "FileContentHash": "3395856ce81f2b7382dee72602f798b642f14140",
+                "FilePath": "\\Device\\HarddiskVolume1\\Users\\Administrator\\Downloads\\Unconfirmed 123490.crdownload",
+                "ID": "715718962991148224",
+                "MitigationStatus": "mitigated",
+                "SiteID": "475482421366727779",
+                "SiteName": "demisto",
+                "ThreatName": "Unconfirmed 123490.crdownload",
+                "Username": "EC2AMAZ-AJ0KANC\\Administrator"
+            },
+            {
+                "AgentComputerName": "EC2AMAZ-AJ0KANC",
+                "AgentID": "657613730168123595",
+                "AgentOsType": "windows",
+                "Classification": "Malware",
+                "ClassificationSource": "Static",
+                "ConfidenceLevel": "malicious",
+                "CreatedDate": "2019-09-15T12:14:42.440985Z",
+                "FileContentHash": "d8757a0396d05a1d532422827a70a7966c361366",
+                "FilePath": "\\Device\\HarddiskVolume1\\Users\\Administrator\\Downloads\\Ncat Netcat Portable - CHIP-Installer.exe",
+                "ID": "715723437013282014",
+                "MitigationStatus": "mitigated",
+                "SiteID": "475482421366727779",
+                "SiteName": "demisto",
+                "ThreatName": "Ncat Netcat Portable - CHIP-Installer.exe",
+                "Username": "EC2AMAZ-AJ0KANC\\Administrator"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sentinel One - Getting Threat List
+>Provides summary information and details for all the threats that matched your search criteria.
+>|ID|Agent Computer Name|Created Date|Site ID|Site Name|Classification|Mitigation Status|Confidence Level|Agent ID|File Content Hash|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 715718962991148224 | EC2AMAZ-AJ0KANC | 2019-09-15T12:05:49.095889Z | 475482421366727779 | demisto | Malware | mitigated | malicious | 657613730168123595 | 3395856ce81f2b7382dee72602f798b642f14140 |
+>| 715723437013282014 | EC2AMAZ-AJ0KANC | 2019-09-15T12:14:42.440985Z | 475482421366727779 | demisto | Malware | mitigated | malicious | 657613730168123595 | d8757a0396d05a1d532422827a70a7966c361366 |
 
 
 ### sentinelone-threat-summary
@@ -240,25 +358,52 @@ Returns a dashboard threat summary.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_ids | CSV list of group IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
+| group_ids | A comma-separated list of group IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.Threat.Active | Number | Number of active threats in the system. | 
+| SentinelOne.Threat.NotResolved | Number | Number of unresolved threats in the system. | 
+| SentinelOne.Threat.SuspiciousNotMitigatedNotResolved | Number | Number of unmitigated suspicious threats in the system. | 
+| SentinelOne.Threat.SuspiciousNotResolved | Number | Number of unresolved suspicious threats in the system. | 
+| SentinelOne.Threat.Resolved | Number | Number of resolved threats in the system. | 
+| SentinelOne.Threat.InProgress | Number | Number of active threats in the system. | 
 | SentinelOne.Threat.Total | Number | Total number of threats in the system. | 
-| SentinelOne.Threat.Mitigated | Number | Number of mitigated threats in the system. | 
-| SentinelOne.Threat.Suspicious | Number | Number of suspicious threats in the system. | 
-| SentinelOne.Threat.Blocked | Number | Number of blocked threats in the system. | 
+| SentinelOne.Threat.NotMitigated | Number | Number of unmitigated threats in the system. | 
+| SentinelOne.Threat.MaliciousNotResolved | Number | Number of unresolved malicious threats in the system. | 
+| SentinelOne.Threat.NotMitigatedNotResolved | Number | Number of unmitigated and unresolved threats in the system. | 
 
 
 #### Command Example
-``` ```
+```!sentinelone-threat-summary group_ids="475482421375116388,764073410272419896"```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Threat": {
+            "InProgress": 0,
+            "MaliciousNotResolved": 0,
+            "NotMitigated": 0,
+            "NotMitigatedNotResolved": 0,
+            "NotResolved": 0,
+            "Resolved": 14,
+            "SuspiciousNotMitigatedNotResolved": 0,
+            "SuspiciousNotResolved": 0,
+            "Total": 14
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sentinel One - Dashboard Threat Summary
+>|In Progress|Malicious Not Resolved|Not Mitigated|Not Mitigated Not Resolved|Not Resolved|Resolved|Suspicious Not Mitigated Not Resolved|Suspicious Not Resolved|Total|
+>|---|---|---|---|---|---|---|---|---|
+>| 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 14 |
 
 
 ### sentinelone-mark-as-threat
@@ -273,8 +418,8 @@ Mark suspicious threats as threats
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_ids | CSV list of threat IDs. | Optional | 
-| target_scope | Scope to use for exclusions. Can be "site" or "tenant". | Required | 
+| threat_ids | A comma-separated list of threat IDs. | Optional | 
+| target_scope | Scope to use for exclusions. Can be "site" or "tenant". Possible values are: site, tenant. | Required | 
 
 
 #### Context Output
@@ -283,13 +428,6 @@ Mark suspicious threats as threats
 | --- | --- | --- |
 | SentinelOne.Threat.ID | String | The threat ID. | 
 | SentinelOne.Threat.MarkedAsThreat | Boolean | Whether the suspicious threat was successfully marked as a threat. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### sentinelone-mitigate-threat
@@ -317,13 +455,6 @@ Applies a mitigation action to a group of threats that match the specified input
 | SentinelOne.Threat.Mitigation.Action | Number | Number of threats affected. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### sentinelone-resolve-threat
 ***
 Resolves threat using the threat ID.
@@ -336,7 +467,7 @@ Resolves threat using the threat ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| threat_ids | CSV list of threat IDs. | Required | 
+| threat_ids | A comma-separated list of threat IDs. | Required | 
 
 
 #### Context Output
@@ -345,13 +476,6 @@ Resolves threat using the threat ID.
 | --- | --- | --- |
 | SentinelOne.Threat.ID | String | The threat ID. | 
 | SentinelOne.Threat.Resolved | Boolean | Whether the threat was successfully resolved. | 
-
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
 
 ### sentinelone-get-agent
@@ -366,7 +490,7 @@ Returns details of an agent, by agent ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | The agent ID. | Required | 
+| agent_id | A comma-separated list of Agent IDs. | Required | 
 
 
 #### Context Output
@@ -376,7 +500,7 @@ Returns details of an agent, by agent ID.
 | SentinelOne.Agent.NetworkStatus | string | The agent network status. | 
 | SentinelOne.Agent.ID | string | The agent ID. | 
 | SentinelOne.Agent.AgentVersion | string | The agent software version. | 
-| SentinelOne.Agent.IsDecomissioned | boolean | Whether the agent is decommissioned. | 
+| SentinelOne.Agent.IsDecommissioned | boolean | Whether the agent is decommissioned. | 
 | SentinelOne.Agent.IsActive | boolean | Whether the agent is active. | 
 | SentinelOne.Agent.LastActiveDate | date | The last active date of the agent. | 
 | SentinelOne.Agent.RegisteredAt | date | The registration date of the agent. | 
@@ -391,10 +515,39 @@ Returns details of an agent, by agent ID.
 
 
 #### Command Example
-``` ```
+```!sentinelone-get-agent agent_id=657613730168123595```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Agent": {
+            "AgentVersion": "3.1.3.38",
+            "ComputerName": "EC2AMAZ-AJ0KANC",
+            "CreatedAt": "2019-06-27T08:01:05.571895Z",
+            "Domain": "WORKGROUP",
+            "EncryptedApplications": false,
+            "ExternalIP": "8.88.8.8",
+            "ID": "657613730168123595",
+            "IsActive": false,
+            "IsDecommissioned": true,
+            "LastActiveDate": "2020-02-20T00:26:33.955830Z",
+            "NetworkStatus": "connecting",
+            "OSName": "Windows Server 2016",
+            "RegisteredAt": "2019-06-27T08:01:05.567249Z",
+            "SiteName": "demisto",
+            "ThreatCount": 0
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sentinel One - Get Agent Details
+>|Agent Version|Computer Name|Created At|Domain|Encrypted Applications|External IP|ID|Is Active|Is Decommissioned|Last Active Date|Network Status|OS Name|Registered At|Site Name|Threat Count|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 3.1.3.38 | EC2AMAZ-AJ0KANC | 2019-06-27T08:01:05.571895Z | WORKGROUP | false | 8.88.8.8 | 657613730168123595 | false | true | 2020-02-20T00:26:33.955830Z | connecting | Windows Server 2016 | 2019-06-27T08:01:05.567249Z | demisto | 0 |
 
 
 ### sentinelone-get-sites
@@ -411,15 +564,15 @@ Returns all sites that match the specified criteria.
 | --- | --- | --- |
 | updated_at | Timestamp of last update, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | query | Full-text search for fields: name, account_name. | Optional | 
-| site_type | Site type. Can be "Trial", "Paid", "POC", "DEV", or "NFR". | Optional | 
-| features | Returns sites that support the specified features. Can be "firewall-control", "device-control", or "ioc". | Optional | 
-| state | Site state. Can be "active", "deleted", or "expired". | Optional | 
-| suite | The suite of product features active for this site. Can be "Core" or "Complete". | Optional | 
-| admin_only | Sites to which the user has Admin privileges. | Optional | 
+| site_type | Site type. Can be "Trial", "Paid", "POC", "DEV", or "NFR". Possible values are: Trial, Paid, POC, DEV, NFR. | Optional | 
+| features | Returns sites that support the specified features. Can be "firewall-control", "device-control", or "ioc". Possible values are: firewall-control, device-control, ioc. | Optional | 
+| state | Site state. Can be "active", "deleted", or "expired". Possible values are: active, deleted, expired. | Optional | 
+| suite | The suite of product features active for this site. Can be "Core" or "Complete". Possible values are: Core, Complete. | Optional | 
+| admin_only | Sites to which the user has Admin privileges. Possible values are: true, false. | Optional | 
 | account_id | Account ID, for example: "225494730938493804". | Optional | 
 | site_name | Site name, for example: "My Site". | Optional | 
 | created_at | Timestamp of site creation, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
-| limit | Maximum number of results to return. | Optional | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
 
 
 #### Context Output
@@ -442,10 +595,38 @@ Returns all sites that match the specified criteria.
 
 
 #### Command Example
-``` ```
+```!sentinelone-get-sites```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Site": {
+            "AccountName": "SentinelOne",
+            "ActiveLicenses": 0,
+            "CreatedAt": "2018-10-19T00:58:41.644879Z",
+            "Creator": "XSOAR User",
+            "Expiration": null,
+            "HealthStatus": true,
+            "ID": "475482421366727779",
+            "Name": "demisto",
+            "State": "active",
+            "Suite": "Complete",
+            "TotalLicenses": 0,
+            "Type": "Paid",
+            "UnlimitedLicenses": true
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sentinel One - Getting List of Sites
+>Provides summary information and details for all sites that matched your search criteria.
+>|Account Name|Active Licenses|Created At|Creator|Health Status|ID|Name|State|Suite|Total Licenses|Type|Unlimited Licenses|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| SentinelOne | 0 | 2018-10-19T00:58:41.644879Z | XSOAR User | true | 475482421366727779 | demisto | active | Complete | 0 | Paid | true |
 
 
 ### sentinelone-get-site
@@ -485,10 +666,40 @@ Returns a site, by site ID.
 
 
 #### Command Example
-``` ```
+```!sentinelone-get-site site_id=475482421366727779```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Site": {
+            "AccountID": "433241117337583618",
+            "AccountName": "SentinelOne",
+            "ActiveLicenses": 0,
+            "CreatedAt": "2018-10-19T00:58:41.644879Z",
+            "Creator": "XSOAR User",
+            "Expiration": null,
+            "HealthStatus": true,
+            "ID": "475482421366727779",
+            "IsDefault": false,
+            "Name": "demisto",
+            "State": "active",
+            "Suite": "Complete",
+            "TotalLicenses": 0,
+            "Type": "Paid",
+            "UnlimitedLicenses": true
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sentinel One - Summary About Site: 475482421366727779
+>Provides summary information and details for specific site ID
+>|Account ID|Account Name|Active Licenses|Created At|Creator|Health Status|ID|Is Default|Name|State|Suite|Total Licenses|Type|Unlimited Licenses|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 433241117337583618 | SentinelOne | 0 | 2018-10-19T00:58:41.644879Z | XSOAR User | true | 475482421366727779 | false | demisto | active | Complete | 0 | Paid | true |
 
 
 ### sentinelone-reactivate-site
@@ -514,13 +725,6 @@ Reactivates an expired site.
 | SentinelOne.Site.Reactivated | boolean | Whether the site was reactivated. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### sentinelone-get-activities
 ***
 Returns a list of activities.
@@ -537,12 +741,12 @@ Returns a list of activities.
 | user_emails | Email address of the user who invoked the activity (if applicable). | Optional | 
 | group_ids | List of Group IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
 | created_until | Return activities created on or before this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
-| include_hidden | Include internal activities hidden from display, for example: "False". | Optional | 
-| activities_ids | CSV list of activity IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
+| include_hidden | Include internal activities hidden from display, for example: "False". Possible values are: true, false. | Optional | 
+| activities_ids | A comma-separated list of activity IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
 | created_before | Return activities created before this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
-| threats_ids | CSV list of threat IDs for which to return activities, for example: "225494730938493804,225494730938493915". | Optional | 
-| activity_types | CSV of activity codes to return, for example: "52,53,71,72". | Optional | 
-| user_ids | CSV list of user IDs for users that invoked the activity (if applicable), for example: "225494730938493804,225494730938493915". | Optional | 
+| threats_ids | A comma-separated list of threat IDs for which to return activities, for example: "225494730938493804,225494730938493915". | Optional | 
+| activity_types | A comma-separated list of activity codes to return, for example: "52,53,71,72". | Optional | 
+| user_ids | A comma-separated list of user IDs for users that invoked the activity (if applicable), for example: "225494730938493804,225494730938493915". | Optional | 
 | created_from | Return activities created on or after this timestamp, for example: "2018-02-27T04:49:26.257525Z". | Optional | 
 | created_between | Return activities created within this range (inclusive), for example: "1514978764288-1514978999999". | Optional | 
 | agent_ids | Return activities related to specified agents. Example: "225494730938493804,225494730938493915". | Optional | 
@@ -575,10 +779,121 @@ Returns a list of activities.
 
 
 #### Command Example
-``` ```
+```!sentinelone-get-activities```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Activity": [
+            {
+                "ActivityType": 61,
+                "AgentID": "657613730168123595",
+                "AgentUpdatedVersion": null,
+                "Comments": null,
+                "CreatedAt": "2020-01-12T20:16:44.594737Z",
+                "Data": {
+                    "accountName": "SentinelOne",
+                    "computerName": "EC2AMAZ-AJ0KANC",
+                    "groupName": "Default Group",
+                    "siteName": "demisto",
+                    "username": "XSOAR User",
+                    "uuid": "f431b0a1a8744d2a8a92fc88fa3c13bc"
+                },
+                "Description": null,
+                "GroupID": "475482421375116388",
+                "Hash": null,
+                "ID": "802214365638826164",
+                "OsFamily": null,
+                "PrimaryDescription": "The management user XSOAR User issued a disconnect from network command to the machine EC2AMAZ-AJ0KANC.",
+                "SecondaryDescription": null,
+                "SiteID": "475482421366727779",
+                "ThreatID": null,
+                "UpdatedAt": "2020-01-12T20:16:44.594743Z",
+                "UserID": "475482955872052394"
+            },
+            {
+                "ActivityType": 62,
+                "AgentID": "657613730168123595",
+                "AgentUpdatedVersion": null,
+                "Comments": null,
+                "CreatedAt": "2020-01-12T20:16:46.659017Z",
+                "Data": {
+                    "accountName": "SentinelOne",
+                    "computerName": "EC2AMAZ-AJ0KANC",
+                    "groupName": "Default Group",
+                    "siteName": "demisto",
+                    "username": "XSOAR User",
+                    "uuid": "f431b0a1a8744d2a8a92fc88fa3c13bc"
+                },
+                "Description": null,
+                "GroupID": "475482421375116388",
+                "Hash": null,
+                "ID": "802214382952913086",
+                "OsFamily": null,
+                "PrimaryDescription": "The management user XSOAR User issued a reconnect to network command to the machine EC2AMAZ-AJ0KANC.",
+                "SecondaryDescription": null,
+                "SiteID": "475482421366727779",
+                "ThreatID": null,
+                "UpdatedAt": "2020-01-12T20:16:46.659023Z",
+                "UserID": "475482955872052394"
+            },
+            {
+                "ActivityType": 1002,
+                "AgentID": "657613730168123595",
+                "AgentUpdatedVersion": null,
+                "Comments": null,
+                "CreatedAt": "2020-01-12T20:17:32.040670Z",
+                "Data": {
+                    "computerName": "EC2AMAZ-AJ0KANC"
+                },
+                "Description": null,
+                "GroupID": "475482421375116388",
+                "Hash": null,
+                "ID": "802214763636332743",
+                "OsFamily": null,
+                "PrimaryDescription": "Agent EC2AMAZ-AJ0KANC was connected to network.",
+                "SecondaryDescription": null,
+                "SiteID": "475482421366727779",
+                "ThreatID": null,
+                "UpdatedAt": "2020-01-12T20:17:32.038143Z",
+                "UserID": null
+            },
+            {
+                "ActivityType": 1001,
+                "AgentID": "657613730168123595",
+                "AgentUpdatedVersion": null,
+                "Comments": null,
+                "CreatedAt": "2020-01-12T20:17:42.815619Z",
+                "Data": {
+                    "computerName": "EC2AMAZ-AJ0KANC"
+                },
+                "Description": null,
+                "GroupID": "475482421375116388",
+                "Hash": null,
+                "ID": "802214854023583946",
+                "OsFamily": null,
+                "PrimaryDescription": "Agent EC2AMAZ-AJ0KANC was disconnected from network.",
+                "SecondaryDescription": null,
+                "SiteID": "475482421366727779",
+                "ThreatID": null,
+                "UpdatedAt": "2020-01-12T20:17:42.812834Z",
+                "UserID": null
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sentinel One Activities
+>|ID|Primary Description|Data|User ID|Created At|Updated At|
+>|---|---|---|---|---|---|
+>| 802214365638826164 | The management user XSOAR User issued a disconnect from network command to the machine EC2AMAZ-AJ0KANC. | accountName: SentinelOne<br/>computerName: EC2AMAZ-AJ0KANC<br/>groupName: Default Group<br/>siteName: demisto<br/>username: XSOAR User<br/>uuid: f431b0a1a8744d2a8a92fc88fa3c13bc | 475482955872052394 | 2020-01-12T20:16:44.594737Z | 2020-01-12T20:16:44.594743Z |
+>| 802214382952913086 | The management user XSOAR User issued a reconnect to network command to the machine EC2AMAZ-AJ0KANC. | accountName: SentinelOne<br/>computerName: EC2AMAZ-AJ0KANC<br/>groupName: Default Group<br/>siteName: demisto<br/>username: XSOAR User<br/>uuid: f431b0a1a8744d2a8a92fc88fa3c13bc | 475482955872052394 | 2020-01-12T20:16:46.659017Z | 2020-01-12T20:16:46.659023Z |
+>| 802214763636332743 | Agent EC2AMAZ-AJ0KANC was connected to network. | computerName: EC2AMAZ-AJ0KANC |  | 2020-01-12T20:17:32.040670Z | 2020-01-12T20:17:32.038143Z |
+>| 802214854023583946 | Agent EC2AMAZ-AJ0KANC was disconnected from network. | computerName: EC2AMAZ-AJ0KANC |  | 2020-01-12T20:17:42.815619Z | 2020-01-12T20:17:42.812834Z |
 
 
 ### sentinelone-get-groups
@@ -594,9 +909,9 @@ Returns data for the specified group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_type | Group type, for example: "static". | Optional | 
-| group_ids | CSV list of group IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
+| group_ids | A comma-separated list of group IDs by which to filter, for example: "225494730938493804,225494730938493915". | Optional | 
 | group_id | Group ID by which to filter, for example: "225494730938493804". | Optional | 
-| is_default | Whether this is the default group. | Optional | 
+| is_default | Whether this is the default group. Possible values are: true, false. | Optional | 
 | name | The name of the group. | Optional | 
 | query | Free-text search on fields name. | Optional | 
 | rank | The rank sets the priority of a dynamic group over others, for example, "1", which is the highest priority. | Optional | 
@@ -624,10 +939,39 @@ Returns data for the specified group.
 
 
 #### Command Example
-``` ```
+```!sentinelone-get-groups```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Group": {
+            "createdAt": "2018-10-19T00:58:41.646045Z",
+            "creator": "XSOAR User",
+            "creatorId": "433273625970238486",
+            "filterId": null,
+            "filterName": null,
+            "id": "475482421375116388",
+            "inherits": true,
+            "isDefault": true,
+            "name": "Default Group",
+            "rank": null,
+            "registrationToken": "eyJiOiAiZ184NjJiYWQzNTIwN2ZmNTJmIn0=",
+            "siteId": "475482421366727779",
+            "totalAgents": 0,
+            "type": "static",
+            "updatedAt": "2021-01-02T13:34:58.753880Z"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Sentinel One Groups
+>|Id|Name|Type|Creator|Creator Id|Created At|
+>|---|---|---|---|---|---|
+>| 475482421375116388 | Default Group | static | XSOAR User | 433273625970238486 | 2018-10-19T00:58:41.646045Z |
 
 
 ### sentinelone-move-agent
@@ -688,7 +1032,7 @@ There is no context output for this command.
 
 ### sentinelone-agent-processes
 ***
-Retrieves running processes for a specific agent.
+DEPRECATED - Retrieves running processes for a specific agent.
 
 
 #### Base Command
@@ -713,13 +1057,6 @@ Retrieves running processes for a specific agent.
 | SentinelOne.Agent.executablePath | String | Executable path. | 
 
 
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### sentinelone-connect-agent
 ***
 Connects agents to network.
@@ -732,7 +1069,7 @@ Connects agents to network.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | A CSV list of agent IDs to connect to the network. Run the list-agents command to get a list of agent IDs. | Required | 
+| agent_id | A comma-separated list of agent IDs to connect to the network. Run the list-agents command to get a list of agent IDs. | Required | 
 
 
 #### Context Output
@@ -744,11 +1081,23 @@ Connects agents to network.
 
 
 #### Command Example
-``` ```
+```!sentinelone-connect-agent agent_id=657613730168123595```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Agent": {
+            "ID": "657613730168123595",
+            "NetworkStatus": "connecting"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>1 agent(s) successfully connected to the network.
 
 ### sentinelone-disconnect-agent
 ***
@@ -762,7 +1111,7 @@ Disconnects agents from network.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| agent_id | A CSV list of agent IDs to disconnect from the network. Run the list-agents command to get a list of agent IDs. | Required | 
+| agent_id | A comma-separated list of agent IDs to disconnect from the network. Run the list-agents command to get a list of agent IDs. | Required | 
 
 
 #### Context Output
@@ -774,11 +1123,23 @@ Disconnects agents from network.
 
 
 #### Command Example
-``` ```
+```!sentinelone-disconnect-agent agent_id=657613730168123595```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Agent": {
+            "ID": "657613730168123595",
+            "NetworkStatus": "disconnecting"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>1 agent(s) successfully disconnected from the network.
 
 ### sentinelone-broadcast-message
 ***
@@ -793,10 +1154,10 @@ Broadcasts a message to all agents that match the input filters.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | message | The Message to broadcast to agents. | Required | 
-| active_agent | Whether to only include active agents. Default is "false". | Optional | 
-| group_id | List of Group IDs by which to filter the results. | Optional | 
-| agent_id | A list of Agent IDs by which to filter the results. | Optional | 
-| domain | Included network domains. | Optional | 
+| active_agent | Whether to only include active agents. Default is "false". Possible values are: true, false. | Optional | 
+| group_id | A comma-separated list of Group IDs by which to filter the results. | Optional | 
+| agent_id | A comma-separated list of Agent IDs by which to filter the results. | Optional | 
+| domain | A comma-separated of included network domains. | Optional | 
 
 
 #### Context Output
@@ -804,11 +1165,11 @@ Broadcasts a message to all agents that match the input filters.
 There is no context output for this command.
 
 #### Command Example
-``` ```
+```!sentinelone-broadcast-message message="Hey There, just checking" agent_id=657613730168123595```
 
 #### Human Readable Output
 
-
+>The message was successfully delivered to the agent(s)
 
 ### sentinelone-get-events
 ***
@@ -822,7 +1183,7 @@ Returns all Deep Visibility events that match the query.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of items to return (1-100). Default is "50". | Optional | 
+| limit | Maximum number of items to return (1-100). Default is "50". Default is 50. | Optional | 
 | query_id | QueryId obtained when creating a query in the sentinelone-create-query command. Example: "q1xx2xx3". | Required | 
 
 
@@ -847,11 +1208,11 @@ Returns all Deep Visibility events that match the query.
 
 
 #### Command Example
-``` ```
+```!sentinelone-get-events query_id=q034ae362a30eba5a187cbe601d19abaa```
 
 #### Human Readable Output
 
-
+>No events were found.
 
 ### sentinelone-create-query
 ***
@@ -866,7 +1227,7 @@ Runs a Deep Visibility Query and returns the queryId. You can use the queryId fo
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query string for which to return events. | Required | 
-| from_date | Query start date, for example, "2019-08-03T04:49:26.257525Z". | Required | 
+| from_date | Query start date, for example, "2019-08-03T04:49:26.257525Z". Limited to 93 ago. | Required | 
 | to_date | Query end date, for example, "2019-08-03T04:49:26.257525Z". | Required | 
 
 
@@ -881,11 +1242,25 @@ Runs a Deep Visibility Query and returns the queryId. You can use the queryId fo
 
 
 #### Command Example
-``` ```
+```!sentinelone-create-query query="AgentName Is Not Empty" from_date="2020-10-13T15:24:09.257Z" to_date="2021-01-10T04:49:26.257525Z"```
+
+#### Context Example
+```json
+{
+    "SentinelOne": {
+        "Query": {
+            "FromDate": "2020-10-13T15:24:09.257Z",
+            "Query": "AgentName Is Not Empty",
+            "QueryID": "q15a9c0b5a5f2081188e70c42897ef5f9",
+            "ToDate": "2021-01-10T04:49:26.257525Z"
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
-
+>The query ID is q15a9c0b5a5f2081188e70c42897ef5f9
 
 ### sentinelone-get-processes
 ***
@@ -900,7 +1275,7 @@ Returns a list of Deep Visibility events from query by event type - process.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query_id | The queryId that is returned when creating a query under Create Query. Example: "q1xx2xx3". Get the query_id from the "get-query-id" command. | Required | 
-| limit | Maximum number of items to return (1-100). Default is "50". | Optional | 
+| limit | Maximum number of items to return (1-100). Default is "50". Default is 50. | Optional | 
 
 
 #### Context Output
@@ -927,10 +1302,7 @@ Returns a list of Deep Visibility events from query by event type - process.
 
 
 #### Command Example
-``` ```
-
-#### Human Readable Output
-
+```!sentinelone-get-processes query_id=q034ae362a30eba5a187cbe601d19abaa```
 
 
 ### sentinelone-shutdown-agent
@@ -946,7 +1318,7 @@ Sends a shutdown command to all agents that match the input filter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | A free-text search term, will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term  (not if they contain the search term). | Optional | 
-| agent_id | A CSV list of agents IDs to shutdown. | Optional | 
+| agent_id | A comma-separated list of agents IDs to shutdown. | Optional | 
 | group_id | The ID of the network group. | Optional | 
 
 
@@ -977,17 +1349,11 @@ Sends an uninstall command to all agents that match the input filter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | A free-text search term, will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term  (not if they contain the search term). | Optional | 
-| agent_id | A CSV list of agents IDs to shutdown. | Optional | 
+| agent_id | A comma-separated list of agents IDs to shutdown. | Optional | 
 | group_id | The ID of the network group. | Optional | 
 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
 
