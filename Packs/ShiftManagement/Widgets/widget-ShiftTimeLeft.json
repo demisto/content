@@ -1,8 +1,8 @@
 {
   "id": "ShiftTimeLeft",
-  "name": "Shift Time Left",
+  "name": "Shift changes in",
   "dataType": "scripts",
-  "widgetType": "text",
+  "widgetType": "duration",
   "query": "TimeToNextShift",
   "version": -1,
   "description": "Shows how much time left for the shift to ends.",

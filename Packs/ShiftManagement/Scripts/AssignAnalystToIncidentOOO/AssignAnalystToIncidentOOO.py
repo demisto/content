@@ -28,6 +28,7 @@ non_OOO_list = [x['username'] for x in userinfo if x['username'] not in list_inf
 # Assign user to the Incident, if there is anyone to assign
 if not non_OOO_list:
     return_error(message="No users to assign")
+
 elif assign_all:
     # set the first user to be the owner
     owner = non_OOO_list[0]
