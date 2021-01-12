@@ -1,8 +1,8 @@
 {
-  "id": "indicator_intel471_forumPostTotalCount",
+  "id": "indicator_intel471forumposttotalcount",
   "version": -1,
   "modified": "2020-05-06T12:29:08.320428307Z",
-  "name": "Intel471 Forum Post Total Count",
+  "name": "Forum Post Total Count",
   "ownerOnly": false,
   "placeholder": "",
   "description": "",

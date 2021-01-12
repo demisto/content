@@ -3,6 +3,10 @@ commonfields:
   id: Intel471 Actors Feed
   version: -1
 configuration:
+- display: Username
+  name: credentials
+  required: false
+  type: 9
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed
@@ -62,11 +66,6 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: Type of the indicator in the feed.
-  display: Indicator Type
-  name: indicator_type
-  required: false
-  type: 0
 - additionalinfo: Free text actor search (all fields included).
   display: Actor
   name: actor
@@ -79,27 +78,6 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- additionalinfo: 'Long unix time. Search indicators with activity range overlapping given time (including). Object fields: activity.first and activity.last. Empty indicates unbounded. Examples: 1569314472407, 24hours, 1day'
-  display: Start Time
-  name: from
-  required: false
-  type: 0
-- additionalinfo: 'Long unix time. Search indicators with activity range overlapping given time (including). Object fields: activity.first and activity.last. Empty indicates unbounded. Examples: 1569314472407, 24hours, 1day'
-  display: End Time
-  name: until
-  required: false
-  type: 0
-- display: Username
-  name: credentials
-  required: false
-  type: 9
-- additionalinfo: JMESPath expression for extracting the indicators. You can use http://jmespath.org/
-    to identify the proper expression.
-  display: JMESPath Extractor
-  name: extractor
-  required: true
-  type: 0
-  defaultvalue: "*"
 - additionalinfo: The JSON attribute that holds the indicator value. Default value
     is 'indicator'.
   display: JSON Indicator Attribute

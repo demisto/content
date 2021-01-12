@@ -15,10 +15,10 @@ MAPPING = {
     'lastUpdated': 'updateddate',
     'activeFrom': 'activefrom',
     'activeUntil': 'activeuntil',
-    'links_forumTotalCount': 'forumtotalcount',
-    'links_forumPostTotalCount': 'forumposttotalcount',
+    'links_forumTotalCount': 'intel471forumtotalcount',
+    'links_forumPostTotalCount': 'intel471forumposttotalcount',
     'links_reportTotalCount': 'intel471reporttotalcount',
-    'links_instantMessageTotalCount': 'instantmessagetotalcount',
+    'links_instantMessageTotalCount': 'intel471instantmessagetotalcount',
 }
 
 
@@ -127,15 +127,14 @@ def custom_handle_indicator(client: Client, item: Dict, feed_config: Dict, servi
 
     for forum_item in attributes.get(indicator_field, []):
         value = f"{forum_item.get('actorHandle', '')} ({forum_item.get('name', '')})"
-        indicator_copy = indicator.copy()
-        indicator_copy['value'] = forum_item.get('actorHandle', '')
+        indicator['value'] = forum_item.get('actorHandle', '')
         attributes['handles'].append(value)
 
         if mapping:
-            mapping_function(mapping, indicator_copy, attributes)
-        indicator_copy['rawJSON'] = item
+            mapping_function(mapping, indicator, attributes)
+        indicator['rawJSON'] = item
 
-        indicator_list.append(indicator_copy)
+        indicator_list.append(indicator)
     return indicator_list
 
 

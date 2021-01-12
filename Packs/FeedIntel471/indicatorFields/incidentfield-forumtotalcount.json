@@ -1,8 +1,8 @@
 {
-  "id": "indicator_intel471_forumtotalcount",
+  "id": "indicator_intel471forumtotalcount",
   "version": -1,
   "modified": "2020-05-06T12:29:08.320428307Z",
-  "name": "Intel471 Forum Total Count",
+  "name": "Forum Total Count",
   "ownerOnly": false,
   "placeholder": "",
   "description": "",
