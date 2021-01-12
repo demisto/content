@@ -1,0 +1,152 @@
+commonfields:
+  id: CyrenThreatInDepth
+  version: -1
+name: CyrenThreatInDepth
+display: Cyren Threat InDepth Threat Intelligence Feed
+category: Data Enrichment & Threat Intelligence
+description: Threat InDepth's actionable and contextualized intelligence helps
+  enterprises improve their threat detection and response by providing unprecedented
+  visibility into new email-borne security threats faster than other security vendors.
+fromversion: 6.0.0
+configuration:
+- display: Indicator Reputation
+  name: feedReputation
+  type: 18
+  required: false
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- additionalinfo: Incremental feeds pull only new or modified indicators that have
+   been sent from the integration. As the determination if the indicator is new or
+   modified happens on the 3rd-party vendor's side, and only indicators that are
+   new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
+   are labeled new or modified.
+  defaultvalue: "true"
+  display: Incremental Feed
+  hidden: false
+  name: feedIncremental
+  required: false
+  type: 8
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- defaultvalue: "true"
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- defaultvalue: https://api-feeds.cyren.com/v1/feed
+  display: API URL
+  name: url
+  required: true
+  type: 0
+- display: API Token
+  name: apikey
+  type: 4
+  required: true
+- display: Feed Name
+  name: feed_name
+  defaultvalue: IP Reputation
+  type: 15
+  required: true
+  options:
+  - IP Reputation
+  - Phishing URLs
+  - Malware URLs
+  - Malware Hashes
+  additionalinfo: Choose from the available options to ingest the type of data you are interested in.
+    Keep in mind that the API token issued to you only corresponds to one of the data types each.
+- display: Maximum number of indicators
+  name: max_indicators
+  defaultvalue: "100000"
+  type: 0
+  required: false
+  additionalinfo: Maximum number of indicators to be fetched each time. The value cannot
+    be higher than 100.000. If you provide a value higher than that it will be capped at 100.000.
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+script:
+  script: "-"
+  type: python
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: "50"
+      description: The maximum number of results to return.
+      isArray: false
+      name: max_indicators
+      required: false
+      secret: false
+    deprecated: false
+    description: Fetching Cyren Threat InDepth indicators
+    execution: true
+    name: cyren-threat-indepth-get-indicators
+  dockerimage: demisto/python3:3.9.1.14969
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  subtype: python3

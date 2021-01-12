@@ -46,6 +46,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "XsoarPowershellTesting",
+            "playbookID": "XsoarPowershellTesting-Test"
+        },
+        {
             "integrations": "Palo Alto Networks Threat Vault",
             "playbookID": "PANW Threat Vault - Signature Search - Test",
             "fromversion": "5.0.0"
@@ -101,7 +105,7 @@
             ]
         },
         {
-            "integrations":"Azure Network Security Groups",
+            "integrations": "Azure Network Security Groups",
             "fromversion": "5.0.0",
             "instance_names": "azure_nsg_prod",
             "playbookID": "Azure NSG - Test"
@@ -448,6 +452,12 @@
         {
             "integrations": "HelloWorld",
             "playbookID": "HelloWorld_Scan-Test",
+            "fromversion": "5.0.0",
+            "timeout": 400
+        },
+        {
+            "integrations": "HelloWorldPremium",
+            "playbookID": "HelloWorldPremium_Scan-Test",
             "fromversion": "5.0.0",
             "timeout": 400
         },
@@ -2053,7 +2063,6 @@
                 "carbonblack-v2",
                 "carbonblackliveresponse",
                 "Cylance Protect v2"
-
             ],
             "playbookID": "Retrieve File from Endpoint - Generic V2 Test",
             "fromversion": "5.0.0"
@@ -3213,7 +3222,6 @@
         }
     ],
     "skipped_tests": {
-        "urlscan_malicious_Test": "Issue 20111",
         "Github IAM - Test Playbook": "Issue 32383",
         "Workday - Test": "No credentials Issue 29595",
         "PCAP File Carving Test": "Merged with PCAP Analysis Test",
@@ -3302,7 +3310,13 @@
         "PhishlabsIOC_DRP-Test": "Issue 29589",
         "Archer-Test-Playbook": "Issue 26851",
         "Carbon Black Live Response Test": "Issue 28237",
-        "Carbon Black Enterprise Protection V2 Test": "Issue 32322"
+        "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
+        "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
+        "FeedThreatConnect-Test": "Issue 32317",
+        "Phishing v2 - Test - Incident Starter": "Issue 26783",
+        "Phishing - Core - Test - Incident Starter": "Issue 26784",
+        "Process Email - Generic - Test - Incident Starter": "Issue 32459",
+        "HelloWorldPremium_Scan-Test": "Issue 32512"
     },
     "skipped_integrations": {
 
@@ -3418,16 +3432,19 @@
         "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "Palo Alto Minemeld": "Issue #26878",
-        "AttackIQFireDrill": "License issues #29774"
+        "AttackIQFireDrill": "License issues #29774",
+        "CrowdStrike Falcon Intel v2": "License issues #32473",
+        "CrowdStrikeMalquery": "License issues #32473",
+        "CrowdstrikeFalcon": "License issues #32473"
     },
     "nightly_integrations": [
         "Lastline v2",
         "TruSTAR",
         "SlackV2",
-        "VulnDB",
-        "urlscan.io"
+        "VulnDB"
     ],
     "unmockable_integrations": {
+        "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
         "urlscan.io": "Uses data that comes in the headers",
         "QRadar_v2": "Test playbook 'test playbook - QRadarCorrelations' has multiple branches",
@@ -3449,6 +3466,7 @@
         "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
         "BPA": "Playbook using GenericPolling which is inconsistent",
+        "XsoarPowershellTesting": "Integration which not use network.",
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
