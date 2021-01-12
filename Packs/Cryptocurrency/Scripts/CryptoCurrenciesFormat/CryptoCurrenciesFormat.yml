@@ -19,5 +19,5 @@ tags:
 - indicator-format
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.0.0

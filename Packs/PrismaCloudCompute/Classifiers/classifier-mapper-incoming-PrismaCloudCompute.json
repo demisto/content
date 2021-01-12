@@ -104,25 +104,12 @@
 				"Prisma Cloud Compute User": {
 					"complex": null,
 					"simple": "user"
-				},
-				"testShortMsg": {
-					"complex": {
-						"accessor": "",
-						"filters": [],
-						"root": "message",
-						"transformers": []
-					},
-					"simple": ""
 				}
 			}
 		},
 		"Prisma Cloud Compute Cloud Discovery": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
-				"Prisma Cloud Compute AccountID": {
-					"complex": null,
-					"simple": "accountID"
-				},
 				"Prisma Cloud Compute Collections": {
 					"complex": {
 						"accessor": "",
@@ -188,10 +175,6 @@
 				"Prisma Cloud Compute Total": {
 					"complex": null,
 					"simple": "total"
-				},
-				"pcc protected": {
-					"complex": null,
-					"simple": "protected"
 				}
 			}
 		},
