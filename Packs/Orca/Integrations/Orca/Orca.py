@@ -123,12 +123,18 @@ def main() -> None:
         if command == "orca-get-alerts":
             alerts = orca_client.get_alerts_by_type(alert_type=demisto.args().get('alert_type'))
             if not alerts:
-                return_results(f"Alerts with type {demisto.args().get('alert_type')} does not exist")
-            return_results(alerts)
+                return_error(f"Alerts with type {demisto.args().get('alert_type')} does not exist")
+            command_result = CommandResults(outputs_prefix="Orca.Manager.Alerts", outputs=alerts, raw_response=alerts)
+            return_results(command_result)
 
         elif command == "orca-get-asset":
             asset = orca_client.get_asset(asset_unique_id=demisto.args()['asset_unique_id'])
-            return_results(asset)
+            if not isinstance(asset, Dict):
+                # this means asset not found
+                return_error(asset)
+
+            command_result = CommandResults(outputs_prefix="Orca.Manager.Asset", outputs=[asset], raw_response=asset)
+            return_results(command_result)
 
         elif command == "fetch-incidents":
             fetch_incidents(orca_client)
