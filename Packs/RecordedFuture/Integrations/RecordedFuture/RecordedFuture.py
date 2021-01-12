@@ -520,7 +520,7 @@ def build_rep_context(
 
 def triage_command(
     client: Client, entities: Dict[str, List[str]], context: str
-) -> CommandResults:
+) -> List[CommandResults]:
     """Do Auto Triage."""
     zero_filter = entities.pop('filter', False)
 
@@ -535,15 +535,17 @@ def triage_command(
     context_data = client.get_triage(entities, context)
     entities = [e for e in context_data["entities"] if include_score(e["score"])]  # type: ignore
     context_data["entities"] = entities
-    output_context, indicators = build_triage_context(context_data)
-    return CommandResults(
-        outputs_prefix="RecordedFuture",
-        outputs=output_context,
-        raw_response=context_data,
-        readable_output=build_triage_markdown(context_data, context),
-        outputs_key_field="Verdict",
-        indicators=indicators,
+    output_context, command_results = build_triage_context(context_data)
+    command_results.append(
+        CommandResults(
+            outputs_prefix="RecordedFuture",
+            outputs=output_context,
+            raw_response=context_data,
+            readable_output=build_triage_markdown(context_data, context),
+            outputs_key_field="verdict",
+        )
     )
+    return command_results
 
 
 def build_triage_markdown(context_data: Dict[str, Any], context: str) -> str:
@@ -622,45 +624,43 @@ def build_triage_context(
             for entity in context_data["entities"]
         ],
     }
-    indicators = [
-        create_indicator(
-            entity["name"],
-            rf_type_to_xsoar_type(entity["type"]),
-            entity["score"],
-            "",
+    command_results: List[CommandResults] = []
+    for entity in context_data['entities']:
+        indicator = create_indicator(
+            entity['name'],
+            rf_type_to_xsoar_type(entity['type']),
+            entity['score'],
+            ''
         )
-        for entity in context_data["entities"]
-    ]
-    return context, indicators
+        readable_output = tableToMarkdown(
+            'New Indicator was created', indicator.to_context()
+        )
+        command_result = CommandResults(
+            outputs=context,
+            readable_output=readable_output,
+            indicator=indicator
+        )
+        command_results.append(command_result)
+    return context, command_results
 
 
 def enrich_command(
     client: Client, entity: str, entity_type: str, related: bool, risky: bool, profile: str = 'All'
-) -> CommandResults:
+) -> List[CommandResults]:
     """Enrich command."""
     try:
         entity_data = client.entity_enrich(entity, entity_type, related, risky, profile)
         markdown = build_intel_markdown(entity_data, entity_type)
-        indicators, context = build_intel_context(
-            entity, entity_data, entity_type
-        )
-        return CommandResults(
-            outputs_prefix=get_output_prefix(entity_type),
-            outputs=context,
-            raw_response=entity_data,
-            readable_output=markdown,
-            outputs_key_field="name",
-            indicators=indicators,
-        )
+        return build_intel_context(entity, entity_data, entity_type, markdown)
     except DemistoException as err:
         if "404" in str(err):
-            return CommandResults(
+            return [CommandResults(
                 outputs_prefix="",
                 outputs={},
                 raw_response={},
                 readable_output="No results found.",
                 outputs_key_field="",
-            )
+            )]
         else:
             raise err
 
@@ -821,49 +821,72 @@ def build_intel_markdown(entity_data: Dict[str, Any], entity_type: str) -> str:
 
 
 def build_intel_context(
-    entity: str, entity_data: Dict[str, Any], entity_type: str
-) -> Tuple[List[Common.Indicator], Dict[str, Any]]:
+    entity: str, entity_data: Dict[str, Any], entity_type: str, markdown: str
+) -> List[CommandResults]:
     """Build Intelligence context."""
     if entity_type == "hash":
         entity_type = "file"
     elif entity_type == "vulnerability":
         entity_type = "cve"
-    indicators = []
+    command_results: List[CommandResults] = []
     if entity_data and ("error" not in entity_data):
         data = entity_data["data"]
-        indicators.append(
-            create_indicator(
-                entity,
-                entity_type,
-                data["risk"]["score"],
-                data["entity"].get("description", ""),
-                location=data.get("location", None),
-            )
-        )
-        indicators.extend(
-            [
-                create_indicator(
-                    x["ip"]["name"],
-                    "ip",
-                    x["score"],
-                    f"IP in the same CIDR as {entity}",
-                )
-                for x in data.get("riskyCIDRIPs", [])
-            ]
-        )
         data.update(data.pop("entity"))
         data.update(data.pop("risk"))
         data.update(data.pop("timestamps"))
         evidence_details = data['evidenceDetails']
         rules = ','.join([e['rule'] for e in evidence_details])
         data['concatRules'] = rules
-        if data.get("relatedEntities", None):
-            data["relatedEntities"] = handle_related_entities(
-                data.pop("relatedEntities")
+
+        command_results.append(
+            CommandResults(
+                outputs_prefix=get_output_prefix(entity_type),
+                outputs=data,
+                raw_response=entity_data,
+                readable_output=markdown,
+                outputs_key_field='name'
+            )
+        )
+
+        indicator = create_indicator(
+            entity,
+            entity_type,
+            data['score'],
+            data.get('description', ''),
+            location=data.get('location')
+        )
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown('New indicator was created', indicator.to_context()),
+                indicator=indicator
+            )
+        )
+
+        for cidr in data.get('riskyCIDRIPs', []):
+            indicator = create_indicator(
+                cidr['ip']['name'],
+                'ip',
+                cidr['score'],
+                f'IP in the same CIDR as {entity}',
+            )
+            command_results.append(
+                CommandResults(
+                    readable_output=tableToMarkdown("New indicator was created", indicator.to_context()),
+                    indicator=indicator
+                )
             )
     else:
-        return [create_indicator(entity, entity_type, 0, "")], {}
-    return indicators, data
+        indicator = create_indicator(entity, entity_type, 0, '')
+        command_results.append(
+            CommandResults(
+                readable_output=tableToMarkdown(
+                    'New indicator was created',
+                    indicator.to_context()
+                ),
+                indicator=indicator
+            )
+        )
+    return command_results
 
 
 def handle_related_entities(
