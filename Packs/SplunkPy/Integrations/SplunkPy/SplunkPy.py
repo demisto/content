@@ -21,6 +21,8 @@ sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
+if VERIFY_CERTIFICATE and (os.environ.get('SSL_CERT_FILE') or os.environ.get('CERT_FILE')):
+    VERIFY_CERTIFICATE = os.environ.get('SSL_CERT_FILE') or os.environ.get('CERT_FILE')
 FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
