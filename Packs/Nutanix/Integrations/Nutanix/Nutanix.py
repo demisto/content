@@ -3,6 +3,7 @@ from typing import Dict
 import dateutil.parser as dp
 import pytz
 import urllib3
+from collections import OrderedDict
 
 from CommonServerPython import *
 
@@ -318,8 +319,14 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
 
     response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
 
-    if response.get('entities') is None:
-        raise DemistoException('No entities were found in response for nutanix-hypervisor-hosts-list command')
+    outputs = response.get('entities')
+
+    if outputs is None:
+        raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
+
+    for output in outputs:
+        disk_config_map = output['disk_hardware_config']
+        output['disk_hardware_config'] = [disk_config for disk_number: disk_config in disk_config_map]
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Host',
@@ -680,7 +687,8 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
 
 
 def main() -> None:
-    command = demisto.command()
+    # command = demisto.command()
+    command = 'nutanix-hypervisor-hosts-list'
     params = demisto.params()
 
     commands = {
