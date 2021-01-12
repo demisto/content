@@ -132,9 +132,272 @@ script:
     description: Get the list of physical hosts configured in the cluster.
     name: nutanix-hypervisor-hosts-list
     outputs:
-    - contextPath: NutanixHypervisor.Host
-      description: Host list
-      type: string
+      - contextPath: NutanixHypervisor.Host..service_vmid
+        description: Service virtual machine id.
+        type: String
+      - contextPath: NutanixHypervisor.Host..uuid
+        description: Host uuid.
+        type: String
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.serial_number
+        description: Disk serial number.
+        type: String
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.disk_id
+        description: Disk id.
+        type: String
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.disk_uuid
+        description: Disk uuid.
+        type: String
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.location
+        description: Disk location/index.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.bad
+        description: Is disk bad.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.mounted
+        description: Is disk mounted.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.mount_path
+        description: Mount path.
+        type: String
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.model
+        description: Disk model.
+        type: String
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.vendor
+        description: Vendor name.
+        type: String
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.boot_disk
+        description: TODO. # TODO TOM
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.only_boot_disk
+        description: TODO. # TODO TOM
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.under_diagnosis
+        description: Is disk under diagnosis.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.background_operation
+        description: Background operation.
+        type: Unknown # TODO TOM
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.current_firmware_version
+        description: Disk current firmware version.
+        type: String
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.target_firmware_version
+        description: Disk target firmware version.
+        type: String
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.can_add_as_new_disk
+        description: Can add this disk as a new disk.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.can_add_as_old_disk
+        description: Can add this disk as an old disk.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..name
+        description: Host name.
+        type: String
+      - contextPath: NutanixHypervisor.Host..service_vmexternal_ip
+        description: Service virtual machine external ip.
+        type: String
+      - contextPath: NutanixHypervisor.Host..service_vmnat_ip
+        description: service virtual machine network address translation ip.
+        type: String
+      - contextPath: NutanixHypervisor.Host..service_vmnat_port
+        description: Service virtual machine network address translation port.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..oplog_disk_pct
+        description: Oplog disk pct.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..oplog_disk_size
+        description: Oplog disk size.
+        type: Date
+      - contextPath: NutanixHypervisor.Host..hypervisor_key
+        description: Hypervisor key.
+        type: String
+      - contextPath: NutanixHypervisor.Host..hypervisor_address
+        description: Hypervisor address.
+        type: String
+      - contextPath: NutanixHypervisor.Host..hypervisor_username
+        description: Hypervisor username.
+        type: String
+      - contextPath: NutanixHypervisor.Host..hypervisor_password
+        description: Hypervisor password.
+        type: String
+      - contextPath: NutanixHypervisor.Host..backplane_ip
+        description: Backplane ip.
+        type: String
+      - contextPath: NutanixHypervisor.Host..controller_vm_backplane_ip
+        description: Controller virtual machine backplane ip.
+        type: String
+      - contextPath: NutanixHypervisor.Host..rdma_backplane_ips
+        description: Remote directory memory access backplane ips.
+        type: Array
+      - contextPath: NutanixHypervisor.Host..management_server_name
+        description: Management server name.
+        type: String
+      - contextPath: NutanixHypervisor.Host..ipmi_address
+        description: Ipmi address.
+        type: String
+      - contextPath: NutanixHypervisor.Host..ipmi_username
+        description: Ipmi username.
+        type: String
+      - contextPath: NutanixHypervisor.Host..ipmi_password
+        description: Ipmi password.
+        type: String
+      - contextPath: NutanixHypervisor.Host..monitored
+        description: Is host monitored.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..position.ordinal
+        description: Host ordinal position.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..position.name
+        description: Host's position name.
+        type: String
+      - contextPath: NutanixHypervisor.Host..position.physical_position
+        description: Physical position. Allowed values are [C, L, R, TL, TR, BL, BR]. Values
+          are abbreviations for [Center, Left, Right, Top Left, Top Right, Bottom Left,
+          Bottom Right].
+        type: String
+      - contextPath: NutanixHypervisor.Host..serial
+        description: Host serial id.
+        type: String
+      - contextPath: NutanixHypervisor.Host..block_serial
+        description: Host block serial id.
+        type: String
+      - contextPath: NutanixHypervisor.Host..block_model
+        description: Host block model.
+        type: String
+      - contextPath: NutanixHypervisor.Host..block_model_name
+        description: Block model name.
+        type: String
+      - contextPath: NutanixHypervisor.Host..block_location
+        description: Block location.
+        type: String
+      - contextPath: NutanixHypervisor.Host..host_maintenance_mode_reason
+        description: Host maintenance reason, in case host is in maintenance.
+        type: String
+      - contextPath: NutanixHypervisor.Host..hypervisor_state
+        description: Host's hypervisor state.
+        type: String
+      - contextPath: NutanixHypervisor.Host..acropolis_connection_state
+        description: Acropolis connection status.
+        type: String
+      - contextPath: NutanixHypervisor.Host..metadata_store_status
+        description: Meta data store status.
+        type: String
+      - contextPath: NutanixHypervisor.Host..metadata_store_status_message
+        description: Meta data store status message.
+        type: String
+      - contextPath: NutanixHypervisor.Host..state
+        description: Host state.
+        type: String
+      - contextPath: NutanixHypervisor.Host..dynamic_ring_changing_node
+        description: Host dynamic ring changing mode.
+        type: Unknown
+      - contextPath: NutanixHypervisor.Host..removal_status
+        description: Host removal status.
+        type: String
+      - contextPath: NutanixHypervisor.Host..vzone_name
+        description: Virtual zone name.
+        type: String
+      - contextPath: NutanixHypervisor.Host..cpu_model
+        description: Cpu model.
+        type: String
+      - contextPath: NutanixHypervisor.Host..num_cpu_cores
+        description: Number of cpu cores.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..num_cpu_threads
+        description: Number of cpu threads.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..num_cpu_sockets
+        description: Number of cpu sockets.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..cpu_frequency_in_hz
+        description: Cpu frequency in hz.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..cpu_capacity_in_hz
+        description: Cpu capacity in hz.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..memory_capacity_in_bytes
+        description: Host memory capacity in bytes.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..hypervisor_full_name
+        description: Host's hypervisor full name.
+        type: String
+      - contextPath: NutanixHypervisor.Host..hypervisor_type
+        description: Hypervisor's type.
+        type: String
+      - contextPath: NutanixHypervisor.Host..num_vms
+        description: Host number of virtual machines.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..boot_time_in_usecs
+        description: Boot time in epoch time.
+        type: Number
+      - contextPath: NutanixHypervisor.Host..is_degraded
+        description: Is host degraded.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..is_secure_booted
+        description: Is host secure booted.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..is_hardware_virtualized
+        description: Is hardware virtualized.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..failover_cluster_fqdn
+        description: Failover cluster fully qualified domain name.
+        type: String
+      - contextPath: NutanixHypervisor.Host..failover_cluster_node_state
+        description: Failover cluster node state.
+        type: String
+      - contextPath: NutanixHypervisor.Host..reboot_pending
+        description: Is reboot pending.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..default_vm_location
+        description: Default virtual machine location.
+        type: String
+      - contextPath: NutanixHypervisor.Host..default_vm_storage_container_id
+        description: Default virtual machine storage container id.
+        type: String
+      - contextPath: NutanixHypervisor.Host..default_vm_storage_container_uuid
+        description: Default virtual machine storage container uuid.
+        type: String
+      - contextPath: NutanixHypervisor.Host..default_vhd_location
+        description: Default virtual hard disk location.
+        type: String
+      - contextPath: NutanixHypervisor.Host..default_vhd_storage_container_id
+        description: Default virtual hard disk storage container id.
+        type: String
+      - contextPath: NutanixHypervisor.Host..default_vhd_storage_container_uuid
+        description: Default virtual hard disk storage container uuid.
+        type: String
+      - contextPath: NutanixHypervisor.Host..bios_version
+        description: BIOS version.
+        type: String
+      - contextPath: NutanixHypervisor.Host..bios_model
+        description: BIOS model.
+        type: String
+      - contextPath: NutanixHypervisor.Host..bmc_version
+        description: BMC version.
+        type: String
+      - contextPath: NutanixHypervisor.Host..bmc_model
+        description: BMC model.
+        type: String
+      - contextPath: NutanixHypervisor.Host..hba_firmwares_list
+        description: Host bus adapter firmwares list.
+        type: Array
+      - contextPath: NutanixHypervisor.Host..cluster_uuid
+        description: Host's cluster uuid.
+        type: String
+      - contextPath: NutanixHypervisor.Host..has_csr
+        description: Does host have csr.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Host..host_gpus
+        description: Host's gpus.
+        type: Array
+      - contextPath: NutanixHypervisor.Host..gpu_driver_version
+        description: Host gpu driver version.
+        type: String
+      - contextPath: NutanixHypervisor.Host..host_type
+        description: Host type.
+        type: String
+      - contextPath: NutanixHypervisor.Host..host_in_maintenance_mode
+        description: Is host in maintenance mode.
+        type: Boolean
   - arguments:
     - description: 'Retrieve virtual machines that matches the filters given. Each
         filter is written in the following way: filter_name==filter_value or filter_name!=filter_value.

@@ -30,8 +30,23 @@ class Client(BaseClient):
     def __init__(self, base_url, verify, proxy, auth):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
 
-    def fetch_incidents(self):
-        raise NotImplementedError
+    def fetch_incidents(self, auto_resolved: Optional[bool], resolved: Optional[bool], acknowledged: Optional[bool],
+                        alert_type_ids: Optional[str], entity_ids: Optional[str], impact_types: Optional[str],
+                        classifications: Optional[str], entity_type_ids: Optional[str]):
+        return self._http_request(
+            method='GET',
+            url_suffix='alerts',
+            params=assign_params(
+                resolved=resolved,
+                auto_resolved=auto_resolved,
+                acknowledged=acknowledged,
+                alert_type_uuid=alert_type_ids,
+                entity_ids=entity_ids,
+                impact_types=impact_types,
+                classification=classifications,
+                entity_type_id=entity_type_ids
+            )
+        )
 
     def get_nutanix_hypervisor_hosts_list(self, filter_: Optional[str], limit: Optional[int], page: Optional[int]):
         return self._http_request(
@@ -80,8 +95,8 @@ class Client(BaseClient):
 
     def get_nutanix_alerts_list(self, start_time: Optional[int], end_time: Optional[int], resolved: Optional[bool],
                                 auto_resolved: Optional[bool], acknowledged: Optional[bool], severity: Optional[str],
-                                alert_type_uuid: Optional[str], entity_ids: Optional[str], impact_types: Optional[str],
-                                classification: Optional[str], entity_types: Optional[str], page: Optional[int],
+                                alert_type_ids: Optional[str], entity_ids: Optional[str], impact_types: Optional[str],
+                                classifications: Optional[str], entity_types: Optional[str], page: Optional[int],
                                 limit: Optional[int]):
         return self._http_request(
             method='GET',
@@ -93,10 +108,10 @@ class Client(BaseClient):
                 auto_resolved=auto_resolved,
                 acknowledged=acknowledged,
                 severity=severity,
-                alert_type_uuid=alert_type_uuid,
+                alert_type_uuid=alert_type_ids,
                 entity_ids=entity_ids,
                 impact_types=impact_types,
-                classification=classification,
+                classification=classifications,
                 entity_type=entity_types,
                 page=page,
                 count=limit
@@ -117,7 +132,7 @@ class Client(BaseClient):
 
     def post_nutanix_alerts_acknowledge_by_filter(self, start_time: Optional[int], end_time: Optional[int],
                                                   severity: Optional[str],
-                                                  impact_types: Optional[str], classification: Optional[str],
+                                                  impact_types: Optional[str], classifications: Optional[str],
                                                   entity_types: Optional[str],
                                                   entity_type_ids: Optional[str], limit: Optional[int]):
         return self._http_request(
@@ -128,7 +143,7 @@ class Client(BaseClient):
                 end_time_in_usecs=end_time,
                 severity=severity,
                 impact_types=impact_types,
-                classification=classification,
+                classification=classifications,
                 entity_type=entity_types,
                 entity_type_ids=entity_type_ids,
                 count=limit
@@ -137,7 +152,7 @@ class Client(BaseClient):
 
     def post_nutanix_alerts_resolve_by_filter(self, start_time: Optional[int], end_time: Optional[int],
                                               severity: Optional[str], impact_types: Optional[str],
-                                              classification: Optional[str], entity_types: Optional[str],
+                                              classifications: Optional[str], entity_types: Optional[str],
                                               entity_type_ids: Optional[str], limit: Optional[int]):
         return self._http_request(
             method='POST',
@@ -147,7 +162,7 @@ class Client(BaseClient):
                 end_time_in_usecs=end_time,
                 severity=severity,
                 impact_types=impact_types,
-                classification=classification,
+                classification=classifications,
                 entity_type=entity_types,
                 entity_type_ids=entity_type_ids,
                 count=limit
@@ -279,15 +294,36 @@ def test_module_command(client: Client):
     demisto.results('ok')
 
 
-def fetch_incidents_command(client: Client, args: Dict):
-    # auto_resolved = get_optional_boolean_param(args, 'auto_resolved')
-    # resolved = True if auto_resolved else get_optional_boolean_param(args, 'resolved')
-    # acknowledged = get_optional_boolean_param(args, 'acknowledged')
-    # alert_type_ids = args.get('alert_type_ids')  # maybe split , maybe ids?
-    # entity_ids = args.get('entity_ids')  # maybe split , in doc entity_id probably mistake
-    # impact_types = args.get('impact_types')  # maybe split ,
-    # classifications = args.get('classifications')  # maybe split ,
-    # entity_type_ids = args.get('entity_type_ids')  # maybe split ,
+def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
+    auto_resolved = get_optional_boolean_param(params, 'auto_resolved')
+    resolved = True if auto_resolved else get_optional_boolean_param(params, 'resolved')
+    acknowledged = get_optional_boolean_param(params, 'acknowledged')
+    alert_type_ids = params.get('alert_type_ids')
+    entity_ids = params.get('entity_ids')  # TODO MAYBE DELETE
+    impact_types = params.get('impact_types')
+    classifications = params.get('classifications')
+    entity_type_ids = params.get('entity_type_ids')  # TODO MAYBE DELETE
+
+    response = client.fetch_incidents(auto_resolved, resolved, acknowledged, alert_type_ids, entity_ids, impact_types,
+                                      classifications, entity_type_ids)
+
+    # Get the last fetch time, if exists
+    # last_run is a dict with a single key, called last_fetch
+    last_fetch = last_run.get('last_fetch', None)
+    # Handle first fetch time
+    if last_fetch is None:
+        # if missing, use what provided via first_fetch_time
+        last_fetch = first_fetch_time
+    else:
+        # otherwise use the stored last fetch
+        last_fetch = int(last_fetch)
+
+    # for type checking, making sure that latest_created_time is int
+    latest_created_time = cast(int, last_fetch)
+
+    # Initialize an empty list of incidents to return
+    # Each incident is a dict with a string as a key
+    incidents: List[Dict[str, Any]] = []
 
     raise NotImplementedError
 
@@ -319,14 +355,24 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
 
     response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
 
-    outputs = response.get('entities')
+    unprocessed_outputs = response.get('entities')
 
-    if outputs is None:
+    if unprocessed_outputs is None:
         raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
 
-    for output in outputs:
-        disk_config_map = output['disk_hardware_config']
-        output['disk_hardware_config'] = [disk_config for disk_number: disk_config in disk_config_map]
+    outputs_processed = []
+
+    for unprocessed_output in unprocessed_outputs:
+        unordered_disk_configs = unprocessed_output['disk_hardware_configs']
+        ordered_disk_configs = dict(sorted(unordered_disk_configs.items()))
+        ordered_disk_list = [disk_config for _, disk_config in ordered_disk_configs.items() if disk_config is not None]
+        unprocessed_output['disk_hardware_configs'] = ordered_disk_list
+
+        del(unprocessed_output['stats'])
+        del(unprocessed_output['usage_stats'])
+
+        output_processed = {k: v for k, v in unprocessed_output.items() if v is not None}
+        outputs_processed.append(output_processed)
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Host',
@@ -474,7 +520,7 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
                     For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'.
                     Given Impact Types = 'SystemIndicator',only alerts with impact type 'SystemIndicator',
                     such as 'Incorrect NTP Configuration' will be retrieved.
-    - classification: Retrieve alerts that their classifications matches one of the classification in
+    - classifications: Retrieve alerts that their classifications matches one of the classification in
                       classifications list given.
                       For example, alert 'Pulse cannot connect to REST server endpoint' has classification of Cluster.
                       Given classifications = 'cluster', only alerts with classification of 'cluster', such as
@@ -510,7 +556,8 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
 
     response = client.get_nutanix_alerts_list(start_time, end_time, resolved, auto_resolved, acknowledged, severity,
-                                              alert_type_ids, entity_ids, impact_types, classification, entity_types,
+                                              alert_type_ids, entity_ids, impact_types, classification,
+                                              entity_types,
                                               page, limit)
 
     if response.get('entities') is None:
@@ -589,7 +636,7 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
                     For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'.
                     Given Impact Types = 'SystemIndicator',only alerts with impact type 'SystemIndicator',
                     such as 'Incorrect NTP Configuration' will be acknowledged.
-    - classification: Retrieve alerts that their classifications matches one of the classification in
+    - classifications: Retrieve alerts that their classifications matches one of the classification in
                       classifications list given.
                       For example, alert 'Pulse cannot connect to REST server endpoint' has classification of Cluster.
                       Given classifications = 'cluster', only alerts with classification of 'cluster', such as
@@ -622,7 +669,8 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE)
 
     response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
-                                                                classification, entity_types, entity_type_ids, limit)
+                                                                classification, entity_types, entity_type_ids,
+                                                                limit)
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Alert',
@@ -642,7 +690,7 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
                     For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'.
                     Given Impact Types = 'SystemIndicator',only alerts with impact type 'SystemIndicator',
                     such as 'Incorrect NTP Configuration' will be resolved.
-    - classification: Resolve alerts that their classifications matches one of the classification in
+    - classifications: Resolve alerts that their classifications matches one of the classification in
                       classifications list given.
                       For example, alert 'Pulse cannot connect to REST server endpoint' has classification of Cluster.
                       Given classifications = 'cluster', only alerts with classification of 'cluster', such as
@@ -692,7 +740,6 @@ def main() -> None:
     params = demisto.params()
 
     commands = {
-        'fetch-incidents': fetch_incidents_command,
         'nutanix-hypervisor-hosts-list': nutanix_hypervisor_hosts_list_command,
         'nutanix-hypervisor-vms-list': nutanix_hypervisor_vms_list_command,
         'nutanix-hypervisor-vm-powerstatus-change': nutanix_hypervisor_vm_power_status_change_command,
@@ -722,6 +769,12 @@ def main() -> None:
 
         if command == 'test-module':
             test_module_command(client)
+
+        elif command == 'fetch-incidents':
+            last_run = demisto.getLastRun()
+            incidents, next_run = fetch_incidents_command(client, params, last_run)
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
 
         elif command in commands:
             return_results(commands[command](client, demisto.args()))
