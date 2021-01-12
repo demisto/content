@@ -1254,15 +1254,10 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
 
 
 def threat_to_incident(threat) -> dict:
-    occurred_key = 'createdDate'
-    threat_info = threat
-    if IS_VERSION_2_1:
-        threat_info = threat.get('threatInfo', {})
-        occurred_key = 'createdAt'
-
+    threat_info = threat.get('threatInfo', {}) if IS_VERSION_2_1 else threat
     incident = {
         'name': f'Sentinel One Threat: {threat_info.get("classification", "Not classified")}',
-        'occurred': threat_info.get(occurred_key),
+        'occurred': threat_info.get('createdAt'),
         'rawJSON': json.dumps(threat)}
     return incident
 
