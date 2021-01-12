@@ -1,20 +1,17 @@
-comment: Common code that will be appended into each IAM integration when it's deployed.
 commonfields:
   id: IAMModule
   version: -1
-enabled: false
 name: IAMModule
-script: '-'
+script: ''
+type: python
 subtype: python3
-system: false
 tags:
 - infra
 - server
+comment: Common code that will be appended into each IAM integration when it's deployed.
+system: true
+scripttarget: 0
+dependson: {}
 timeout: 0s
-type: python
 dockerimage: demisto/python3:3.8.6.13358
-dependson: {
-  }
 fromversion: 6.0.0
-tests:
-  - No tests
