@@ -2,7 +2,7 @@ commonfields:
   id: Gurucul-GRA
   version: -1
 name: Gurucul-GRA
-display: Gurucul-GRA (Community Contribution)
+display: Gurucul-GRA
 category: Data Enrichment & Threat Intelligence
 description: Gurucul Risk Analytics (GRA) is a Unified Security and Risk Analytics
   platform.
