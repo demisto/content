@@ -13,6 +13,7 @@ requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+SEVERITIES = {'low': 1, 'medium': 2, 'high': 3, 'very_high': 4}
 
 
 class Client(BaseClient):
@@ -260,7 +261,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         incident = {
             'name': f'Cyberint alert {alert_id}: {alert_title}',
             'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
-            'rawJSON': json.dumps(alert)
+            'rawJSON': json.dumps(alert),
+            'severity': SEVERITIES.get(alert.get('severity', 'low'), 1)
         }
         incidents.append(incident)
     if incidents:

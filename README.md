@@ -1,5 +1,4 @@
 Intelligence-Driven Digital Risk Protection
-This integration was integrated and tested with version xx of cyberint
 ## Configure cyberint on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
