@@ -334,7 +334,7 @@ references:
 
         # Merge public and private ID sets
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
-        echo "successfully merge public and private ID sets"
+        echo "successfully merged public and private ID sets"
 
   build_content_descriptor: &build_content_descriptor
     run:
