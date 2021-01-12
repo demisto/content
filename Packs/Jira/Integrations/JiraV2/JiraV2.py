@@ -985,7 +985,7 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
                     'Type': EntryType.NOTE,
                     'Contents': comment.get('body', ''),
                     'ContentsFormat': EntryFormat.TEXT,
-                    'Tags': ['comment'],  # the list of tags to add to the entry
+                    # 'Tags': ['comment'],  # the list of tags to add to the entry
                     'Note': True
                 })
             for attachment in entries['attachments']:
