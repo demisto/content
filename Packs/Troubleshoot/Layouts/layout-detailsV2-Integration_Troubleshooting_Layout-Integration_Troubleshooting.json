@@ -193,5 +193,5 @@
  "version": -1,
  "toVersion": "5.9.9",
  "fromVersion": "5.0.0",
- "description": ""
+ "description": "Use this layout to view the Troubleshooting summary and files."
 }
