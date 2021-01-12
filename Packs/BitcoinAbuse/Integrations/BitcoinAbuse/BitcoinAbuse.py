@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CSVFeedApiModule import *
 from CommonServerPython import *  # noqa: F401
-from enum import Enum
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -46,12 +45,6 @@ READER_CONFIG = {
         'abusetype': ('abuse_type_id', lambda abuse_type_id: abuse_type_id_to_name.get(abuse_type_id))
     }
 }
-
-
-class IndicatorsCommandType(Enum):
-    TEST_MODULE = 0
-    FETCH = 1
-    GET = 2
 
 
 class BitcoinAbuseClient(BaseClient):
@@ -289,7 +282,7 @@ def bitcoin_abuse_test_module_command(params: Dict):
 
 def bitcoin_abuse_fetch_indicators_command(params: Dict) -> None:
     """
-    Fetches indicators from Bitcoin Abuse service.
+    Wrapper for fetching indicators from Bitcoin Abuse service.
     Args:
         params (Dict): Demisto params.
 
@@ -316,7 +309,6 @@ def bitcoin_abuse_get_indicators_command(params: Dict, args: Dict):
     indicators = get_indicators(params)
     limit = arg_to_number(args.get('limit', 50), 'limit')
     truncated_indicators_list = indicators[:limit]
-    print(truncated_indicators_list)
     return CommandResults(
         readable_output=tableToMarkdown('Indicators', truncated_indicators_list,
                                         headers=['value', 'type', 'fields']),
@@ -349,5 +341,4 @@ def main() -> None:
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    bitcoin_abuse_get_indicators_command(demisto.params(), demisto.args())
     main()
