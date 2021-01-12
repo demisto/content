@@ -515,11 +515,23 @@ def opt_in_log(message):
     demisto.info(message)
 
 
+def replace_dict_comprehension(last_run_fetched_ids, current_epoch_time):
+    new_last_run_fetched_ids = {}
+    for inc_id, time in last_run_fetched_ids.items():
+        try:
+            if current_epoch_time - time < 3600:
+                new_last_run_fetched_ids[inc_id] = time
+        except Exception as e:
+            demisto.debug('Got exception building dedup dict.\n time is: {}\n\ninc is: {}\n'.format(time, inc_id))
+
+    return new_last_run_fetched_ids
+
+
 def fetch_incidents(service):
     demisto.debug('\n\nEntering fetch incidents\n\n')
     opt_in_log('\n\n Entering fetch\n\n')
     last_run = demisto.getLastRun() and demisto.getLastRun()['time']
-    opt_in_log('\n\n last run is: {} \n\n'.format(last_run))
+    opt_in_log('\n\n last run is: {} \n\n'.format(demisto.getLastRun()))
     search_offset = demisto.getLastRun().get('offset', 0)
 
     incidents = []
@@ -576,8 +588,11 @@ def fetch_incidents(service):
         else:
             opt_in_log('\n\nDropped incident due to duplication.\n\n')
 
-    last_run_fetched_ids = {inc_id: time for inc_id, time in last_run_fetched_ids.items() if
-                            current_epoch_time - time < 3600}
+    # last_run_fetched_ids = {inc_id: time for inc_id, time in last_run_fetched_ids.items() if
+    #                         current_epoch_time - time < 3600}
+
+    last_run_fetched_ids = replace_dict_comprehension(last_run_fetched_ids, current_epoch_time)
+    demisto.debug('\n\n last_run_fetched_ids = {} \n\n'.format(last_run_fetched_ids))
 
     debug_message = '\n\n total number of incidents found: from {}\n to {}\n with the ' \
                     'query: {} is: {}.\n\n incidents found: {} \n\n'.format(last_run, now, searchquery_oneshot,
