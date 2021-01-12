@@ -40,5 +40,11 @@ entry_context = {"ShiftManagment.OOOUsers": users_list}
 if users_list:
     hr = tableToMarkdown('Out of office users', users_list)
 else:
-    hr = 'No analyst is out of office today.'
-return_outputs(hr, entry_context)
+    hr = '### OOO Users\nNo analysts is out of office today.'
+
+demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['markdown'],
+            'EntryContext': entry_context,
+            'Contents': hr
+        })
