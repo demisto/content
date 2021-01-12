@@ -1,7 +1,7 @@
 import math
 from CommonServerPython import *  # noqa: F401
 
-text_widget = ''
+total_seconds = ''
 
 today_week_day = datetime.today().weekday()
 today_week_day = 0 if today_week_day == 6 else today_week_day + 1
@@ -34,10 +34,8 @@ else:
                 if shift_from < datetime.today() and shift_to > datetime.today():
                     # found the current shift
                     diff = shift_to - datetime.today()
-                    hours = math.floor(diff.seconds / 3600)
-                    minutes = round(diff.seconds / 60 % 60)
-                    text_widget = f'{hours:02d} : {minutes:02d}'
+                    total_seconds = round(diff.total_seconds())
                     break
 
-widget = TextWidget(text=f'Time to next shift (Hours : Minutes)\n # {text_widget}')
-return_results(widget)
+widget = [{'name': '', 'data': [total_seconds]}]
+return_results(json.dumps(widget))
