@@ -1239,7 +1239,7 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
         except TypeError:
             rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if rank >= fetch_threat_rank:
+        if rank >= fetch_threat_rank or IS_VERSION_2_1:
             incident = threat_to_incident(threat)
             date_occurred_dt = parse(incident['occurred'])
             incident_date = date_to_timestamp(date_occurred_dt, '%Y-%m-%dT%H:%M:%S.%fZ')
