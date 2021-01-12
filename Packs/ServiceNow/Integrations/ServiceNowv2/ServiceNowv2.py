@@ -977,7 +977,7 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     else:
         additional_fields_keys = list(args.keys())
 
-    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket, additional_fields_keys)} # add args by union
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket, additional_fields_keys)}
 
     return human_readable, entry_context, result, True
 
@@ -1030,7 +1030,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     entry_context = {
         'Ticket(val.ID===obj.ID)': created_ticket_context,
         'ServiceNow.Ticket(val.ID===obj.ID)': created_ticket_context
-    } # add args
+    }
 
     return human_readable, entry_context, result, True
 
