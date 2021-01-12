@@ -403,17 +403,30 @@ references:
         GCS_PATH=$(mktemp)
         echo "$GCS_MARKET_KEY" > "$GCS_PATH"
         gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+<<<<<<< HEAD
         echo "successfully activated google cloud service account"
 
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
         echo "successfully downloaded private ID set"
         gcloud auth revoke --all &> /dev/null
+=======
+        echo "successfully activate service account"
+
+        # Download private ID set
+        gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
+        echo "successfully download private ID set"
+        gcloud auth revoke --all
+>>>>>>> 565b9b77f... add echo to merge id sets step
         rm $GCS_PATH
 
         # Merge public and private ID sets
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
+<<<<<<< HEAD
         echo "successfully merged public and private ID sets"
+=======
+        echo "successfully merge public and private ID sets"
+>>>>>>> 565b9b77f... add echo to merge id sets step
 
   build_content_descriptor: &build_content_descriptor
     run:
