@@ -1,3 +1,6 @@
+[file:playbook-Archer_Playbook_Test.yml]
+ignore=auto-test
+
 [file:integration-ArcherRSA.yml]
 ignore=IN126
 
