@@ -6,81 +6,9 @@
   "User Profile": {
    "dontMapEventToLabels": true,
    "internalMapping": {
-    "c": {
-     "complex": null,
-     "simple": "country"
-    },
-    "cn": {
-     "complex": {
-      "accessor": "",
-      "filters": [
-
-      ],
-      "root": "email",
-      "transformers": [
-       {
-        "args": {
-         "delimiter": {
-          "isContext": false,
-          "value": {
-           "complex": null,
-           "simple": "@"
-          }
-         }
-        },
-        "operator": "split"
-       },
-       {
-        "args": {
-         "index": {
-          "isContext": false,
-          "value": {
-           "complex": null,
-           "simple": "0"
-          }
-         }
-        },
-        "operator": "atIndex"
-       }
-      ]
-     },
-     "simple": ""
-    },
     "department": {
      "complex": null,
      "simple": "department"
-    },
-    "displayName": {
-     "complex": null,
-     "simple": "displayname"
-    },
-    "employeeID": {
-     "complex": null,
-     "simple": "employeeid"
-    },
-    "givenName": {
-     "complex": null,
-     "simple": "givenname"
-    },
-    "l": {
-     "complex": null,
-     "simple": "city"
-    },
-    "mail": {
-     "complex": null,
-     "simple": "email"
-    },
-    "mobile": {
-     "complex": null,
-     "simple": "mobilephone"
-    },
-    "ou": {
-     "complex": null,
-     "simple": "locationregion"
-    },
-    "postalCode": {
-     "complex": null,
-     "simple": "zipcode"
     },
     "samaccountname": {
      "complex": {
@@ -118,29 +46,9 @@
      },
      "simple": ""
     },
-    "sn": {
-     "complex": null,
-     "simple": "surname"
-    },
-    "st": {
-     "complex": null,
-     "simple": "statename"
-    },
-    "streetAddress": {
-     "complex": null,
-     "simple": "streetaddress"
-    },
     "title": {
      "complex": null,
      "simple": "title"
-    },
-    "userPrincipalName": {
-     "complex": null,
-     "simple": "username"
-    },
-    "ou":{
-     "complex": null,
-     "simple": ""
     }
    }
   }

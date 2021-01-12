@@ -10,49 +10,17 @@
 					"complex": null,
 					"simple": "city"
 				},
-				"costCenter": {
-					"complex": null,
-					"simple": "costcenter"
-				},
 				"department": {
 					"complex": null,
 					"simple": "department"
-				},
-				"displayName": {
-					"complex": null,
-					"simple": "displayname"
 				},
 				"email": {
 					"complex": null,
 					"simple": "email"
 				},
-				"employeeNumber": {
-					"complex": null,
-					"simple": "employeeid"
-				},
-				"firstName": {
-					"complex": null,
-					"simple": "givenname"
-				},
 				"id": {
 					"complex": null,
 					"simple": "oktaid"
-				},
-				"lastName": {
-					"complex": null,
-					"simple": "surname"
-				},
-				"login": {
-					"complex": null,
-					"simple": "email"
-				},
-				"manager": {
-					"complex": null,
-					"simple": "managername"
-				},
-				"mobilePhone": {
-					"complex": null,
-					"simple": "mobilephone"
 				},
 				"organization": {
 					"complex": null,
@@ -62,21 +30,9 @@
 					"complex": null,
 					"simple": "state"
 				},
-				"streetAddress": {
-					"complex": null,
-					"simple": "streetaddress"
-				},
 				"title": {
 					"complex": null,
 					"simple": "title"
-				},
-				"userType": {
-					"complex": null,
-					"simple": "employeetype"
-				},
-				"zipCode": {
-					"complex": null,
-					"simple": "zipcode"
 				}
 			}
 		}

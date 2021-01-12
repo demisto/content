@@ -12,44 +12,6 @@
 					"complex": null,
 					"simple": "servicenowcategory"
 				},
-				"child_incidents": {
-					"complex": null,
-					"simple": "childincidentscount"
-				},
-				"close_notes": {
-					"complex": null,
-					"simple": "closeNotes"
-				},
-				"closed_at": {
-					"complex": {
-						"accessor": "",
-						"filters": [
-							[
-								{
-									"ignoreCase": false,
-									"left": {
-										"isContext": true,
-										"value": {
-											"complex": null,
-											"simple": "closed"
-										}
-									},
-									"operator": "isAfter",
-									"right": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "0001-01-01T00:00:00Z"
-										}
-									}
-								}
-							]
-						],
-						"root": "closed",
-						"transformers": []
-					},
-					"simple": ""
-				},
 				"description": {
 					"complex": null,
 					"simple": "details"
@@ -57,48 +19,6 @@
 				"escalation": {
 					"complex": null,
 					"simple": "servicenowescalation"
-				},
-				"impact": {
-					"complex": null,
-					"simple": "servicenowimpact"
-				},
-				"notify": {
-					"complex": null,
-					"simple": "servicenownotify"
-				},
-				"priority": {
-					"complex": null,
-					"simple": "servicenowpriority"
-				},
-				"resolved_at": {
-					"complex": {
-						"accessor": "",
-						"filters": [
-							[
-								{
-									"ignoreCase": false,
-									"left": {
-										"isContext": true,
-										"value": {
-											"complex": null,
-											"simple": "closed"
-										}
-									},
-									"operator": "isAfter",
-									"right": {
-										"isContext": false,
-										"value": {
-											"complex": null,
-											"simple": "0001-01-01T00:00:00Z"
-										}
-									}
-								}
-							]
-						],
-						"root": "closed",
-						"transformers": []
-					},
-					"simple": ""
 				},
 				"severity": {
 					"complex": {
@@ -252,10 +172,6 @@
 					"complex": null,
 					"simple": "name"
 				},
-				"sla_due": {
-					"complex": null,
-					"simple": "remediationsla.dueDate"
-				},
 				"state": {
 					"complex": null,
 					"simple": "servicenowstate"
@@ -263,18 +179,6 @@
 				"subcategory": {
 					"complex": null,
 					"simple": "subcategory"
-				},
-				"sys_created_on": {
-					"complex": null,
-					"simple": "created"
-				},
-				"urgency": {
-					"complex": null,
-					"simple": "servicenowurgency"
-				},
-				"work_start": {
-					"complex": null,
-					"simple": "timetoassignment.startDate"
 				}
 			}
 		}
