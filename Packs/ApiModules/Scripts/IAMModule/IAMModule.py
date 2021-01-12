@@ -167,6 +167,9 @@ class IAMUserProfile:
 
         return return_entry
 
+    def return_outputs(self):
+        return_results(self.to_entry())
+
     def set_result(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
                    error_message=None, details=None, skip=False, skip_reason=None, action=None, return_error=False):
         """ Sets the outputs and readable outputs attributes according to the given arguments.

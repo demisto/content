@@ -19,10 +19,6 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
-try:
-    from IAMModule import IAMUserProfile
-except ImportError:
-    from IAMModule import IAMUserProfile  # type: ignore
 
 import demistomock as demisto
 import warnings
@@ -4305,10 +4301,6 @@ def return_results(results):
 
     if isinstance(results, GetRemoteDataResponse):
         demisto.results(results.extract_for_local())
-        return
-
-    if isinstance(results, IAMUserProfile):
-        demisto.results(results.to_entry())
         return
 
     if isinstance(results, GetModifiedRemoteDataResponse):

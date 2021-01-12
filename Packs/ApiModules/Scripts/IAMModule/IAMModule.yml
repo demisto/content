@@ -16,3 +16,5 @@ dockerimage: demisto/python3:3.8.6.13358
 dependson: {
   }
 fromversion: 6.0.0
+tests:
+  - No tests

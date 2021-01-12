@@ -1,7 +1,7 @@
 from requests import Response, Session
 from Okta_IAM import Client, get_user_command, create_user_command, update_user_command, \
     disable_user_command, get_mapping_fields_command, get_app_user_assignment_command, fetch_incidents
-from IAMModule import IAMErrors, IAMUserProfile, IAMActions
+from IAMModule import *
 from CommonServerPython import EntryType
 
 
