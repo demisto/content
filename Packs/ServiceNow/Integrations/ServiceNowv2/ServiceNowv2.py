@@ -1022,7 +1022,7 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
 
     # make the modified fields the user inserted as arguments show in the context
     if additional_fields:
-        additional_fields_keys = additional_fields_keys.extend(list(args.keys()))
+        additional_fields_keys.extend(list(args.keys()))
     else:
         additional_fields_keys = list(args.keys())
 
