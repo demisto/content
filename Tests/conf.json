@@ -46,6 +46,10 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "XsoarPowershellTesting",
+            "playbookID": "XsoarPowershellTesting-Test"
+        },
+        {
             "integrations": "Palo Alto Networks Threat Vault",
             "playbookID": "PANW Threat Vault - Signature Search - Test",
             "fromversion": "5.0.0"
@@ -3311,7 +3315,8 @@
         "FeedThreatConnect-Test": "Issue 32317",
         "Phishing v2 - Test - Incident Starter": "Issue 26783",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
-        "Process Email - Generic - Test - Incident Starter": "Issue 32459"
+        "Process Email - Generic - Test - Incident Starter": "Issue 32459",
+        "HelloWorldPremium_Scan-Test": "Issue 32512"
     },
     "skipped_integrations": {
 
@@ -3461,6 +3466,7 @@
         "VirusTotal - Private API": "proxy failures with recording. related issues: 26463, 28888",
         "SecurityIntelligenceServicesFeed": "Need proxy configuration in server",
         "BPA": "Playbook using GenericPolling which is inconsistent",
+        "XsoarPowershellTesting": "Integration which not use network.",
         "Mail Listener v2": "Integration has no proxy checkbox",
         "Cortex XDR - IOC": "'Cortex XDR - IOC - Test' is using also the fetch indicators which is not working in proxy mode",
         "AWS - Security Hub": "Issue 24926",
