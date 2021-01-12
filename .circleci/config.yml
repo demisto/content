@@ -401,7 +401,9 @@ references:
         fi
 
         GCS_PATH=$(mktemp)
+        echo "1"
         echo "$GCS_MARKET_KEY" > "$GCS_PATH"
+        echo "2"
         gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
 <<<<<<< HEAD
         echo "successfully activated google cloud service account"
