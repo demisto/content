@@ -255,23 +255,7 @@
       "version": 0
      },
      {
-      "fieldId": "incident_chronicleassetsupportcontact",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
       "fieldId": "incident_chronicleautoblockentities",
-      "id": "",
-      "isVisible": true,
-      "modified": "0001-01-01T00:00:00Z",
-      "sortValues": null,
-      "version": 0
-     },
-     {
-      "fieldId": "incident_chronicleskipentityisolation",
       "id": "",
       "isVisible": true,
       "modified": "0001-01-01T00:00:00Z",
