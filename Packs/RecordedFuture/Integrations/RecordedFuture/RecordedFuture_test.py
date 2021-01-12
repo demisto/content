@@ -2,7 +2,6 @@ import unittest
 import os
 import json
 from pathlib import Path
-import requests_mock
 from RecordedFuture import (
     lookup_command,
     Client,
@@ -12,7 +11,6 @@ from RecordedFuture import (
     get_alert_single_command,
     triage_command,
 )
-from mock_samples import ALERT_RULES
 from CommonServerPython import CommandResults
 
 import vcr as vcrpy
@@ -136,13 +134,8 @@ class RFTest(unittest.TestCase):
         scores = [e for e in context["Contents"]['Entities'] if e['score'] == 0]
         self.assertEqual(len(scores), 0, "Response contains entities with zero score")  # noqa
 
-    @requests_mock.Mocker()
-    def test_get_alerting_rules(self, m) -> None:
-        m.register_uri(
-            "GET",
-            "https://api.recordedfuture.com/v2/alert/rule?limit=10",
-            text=json.dumps(ALERT_RULES),
-        )
+    @vcr.use_cassette()
+    def test_get_alerting_rules(self) -> None:
         resp = get_alert_rules_command(self.client, rule_name="", limit=10)
         self.assertTrue(resp)
         self.assertTrue(resp["Contents"]["data"])
