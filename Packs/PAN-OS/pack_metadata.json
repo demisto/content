@@ -2,7 +2,7 @@
     "name": "PAN-OS",
     "description": "Manage Palo Alto Networks Firewall and Panorama. For more information see Panorama documentation.",
     "support": "xsoar",
-    "currentVersion": "1.6.6",
+    "currentVersion": "1.6.12",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

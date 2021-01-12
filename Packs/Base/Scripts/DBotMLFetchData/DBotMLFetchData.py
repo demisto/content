@@ -60,7 +60,7 @@ DOMAIN_TO_RANK = None
 WORD_TO_REGEX = None
 WORD_TO_NGRAMS = None
 
-FETCH_DATA_VERSION = '2.0'
+FETCH_DATA_VERSION = '3.1'
 LAST_EXECUTION_LIST_NAME = 'FETCH_DATA_ML_LAST_EXECUTION'
 MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION = 500
 MAX_INCIDENTS_TO_FETCH_FIRST_EXECUTION = 3000
@@ -101,19 +101,20 @@ class ShortTextException(Exception):
 '''
 Define heuristics for finding label field
 '''
-LABEL_FIELDS_BLACKLIST = set([EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, 'emailbodyhtml', 'CustomFields',
-                              'ShardID', 'account', 'activated', 'attachment', 'autime', 'canvases',
-                              'category', 'closeNotes', 'closed', 'closingUserId', 'created', 'criticalassets',
-                              'dbotCreatedBy', 'dbotMirrorDirection', 'dbotMirrorId', 'details', 'detectionsla',
-                              'droppedCount', 'dbotMirrorInstance', 'dbotMirrorLastSync', 'dueDate', 'emailbody',
-                              'emailcc', 'emailfrom', 'emailhtml', 'emailmessageid', 'emailto', 'emailtocount',
-                              'emailheaders', 'emailsubject', 'hasRole', 'id', 'investigationId', 'isPlayground',
-                              'labels', 'lastJobRunTime', 'lastOpen', 'linkedCount', 'linkedIncidents', 'modified',
-                              'name', 'notifyTime', 'occurred', 'openDuration', 'owner', 'parent', 'phase',
-                              'playbookId', 'previousRoles', 'rawCategory', 'rawCloseReason', 'rawJSON', 'rawName',
-                              'rawPhase', 'rawType', 'reason', 'remediationsla', 'reminder', 'roles', 'runStatus',
-                              'severity', 'sla', 'sortValues', 'sourceBrand', 'sourceInstance',
-                              'status', 'timetoassignment', 'type', 'urlsslverification', 'version'])
+LABEL_FIELDS_BLACKLIST = {EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, 'emailbodyhtml', 'CustomFields',
+                          'ShardID', 'account', 'activated', 'attachment', 'autime', 'canvases', 'category',
+                          'closeNotes', 'closed', 'closingUserId', 'created', 'criticalassets', 'dbotCreatedBy',
+                          'dbotMirrorDirection', 'dbotMirrorId', 'details', 'detectionsla', 'droppedCount',
+                          'dbotMirrorInstance', 'dbotMirrorLastSync', 'dueDate', 'emailbody', 'emailcc', 'emailfrom',
+                          'emailhtml', 'emailmessageid', 'emailto', 'emailtocount', 'emailheaders', 'emailsubject',
+                          'hasRole', 'id', 'investigationId', 'isPlayground', 'labels', 'lastJobRunTime', 'lastOpen',
+                          'linkedCount', 'linkedIncidents', 'modified', 'name', 'notifyTime', 'occurred',
+                          'openDuration', 'owner', 'parent', 'phase', 'playbookId', 'previousRoles', 'rawCategory',
+                          'rawCloseReason', 'rawJSON', 'rawName', 'rawPhase', 'rawType', 'reason', 'remediationsla',
+                          'reminder', 'roles', 'runStatus', 'severity', 'sla', 'sortValues', 'sourceBrand',
+                          'sourceInstance', 'status', 'timetoassignment', 'type', 'urlsslverification', 'version',
+                          "index", 'allRead', 'allReadWrite', 'dbotCurrentDirtyFields', 'dbotDirtyFields',
+                          'dbotMirrorTags', 'feedBased', 'previousAllRead', 'previousAllReadWrite'}
 LABEL_VALUES_KEYWORDS = ['spam', 'malicious', 'legit', 'false', 'positive', 'phishing', 'fraud', 'internal', 'test',
                          'fp', 'tp', 'resolve', 'credentials', 'spear', 'malware', 'whaling', 'catphishing',
                          'catfishing', 'social', 'sextortion', 'blackmail', 'spyware', 'adware']
@@ -138,19 +139,20 @@ Define known shortened and drive domains
 
 DRIVE_URL_KEYWORDS = ['drive', 'transfer', 'formplus', 'dropbox', 'sendspace', 'onedrive', 'box', 'pcloud', 'icloud',
                       'mega', 'spideroak', 'sharepoint']
-SHORTENED_DOMAINS = set(
-    ["adf.ly", "t.co", "goo.gl", "adbooth.net", "adfoc.us", "bc.vc", "bit.ly", "j.gs", "seomafia.net", "adlock.in",
-     "adbooth.com", "cutt.us", "is.gd", "cf.ly", "ity.im", "tiny.cc", "adfa.st", "budurl.com", "soo.gd",
-     "prettylinkpro.com", "shrinkonce.com", "ad7.biz", "2tag.nl", "1o2.ir", "hotshorturl.com", "onelink.ir", "dai3.net",
-     "9en.us", "kaaf.com", "rlu.ru", "awe.sm", "4ks.net", "s2r.co", "4u2bn.com", "multiurl.com", "tab.bz", "dstats.net",
-     "iiiii.in", "nicbit.com", "l1nks.org", "at5.us", "bizz.cc", "fur.ly", "clicky.me", "magiclinker.com",
-     "miniurl.com", "bit.do", "adurl.biz", "omani.ac", "1y.lt", "1click.im", "1dl.us", "4zip.in", "ad4.us", "adfro.gs",
-     "adnld.com", "adshor.tk", "adspl.us", "adzip.us", "articleshrine.com", "asso.in", "b2s.me", "bih.cc", "biturl.net",
-     "buraga.org", "cc.cr", "cf6.co", "dollarfalls.info", "domainonair.com", "gooplu.com", "hide4.me", "ik.my",
-     "ilikear.ch", "infovak.com", "itz.bz", "jetzt-hier-klicken.de", "kly.so", "lst.bz", "mrte.ch",
-     "multiurlscript.com", "nowlinks.net", "nsyed.com", "ooze.us", "ozn.st", "scriptzon.com", "short2.in",
-     "shortxlink.com", "shr.tn", "shrt.in", "sitereview.me", "sk.gy", "snpurl.biz", "socialcampaign.com", "swyze.com",
-     "theminiurl.com", "tinylord.com", "tinyurl.ms", "tip.pe", "ty.by"])
+SHORTENED_DOMAINS = {"adf.ly", "t.co", "goo.gl", "adbooth.net", "adfoc.us", "bc.vc", "bit.ly", "j.gs", "seomafia.net",
+                     "adlock.in", "adbooth.com", "cutt.us", "is.gd", "cf.ly", "ity.im", "tiny.cc", "adfa.st",
+                     "budurl.com", "soo.gd", "prettylinkpro.com", "shrinkonce.com", "ad7.biz", "2tag.nl", "1o2.ir",
+                     "hotshorturl.com", "onelink.ir", "dai3.net", "9en.us", "kaaf.com", "rlu.ru", "awe.sm", "4ks.net",
+                     "s2r.co", "4u2bn.com", "multiurl.com", "tab.bz", "dstats.net", "iiiii.in", "nicbit.com",
+                     "l1nks.org", "at5.us", "bizz.cc", "fur.ly", "clicky.me", "magiclinker.com", "miniurl.com",
+                     "bit.do", "adurl.biz", "omani.ac", "1y.lt", "1click.im", "1dl.us", "4zip.in", "ad4.us", "adfro.gs",
+                     "adnld.com", "adshor.tk", "adspl.us", "adzip.us", "articleshrine.com", "asso.in", "b2s.me",
+                     "bih.cc", "biturl.net", "buraga.org", "cc.cr", "cf6.co", "dollarfalls.info", "domainonair.com",
+                     "gooplu.com", "hide4.me", "ik.my", "ilikear.ch", "infovak.com", "itz.bz", "jetzt-hier-klicken.de",
+                     "kly.so", "lst.bz", "mrte.ch", "multiurlscript.com", "nowlinks.net", "nsyed.com", "ooze.us",
+                     "ozn.st", "scriptzon.com", "short2.in", "shortxlink.com", "shr.tn", "shrt.in", "sitereview.me",
+                     "sk.gy", "snpurl.biz", "socialcampaign.com", "swyze.com", "theminiurl.com", "tinylord.com",
+                     "tinyurl.ms", "tip.pe", "ty.by"}
 
 
 def find_label_fields_candidates(incidents_df):
@@ -266,7 +268,7 @@ def get_url_features(email_body, email_html, soup):
     drive_count = len([u for u in all_urls if any(drive in u for drive in DRIVE_URL_KEYWORDS)])
     return {
         'http_urls_count': sum(url.startswith('http') and not url.startswith('https') for url in plain_urls),
-        'https_urls_count': sum(url.startswith('https')for url in plain_urls),
+        'https_urls_count': sum(url.startswith('https') for url in plain_urls),
         'embedded_urls_count': len(embedded_urls),
         'all_urls_count': len(all_urls),
         'average_url_length': average_url_length,
@@ -288,7 +290,7 @@ def get_html_features(soup):
 
 
 def load_external_resources():
-    global EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_100, EMBEDDING_DICT_FASTTEXT,\
+    global EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_50, EMBEDDING_DICT_GLOVE_100, EMBEDDING_DICT_FASTTEXT, \
         DOMAIN_TO_RANK, DOMAIN_TO_RANK_PATH, WORD_TO_NGRAMS, WORD_TO_REGEX
     with open(GLOVE_50_PATH, 'rb') as file:
         EMBEDDING_DICT_GLOVE_50 = pickle.load(file)
@@ -324,7 +326,8 @@ def get_embedding_features(tokenized_text):
 def get_header_value(email_headers, header_name, index=0, ignore_case=False):
     if ignore_case:
         header_name = header_name.lower()
-        headers_with_name = [header_dict for header_dict in email_headers if header_dict['headername'].lower() == header_name]
+        headers_with_name = [header_dict for header_dict in email_headers if
+                             header_dict['headername'].lower() == header_name]
     else:
         headers_with_name = [header_dict for header_dict in email_headers if header_dict['headername'] == header_name]
     if len(headers_with_name) == 0:
@@ -571,6 +574,7 @@ def extract_features_from_incident(row, label_fields):
         'attachments_features': attachments_features,
         'created': str(row['created']) if 'created' in row else None,
         'id': str(row['id']) if 'id' in row else None,
+        'type': str(row['type']) if 'type' in row else None,
 
     }
     for label in label_fields:
@@ -586,6 +590,7 @@ def extract_features_from_all_incidents(incidents_df, label_fields):
     exceptions_log = []
     exception_indices = set()
     timeout_indices = set()
+    short_text_indices = set()
     durations = []
     for index, row in incidents_df.iterrows():
         signal.alarm(5)
@@ -598,7 +603,7 @@ def extract_features_from_all_incidents(incidents_df, label_fields):
         except TimeoutException:
             timeout_indices.add(index)
         except ShortTextException:
-            exceptions_log.append(traceback.format_exc())
+            short_text_indices.add(index)
         except Exception:
             exception_indices.add(index)
             exceptions_log.append(traceback.format_exc())
@@ -606,14 +611,14 @@ def extract_features_from_all_incidents(incidents_df, label_fields):
                 break
         finally:
             signal.alarm(0)
-    return X, Counter(exceptions_log).most_common(), exception_indices, timeout_indices, durations
+    return X, Counter(exceptions_log).most_common(), short_text_indices, exception_indices, timeout_indices, durations
 
 
 def extract_data_from_incidents(incidents, input_label_field=None):
     incidents_df = pd.DataFrame(incidents)
     if 'created' in incidents_df:
-        incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))   # type: ignore
-        incidents_df_for_finding_labels_fields_candidates = incidents_df.sort_values(by='created', ascending=False)\
+        incidents_df['created'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
+        incidents_df_for_finding_labels_fields_candidates = incidents_df.sort_values(by='created', ascending=False) \
             .head(500)
     else:
         incidents_df_for_finding_labels_fields_candidates = incidents_df
@@ -626,14 +631,38 @@ def extract_data_from_incidents(incidents, input_label_field=None):
         label_fields = [input_label_field]
     for label in label_fields:
         incidents_df[label].replace('', float('nan'), regex=True, inplace=True)
+    n_fetched_incidents = len(incidents_df)
     incidents_df = incidents_df.dropna(how='all', subset=label_fields).reset_index()
+    n_incidents = len(incidents_df)
     y = []
     for i, label in enumerate(label_fields):
         y.append({'field_name': label,
                   'rank': '#{}'.format(i + 1)})
-    load_external_resources()
-    X, exceptions_log, exception_indices, timeout_indices, durations\
-        = extract_features_from_all_incidents(incidents_df, label_fields)
+    custom_fields = [col for col in incidents_df.columns if col not in LABEL_FIELDS_BLACKLIST]
+    custom_fields_dict = {col: float(incidents_df[col].nunique() / n_incidents) for col in custom_fields}
+    subject_field_exists = EMAIL_SUBJECT_FIELD in incidents_df.columns
+    body_field_exists = EMAIL_BODY_FIELD in incidents_df.columns
+    html_field_exists = EMAIL_HTML_FIELD in incidents_df.columns
+    headers_field_exists = EMAIL_HEADERS_FIELD in incidents_df.columns
+    attachments_field_exists = EMAIL_ATTACHMENT_FIELD in incidents_df.columns
+    n_missing_subject_field = sum(incidents_df[EMAIL_SUBJECT_FIELD].isnull()) if subject_field_exists else n_incidents
+    n_missing_body_field = sum(incidents_df[EMAIL_BODY_FIELD].isnull()) if body_field_exists else n_incidents
+    n_missing_html_field = sum(incidents_df[EMAIL_HTML_FIELD].isnull()) if html_field_exists else n_incidents
+    n_missing_headers_field = sum(incidents_df[EMAIL_HEADERS_FIELD].isnull()) if headers_field_exists else n_incidents
+    n_missing_attachments_field = sum(incidents_df[EMAIL_ATTACHMENT_FIELD].isnull()) \
+        if attachments_field_exists else n_incidents
+    if not (subject_field_exists or body_field_exists or html_field_exists):
+        X = []
+        exceptions_log = []
+        short_text_indices = []
+        exception_indices = []
+        timeout_indices = []
+        durations = []
+    else:
+        load_external_resources()
+        X, exceptions_log, short_text_indices, exception_indices, timeout_indices, durations \
+            = extract_features_from_all_incidents(incidents_df, label_fields)
+
     return {'X': X,
             'n_fetched_incidents': len(X),
             'y': y,
@@ -641,7 +670,22 @@ def extract_data_from_incidents(incidents, input_label_field=None):
                 {'exceptions': exceptions_log,
                  'n_timout': len(timeout_indices),
                  'n_other_exceptions': len(exception_indices),
-                 'durations': durations}
+                 'durations': durations,
+                 'n_fetched_incidents': n_fetched_incidents,
+                 'n_labeled_incidents': n_incidents,
+                 'subject_field_exists': subject_field_exists,
+                 'body_field_exists': body_field_exists,
+                 'html_field_exists': html_field_exists,
+                 'headers_field_exists': headers_field_exists,
+                 'attachments_field_exists': attachments_field_exists,
+                 'n_missing_subject_field': n_missing_subject_field,
+                 'n_missing_body_field': n_missing_body_field,
+                 'n_missing_html_field': n_missing_html_field,
+                 'n_missing_headers_field': n_missing_headers_field,
+                 'n_missing_attachments_field': n_missing_attachments_field,
+                 'n_short_text_fields': len(short_text_indices),
+                 'custom_fields': custom_fields_dict
+                 },
             }
 
 
@@ -655,23 +699,8 @@ def return_json_entry(obj):
 
 
 def get_args_based_on_last_execution():
-    lst = demisto.executeCommand('getList', {'listName': LAST_EXECUTION_LIST_NAME})
-    if isError(lst):  # if first execution
-        return FIRST_EXECUTION_ARGUMENTS
-    try:
-        list_content = lst[0]['Contents']
-        last_execution_json_data = json.loads(list_content)
-        last_execution_time = last_execution_json_data[EXECUTION_JSON_FIELD]
-        last_execution_version = last_execution_json_data[VERSION_JSON_FIELD]
-        if last_execution_version != FETCH_DATA_VERSION:
-            return FIRST_EXECUTION_ARGUMENTS
-        last_execution_datetime = datetime.strptime(last_execution_time, DATETIME_FORMAT)
-        query = 'modified:>="{}"'.format(datetime.strftime(last_execution_datetime, MODIFIED_QUERY_TIMEFORMAT))
-        return {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION,
-                'fromDate': FROM_DATA_PERIODIC_EXECUTION,
-                'query': query}
-    except Exception:
-        return FIRST_EXECUTION_ARGUMENTS
+    return {'limit': MAX_INCIDENTS_TO_FETCH_PERIODIC_EXECUTION,
+            'fromDate': FROM_DATA_PERIODIC_EXECUTION}
 
 
 def update_last_execution_time():
@@ -690,7 +719,7 @@ def determine_incidents_args(input_args, default_args):
         get_incidents_by_query_args['query'] = '({}) and (status:Closed)'.format(default_args['query'])
     else:
         get_incidents_by_query_args['query'] = 'status:Closed'
-    for arg in ['limit', 'fromDate']:
+    for arg in ['limit', 'fromDate', 'incidentTypes']:
         if arg in input_args:
             get_incidents_by_query_args[arg] = input_args[arg]
         elif arg in default_args:
@@ -743,10 +772,9 @@ def main():
                'ExecutionTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S"), 'IsCompressed': compress}
         return_file = input_args.get('toFile', 'False').strip() == 'True'
         if return_file:
-            return_file_entry(res, len(incidents))
+            return_file_entry(res, len(data['X']))
         else:
             return_json_entry(res)
-    update_last_execution_time()
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

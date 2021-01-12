@@ -2,7 +2,7 @@
     "name": "Deprecated Content",
     "description": "Deprecated Cortex XSOAR content pack.",
     "support": "xsoar",
-    "currentVersion": "1.6.6",
+    "currentVersion": "1.6.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

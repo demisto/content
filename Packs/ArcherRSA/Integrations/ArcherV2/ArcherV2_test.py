@@ -1,6 +1,11 @@
+import copy
+from datetime import datetime, timezone
+
 import pytest
-from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value
+
 import demistomock as demisto
+from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
+    fetch_incidents, get_fetch_time, parser
 
 BASE_URL = 'https://test.com/'
 
@@ -27,9 +32,19 @@ XML_FOR_TEST = '<?xml version="1.0" encoding="utf-8"?>' + \
 GET_LEVEL_RES = [{"IsSuccessful": True, "RequestedObject": {"Id": 123}}]
 
 FIELD_DEFINITION_RES = [
-    {"IsSuccessful": True, "RequestedObject": {"Id": 1, "Type": 7, "Name": "External Links", "IsRequired": False}},
-    {"IsSuccessful": True, "RequestedObject": {"Id": 2, "Type": 1, "Name": "Device Name", "IsRequired": True,
-                                               "RelatedValuesListId": 8}}]
+    {
+        "IsSuccessful": True,
+        "RequestedObject": {
+            "Id": 1, "Type": 7, "Name": "External Links", "IsRequired": False
+        }
+    },
+    {
+        "IsSuccessful": True,
+        "RequestedObject": {
+            "Id": 2, "Type": 1, "Name": "Device Name", "IsRequired": True, "RelatedValuesListId": 8
+        }
+    }
+]
 
 GET_LEVELS_BY_APP = [
     {'level': 123, 'mapping': {'1': {
@@ -39,24 +54,29 @@ GET_LEVELS_BY_APP = [
             'IsRequired': True, 'RelatedValuesListId': 8}
     }}]
 
-GET_FIElD_DEFINITION_RES = {"RequestedObject":
-                            {"RelatedValuesListId": 62},
-                            "IsSuccessful": True,
-                            "ValidationMessages": []}
+GET_FIElD_DEFINITION_RES = {
+    "RequestedObject": {"RelatedValuesListId": 62},
+    "IsSuccessful": True,
+    "ValidationMessages": []
+}
 
-VALUE_LIST_RES = {"RequestedObject": {
-    "Children": [
-        {"Data": {"Id": 471, "Name": "Low", "IsSelectable": True}},
-        {"Data": {"Id": 472, "Name": "Medium", "IsSelectable": True}},
-        {"Data": {"Id": 473, "Name": "High", "IsSelectable": True}}]},
-    "IsSuccessful": True, "ValidationMessages": []}
+VALUE_LIST_RES = {
+    "RequestedObject": {
+        "Children": [
+            {"Data": {"Id": 471, "Name": "Low", "IsSelectable": True}},
+            {"Data": {"Id": 472, "Name": "Medium", "IsSelectable": True}},
+            {"Data": {"Id": 473, "Name": "High", "IsSelectable": True}}]},
+    "IsSuccessful": True, "ValidationMessages": []
+}
 
-VALUE_LIST_RES_FOR_SOURCE = {"RequestedObject": {
-    "Children": [
-        {"Data": {"Id": 471, "Name": "ArcSight", "IsSelectable": True}},
-        {"Data": {"Id": 472, "Name": "Medium", "IsSelectable": True}},
-        {"Data": {"Id": 473, "Name": "High", "IsSelectable": True}}]},
-    "IsSuccessful": True, "ValidationMessages": []}
+VALUE_LIST_RES_FOR_SOURCE = {
+    "RequestedObject": {
+        "Children": [
+            {"Data": {"Id": 471, "Name": "ArcSight", "IsSelectable": True}},
+            {"Data": {"Id": 472, "Name": "Medium", "IsSelectable": True}},
+            {"Data": {"Id": 473, "Name": "High", "IsSelectable": True}}]},
+    "IsSuccessful": True, "ValidationMessages": []
+}
 
 VALUE_LIST_FIELD_DATA = {
     "FieldId": 304, "ValuesList": [
@@ -64,9 +84,11 @@ VALUE_LIST_FIELD_DATA = {
         {"Id": 472, "Name": "Medium", "IsSelectable": True},
         {"Id": 473, "Name": "High", "IsSelectable": True}]}
 
-RES_WITH_ERRORS = {'ValidationMessages': [
-    {'ResourcedMessage': 'The Type field is a required field.'},
-    {'ResourcedMessage': 'The Device Name field is a required field.'}]}
+RES_WITH_ERRORS = {
+    'ValidationMessages': [
+        {'ResourcedMessage': 'The Type field is a required field.'},
+        {'ResourcedMessage': 'The Device Name field is a required field.'}]
+}
 
 GET_RECORD_RES_failed = {'ValidationMessages': [{'ResourcedMessage': 'No resource found.'}]}
 
@@ -161,186 +183,320 @@ GET_RESPONSE_NOT_SUCCESSFUL_JSON = {"IsSuccessful": False, "RequestedObject": No
 GET_RESPONSE_SUCCESSFUL_JSON = {"IsSuccessful": True, "RequestedObject": {'SessionToken': 'session-id'}}
 
 
-def test_extract_from_xml():
-    field_id = extract_from_xml(XML_FOR_TEST, 'Envelope.Body.GetValueListForField.fieldId')
-    assert field_id == '6969'
+class TestArcherV2:
+    def test_extract_from_xml(self):
+        field_id = extract_from_xml(XML_FOR_TEST, 'Envelope.Body.GetValueListForField.fieldId')
+        assert field_id == '6969'
 
+    def test_get_level_by_app_id(self, requests_mock):
+        requests_mock.post(BASE_URL + 'api/core/security/login', json={'RequestedObject': {'SessionToken': 'session-id',
+                                                                                           }, 'IsSuccessful': True})
+        requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
+        requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
+        client = Client(BASE_URL, '', '', '', '')
+        levels = client.get_level_by_app_id('1')
+        assert levels == GET_LEVELS_BY_APP
 
-def test_get_level_by_app_id(requests_mock):
-    requests_mock.post(BASE_URL + 'api/core/security/login', json={'RequestedObject': {'SessionToken': 'session-id',
-                                                                                       }, 'IsSuccessful': True})
-    requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
-    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
-    client = Client(BASE_URL, '', '', '', '')
-    levels = client.get_level_by_app_id('1')
-    assert levels == GET_LEVELS_BY_APP
-
-
-@pytest.mark.parametrize('requested_object, is_successful',
-                         [(GET_RESPONSE_NOT_SUCCESSFUL_JSON, False),
-                          (GET_RESPONSE_SUCCESSFUL_JSON, True)])
-def test_update_session(mocker, requests_mock, requested_object, is_successful):
-    requests_mock.post(BASE_URL + 'api/core/security/login', json=requested_object)
-    mocker.patch.object(demisto, 'results')
-    client = Client(BASE_URL, '', '', '', '')
-    if is_successful:
-        client.update_session()
-        assert demisto.results.call_count == 0
-    else:
-        with pytest.raises(SystemExit) as e:
-            # in case login wasn't successful, return_error will exit with a reason (for example, LoginNotValid)
-            # return_error reached
+    @pytest.mark.parametrize('requested_object, is_successful',
+                             [(GET_RESPONSE_NOT_SUCCESSFUL_JSON, False),
+                              (GET_RESPONSE_SUCCESSFUL_JSON, True)])
+    def test_update_session(self, mocker, requests_mock, requested_object, is_successful):
+        requests_mock.post(BASE_URL + 'api/core/security/login', json=requested_object)
+        mocker.patch.object(demisto, 'results')
+        client = Client(BASE_URL, '', '', '', '')
+        if is_successful:
             client.update_session()
-        assert e
+            assert demisto.results.call_count == 0
+        else:
+            with pytest.raises(SystemExit) as e:
+                # in case login wasn't successful, return_error will exit with a reason (for example, LoginNotValid)
+                # return_error reached
+                client.update_session()
+            assert e
 
+    def test_generate_field_contents(self):
+        client = Client(BASE_URL, '', '', '', '')
+        field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP[0]['mapping'])
+        assert field == {'2': {'Type': 1, 'Value': 'Macbook', 'FieldId': '2'}}
 
-def test_generate_field_contents():
-    client = Client(BASE_URL, '', '', '', '')
-    field = generate_field_contents(client, '{"Device Name":"Macbook"}', GET_LEVELS_BY_APP[0]['mapping'])
-    assert field == {'2': {'Type': 1, 'Value': 'Macbook', 'FieldId': '2'}}
+    def test_get_errors_from_res(self):
+        errors = get_errors_from_res(RES_WITH_ERRORS)
+        assert errors == 'The Type field is a required field.\nThe Device Name field is a required field.'
 
+    def test_get_record_failed(self, requests_mock):
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+        requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_failed)
+        client = Client(BASE_URL, '', '', '', '')
+        record, res, errors = client.get_record(75, 1010)
+        assert errors == 'No resource found.'
+        assert res
+        assert record == {}
 
-def test_get_errors_from_res():
-    errors = get_errors_from_res(RES_WITH_ERRORS)
-    assert errors == 'The Type field is a required field.\nThe Device Name field is a required field.'
+    def test_get_record_success(self, requests_mock):
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+        requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_SUCCESS)
+        requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
+        requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
+        client = Client(BASE_URL, '', '', '', '')
+        record, res, errors = client.get_record(1, 1010)
+        assert errors is None
+        assert res
+        assert record == {'Device Name': 'The device name', 'Id': 1010}
 
+    def test_record_to_incident(self):
+        client = Client(BASE_URL, '', '', '', '')
+        record = copy.deepcopy(INCIDENT_RECORD)
+        record['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
+        incident, incident_created_time = client.record_to_incident(record, 75, '305')
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
+        assert incident['name'] == 'RSA Archer Incident: 227602'
+        assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
-def test_get_record_failed(requests_mock):
-    requests_mock.post(BASE_URL + 'api/core/security/login',
-                       json={'RequestedObject': {'SessionToken': 'session-id'}})
-    requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_failed)
-    client = Client(BASE_URL, '', '', '', '')
-    record, res, errors = client.get_record(75, 1010)
-    assert errors == 'No resource found.'
-    assert res
-    assert record == {}
+    def test_search_records(self, requests_mock):
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+        requests_mock.post(BASE_URL + 'ws/general.asmx', text=GET_TOKEN_SOAP)
 
+        requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
+        requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
+        requests_mock.post(BASE_URL + 'ws/search.asmx', text=SEARCH_RECORDS_RES)
+        client = Client(BASE_URL, '', '', '', '')
+        records, raw_res = client.search_records(1, ['External Links', 'Device Name'])
+        assert raw_res
+        assert len(records) == 1
+        assert records[0]['record']['Id'] == '238756'
+        assert records[0]['record']['Device Name'] == 'DEVICE NAME'
 
-def test_get_record_success(requests_mock):
-    requests_mock.post(BASE_URL + 'api/core/security/login',
-                       json={'RequestedObject': {'SessionToken': 'session-id'}})
-    requests_mock.get(BASE_URL + 'api/core/content/1010', json=GET_RECORD_RES_SUCCESS)
-    requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
-    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
-    client = Client(BASE_URL, '', '', '', '')
-    record, res, errors = client.get_record(1, 1010)
-    assert errors is None
-    assert res
-    assert record == {'Device Name': 'The device name', 'Id': 1010}
+    def test_get_field_value_list(self, requests_mock):
+        cache = demisto.getIntegrationContext()
+        cache['fieldValueList'] = {}
+        demisto.setIntegrationContext(cache)
 
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+        requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
+        requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
+        client = Client(BASE_URL, '', '', '', '')
+        field_data = client.get_field_value_list(304)
+        assert VALUE_LIST_FIELD_DATA == field_data
 
-def test_record_to_incident():
-    client = Client(BASE_URL, '', '', '', '')
-    incident, incident_created_time = client.record_to_incident(INCIDENT_RECORD, 75, 'Date/Time Reported')
-    assert incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ') == '2018-03-26T10:03:32Z'
-    assert incident['name'] == 'RSA Archer Incident: 227602'
-    assert incident['occurred'] == '2018-03-26T10:03:32Z'
+    def test_generate_field_value_text_input(self):
+        client = Client(BASE_URL, '', '', '', '')
+        field_key, field_value = generate_field_value(client, "", {'Type': 1}, "Demisto")
+        assert field_key == 'Value'
+        assert field_value == 'Demisto'
 
+    def test_generate_field_value_values_list_input(self, requests_mock):
+        cache = demisto.getIntegrationContext()
+        cache['fieldValueList'] = {}
+        demisto.setIntegrationContext(cache)
 
-def test_search_records(requests_mock):
-    requests_mock.post(BASE_URL + 'api/core/security/login',
-                       json={'RequestedObject': {'SessionToken': 'session-id'}})
-    requests_mock.post(BASE_URL + 'ws/general.asmx', text=GET_TOKEN_SOAP)
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}})
+        requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
+        requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
 
-    requests_mock.get(BASE_URL + 'api/core/system/level/module/1', json=GET_LEVEL_RES)
-    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/level/123', json=FIELD_DEFINITION_RES)
-    requests_mock.post(BASE_URL + 'ws/search.asmx', text=SEARCH_RECORDS_RES)
-    client = Client(BASE_URL, '', '', '', '')
-    records, raw_res = client.search_records(1, ['External Links', 'Device Name'])
-    assert raw_res
-    assert len(records) == 1
-    assert records[0]['record']['Id'] == '238756'
-    assert records[0]['record']['Device Name'] == 'DEVICE NAME'
+        client = Client(BASE_URL, '', '', '', '')
+        field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"])
+        assert field_key == 'Value'
+        assert field_value == {'ValuesListIds': [473]}
 
+    def test_generate_field_external_link_input(self):
+        client = Client(BASE_URL, '', '', '', '')
+        field_key, field_value = generate_field_value(client, "", {'Type': 7},
+                                                      [{"value": "github", "link": "https://github.com"},
+                                                       {"value": "google", "link": "https://google.com"}])
+        assert field_key == 'Value'
+        assert field_value == [{"Name": "github", "URL": "https://github.com"},
+                               {"Name": "google", "URL": "https://google.com"}]
 
-def test_get_field_value_list(requests_mock):
-    cache = demisto.getIntegrationContext()
-    cache['fieldValueList'] = {}
-    demisto.setIntegrationContext(cache)
+    def test_generate_field_users_groups_input(self):
+        client = Client(BASE_URL, '', '', '', '')
+        field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]})
+        assert field_key == 'Value'
+        assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
 
-    requests_mock.post(BASE_URL + 'api/core/security/login',
-                       json={'RequestedObject': {'SessionToken': 'session-id'}})
-    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
-    requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
-    client = Client(BASE_URL, '', '', '', '')
-    field_data = client.get_field_value_list(304)
-    assert VALUE_LIST_FIELD_DATA == field_data
+    @pytest.mark.parametrize('field_value, result', [
+        ([1, 2], [{"ContentID": 1}, {"ContentID": 2}]),
+        (1234, [{"ContentID": 1234}])
+    ])
+    def test_generate_field_cross_reference_input(self, field_value, result):
+        client = Client(BASE_URL, '', '', '', '')
+        field_key, field_value = generate_field_value(client, "", {'Type': 9}, field_value)
+        assert field_key == 'Value'
+        assert field_value == result
 
+    def test_generate_field_ip_address_input(self):
+        client = Client(BASE_URL, '', '', '', '')
+        field_key, field_value = generate_field_value(client, "", {'Type': 19}, '127.0.0.1')
+        assert field_key == 'IpAddressBytes'
+        assert field_value == '127.0.0.1'
 
-def test_generate_field_value_text_input():
-    client = Client(BASE_URL, '', '', '', '')
-    field_key, field_value = generate_field_value(client, "", {'Type': 1}, "Demisto")
-    assert field_key == 'Value'
-    assert field_value == 'Demisto'
+    def test_generate_field_value(self, requests_mock):
+        """
+        Given
+        - generate_field_value on Values List type
+        When
+        - the source is not a list
+        Then
+        - ensure generate_field_value will handle it
+        """
+        cache = demisto.getIntegrationContext()
+        cache['fieldValueList'] = {}
+        demisto.setIntegrationContext(cache)
 
+        requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/16172', json=GET_FIElD_DEFINITION_RES)
+        requests_mock.post(BASE_URL + 'api/core/security/login',
+                           json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': 'yes'})
+        requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES_FOR_SOURCE)
 
-def test_generate_field_value_values_list_input(requests_mock):
-    cache = demisto.getIntegrationContext()
-    cache['fieldValueList'] = {}
-    demisto.setIntegrationContext(cache)
+        client = Client(BASE_URL, '', '', '', '')
+        field_key, field_value = generate_field_value(client, "Source",
+                                                      {'FieldId': '16172', 'IsRequired': False, 'Name':
+                                                          'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight')
+        assert field_key == 'Value'
+        assert field_value == {'ValuesListIds': [471]}
 
-    requests_mock.post(BASE_URL + 'api/core/security/login',
-                       json={'RequestedObject': {'SessionToken': 'session-id'}})
-    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/304', json=GET_FIElD_DEFINITION_RES)
-    requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES)
+    def test_record_to_incident_europe_time(self):
+        """
+        Given:
+            record with european time (day first)
 
-    client = Client(BASE_URL, '', '', '', '')
-    field_key, field_value = generate_field_value(client, "", {'Type': 4, 'FieldId': 304}, ["High"])
-    assert field_key == 'Value'
-    assert field_value == {'ValuesListIds': [473]}
+        When:
+            fetching incidents
 
+        Then:
+            assert return dates are right
 
-def test_generate_field_external_link_input():
-    client = Client(BASE_URL, '', '', '', '')
-    field_key, field_value = generate_field_value(client, "", {'Type': 7},
-                                                  [{"value": "github", "link": "https://github.com"},
-                                                   {"value": "google", "link": "https://google.com"}])
-    assert field_key == 'Value'
-    assert field_value == [{"Name": "github", "URL": "https://github.com"},
-                           {"Name": "google", "URL": "https://google.com"}]
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        incident = INCIDENT_RECORD.copy()
+        incident['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
+        incident['record']['Date/Time Reported'] = "26/03/2018 10:03 AM"
+        incident, incident_created_time = client.record_to_incident(INCIDENT_RECORD, 75, '305')
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
+        assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
+    def test_record_to_incident_american_time(self):
+        """
+        Given:
+            record with american time (month first)
 
-def test_generate_field_users_groups_input():
-    client = Client(BASE_URL, '', '', '', '')
-    field_key, field_value = generate_field_value(client, "", {'Type': 8}, {"users": [20], "groups": [30]})
-    assert field_key == 'Value'
-    assert field_value == {"UserList": [{"ID": 20}], "GroupList": [{"ID": 30}]}
+        When:
+            fetching incidents
 
+        Then:
+            assert return dates are right
 
-def test_generate_field_cross_reference_input():
-    client = Client(BASE_URL, '', '', '', '')
-    field_key, field_value = generate_field_value(client, "", {'Type': 9}, [1, 2])
-    assert field_key == 'Value'
-    assert field_value == [{"ContentID": 1}, {"ContentID": 2}]
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        incident = INCIDENT_RECORD.copy()
+        incident['record']['Date/Time Reported'] = '03/26/2018 10:03 AM'
+        incident['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
+        incident, incident_created_time = client.record_to_incident(
+            INCIDENT_RECORD, 75, '305'
+        )
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
+        assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
+    def test_fetch_time_change(self, mocker):
+        """
+        Given:
+            incident with date/time reported
+            european time (day first) - True or false
 
-def test_generate_field_ip_address_input():
-    client = Client(BASE_URL, '', '', '', '')
-    field_key, field_value = generate_field_value(client, "", {'Type': 19}, '127.0.0.1')
-    assert field_key == 'IpAddressBytes'
-    assert field_value == '127.0.0.1'
+        When:
+            Fetching incidents
 
+        Then:
+            Check that the new next fetch is greater than last_fetch
+            Check the wanted next_fetch is true
+            Assert occurred time
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        date_time_reported = '2018-04-03T10:03:00.000Z'
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported'
+        }
+        record = copy.deepcopy(INCIDENT_RECORD)
+        record['record']['Date/Time Reported'] = date_time_reported
+        record['raw']['Field'][1]['@xmlConvertedValue'] = date_time_reported
+        last_fetch = get_fetch_time(
+            {'last_fetch': '2018-03-01T10:03:00Z'}, params.get('fetch_time', '3 days')
+        )
+        mocker.patch.object(client, 'search_records', return_value=([record], {}))
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
+        assert last_fetch < next_fetch
+        assert next_fetch == datetime(2018, 4, 3, 10, 3, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == date_time_reported
 
-def test_generate_field_value(requests_mock):
-    """
-    Given
-    - generate_field_value on Values List type
-    When
-    - the source is not a list
-    Then
-    - ensure generate_field_value will handle it
-    """
-    cache = demisto.getIntegrationContext()
-    cache['fieldValueList'] = {}
-    demisto.setIntegrationContext(cache)
+    def test_two_fetches(self, mocker):
+        """
+        Given:
+            2 incident with date/time reported
+            running two fetches.
+        When:
+            Fetching incidents
 
-    requests_mock.get(BASE_URL + 'api/core/system/fielddefinition/16172', json=GET_FIElD_DEFINITION_RES)
-    requests_mock.post(BASE_URL + 'api/core/security/login',
-                       json={'RequestedObject': {'SessionToken': 'session-id'}, 'IsSuccessful': 'yes'})
-    requests_mock.get(BASE_URL + 'api/core/system/valueslistvalue/valueslist/62', json=VALUE_LIST_RES_FOR_SOURCE)
+        Then:
+            Check that the new next fetch is greater than last_fetch on both calls.
+            Check the wanted next_fetch is equals to the date in the incident in both calls.
+            Assert occurred time
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported'
+        }
+        record1, record2 = copy.deepcopy(INCIDENT_RECORD), copy.deepcopy(INCIDENT_RECORD)
+        record1['record']['Date/Time Reported'] = '18/03/2020 10:30 AM'
+        record2['record']['Date/Time Reported'] = '18/03/2020 03:30 PM'
+        record1['raw']['Field'][1]['@xmlConvertedValue'] = '2020-03-18T10:30:00.000Z'
+        record2['raw']['Field'][1]['@xmlConvertedValue'] = '2020-03-18T15:30:00.000Z'
+        last_fetch = parser('2020-18-03T09:00:00Z')
+        mocker.patch.object(
+            client, 'search_records', side_effect=[
+                ([record1], {}),
+                ([record2], {})
+            ]
+        )
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
+        assert last_fetch < next_fetch
+        assert next_fetch == datetime(2020, 3, 18, 10, 30, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == '2020-03-18T10:30:00.000Z'
+        incidents, next_fetch = fetch_incidents(client, params, next_fetch, '305')
+        assert last_fetch < next_fetch
+        assert next_fetch == datetime(2020, 3, 18, 15, 30, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == '2020-03-18T15:30:00.000Z'
 
-    client = Client(BASE_URL, '', '', '', '')
-    field_key, field_value = generate_field_value(client, "Source", {'FieldId': '16172', 'IsRequired': False, 'Name':
-                                                  'Source', 'RelatedValuesListId': 2092, 'Type': 4}, 'ArcSight')
-    assert field_key == 'Value'
-    assert field_value == {'ValuesListIds': [471]}
+    def test_fetch_got_old_incident(self, mocker):
+        """
+        Given:
+            last_fetch is newer than new incident
+
+        When:
+            Fetching incidents
+
+        Then:
+            Check that the next fetch is equals last fetch (no new incident)
+            Check that no incidents brought back
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        date_time_reported = '2018-03-01T10:02:00.000Z'
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported'
+        }
+        record = copy.deepcopy(INCIDENT_RECORD)
+        record['record']['Date/Time Reported'] = date_time_reported
+        record['raw']['Field'][1]['@xmlConvertedValue'] = date_time_reported
+        last_fetch = get_fetch_time(
+            {'last_fetch': '2018-03-01T10:03:00Z'}, params.get('fetch_time', '3 days')
+        )
+        mocker.patch.object(client, 'search_records', return_value=([record], {}))
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
+        assert last_fetch == next_fetch
+        assert not incidents, 'Should not get new incidents.'

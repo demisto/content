@@ -9,26 +9,22 @@ description: Malware dynamic analysis sandboxing
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
-  defaultvalue: ""
   type: 0
   required: false
 - display: Username (Only if your cuckoo service requires HTTP auth)
   name: authentication
-  defaultvalue: ""
   type: 9
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 script:
-  script: >-
+  script: |-
     var entityMap = {
         Machine:{
             status :            'Status',
@@ -68,19 +64,33 @@ script:
             added_on :          'AddedOn',
             completed_on :      'CompletedOn',
             score :             'Score',
-            monitor :           'Monitor'
-        }
-    };
+            monitor :           'Monitor',
+            FileInfo :          'FileInfo'
 
+        },
+        FileInfo: {
+            yara :              'yara',
+            sha1 :              'sha1',
+            name :              'name',
+            type :              'type',
+            sha256 :            'sha256',
+            urls :              'urls',
+            crc32 :             'crc32',
+            path :              'path',
+            ssdeep :            'ssdeep',
+            size :              'size',
+            sha512 :            'sha512',
+            md5 :               'md5'
+        }
+
+    };
 
     var undrscrToCamelCase = function(string){
         string = '_'+string;
         return string.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
     };
 
-
     //returns single object withing entity (i.e. File[0])
-
     var jsonToEntityObject = function(origObj, newKeys){
         var ret = {};
         var path;
@@ -93,9 +103,7 @@ script:
         return ret;
     };
 
-
     //returns entire entity array (i.e. File)
-
     var jsonToEntity = function(origObj, newKeys){
         var j;
         var ret;
@@ -112,7 +120,6 @@ script:
         }
     };
 
-
     var fixUrl = function(base) {
         res = base;
         if (base && base[base.length - 1] != '/') {
@@ -120,7 +127,6 @@ script:
         }
         return res;
     };
-
 
     var parseResponse = function(resp) {
         if (resp.StatusCode === 200) {
@@ -137,7 +143,6 @@ script:
             throw err;
         }
     };
-
 
     var cuckooGet = function(qArgs, qParams, suffix) {
         url = fixUrl(qParams['server']) + suffix;
@@ -156,7 +161,6 @@ script:
         return result =  parseResponse(res);
     };
 
-
     var cuckooGetRaw = function(qArgs, qParams, suffix) {
         url = fixUrl(qParams['server']) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
@@ -173,7 +177,6 @@ script:
         );
         return res;
     };
-
 
     var cuckooGetFile = function(qArgs, qParams, suffix, filename) {
         url = fixUrl(qParams['server']) + suffix;
@@ -205,7 +208,6 @@ script:
         };
     };
 
-
     var cuckooPost = function(qArgs, qParams, suffix) {
         url = fixUrl(qParams.server) + suffix;
         username = qParams['authentication'] ? qParams['authentication']['identifier'] : '';
@@ -226,7 +228,6 @@ script:
         );
         return parseResponse(res);
     };
-
 
     var fetchFiles = function(qArgs, qParams) {
         url = fixUrl(qParams['server']) + 'tasks/create/file';
@@ -249,7 +250,6 @@ script:
         return parseResponse(res);
     };
 
-
     var createTaskFromFile = function(args, params){
         var res =  fetchFiles(args, params);
         return {
@@ -260,7 +260,6 @@ script:
             EntryContext: {'Cuckoo.Task' : {ID: res.task_id}}
         };
     };
-
 
     var createTaskFromURL = function(args, params){
         var res = cuckooPost(args, params, 'tasks/create/url');
@@ -273,18 +272,20 @@ script:
         };
     };
 
-
     var tblToMdWithTransform = function(title, t, transform){
         return tblToMd(title, t, undefined, undefined, transform);
     }
-
 
     var getTaskReport = function(args, params){
         var result = cuckooGet(args, params, 'tasks/report/' + args['id']);
         var md;
         var context = {};
 
-        context['Cuckoo.Task(val.ID && val.ID == obj.ID)'] = jsonToEntity(result.info, entityMap.Task);
+
+        context = jsonToEntity(result.info, entityMap.Task);
+        if ('file' in result.target) {
+            context[0]['FileInfo'] = jsonToEntity(result.target.file, entityMap.FileInfo)[0];
+        }
         md = tblToMdWithTransform('Task Target', result.target, undrscrToCamelCase);
         md += tblToMdWithTransform('Task Info', result.info, undrscrToCamelCase);
         md += tblToMdWithTransform('Task Metadata', result.metadata, undrscrToCamelCase);
@@ -292,15 +293,16 @@ script:
         if(result.signatures && result.signatures.length > 0){
             md += tblToMdWithTransform('Task Signatures', result.signatures, undrscrToCamelCase);
         }
+
         return {
             Type: entryTypes.note,
             Contents: result,
             ContentsFormat: formats.json,
             HumanReadable: md,
-            EntryContext: context
+            EntryContext: {'Cuckoo.Task(val.ID && val.ID == obj.ID)': context}
+
         };
     };
-
     var viewTasks = function(args, params){
         ids = argToList(args['id']);
         var res = [];
@@ -311,7 +313,6 @@ script:
         }
         return res;
     };
-
 
     var viewTask = function(args, params, id){
         result = cuckooGet(args, params, 'tasks/view/' + id);
@@ -325,12 +326,10 @@ script:
         };
     };
 
-
     var deleteTask = function(args, params){
         var res = JSON.parse(cuckooGetRaw(args, params, 'tasks/delete/' + args['id']).Body);
         return (res.status? res.status : res.message);
     };
-
 
     var listTasks = function(args, params){
         var result = cuckooGet(args, params, 'tasks/list');
@@ -344,7 +343,6 @@ script:
         };
     };
 
-
     var listMachines = function(args, params){
         var result = cuckooGet(args, params, 'machines/list');
 
@@ -356,7 +354,6 @@ script:
             EntryContext: {'Cuckoo.Machine' : jsonToEntity(result.machines, entityMap.Machine)}
         };
     };
-
 
     var viewMachine = function(args, params){
         result = cuckooGet(args, params, 'machines/view/' + args['name']);
@@ -370,7 +367,6 @@ script:
         };
     };
 
-
     var taskScreenshot = function(args ,params){
         var uri = 'tasks/screenshots/' + args['id'];
         var filename = 'CuckooScreenshots.zip'
@@ -383,9 +379,7 @@ script:
 
 
 
-
     // The command input arg holds the command sent from the user.
-
     switch (command) {
         // This is the call made when pressing the integration test button.
         case 'test-module':
@@ -452,13 +446,17 @@ script:
     - name: timeout
       description: (optional)  analysis timeout (in seconds)
     - name: enforce_timeout
-      description: (optional) enable to enforce the execution for the full timeout value
+      description: (optional) enable to enforce the execution for the full timeout
+        value
     - name: platform
-      description: (optional) - name of the platform to select the analysis machine from (e.g. “windows”)
+      description: (optional) - name of the platform to select the analysis machine
+        from (e.g. “windows”)
     - name: tags
-      description: (optional) - define machine to start by tags. Platform must be set to use that. Tags are comma separated
+      description: (optional) - define machine to start by tags. Platform must be
+        set to use that. Tags are comma separated
     - name: memory
-      description: (optional) - enable the creation of a full memory dump of the analysis machine
+      description: (optional) - enable the creation of a full memory dump of the analysis
+        machine
     - name: options
       description: ' (optional) - options to pass to the analysis package'
     outputs:
@@ -479,13 +477,17 @@ script:
     - name: timeout
       description: (optional)  analysis timeout (in seconds)
     - name: enforce_timeout
-      description: (optional) enable to enforce the execution for the full timeout value
+      description: (optional) enable to enforce the execution for the full timeout
+        value
     - name: platform
-      description: (optional) - name of the platform to select the analysis machine from (e.g. “windows”)
+      description: (optional) - name of the platform to select the analysis machine
+        from (e.g. “windows”)
     - name: tags
-      description: (optional) - define machine to start by tags. Platform must be set to use that. Tags are comma separated
+      description: (optional) - define machine to start by tags. Platform must be
+        set to use that. Tags are comma separated
     - name: memory
-      description: (optional) - enable the creation of a full memory dump of the analysis machine
+      description: (optional) - enable the creation of a full memory dump of the analysis
+        machine
     - name: options
       description: ' (optional) - options to pass to the analysis package'
     outputs:
@@ -592,6 +594,28 @@ script:
       description: Reported score of the the task
     - contextPath: Cuckoo.Task.Monitor
       description: Monitor of the reported task
+    - contextPath: Cuckoo.Task.FileInfo.sha1
+      description: The SHA1 hash of the file.
+    - contextPath: Cuckoo.Task.FileInfo.name
+      description: The file name.
+    - contextPath: Cuckoo.Task.FileInfo.type
+      description: The file type.
+    - contextPath: Cuckoo.Task.FileInfo.sha256
+      description: The SHA256 hash of the file.
+    - contextPath: Cuckoo.Task.FileInfo.urls
+      description: Related URLs of the file.
+    - contextPath: Cuckoo.Task.FileInfo.crc32
+      description: The CRC32 of the file.
+    - contextPath: Cuckoo.Task.FileInfo.path
+      description: The file path.
+    - contextPath: Cuckoo.Task.FileInfo.ssdeep
+      description: The ssdeep of the file.
+    - contextPath: Cuckoo.Task.FileInfo.size
+      description: The size of the file.
+    - contextPath: Cuckoo.Task.FileInfo.sha512
+      description: The SHA512 hash of the file.
+    - contextPath: Cuckoo.Task.FileInfo.md5
+      description: The MD5 hash file.
     description: commands.server.ckReport.description
   - name: ck-list
     deprecated: true
@@ -824,8 +848,10 @@ script:
       default: true
       description: ID of the task that generated the screenshot
     - name: screenshot
-      description: (optional) - numerical identifier of a single screenshot (e.g. 0001, 0002)
-    description: Retrieve screenshots taken during analysis. If the screenshot number argument is omitted, retrieves a zip file with all screenshots.
+      description: (optional) - numerical identifier of a single screenshot (e.g.
+        0001, 0002)
+    description: Retrieve screenshots taken during analysis. If the screenshot number
+      argument is omitted, retrieves a zip file with all screenshots.
   - name: cuckoo-task-screenshot
     arguments:
     - name: id
@@ -833,7 +859,8 @@ script:
       default: true
       description: ID of the task that generated the screenshot
     - name: screenshot
-      description: (optional) - numerical identifier of a single screenshot (e.g. 0001, 0002)
+      description: (optional) - numerical identifier of a single screenshot (e.g.
+        0001, 0002)
     outputs:
     - contextPath: File.Size
       description: Size of file
@@ -855,7 +882,8 @@ script:
       description: File's MD5
     - contextPath: File.Extension
       description: File's Extension
-    description: Retrieve screenshots taken during analysis. If the screenshot number argument is omitted, retrieves a zip file with all screenshots.
+    description: Retrieve screenshots taken during analysis. If the screenshot number
+      argument is omitted, retrieves a zip file with all screenshots.
   - name: ck-machines-list
     deprecated: true
     arguments: []
@@ -888,7 +916,8 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
-    description: Returns a list with details on the analysis machines available to Cuckoo.
+    description: Returns a list with details on the analysis machines available to
+      Cuckoo.
   - name: cuckoo-machines-list
     arguments: []
     outputs:
@@ -920,7 +949,8 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
-    description: Returns a list with details on the analysis machines available to Cuckoo.
+    description: Returns a list with details on the analysis machines available to
+      Cuckoo.
   - name: ck-machine-view
     deprecated: true
     arguments:
@@ -956,7 +986,8 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
-    description: Returns details on the analysis machine associated with the given name.
+    description: Returns details on the analysis machine associated with the given
+      name.
   - name: cuckoo-machine-view
     arguments:
     - name: name
@@ -991,8 +1022,9 @@ script:
       description: Port address of machine's result server
     - contextPath: Machine.Tags
       description: Machine tags
-    description: Returns details on the analysis machine associated with the given name.
-hidden: false
+    description: Returns details on the analysis machine associated with the given
+      name.
+  runonce: false
 fromversion: 5.0.0
 tests:
 - CuckooTest

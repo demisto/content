@@ -4,7 +4,6 @@ Uptycs combines the open source universal agent, osquery, with a scalable securi
 
 The Demisto-Uptycs integration connects to the Uptycs backend via the Uptycs API.  The integration allows the use of Uptycs data in existing workflows.  Features include fetching and handling alerts, threat investigation, posting new threat sources, setting tags on assets, and the ability to run arbitrary SQL queries against your Uptycs database or in real-time against registered endpoints.
 
-This integration was integrated and tested with version xx of Uptycs
 ## Uptycs Playbook
 ---
 
@@ -2589,7 +2588,4 @@ In order to create an instance of the integration, a user API key and secret mus
 ---
 
 While the Demisto-Uptycs integration provides multiple commands with which to access the Uptycs backend, not all features are supported.  In particular, configuration changes are best made using the Uptycs UI.  Many of the commands have a limit set to reduce the number of rows returned from a query or api call.  The limit can be raised, or turned off, however, this may cause the queries take longer to return and potentially return large numbers of rows.  When writing queries, it can sometimes be easier to test using the Uptycs UI rather than the integration.
-
-## Troubleshooting
----
 

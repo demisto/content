@@ -102,8 +102,39 @@ def create_incident_type(path: Path, layout_name: str) -> str:
     return str(incident_path)
 
 
+def create_mapper(path: Path) -> str:
+    """
+    Creates a mapper
+
+    Args:
+        path: A path of the pack
+
+    Returns:
+        The path to the mapper
+    """
+    mapper_path_sample = Path('Packs/HelloWorld/Classifiers/classifier-mapper-incoming-HelloWorld.json')
+    with open(mapper_path_sample) as stream:
+        mapper = json.load(stream)
+    name = 'Hello World Test - Incoming Mapper'
+    _id = 'HelloWorld-mapper Test'
+    mapper.update({
+        'name': name,
+        'id': _id
+    })
+    dest_mapper_path = path / 'Classifiers'
+
+    if not os.path.isdir(dest_mapper_path):
+        os.mkdir(dest_mapper_path)
+
+    mapper_path = dest_mapper_path / 'classifier-mapper-incoming-HelloWorldTest.json'
+    with open(mapper_path, 'w+') as stream:
+        json.dump(mapper, stream, indent=4)
+    return str(mapper_path)
+
+
 def main():
-    parser = argparse.ArgumentParser(description="Creates incident field, incident type and a layout in a given pack.")
+    parser = argparse.ArgumentParser(description="Creates incident field, incident type, mapper and a "
+                                                 "layout in a given pack.")
     parser.add_argument('pack_name')
     parser.add_argument('--artifacts-folder', required=False)
     args = parser.parse_args()
@@ -112,7 +143,8 @@ def main():
     uploaded_entities = [
         create_layout(pack_path, layout_name),
         create_incident_field(pack_path, 'Hello World Alert Test'),
-        create_incident_type(pack_path, layout_name)
+        create_incident_type(pack_path, layout_name),
+        create_mapper(pack_path)
     ]
     print("Created entities:")
     print("\t" + "\n\t".join(uploaded_entities))

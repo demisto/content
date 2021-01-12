@@ -1,7 +1,6 @@
 ## Overview
 ---
-
-Use the Microsoft Defender Advanced Threat Protection (ATP) integration for preventative protection, post-breach detection, automated investigation, and response.
+Use the Microsoft Defender for Endpoint (previously Microsoft Defender Advanced Threat Protection (ATP)) integration for preventative protection, post-breach detection, automated investigation, and response.
 
 ## Microsoft Defender Advanced Threat Protection Playbook
 ---
@@ -34,17 +33,17 @@ For more details about the authentication used in this integration, see [Microso
 * Url.Read.All - Application
 * User.Read.All - Application
 
-## Configure Microsoft Defender Advanced Threat Protection on Demisto
+## Configure Microsoft Defender for Endpoint on Demisto
 ---
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft Defender Advanced Threat Protection.
+2. Search for Microsoft Defender for Endpoint.
 3. Click **Add instance** to create and configure a new integration instance.
     
     | **Parameter** | **Description** | **Example** |
     | ---------             | -----------           | -------            |
     | Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
-    | Host URL | The URL to the Microsoft Defender Advanced Threat Protection server, including the scheme. | `https://api.securitycenter.windows.com` |
+    | Host URL | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
      | ID | The ID used to gain access to the integration. | N/A |
      | Token | A piece of data that servers use to verify for authenticity | eea810f5-a6f6 |
     | Fetch Incidents | Whether to fetch the incidents or not. | N/A |
@@ -839,6 +838,7 @@ AdvancedQuery.Read.All
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | The query to run. | Required | 
+| timeout | The amount of time (in seconds) that a request will wait for the query response before a timeout occurs. | Optional | 
 
 
 ##### Context Output

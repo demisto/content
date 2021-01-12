@@ -1,32 +1,51 @@
-import demistomock as demisto
-from CommonServerPython import *
-import traceback
-from CommonServerUserPython import *
-from typing import Dict
+from datetime import timezone
+from typing import Dict, Tuple, Union
+
 import dateparser
+import urllib3
+
+from CommonServerPython import *
 
 ''' IMPORTS '''
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
-REQUEST_HEADERS = {'Accept': 'application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8',
-                   'Content-Type': 'application/json'}
+FETCH_PARAM_ID_KEY = 'field_time_id'
+LAST_FETCH_TIME_KEY = 'last_fetch'
+OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
-FIELD_TYPE_DICT = {1: 'Text', 2: 'Numeric', 3: 'Date', 4: 'Values List', 6: 'TrackingID', 7: 'External Links',
-                   8: 'Users/Groups List', 9: 'Cross-Reference', 11: 'Attachment', 12: 'Image',
-                   14: 'Cross-Application Status Tracking (CAST)', 16: 'Matrix', 19: 'IP Address', 20: 'Record Status',
-                   21: 'First Published', 22: 'Last Updated Field', 23: 'Related Records', 24: 'Sub-Form',
-                   25: 'History Log', 26: 'Discussion', 27: 'Multiple Reference Display Control',
-                   28: 'Questionnaire Reference', 29: 'Access History', 30: 'V oting', 31: 'Scheduler',
-                   1001: 'Cross-Application Status Tracking Field Value'}
+REQUEST_HEADERS = {
+    'Accept': 'application/json,text/html,application/xhtml +xml,application/xml;q=0.9,*/*;q=0.8',
+    'Content-Type': 'application/json'
+}
+
+FIELD_TYPE_DICT = {
+    1: 'Text', 2: 'Numeric', 3: 'Date', 4: 'Values List', 6: 'TrackingID', 7: 'External Links',
+    8: 'Users/Groups List', 9: 'Cross-Reference', 11: 'Attachment', 12: 'Image',
+    14: 'Cross-Application Status Tracking (CAST)', 16: 'Matrix', 19: 'IP Address', 20: 'Record Status',
+    21: 'First Published', 22: 'Last Updated Field', 23: 'Related Records', 24: 'Sub-Form',
+    25: 'History Log', 26: 'Discussion', 27: 'Multiple Reference Display Control',
+    28: 'Questionnaire Reference', 29: 'Access History', 30: 'V oting', 31: 'Scheduler',
+    1001: 'Cross-Application Status Tracking Field Value'
+}
 
 ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
 
+def parser(date_str, date_formats=None, languages=None, locales=None, region=None, settings=None) -> datetime:
+    """Wrapper of dateparser.parse to support return type value
+    """
+    date_obj = dateparser.parse(
+        date_str, date_formats=date_formats, languages=languages, locales=locales, region=region, settings=settings
+    )
+    assert isinstance(date_obj, datetime), f'Could not parse date {date_str}'  # MYPY Fix
+    return date_obj.replace(tzinfo=timezone.utc)
+
+
 def get_token_soap_request(user, password, instance):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+           '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
            'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
            '    <soap:Body>' + \
            '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
@@ -103,8 +122,10 @@ def search_records_by_report_soap_request(token, report_guid):
            '</soap:Envelope>'
 
 
-def search_records_soap_request(token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
-                                numeric_operator='', max_results=10):
+def search_records_soap_request(
+        token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
+        numeric_operator='', max_results=10
+):
     request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
                    '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' \
                    'xmlns:xsd="http://www.w3.org/2001/XMLSchema"' \
@@ -147,7 +168,7 @@ def search_records_soap_request(token, app_id, display_fields, field_id, field_n
 
         request_body += '</Conditions></Filter>'
 
-    if date_operator:
+    if date_operator:  # Fetch incidents must present date_operator
         request_body += '<Filter>' + \
                         '<Conditions>' + \
                         '    <DateComparisonFilterCondition>' + \
@@ -199,6 +220,33 @@ SOAP_COMMANDS = {
         'outputPath': 'Envelope.Body.SearchRecordsByReportResponse.SearchRecordsByReportResult'
     }
 }
+
+
+def get_occurred_time(fields: Union[List[dict], dict], field_id: str) -> str:
+    """
+    Occurred time is part of the raw 'Field' key in the response.
+    It should be under @xmlConvertedValue, but field can be both a list or a dict.
+
+    Arguments:
+        fields: Field to find the occurred utc time on
+        field_id: The @id in the response the time should be on
+
+    Returns:
+         Time of occurrence according to the field ID.
+    """
+    try:
+        field_id = str(field_id)  # In case it passed as a integer
+        if isinstance(fields, dict):
+            return fields['@xmlConvertedValue']
+        else:
+            for field in fields:
+                if str(field['@id']) == field_id:  # In a rare case @id is an integer
+                    return str(field['@xmlConvertedValue'])
+        raise KeyError('Could not find @xmlConvertedValue in record.')  # No xmlConvertedValue
+    except KeyError as exc:
+        raise DemistoException(
+            f'Could not find the property @xmlConvertedValue in field id {field_id}. Is that a date field?'
+        ) from exc
 
 
 class Client(BaseClient):
@@ -335,15 +383,30 @@ class Client(BaseClient):
             record['Id'] = content_obj.get('Id')
         return record, res, errors
 
-    def record_to_incident(self, record_item, app_id, date_field):
+    @staticmethod
+    def record_to_incident(
+            record_item, app_id, fetch_param_id
+    ) -> Tuple[dict, datetime]:
+        """Transform a record to incident
+
+        Args:
+            record_item: The record item dict
+            app_id: ID of the app
+            fetch_param_id: ID of the fetch param.
+
+        Returns:
+            incident, incident created time (UTC Time)
+        """
         labels = []
         raw_record = record_item['raw']
         record_item = record_item['record']
-
-        incident_created_time = datetime(1, 1, 1)
-        if record_item.get(date_field):
-            incident_created_time = dateparser.parse(record_item[date_field]).replace(tzinfo=None)
-
+        try:
+            occurred_time = get_occurred_time(raw_record['Field'], fetch_param_id)
+        except KeyError as exc:
+            raise DemistoException(
+                f'Could not find occurred time in record {record_item.get("Id")=}'
+            ) from exc
+        # Will convert value to strs
         for k, v in record_item.items():
             if isinstance(v, str):
                 labels.append({
@@ -359,19 +422,29 @@ class Client(BaseClient):
         labels.append({'type': 'ModuleId', 'value': app_id})
         labels.append({'type': 'ContentId', 'value': record_item.get("Id")})
         labels.append({'type': 'rawJSON', 'value': json.dumps(raw_record)})
-
         incident = {
             'name': f'RSA Archer Incident: {record_item.get("Id")}',
             'details': json.dumps(record_item),
-            'occurred': incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'occurred': occurred_time,
             'labels': labels,
             'rawJSON': json.dumps(raw_record)
         }
-        return incident, incident_created_time
+        return incident, parser(occurred_time)
 
-    def search_records(self, app_id, fields_to_display=[], field_to_search='', search_value='',
-                       numeric_operator='', date_operator='', max_results=10):
-        level_data = self.get_level_by_app_id(app_id)[0]
+    def search_records(
+            self, app_id, fields_to_display=None, field_to_search='', search_value='',
+            numeric_operator='', date_operator='', max_results=10,
+    ):
+        demisto.debug(f'searching for records {field_to_search}:{search_value}')
+        if fields_to_display is None:
+            fields_to_display = []
+        try:
+            level_data = self.get_level_by_app_id(app_id)[0]
+        except IndexError as exc:
+            raise DemistoException(
+                'Could not find a level data. You might be using the wrong application id'
+            ) from exc
+        # Building request fields
         fields_xml = ''
         search_field_name = ''
         search_field_id = ''
@@ -384,12 +457,14 @@ class Client(BaseClient):
                 search_field_name = field_name
                 search_field_id = field
 
-        res, raw_res = self.do_soap_request('archer-search-records',
-                                            app_id=app_id, display_fields=fields_xml,
-                                            field_id=search_field_id, field_name=search_field_name,
-                                            numeric_operator=numeric_operator,
-                                            date_operator=date_operator, search_value=search_value,
-                                            max_results=max_results)
+        res, raw_res = self.do_soap_request(
+            'archer-search-records',
+            app_id=app_id, display_fields=fields_xml,
+            field_id=search_field_id, field_name=search_field_name,
+            numeric_operator=numeric_operator,
+            date_operator=date_operator, search_value=search_value,
+            max_results=max_results
+        )
 
         if not res:
             return [], raw_res
@@ -455,8 +530,58 @@ class Client(BaseClient):
 
                 cache['fieldValueList'][field_id] = field_data
                 demisto.setIntegrationContext(cache)
+                return field_data
+        return {}
 
-        return field_data
+    def get_field_id(self, app_id: str, field_name: str) -> str:
+        """Get field ID by field name
+
+        Args:
+            app_id: app id to search on
+            field_name: field name to search on
+
+        Raises:
+            DemistoException: If could not find field ID
+
+        Returns:
+            The ID of the field
+        """
+        fields, _ = self.get_application_fields(app_id)
+        for field in fields:
+            if field_name == field.get('FieldName'):
+                try:
+                    return str(field['FieldId'])
+                except KeyError:
+                    raise DemistoException(f'Could not find FieldId for {field_name=}')
+        raise DemistoException(f'Could not find field ID {field_name}')
+
+    def get_application_fields(self, app_id: str) -> Tuple[list, list]:
+        """Getting all fields in the application
+
+        Args:
+            app_id: Application to find the fields on
+
+        Returns:
+            fields, raw response
+        """
+        res = self.do_request('GET', f'/api/core/system/fielddefinition/application/{app_id}')
+
+        fields = []
+        for field in res:
+            if field.get('RequestedObject') and field.get('IsSuccessful'):
+                field_obj = field['RequestedObject']
+                field_type = field_obj.get('Type')
+                fields.append({
+                    'FieldId': field_obj.get('Id'),
+                    'FieldType': FIELD_TYPE_DICT.get(field_type, 'Unknown'),
+                    'FieldName': field_obj.get('Name'),
+                    'LevelID': field_obj.get('LevelId')
+                })
+            else:
+                errors = get_errors_from_res(field)
+                if errors:
+                    raise DemistoException(errors)
+        return fields, res
 
 
 def extract_from_xml(xml, path):
@@ -540,8 +665,12 @@ def generate_field_value(client, field_name, field_data, field_val):
     # for example: {"Area Reference(s)":[20]}
     elif field_type == 9:
         list_cross_reference = []
-        for content in field_val:
-            list_cross_reference.append({'ContentID': content})
+        if isinstance(field_val, list):
+            for content in field_val:
+                list_cross_reference.append({'ContentID': content})
+
+        else:
+            list_cross_reference = [{'ContentID': field_val}]
         return 'Value', list_cross_reference
 
     elif field_type == 19:
@@ -570,24 +699,13 @@ def get_file(entry_id):
     return file_name, file_bytes.decode('utf-8')
 
 
-def test_module(client: Client, params) -> str:
+def test_module(client: Client, params: dict) -> str:
     if params.get('isFetch', False):
-        first_fetch_time = '3 days'
-        last_fetch = dateparser.parse(first_fetch_time)
-
-        last_fetch = last_fetch.replace(tzinfo=None)
-        app_id = params.get('applicationId', '75')
-        date_field = params.get('applicationDateField', 'Date/Time Reported')
-        max_results = 10
-        time_offset = 0
-        fields_to_display = argToList(params.get('fields_to_fetch'))
-        fields_to_display.append(date_field)
-
-        last_fetch = last_fetch + timedelta(minutes=(time_offset * -1))
-
-        client.search_records(app_id, fields_to_display, date_field,
-                              last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                              date_operator='GreaterThan', max_results=max_results)
+        last_run = {
+            FETCH_PARAM_ID_KEY: get_fetch_param_id(
+                client, {}, params['applicationId'], params['applicationDateField']
+            )}
+        fetch_incidents_command(client, params, last_run)
 
         return 'ok'
 
@@ -630,23 +748,8 @@ def search_applications_command(client: Client, args: Dict[str, str]):
 
 
 def get_application_fields_command(client: Client, args: Dict[str, str]):
-    app_id = args.get('applicationId')
-
-    res = client.do_request('GET', f'/api/core/system/fielddefinition/application/{app_id}')
-
-    fields = []
-    for field in res:
-        if field.get('RequestedObject') and field.get('IsSuccessful'):
-            field_obj = field['RequestedObject']
-            field_type = field_obj.get('Type')
-            fields.append({'FieldId': field_obj.get('Id'),
-                           'FieldType': FIELD_TYPE_DICT.get(field_type, 'Unknown'),
-                           'FieldName': field_obj.get('Name'),
-                           'LevelID': field_obj.get('LevelId')})
-        else:
-            errors = get_errors_from_res(field)
-            if errors:
-                return_error(errors)
+    app_id = args['applicationId']
+    fields, res = client.get_application_fields(app_id)
 
     markdown = tableToMarkdown('Application fields', fields)
     context: dict = {'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)': fields}
@@ -727,8 +830,12 @@ def get_record_command(client: Client, args: Dict[str, str]):
 def create_record_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     fields_values = args.get('fieldsToValues')
-
-    level_data = client.get_level_by_app_id(app_id)[0]
+    try:
+        level_data = client.get_level_by_app_id(app_id)[0]
+    except IndexError as exc:
+        raise DemistoException(
+            'Got no level by app id. You might be using the wrong application id'
+        ) from exc
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
@@ -771,7 +878,7 @@ def update_record_command(client: Client, args: Dict[str, str]):
     if res.get('IsSuccessful'):
         return_outputs(f'Record {record_id} updated successfully', {}, res)
     else:
-        return_error('Update record failed')
+        raise DemistoException('Update record failed')
 
 
 def execute_statistics_command(client: Client, args: Dict[str, str]):
@@ -821,7 +928,16 @@ def get_value_list_command(client: Client, args: Dict[str, str]):
     return_outputs(markdown, context, {})
 
 
-def upload_file_command(client: Client, args: Dict[str, str]):
+def upload_file_command(client: Client, args: Dict[str, str]) -> str:
+    """Uploading a file to archer as an attachment
+
+    Arguments:
+        client: A client to use in order to send the api callarcher-get-file
+        args: demisto args
+
+    Returns:
+        An attachment id from Archer
+    """
     entry_id = args.get('entryId')
     file_name, file_bytes = get_file(entry_id)
     body = {'AttachmentName': file_name, 'AttachmentBytes': file_bytes}
@@ -834,9 +950,31 @@ def upload_file_command(client: Client, args: Dict[str, str]):
 
     if res.get('RequestedObject') and res.get('IsSuccessful'):
         attachment_id = res['RequestedObject'].get('Id')
-        return_outputs(f'File uploaded succsessfully, attachment ID: {attachment_id}', {}, res)
     else:
-        return_error('Upload file failed')
+        raise DemistoException('Upload file failed')
+
+    return_outputs(f'File uploaded successfully, attachment ID: {attachment_id}', {}, res)
+    return attachment_id
+
+
+def upload_and_associate_command(client: Client, args: Dict[str, str]):
+    """Uploading an entry to archer. than, if needed, associate it to a record.
+    """
+    app_id = args.get('applicationId')
+    content_id = args.get('contentId')
+    associate_field = args.get('associatedField')
+
+    should_associate_to_record = app_id and content_id
+    if not should_associate_to_record:  # If both app_id and content_id
+        if app_id or content_id:  # If one of them, raise error. User's mistake
+            raise DemistoException(
+                'Found arguments to associate an attachment to a record, but not all required arguments supplied'
+            )
+
+    attachment_id = upload_file_command(client, args)
+    if should_associate_to_record:
+        args['fieldsToValues'] = json.dumps({associate_field: [attachment_id]})
+        update_record_command(client, args)
 
 
 def download_file_command(client: Client, args: Dict[str, str]):
@@ -896,7 +1034,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
     search_value = args.get('searchValue')
     max_results = args.get('maxResults', 10)
     date_operator = args.get('dateOperator')
-    numeric_operator = args.get('numeric-operator')
+    numeric_operator = args.get('numericOperator')
     fields_to_display = argToList(args.get('fieldsToDisplay'))
     fields_to_get = argToList(args.get('fieldsToGet'))
     full_data = args.get('fullData', 'true') == 'true'
@@ -912,8 +1050,10 @@ def search_records_command(client: Client, args: Dict[str, str]):
         fields_mapping = level_data['mapping']
         fields_to_get = [fields_mapping[next(iter(fields_mapping))]['Name']]
 
-    records, raw_res = client.search_records(app_id, fields_to_get, field_to_search, search_value,
-                                             numeric_operator, date_operator, max_results)
+    records, raw_res = client.search_records(
+        app_id, fields_to_get, field_to_search, search_value,
+        numeric_operator, date_operator, max_results=max_results
+    )
 
     records = list(map(lambda x: x['record'], records))
 
@@ -947,6 +1087,7 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
 
     raw_records = json.loads(xml2json(res))
     records = []
+    ec = {}
     if raw_records.get('Records') and raw_records['Records'].get('Record'):
         level_id = raw_records['Records']['Record'][0]['@levelId']
 
@@ -975,61 +1116,130 @@ def print_cache_command(client: Client, args: Dict[str, str]):
     return_outputs(cache, {}, {})
 
 
-def fetch_incidents(client, last_run, first_fetch_time, params):
-    # Get the last fetch time, if exists
-    last_fetch = last_run.get('last_fetch')
+def fetch_incidents(
+        client: Client, params: dict, from_time: datetime, fetch_param_id: str
+) -> Tuple[list, datetime]:
+    """Fetches incidents.
 
-    # Handle first time fetch
-    if last_fetch is None:
-        last_fetch = dateparser.parse(first_fetch_time)
-    else:
-        last_fetch = dateparser.parse(last_fetch)
+    Args:
+        client: Client derived from BaseClient
+        params: demisto.params dict.
+        from_time: Time to start the fetch from
+        fetch_param_id: Param ID to find occurred time. can be acquired by get_fetch_param_id
 
-    last_fetch = last_fetch.replace(tzinfo=None)
-    app_id = params.get('applicationId')
-    date_field = params.get('applicationDateField')
+    Returns:
+        incidents, next_run datetime in archer's local time
+    """
+    # Not using get method as those params are a must
+    app_id = params['applicationId']
+    date_field = params['applicationDateField']
     max_results = params.get('fetch_limit', 10)
-    time_offset = int(params.get('time_zone', '0'))
     fields_to_display = argToList(params.get('fields_to_fetch'))
     fields_to_display.append(date_field)
+    # API Call
+    records, raw_res = client.search_records(
+        app_id, fields_to_display, date_field,
+        from_time.strftime(OCCURRED_FORMAT),
+        date_operator='GreaterThan',
+        max_results=max_results
+    )
+    demisto.debug(f'Found {len(records)=}.')
+    # Build incidents
+    incidents = list()
+    # Encountered that sometimes, somehow, on of next_fetch is not UTC.
+    last_fetch_time = from_time.replace(tzinfo=timezone.utc)
+    next_fetch = last_fetch_time
+    for record in records:
+        incident, incident_created_time = client.record_to_incident(record, app_id, fetch_param_id)
+        # Encountered that sometimes, somehow, incident_created_time is not UTC.
+        incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
+        if last_fetch_time <= incident_created_time:
+            incidents.append(incident)
+            if next_fetch < incident_created_time:
+                next_fetch = incident_created_time
+        else:
+            demisto.debug(
+                f'The newly fetched incident is older than last fetch. {incident_created_time=} {next_fetch=}'
+            )
+    demisto.debug(f'Going out fetch incidents with {next_fetch=}, {len(incidents)=}')
+    return incidents, next_fetch
 
-    last_fetch = last_fetch + timedelta(minutes=(time_offset * -1))
 
-    records, raw_res = client.search_records(app_id, fields_to_display, date_field,
-                                             last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ'),
-                                             date_operator='GreaterThan', max_results=max_results)
+def get_fetch_time(last_fetch: dict, first_fetch_time: str) -> datetime:
+    """Gets lastRun object and first fetch time (str, 3 days) and returns
+    a datetime object of the last run if exists, else datetime of the first fetch time
 
-    incidents = []
+    Args:
+        last_fetch: a dict that may contain 'last_fetch'
+        first_fetch_time: time back in simple format (3 days)
 
-    for item in records:
-        incident, incident_created_time = client.record_to_incident(item, app_id, date_field)
+    Returns:
+        Time to start fetch from. UTC timezone.
+    """
+    if next_run := last_fetch.get(LAST_FETCH_TIME_KEY):
+        start_fetch = parser(next_run)
+    else:
+        start_fetch, _ = parse_date_range(first_fetch_time)
+    start_fetch.replace(tzinfo=timezone.utc)
+    return start_fetch
 
-        incidents.append(incident)
-        if incident_created_time > last_fetch:
-            last_fetch = incident_created_time
 
-    last_fetch = last_fetch + timedelta(minutes=time_offset)
-    next_run = {'last_fetch': last_fetch.strftime('%Y-%m-%dT%H:%M:%SZ')}
-    return next_run, incidents
+def get_fetch_param_id(client: Client, last_run: dict, app_id: str, app_date_field: str) -> str:
+    """ Get the from lastRun if available. Else ask the instance for the ID
+    Args:
+        client: Archer's client
+        last_run: Last run object
+        app_id: app id to search on
+        app_date_field: the name of the date_field
+    Returns:
+        ID of the field
+    """
+    try:  # If exists
+        fetch_param_id = last_run[FETCH_PARAM_ID_KEY]
+    except KeyError:  # If not, search for it
+        fetch_param_id = client.get_field_id(app_id, app_date_field)
+    demisto.debug(f'Found a field ID {fetch_param_id=}')
+    return fetch_param_id
+
+
+def fetch_incidents_command(client: Client, params: dict, last_run: dict) -> Tuple[list, datetime]:
+    """Fetches incidents
+    Arguments:
+        client: Archer's client
+        params: demisto.params()
+        last_run: demisto.getLastRun()
+    Returns:
+        incidents, next fetch
+    """
+    from_time = get_fetch_time(last_run, params.get('fetch_time', '3 days'))
+    fetch_param_id = last_run[FETCH_PARAM_ID_KEY]
+    demisto.debug(f'Starting fetch incidents with {from_time=} and {fetch_param_id=}')
+    return fetch_incidents(
+        client=client,
+        params=params,
+        from_time=from_time,
+        fetch_param_id=fetch_param_id
+    )
 
 
 def main():
     params = demisto.params()
     credentials = params.get('credentials')
     base_url = params.get('url').strip('/')
-    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
 
     cache = demisto.getIntegrationContext()
     if not cache.get('fieldValueList'):
         cache['fieldValueList'] = {}
         demisto.setIntegrationContext(cache)
 
-    client = Client(base_url,
-                    credentials.get('identifier'), credentials.get('password'),
-                    params.get('instanceName'),
-                    params.get('userDomain'),
-                    verify=not params.get('insecure', False),
-                    proxy=params.get('proxy', False))
+    client = Client(
+        base_url,
+        credentials.get('identifier'), credentials.get('password'),
+        params.get('instanceName'),
+        params.get('userDomain'),
+        verify=not params.get('insecure', False),
+        proxy=params.get('proxy', False)
+    )
     commands = {
         'archer-search-applications': search_applications_command,
         'archer-get-application-fields': get_application_fields_command,
@@ -1044,7 +1254,7 @@ def main():
         'archer-get-search-options-by-guid': search_options_command,
         'archer-reset-cache': reset_cache_command,
         'archer-get-valuelist': get_value_list_command,
-        'archer-upload-file': upload_file_command,
+        'archer-upload-file': upload_and_associate_command,
         'archer-get-file': download_file_command,
         'archer-list-users': list_users_command,
         'archer-search-records': search_records_command,
@@ -1054,17 +1264,16 @@ def main():
 
     command = demisto.command()
     LOG(f'Command being called is {command}')
-
     try:
         if command == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            next_run, incidents = fetch_incidents(
-                client=client,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time,
-                params=params)
-
-            demisto.setLastRun(next_run)
+            last_run = demisto.getLastRun()
+            last_run[FETCH_PARAM_ID_KEY] = get_fetch_param_id(
+                client, last_run, params['applicationId'], params['applicationDateField']
+            )
+            incidents, next_fetch = fetch_incidents_command(client, params, last_run)
+            demisto.debug(f'Setting next run to {next_fetch}')
+            last_run[LAST_FETCH_TIME_KEY] = next_fetch.strftime(OCCURRED_FORMAT)
+            demisto.setLastRun(last_run)
             demisto.incidents(incidents)
         elif command == 'test-module':
             demisto.results(test_module(client, params))

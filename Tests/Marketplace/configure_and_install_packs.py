@@ -1,5 +1,6 @@
 import argparse
 import logging
+import sys
 
 from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
     Build, Server
@@ -11,8 +12,8 @@ from Tests.scripts.utils.log_util import install_logging
 def options_handler():
     parser = argparse.ArgumentParser(description='Utility for instantiating integration instances')
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Demisto 6.0", "Demisto Marketplace". The server url is determined by the'
-                                          ' AMI environment.', default="Demisto Marketplace")
+                                          '"Server 6.0", "Server Master". The server url is determined by the'
+                                          ' AMI environment.', default="Server Master")
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build_number', help='CI job number where the instances were created', required=True)
@@ -23,11 +24,11 @@ def options_handler():
 
 
 def main():
-    install_logging('Configure and Install Packs.log')
+    install_logging('Install_Packs.log')
     options = options_handler()
 
     # Get the host by the ami env
-    hosts, _ = Build.get_servers(ami_env=options.ami_env)
+    hosts, server_version = Build.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
     secret_conf_file = get_json_file(path=options.secret)
@@ -45,8 +46,13 @@ def main():
         # Acquire the server's host and install all content packs (one threaded execution)
         logging.info(f'Starting to install all content packs in {host}')
         server_host: str = server.client.api_client.configuration.host
-        install_all_content_packs(client=server.client, host=server_host)
-        logging.success(f'Finished installing all content packs in {host}')
+        success_flag = install_all_content_packs(client=server.client, host=server_host, server_version=server_version)
+
+        if success_flag:
+            logging.success(f'Finished installing all content packs in {host}')
+        else:
+            logging.error('Failed to install all packs.')
+            sys.exit(1)
 
 
 if __name__ == '__main__':

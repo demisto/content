@@ -2,6 +2,7 @@
 	"description": "Approved usecases for use in pack_metadata.json. To modify this file you will need a CODEOWNER to approve.",
 	"approved_list": [
 		"Access",
+		"Asset Management",
 		"Breach Notification",
 		"Breach and Attack Simulation",
 		"Brute Force",
@@ -15,7 +16,7 @@
 		"HIPAA Breach Notification",
 		"Health Check",
 		"Hunting",
-		"Identity And Access Management",
+		"Identity and Access Management",
 		"Impossible Traveler",
 		"Incident Response",
 		"Lost or Stolen Device",
@@ -25,6 +26,9 @@
 		"Phishing",
 		"Ransomware",
 		"SANS",
-		"Threat Intelligence Management"
+		"Threat Intelligence Management",
+		"Vulnerability Management",
+		"Network Security",
+		"IT Services"
 	]
 }

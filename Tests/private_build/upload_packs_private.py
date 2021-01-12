@@ -7,12 +7,11 @@ import glob
 import logging
 from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
-    GCPConfig, CONTENT_ROOT_PATH, \
-    get_packs_statistics_dataframe
+    GCPConfig, CONTENT_ROOT_PATH, get_packs_statistics_dataframe, load_json, get_content_git_client, \
+    get_recent_commits_data
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index,\
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config,\
-    upload_id_set, load_json, get_content_git_client, check_if_index_is_updated, print_packs_summary,\
-    get_packs_summary, get_recent_commits_data
+    upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
 
 from Tests.scripts.utils.log_util import install_logging
@@ -278,6 +277,12 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     else:
         pack_was_modified = False
 
+    task_status = pack.is_pack_encrypted(zip_pack_path, enc_key)
+    if not task_status:
+        pack.status = PackStatus.FAILED_DECRYPT_PACK.name
+        pack.cleanup()
+        return
+
     bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
     (task_status, skipped_pack_uploading, full_pack_path) = \
         pack.upload_to_storage(zip_pack_path, pack.latest_version,
@@ -424,8 +429,7 @@ def main():
         content_repo = get_content_git_client(CONTENT_ROOT_PATH)
         current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
                                                                                    is_bucket_upload_flow=False,
-                                                                                   is_private_build=True,
-                                                                                   force_previous_commit="")
+                                                                                   is_private_build=True)
     else:
         current_commit_hash, remote_previous_commit_hash = "", ""
         content_repo = None

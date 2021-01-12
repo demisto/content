@@ -1150,7 +1150,7 @@ def get_domains_for_email_registrar_command():
         if sort != 'created' and sort != 'updated':
             return_error('The parameter sort accept only these values: created/updated/expired.')
     for email in emails:
-        if re.match('^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$', email) is None:
+        if not re.match(emailRegex, email):
             return_error('The provided email is not valid: ' + email)
     # Fetch data
     res = get_domains_for_email_registrar(emails, offset, sort, limit)

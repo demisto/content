@@ -2174,6 +2174,9 @@ def panorama_get_url_category(url_cmd: str, url: str):
         body=params,
     )
     result = raw_result['response']['result']
+    if 'Failed to query the cloud' in result:
+        raise Exception('Failed to query the cloud. Please check your URL Filtering license.')
+
     if url_cmd == 'url-info-host':
         # The result in this case looks like so: "Ancestors info:\nBM:\nURL.com,1,5,search-engines,, {some more info
         # here...}" - The 4th element is the url category.
@@ -4355,6 +4358,8 @@ def prettify_log(log: dict):
         pretty_log['TimeGenerated'] = log['time_generated']
     if 'url_category_list' in log:
         pretty_log['URLCategoryList'] = log['url_category_list']
+    if 'vsys' in log:
+        pretty_log['Vsys'] = log['vsys']
 
     return pretty_log
 
@@ -5539,152 +5544,159 @@ def get_security_profiles_command(security_profile: str = None):
         raise Exception('Please commit the instance prior to getting the security profiles.')
 
     human_readable = ''
-    content = []
     context = {}
     if 'spyware' in security_profiles and security_profiles['spyware'] is not None:
+        spyware_content = []
         profiles = security_profiles.get('spyware', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
                 spyware_rules = prettify_profiles_rules(rules)
-                content.append({
+                spyware_content.append({
                     'Name': profile['@name'],
                     'Rules': spyware_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             spyware_rules = prettify_profiles_rules(rules)
-            content = [{
+            spyware_content = [{
                 'Name': profiles['@name'],
                 'Rules': spyware_rules
             }]
 
-        human_readable = tableToMarkdown('Anti Spyware Profiles', content)
-        context.update({"Panorama.Spyware(val.Name == obj.Name)": content})
+        human_readable = tableToMarkdown('Anti Spyware Profiles', spyware_content)
+        context.update({"Panorama.Spyware(val.Name == obj.Name)": spyware_content})
 
     if 'virus' in security_profiles and security_profiles['virus'] is not None:
+        virus_content = []
         profiles = security_profiles.get('virus', {}).get('entry', [])
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('decoder', {}).get('entry', [])
                 antivirus_rules = prettify_profiles_rules(rules)
-                content.append({
+                virus_content.append({
                     'Name': profile['@name'],
                     'Decoder': antivirus_rules
                 })
         else:
             rules = profiles.get('decoder', {}).get('entry', [])
             antivirus_rules = prettify_profiles_rules(rules)
-            content = [{
+            virus_content = [{
                 'Name': profiles['@name'],
                 'Rules': antivirus_rules
             }]
 
-        human_readable += tableToMarkdown('Antivirus Profiles', content)
-        context.update({"Panorama.Antivirus(val.Name == obj.Name)": content})
+        human_readable += tableToMarkdown('Antivirus Profiles', virus_content, headers=['Name', 'Decoder', 'Rules'],
+                                          removeNull=True)
+        context.update({"Panorama.Antivirus(val.Name == obj.Name)": virus_content})
 
     if 'file-blocking' in security_profiles and security_profiles['file-blocking'] is not None:
+        file_blocking_content = []
         profiles = security_profiles.get('file-blocking', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
                 file_blocking_rules = prettify_profiles_rules(rules)
-                content.append({
+                file_blocking_content.append({
                     'Name': profile['@name'],
                     'Rules': file_blocking_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             file_blocking_rules = prettify_profiles_rules(rules)
-            content = [{
+            file_blocking_content = [{
                 'Name': profiles['@name'],
                 'Rules': file_blocking_rules
             }]
 
-        human_readable += tableToMarkdown('File Blocking Profiles', content)
-        context.update({"Panorama.FileBlocking(val.Name == obj.Name)": content})
+        human_readable += tableToMarkdown('File Blocking Profiles', file_blocking_content)
+        context.update({"Panorama.FileBlocking(val.Name == obj.Name)": file_blocking_content})
 
     if 'vulnerability' in security_profiles and security_profiles['vulnerability'] is not None:
+        vulnerability_content = []
         profiles = security_profiles.get('vulnerability', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
                 vulnerability_rules = prettify_profiles_rules(rules)
-                content.append({
+                vulnerability_content.append({
                     'Name': profile['@name'],
                     'Rules': vulnerability_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             vulnerability_rules = prettify_profiles_rules(rules)
-            content = [{
+            vulnerability_content = [{
                 'Name': profiles['@name'],
                 'Rules': vulnerability_rules
             }]
 
-        human_readable += tableToMarkdown('Vulnerability Protection Profiles', content)
-        context.update({"Panorama.Vulnerability(val.Name == obj.Name)": content})
+        human_readable += tableToMarkdown('Vulnerability Protection Profiles', vulnerability_content)
+        context.update({"Panorama.Vulnerability(val.Name == obj.Name)": vulnerability_content})
 
     if 'data-filtering' in security_profiles and security_profiles['data-filtering'] is not None:
+        data_filtering_content = []
         profiles = security_profiles.get('data-filtering', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
                 data_filtering_rules = prettify_data_filtering_rules(rules)
-                content.append({
+                data_filtering_content.append({
                     'Name': profile['@name'],
                     'Rules': data_filtering_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             data_filtering_rules = prettify_data_filtering_rules(rules)
-            content = [{
+            data_filtering_content = [{
                 'Name': profiles['@name'],
                 'Rules': data_filtering_rules
             }]
 
-        human_readable += tableToMarkdown('Data Filtering Profiles', content)
-        context.update({"Panorama.DataFiltering(val.Name == obj.Name)": content})
+        human_readable += tableToMarkdown('Data Filtering Profiles', data_filtering_content)
+        context.update({"Panorama.DataFiltering(val.Name == obj.Name)": data_filtering_content})
 
     if 'url-filtering' in security_profiles and security_profiles['url-filtering'] is not None:
+        url_filtering_content = []
         profiles = security_profiles.get('url-filtering', {}).get('entry', {})
         if isinstance(profiles, list):
             for profile in profiles:
                 url_filtering_rules = prettify_get_url_filter(profile)
-                content.append({
+                url_filtering_content.append({
                     'Name': profile['@name'],
                     'Rules': url_filtering_rules
                 })
         else:
             url_filtering_rules = prettify_get_url_filter(profiles)
-            content = [{
+            url_filtering_content = [{
                 'Name': profiles['@name'],
                 'Rules': url_filtering_rules
             }]
 
-        human_readable += tableToMarkdown('URL Filtering Profiles', content)
-        context.update({'Panorama.URLFilter(val.Name == obj.Name)': content})
+        human_readable += tableToMarkdown('URL Filtering Profiles', url_filtering_content)
+        context.update({'Panorama.URLFilter(val.Name == obj.Name)': url_filtering_content})
 
     if 'wildfire-analysis' in security_profiles and security_profiles['wildfire-analysis'] is not None:
+        wildfire_analysis_content = []
         profiles = security_profiles.get('wildfire-analysis', {}).get('entry', [])
         if isinstance(profiles, list):
             for profile in profiles:
                 rules = profile.get('rules', {}).get('entry', [])
                 wildfire_rules = prettify_wildfire_rules(rules)
-                content.append({
+                wildfire_analysis_content.append({
                     'Name': profile['@name'],
                     'Rules': wildfire_rules
                 })
         else:
             rules = profiles.get('rules', {}).get('entry', [])
             wildfire_rules = prettify_wildfire_rules(rules)
-            content = [{
+            wildfire_analysis_content = [{
                 'Name': profiles['@name'],
                 'Rules': wildfire_rules
             }]
 
-        human_readable += tableToMarkdown('WildFire Profiles', content)
-        context.update({"Panorama.WildFire(val.Name == obj.Name)": content})
+        human_readable += tableToMarkdown('WildFire Profiles', wildfire_analysis_content)
+        context.update({"Panorama.WildFire(val.Name == obj.Name)": wildfire_analysis_content})
 
     return_results({
         'Type': entryTypes['note'],
@@ -5697,12 +5709,11 @@ def get_security_profiles_command(security_profile: str = None):
 
 
 @logger
-def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, profile_name: str) -> Dict:
+def apply_security_profile(xpath: str, profile_name: str) -> Dict:
     params = {
         'action': 'set',
         'type': 'config',
-        'xpath': f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"
-        f"profiles/{profile_type}",
+        'xpath': xpath,
         'key': API_KEY,
         'element': f'<member>{profile_name}</member>'
     }
@@ -5713,12 +5724,18 @@ def apply_security_profile(pre_post: str, rule_name: str, profile_type: str, pro
 
 def apply_security_profile_command(profile_name: str, profile_type: str, rule_name: str, pre_post: str = None):
 
-    if DEVICE_GROUP:
+    if DEVICE_GROUP:  # Panorama instance
         if not pre_post:
             raise Exception('Please provide the pre_post argument when applying profiles to rules in '
                             'Panorama instance.')
+        xpath = f"{XPATH_RULEBASE}{pre_post}/security/rules/entry[@name='{rule_name}']/profile-setting/"\
+                f"profiles/{profile_type}"
 
-    apply_security_profile(pre_post, rule_name, profile_type, profile_name)
+    else:  # firewall instance
+        xpath = f"{XPATH_RULEBASE}rulebase/security/rules/entry[@name='{rule_name}']/profile-setting/"\
+                f"profiles/{profile_type}"
+
+    apply_security_profile(xpath, profile_name)
     return_results(f'The profile {profile_name} has been applied to the rule {rule_name}')
 
 
