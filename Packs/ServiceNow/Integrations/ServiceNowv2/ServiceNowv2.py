@@ -288,7 +288,7 @@ def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list
             'Resolved At': ticket.get('resolved_at'),
             'SLA Due': ticket.get('sla_due'),
             'Short Description': ticket.get('short_description'),
-            'Additional Comments': ticket.get('comments'),
+            'Additional Comments': ticket.get('comments')
         }
         # Try to map the fields
         impact = ticket.get('impact', '')
