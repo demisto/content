@@ -30,7 +30,7 @@ def get_threats_outputs(threats, rank: int = 0):
             entry = {
                 'ID': threat.get('id'),
                 'AgentComputerName': agent_realtime_info.get('agentComputerName'),
-                'CreatedDate': threat_info.get('createdAt') if IS_VERSION_2_1 else threat_info.get('createdDate'),
+                'CreatedDate': threat_info.get('createdAt'),
                 'SiteID': agent_realtime_info.get('siteId'),
                 'SiteName': agent_realtime_info.get('siteName'),
                 'Classification': threat_info.get('classification'),

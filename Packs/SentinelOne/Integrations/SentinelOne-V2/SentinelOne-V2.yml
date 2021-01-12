@@ -11,6 +11,14 @@ configuration:
   name: token
   required: true
   type: 4
+- defaultvalue: '2.1'
+  display: API Version.
+  required: true
+  name: api_version
+  options:
+  - '2.0'
+  - '2.1'
+  type: 15
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -33,7 +41,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '5'
-  display: Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk
+  display: Minimum risk score for importing incidents (0-10), where 0 is low risk and 10 is high risk. Relevant for API version 2.0.
   name: fetch_threat_rank
   required: false
   type: 0
@@ -42,7 +50,7 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-description: End point protection
+description: Use the SentinelOne integratation to send requests to your Management Server and responds with data pulled from Agents or from the management database.
 display: SentinelOne v2
 name: SentinelOne V2
 script:
@@ -56,7 +64,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'CSV list of scan statuses by which to filter the results, for example: "started,aborted".'
+      description: 'A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted".'
       isArray: false
       name: scan_status
       predefined:
@@ -104,7 +112,7 @@ script:
     - contextPath: SentinelOne.Agents.AgentVersion
       description: The agent software version.
       type: string
-    - contextPath: SentinelOne.Agents.IsDecomissioned
+    - contextPath: SentinelOne.Agents.IsDecommissioned
       description: Whether the agent is decommissioned.
       type: boolean
     - contextPath: SentinelOne.Agents.IsActive
@@ -197,7 +205,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: CSV list of group IDs by which to filter. Can be "site_ids" or "group_ids".
+      description: A comma-separated list of group IDs by which to filter. Can be "site_ids" or "group_ids".
       isArray: true
       name: group_ids
       required: false
@@ -225,7 +233,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'CSV list of OS types by which to filter, for example: "windows, linux".'
+      description: 'A comma-separated list of OS types by which to filter, for example: "windows, linux".'
       isArray: true
       name: os_types
       predefined:
@@ -288,7 +296,7 @@ script:
       description: User name of the user that added the item.
       type: string
     - contextPath: SentinelOne.Exclusions.Mode
-      description: 'CSV list of modes by which to filter (ath exclusions only), for example: "suppress".'
+      description: 'A comma-separated list of modes by which to filter (ath exclusions only), for example: "suppress".'
       type: string
   - arguments:
     - default: false
@@ -308,22 +316,16 @@ script:
     - contextPath: SentinelOne.Hash.Hash
       description: The content hash.
       type: String
-    - contextPath: SentinelOne.Hash.Classification
-      description: The hash classification.
-      type: String
-    - contextPath: SentinelOne.Hash.Classification Source
-      description: The hash classification source.
-      type: String
   - arguments:
     - default: false
       description: The content hash of the threat.
-      isArray: false
+      isArray: true
       name: content_hash
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: CSV list of mitigation statuses. Can be "mitigated", "active", "blocked", "suspicious", "pending", or "suspicious_resolved".
+      description: A comma-separated list of mitigation statuses. Can be "mitigated", "active", "blocked", "suspicious", "pending", or "suspicious_resolved".
       isArray: true
       name: mitigation_status
       predefined:
@@ -371,7 +373,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Threat display name. Can be a partial display name, not an exact match.
+      description: Threat display name. For API version 2.0 can be a partial display name, not an exact match.
       isArray: false
       name: display_name
       required: false
@@ -390,7 +392,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'CSV list of threat IDs, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of threat IDs, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: threat_ids
       required: false
@@ -408,7 +410,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Risk level threshold to retrieve (1-10).
+      description: Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only.
       isArray: false
       name: rank
       required: false
@@ -433,6 +435,15 @@ script:
     - contextPath: SentinelOne.Threat.Classification
       description: Classification name.
       type: string
+    - contextPath: SentinelOne.Threat.ClassificationSource
+      description: Source of the threat Classification.
+      type: string
+    - contextPath: SentinelOne.Threat.ConfidenceLevel
+      description: SentinelOne threat confidence level.
+      type: string
+    - contextPath: SentinelOne.Threat.FileSha256
+      description: SHA256 hash of file content.
+      type: string
     - contextPath: SentinelOne.Threat.MitigationStatus
       description: The agent status.
       type: String
@@ -443,11 +454,11 @@ script:
       description: Number representing cloud reputation (1-10).
       type: Number
     - contextPath: SentinelOne.Threat.MarkedAsBenign
-      description: Whether the threat is marked as benign.
+      description: Whether the threat is marked as benign. Relevant for version 2.0 only.
       type: Boolean
   - arguments:
     - default: false
-      description: 'CSV list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: group_ids
       required: false
@@ -457,24 +468,36 @@ script:
     execution: false
     name: sentinelone-threat-summary
     outputs:
-    - contextPath: SentinelOne.Threat.Active
+    - contextPath: SentinelOne.Threat.NotResolved
+      description: Number of unresolved threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.SuspiciousNotMitigatedNotResolved
+      description: Number of unmitigated suspicious threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.SuspiciousNotResolved
+      description: Number of unresolved suspicious threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.Resolved
+      description: Number of resolved threats in the system.
+      type: Number
+    - contextPath: SentinelOne.Threat.InProgress
       description: Number of active threats in the system.
       type: Number
     - contextPath: SentinelOne.Threat.Total
       description: Total number of threats in the system.
       type: Number
-    - contextPath: SentinelOne.Threat.Mitigated
-      description: Number of mitigated threats in the system.
+    - contextPath: SentinelOne.Threat.NotMitigated
+      description: Number of unmitigated threats in the system.
       type: Number
-    - contextPath: SentinelOne.Threat.Suspicious
-      description: Number of suspicious threats in the system.
+    - contextPath: SentinelOne.Threat.MaliciousNotResolved
+      description: Number of unresolved malicious threats in the system.
       type: Number
-    - contextPath: SentinelOne.Threat.Blocked
-      description: Number of blocked threats in the system.
+    - contextPath: SentinelOne.Threat.NotMitigatedNotResolved
+      description: Number of unmitigated and unresolved threats in the system.
       type: Number
   - arguments:
     - default: false
-      description: CSV list of threat IDs.
+      description: A comma-separated list of threat IDs.
       isArray: true
       name: threat_ids
       required: false
@@ -515,12 +538,12 @@ script:
       required: true
       secret: false
     - default: false
-      description: CSV list of threat IDs.
+      description: A comma-separated list of threat IDs.
       isArray: true
       name: threat_ids
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Applies a mitigation action to a group of threats that match the specified input filter.
     execution: false
     name: sentinelone-mitigate-threat
@@ -536,7 +559,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: CSV list of threat IDs.
+      description: A comma-separated list of threat IDs.
       isArray: true
       name: threat_ids
       required: true
@@ -554,8 +577,8 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The agent ID.
-      isArray: false
+      description: A comma-separated list of Agent IDs.
+      isArray: true
       name: agent_id
       required: true
       secret: false
@@ -573,7 +596,7 @@ script:
     - contextPath: SentinelOne.Agent.AgentVersion
       description: The agent software version.
       type: string
-    - contextPath: SentinelOne.Agent.IsDecomissioned
+    - contextPath: SentinelOne.Agent.IsDecommissioned
       description: Whether the agent is decommissioned.
       type: boolean
     - contextPath: SentinelOne.Agent.IsActive
@@ -857,7 +880,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'CSV list of activity IDs by which to filter, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of activity IDs by which to filter, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: activities_ids
       required: false
@@ -869,19 +892,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'CSV list of threat IDs for which to return activities, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of threat IDs for which to return activities, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: threats_ids
       required: false
       secret: false
     - default: false
-      description: 'CSV of activity codes to return, for example: "52,53,71,72".'
+      description: 'A comma-separated list of activity codes to return, for example: "52,53,71,72".'
       isArray: true
       name: activity_types
       required: false
       secret: false
     - default: false
-      description: 'CSV list of user IDs for users that invoked the activity (if applicable), for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of user IDs for users that invoked the activity (if applicable), for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: user_ids
       required: false
@@ -980,7 +1003,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'CSV list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
+      description: 'A comma-separated list of group IDs by which to filter, for example: "225494730938493804,225494730938493915".'
       isArray: true
       name: group_ids
       required: false
@@ -1111,8 +1134,8 @@ script:
       name: agents_ids
       required: true
       secret: false
-    deprecated: false
-    description: Retrieves running processes for a specific agent.
+    deprecated: true
+    description: Deprecated. Retrieves running processes for a specific agent.
     execution: false
     name: sentinelone-agent-processes
     outputs:
@@ -1136,8 +1159,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A CSV list of agent IDs to connect to the network. Run the list-agents command to get a list of agent IDs.
-      isArray: false
+      description: A comma-separated list of agent IDs to connect to the network. Run the list-agents command to get a list of agent IDs.
+      isArray: true
       name: agent_id
       required: true
       secret: false
@@ -1154,8 +1177,8 @@ script:
       type: String
   - arguments:
     - default: false
-      description: A CSV list of agent IDs to disconnect from the network. Run the list-agents command to get a list of agent IDs.
-      isArray: false
+      description: A comma-separated list of agent IDs to disconnect from the network. Run the list-agents command to get a list of agent IDs.
+      isArray: true
       name: agent_id
       required: true
       secret: false
@@ -1188,20 +1211,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: List of Group IDs by which to filter the results.
-      isArray: false
+      description: A comma-separated list of Group IDs by which to filter the results.
+      isArray: true
       name: group_id
       required: false
       secret: false
     - default: false
-      description: A list of Agent IDs by which to filter the results.
-      isArray: false
+      description: A comma-separated list of Agent IDs by which to filter the results.
+      isArray: true
       name: agent_id
       required: false
       secret: false
     - default: false
-      description: Included network domains.
-      isArray: false
+      description: A comma-separated of included network domains.
+      isArray: true
       name: domain
       required: false
       secret: false
@@ -1278,7 +1301,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Query start date, for example, "2019-08-03T04:49:26.257525Z".
+      description: Query start date, for example, "2019-08-03T04:49:26.257525Z". Limited to 93 ago.
       isArray: false
       name: from_date
       required: true
@@ -1384,8 +1407,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of agents IDs to shutdown.
-      isArray: false
+      description: A comma-separated list of agents IDs to shutdown.
+      isArray: true
       name: agent_id
       required: false
       secret: false
@@ -1411,7 +1434,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A CSV list of agents IDs to shutdown.
+      description: A comma-separated list of agents IDs to shutdown.
       isArray: false
       name: agent_id
       required: false
@@ -1435,5 +1458,6 @@ script:
   type: python
   subtype: python3
 tests:
-- SentinelOne V2 - test
+- SentinelOne V2.1 - Test
+- SentinelOne V2.0 - Test
 fromversion: 5.0.0
