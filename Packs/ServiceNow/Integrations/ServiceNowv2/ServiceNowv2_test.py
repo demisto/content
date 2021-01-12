@@ -564,7 +564,7 @@ def test_sysparm_input_display_value(mocker, requests_mock):
     assert requests_mock.request_history[1].method == 'POST'
 
 
-def test_get_mapping_fields():
+def test_get_mapping_fields(): #######
     """
     Given:
         -  ServiceNow client

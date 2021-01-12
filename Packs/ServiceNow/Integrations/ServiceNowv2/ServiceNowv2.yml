@@ -482,17 +482,6 @@ script:
       name: delivery_plan
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to display comments, work notes, and so on. Can be "true"
-        or "false".
-      isArray: false
-      name: display
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Ticket description.
       isArray: false
@@ -503,12 +492,6 @@ script:
       description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       isArray: false
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: Escalation
-      isArray: false
-      name: escalation
       required: false
       secret: false
     - default: false
@@ -1047,17 +1030,6 @@ script:
       name: delivery_plan
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to display comments, work notes, and so on. Can be "true"
-        or "false".
-      isArray: false
-      name: display
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Ticket description.
       isArray: false
@@ -1068,12 +1040,6 @@ script:
       description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       isArray: false
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: Escalation.
-      isArray: false
-      name: escalation
       required: false
       secret: false
     - default: false

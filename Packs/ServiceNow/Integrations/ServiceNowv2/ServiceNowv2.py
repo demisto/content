@@ -81,7 +81,8 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'knowledge', 'location', 'made_sla', 'notify', 'order', 'parent', 'parent_incident', 'priority',
              'problem_id', 'resolved_at', 'resolved_by', 'rfc',
              'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'title', 'type', 'urgency',
-             'user_input', 'watch_list', 'work_end', 'work_notes', 'work_notes_list', 'work_start']
+             'user_input', 'watch_list', 'work_end', 'work_notes', 'work_notes_list', 'work_start',
+             'reassignment_count', 'reopen_count', 'sys_updated_by', 'sys_updated_on', 'display']
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -202,7 +203,8 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     }
     if additional_fields:
         for additional_field in additional_fields:
-            context[additional_field] = data.get(additional_field)
+            if additional_field in data.keys():
+                context[string_to_table_header(additional_field)] = data.get(additional_field)
 
     # These fields refer to records in the database, the value is their system ID.
     closed_by = data.get('closed_by')
@@ -286,9 +288,8 @@ def get_ticket_human_readable(tickets, ticket_type: str, additional_fields: list
             'Resolved At': ticket.get('resolved_at'),
             'SLA Due': ticket.get('sla_due'),
             'Short Description': ticket.get('short_description'),
-            'Additional Comments': ticket.get('comments')
+            'Additional Comments': ticket.get('comments'),
         }
-
         # Try to map the fields
         impact = ticket.get('impact', '')
         if impact:
@@ -922,7 +923,7 @@ def get_ticket_command(client: Client, args: dict):
 
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
-               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
+               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments', 'Test_noy']
     if additional_fields:
         headers.extend(additional_fields)
 
@@ -969,7 +970,14 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields_keys)
     human_readable = tableToMarkdown(f'ServiceNow ticket updated successfully\nTicket type: {ticket_type}',
                                      t=hr_, removeNull=True)
-    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket, additional_fields_keys)}
+
+    # make the modified fields the user inserted as arguments show in the context
+    if additional_fields:
+        additional_fields_keys = additional_fields_keys.extend(list(args.keys()))
+    else:
+        additional_fields_keys = list(args.keys())
+
+    entry_context = {'ServiceNow.Ticket(val.ID===obj.ID)': get_ticket_context(ticket, additional_fields_keys)} # add args by union
 
     return human_readable, entry_context, result, True
 
@@ -1006,17 +1014,23 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     hr_ = get_ticket_human_readable(ticket, ticket_type, additional_fields_keys)
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
-               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
+               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments', 'Test_noy']
     if additional_fields:
         headers.extend(additional_fields_keys)
     human_readable = tableToMarkdown('ServiceNow ticket was created successfully.', t=hr_,
                                      headers=headers, removeNull=True)
 
+    # make the modified fields the user inserted as arguments show in the context
+    if additional_fields:
+        additional_fields_keys = additional_fields_keys.extend(list(args.keys()))
+    else:
+        additional_fields_keys = list(args.keys())
+
     created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
     entry_context = {
         'Ticket(val.ID===obj.ID)': created_ticket_context,
         'ServiceNow.Ticket(val.ID===obj.ID)': created_ticket_context
-    }
+    } # add args
 
     return human_readable, entry_context, result, True
 
