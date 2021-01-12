@@ -305,7 +305,7 @@ script:
       description: Use the search query string parameter to perform a case-insensitive
         search within all designated text fields of a model.
       isArray: false
-      name: query
+      name: search
       required: false
       secret: false
     - default: false
@@ -708,7 +708,7 @@ script:
       type: String
     - contextPath: AnsibleAWX.Job.instance_group
       description: 'The Instance group the job was run under'
-      type: Date
+      type: Number
     - contextPath: AnsibleAWX.Job.credential
       description: 'Credential id that allow Tower to access the node this job will be ran against'
       type: Number
