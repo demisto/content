@@ -125,20 +125,22 @@ EXPECTED_UPDATE_TICKET_ADDITIONAL = {
     'ServiceNow.Ticket(val.ID===obj.ID)': {
         'ID': '1234', 'Summary': 'Trouble getting to Oregon mail server', 'Number': 'INC0000039',
         'CreatedOn': '2019-09-05 00:42:29', 'Active': 'true', 'OpenedAt': '2019-09-05 00:41:01',
-        'approval': 'rejected', 'OpenedBy': 'admin', 'Creator': 'admin',
-        'Priority': '5 - Planning', 'State': '1', 'Severity': '3', 'Approval: rejected'
+        'OpenedBy': 'admin', 'Creator': 'admin',
+        'Priority': '5 - Planning', 'State': '1', 'Severity': '3', 'approval': 'rejected'
     }
 }
 EXPECTED_CREATE_TICKET = {
     'Ticket(val.ID===obj.ID)': {
         'ID': 'sys_id', 'Number': 'INC0010007', 'CreatedOn': '2020-04-06 13:04:44',
         'Active': 'true', 'OpenedAt': '2020-04-06 13:04:44', 'OpenedBy': 'test',
-        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1', 'Severity': '3'
+        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1', 'severity': '3', 'sla_due': '2020-10-10 10:10:11',
+        "description": "creating a test ticket"
     },
     'ServiceNow.Ticket(val.ID===obj.ID)': {
         'ID': 'sys_id', 'Number': 'INC0010007', 'CreatedOn': '2020-04-06 13:04:44',
         'Active': 'true', 'OpenedAt': '2020-04-06 13:04:44', 'OpenedBy': 'test',
-        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1'
+        'Creator': 'test', 'Priority': '5 - Planning', 'State': '1', 'severity': '3', 'sla_due': '2020-10-10 10:10:11',
+        "description": "creating a test ticket"
     }
 }
 EXPECTED_QUERY_TICKETS = {

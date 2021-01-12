@@ -204,7 +204,7 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     if additional_fields:
         for additional_field in additional_fields:
             if additional_field in data.keys():
-                context[string_to_table_header(additional_field)] = data.get(additional_field)
+                context[additional_field] = data.get(additional_field)
 
     # These fields refer to records in the database, the value is their system ID.
     closed_by = data.get('closed_by')
@@ -973,7 +973,7 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
 
     # make the modified fields the user inserted as arguments show in the context
     if additional_fields:
-        additional_fields_keys = additional_fields_keys.extend(list(args.keys()))
+        additional_fields_keys.extend(list(args.keys()))
     else:
         additional_fields_keys = list(args.keys())
 

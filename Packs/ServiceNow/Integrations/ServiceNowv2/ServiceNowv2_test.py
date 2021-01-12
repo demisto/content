@@ -85,7 +85,7 @@ def test_split_fields():
      RESPONSE_UPDATE_TICKET_SC_REQ, EXPECTED_UPDATE_TICKET_SC_REQ, True),
     (update_ticket_command, {'id': '1234', 'severity': '3', 'additional_fields': "approval=rejected"},
      RESPONSE_UPDATE_TICKET_ADDITIONAL, EXPECTED_UPDATE_TICKET_ADDITIONAL, True),
-    (create_ticket_command, {'active': 'false', 'severity': "3", 'description': "creating a test ticket",
+    (create_ticket_command, {'active': 'true', 'severity': "3", 'description': "creating a test ticket",
                              'sla_due': "2020-10-10 10:10:11"}, RESPONSE_CREATE_TICKET, EXPECTED_CREATE_TICKET, True),
     (query_tickets_command, {'limit': "3", 'query': "impact<2^short_descriptionISNOTEMPTY", 'ticket_type': "incident"},
      RESPONSE_QUERY_TICKETS, EXPECTED_QUERY_TICKETS, True),
