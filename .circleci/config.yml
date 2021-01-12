@@ -566,11 +566,6 @@ jobs:
       - *update_tests_step
       - *validate_files_and_yaml
       - run:
-          name: Content Docs Site
-          when: always
-          command: |
-            ./Documentation/docs_site_update.sh
-      - run:
           name: Spell Checks
           command: |
             python3 ./Tests/scripts/circleci_spell_checker.py $CIRCLE_BRANCH
