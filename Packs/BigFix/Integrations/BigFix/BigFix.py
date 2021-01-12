@@ -11,8 +11,7 @@ VERIFY_CERTIFICATE = not demisto.params().get('unsecure')
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 
-if not demisto.params().get('proxy'):
-    handle_proxy(proxy_param_name='proxy', )
+handle_proxy(proxy_param_name='proxy')
 
 
 def get_first(iterable, default=None):
