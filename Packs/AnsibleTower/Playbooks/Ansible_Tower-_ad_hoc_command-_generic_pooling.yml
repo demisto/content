@@ -37,7 +37,7 @@ tasks:
     task:
       id: 7630373a-14c4-483f-8ba6-838382463465
       version: -1
-      name: is Ansible Tower enabled?
+      name: Is Ansible Tower enabled?
       description: ''
       type: condition
       iscommand: false
@@ -95,7 +95,7 @@ tasks:
       id: b4c6dcf6-abe2-40c9-8687-353f84c27630
       version: -1
       name: Ad hoc command launch
-      description: Create new ad hoc command
+      description: Create new ad hoc command.
       script: '|||ansible-tower-adhoc-command-launch'
       type: regular
       iscommand: true
@@ -222,7 +222,7 @@ tasks:
       id: d60cdaad-e500-476c-8bc6-e6e0f672a52b
       version: -1
       name: Ad hoc command output
-      description: Retrieve the stdout from running this ad hoc command.
+      description: Retrieve the standard output from running this ad hoc command.
       script: '|||ansible-tower-adhoc-command-stdout'
       type: regular
       iscommand: true
@@ -268,20 +268,20 @@ inputs:
   value: {}
   required: true
   description: Select credentials that allows Tower to access the nodes this job will
-    be run against (if needed)
+    be run against (if needed).
   playbookInputQuery:
 - key: Inventory_id
   value: {}
   required: true
   description: Select the inventory containing the hosts you want this job to manage
-    (if needed)
+    (if needed).
   playbookInputQuery:
 - key: module_name
   value: {}
   required: true
   description: Modules are discrete units of code that can be used from the command
     line or in a playbook task. Ansible ships with a number of modules that can be
-    executed directly on remote hosts or through Playbooks.
+    executed directly on remote hosts or through playbooks.
   playbookInputQuery:
 - key: module_args
   value: {}
@@ -292,31 +292,31 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Print output from ad hoc command running
+  description: Print output from the ad hoc command that is running.
   playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency. How often the polling command should run (in minutes).
   playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
-  description: How much time to wait before a timeout occurs (minutes)
+  description: How much time (in minutes) to wait before a timeout occurs.
   playbookInputQuery:
 outputs:
 - contextPath: AnsibleAWX.AdhocCommand.id
-  description: Ad hoc command id
+  description: Ad hoc command ID.
 - contextPath: AnsibleAWX.AdhocCommand.status
-  description: 'Ad hoc command status'
+  description: Ad hoc command status.
 - contextPath: AnsibleAWX.JobStdout.content
-  description: job content output
+  description: Job content output.
 fromversion: 5.0.0
-description: Generic pooling playbook for runing ad hoc commands. Ad-hoc commands in Ansible allow you to execute simple
-  tasks at the command line against one or all of your hosts. This playbook first launch an ad hoc command, then report the status of the task
-  when finish running and at the end return the output of the task.
+description: Generic pooling playbook for runing ad hoc commands. Ad-hoc commands in Ansible allows you to execute simple
+  tasks at the command line against one or all of your hosts. This playbook first launchrd an ad hoc command, then reportd the status of the task
+  when it finishes running, and at the end returns the output of the task.
 tests:
   -  No tests
 
