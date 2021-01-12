@@ -68,7 +68,8 @@ class BitcoinAbuseClient(BaseClient):
         Args:
             address (str): the address of the abuser
             abuse_type_id (int): an id which indicates which type of abuse was made
-            abuse_type_other (Optional[str]): in case abuse_type_id was other, holds information describing the abuse type
+            abuse_type_other (Optional[str]): in case abuse_type_id was other, holds information describing the
+                                              abuse type
             abuser (str): information about the abuser (email, name, ...)
             description (str): description of the abuse (may include email sent, etc)
 
@@ -130,7 +131,7 @@ def assure_valid_response(indicators: List[Dict]) -> None:
         indicators (List[Dict]): the array of indicators fetched
 
     Returns:
-        - Throws DemistoException incase an incorrect api key was given
+        - Throws DemistoException in case an incorrect api key was given
     """
     if indicators and '<html lang="en">' == indicators[0]['value']:
         raise DemistoException('api token inserted is not valid')
@@ -174,14 +175,15 @@ def report_address_command(params: Dict, args: Dict) -> CommandResults:
                                                   abuser=abuser,
                                                   description=description)
 
-    if argToBoolean(http_response.get('success')):
-        return CommandResults(
-            readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
-                            f' was reported to BitcoinAbuse service'
-        )
-    else:
-        failure_message = http_response.get('response')
-        raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
+    raise DemistoException('')
+    # if argToBoolean(http_response.get('success')):
+    #     return CommandResults(
+    #         readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
+    #                         f' was reported to BitcoinAbuse service'
+    #     )
+    # else:
+    #     failure_message = http_response.get('response')
+    #     raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
 
 
 def build_params_for_csv_module(params: Dict):
@@ -205,6 +207,8 @@ def build_params_for_csv_module(params: Dict):
     params['url'] = urls
     params['feed_url_to_config'] = feed_url_to_config
     params['delimiter'] = ','
+
+    params['encoding'] = 'utf-8'
 
     return params
 
@@ -278,7 +282,7 @@ def indicator_commands(params: Dict, args: Dict, command_type: IndicatorsCommand
         demisto.setIntegrationContext({'have_fetched_first_time': True})
 
     elif command_type == IndicatorsCommandType.GET:
-        limit = arg_to_number(args.get('limit'), 'limit')
+        limit = arg_to_number(args.get('limit', 50), 'limit')
         truncated_indicators_list = indicators_without_duplicates[:limit]
         return CommandResults(
             readable_output=tableToMarkdown('Indicators', truncated_indicators_list,
