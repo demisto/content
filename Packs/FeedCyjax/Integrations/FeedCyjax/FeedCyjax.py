@@ -1,10 +1,12 @@
 import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *
+from CommonServerUserPython import *
 
+import pytz
 import urllib3
 import traceback
-import datetime
+import dateparser
+from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 import cyjax as cyjax_sdk
@@ -58,13 +60,10 @@ class Client(object):
         error_msg = 'Not responding'
 
         try:
-            indicators = list(cyjax_sdk.IndicatorOfCompromise().list(since=datetime.timedelta(minutes=5)))
-
-            demisto.info(indicators)
+            indicators = list(cyjax_sdk.IndicatorOfCompromise().list(since=timedelta(minutes=5)))
             result = True
         except Exception as e:
-            demisto.info(repr(e))
-            error_msg = repr(e)
+            error_msg = str(e)
             demisto.debug('Error when testing connection to Cyjax API {}'.format(error_msg))
 
         return result, error_msg
@@ -107,65 +106,104 @@ class Client(object):
 ''' HELPER FUNCTIONS '''
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
-    """Converts an XSOAR argument to a timestamp (seconds from epoch)"""
+def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
+    # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
+
+    """Converts an XSOAR argument to a datetime
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``datetime``. It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type is_utc: ``bool``
+    :param is_utc: if True then date converted as utc timezone, otherwise will convert with local timezone.
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :type settings: ``dict``
+    :param settings: If provided, passed to dateparser.parse function.
+
+    :return:
+        returns an ``datetime`` if conversion works
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[datetime]``
+    """
 
     if arg is None:
         if required is True:
-            raise ValueError(f'Missing "{arg_name}"')
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
         return None
 
-    if isinstance(arg, str) and arg.isdigit():
+    if isinstance(arg, str) and arg.isdigit() or isinstance(arg, (int, float)):
         # timestamp is a str containing digits - we just convert it to int
-        return int(arg)
+        ms = float(arg)
+        if ms > 2000000000.0:
+            # in case timestamp was provided as unix time (in milliseconds)
+            ms = ms / 1000.0
+
+        if is_utc:
+            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
+        else:
+            return datetime.fromtimestamp(ms)
     if isinstance(arg, str):
         # we use dateparser to handle strings either in ISO8601 format, or
         # relative time stamps.
         # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        if settings:
+            date = dateparser.parse(arg, settings=settings)
+        else:
+            date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+
         if date is None:
             # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
+            if arg_name:
+                raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid date'.format(arg))
 
-        return int(date.timestamp())
-    if isinstance(arg, (int, float)):
-        # Convert to int if the input is a float
-        return int(arg)
-    raise ValueError(f'Invalid date: "{arg_name}"')
+        return date
 
-
-def arg_to_utc_string(arg: Any, arg_name: str) -> Optional[str]:
-    """Converts an XSOAR argument to a UTC date string"""
-    utc_string = None
-
-    if arg:
-        timestamp = arg_to_timestamp(arg, arg_name)
-        if isinstance(timestamp, int):
-            utc_string = str(datetime.datetime.utcfromtimestamp(timestamp))
-
-    return utc_string
+    if arg_name:
+        raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid date'.format(arg))
 
 
-def get_indicators_last_fetch_timestamp() -> int:
-    """Get the last fetch-indicators timestamp. Check if indicators were ever fetched before,
-    if not find the timestamp for the first fetch.
+def get_indicators_last_fetch_date() -> datetime:
+    """Get the last fetch-indicators date. Check if indicators were ever fetched before,
+    if not find the date for the first fetch.
 
-    :return: Incidents last fetch timestamp
-    :rtype: ``int``
+    :return: Incidents last fetch date
+    :rtype: ``datetime``
     """
     last_fetch_timestamp = demisto.getLastRun().get(INDICATORS_LAST_FETCH_KEY, None)
 
     # Check if indicators were ever fetched before
     if last_fetch_timestamp is None:
         # How much time before the first fetch to retrieve incidents
-        first_fetch_time = arg_to_timestamp(
+        first_fetch_time = arg_to_datetime(
             arg=demisto.params().get('first_fetch', '3 days'),
             arg_name='First fetch time',
             required=True
         )
-        last_fetch_timestamp = first_fetch_time
+        last_fetch_timestamp = first_fetch_time.timestamp()
 
-    return int(last_fetch_timestamp)
+    date = datetime.utcfromtimestamp(int(last_fetch_timestamp)).replace(tzinfo=timezone.utc)
+
+    return date
 
 
 def map_indicator_type(cyjax_type: str) -> str:
@@ -264,7 +302,7 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score=None) -> Dict[str, Any]
         if 'city_name' in cyjax_indicator.get('geoip'):
             fields['city'] = cyjax_indicator.get('geoip').get('city_name')
         if 'country_name' in cyjax_indicator.get('geoip'):
-            fields['countryname'] = cyjax_indicator.get('geoip').get('country_name')
+            fields['geocountry'] = cyjax_indicator.get('geoip').get('country_name')
         if 'location' in cyjax_indicator.get('geoip'):
             fields['geolocation'] = "Lon: {}, Lat: {}".format(
                 cyjax_indicator.get('geoip').get('location').get('lon'),
@@ -295,15 +333,15 @@ def test_module(client: Client) -> str:
         return 'Could not connect to Cyjax API ({})'.format(error_msg)
 
 
-def fetch_indicators_command(client: Client, last_run: int, reputation: str) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputation: str) -> Tuple[Dict[str, int], List[dict]]:
     """Fetch indicators from Cyjax API.
     This function retrieves new indicators every interval (default is 60 minutes).
 
     :type client: ``Client``
     :param client: Instance of Client class.
 
-    :type last_run: ``int``
-    :param last_run: The last fetch run timestamp
+    :type last_fetch_date: ``datetime``
+    :param last_fetch_date: The last fetch date run
 
     :type reputation: ``str``
     :param reputation: The feed reputation as string
@@ -314,7 +352,8 @@ def fetch_indicators_command(client: Client, last_run: int, reputation: str) -> 
             indicators (``List[dict]``): List of indicators that will be added to XSOAR
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
-    since = str(datetime.datetime.utcfromtimestamp(last_run))
+    since = last_fetch_date.isoformat()
+    last_run_timestamp = int(last_fetch_date.timestamp())
 
     indicators = []  # type:List
     cyjax_indicators = client.fetch_indicators(since=since)   # type:List
@@ -328,10 +367,10 @@ def fetch_indicators_command(client: Client, last_run: int, reputation: str) -> 
         indicators.append(convert_cyjax_indicator(cyjax_indicator))
 
         # Update last run
-        if indicator_timestamp > last_run:
-            last_run = indicator_timestamp
+        if indicator_timestamp > last_run_timestamp:
+            last_run_timestamp = indicator_timestamp
 
-    next_run = {INDICATORS_LAST_FETCH_KEY: last_run}
+    next_run = {INDICATORS_LAST_FETCH_KEY: last_run_timestamp}
     return next_run, indicators
 
 
@@ -354,10 +393,12 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> Optional[Dic
     source_id = args.get('source_id', None)
 
     if since is not None:
-        since = arg_to_utc_string(since, 'since')
+        since_date = arg_to_datetime(since, 'since')
+        since = since_date.isoformat() if since_date else None
 
     if until is not None:
-        until = arg_to_utc_string(until, 'until')
+        until_date = arg_to_datetime(until, 'until')
+        until = until_date.isoformat() if until_date else None
 
     if source_id is not None:
         source_id = int(source_id)
@@ -446,10 +487,8 @@ def main() -> None:
             return_results(test_module(client))
 
         elif demisto.command() == 'fetch-indicators':
-            demisto.debug('--------------======--------- CYJAX fetch-indicators called at {}'.format(datetime.datetime.now()))
-
-            last_fetch_timestamp = get_indicators_last_fetch_timestamp()  # type:int
-            next_run, indicators = fetch_indicators_command(client, last_fetch_timestamp, reputation)
+            last_fetch_date = get_indicators_last_fetch_date()  # type:datetime
+            next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation)
 
             if indicators:
                 for b in batch(indicators, batch_size=2000):
