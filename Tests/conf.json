@@ -3030,38 +3030,13 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "PCAP Search test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
-            "fromversion": "5.0.0",
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general"
-        },
-        {
-            "playbookID": "PCAP File Carving Test",
-            "integrations": [
-                "VirusTotal",
-                "WildFire-v2"
-            ],
-            "instance_names": "virus_total_general",
-            "fromversion": "5.0.0"
-        },
-        {
             "playbookID": "PCAP Analysis Test",
             "integrations": [
-                "Recorded Future v2",
+                "ipinfo",
                 "WildFire-v2"
             ],
             "fromversion": "5.0.0",
             "timeout": 1200
-        },
-        {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
-            "fromversion": "5.0.0"
         },
         {
             "integrations": "Workday",
