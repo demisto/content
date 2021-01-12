@@ -58,7 +58,7 @@ Gets the documentation of all BPA checks.
 
 
 #### Command Example
-```!pan-os-get-documentation ids=4,6,7```
+```!pan-os-get-documentation doc_ids=4,6,7```
 
 #### Context Example
 ```json

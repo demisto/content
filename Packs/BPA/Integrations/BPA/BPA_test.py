@@ -33,7 +33,7 @@ def test_get_results(args, expected_result, mocker):
 
 @pytest.mark.parametrize('args, expected_result', [
     ({'task_id': '1234'}, GET_DOCUMENTATION_NO_FILTER),
-    ({'task_id': '1234', 'ids': '3,4,5,6'}, GET_DOCUMENTATION_ID_FILTER)
+    ({'task_id': '1234', 'doc_ids': '3,4,5,6'}, GET_DOCUMENTATION_ID_FILTER)
 ])
 def test_get_documentation(args, expected_result, mocker):
     """

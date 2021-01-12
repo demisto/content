@@ -131,7 +131,7 @@ def get_documentation_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     raw = client.get_documentation_request()
     if not raw:
         raise Exception('Failed getting documentation from BPA')
-    filter_by_ids = args.get('ids')
+    filter_by_ids = args.get('doc_ids')
     if filter_by_ids:
         output = []
         old_output = []  # keep old output format in order to not break backwards compatibility
@@ -148,7 +148,6 @@ def get_documentation_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
         'PAN-OS-BPA.Documentation': old_output  # Keep old output path in order to not break backwards compatibility.
     }
     human_readable = tableToMarkdown('BPA documentation', output)
-    # print(f'DOCUMENTATION CONTEXT: {entry_context}')
 
     return human_readable, entry_context, raw
 

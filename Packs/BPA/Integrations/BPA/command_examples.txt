@@ -1,3 +1,3 @@
 !pan-os-bpa-get-job-results task_id=b0539068-e1c1-496c-9dfd-a1274947f76e check_id=104,105 check_name="Accelerated Aging"
 !pan-os-bpa-submit-job
-!pan-os-get-documentation ids=4,6,7
+!pan-os-get-documentation doc_ids=4,6,7
