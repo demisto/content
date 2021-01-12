@@ -1,0 +1,17 @@
+{
+    "name": "intigriti",
+    "description": "This package provides a simple integration with intigriti to check if a certain IP has been used by the platform or not.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "ThisIsNotTheUserYouAreLookingFor",
+    "url": "",
+    "email": "",
+    "created": "2021-01-12T08:47:14Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "ThisIsNotTheUserYouAreLookingFor"
+    ]
+}

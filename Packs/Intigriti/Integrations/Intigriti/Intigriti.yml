@@ -1,0 +1,37 @@
+category: Utilities
+commonfields:
+  id: Intigriti
+  version: -1
+configuration:
+- display: Client ID
+  name: client_id
+  required: true
+  type: 4
+- display: Client Secret
+  name: client_secret
+  required: true
+  type: 4
+description: This integration provides command line access to the intigriti platform
+  API
+display: Intigriti
+name: Intigriti
+script:
+  commands:
+  - arguments:
+    - description: The IP address which is checked if it's in use by a researcher
+        on the intigriti platform or not
+      name: ip
+      required: true
+    description: Get back a boolean with the Intigriti usage status of the IP specified
+    name: IntigritiIPStatus
+    outputs:
+    - contextPath: IntigritiResult
+      type: string
+  dockerimage: demisto/python3:3.9.1.14969
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
