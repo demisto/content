@@ -11,6 +11,19 @@ class OrcaClient:
     def __init__(self, client: BaseClient):
         self.client = client
 
+    def validate_api_key(self)->str:
+        demisto.info("validate_api_key, enter")
+        invalid_token_string = "Test failed becasue the Orca API key that was entered is invalid, please provide a valid API key"
+        try:
+            response = self.client._http_request(method="GET", url_suffix="/user/action?")
+        except Exception as e:
+            return invalid_token_string
+
+        if response.get("status") != "success":
+            return invalid_token_string
+
+        return "ok"
+
     def get_alerts_by_type(self, alert_type: Optional[str] = None) -> Union[List[Dict[str, Any]], str]:  # pylint: disable=E1136
         demisto.info("get_alerts, enter")
         url_suffix = "/alerts"
@@ -138,6 +151,11 @@ def main() -> None:
 
         elif command == "fetch-incidents":
             fetch_incidents(orca_client)
+
+        elif command == "test-module":
+            test_res = orca_client.validate_api_key()
+            return_results(test_res)
+
 
         else:
             raise NotImplementedError(f'{command} is not an existing orca command')

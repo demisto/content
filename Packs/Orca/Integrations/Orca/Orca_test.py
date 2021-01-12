@@ -551,3 +551,42 @@ def test_get_asset_nonexistent(requests_mock, orca_client: OrcaClient) -> None:
     requests_mock.get(f"{ORCA_API_DNS_NAME}/assets/1234567", json=mock_response)
     res = orca_client.get_asset(asset_unique_id="1234567")
     assert res == "Asset Not Found"
+
+
+def test_test_module_success(requests_mock, orca_client: OrcaClient) -> None:
+    mock_response = {
+    "status": "success",
+    "data": {
+        "user_id": "77777634-7777-7777-7777-f49f77777777",
+        "email": "system_testing@orca.security",
+        "first": "System",
+        "last": "Testing",
+        "full_name": "System Testing",
+        "profile_picture": "",
+        "organization_id": "e3dab69a-5555-5555-5555-c5b8881cd2fe",
+        "organization_name": "Orca Security",
+        "feature_flags": {},
+        "has_cloud_accounts": True,
+        "has_scanned_cloud_accounts": True
+    }
+}
+    requests_mock.get(f"{ORCA_API_DNS_NAME}/user/action?", json=mock_response)
+    res = orca_client.validate_api_key()
+    assert res == "ok"
+
+def test_test_module_fail(requests_mock, orca_client: OrcaClient) -> None:
+    mock_response = {
+    "detail": "Given token not valid for any token type",
+    "code": "token_not_valid",
+    "messages": [
+        {
+            "token_class": "AccessTokenWithExpiration",
+            "token_type": "access",
+            "message": "Token is invalid or expired"
+        }
+    ],
+    "status_code": 403
+}
+    requests_mock.get(f"{ORCA_API_DNS_NAME}/user/action?", json=mock_response)
+    res = orca_client.validate_api_key()
+    assert res == "Test failed becasue the Orca API key that was entered is invalid, please provide a valid API key"
