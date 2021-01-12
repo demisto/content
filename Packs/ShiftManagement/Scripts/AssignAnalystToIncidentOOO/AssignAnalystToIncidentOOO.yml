@@ -39,7 +39,7 @@ args:
 comment: |-
   Assign analyst to incident with consideration of PTO, OOO, or Disabled Users.
 
-  Users can use the OutOfOffice automation to add or remove themselves from the list.
+  Users can use the ManageOOOusers automation to add or remove themselves from the list.
 commonfields:
   id: AssignAnalystToIncidentOOO
   version: -1
