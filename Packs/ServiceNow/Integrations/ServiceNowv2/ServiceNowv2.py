@@ -923,7 +923,7 @@ def get_ticket_command(client: Client, args: dict):
 
     headers = ['System ID', 'Number', 'Impact', 'Urgency', 'Severity', 'Priority', 'State', 'Approval',
                'Created On', 'Created By', 'Active', 'Close Notes', 'Close Code', 'Description', 'Opened At',
-               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments', 'Test_noy']
+               'Due Date', 'Resolved By', 'Resolved At', 'SLA Due', 'Short Description', 'Additional Comments']
     if additional_fields:
         headers.extend(additional_fields)
 
