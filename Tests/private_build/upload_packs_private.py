@@ -278,6 +278,12 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     else:
         pack_was_modified = False
 
+    task_status = pack.is_pack_encrypted(zip_pack_path, enc_key)
+    if not task_status:
+        pack.status = PackStatus.FAILED_DECRYPT_PACK.name
+        pack.cleanup()
+        return
+
     bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
     (task_status, skipped_pack_uploading, full_pack_path) = \
         pack.upload_to_storage(zip_pack_path, pack.latest_version,
