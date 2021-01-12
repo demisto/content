@@ -749,6 +749,8 @@ class Pack(object):
 
             subprocess.call(full_command, shell=True)
             new_artefacts = os.path.join(current_working_dir, 'private_artifacts')
+            if os.path.exists(new_artefacts):
+                shutil.rmtree(new_artefacts)
             os.mkdir(path=new_artefacts)
             shutil.copy(zip_pack_path, os.path.join(new_artefacts, f'{pack_name}_not_encrypted.zip'))
             shutil.copy(output_file, os.path.join(new_artefacts, f'{pack_name}.zip'))
