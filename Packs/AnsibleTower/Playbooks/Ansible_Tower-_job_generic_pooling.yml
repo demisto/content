@@ -95,7 +95,7 @@ tasks:
       id: ba3c8ebd-da30-4543-8b4e-364cbd30f618
       version: -1
       name: Job template launch
-      description: Launch job template
+      description: Launch the job template.
       script: '|||ansible-tower-job-launch'
       type: regular
       iscommand: true
@@ -221,7 +221,7 @@ tasks:
       id: e2dc36ae-1838-4464-8f58-f422f2916d1a
       version: -1
       name: Job output
-      description: Retrieve the stdout from running the given job
+      description: Retrieves the standard output from running the given job.
       script: '|||ansible-tower-job-stdout'
       type: regular
       iscommand: true
@@ -271,37 +271,37 @@ inputs:
 - key: credentials_id
   value: {}
   required: false
-  description: Select credentials that allows Tower to access the nodes this job will
-    be run against (if needed)
+  description: Select the credentials that allows Tower to access the nodes this job will
+    be run against (if needed).
   playbookInputQuery:
 - key: Inventory_id
   value: {}
   required: false
   description: Select the inventory containing the hosts you want this job to manage
-    (if needed)
+    (if needed).
   playbookInputQuery:
 - key: extra_variables
   value: {}
   required: false
-  description: Pass extra command line variables to the playbook (if needed)
+  description: Pass extra command line variables to the playbook (if needed).
   playbookInputQuery:
 - key: show_output
   value:
     simple: "False"
   required: false
-  description: Print output from the job running
+  description: Print output from the job that is running.
   playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (in minutes)
   playbookInputQuery:
 - key: Timeout
   value:
     simple: "15"
   required: false
-  description: How much time to wait before a timeout occurs (minutes)
+  description: How much time (in minutes) to wait before a timeout occurs.
   playbookInputQuery:
 outputs:
 - contextPath: AnsibleAWX.Job.id
@@ -311,7 +311,7 @@ outputs:
 - contextPath: AnsibleAWX.JobStdout.content
   description: job stdout
 fromversion: 5.0.0
-description: Generic pooling playbook to launch a specific job template, returns job
-  status when he finish running
+description: Generic pooling playbook to launch a specific job template. Returns the job
+  status when the job finishes running.
 tests:
  -  No tests
