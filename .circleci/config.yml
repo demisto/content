@@ -324,11 +324,11 @@ references:
         GCS_PATH=$(mktemp)
         echo "$GCS_MARKET_KEY" > "$GCS_PATH"
         gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
-        echo "successfully activate service account"
+        echo "successfully activated google cloud service account"
 
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
-        echo "successfully download private ID set"
+        echo "successfully downloaded private ID set"
         gcloud auth revoke --all
         rm $GCS_PATH
 
