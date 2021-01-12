@@ -146,6 +146,8 @@ class PackStatus(enum.Enum):
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
+    FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
+                          " which should be encrypted, seems not to be encrypted."
 
 
 class Pack(object):
@@ -757,6 +759,57 @@ class Pack(object):
             os.chdir(current_working_dir)
         except subprocess.CalledProcessError as error:
             print(f"Error while trying to encrypt pack. {error}")
+
+    def decrypt_pack(self, encrypted_zip_pack_path, decryption_key):
+        """ decrypt the pack in order to see that the pack was encrypted in the first place.
+
+        Args:
+            encrypted_zip_pack_path (str): The path for the encrypted zip pack.
+            decryption_key (str): The key which we can decrypt the pack with.
+
+        Returns:
+            bool: whether the decryption succeeded.
+        """
+        try:
+            current_working_dir = os.getcwd()
+            extract_destination_path = f'{current_working_dir}/decrypt_pack_dir'
+            os.mkdir(extract_destination_path)
+
+            shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
+            new_encrypted_pack_path = os.path.join(extract_destination_path, 'encrypted_zip_pack.zip')
+            shutil.copy(encrypted_zip_pack_path, new_encrypted_pack_path)
+            os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
+            output_decrypt_file_path = f"{extract_destination_path}/decrypt_pack.zip"
+            os.chdir(extract_destination_path)
+
+            subprocess.call('chmod +x ./decryptor', shell=True)
+            full_command = f'./decryptor {new_encrypted_pack_path} {output_decrypt_file_path} "{decryption_key}"'
+            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            stdout, stderr = process.communicate()
+            shutil.rmtree(extract_destination_path)
+            os.chdir(current_working_dir)
+            if stdout:
+                logging.info(str(stdout))
+            if stderr:
+                logging.error(f"Error: Premium pack {self. _pack_name} should be encrypted, but isn't.")
+                return False
+            return True
+
+        except subprocess.CalledProcessError as error:
+            logging.exception(f"Error while trying to decrypt pack. {error}")
+            return False
+
+    def is_pack_encrypted(self, encrypted_zip_pack_path, decryption_key):
+        """ Checks if the pack is encrypted by trying to decrypt it.
+
+        Args:
+            encrypted_zip_pack_path (str): The path for the encrypted zip pack.
+            decryption_key (str): The key which we can decrypt the pack with.
+
+        Returns:
+            bool: whether the pack is encrypted.
+        """
+        return self.decrypt_pack(encrypted_zip_pack_path, decryption_key)
 
     def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
         """ Zips pack folder.
