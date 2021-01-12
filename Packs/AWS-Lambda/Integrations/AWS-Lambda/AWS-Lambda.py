@@ -1,3 +1,4 @@
+from typing import Tuple
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -13,6 +14,16 @@ import urllib3.util
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+
+def get_timeout(timeout: str) -> Tuple[int, int]:
+    if not timeout:
+        timeout = "60,10"  # default values
+    timeout_vals = timeout.split(',')
+    read_timeout = int(timeout_vals[0])
+    connect_timeout = 10 if len(timeout_vals) == 1 else int(timeout_vals[1])
+    return (read_timeout, connect_timeout)
+
+
 """GLOBAL VARIABLES"""
 AWS_DEFAULT_REGION = demisto.params().get('defaultRegion')
 AWS_ROLE_ARN = demisto.params().get('roleArn')
@@ -23,10 +34,13 @@ AWS_ACCESS_KEY_ID = demisto.params().get('access_key')
 AWS_SECRET_ACCESS_KEY = demisto.params().get('secret_key')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', True)
 proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-config = Config(
-    connect_timeout=1,
+(read_timeout, connect_timeout) = get_timeout(demisto.params().get('timeout'))
+retries = demisto.params().get('retries') or 5
+CONFIG = Config(
+    connect_timeout=connect_timeout,
+    read_timeout=read_timeout,
     retries=dict(
-        max_attempts=5
+        max_attempts=int(retries)
     ),
     proxies=proxies
 )
@@ -37,6 +51,19 @@ config = Config(
 def aws_session(service='lambda', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None,
                 rolePolicy=None):
     kwargs = {}
+    config = CONFIG
+    command_config: Dict[str, Any] = {}
+    retries = demisto.getArg('retries')
+    if retries:
+        command_config['retries'] = dict(max_attempts=int(retries))
+    timeout = demisto.getArg('timeout')
+    if timeout:
+        (read_timeout, connect_timeout) = get_timeout(timeout)
+        command_config['read_timeout'] = read_timeout
+        command_config['connect_timeout'] = connect_timeout
+    if retries or timeout:
+        demisto.debug(f'Merging client config settings: {command_config}')
+        config = CONFIG.merge(Config(**command_config))
     if roleArn and roleSessionName is not None:
         kwargs.update({
             'RoleArn': roleArn,
@@ -123,7 +150,6 @@ def aws_session(service='lambda', region=None, roleArn=None, roleSessionName=Non
                 verify=VERIFY_CERTIFICATE,
                 config=config
             )
-
     return client
 
 
@@ -284,7 +310,10 @@ def invoke(args):
     if args.get('clientContext') is not None:
         kwargs.update({'ClientContext': args.get('clientContext')})
     if args.get('payload') is not None:
-        kwargs.update({'Payload': json.dumps(args.get('payload'))})
+        payload = args.get('payload')
+        if (not isinstance(payload, str)) or (not payload.startswith('{') and not payload.startswith('[')):
+            payload = json.dumps(payload)
+        kwargs.update({'Payload': payload})
     if args.get('qualifier') is not None:
         kwargs.update({'Qualifier': args.get('qualifier')})
     response = client.invoke(**kwargs)
@@ -293,7 +322,7 @@ def invoke(args):
         'Region': obj['_user_provided_options']['region_name'],
     })
     if 'LogResult' in response:
-        data.update({'LogResult': base64.b64decode(response['LogResult'])})  # type:ignore
+        data.update({'LogResult': base64.b64decode(response['LogResult']).decode("utf-8")})  # type:ignore
     if 'Payload' in response:
         data.update({'Payload': response['Payload'].read().decode("utf-8")})  # type:ignore
     if 'ExecutedVersion' in response:
@@ -373,27 +402,31 @@ def test_function():
         demisto.results('ok')
 
 
-"""EXECUTION BLOCK"""
-try:
-    if demisto.command() == 'test-module':
-        test_function()
-    elif demisto.command() == 'aws-lambda-get-function':
-        get_function(demisto.args())
-    elif demisto.command() == 'aws-lambda-list-functions':
-        list_functions(demisto.args())
-    elif demisto.command() == 'aws-lambda-list-aliases':
-        list_aliases(demisto.args())
-    elif demisto.command() == 'aws-lambda-invoke':
-        invoke(demisto.args())
-    elif demisto.command() == 'aws-lambda-remove-permission':
-        remove_permission(demisto.args())
-    elif demisto.command() == 'aws-lambda-get-account-settings':
-        get_account_settings(demisto.args())
-except ResponseParserError as e:
-    return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
-        error=type(e)))
-    LOG(str(e))
+def main():
+    try:
+        """EXECUTION BLOCK"""
+        if demisto.command() == 'test-module':
+            test_function()
+        elif demisto.command() == 'aws-lambda-get-function':
+            get_function(demisto.args())
+        elif demisto.command() == 'aws-lambda-list-functions':
+            list_functions(demisto.args())
+        elif demisto.command() == 'aws-lambda-list-aliases':
+            list_aliases(demisto.args())
+        elif demisto.command() == 'aws-lambda-invoke':
+            invoke(demisto.args())
+        elif demisto.command() == 'aws-lambda-remove-permission':
+            remove_permission(demisto.args())
+        elif demisto.command() == 'aws-lambda-get-account-settings':
+            get_account_settings(demisto.args())
+    except ResponseParserError as e:
+        return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
+            error=type(e)))
+    except Exception as e:
+        return_error('Error has occurred in the AWS Lambda Integration: {error}\n {message}'.format(
+            error=type(e), message=str(e)))
 
-except Exception as e:
-    return_error('Error has occurred in the AWS Lambda Integration: {error}\n {message}'.format(
-        error=type(e), message=str(e)))
+
+# python2 uses __builtin__ python3 uses builtins
+if __name__ in ("__builtin__", "builtins"):
+    main()

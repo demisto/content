@@ -146,6 +146,8 @@ class PackStatus(enum.Enum):
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
+    FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
+                          " which should be encrypted, seems not to be encrypted."
 
 
 class Pack(object):
@@ -572,7 +574,7 @@ class Pack(object):
         pack_metadata['certification'] = Pack._get_certification(support_type=pack_metadata['support'],
                                                                  certification=user_metadata.get('certification'))
         pack_metadata['price'] = convert_price(pack_id=pack_id, price_value_input=user_metadata.get('price'))
-        if pack_metadata['price'] > 0:
+        if 'vendorId' in user_metadata:
             pack_metadata['premium'] = True
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
@@ -750,6 +752,57 @@ class Pack(object):
         except subprocess.CalledProcessError as error:
             print(f"Error while trying to encrypt pack. {error}")
 
+    def decrypt_pack(self, encrypted_zip_pack_path, decryption_key):
+        """ decrypt the pack in order to see that the pack was encrypted in the first place.
+
+        Args:
+            encrypted_zip_pack_path (str): The path for the encrypted zip pack.
+            decryption_key (str): The key which we can decrypt the pack with.
+
+        Returns:
+            bool: whether the decryption succeeded.
+        """
+        try:
+            current_working_dir = os.getcwd()
+            extract_destination_path = f'{current_working_dir}/decrypt_pack_dir'
+            os.mkdir(extract_destination_path)
+
+            shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
+            new_encrypted_pack_path = os.path.join(extract_destination_path, 'encrypted_zip_pack.zip')
+            shutil.copy(encrypted_zip_pack_path, new_encrypted_pack_path)
+            os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
+            output_decrypt_file_path = f"{extract_destination_path}/decrypt_pack.zip"
+            os.chdir(extract_destination_path)
+
+            subprocess.call('chmod +x ./decryptor', shell=True)
+            full_command = f'./decryptor {new_encrypted_pack_path} {output_decrypt_file_path} "{decryption_key}"'
+            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            stdout, stderr = process.communicate()
+            shutil.rmtree(extract_destination_path)
+            os.chdir(current_working_dir)
+            if stdout:
+                logging.info(str(stdout))
+            if stderr:
+                logging.error(f"Error: Premium pack {self. _pack_name} should be encrypted, but isn't.")
+                return False
+            return True
+
+        except subprocess.CalledProcessError as error:
+            logging.exception(f"Error while trying to decrypt pack. {error}")
+            return False
+
+    def is_pack_encrypted(self, encrypted_zip_pack_path, decryption_key):
+        """ Checks if the pack is encrypted by trying to decrypt it.
+
+        Args:
+            encrypted_zip_pack_path (str): The path for the encrypted zip pack.
+            decryption_key (str): The key which we can decrypt the pack with.
+
+        Returns:
+            bool: whether the pack is encrypted.
+        """
+        return self.decrypt_pack(encrypted_zip_pack_path, decryption_key)
+
     def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
         """ Zips pack folder.
 
@@ -775,7 +828,9 @@ class Pack(object):
         except Exception:
             logging.exception(f"Failed in zipping {self._pack_name} folder")
         finally:
-            return task_status, zip_pack_path
+            # If the pack needs to be encrypted, it is initially at a different location than this final path
+            final_path_to_zipped_pack = f"{self._pack_path}.zip"
+            return task_status, final_path_to_zipped_pack
 
     def detect_modified(self, content_repo, index_folder_path, current_commit_hash, previous_commit_hash):
         """ Detects pack modified files.

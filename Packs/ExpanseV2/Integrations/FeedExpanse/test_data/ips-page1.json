@@ -1,0 +1,37 @@
+{
+    "data": [
+        {
+            "ip": "192.0.2.2",
+            "domain": "useless.example.com",
+            "type": "DOMAIN_RESOLUTION",
+            "assetType": "DOMAIN",
+            "assetKey": "useless.example.com",
+            "provider": {
+                "id": "RFC5737Cloud",
+                "name": "RFC5737Cloud"
+            },
+            "lastObserved": "2020-11-19T06:24:12.059Z",
+            "tenant": {
+                "id": "aac0820c-508d-485f-bec1-c72c5d80c97b",
+                "name": "Example.com Ltd",
+                "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+            },
+            "businessUnits": [
+                {
+                    "id": "44d64f93-8327-4c2c-97aa-8c6dd7be2e31",
+                    "name": "BU2",
+                    "tenantId": "aac0820c-508d-485f-bec1-c72c5d80c97b"
+                }
+            ],
+            "commonName": null
+        }
+    ],
+    "pagination": {
+        "next": null,
+        "prev": null
+    },
+    "meta": {
+        "nextPageToken": null,
+        "prevPageToken": null
+    }
+}

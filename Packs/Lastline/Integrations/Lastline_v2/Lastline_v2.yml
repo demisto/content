@@ -12,17 +12,20 @@ configuration:
   name: api_key
   required: false
   type: 0
-  additionalinfo: Note that whe when credentials are filled with data, the integration use account-based authentication.
+  additionalinfo: Note that when credentials are set, the integration
+    uses account-based authentication.
 - display: API Token for accessing Lastline APIs
   name: api_token
   required: false
   type: 4
-  additionalinfo: Note that when credentials are filled with data, the integration use account-based authentication.
+  additionalinfo: Note that when credentials are set, the integration
+    use account-based authentication.
 - display: Email address
   name: credentials
   required: false
   type: 9
-  additionalinfo: Note that when credentials are filled with data, the integration use account-based authentication.
+  additionalinfo: Note that when credentials are set, the integration
+    uses account-based authentication.
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -37,27 +40,32 @@ configuration:
   name: threshold
   required: false
   type: 0
-description: Use the Lastline v2 integration to provide threat analysts and incident response teams with the advanced malware isolation and inspection environment needed to safely execute advanced malware samples, and understand their behavior.
+description: Use the Lastline v2 integration to provide threat analysts and incident
+  response teams with the advanced malware isolation and inspection environment needed
+  to safely execute advanced malware samples, and understand their behavior.
 display: Lastline v2
 name: Lastline v2
 script:
   commands:
   - arguments:
     - default: true
-      description: A comma-separated list of file hashes to check. Supports MD5, SHA1, and SHA256 hashes.
+      description: A comma-separated list of file hashes to check. Supports MD5, SHA1,
+        and SHA256 hashes.
       isArray: true
       name: file
       required: true
       secret: false
     - default: false
       defaultValue: '70'
-      description: The score threshold that determines if the file is malicious. The default value is "70".
+      description: The score threshold that determines if the file is malicious. The
+        default value is "70".
       isArray: false
       name: threshold
       required: false
       secret: false
     deprecated: false
-    description: Checks the file reputation of the specified file hashes. Supports MD5, SHA1, and SHA256 hashes.
+    description: Checks the file reputation of the specified file hashes. Supports
+      MD5, SHA1, and SHA256 hashes.
     execution: false
     name: file
     outputs:
@@ -119,7 +127,9 @@ script:
       description: A list of network connections executed by the analysis subject.
       type: string
     - contextPath: Lastline.Submission.DownloadedFiles
-      description: A list of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
+      description: A list of files that were downloaded using the Microsoft Windows
+        file-download API functions. Each element is a tuple of file-origin URL and
+        a File element.
       type: string
     - contextPath: Lastline.Submission.Process
       description: Information on the Windows process.
@@ -154,7 +164,8 @@ script:
       secret: false
     - default: false
       defaultValue: '70'
-      description: The score threshold that determines if the file is malicious. The default value is "70".
+      description: The score threshold that determines if the file is malicious. The
+        default value is "70".
       isArray: false
       name: threshold
       required: false
@@ -213,7 +224,9 @@ script:
       description: A list of network connections executed by the analysis subject.
       type: string
     - contextPath: Lastline.Submission.DownloadedFiles
-      description: A list of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
+      description: A list of files that were downloaded using the Microsoft Windows
+        file-download API functions. Each element is a tuple of file-origin URL and
+        a File element.
       type: string
     - contextPath: Lastline.Submission.Process
       description: Information on the Windows process.
@@ -245,7 +258,8 @@ script:
       secret: false
     - default: false
       defaultValue: '70'
-      description: The score threshold that determines if the file is malicious. The default value is "70".
+      description: The score threshold that determines if the file is malicious. The
+        default value is "70".
       isArray: false
       name: threshold
       required: false
@@ -313,7 +327,9 @@ script:
       description: A list of network connections executed by the analysis subject.
       type: string
     - contextPath: Lastline.Submission.DownloadedFiles
-      description: A list of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
+      description: A list of files that were downloaded using the Microsoft Windows
+        file-download API functions. Each element is a tuple of file-origin URL and
+        a File element.
       type: string
     - contextPath: Lastline.Submission.Process
       description: Information on the Windows process.
@@ -347,7 +363,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: The score threshold that determines if the file is malicious. The default value is "70".
+      description: The score threshold that determines if the file is malicious. The
+        default value is "70".
       isArray: false
       name: threshold
       required: false
@@ -427,7 +444,9 @@ script:
       description: A list of network connections executed by the analysis subject.
       type: string
     - contextPath: Lastline.Submission.DownloadedFiles
-      description: A list of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
+      description: A list of files that were downloaded using the Microsoft Windows
+        file-download API functions. Each element is a tuple of file-origin URL and
+        a File element.
       type: string
     - contextPath: Lastline.Submission.Process
       description: Information on the Windows process.
@@ -455,13 +474,15 @@ script:
       type: string
   - arguments:
     - default: false
-      description: Return tasks before this date (in UTC format %Y-%m-%dT%H:%M:%S). For example, 2018-07-08T12:00:00.
+      description: Return tasks before this date (in UTC format %Y-%m-%dT%H:%M:%S).
+        For example, 2018-07-08T12:00:00.
       isArray: false
       name: before
       required: false
       secret: false
     - default: false
-      description: Return tasks after this date (in UTC format %Y-%m-%dT%H:%M:%S). For example, 2018-07-10T12:00:00.
+      description: Return tasks after this date (in UTC format %Y-%m-%dT%H:%M:%S).
+        For example, 2018-07-10T12:00:00.
       isArray: false
       name: after
       required: true
@@ -552,7 +573,9 @@ script:
       description: A list of network connections executed by the analysis subject.
       type: string
     - contextPath: Lastline.Submission.DownloadedFiles
-      description: A list of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
+      description: A list of files that were downloaded using the Microsoft Windows
+        file-download API functions. Each element is a tuple of file-origin URL and
+        a File element.
       type: string
     - contextPath: Lastline.Submission.Process
       description: Information on athe Windows process.
@@ -578,7 +601,7 @@ script:
     - contextPath: Lastline.Submission.Process.process_id
       description: The process ID.
       type: string
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -1,9 +1,11 @@
-import sys
-import os
 import json
-import subprocess
 import logging
+import os
+import subprocess
+import sys
+
 import Tests.scripts.awsinstancetool.aws_functions as aws_functions
+
 from Tests.scripts.utils.log_util import install_logging
 
 
@@ -44,6 +46,13 @@ def main():
 
         except subprocess.CalledProcessError:
             logging.exception(f'Failed downloading server logs from server {env["InstanceDNS"]}')
+
+        try:
+            logging.debug(f'logging out of docker on server for server {env["InstanceDNS"]}')
+            subprocess.check_output(
+                f'ssh -o StrictHostKeyChecking=no {env["SSHuser"]}@{env["InstanceDNS"]} sudo -u demisto docker logout'.split())
+        except Exception:
+            logging.exception(f'Could not log out of docker on {env["InstanceDNS"]}')
 
         if time_to_live:
             logging.info(f'Skipping - Time to live was set to {time_to_live} minutes')

@@ -1,0 +1,47 @@
+{
+    "name": "Rapid Breach Response",
+    "description": "This content pack helps you collect, investigate, and remediate incident relate to major breaches.",
+    "support": "xsoar",
+    "currentVersion": "1.3.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-12-16T14:11:20Z",
+    "categories": [],
+    "tags": [
+        "Breach",
+        "TIM",
+        "Incident Response"
+    ],
+    "useCases": [
+        "Hunting",
+        "Incident Response"
+    ],
+    "keywords": [
+        "SolarStorm",
+        "SunBurst",
+        "SolarWinds"
+    ],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "PANWComprehensiveInvestigation": {
+            "mandatory": false,
+            "display_name": "PANW Comprehensive Investigation"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "ExpanseV2": {
+            "mandatory": false,
+            "display_name": "Expanse v2"
+        },
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
+        }
+    }
+}

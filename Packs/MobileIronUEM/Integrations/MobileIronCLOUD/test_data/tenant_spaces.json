@@ -1,0 +1,65 @@
+{
+    "errors": null,
+    "result": {
+        "searchResults": [
+            {
+                "id": 100001,
+                "createdAt": 1509633426359,
+                "createdBy": 1,
+                "modifiedAt": 1598483659513,
+                "modifiedBy": 123,
+                "name": "Default Space",
+                "description": "Default device management Space.",
+                "domainRule": null,
+                "defaultPartition": true,
+                "priority": 2,
+                "guid": null,
+                "appCount": 0,
+                "contentCount": 0,
+                "memberCount": 0,
+                "countLastUpdatedAt": null,
+                "treeView": null,
+                "deviceCount": 4,
+                "configurationCount": 46,
+                "policyCount": 6,
+                "deviceGroupCount": 15
+            },
+            {
+                "id": 100002,
+                "createdAt": 1604494019686,
+                "createdBy": 53534718,
+                "modifiedAt": 1604494048508,
+                "modifiedBy": 123,
+                "name": "Marketing Space",
+                "description": null,
+                "domainRule": "ACCOUNTGROUP EQ 'Marketing'",
+                "defaultPartition": false,
+                "priority": 1,
+                "guid": null,
+                "appCount": 0,
+                "contentCount": 0,
+                "memberCount": 0,
+                "countLastUpdatedAt": null,
+                "treeView": {
+                    "operator": "LEAF",
+                    "rule": {
+                        "field": "ACCOUNTGROUP",
+                        "cfAttributeName": null,
+                        "operator": "EQ",
+                        "values": [
+                            "Marketing"
+                        ]
+                    },
+                    "children": null
+                },
+                "deviceCount": 0,
+                "configurationCount": 0,
+                "policyCount": 6,
+                "deviceGroupCount": 8
+            }
+        ],
+        "totalCount": 2,
+        "offset": 0,
+        "limit": 50
+    }
+}
