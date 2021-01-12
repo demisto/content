@@ -79,10 +79,10 @@ SNOW_ARGS = ['active', 'activity_due', 'opened_at', 'short_description', 'additi
              'correlation_display', 'correlation_id', 'delivery_plan', 'delivery_task', 'description', 'due_date',
              'expected_start', 'follow_up', 'group_list', 'hold_reason', 'impact', 'incident_state',
              'knowledge', 'location', 'made_sla', 'notify', 'order', 'parent', 'parent_incident', 'priority',
-             'problem_id', 'resolved_at', 'resolved_by', 'rfc',
-             'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'time_worked', 'title', 'type', 'urgency',
-             'user_input', 'watch_list', 'work_end', 'work_notes', 'work_notes_list', 'work_start',
-             'reassignment_count', 'reopen_count', 'sys_updated_by', 'sys_updated_on', 'display']
+             'problem_id', 'reassignment_count', 'reopen_count', 'resolved_at', 'resolved_by', 'rfc',
+             'severity', 'sla_due', 'state', 'subcategory', 'sys_tags', 'sys_updated_by', 'sys_updated_on',
+             'time_worked', 'title', 'type', 'urgency', 'user_input', 'watch_list', 'work_end', 'work_notes',
+             'work_notes_list', 'work_start']
 
 # Every table in ServiceNow should have those fields
 DEFAULT_RECORD_FIELDS = {
@@ -203,7 +203,7 @@ def create_ticket_context(data: dict, additional_fields: list = None) -> Any:
     }
     if additional_fields:
         for additional_field in additional_fields:
-            if additional_field in data.keys():
+            if additional_field in data.keys() and camelize_string(additional_field) not in context.keys():
                 context[additional_field] = data.get(additional_field)
 
     # These fields refer to records in the database, the value is their system ID.

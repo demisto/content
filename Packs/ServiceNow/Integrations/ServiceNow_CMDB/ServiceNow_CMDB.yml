@@ -12,8 +12,8 @@ configuration:
   name: credentials
   required: true
   type: 9
-- additionalinfo: Check this box to use OAuth 2.0 authentication.
-    See (?) for more information.
+- additionalinfo: Check this box to use OAuth 2.0 authentication. See (?) for more
+    information.
   display: Use OAuth Login
   hidden: false
   name: use_oauth
@@ -27,8 +27,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: ServiceNow CMDB is a service‑centric foundation that proactively
-  analyzes service‑impacting changes, identifies issues, and eliminates outages.
+description: ServiceNow CMDB is a service‑centric foundation that proactively analyzes
+  service‑impacting changes, identifies issues, and eliminates outages.
 display: ServiceNow CMDB
 name: ServiceNow CMDB
 script:
@@ -86,7 +86,8 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the fields to return for the queried record. 
+      description: A comma-separated list of the fields to return for the queried
+        record.
       isArray: false
       name: fields
       required: false
@@ -136,34 +137,36 @@ script:
       secret: false
     - default: true
       defaultValue: ServiceNow
-      description: 'The discovery source value. You can see all available values from the
-        sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
+      description: 'The discovery source value. You can see all available values from
+        the sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci.
+        (default: "ServiceNow").'
       isArray: false
       name: source
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of attributes that should be added to the created record. Input
-        format: attribute=value pairs, e.g., "name=test, ram=1024".'
+      description: 'A comma-separated list of attributes that should be added to the
+        created record. Input format: attribute=value pairs, e.g., "name=test, ram=1024".'
       isArray: false
       name: attributes
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of dictionaries. Each dictionary represents an inbound relation that should be added to the created record.
+      description: A comma-separated list of dictionaries. Each dictionary represents
+        an inbound relation that should be added to the created record.
       isArray: true
       name: inbound_relations
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of dictionaries. Each dictionary represents an outbound
-        relation that should be added to the created record.
+      description: A comma-separated list of dictionaries. Each dictionary represents
+        an outbound relation that should be added to the created record.
       isArray: true
       name: outbound_relations
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of fields to return for the created record. 
+      description: A comma-separated list of fields to return for the created record.
       isArray: false
       name: fields
       required: false
@@ -219,19 +222,23 @@ script:
       secret: false
     - default: true
       defaultValue: ServiceNow
-      description: 'The discovery source value. You can see all available values from sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
+      description: 'The discovery source value. You can see all available values from
+        sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci.
+        (default: "ServiceNow").'
       isArray: false
       name: source
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of the attributes that should be updated in the record. Input format: attribute=value pairs, e.g., "name=test,ram=1024".'
+      description: 'A comma-separated list of the attributes that should be updated
+        in the record. Input format: attribute=value pairs, e.g., "name=test,ram=1024".'
       isArray: false
       name: attributes
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the fields to return for the updated record. 
+      description: A comma-separated list of the fields to return for the updated
+        record.
       isArray: false
       name: fields
       required: false
@@ -288,26 +295,28 @@ script:
     - default: true
       defaultValue: ServiceNow
       description: 'The discovery source value. You can see all available values from
-        sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
+        sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci.
+        (default: "ServiceNow").'
       isArray: false
       name: source
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of dictionaries. Each dictionary represents an inbound relation that should be added to the created record.
+      description: A comma-separated list of dictionaries. Each dictionary represents
+        an inbound relation that should be added to the created record.
       isArray: true
       name: inbound_relations
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of dictionaries. Each dictionary represents an outbound
-        relation that should be added to the created record.
+      description: A comma-separated list of dictionaries. Each dictionary represents
+        an outbound relation that should be added to the created record.
       isArray: true
       name: outbound_relations
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of the fields to return for the record. 
+      description: A comma-separated list of the fields to return for the record.
       isArray: false
       name: fields
       required: false
@@ -368,7 +377,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: A comma-separated list of the fields to return for the record. 
+      description: A comma-separated list of the fields to return for the record.
       isArray: false
       name: fields
       required: false
@@ -431,7 +440,7 @@ script:
     description: Test the instance configuration when using OAuth authorization.
     execution: false
     name: servicenow-cmdb-oauth-test
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false

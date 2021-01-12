@@ -2331,7 +2331,7 @@ script:
     description: Test the instance configuration when using OAuth2 authentication.
     execution: false
     name: servicenow-oauth-test
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false
