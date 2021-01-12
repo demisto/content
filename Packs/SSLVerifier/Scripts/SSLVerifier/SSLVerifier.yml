@@ -1,0 +1,37 @@
+commonfields:
+  id: 08b3fdcb-3344-4ed9-907f-9c4591ecd1bc
+  version: 17
+vcShouldKeepItemLegacyProdMachine: false
+name: SSLVerifier
+script: ''
+type: python
+tags: []
+description: Use this automation to check for validity of your SSL certificate and get the time until expiration.
+enabled: true
+args:
+- name: URL
+  required: true
+  description: URL to check
+- name: Port
+  default: true
+  description: Port to check
+  defaultValue: "443"
+outputs:
+- contextPath: SSLVerifier.Certificate.Expiry
+  description: Time of expiration
+  type: string
+- contextPath: SSLVerifier.Certificate.Issuer
+  description: Issuer information
+  type: string
+- contextPath: SSLVerifier.Certificate.Site
+  description: Site that was checked
+  type: string
+- contextPath: SSLVerifier.Certificate.TimeToExpiration
+  description: Days to expiration
+  type: string
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.1.14969
+runas: DBotWeakRole
