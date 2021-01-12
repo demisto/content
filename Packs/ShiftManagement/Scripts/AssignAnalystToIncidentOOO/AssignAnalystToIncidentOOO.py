@@ -19,7 +19,7 @@ def main():
     ooo_list = demisto.executeCommand("GetUsersOOO", {"listname": list_name})
     if isError(ooo_list[0]):
         return_results(ooo_list[0])
-    list_info = ooo_list[0].get('Contents').get('ShiftManagment.OOOUsers')
+    list_info = ooo_list[0].get('EntryContext').get('ShiftManagment.OOOUsers')
     list_info = [i['username'] for i in list_info]
 
     # Build list of users that we can assign to
