@@ -31,9 +31,9 @@ class AzureWAFClient:
         # for dev environment use:
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
-            integration_context = demisto.getIntegrationContext()
+            integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
-            demisto.setIntegrationContext(integration_context)
+            set_integration_context(integration_context)
         base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
