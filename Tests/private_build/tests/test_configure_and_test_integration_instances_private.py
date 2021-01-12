@@ -95,7 +95,7 @@ def test_find_needed_test_playbook_paths():
     file_paths = find_needed_test_playbook_paths(test_playbooks=test_playbook_conf,
                                                  tests_to_run=tests_to_run,
                                                  path_to_content='.')
-    assert len(file_paths) == 51
+    assert len(file_paths) == 52
     assert './Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml' in file_paths
 
 

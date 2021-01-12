@@ -1,3 +1,16 @@
+args:
+- auto: PREDEFINED
+  default: true
+  defaultValue: 'false'
+  description: If "true" will return all users, including users that are Out Of Office.
+    If "false", will return all users that are not Out Of Office. Default is "false".
+  isArray: false
+  name: include_OOO_users
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
 comment: Retrieves users that are currently on-call (on shift).
 commonfields:
   id: GetUsersOnCall
@@ -5,12 +18,12 @@ commonfields:
 enabled: false
 name: GetUsersOnCall
 script: '-'
+subtype: python3
+system: false
 tags:
 - Shift Management
 - widget
-subtype: python3
-system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.5.0
