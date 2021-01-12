@@ -8,11 +8,11 @@ $script:INTEGRATION_ENTRY_CONTEX = "XSOAR"
 
 function TestModuleCommand() {
     # Raw response
-    $raw_response = @{}
+    $raw_response = $null
     # Human readable
-    $human_readable = "Ok!"
+    $human_readable = "ok"
     # Entry context
-    $entry_context = @{}
+    $entry_context = $null
 
     return $human_readable, $entry_context, $raw_response
 }
