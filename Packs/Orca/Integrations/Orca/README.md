@@ -33,6 +33,7 @@ Get the alerts on cloud assets
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_type | Type of alert to get. | Optional | 
+| asset_unique_id | Get alerts of asset_unique_id. | Optional | 
 
 
 #### Context Output
@@ -72,13 +73,8 @@ Get Description of An asset
 
 
 #### Command Example
-```!orca-get-asset asset_unique_id=vm_77777d777777_i-77bcc77efd8777777```
-
-#### Context Example
-```json
-{}
-```
+``` ```
 
 #### Human Readable Output
 
->could not find vm_77777d777777_i-77bcc77efd8777777
+

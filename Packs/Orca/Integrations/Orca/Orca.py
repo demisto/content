@@ -11,12 +11,12 @@ class OrcaClient:
     def __init__(self, client: BaseClient):
         self.client = client
 
-    def validate_api_key(self)->str:
+    def validate_api_key(self) -> str:
         demisto.info("validate_api_key, enter")
         invalid_token_string = "Test failed becasue the Orca API key that was entered is invalid, please provide a valid API key"
         try:
             response = self.client._http_request(method="GET", url_suffix="/user/action?")
-        except Exception as e:
+        except Exception:
             return invalid_token_string
 
         if response.get("status") != "success":
@@ -24,17 +24,31 @@ class OrcaClient:
 
         return "ok"
 
-    def get_alerts_by_type(self, alert_type: Optional[str] = None) -> Union[List[Dict[str, Any]], str]:  # pylint: disable=E1136
-        demisto.info("get_alerts, enter")
+    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[
+        List[Dict[str, Any]], str]:  # pylint: disable=E1136 # noqa: E125
+        demisto.info("get_alerts_by_filter, enter")
+
         url_suffix = "/alerts"
+
+        if alert_type and asset_unique_id or (not alert_type and not asset_unique_id):
+            demisto.info("must supply exactly one filter")
+            return "must supply exactly one filter"
+
         if alert_type:
-            url_suffix = f"{url_suffix}?type={alert_type}"
-        response = self.client._http_request(method="GET", url_suffix=url_suffix)
+            # url_suffix = f"{url_suffix}?type={alert_type}"
+            params = {"type": alert_type}
+
+        elif asset_unique_id:
+            params = {"asset_unique_id": asset_unique_id}
+
+        response = self.client._http_request(method="GET", url_suffix=url_suffix, params=params)
 
         if response['status'] != 'success':
+            demisto.info("bad response from Orca API")
             return response['error']
 
-        alerts = response["data"]
+        alerts = response.get("data")
+
         return alerts
 
     def get_all_alerts(self) -> List[Dict[str, Any]]:
@@ -134,9 +148,13 @@ def main() -> None:
 
         orca_client = OrcaClient(client=client)
         if command == "orca-get-alerts":
-            alerts = orca_client.get_alerts_by_type(alert_type=demisto.args().get('alert_type'))
+            demisto_args = demisto.args()
+            alerts = orca_client.get_alerts_by_filter(alert_type=demisto_args.get('alert_type'),
+                                                      asset_unique_id=demisto_args.get('asset_unique_id'))
+            if isinstance(alerts, str):
+                return_error(alerts)
             if not alerts:
-                return_error(f"Alerts with type {demisto.args().get('alert_type')} does not exist")
+                return_error("Alerts not exists")
             command_result = CommandResults(outputs_prefix="Orca.Manager.Alerts", outputs=alerts, raw_response=alerts)
             return_results(command_result)
 
@@ -155,7 +173,6 @@ def main() -> None:
         elif command == "test-module":
             test_res = orca_client.validate_api_key()
             return_results(test_res)
-
 
         else:
             raise NotImplementedError(f'{command} is not an existing orca command')

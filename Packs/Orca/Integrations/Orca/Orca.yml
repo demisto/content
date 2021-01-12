@@ -21,10 +21,10 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '200'
+  display: Max fetch
   name: max_fetch
   required: false
   type: 0
-  display: Max fetch
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -44,6 +44,14 @@ script:
       description: Type of alert to get
       isArray: false
       name: alert_type
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Get alerts of a specific asset
+      isArray: false
+      name: asset_unique_id
       required: false
       secret: false
     deprecated: false
