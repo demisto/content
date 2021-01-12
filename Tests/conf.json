@@ -1051,14 +1051,6 @@
             "timeout": 600
         },
         {
-            "integrations": [
-                "Palo Alto Minemeld",
-                "Panorama"
-            ],
-            "instance_names": "palo_alto_firewall",
-            "playbookID": "block_indicators_-_generic_-_test"
-        },
-        {
             "integrations": "Signal Sciences WAF",
             "playbookID": "SignalSciences-Test"
         },
@@ -2693,10 +2685,6 @@
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
-            "integrations": "IronDefense",
-            "playbookID": "IronDefenseTest"
-        },
-        {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
         },
@@ -3218,6 +3206,8 @@
     ],
     "skipped_tests": {
         "Github IAM - Test Playbook": "Issue 32383",
+        "Calculate Severity - Standard - Test": "Issue 32715",
+        "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
         "Protectwise-Test": "Issue 28168",
         "Phishing Classifier V2 ML Test": "Issue 26066",
