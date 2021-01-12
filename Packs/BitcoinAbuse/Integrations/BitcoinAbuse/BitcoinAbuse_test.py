@@ -6,7 +6,9 @@ import io
 
 import pytest
 
-from BitcoinAbuse import *
+from BitcoinAbuse import BitcoinAbuseClient, bitcoin_abuse_report_address_command, build_fetch_indicators_url_suffixes
+from CommonServerPython import DemistoException, Dict, json
+from demistomock import setIntegrationContext
 
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
 
@@ -57,7 +59,7 @@ def test_report_address_successful_command(requests_mock, response: Dict, addres
         'https://www.bitcoinabuse.com/api/reports/create',
         json=response
     )
-    assert report_address_command({}, address_report).readable_output == expected
+    assert bitcoin_abuse_report_address_command({}, address_report).readable_output == expected
 
 
 @pytest.mark.parametrize('address_report, expected',
@@ -80,7 +82,7 @@ def test_report_address_command_invalid_arguments(address_report: Dict, expected
        """
 
     with pytest.raises(DemistoException, match=expected):
-        report_address_command({}, address_report)
+        bitcoin_abuse_report_address_command({}, address_report)
 
 
 def test_failure_response_from_bitcoin_abuse(requests_mock):
@@ -100,7 +102,7 @@ def test_failure_response_from_bitcoin_abuse(requests_mock):
         json=bitcoin_responses['failure']
     )
     with pytest.raises(DemistoException, match=failure_bitcoin_report_command_output):
-        report_address_command({}, report_address_scenarios['valid'])
+        bitcoin_abuse_report_address_command({}, report_address_scenarios['valid'])
 
 
 @pytest.mark.parametrize('params, have_fetched_first_time, expected_url_suffix, expected_have_fetched_first_time',
@@ -123,5 +125,5 @@ def test_url_suffixes_builder(params, have_fetched_first_time, expected_url_suff
      - Case b: Ensure that the monthly and forever download suffix is returned.
      - Case c: Ensure that the daily download suffix is returned
     """
-    demisto.setIntegrationContext({'have_fetched_first_time': have_fetched_first_time})
+    setIntegrationContext({'have_fetched_first_time': have_fetched_first_time})
     assert build_fetch_indicators_url_suffixes(params) == expected_url_suffix

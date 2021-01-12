@@ -7,7 +7,7 @@ The API key is free and can be achieved by doing the following:
 1. Navigate to https://www.bitcoinabuse.com and click on "Register" on top right corner of your screen.
 2. Fill in your details (Name, Email, Password, etc...)
 3. After your account have been set, go to Settings, and click on "API" section.
-4. Give your API token a name, and click on "Create", and a screen containing your generated API key
+4. Give your API token a name, and click on "Create", a screen containing your generated API key
 will appear.
    
 #### Fetching indicators

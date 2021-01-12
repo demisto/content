@@ -137,7 +137,7 @@ def assure_valid_response(indicators: List[Dict]) -> None:
         raise DemistoException('api token inserted is not valid')
 
 
-def report_address_command(params: Dict, args: Dict) -> CommandResults:
+def bitcoin_abuse_report_address_command(params: Dict, args: Dict) -> CommandResults:
     """
     Reports a bitcoin abuse to Bitcoin Abuse service
 
@@ -175,15 +175,14 @@ def report_address_command(params: Dict, args: Dict) -> CommandResults:
                                                   abuser=abuser,
                                                   description=description)
 
-    raise DemistoException('')
-    # if argToBoolean(http_response.get('success')):
-    #     return CommandResults(
-    #         readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
-    #                         f' was reported to BitcoinAbuse service'
-    #     )
-    # else:
-    #     failure_message = http_response.get('response')
-    #     raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
+    if argToBoolean(http_response.get('success')):
+        return CommandResults(
+            readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
+                            f' was reported to BitcoinAbuse service'
+        )
+    else:
+        failure_message = http_response.get('response')
+        raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
 
 
 def build_params_for_csv_module(params: Dict):
@@ -213,20 +212,16 @@ def build_params_for_csv_module(params: Dict):
     return params
 
 
-def indicator_commands(params: Dict, args: Dict, command_type: IndicatorsCommandType):
+def get_indicators(params: Dict):
     """
-     Wrapper which calls to CSVFeedApiModule for fetching indicators from Bitcoin Abuse download csv feed.
+    Builds CSV module client and performs the API call to Bitcoin Abuse service.
+     If the call was successful, returns list of indicators.
     Args:
         params (Dict): Demisto params.
-        args (Dict): Demisto arguments.
-        command_type (IndicatorsCommandType): Indicates if command is test_module/get-indicators/fetch-indicators.
 
     Returns:
         - Throws exception if an invalid api key was given or error occurred during the call to Bitcoin Abuse service
-        - Fetches indicators if the call to Bitcoin Abuse service was successful and command is fetch-indicators
-        - 'ok' if the call to Bitcoin Abuse service was successful and command is test_module
-        - Returns indicators if the call to Bitcoin Abuse service was successful and
-          command is bitcoinabuse-get-indicators.
+        - Returns indicators list if the call to Bitcoin Abuse service was successful
     """
 
     indicators_name_to_count_dict: Dict[str, int] = dict()
@@ -275,23 +270,58 @@ def indicator_commands(params: Dict, args: Dict, command_type: IndicatorsCommand
         indicator['fields']['count'] = indicator_count
         indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
 
-    if command_type == IndicatorsCommandType.FETCH:
-        # we submit the indicators in batches
-        for b in batch(indicators_without_duplicates, batch_size=2000):
-            demisto.createIndicators(b)  # type: ignore
-        demisto.setIntegrationContext({'have_fetched_first_time': True})
+    return indicators_without_duplicates
 
-    elif command_type == IndicatorsCommandType.GET:
-        limit = arg_to_number(args.get('limit', 50), 'limit')
-        truncated_indicators_list = indicators_without_duplicates[:limit]
-        return CommandResults(
-            readable_output=tableToMarkdown('Indicators', truncated_indicators_list,
-                                            headers=['value', 'type', 'fields']),
-            raw_response=truncated_indicators_list
-        )
 
-    else:
-        demisto.results('ok')
+def bitcoin_abuse_test_module_command(params: Dict):
+    """
+    Performs a basic GET request to check if the API is reachable and authentication is successful.
+
+    Args:
+        params (Dict): Client object to perform request.
+
+    Returns:
+        'ok' if the call to Bitcoin Abuse service was successful and command is test_module.
+    """
+    get_indicators(params)
+    demisto.results('ok')
+
+
+def bitcoin_abuse_fetch_indicators_command(params: Dict) -> None:
+    """
+    Fetches indicators from Bitcoin Abuse service.
+    Args:
+        params (Dict): Demisto params.
+
+    Returns:
+
+    """
+    indicators = get_indicators(params)
+    for b in batch(indicators, batch_size=2000):
+        demisto.createIndicators(b)  # type: ignore
+    demisto.setIntegrationContext({'have_fetched_first_time': True})
+
+
+def bitcoin_abuse_get_indicators_command(params: Dict, args: Dict):
+    """
+    Wrapper for retrieving indicators from the feed to the war-room.
+
+    Args:
+        params (Dict): Demisto params.
+        args (Dict): Demsisto args.
+
+    Returns:
+        CommandResults.
+    """
+    indicators = get_indicators(params)
+    limit = arg_to_number(args.get('limit', 50), 'limit')
+    truncated_indicators_list = indicators[:limit]
+    print(truncated_indicators_list)
+    return CommandResults(
+        readable_output=tableToMarkdown('Indicators', truncated_indicators_list,
+                                        headers=['value', 'type', 'fields']),
+        raw_response=truncated_indicators_list
+    )
 
 
 def main() -> None:
@@ -301,16 +331,16 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            indicator_commands(demisto.params(), demisto.args(), command_type=IndicatorsCommandType.TEST_MODULE)
+            bitcoin_abuse_test_module_command(demisto.params())
 
         elif command == 'fetch-indicators':
-            indicator_commands(demisto.params(), demisto.args(), command_type=IndicatorsCommandType.FETCH)
+            bitcoin_abuse_fetch_indicators_command(demisto.params())
 
         elif command == 'bitcoinabuse-get-indicators':
-            return_results(indicator_commands(demisto.params(), demisto.args(), command_type=IndicatorsCommandType.GET))
+            bitcoin_abuse_get_indicators_command(demisto.params(), demisto.args())
 
         elif command == 'bitcoinabuse-report-address':
-            return_results(report_address_command(demisto.params(), demisto.args()))
+            return_results(bitcoin_abuse_report_address_command(demisto.params(), demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
@@ -319,4 +349,5 @@ def main() -> None:
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
+    bitcoin_abuse_get_indicators_command(demisto.params(), demisto.args())
     main()
