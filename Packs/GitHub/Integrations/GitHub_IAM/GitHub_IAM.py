@@ -363,20 +363,20 @@ def main():
 
         elif command == 'iam-get-user':
             user_profile = get_user_command(client, args, mapper_in)
-            user_profile.return_outputs
+            user_profile.return_outputs()
 
         elif command == 'iam-create-user':
             user_profile = create_user_command(client, args, mapper_out, is_create_enabled, is_update_enabled)
-            user_profile.return_outputs
+            user_profile.return_outputs()
 
         elif command == 'iam-update-user':
             user_profile = update_user_command(client, args, mapper_out, is_update_enabled,
                                                is_create_enabled, create_if_not_exists)
-            user_profile.return_outputs
+            user_profile.return_outputs()
 
         elif command == 'iam-disable-user':
             user_profile = disable_user_command(client, args, mapper_out, is_disable_enabled)
-            user_profile.return_outputs
+            user_profile.return_outputs()
 
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())
