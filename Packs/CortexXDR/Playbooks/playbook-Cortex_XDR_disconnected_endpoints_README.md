@@ -9,6 +9,8 @@ To set the job correctly, you will need to.
 4. Set type to Cortex XDR disconnected endpoints.
 5. Set this playbook as the job playbook.
 
+https://xsoar.pan.dev/docs/incidents/incident-jobs
+
 The scheduled run time and the timestamp relative date should be identical,
 If the job is recurring every 7 days, the time range should be 7 days as well.
 

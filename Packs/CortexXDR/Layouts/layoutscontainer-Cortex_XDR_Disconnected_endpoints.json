@@ -337,7 +337,7 @@
         ]
     },
     "group": "incident",
-    "id": "294c4eca-caf4-429d-8277-56676b7bee9d",
+    "id": "Cortex XDR Disconnected endpoints",
     "name": "Cortex XDR Disconnected endpoints",
     "system": false,
     "version": -1,
