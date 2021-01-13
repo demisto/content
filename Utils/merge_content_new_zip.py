@@ -58,6 +58,7 @@ def get_recent_workflows_data_request(feature_branch_name):
         list. List of last 10 successful builds.
     """
     cmd_url = f"{CONTENT_API_WORKFLOWS_URI}?branch={feature_branch_name}"
+    print(f"sent url {cmd_url}")
     params = {'limit': 20}
     response = http_request('GET', cmd_url, params=params)
     return response
@@ -72,6 +73,7 @@ def get_last_successful_workflow(feature_branch_name):
     Returns:
         Last successful build number of the given branch
     """
+    print(feature_branch_name)
     recent_workflows = get_recent_workflows_data_request(feature_branch_name).get('items')
     for workflow in recent_workflows:
         if workflow.get('status') == "success":
