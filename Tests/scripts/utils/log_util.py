@@ -15,6 +15,7 @@ LEVEL_STYLES = {
     'success': {'color': 'green'}
 }
 
+
 def _add_logging_level(level_name: str, level_num: int, method_name: str = None) -> None:
     """
     Comprehensively adds a new logging level to the `logging` module and the
