@@ -6,7 +6,8 @@ import io
 
 import pytest
 
-from BitcoinAbuse import BitcoinAbuseClient, bitcoin_abuse_report_address_command, build_fetch_indicators_url_suffixes
+from BitcoinAbuse import BitcoinAbuseClient, bitcoin_abuse_report_address_command, build_fetch_indicators_url_suffixes, \
+    bitcoin_abuse_get_indicators_command
 from CommonServerPython import DemistoException, Dict, json
 from demistomock import setIntegrationContext
 
@@ -32,6 +33,7 @@ successful_bitcoin_report_command_output = 'Bitcoin address 12xfas41 by abuse bi
                                            'BitcoinAbuse service'
 failure_bitcoin_report_command_output = 'bitcoin report address did not succeed: {}'.format(
     bitcoin_responses['failure']['response'])
+get_indicators_scenarios = util_load_json('test_data/get_indicators_command.json')
 
 
 @pytest.mark.parametrize('response, address_report, expected',
@@ -127,3 +129,23 @@ def test_url_suffixes_builder(params, have_fetched_first_time, expected_url_suff
     """
     setIntegrationContext({'have_fetched_first_time': have_fetched_first_time})
     assert build_fetch_indicators_url_suffixes(params) == expected_url_suffix
+
+
+def test_get_indicators_command(requests_mock):
+    """
+    Given:
+        - params: Demisto params for get-indicators command
+        - args: Demisto args for get-indicators command.
+    When:
+        - Command `bitcoinabuse-get-indicators` is being called
+    Then:
+        - Assert the CommandResults object returned is as expected.
+    """
+    setIntegrationContext({'have_fetched_first_time': False})
+    requests_mock.get(
+        'https://www.bitcoinabuse.com/api/download/30d?api_token=123',
+        content=get_indicators_scenarios['mock_response'].encode('utf-8')
+    )
+    results = bitcoin_abuse_get_indicators_command(params={'api_key': '123'}, args={'limit': 1})
+    assert results.readable_output == get_indicators_scenarios['expected']['readable_output']
+    assert results.raw_response == get_indicators_scenarios['expected']['raw_response']

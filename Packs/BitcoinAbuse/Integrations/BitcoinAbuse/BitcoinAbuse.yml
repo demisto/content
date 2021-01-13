@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: BitcoinAbuse
+  id: BitcoinAbuse Feed
   version: -1
 configuration:
 - display: Fetch indicators

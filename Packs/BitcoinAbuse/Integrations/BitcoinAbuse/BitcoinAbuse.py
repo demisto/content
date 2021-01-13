@@ -266,9 +266,9 @@ def get_indicators(params: Dict):
     return indicators_without_duplicates
 
 
-def bitcoin_abuse_test_module_command(params: Dict):
+def test_module_command(params: Dict):
     """
-    Performs a basic GET request to check if the API is reachable and authentication is successful.
+    Performs a fetch indicators flow to validate the configuration params.
 
     Args:
         params (Dict): Client object to perform request.
@@ -277,7 +277,7 @@ def bitcoin_abuse_test_module_command(params: Dict):
         'ok' if the call to Bitcoin Abuse service was successful and command is test_module.
     """
     get_indicators(params)
-    demisto.results('ok')
+    return 'ok'
 
 
 def bitcoin_abuse_fetch_indicators_command(params: Dict) -> None:
@@ -319,17 +319,17 @@ def bitcoin_abuse_get_indicators_command(params: Dict, args: Dict):
 def main() -> None:
     command = demisto.command()
     demisto.debug(f'Bitcoin Abuse: Command being called is {demisto.command()}')
-
+    return_results(bitcoin_abuse_get_indicators_command(demisto.params(), demisto.args()))
     try:
 
         if command == 'test-module':
-            bitcoin_abuse_test_module_command(demisto.params())
+            return_results(test_module_command(demisto.params()))
 
         elif command == 'fetch-indicators':
             bitcoin_abuse_fetch_indicators_command(demisto.params())
 
         elif command == 'bitcoinabuse-get-indicators':
-            bitcoin_abuse_get_indicators_command(demisto.params(), demisto.args())
+            return_results(bitcoin_abuse_get_indicators_command(demisto.params(), demisto.args()))
 
         elif command == 'bitcoinabuse-report-address':
             return_results(bitcoin_abuse_report_address_command(demisto.params(), demisto.args()))
