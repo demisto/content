@@ -316,17 +316,25 @@ references:
       name: Merge public and private ID sets
       when: always
       command: |
+        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+            echo "Skipping, Should not run on contributor's branch."
+            exit 0
+        fi
+
         GCS_PATH=$(mktemp)
         echo "$GCS_MARKET_KEY" > "$GCS_PATH"
         gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+        echo "successfully activated google cloud service account"
 
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
+        echo "successfully downloaded private ID set"
         gcloud auth revoke --all
         rm $GCS_PATH
 
         # Merge public and private ID sets
         demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
+        echo "successfully merged public and private ID sets"
 
   build_content_descriptor: &build_content_descriptor
     run:
@@ -565,11 +573,6 @@ jobs:
       - *merge_public_and_private_id_sets
       - *update_tests_step
       - *validate_files_and_yaml
-      - run:
-          name: Content Docs Site
-          when: always
-          command: |
-            ./Documentation/docs_site_update.sh
       - run:
           name: Spell Checks
           command: |
