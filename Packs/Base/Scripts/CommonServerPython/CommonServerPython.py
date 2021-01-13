@@ -246,6 +246,41 @@ class DBotScoreType(object):
             DBotScoreType.CRYPTOCURRENCY,
         )
 
+class DBotScoreReliability(object):
+    """
+    Enum: Source reliability levels
+    DBotScoreReliability.COMPLETELY
+    DBotScoreReliability.USUALLY
+    DBotScoreReliability.FAIRLY
+    DBotScoreReliability.NOT_USUALLY
+    DBotScoreReliability.UNRELIABLE
+    DBotScoreReliability.CANNOT_BE_JUDGED
+    :return: None
+    :rtype: ``None``
+    """
+    COMPLETELY = 'A: Completely reliable'
+    USUALLY = 'B: Usually reliable'
+    FAIRLY = 'C: Fairly reliable'
+    NOT_USUALLY = 'D: Not usually reliable'
+    UNRELIABLE = 'E: Unreliable'
+    CANNOT_BE_JUDGED = 'F: Reliability cannot be judged'
+    def __init__(self):
+        # required to create __init__ for create_server_docs.py purpose
+        pass
+
+    @classmethod
+    def is_valid_type(cls, _type):
+        # type: (str) -> bool
+
+        return _type in (
+            DBotScoreReliability.COMPLETELY,
+            DBotScoreReliability.USUALLY,
+            DBotScoreReliability.FAIRLY,
+            DBotScoreReliability.NOT_USUALLY,
+            DBotScoreReliability.UNRELIABLE,
+            DBotScoreReliability.CANNOT_BE_JUDGED,
+        )
+
 
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
@@ -2119,8 +2154,8 @@ class Common(object):
         :type malicious_description: ``str``
         :param malicious_description: if the indicator is malicious and have explanation for it then set it to this field
 
-        :type reliability: ``str``
-        :param reliability: The reliability of an intelligence-data source
+        :type reliability: ``DBotScoreReliability``
+        :param reliability: use DBotScoreReliability class
 
         :return: None
         :rtype: ``None``
@@ -2143,6 +2178,9 @@ class Common(object):
 
             if not Common.DBotScore.is_valid_score(score):
                 raise TypeError('indicator_type must be of type DBotScore enum')
+
+            if reliability and not DBotScoreReliability.is_valid_type(reliability):
+                raise TypeError('reliability must be of type DBotScoreReliability enum')
 
             self.indicator = indicator
             self.indicator_type = indicator_type
