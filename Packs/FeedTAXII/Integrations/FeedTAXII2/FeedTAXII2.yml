@@ -105,12 +105,6 @@ configuration:
   name: initial_interval
   required: false
   type: 0
-- additionalinfo: "TAXII 2 filter arguments. Comma-separated values, e.g.: `added_after=<date>,revoked=true`."
-  display: Filter Arguments
-  hidden: false
-  name: filter_args
-  required: false
-  type: 0
 - additionalinfo: Set the number of stix object that will be requested with each taxii
     poll (http request). A single fetch is made of several taxii polls. Changing this
     setting can help speed up fetches, or fix issues on slower networks. Please note
@@ -178,12 +172,6 @@ script:
       name: added_after
       required: false
       secret: false
-    - default: false
-      description: 'TAXII filter arguments. Comma-separated values, e.g.: "added_after=<date>,revoked=true".'
-      isArray: false
-      name: filter_args
-      required: false
-      secret: false
     deprecated: false
     description: Allows you to test your feed and to make sure you can fetch indicators
       successfuly.
@@ -214,7 +202,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.11306
+  dockerimage: demisto/taxii2:1.0.0.13859
   feed: true
   isfetch: false
   longRunning: false
