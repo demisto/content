@@ -34,7 +34,6 @@ IP to check
 | --- | --- | --- |
 | ip | IP to check | Required | 
 | threshold | score treshold  | Optional | 
-| long | Should we return full response | Optional | 
 
 
 ##### Context Output
@@ -160,7 +159,6 @@ Check the given URL reputation
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | threshold | If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used. | Optional | 
-| long | Should we return full response with detected malware on the URLs | Optional | 
 | url | The URL to check | Required | 
 
 
@@ -215,7 +213,6 @@ Check file reputation
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file | The file hash md5/sha1/sha256 to check | Required | 
-| long | Should we return full response | Optional | 
 
 
 ##### Context Output
@@ -336,7 +333,6 @@ Check domain reputation
 | --- | --- | --- |
 | domain | The domain to check | Required | 
 | threshold | If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used. | Optional | 
-| long | Should we return full response | Optional | 
 
 
 ##### Context Output

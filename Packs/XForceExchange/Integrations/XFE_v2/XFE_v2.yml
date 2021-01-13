@@ -51,16 +51,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: score threshold
+      description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
-      required: false
-      secret: false
-    - default: false
-      defaultValue: 'false'
-      description: Should we return full response
-      isArray: false
-      name: long
       required: false
       secret: false
     deprecated: false
@@ -108,12 +101,6 @@ script:
       name: threshold
       required: false
       secret: false
-    - default: false
-      description: Should we return full response with detected malware on the URLs
-      isArray: false
-      name: long
-      required: false
-      secret: false
     - default: true
       description: The URL to check
       isArray: true
@@ -149,12 +136,6 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    - default: false
-      description: Should we return full response
-      isArray: false
-      name: long
-      required: false
       secret: false
     deprecated: false
     description: Check file reputation
@@ -216,16 +197,6 @@ script:
       description: If the score is above the given threshold, will be considered malicious. If threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
       isArray: false
       name: threshold
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Should we return full response
-      isArray: false
-      name: long
-      predefined:
-      - 'true'
-      - 'false'
       required: false
       secret: false
     deprecated: false
@@ -527,7 +498,7 @@ script:
     - contextPath: XFE.CVESearch.Bookmark
       description: Bookmark used to page through results.
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false

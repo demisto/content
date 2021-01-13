@@ -155,7 +155,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
         Any: the raw data from X-Force client (used for debugging).
     """
 
-    threshold = int(demisto.params().get('ip_threshold', DEFAULT_THRESHOLD))
+    threshold = int(args.get('threshold', int(demisto.params().get('ip_threshold', DEFAULT_THRESHOLD))))
 
     markdown = ''
     context: dict = defaultdict(list)
@@ -202,7 +202,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any
      """
 
     domains = argToList(args.get('domain', ''))
-    threshold = int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))
+    threshold = int(args.get('threshold', int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))))
     context: Dict[str, Any] = defaultdict(list)
     markdown = ''
     reports = []
@@ -258,7 +258,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[str, dict, Any]:
      """
 
     urls = argToList(args.get('url', ''))
-    threshold = int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))
+    threshold = int(args.get('threshold', int(demisto.params().get('url_threshold', DEFAULT_THRESHOLD))))
     context: Dict[str, Any] = defaultdict(list)
     markdown = ''
     reports = []
