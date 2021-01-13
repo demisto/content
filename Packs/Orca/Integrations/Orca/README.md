@@ -1,5 +1,5 @@
 Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS, Azure, and GCP.
-This integration was integrated and tested with version xx of Orca
+This integration was integrated and tested with Orca
 ## Configure Orca on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
