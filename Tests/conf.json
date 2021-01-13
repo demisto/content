@@ -3124,6 +3124,7 @@
         "ThreatConnect v2": "unstable instance",
 
         "_comment3": "~~~ QUOTA ISSUES ~~~",
+        "Microsoft Defender Advanced Threat Protection": "Skipping on 4.5 due to quota issue",
         "Joe Security": "Issue 25650",
         "XFE_v2": "Issue 22715",
         "AlphaSOC Wisdom": "API key has expired",
