@@ -10,7 +10,7 @@ import shutil
 requests.packages.urllib3.disable_warnings()
 
 ACCEPT_TYPE = 'application/json'
-CONTENT_API_WORKFLOWS_URI = 'https://circleci.com/api/v2/insights/gh/demisto/content/workflows/commit'
+CONTENT_API_WORKFLOWS_URI = 'https://circleci.com/api/v2/insights/gh/demisto/content/workflows'
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '')
