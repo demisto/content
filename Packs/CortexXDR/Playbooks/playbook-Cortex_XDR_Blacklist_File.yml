@@ -1,0 +1,156 @@
+id: Cortex XDR Blacklist File
+version: -1
+name: Cortex XDR Blacklist File
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3a09e0a4-a49a-40f4-82df-b9385f001af5
+    type: start
+    task:
+      id: 3a09e0a4-a49a-40f4-82df-b9385f001af5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: dc370960-ba6f-4c92-8eb3-177450fd48bb
+    type: regular
+    task:
+      id: dc370960-ba6f-4c92-8eb3-177450fd48bb
+      version: -1
+      name: Cortex XDR Blacklist file
+      description: Blacklists requested files which have not already been blacklisted
+        or whitelisted.
+      script: '|||xdr-blacklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      comment: {}
+      hash_list:
+        complex:
+          root: inputs.HashList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 43dd04b5-88b2-46e3-89f2-736c237aa9d8
+    type: condition
+    task:
+      id: 43dd04b5-88b2-46e3-89f2-736c237aa9d8
+      version: -1
+      name: Is there a file to blacklist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.HashList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 080983ed-7a0c-4c19-8f9b-a81f6c1b682b
+    type: title
+    task:
+      id: 080983ed-7a0c-4c19-8f9b-a81f6c1b682b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_1_yes": 0.64,
+      "2_3_#default#": 0.26
+    },
+    "paper": {
+      "dimensions": {
+        "height": 645,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: HashList
+  value: {}
+  required: false
+  description: t represents a list of hashed files you want to blacklist. Must be
+    a valid SHA256 hash.
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+description: Use this playbook to blacklist files with a given file SHA256 playbook
+  input.
