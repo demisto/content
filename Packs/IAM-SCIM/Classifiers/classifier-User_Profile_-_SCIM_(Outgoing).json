@@ -362,6 +362,7 @@
      "complex": null,
      "simple": "employeetype"
     }
+   }
   }
  },
  "name": "User Profile - SCIM (Outgoing)",
