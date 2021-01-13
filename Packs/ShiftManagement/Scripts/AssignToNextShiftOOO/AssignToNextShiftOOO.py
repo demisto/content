@@ -14,7 +14,7 @@ def main():
     # get OOO users
     ooo_list = demisto.executeCommand("GetUsersOOO", {"listname": list_name})
     if isError(ooo_list[0]):
-        return_results(ooo_list[0])
+        return_error(f'Error occurred while trying to get OOO users: {ooo_list[0].get("Contents")}')
     list_info = ooo_list[0].get('Contents').get('ShiftManagment.OOOUsers')
     list_info = [i['username'] for i in list_info]
 
