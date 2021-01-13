@@ -4,7 +4,7 @@
     "modified": "2021-01-11T14:14:40.138962Z",
     "name": "Reports Count",
     "ownerOnly": false,
-    "cliName": "count",
+    "cliName": "reportscount",
     "type": "number",
     "closeForm": false,
     "editForm": true,
