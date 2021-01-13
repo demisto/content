@@ -448,7 +448,7 @@ def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional
         'ContentsFormat': EntryFormat.JSON,
         'Contents': indicator_sighting,
         'ReadableContentsFormat': EntryFormat.MARKDOWN,
-        'HumanReadable': tableToMarkdown('Incident Report Indicators:', indicator_sighting,
+        'HumanReadable': tableToMarkdown('Indicator "{}" sighting'.format(value), indicator_sighting,
                                          headerTransform=pascalToSpace),
         'EntryContext': {
             'Cyjax.IndicatorSighting(val.value && val.value === obj.value)': createContext(indicator_sighting,
