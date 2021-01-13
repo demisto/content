@@ -289,7 +289,7 @@ script:
         type: String
       - contextPath: NutanixHypervisor.Host..dynamic_ring_changing_node
         description: Host dynamic ring changing mode.
-        type: Unknown
+        type: Unknown # TODO TOM
       - contextPath: NutanixHypervisor.Host..removal_status
         description: Host removal status.
         type: String
@@ -656,8 +656,122 @@ script:
       filters if given.
     name: nutanix-alerts-list
     outputs:
-    - contextPath: NutanixHypervisor.Alerts.id
-      description: The Id of the alert.
+      - contextPath: NutanixHypervisor.Alerts..id
+        description: Id of the alert.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..alert_type_uuid
+        description: Uuid of the type of the alert.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..check_id
+        description: The check id of the alert.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..resolved
+        description: Was alert resolved.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Alerts..auto_resolved
+        description: Was alert auto resolved.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Alerts..acknowledged
+        description: Was alert acknowledged.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Alerts..service_vmid
+        description: Service virtual machine id of the alert.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..node_uuid
+        description: Node uuid.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..created_time_stamp_in_usecs
+        description: The time alert was created in epoch time.
+        type: Number
+      - contextPath: NutanixHypervisor.Alerts..last_occurrence_time_stamp_in_usecs
+        description: The time of the last occurrence of the alert in epoch time.
+        type: Number
+      - contextPath: NutanixHypervisor.Alerts..cluster_uuid
+        description: The cluster uuid of the alert.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..originating_cluster_uuid
+        description: The originating cluster uuid of the alert.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..severity
+        description: The severity of the alert.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..impact_types
+        description: The impact types of the alert.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..classifications
+        description: The classifications of the alert.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..acknowledged_by_username
+        description: The username of whom acknowledged the alert, if the alert was acknowledged
+          by a user.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..message
+        description: Alert message.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..detailed_message
+        description: Alert detailed message.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..alert_title
+        description: Alert title.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..operation_type
+        description: Alert operation type.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..acknowledged_time_stamp_in_usecs
+        description: The time alert was acknowledged in epoch time.
+        type: Number
+      - contextPath: NutanixHypervisor.Alerts..resolved_time_stamp_in_usecs
+        description: The time alert was resolved in epoch time.
+        type: Number
+      - contextPath: NutanixHypervisor.Alerts..resolved_by_username
+        description: The username whom resolved the alert, if the alert was resolved by
+          a user.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..user_defined
+        description: Is the alert user defined or not.
+        type: Boolean
+      - contextPath: NutanixHypervisor.Alerts..affected_entities.entity_type
+        description: Affected entity type.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..affected_entities.entity_type_display_name
+        description: The entity type display name of the affected entities.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..affected_entities.entity_name
+        description: The entity display name of the affected entities.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..affected_entities.uuid
+        description: The affected entity uuid.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..affected_entities.id
+        description: The affected entity id.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..context_types
+        description: Alert context types.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..context_values
+        description: Alert context values.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..alert_details.metric_details.comparision_operator
+        description: Comparision operator used in metric.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..alert_details.metric_details.condition_type
+        description: condition type of the alert by metric. Can be [STATIC, THRESHOLD, ANOMALY, SAFETY_ZONE].
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..alert_details.metric_details.data_type
+        description: Data type used in metric. can be [LONG, DOUBLE, BOOLEAN, STRING].
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..alert_details.metric_details.metric_category
+        description: Metric category.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..alert_details.metric_details.metric_display_name
+        description: Metric display name.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..alert_details.metric_details.metric_name
+        description: Metric name.
+        type: String
+      - contextPath: NutanixHypervisor.Alerts..alert_details.metric_details.metric_value_details
+        description: Metric value details.
+        type: Array
   - arguments:
     - description: The id of the alert to acknowledge.
       name: alert_id

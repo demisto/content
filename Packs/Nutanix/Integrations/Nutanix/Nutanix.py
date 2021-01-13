@@ -304,28 +304,42 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
     classifications = params.get('classifications')
     entity_type_ids = params.get('entity_type_ids')  # TODO MAYBE DELETE
 
-    response = client.fetch_incidents(auto_resolved, resolved, acknowledged, alert_type_ids, entity_ids, impact_types,
-                                      classifications, entity_type_ids)
+    alerts = client.fetch_incidents(auto_resolved, resolved, acknowledged, alert_type_ids, entity_ids, impact_types,
+                                    classifications, entity_type_ids)
 
-    # Get the last fetch time, if exists
-    # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
-    # Handle first fetch time
-    if last_fetch is None:
-        # if missing, use what provided via first_fetch_time
-        last_fetch = first_fetch_time
-    else:
-        # otherwise use the stored last fetch
-        last_fetch = int(last_fetch)
-
-    # for type checking, making sure that latest_created_time is int
-    latest_created_time = cast(int, last_fetch)
-
-    # Initialize an empty list of incidents to return
-    # Each incident is a dict with a string as a key
+    last_fetch_epoch_time = last_run.get('last_fetch_epoch_time', 0)
+    current_run_max_epoch_time = 0
     incidents: List[Dict[str, Any]] = []
 
-    raise NotImplementedError
+    for alert in alerts:
+        # maybe created time and not last occurrence
+        last_occurrence_time = alert.get('last_occurrence_time_stamp_in_usecs', 0)
+        if last_occurrence_time <= last_fetch_epoch_time:
+            continue
+
+        current_run_max_epoch_time = max(current_run_max_epoch_time, last_occurrence_time)
+        incident = {
+            'alerttypeuuid': alert.get('alert_type_uuid'),
+            'checkid': alert.get('check_id'),
+            'resolved': alert.get('resolved'),
+            'closinguser': alert.get('resolved_by_username'),
+            'acknowledged': alert.get('acknowledged'),
+            'acknowledgedbyusername': alert.get('acknowledged_by_username'),
+            'ticketopeneddate': alert.get('created_time_stamp_in_usecs'),
+            'lastseen': last_occurrence_time,
+            'ticketacknowledgeddate': alert.get('acknowledged_time_stamp_in_usecs'),
+            'ticketclosedate': alert.get('resolved_time_stamp_in_usecs'),
+            'clusteruuid': alert.get('cluster_uuid'),
+            'severity': alert.get('severity'),
+            'classifications': alert.get('classifications'),
+            'alertname': alert.get('alert_title'),
+            'message': alert.get('message'),
+            'operationtype': alert.get('operation_type')
+        }
+
+        incidents.append(incident)
+
+    return incidents, {'last_fetch_epoch_time': current_run_max_epoch_time}
 
 
 def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
@@ -368,8 +382,8 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
         ordered_disk_list = [disk_config for _, disk_config in ordered_disk_configs.items() if disk_config is not None]
         unprocessed_output['disk_hardware_configs'] = ordered_disk_list
 
-        del(unprocessed_output['stats'])
-        del(unprocessed_output['usage_stats'])
+        del (unprocessed_output['stats'])
+        del (unprocessed_output['usage_stats'])
 
         output_processed = {k: v for k, v in unprocessed_output.items() if v is not None}
         outputs_processed.append(output_processed)
@@ -377,7 +391,7 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Host',
         outputs_key_field='uuid',
-        outputs=response['entities']
+        outputs=outputs_processed
     )
 
 
@@ -556,17 +570,20 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
 
     response = client.get_nutanix_alerts_list(start_time, end_time, resolved, auto_resolved, acknowledged, severity,
-                                              alert_type_ids, entity_ids, impact_types, classification,
-                                              entity_types,
+                                              alert_type_ids, entity_ids, impact_types, classification, entity_types,
                                               page, limit)
 
-    if response.get('entities') is None:
+    outputs = response.get('entities')
+    if outputs is None:
         raise DemistoException('No entities were found in response for nutanix-alerts-list command')
+
+    # remove recursively
+    outputs = [[{k: v for k, v in output.items() if v is not None}] for output in outputs]
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Alerts',
         outputs_key_field='id',
-        outputs=response['entities']
+        outputs=outputs
     )
 
 
@@ -736,7 +753,7 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
 
 def main() -> None:
     # command = demisto.command()
-    command = 'nutanix-hypervisor-hosts-list'
+    command = 'nutanix-alerts-list'
     params = demisto.params()
 
     commands = {
