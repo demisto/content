@@ -10,32 +10,140 @@
     "suffix": "hosts",
     "response": {
       "metadata": "a few rows containing meta data about the request",
-      "entities": {
-        "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-        "num_cpu_cores": 8,
-        "num_cpu_threads": 8,
-        "num_cpu_sockets": 2,
-        "cpu_frequency_in_hz": 2095000000,
-        "cpu_capacity_in_hz": 16760000000,
-        "memory_capacity_in_bytes": 33722204160,
-        "details": "many details about the host"
-      }
+      "entities": [
+        {
+          "disk_hardware_configs": {
+            "1": {
+              "serial_number": "drive-scsi0-0-0-0",
+              "disk_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::12",
+              "disk_uuid": "f062895b-8cc9-496a-bfd1-5d7e54cd285c",
+              "location": 1,
+              "bad": false,
+              "mounted": true,
+              "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-0",
+              "model": "Virtual disk",
+              "vendor": "Not Available",
+              "boot_disk": true,
+              "only_boot_disk": false,
+              "under_diagnosis": false,
+              "background_operation": null,
+              "current_firmware_version": "2.5+",
+              "target_firmware_version": "2.5+",
+              "can_add_as_new_disk": false,
+              "can_add_as_old_disk": false
+            },
+            "2": {
+              "serial_number": "drive-scsi0-0-0-1",
+              "disk_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::13",
+              "disk_uuid": "5be00813-22ed-47bd-8ee7-da295196d1a8",
+              "location": 2,
+              "bad": false,
+              "mounted": true,
+              "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-1",
+              "model": "Virtual disk",
+              "vendor": "Not Available",
+              "boot_disk": false,
+              "only_boot_disk": false,
+              "under_diagnosis": false,
+              "background_operation": null,
+              "current_firmware_version": "2.5+",
+              "target_firmware_version": "2.5+",
+              "can_add_as_new_disk": false,
+              "can_add_as_old_disk": false
+            },
+            "3": null,
+            "4": null,
+            "5": null,
+            "6": null,
+            "7": null,
+            "8": null,
+            "9": null,
+            "10": null,
+            "11": null,
+            "12": null,
+            "13": null,
+            "14": null,
+            "15": null,
+            "16": null,
+            "17": null,
+            "18": null,
+            "19": null,
+            "20": null,
+            "21": null,
+            "22": null,
+            "23": null,
+            "24": null,
+            "25": null,
+            "26": null
+          },
+          "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+          "num_cpu_cores": 8,
+          "num_cpu_threads": 8,
+          "num_cpu_sockets": 2,
+          "cpu_frequency_in_hz": 2095000000,
+          "cpu_capacity_in_hz": 16760000000,
+          "memory_capacity_in_bytes": 33722204160,
+          "details": "many details about the host"
+        }
+      ]
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Host",
       "outputs_key_field": "uuid",
-      "outputs": {
-        "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-        "num_cpu_cores": 8,
-        "num_cpu_threads": 8,
-        "num_cpu_sockets": 2,
-        "cpu_frequency_in_hz": 2095000000,
-        "cpu_capacity_in_hz": 16760000000,
-        "memory_capacity_in_bytes": 33722204160,
-        "details": "many details about the host"
-      }
+      "outputs": [
+        {
+          "disk_hardware_configs": [
+            {
+              "serial_number": "drive-scsi0-0-0-0",
+              "disk_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::12",
+              "disk_uuid": "f062895b-8cc9-496a-bfd1-5d7e54cd285c",
+              "location": 1,
+              "bad": false,
+              "mounted": true,
+              "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-0",
+              "model": "Virtual disk",
+              "vendor": "Not Available",
+              "boot_disk": true,
+              "only_boot_disk": false,
+              "under_diagnosis": false,
+              "background_operation": null,
+              "current_firmware_version": "2.5+",
+              "target_firmware_version": "2.5+",
+              "can_add_as_new_disk": false,
+              "can_add_as_old_disk": false
+            },
+            {
+              "serial_number": "drive-scsi0-0-0-1",
+              "disk_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::13",
+              "disk_uuid": "5be00813-22ed-47bd-8ee7-da295196d1a8",
+              "location": 2,
+              "bad": false,
+              "mounted": true,
+              "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-1",
+              "model": "Virtual disk",
+              "vendor": "Not Available",
+              "boot_disk": false,
+              "only_boot_disk": false,
+              "under_diagnosis": false,
+              "background_operation": null,
+              "current_firmware_version": "2.5+",
+              "target_firmware_version": "2.5+",
+              "can_add_as_new_disk": false,
+              "can_add_as_old_disk": false
+            }
+          ],
+          "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+          "num_cpu_cores": 8,
+          "num_cpu_threads": 8,
+          "num_cpu_sockets": 2,
+          "cpu_frequency_in_hz": 2095000000,
+          "cpu_capacity_in_hz": 16760000000,
+          "memory_capacity_in_bytes": 33722204160,
+          "details": "many details about the host"
+        }
+      ]
     },
     "args": {}
   },
@@ -43,30 +151,35 @@
     "suffix": "vms",
     "response": {
       "metadata": "a few rows containing meta data about the request",
-      "entities": {
-        "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-        "num_cores_per_vcpu": 2,
-        "num_vcpus": 2,
-        "power_state": "on",
-        "timezone": "UTC",
-        "details": "many details about the virtual machine"
-      }
+      "entities": [
+        {
+          "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+          "num_cores_per_vcpu": 2,
+          "num_vcpus": 2,
+          "power_state": "on",
+          "timezone": "UTC",
+          "details": "many details about the virtual machine"
+        }
+      ]
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.VM",
       "outputs_key_field": "uuid",
-      "outputs": {
-        "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
-        "num_cores_per_vcpu": 2,
-        "num_vcpus": 2,
-        "power_state": "on",
-        "timezone": "UTC",
-        "details": "many details about the virtual machine"
-      }
+      "outputs": [
+        {
+          "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+          "num_cores_per_vcpu": 2,
+          "num_vcpus": 2,
+          "power_state": "on",
+          "timezone": "UTC",
+          "details": "many details about the virtual machine"
+        }
+      ]
     },
-    "args": {}
+    "args": {
+    }
   },
   "nutanix-hypervisor-vm-powerstatus-change": {
     "suffix": "vms/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/set_power_state",
