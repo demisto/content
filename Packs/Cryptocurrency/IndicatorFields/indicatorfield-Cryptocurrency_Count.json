@@ -2,7 +2,7 @@
     "id": "indicator_count",
     "version": -1,
     "modified": "2021-01-11T14:14:40.138962Z",
-    "name": "Count",
+    "name": "Reports Count",
     "ownerOnly": false,
     "cliName": "count",
     "type": "number",
