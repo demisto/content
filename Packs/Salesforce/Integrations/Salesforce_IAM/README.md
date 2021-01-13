@@ -9,11 +9,12 @@ For more information, please refer to the [Identity Lifecycle Management article
 2. Search for Salesforce IAM.
 3. Click **Add instance** to create and configure a new integration instance.
 
-## Mandatory fields in Creating User Command
-When creating a user in salesforce there are some mandatory fields, some are set as the default in the integration params:
-Default Local Sid Key, Default Email Encoding Key and Default Language Locale Key.
-ProfileId and Timezone Sid Key are part of the mapping fields and you need to map the proper values to them,
-in order to do so change the *DemoGenerateProfileId* and the *DemoGenerateTimeZone* automations and use them as transformers to fit your settings.
+## Required Fields in Create User Command
+When creating a user in Salesforce there are mandatory fields that need to be set. Some of them are set with default values in the integration parameters:
+**Default Local Sid Key**, **Default Email Encoding Key** and **Default Language Locale Key**.
+**ProfileId** and **Timezone Sid Key** are also required, but are filled using the Salesforce mapper in the following manner:
+Duplicate the **DemoGenerateProfileId** and the **DemoGenerateTimeZone** automations, edit them according to your needs, and use them as transformers in the **User Profile - Salesforce (Outgoing)** mapper under the **ProfileId** and **TimeZoneSidKey** fields respectively.
+This configuration ensures that the user being created is created with the right permissions and settings in Salesforce.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -39,11 +40,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***
-Creates a user.
-In order to create a user some mandatory fields are required, such as Local Sid Key, Email Encoding Key and Language Locale Key
-that can be set as default in the integration's param, ProfileId and Time Zone Sid Key should be mapped using a suitable transformer,
-for example, look at the demo transformers scripts - DemoGenerateTimeZone and DemoGenerateProfileId.
-Please create your own transformers and map the fitting values to them.
+Creates a user with specific settings and permissions in Salesforce, according to the configuration of the Salesforce integration and mapper - as explained in the "Required Fields in Create User Command" section.
 
 #### Base Command
 
