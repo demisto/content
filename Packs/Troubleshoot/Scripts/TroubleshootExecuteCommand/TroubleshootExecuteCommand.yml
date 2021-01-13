@@ -1,0 +1,78 @@
+args:
+- default: false
+  description: The command to run.
+  isArray: false
+  name: command
+  required: true
+  secret: false
+- default: false
+  description: The arguments of the command.
+  isArray: false
+  name: arguments
+  required: false
+  secret: false
+- default: false
+  description: The instance name.
+  isArray: false
+  name: instance_name
+  required: true
+  secret: false
+comment: Executes a command in Cortex XSOAR in debug mode and pulls logs from the
+  command execution.
+commonfields:
+  id: TroubleshootExecuteCommand
+  version: -1
+enabled: false
+name: TroubleshootExecuteCommand
+outputs:
+- contextPath: TroubleshootExecuteCommand.command
+  description: The command executed.
+  type: String
+- contextPath: TroubleshootExecuteCommand.instance_name
+  description: On which instance of the integration the command executed.
+  type: String
+- contextPath: TroubleshootExecuteCommand.Error
+  description: The errors from the command.
+  type: String
+- contextPath: File.Name
+  description: The full file name (including file extension).
+  type: String
+- contextPath: File.EntryID
+  description: The ID for locating the file in the War Room.
+  type: String
+- contextPath: File.Size
+  description: The size of the file in bytes.
+  type: Number
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: String
+- contextPath: File.SSDeep
+  description: The ssdeep hash of the file (same as displayed in file entries).
+  type: String
+- contextPath: File.Extension
+  description: "The file extension, for example: 'xls'."
+  type: String
+- contextPath: File.Type
+  description: The file type, as determined by libmagic (same as displayed in the
+    file entries).
+  type: String
+script: '-'
+subtype: python3
+system: false
+tags:
+- troubleshoot
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.14969
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
