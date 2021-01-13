@@ -7,7 +7,7 @@ import stomp
 import os
 import traceback
 
-handle_proxy()
+PROXIES = handle_proxy()
 
 ''' GLOBAL VARS '''
 
