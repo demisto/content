@@ -44,11 +44,11 @@ def main():
         hr = '### OOO Users\nNo analysts is out of office today.'
 
     demisto.results({
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['markdown'],
-                'EntryContext': entry_context,
-                'Contents': hr
-            })
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'EntryContext': entry_context,
+        'Contents': hr
+    })
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
