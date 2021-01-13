@@ -249,12 +249,8 @@ class DBotScoreType(object):
 class DBotScoreReliability(object):
     """
     Enum: Source reliability levels
-    DBotScoreReliability.COMPLETELY
-    DBotScoreReliability.USUALLY
-    DBotScoreReliability.FAIRLY
-    DBotScoreReliability.NOT_USUALLY
-    DBotScoreReliability.UNRELIABLE
-    DBotScoreReliability.CANNOT_BE_JUDGED
+    Values are case sensitive
+
     :return: None
     :rtype: ``None``
     """

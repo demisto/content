@@ -1539,6 +1539,75 @@ class TestCommandResults:
         except TypeError:
             assert True
 
+    def test_create_dbot_score_with_invalid_reliability(self):
+        """
+        Given:
+            -  an invalid reliability value.
+        When
+            - creating a DBotScore entry
+        Then
+            - an error should be raised
+        """
+        from CommonServerPython import Common, DBotScoreType
+
+        try:
+            Common.DBotScore(
+                indicator='8.8.8.8',
+                integration_name='Virus Total',
+                score=0,
+                indicator_type=DBotScoreType.IP,
+                reliability='Not a reliability'
+            )
+            assert False
+        except TypeError:
+            assert True
+
+    def test_create_dbot_score_with_valid_reliability(self):
+        """
+        Given:
+            -  a valid reliability value
+        When
+            - creating a DBotScore entry
+        Then
+            - the proper entry is created
+        """
+        from CommonServerPython import Common, DBotScoreType, DBotScoreReliability, CommandResults
+
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            score=Common.DBotScore.GOOD,
+            indicator_type=DBotScoreType.IP,
+            reliability=DBotScoreReliability.USUALLY,
+        )
+
+        ip = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score,
+        )
+
+        results = CommandResults(
+            indicator=ip,
+        )
+
+        assert results.to_context()['EntryContext'] == {
+            'IP(val.Address && val.Address == obj.Address)': [
+                {
+                    'Address': '8.8.8.8'
+                }
+            ],
+            'DBotScore(val.Indicator && val.Indicator == '
+            'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                {
+                    'Indicator': '8.8.8.8',
+                    'Type': 'ip',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Reliability': 'B: Usually reliable'
+                }
+            ]
+        }
+
     def test_create_domain(self):
         from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
 
