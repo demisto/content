@@ -4,7 +4,7 @@ from CommonServerPython import *
 def main():
     today_week_day = datetime.today().weekday()
     today_week_day = 0 if today_week_day == 6 else today_week_day + 1
-    total_seconds = ''
+    total_seconds = 0
 
     get_roles_response = demisto.executeCommand('getRoles', {})
     if is_error(get_roles_response):
