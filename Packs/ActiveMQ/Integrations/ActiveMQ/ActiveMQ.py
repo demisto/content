@@ -7,7 +7,11 @@ import stomp
 import os
 import traceback
 
-PROXIES = handle_proxy()
+if not demisto.params()['proxy']:
+    del os.environ['HTTP_PROXY']
+    del os.environ['HTTPS_PROXY']
+    del os.environ['http_proxy']
+    del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
 
