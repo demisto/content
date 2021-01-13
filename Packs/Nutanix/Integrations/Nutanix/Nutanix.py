@@ -30,8 +30,8 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
 
     def fetch_incidents(self, auto_resolved: Optional[bool], resolved: Optional[bool], acknowledged: Optional[bool],
-                        alert_type_ids: Optional[str], entity_ids: Optional[str], impact_types: Optional[str],
-                        classifications: Optional[str], entity_type_ids: Optional[str]):
+                        severity: Optional[str], alert_type_ids: Optional[str], impact_types: Optional[str],
+                        classifications: Optional[str]):
         return self._http_request(
             method='GET',
             url_suffix='alerts',
@@ -39,11 +39,10 @@ class Client(BaseClient):
                 resolved=resolved,
                 auto_resolved=auto_resolved,
                 acknowledged=acknowledged,
+                severity=severity,
                 alert_type_uuid=alert_type_ids,
-                entity_ids=entity_ids,
                 impact_types=impact_types,
-                classification=classifications,
-                entity_type_id=entity_type_ids
+                classification=classifications
             )
         )
 
@@ -94,7 +93,7 @@ class Client(BaseClient):
 
     def get_nutanix_alerts_list(self, start_time: Optional[int], end_time: Optional[int], resolved: Optional[bool],
                                 auto_resolved: Optional[bool], acknowledged: Optional[bool], severity: Optional[str],
-                                alert_type_ids: Optional[str], entity_ids: Optional[str], impact_types: Optional[str],
+                                alert_type_ids: Optional[str], impact_types: Optional[str],
                                 classifications: Optional[str], entity_types: Optional[str], page: Optional[int],
                                 limit: Optional[int]):
         return self._http_request(
@@ -108,7 +107,6 @@ class Client(BaseClient):
                 acknowledged=acknowledged,
                 severity=severity,
                 alert_type_uuid=alert_type_ids,
-                entity_ids=entity_ids,
                 impact_types=impact_types,
                 classification=classifications,
                 entity_type=entity_types,
@@ -130,10 +128,9 @@ class Client(BaseClient):
         )
 
     def post_nutanix_alerts_acknowledge_by_filter(self, start_time: Optional[int], end_time: Optional[int],
-                                                  severity: Optional[str],
-                                                  impact_types: Optional[str], classifications: Optional[str],
-                                                  entity_types: Optional[str],
-                                                  entity_type_ids: Optional[str], limit: Optional[int]):
+                                                  severity: Optional[str], impact_types: Optional[str],
+                                                  classifications: Optional[str], entity_types: Optional[str],
+                                                  limit: Optional[int]):
         return self._http_request(
             method='POST',
             url_suffix='alerts/acknowledge',
@@ -144,7 +141,6 @@ class Client(BaseClient):
                 impact_types=impact_types,
                 classification=classifications,
                 entity_type=entity_types,
-                entity_type_ids=entity_type_ids,
                 count=limit
             )
         )
@@ -152,7 +148,7 @@ class Client(BaseClient):
     def post_nutanix_alerts_resolve_by_filter(self, start_time: Optional[int], end_time: Optional[int],
                                               severity: Optional[str], impact_types: Optional[str],
                                               classifications: Optional[str], entity_types: Optional[str],
-                                              entity_type_ids: Optional[str], limit: Optional[int]):
+                                              limit: Optional[int]):
         return self._http_request(
             method='POST',
             url_suffix='alerts/resolve',
@@ -163,7 +159,6 @@ class Client(BaseClient):
                 impact_types=impact_types,
                 classification=classifications,
                 entity_type=entity_types,
-                entity_type_ids=entity_type_ids,
                 count=limit
             )
         )
@@ -297,14 +292,13 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
     auto_resolved = get_optional_boolean_param(params, 'auto_resolved')
     resolved = True if auto_resolved else get_optional_boolean_param(params, 'resolved')
     acknowledged = get_optional_boolean_param(params, 'acknowledged')
+    severity = params.get('severity')
     alert_type_ids = params.get('alert_type_ids')
-    entity_ids = params.get('entity_ids')  # TODO MAYBE DELETE
     impact_types = params.get('impact_types')
     classifications = params.get('classifications')
-    entity_type_ids = params.get('entity_type_ids')  # TODO MAYBE DELETE
 
-    alerts = client.fetch_incidents(auto_resolved, resolved, acknowledged, alert_type_ids, entity_ids, impact_types,
-                                    classifications, entity_type_ids)
+    alerts = client.fetch_incidents(auto_resolved, resolved, acknowledged, severity, alert_type_ids, impact_types,
+                                    classifications)
 
     last_fetch_epoch_time = last_run.get('last_fetch_epoch_time', 0)
     current_run_max_epoch_time = 0
@@ -528,7 +522,6 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     - alert_type_ids: Retrieve alerts that id of their type matches one alert_type_id in alert_type_id list.
                      For example, alert 'Alert E-mail Failure' has type id of A111066.
                      Given alert_type_ids = 'A111066', only alerts of 'Alert E-mail Failure' will be retrieved.
-    - entity_ids: TODO.
     - impact_types: Retrieve alerts that their impact type matches one of the impact_type in impact_types list.
                     Possible impact types: [Availability, Capacity, Configuration, Performance, SystemIndicator]
                     For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'.
@@ -562,7 +555,6 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     acknowledged = get_optional_boolean_param(args, 'acknowledged')
     severity = args.get('severity')
     alert_type_ids = args.get('alert_type_ids')
-    entity_ids = args.get('entity_ids')
     impact_types = args.get('impact_types')
     classification = args.get('classifications')
     entity_types = args.get('entity_types')
@@ -570,7 +562,7 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
 
     response = client.get_nutanix_alerts_list(start_time, end_time, resolved, auto_resolved, acknowledged, severity,
-                                              alert_type_ids, entity_ids, impact_types, classification, entity_types,
+                                              alert_type_ids, impact_types, classification, entity_types,
                                               page, limit)
 
     outputs = response.get('entities')
@@ -658,7 +650,6 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     - entity_types: Acknowledge alerts that their entity_type matches one of the entity_type in entity_types list.
                    Example for entity types: [VM, Host, Disk, Storage Container, Cluster].
                    If Nutanix service can't recognize the entity type, it returns 404 response.
-    - entity_type_id: TODO maybe delete
     - limit: Maximum number of alerts to acknowledge. Nutanix does not have max for limit, but a very high limit value
              will cause read timeout exception.
 
@@ -679,11 +670,10 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     impact_types = args.get('impact_types')
     classification = args.get('classifications')
     entity_types = args.get('entity_types')
-    entity_type_ids = args.get('entity_type_ids')
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE)
 
     response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
-                                                                classification, entity_types, entity_type_ids,
+                                                                classification, entity_types,
                                                                 limit)
 
     return CommandResults(
@@ -712,7 +702,6 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
     - entity_types: Resolve alerts that their entity_type matches one of the entity_type in entity_types list.
                    Example for entity types: [VM, Host, Disk, Storage Container, Cluster].
                    If Nutanix service can't recognize the entity type, it returns 404 response.
-    - entity_type_id: TODO maybe delete
     - page: The offset of page number in the query response to start resolving alerts.
     - limit: Maximum number of alerts to resolve. Nutanix does not have max for limit, but a very high limit value
              will cause read timeout exception.
@@ -733,11 +722,10 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
     impact_types = args.get('impact_types')
     classification = args.get('classifications')
     entity_types = args.get('entity_types')
-    entity_type_ids = args.get('entity_type_ids')
     limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE)
 
     response = client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity, impact_types,
-                                                            classification, entity_types, entity_type_ids, limit)
+                                                            classification, entity_types, limit)
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Alert',

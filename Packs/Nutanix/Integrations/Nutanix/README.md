@@ -26,7 +26,6 @@ integrated and tested with version v2 of Nutanix
    | entity_id | Entity Id | False |
    | impact_types | Impact Types | False |
    | classifications | Classifications | False |
-   | entity_type_ids |  | False |
    | first_fetch | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
@@ -867,8 +866,7 @@ make sure the user you are using have at least cluster admin permissions
 | severity | Comma separated list. Acknowledge alerts that their severity level matches one of the severities in severity list. Possible values are: CRITICAL, WARNING, INFO, AUDIT. | Optional | 
 | impact_types | Comma separated list. Acknowledge alerts that their impact type matches one of the impact types in impact_types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given impact_types = 'SystemIndicator',only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be acknowledged. | Optional | 
 | classifications | Comma separated list. Acknowledge alerts that their classifications matches one of the classification in classifications list given. For example, alert 'Pulse cannot connect to REST server endpoint' has classification of Cluster. Given classifications = 'cluster', only alerts with classification of 'cluster', such as 'Pulse cannot connect to REST server endpoint' will be acknowledged. | Optional | 
-| entity_types | Comma separated list. Acknowledge alerts that their entity_type matches one of the entity_type in entity_types list. Examples for entity types: [VM, Host, Disk, Storage Container, Cluster]. If Nutanix service can't recognize the entity type, it returns 404 response. | Optional | 
-| entity_type_ids | TODO. | Optional | 
+| entity_types | Comma separated list. Acknowledge alerts that their entity_type matches one of the entity_type in entity_types list. Examples for entity types: [VM, Host, Disk, Storage Container, Cluster]. If Nutanix service can't recognize the entity type, it returns 404 response. | Optional |
 | limit | Maximum number of alerts to acknowledge. Nutanix does not have max for limit, but a very high limit value will cause read timeout exception. | Optional | 
 
 #### Context Output
@@ -936,8 +934,7 @@ make sure the user you are using have at least cluster admin permissions
 | severity | Comma separated list. Resolve alerts that their severity level matches one of the severities in severity list. Possible values are: CRITICAL, WARNING, INFO, AUDIT. | Optional | 
 | impact_types | Comma separated list. Resolve alerts that their impact type matches one of the impact types in impact_types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given impact_types = 'SystemIndicator',only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be resolved. | Optional | 
 | classifications | Comma separated list.Resolve alerts that their classifications matches one of the classification in classifications list given. For example, alert 'Pulse cannot connect to REST server endpoint' has classification of Cluster. Given classifications = 'cluster', only alerts with classification of 'cluster', such as 'Pulse cannot connect to REST server endpoint' will be resolved. | Optional | 
-| entity_types | Comma separated list. Resolve alerts that their entity_type matches one of the entity_type in entity_types list. Examples for entity types: [VM, Host, Disk, Storage Container, Cluster]. If Nutanix service can't recognize the entity type, it returns 404 response. | Optional | 
-| entity_type_ids | TODO. | Optional | 
+| entity_types | Comma separated list. Resolve alerts that their entity_type matches one of the entity_type in entity_types list. Examples for entity types: [VM, Host, Disk, Storage Container, Cluster]. If Nutanix service can't recognize the entity type, it returns 404 response. | Optional |
 | limit | Maximum number of alerts to resolve. Nutanix does not have max for limit, but a very high limit value will cause read timeout exception. | Optional | 
 
 #### Context Output
