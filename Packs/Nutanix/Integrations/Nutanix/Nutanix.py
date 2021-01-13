@@ -3,7 +3,6 @@ from typing import Dict
 import dateutil.parser as dp
 import pytz
 import urllib3
-from collections import OrderedDict
 
 from CommonServerPython import *
 
@@ -369,29 +368,27 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
 
     response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
 
-    unprocessed_outputs = response.get('entities')
+    outputs = response.get('entities')
 
-    if unprocessed_outputs is None:
+    if outputs is None:
         raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
 
-    outputs_processed = []
-
-    for unprocessed_output in unprocessed_outputs:
-        unordered_disk_configs = unprocessed_output['disk_hardware_configs']
+    for output in outputs:
+        unordered_disk_configs = output['disk_hardware_configs']
         ordered_disk_configs = dict(sorted(unordered_disk_configs.items()))
         ordered_disk_list = [disk_config for _, disk_config in ordered_disk_configs.items() if disk_config is not None]
-        unprocessed_output['disk_hardware_configs'] = ordered_disk_list
+        output['disk_hardware_configs'] = ordered_disk_list
 
-        del (unprocessed_output['stats'])
-        del (unprocessed_output['usage_stats'])
-
-        output_processed = {k: v for k, v in unprocessed_output.items() if v is not None}
-        outputs_processed.append(output_processed)
+        try:
+            del (output['stats'])
+            del (output['usage_stats'])
+        except KeyError:
+            demisto.debug('TODO: WEIRD')
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Host',
         outputs_key_field='uuid',
-        outputs=outputs_processed
+        outputs=outputs
     )
 
 
@@ -577,9 +574,6 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     if outputs is None:
         raise DemistoException('No entities were found in response for nutanix-alerts-list command')
 
-    # remove recursively
-    outputs = [[{k: v for k, v in output.items() if v is not None}] for output in outputs]
-
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Alerts',
         outputs_key_field='id',
@@ -752,8 +746,8 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
 
 
 def main() -> None:
-    # command = demisto.command()
-    command = 'nutanix-alerts-list'
+    command = demisto.command()
+    # command = 'nutanix-alerts-list'
     params = demisto.params()
 
     commands = {
@@ -794,7 +788,9 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command in commands:
-            return_results(commands[command](client, demisto.args()))
+            command_results: CommandResults = commands[command](client, demisto.args())
+            command_results.outputs = remove_empty_elements(command_results.outputs)
+            return_results(command_results)
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
