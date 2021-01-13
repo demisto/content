@@ -10,7 +10,7 @@ import shutil
 requests.packages.urllib3.disable_warnings()
 
 ACCEPT_TYPE = 'application/json'
-CONTENT_API_WORKFLOWS_URI = 'https://circleci.com/api/v2/insights/gh/demisto/content/workflows'
+CONTENT_API_WORKFLOWS_URI = 'https://circleci.com/api/v2/insights/gh/demisto/content/workflows/commit'
 ARTIFACTS_PATH = '/home/circleci/project/artifacts/'
 STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
 CIRCLE_STATUS_TOKEN = os.environ.get('CIRCLECI_STATUS_TOKEN', '')
@@ -58,7 +58,6 @@ def get_recent_workflows_data_request(feature_branch_name):
         list. List of last 10 successful builds.
     """
     cmd_url = f"{CONTENT_API_WORKFLOWS_URI}?branch={feature_branch_name}"
-    print(f"sent url {cmd_url}")
     params = {'limit': 20}
     response = http_request('GET', cmd_url, params=params)
     return response
@@ -73,7 +72,6 @@ def get_last_successful_workflow(feature_branch_name):
     Returns:
         Last successful build number of the given branch
     """
-    print(feature_branch_name)
     recent_workflows = get_recent_workflows_data_request(feature_branch_name).get('items')
     for workflow in recent_workflows:
         if workflow.get('status') == "success":
