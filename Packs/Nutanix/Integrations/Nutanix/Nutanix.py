@@ -318,6 +318,7 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
 
         current_run_max_epoch_time = max(current_run_max_epoch_time, last_occurrence_time)
         incident = {
+            'name': 'Nutanix Hypervisor Alert',
             'alerttypeuuid': alert.get('alert_type_uuid'),
             'checkid': alert.get('check_id'),
             'resolved': alert.get('resolved'),
@@ -327,7 +328,7 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
             'ticketopeneddate': alert.get('created_time_stamp_in_usecs'),
             'lastseen': last_occurrence_time,
             'ticketacknowledgeddate': alert.get('acknowledged_time_stamp_in_usecs'),
-            'ticketclosedate': alert.get('resolved_time_stamp_in_usecs'),
+            'ticketcloseddate': alert.get('resolved_time_stamp_in_usecs'),
             'clusteruuid': alert.get('cluster_uuid'),
             'severity': alert.get('severity'),
             'classifications': alert.get('classifications'),
@@ -374,14 +375,16 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
         raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
 
     for output in outputs:
-        unordered_disk_configs = output['disk_hardware_configs']
-        ordered_disk_configs = dict(sorted(unordered_disk_configs.items()))
-        ordered_disk_list = [disk_config for _, disk_config in ordered_disk_configs.items() if disk_config is not None]
-        output['disk_hardware_configs'] = ordered_disk_list
-
         try:
+            unordered_disk_configs = output['disk_hardware_configs']
+            ordered_disk_configs = dict(sorted(unordered_disk_configs.items()))
+            ordered_disk_list = [disk_config for disk_config in ordered_disk_configs.values()
+                                 if disk_config is not None]
+            output['disk_hardware_configs'] = ordered_disk_list
+
             del (output['stats'])
             del (output['usage_stats'])
+
         except KeyError:
             demisto.debug('TODO: WEIRD')
 
@@ -747,7 +750,7 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
 
 def main() -> None:
     command = demisto.command()
-    # command = 'nutanix-alerts-list'
+    command = 'nutanix-hypervisor-hosts-list'
     params = demisto.params()
 
     commands = {
