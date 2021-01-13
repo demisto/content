@@ -8,11 +8,12 @@ For detailed instructions see the Credentials walkthrough section at [demisto su
 ## Enable/Disable CRUD Commands
 You can select which CRUD commands are enabled in the integration instance configuration settings. By default, all commands are enabled.
 
-## Mandatory fields in Creating User Command
-When creating a user in salesforce there are some mandatory fields, some are set as the default in the integration params:
-Default Local Sid Key, Default Email Encoding Key and Default Language Locale Key.
-ProfileId and Timezone Sid Key are part of the mapping fields and you need to map the proper values to them,
-in order to do so change the *DemoGenerateProfileId* and the *DemoGenerateTimeZone* automations and use them as transformers to fit your settings.
+## Required Fields in Create User Command
+When creating a user in Salesforce there are mandatory fields that need to be set. Some of them are set with default values in the integration parameters:
+**Default Local Sid Key**, **Default Email Encoding Key** and **Default Language Locale Key**.
+**ProfileId** and **Timezone Sid Key** are also required, but are filled using the Salesforce mapper in the following manner:
+Duplicate the **DemoGenerateProfileId** and the **DemoGenerateTimeZone** automations, edit them according to your needs, and use them as transformers in the **User Profile - Salesforce (Outgoing)** mapper under the **ProfileId** and **TimeZoneSidKey** fields respectively.
+This configuration ensures that the user being created is created with the right permissions and settings in Salesforce.
 
 ## Add Custom Indicator Fields
 Follow these steps to add custom fields to the User Profile indicator.
