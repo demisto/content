@@ -254,6 +254,7 @@ class DBotScoreReliability(object):
     :return: None
     :rtype: ``None``
     """
+    THIRD_PT_ENRICHMENT = 'A+ - 3rd party enrichment'
     COMPLETELY = 'A: Completely reliable'
     USUALLY = 'B: Usually reliable'
     FAIRLY = 'C: Fairly reliable'
@@ -269,6 +270,7 @@ class DBotScoreReliability(object):
         # type: (str) -> bool
 
         return _type in (
+            DBotScoreReliability.CANNOT_BE_JUDGED,
             DBotScoreReliability.COMPLETELY,
             DBotScoreReliability.USUALLY,
             DBotScoreReliability.FAIRLY,
