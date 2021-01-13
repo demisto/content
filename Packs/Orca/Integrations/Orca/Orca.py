@@ -122,6 +122,7 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int) -> List[Dict[str, A
             return []
 
     else:
+        # this is the first run
         alerts = orca_client.get_all_alerts()
         if not alerts:
             demisto.incidents([])

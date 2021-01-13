@@ -46,10 +46,6 @@ Get the alerts on cloud assets
 #### Command Example
 ``` ```
 
-#### Human Readable Output
-
-
-
 ### orca-get-asset
 ***
 Get Description of An asset
@@ -74,7 +70,4 @@ Get Description of An asset
 
 #### Command Example
 ``` ```
-
-#### Human Readable Output
-
 
