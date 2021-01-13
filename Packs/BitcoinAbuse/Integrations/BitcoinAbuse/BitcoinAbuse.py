@@ -260,7 +260,7 @@ def get_indicators(params: Dict):
 
     for indicator in indicators_without_duplicates:
         indicator_count = indicators_name_to_count_dict.get(indicator['value'])
-        indicator['fields']['count'] = indicator_count
+        indicator['fields']['reportscount'] = indicator_count
         indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
 
     return indicators_without_duplicates
