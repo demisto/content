@@ -2,8 +2,7 @@ from requests import Session
 from requests.models import Response
 import demistomock as demisto
 from GitHub_IAM import Client, IAMUserProfile, get_user_command, create_user_command, update_user_command
-
-from CommonServerPython import IAMActions, IAMErrors
+from IAMModule import *
 
 
 def mock_client():
