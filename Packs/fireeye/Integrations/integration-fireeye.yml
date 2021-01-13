@@ -260,7 +260,6 @@ script:
            httpParams.Password = params.credentials.password;
         }
         full_url = server + url + (method === 'GET' && method ? encodeToURLQuery(args) : '')
-        console.log('full_url: ' + full_url)
         httpParams.Headers = headers;
         var res = http(
                 full_url,
@@ -352,7 +351,7 @@ script:
                 method = commandDictionary[command].method
                 setContentType = commandDictionary[command].setContentType
 
-                respoonse = sendRequest(url, method, setContentType, token, {"submission_Key": submissionKeyList[i]});
+                respoonse = sendRequest(url, method, token, setContentType);
                 status_result = respoonse.Body;
 
                 contentType = respoonse.Headers && respoonse.Headers['Content-Type'] && respoonse.Headers['Content-Type'][0];
