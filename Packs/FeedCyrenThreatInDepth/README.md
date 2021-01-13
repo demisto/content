@@ -1,4 +1,4 @@
-Threat InDepth's actionable and contextualized intelligence helps enterprises improve their threat detection and response by providing unprecedented visibility into new email-borne security threats faster than other security vendors.
+Threat InDepth's correlated and contextualized intelligence helps enterprises improve their threat detection and response by providing unprecedented visibility into new email-borne security threats and actionable insights to make meaningful response decisions. By correlating insights gathered across email content, web traffic, and suspicious files; Cyren provides security teams with a multi-dimensional presentation of critical threat characteristics.
 
 Benefits include:
 

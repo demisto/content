@@ -59,6 +59,18 @@ SEARCH_INDICATORS_RESPONSE = {"total": 1, "iocs": [
 SEARCH_INDICATORS_EMPTY_RESPONSE = {"total": 0, "iocs": []}
 
 
+def test_cyren_feed_relationship_no_indicator():
+    """
+    Given: no indicator
+    When: Running cyren_feed_relationship command.
+    Then: ValueError is raised
+    """
+    from CyrenThreatInDepthRelatedWidget import cyren_feed_relationship
+
+    with pytest.raises(ValueError):
+        cyren_feed_relationship({})
+
+
 def test_cyren_feed_relationship_with_search_response(mocker):
     """
     Given: File hash indicator.
