@@ -36,19 +36,14 @@ USERS_ON_CALL_RESULTS = [
     }
 ]
 
-OOO_USERS_LIST_RESULT = [{
-    'Type': 1,
-    'Contents': '[{"user": "brucewaine", "offuntil": "2021-01-07", "addedby": "admin"}]',
-    'HumanReadable': 'Done: list OOO List was succesfully loaded:\n\n[{"user": "brucewaine", '
-                     '"offuntil": "2021-01-07", "addedby": "admin"}]'
-}]
+GetUsersOOO_RESULT = [{'Type': 1, 'EntryContext': {'ShiftManagment.OOOUsers': [{'username': 'brucewaine'}]}}]
 
 
 def execute_command(name, args=None):
     if name == 'getUsers':
         return USERS_ON_CALL_RESULTS
-    elif name == 'getList':
-        return OOO_USERS_LIST_RESULT
+    elif name == 'GetUsersOOO':
+        return GetUsersOOO_RESULT
     else:
         return None
 
