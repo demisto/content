@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "URL"
+    ],
+    "caseInsensitive": true,
+    "cliName": "cyrenphishingbrands",
+    "closeForm": false,
+    "content": true,
+    "description": "Targeted brands of a phishing indicator, identified by Cyren Threat InDepth Intelligence",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_cyrenphishingbrands",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren Phishing Brands",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
