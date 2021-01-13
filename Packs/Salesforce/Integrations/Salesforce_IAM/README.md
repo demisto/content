@@ -29,9 +29,9 @@ in order to do so change the *DemoGenerateProfileId* and the *DemoGenerateTimeZo
 | create_if_not_exists | Automatically create user if not found in update and enable commands | False |
 | mapper_in | Incoming Mapper | True |
 | mapper_out | Outgoing Mapper | True |
-| localesidkey | Default Local Sid Key | False |
-| emailencodingkey | Default Email Encoding Key | False |
-| languagelocalekey | Default Language Locale Key | False |
+| localesidkey | Default Local Sid Key | True |
+| emailencodingkey | Default Email Encoding Key | True |
+| languagelocalekey | Default Language Locale Key | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
