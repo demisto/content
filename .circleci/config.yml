@@ -1116,6 +1116,7 @@ jobs:
       - *secrets
       - *update_tests_step
       - *create_id_set
+      - *merge_public_and_private_id_sets
       - *validate_files_and_yaml
       - *run_unit_testing_and_lint
       - *infrastructure_testing
