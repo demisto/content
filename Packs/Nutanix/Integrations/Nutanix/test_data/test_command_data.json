@@ -15,8 +15,8 @@
           "disk_hardware_configs": {
             "1": {
               "serial_number": "drive-scsi0-0-0-0",
-              "disk_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::12",
-              "disk_uuid": "f062895b-8cc9-496a-bfd1-5d7e54cd285c",
+              "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xx",
+              "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
               "location": 1,
               "bad": false,
               "mounted": true,
@@ -34,8 +34,8 @@
             },
             "2": {
               "serial_number": "drive-scsi0-0-0-1",
-              "disk_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::13",
-              "disk_uuid": "5be00813-22ed-47bd-8ee7-da295196d1a8",
+              "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xx",
+              "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
               "location": 2,
               "bad": false,
               "mounted": true,
@@ -96,8 +96,8 @@
           "disk_hardware_configs": [
             {
               "serial_number": "drive-scsi0-0-0-0",
-              "disk_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::12",
-              "disk_uuid": "f062895b-8cc9-496a-bfd1-5d7e54cd285c",
+              "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xx",
+              "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
               "location": 1,
               "bad": false,
               "mounted": true,
@@ -115,8 +115,8 @@
             },
             {
               "serial_number": "drive-scsi0-0-0-1",
-              "disk_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::13",
-              "disk_uuid": "5be00813-22ed-47bd-8ee7-da295196d1a8",
+              "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xx",
+              "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
               "location": 2,
               "bad": false,
               "mounted": true,
