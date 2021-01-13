@@ -10,6 +10,85 @@
      "complex": null,
      "simple": "details"
     },
+    "opened_at": {
+     "complex": {
+      "accessor": "[0]",
+      "filters": [
+
+      ],
+      "root": "created",
+      "transformers": [
+       {
+        "args": {
+         "limit": {
+          "isContext": false,
+          "value": null
+         },
+         "replaceWith": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": " "
+          }
+         },
+         "toReplace": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "T"
+          }
+         }
+        },
+        "operator": "replace"
+       },
+       {
+        "args": {
+         "limit": {
+          "isContext": false,
+          "value": null
+         },
+         "replaceWith": {
+          "isContext": false,
+          "value": null
+         },
+         "toReplace": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "Z"
+          }
+         }
+        },
+        "operator": "replace"
+       },
+       {
+        "args": {
+         "delimiter": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "."
+          }
+         }
+        },
+        "operator": "split"
+       },
+       {
+        "args": {
+         "index": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "0"
+          }
+         }
+        },
+        "operator": "atIndex"
+       }
+      ]
+     },
+     "simple": ""
+    },
     "short_description": {
      "complex": null,
      "simple": "name"
