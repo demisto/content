@@ -11,6 +11,14 @@ args:
   - 'false'
   required: false
   secret: false
+- default: false
+  defaultValue: OOO List
+  description: Optionally specify the XSOAR list name to verify against (default is
+    OOO List)
+  isArray: false
+  name: listname
+  required: false
+  secret: false
 comment: Retrieves users that are currently on-call (on shift).
 commonfields:
   id: GetUsersOnCall
