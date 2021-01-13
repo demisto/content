@@ -3,16 +3,3 @@ ignore=IN126
 
 [file:playbook-Create_ServiceNow_Ticket.yml]
 ignore=PB106
-
-[file:classifier-ServiceNow_5_9_9.json]
-ignore=MP106
-
-[file:classifier-mapper-ServiceNow_Create_Ticket_-_Incoming_Mapper.json]
-ignore=MP106
-
-[file:classifier-mapper-outgoing-ServiceNow.json]
-ignore=MP106
-
-[file:classifier-mapper-incoming-ServiceNow.json]
-ignore=MP106
-
