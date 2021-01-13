@@ -8,6 +8,7 @@
     "email": "paltoalto-cortex-xsoar@cyren.com",
     "created": "2020-12-08T09:48:38Z",
     "dependencies": {},
+    "certification": "certified",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
