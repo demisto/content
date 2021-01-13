@@ -1,0 +1,37 @@
+commonfields:
+  id: CreateChannelWrapper
+  version: -1
+name: CreateChannelWrapper
+script: ''
+type: python
+tags:
+- Shift Management
+- ooo
+comment: Create channel in Slack v2 or in Microsoft Teams, if both of them are available
+  it creates the channel in  Slack v2 or and Microsoft Teams
+enabled: true
+args:
+- name: name
+  required: true
+  description: The name of the channel.
+- name: type
+  auto: PREDEFINED
+  predefined:
+  - public
+  - private
+  description: The channel type. Can be "private" or "public".  Relevant only for
+    Slack
+  defaultValue: private
+- name: team
+  description: The team in which to create the channel. Relevant only for Microsoft
+    Team.
+- name: description
+  description: The description of the channel. Relevant only for Microsoft Team.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.1.14969
+runas: DBotRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
