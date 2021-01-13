@@ -29,6 +29,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
+  description: Set to true to assign all the users to the incident.
   isArray: false
   name: assignAll
   predefined:
