@@ -48,7 +48,7 @@ def convert_datetime_to_string(v):
 def connect_db():
     USERNAME = demisto.params().get('credentials').get('identifier')
     PASSWORD = demisto.params().get('credentials').get('password')
-    DATABASE = demisto.params().get('database')
+    DATABASE = demisto.params().get('database (mydb)')
     PORT = int(demisto.params().get('port', 5433))
     SERVER = demisto.params()['url'][:-1] if (demisto.params()['url'] and demisto.params()
                                               ['url'].endswith('/')) else demisto.params()['url']
