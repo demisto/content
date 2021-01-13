@@ -4,8 +4,16 @@ import sys
 
 import coloredlogs
 
-from demisto_sdk.commands.test_content.ParallelLoggingManager import LOGGING_FORMAT, LEVEL_STYLES, ARTIFACTS_PATH
-
+ARTIFACTS_PATH = os.environ.get('CIRCLE_ARTIFACTS', '.')
+LOGGING_FORMAT = '[%(asctime)s] - [%(threadName)s] - [%(levelname)s] - %(message)s'
+LEVEL_STYLES = {
+    'critical': {'bold': True, 'color': 'red'},
+    'debug': {'color': 'cyan'},
+    'error': {'color': 'red'},
+    'info': {},
+    'warning': {'color': 'yellow'},
+    'success': {'color': 'green'}
+}
 
 def _add_logging_level(level_name: str, level_num: int, method_name: str = None) -> None:
     """
