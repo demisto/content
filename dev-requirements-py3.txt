@@ -6,7 +6,7 @@ pytest==5.2.1
 pytest-mock==1.11.1
 requests-mock==1.7.0
 ruamel.yaml==0.16.5
-pipenv==2018.11.26
+pipenv==2020.8.13
 autopep8==1.4.4
 mypy==0.782
 networkx>=2.4
