@@ -37,14 +37,14 @@ def test_ip(requests_mock):
 
     response = ip_details_command(client, args)
 
-    assert response.outputs[0] == mock_response["results"][0]
-    assert response.outputs_prefix == 'CTIX.IP'
-    assert response.outputs_key_field == 'name2'
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == 'CTIX.IP'
+    assert response[0].outputs_key_field == 'name2'
 
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.IP)
-    assert response.indicators[0].ip == ip_to_check
+    assert isinstance(response, list)
+    assert len(response) == 1
+    assert isinstance(response[0].indicator, Common.IP)
+    assert response[0].indicator.ip == ip_to_check
 
 
 def test_domain(requests_mock):
@@ -71,14 +71,14 @@ def test_domain(requests_mock):
 
     response = domain_details_command(client, args)
 
-    assert response.outputs[0] == mock_response["results"][0]
-    assert response.outputs_prefix == 'CTIX.Domain'
-    assert response.outputs_key_field == 'name2'
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == 'CTIX.Domain'
+    assert response[0].outputs_key_field == 'name2'
 
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.Domain)
-    assert response.indicators[0].domain == domain_to_check
+    assert isinstance(response, list)
+    assert len(response) == 1
+    assert isinstance(response[0].indicator, Common.Domain)
+    assert response[0].indicator.domain == domain_to_check
 
 
 def test_url(requests_mock):
@@ -105,14 +105,14 @@ def test_url(requests_mock):
 
     response = url_details_command(client, args)
 
-    assert response.outputs[0] == mock_response["results"][0]
-    assert response.outputs_prefix == 'CTIX.URL'
-    assert response.outputs_key_field == 'name2'
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == 'CTIX.URL'
+    assert response[0].outputs_key_field == 'name2'
 
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.URL)
-    assert response.indicators[0].url == url_to_check
+    assert isinstance(response, list)
+    assert len(response) == 1
+    assert isinstance(response[0].indicator, Common.URL)
+    assert response[0].indicator.url == url_to_check
 
 
 def test_file(requests_mock):
@@ -139,11 +139,11 @@ def test_file(requests_mock):
 
     response = file_details_command(client, args)
 
-    assert response.outputs[0] == mock_response["results"][0]
-    assert response.outputs_prefix == 'CTIX.File'
-    assert response.outputs_key_field == 'name2'
+    assert response[0].outputs == mock_response["results"][0]
+    assert response[0].outputs_prefix == 'CTIX.File'
+    assert response[0].outputs_key_field == 'name2'
 
-    assert isinstance(response.indicators, list)
-    assert len(response.indicators) == 1
-    assert isinstance(response.indicators[0], Common.File)
-    assert response.indicators[0].name == file_to_check
+    assert isinstance(response, list)
+    assert len(response) == 1
+    assert isinstance(response[0].indicator, Common.File)
+    assert response[0].indicator.name == file_to_check

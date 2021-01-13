@@ -205,7 +205,7 @@ def test_module(client: Client):
     demisto.results('ok')
 
 
-def ip_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def ip_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     ip command: Returns IP details for a list of IPs
     """
@@ -224,7 +224,7 @@ def ip_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_ip_details(ip_addresses_array, enhanced)
     ip_list = response.get("data", {}).get("results", {})
-    ip_data_list, ip_standard_list = [], []
+    ip_data_list = []
     for ip_data in ip_list:
         score = to_dbot_score(ip_data.get("score", 0))
         dbot_score = Common.DBotScore(
@@ -238,20 +238,18 @@ def ip_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             asn=ip_data.get("asn"),
             dbot_score=dbot_score
         )
-        ip_standard_list.append(ip_standard_context)
-        ip_data_list.append(ip_data)
+        ip_data_list.append(CommandResults(
+            readable_output=tableToMarkdown('IP Data', ip_data, removeNull=True),
+            outputs_prefix='CTIX.IP',
+            outputs_key_field='name2',
+            outputs=ip_data,
+            indicator=ip_standard_context
+        ))
 
-    readable_output = tableToMarkdown('IP List', ip_data_list, removeNull=True)
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='CTIX.IP',
-        outputs_key_field='name2',
-        outputs=ip_data_list,
-        indicators=ip_standard_list
-    )
+    return ip_data_list
 
 
-def domain_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def domain_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     domain command: Returns domain details for a list of domains
     """
@@ -270,7 +268,7 @@ def domain_details_command(client: Client, args: Dict[str, Any]) -> CommandResul
     enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_domain_details(domain_array, enhanced)
     domain_list = response.get("data", {}).get("results", {})
-    domain_data_list, domain_standard_list = [], []
+    domain_data_list = []
     for domain_data in domain_list:
         score = to_dbot_score(domain_data.get("score", 0))
         dbot_score = Common.DBotScore(
@@ -283,21 +281,18 @@ def domain_details_command(client: Client, args: Dict[str, Any]) -> CommandResul
             domain=domain_data.get("name2"),
             dbot_score=dbot_score
         )
-        domain_standard_list.append(domain_standard_context)
-        domain_data_list.append(domain_data)
+        domain_data_list.append(CommandResults(
+            readable_output=tableToMarkdown('Domain Data', domain_data, removeNull=True),
+            outputs_prefix='CTIX.Domain',
+            outputs_key_field='name2',
+            outputs=domain_data,
+            indicator=domain_standard_context
+        ))
 
-    readable_output = tableToMarkdown('Domain List', domain_data_list, removeNull=True)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='CTIX.Domain',
-        outputs_key_field='name2',
-        outputs=domain_data_list,
-        indicators=domain_standard_list
-    )
+    return domain_data_list
 
 
-def url_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def url_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     url command: Returns URL details for a list of URL
     """
@@ -315,7 +310,7 @@ def url_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_url_details(url_array, enhanced)
     url_list = response.get("data", {}).get("results", {})
-    url_data_list, url_standard_list = [], []
+    url_data_list = []
     for url_data in url_list:
         score = to_dbot_score(url_data.get("score", 0))
         dbot_score = Common.DBotScore(
@@ -328,21 +323,18 @@ def url_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
             url=url_data.get("name2"),
             dbot_score=dbot_score
         )
-        url_standard_list.append(url_standard_context)
-        url_data_list.append(url_data)
+        url_data_list.append(CommandResults(
+            readable_output=tableToMarkdown('URL Data', url_data, removeNull=True),
+            outputs_prefix='CTIX.URL',
+            outputs_key_field='name2',
+            outputs=url_data,
+            indicator=url_standard_context
+        ))
 
-    readable_output = tableToMarkdown('URL List', url_data_list, removeNull=True)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='CTIX.URL',
-        outputs_key_field='name2',
-        outputs=url_data_list,
-        indicators=url_standard_list
-    )
+    return url_data_list
 
 
-def file_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def file_details_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     """
     file command: Returns FILE details for a list of FILE
     """
@@ -360,7 +352,7 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> CommandResults
     enhanced = argToBoolean(args.get('enhanced', False))
     response = client.get_file_details(file_array, enhanced)
     file_list = response.get("data", {}).get("results", {})
-    file_data_list, file_standard_list = [], []
+    file_data_list = []
     for file_data in file_list:
         score = to_dbot_score(file_data.get("score", 0))
         dbot_score = Common.DBotScore(
@@ -373,18 +365,15 @@ def file_details_command(client: Client, args: Dict[str, Any]) -> CommandResults
             name=file_data.get("name2"),
             dbot_score=dbot_score
         )
-        file_standard_list.append(file_standard_context)
-        file_data_list.append(file_data)
+        file_data_list.append(CommandResults(
+            readable_output=tableToMarkdown('File Data', file_data, removeNull=True),
+            outputs_prefix='CTIX.File',
+            outputs_key_field='name2',
+            outputs=file_data,
+            indicator=file_standard_context
+        ))
 
-    readable_output = tableToMarkdown('File List', file_data_list, removeNull=True)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='CTIX.File',
-        outputs_key_field='name2',
-        outputs=file_data_list,
-        indicators=file_standard_list
-    )
+    return file_data_list
 
 
 def main() -> None:
