@@ -1603,7 +1603,7 @@ class TestCommandResults:
                     'Type': 'ip',
                     'Vendor': 'Virus Total',
                     'Score': 1,
-                    'Reliability': 'B: Usually reliable'
+                    'Reliability': 'B - Usually reliable'
                 }
             ]
         }

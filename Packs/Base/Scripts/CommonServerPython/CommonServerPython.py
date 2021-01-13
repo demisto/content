@@ -255,12 +255,12 @@ class DBotScoreReliability(object):
     :rtype: ``None``
     """
     THIRD_PT_ENRICHMENT = 'A+ - 3rd party enrichment'
-    COMPLETELY = 'A: Completely reliable'
-    USUALLY = 'B: Usually reliable'
-    FAIRLY = 'C: Fairly reliable'
-    NOT_USUALLY = 'D: Not usually reliable'
-    UNRELIABLE = 'E: Unreliable'
-    CANNOT_BE_JUDGED = 'F: Reliability cannot be judged'
+    COMPLETELY = 'A - Completely reliable'
+    USUALLY = 'B - Usually reliable'
+    FAIRLY = 'C - Fairly reliable'
+    NOT_USUALLY = 'D - Not usually reliable'
+    UNRELIABLE = 'E - Unreliable'
+    CANNOT_BE_JUDGED = 'F - Reliability cannot be judged'
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
         pass
