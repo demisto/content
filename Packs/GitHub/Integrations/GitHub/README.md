@@ -10,7 +10,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>API Token</strong></li>
-<li><strong>Credentials (for GitHub bots)/strong></li>
+<li><strong>Credentials (for GitHub bots)</strong></li>
 <li><strong>Username of the repository owner, for example: github.com/repos/{<em>owner</em>}/{repo}/issues</strong></li>
 <li><strong>The name of the requested repository.</strong></li>
 <li><strong>First fetch timestamp, in days.</strong></li>
