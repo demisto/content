@@ -6,15 +6,11 @@
         "Orca Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Cloud Acccount": {
+                "Orca Cloud Acccount": {
                     "complex": null,
                     "simple": "cloud_provider_id"
                 },
                 "Orca Alert ID": {
-                    "complex": null,
-                    "simple": "state.alert_id"
-                },
-                "Orca Alert Id": {
                     "complex": null,
                     "simple": "state.alert_id"
                 },
@@ -25,14 +21,6 @@
                 "Orca Reason": {
                     "complex": null,
                     "simple": "type_string"
-                },
-                "Orca_Asset_Unique_ID": {
-                    "complex": null,
-                    "simple": "asset_unique_id"
-                },
-                "cloudaccount": {
-                    "complex": null,
-                    "simple": "account_name"
                 },
                 "details": {
                     "complex": null,
