@@ -97,34 +97,54 @@ def map_orca_score_to_demisto_score(orca_score: int) -> int:
     return MAPPING[orca_score]
 
 
-def fetch_incidents(orca_client: OrcaClient) -> List[Dict[str, Any]]:
-    demisto.debug("fetch-incidents called")
+def fetch_incidents(orca_client: OrcaClient, max_fetch: int) -> List[Dict[str, Any]]:
+    demisto.info(f"fetch-incidents called {max_fetch=}")
+
     if demisto.getLastRun().get('lastRun'):
-        demisto.info("not first run, returning")
-        # only first run is relevant, other incidents are dynamically pushed from Kafka
-        demisto.incidents([])
-        return []
+        demisto.info("not first run, exporting reminder of alerts")
+        incidents_queue = demisto.getLastRun().get('incidents_for_next_run')
+        incidents_to_export = incidents_queue[:max_fetch]
+        incidents_for_next_run = incidents_queue[max_fetch:]
 
-    alerts = orca_client.get_all_alerts()
-    if not alerts:
-        demisto.incidents([])
-        return []
+        if not incidents_to_export:
+            # finished exporting from the queue of alerts
+            demisto.incidents([])
+            demisto.setLastRun(
+                {'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT), "incidents_for_next_run": []})
+            return []
 
-    incidents = []
-    for alert in alerts:
-        alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state", {}).get("score", 1))
-        incident = {
-            'name': f"Orca Cloud Incident: {alert.get('state', {}).get('alert_id')}.",
-            'occurred': datetime_to_string(
-                datetime.strptime(alert.get('state', {}).get('last_seen'), "%Y-%m-%dT%H:%M:%S%z").isoformat()),
-            'rawJSON': json.dumps(alert),
-            'severity': map_orca_score_to_demisto_score(orca_score=alert.get('state', {}).get('score'))
-        }
-        incidents.append(incident)
+        else:
+            # still exporting from alerts queue
+            demisto.info("still exporting from alerts queue")
+            demisto.incidents(incidents_to_export)
+            demisto.setLastRun({'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT),
+                                "incidents_for_next_run": incidents_for_next_run})
+            return []
 
-    demisto.setLastRun({'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
-    demisto.incidents(incidents)
-    return incidents
+    else:
+        alerts = orca_client.get_all_alerts()
+        if not alerts:
+            demisto.incidents([])
+            return []
+
+        incidents = []
+
+        for alert in alerts:
+            alert['demisto_score'] = map_orca_score_to_demisto_score(orca_score=alert.get("state", {}).get("score", 1))
+            incident = {
+                'name': f"Orca Cloud Incident: {alert.get('state', {}).get('alert_id')}.",
+                'occurred': datetime_to_string(
+                    datetime.strptime(alert.get('state', {}).get('last_seen'), "%Y-%m-%dT%H:%M:%S%z").isoformat()),
+                'rawJSON': json.dumps(alert),
+                'severity': map_orca_score_to_demisto_score(orca_score=alert.get('state', {}).get('score'))
+            }
+            incidents.append(incident)
+
+        # demisto.setLastRun({'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
+        demisto.incidents(incidents[:max_fetch])
+        demisto.setLastRun(
+            {'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT), "incidents_for_next_run": incidents[max_fetch:]})
+        return incidents
 
 
 def main() -> None:
@@ -168,7 +188,7 @@ def main() -> None:
             return_results(command_result)
 
         elif command == "fetch-incidents":
-            fetch_incidents(orca_client)
+            fetch_incidents(orca_client, max_fetch=int(demisto.params().get('max_fetch')))
 
         elif command == "test-module":
             test_res = orca_client.validate_api_key()
