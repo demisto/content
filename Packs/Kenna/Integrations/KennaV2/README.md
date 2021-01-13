@@ -1,43 +1,43 @@
 Use the Kenna v2 integration to search and update vulnerabilities, schedule a run connector, and manage tags and attributes.
+This integration was integrated and tested with version xx of Kennav2_Custom.
+## Configure Kennav2_Custom on Cortex XSOAR
 
-## Configure Kenna v2 on Demisto
----
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Kennav2_Custom.
+3. Click **Add instance** to create and configure a new integration instance.
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-2. Search for Kenna v2.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __Server URL (e.g.  https://api.kennasecurity.com)__
-    * __Kenna API key__
-    * __Use system proxy settings__
-    * __Trust any certificate (not secure)__
-4. Click __Test__ to validate the URLs, token, and connection.
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | url | Server URL \(e.g.  https://api.kennasecurity.com\) | False |
+    | key | Kenna API key | True |
+    | proxy | Use system proxy settings | False |
+    | insecure | Trust any certificate \(not secure\) | False |
 
+4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
----
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-### 1. Search vulnerabilities
----
+### kenna-search-vulnerabilities
+***
 Searches for vulnerabilities in Kenna.
 
-##### Base Command
+
+#### Base Command
 
 `kenna-search-vulnerabilities`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Vulnerability ID to search. | Optional | 
-| top-priority | Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false". | Optional | 
+| top-priority | Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false". Possible values are: true, false. | Optional | 
 | min-score | The minimum vulnerability score for which to return vulnerabilities. | Optional | 
-| status | The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive". | Optional | 
-| limit | The maximum number of vulnerabilities to return. The default value is 500. | Optional | 
-| to_context | Whether to flush to context. Can be "True" or "False". The default value is "True". | Optional | 
+| status | The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive". Possible values are: open, closed, risk_accepted, false_positive. | Optional | 
+| limit | The maximum number of vulnerabilities to return. The default value is 500. Default is 500. | Optional | 
+| to_context | Whether to flush to context. Can be "True" or "False". The default value is "True". Possible values are: True, False. Default is True. | Optional | 
+| id | The vulnerability ID for which to search. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -64,253 +64,61 @@ Searches for vulnerabilities in Kenna.
 | Kenna.Vulnerabilities.ID | Number | The vulnerability ID. | 
 
 
-##### Command Example
-```!kenna-search-vulnerabilities limit=5```
+#### Command Example
+``` ```
 
-##### Context Example
-```
-{
-    "Kenna.Vulnerabilities": [
-        {
-            "Status": "open", 
-            "CveID": "CVE-2018-1273", 
-            "Severity": 8, 
-            "AssetID": {asset_id}, 
-            "Threat": 10, 
-            "Patch": true, 
-            "Connectors": [
-                {
-                    "DefinitionName": "Nessus XML", 
-                    "Vendor": "Tenable", 
-                    "ID": 152075, 
-                    "Name": "Nessus XML"
-                }, 
-                {
-                    "DefinitionName": "Kenna Data Importer", 
-                    "Vendor": "Kenna", 
-                    "ID": 152076, 
-                    "Name": "Generic"
-                }
-            ], 
-            "Score": 100, 
-            "ScannerVulnerabilities": [
-                {
-                    "Open": true, 
-                    "ExternalID": "generic scanner-id CVE-2018-1273", 
-                    "Port": null
-                }, 
-                {
-                    "Open": true, 
-                    "ExternalID": "nessus-external-id CVE-2018-1273 f1ca5f10-907f-44a3-9dad-4250dff54cf6", 
-                    "Port": null
-                }
-            ], 
-            "FixID": 1460814, 
-            "TopPriority": true, 
-            "ID": 631199
-        }, 
-        {
-            "Status": "open", 
-            "CveID": "CVE-2018-2628", 
-            "Severity": 8, 
-            "AssetID": {asset_id}, 
-            "Threat": 10, 
-            "Patch": true, 
-            "Connectors": [
-                {
-                    "DefinitionName": "Nessus XML", 
-                    "Vendor": "Tenable", 
-                    "ID": 152075, 
-                    "Name": "Nessus XML"
-                }, 
-                {
-                    "DefinitionName": "Kenna Data Importer", 
-                    "Vendor": "Kenna", 
-                    "ID": 152076, 
-                    "Name": "Generic"
-                }
-            ], 
-            "Score": 100, 
-            "ScannerVulnerabilities": [
-                {
-                    "Open": true, 
-                    "ExternalID": "generic scanner-id CVE-2018-2628", 
-                    "Port": null
-                }, 
-                {
-                    "Open": true, 
-                    "ExternalID": "nessus-external-id CVE-2018-2628 bc839599-9e76-41f9-a79f-92120e346688", 
-                    "Port": null
-                }
-            ], 
-            "FixID": 1460809, 
-            "TopPriority": true, 
-            "ID": 631194
-        }, 
-        {
-            "Status": "open", 
-            "CveID": "CVE-2018-20250", 
-            "Severity": 7, 
-            "AssetID": {asset_id}, 
-            "Threat": 9, 
-            "Patch": true, 
-            "Connectors": [
-                {
-                    "DefinitionName": "Nessus XML", 
-                    "Vendor": "Tenable", 
-                    "ID": 152075, 
-                    "Name": "Nessus XML"
-                }, 
-                {
-                    "DefinitionName": "Kenna Data Importer", 
-                    "Vendor": "Kenna", 
-                    "ID": 152076, 
-                    "Name": "Generic"
-                }
-            ], 
-            "Score": 100, 
-            "ScannerVulnerabilities": [
-                {
-                    "Open": true, 
-                    "ExternalID": "generic scanner-id CVE-2018-20250", 
-                    "Port": null
-                }, 
-                {
-                    "Open": true, 
-                    "ExternalID": "nessus-external-id CVE-2018-20250 755a8761-828b-45a9-907f-d30f38bd18a9", 
-                    "Port": null
-                }
-            ], 
-            "FixID": 1460615, 
-            "TopPriority": true, 
-            "ID": 631026
-        }, 
-        {
-            "Status": "open", 
-            "CveID": "CVE-2018-16858", 
-            "Severity": 8, 
-            "AssetID": {asset_id}, 
-            "Threat": 10, 
-            "Patch": true, 
-            "Connectors": [
-                {
-                    "DefinitionName": "Nessus XML", 
-                    "Vendor": "Tenable", 
-                    "ID": 152075, 
-                    "Name": "Nessus XML"
-                }, 
-                {
-                    "DefinitionName": "Kenna Data Importer", 
-                    "Vendor": "Kenna", 
-                    "ID": 152076, 
-                    "Name": "Generic"
-                }
-            ], 
-            "Score": 100, 
-            "ScannerVulnerabilities": [
-                {
-                    "Open": true, 
-                    "ExternalID": "generic scanner-id CVE-2018-16858", 
-                    "Port": null
-                }, 
-                {
-                    "Open": true, 
-                    "ExternalID": "nessus-external-id CVE-2018-16858 19443e63-b916-4068-a174-0c4678416c14", 
-                    "Port": null
-                }
-            ], 
-            "FixID": 1460616, 
-            "TopPriority": true, 
-            "ID": 631027
-        }, 
-        {
-            "Status": "open", 
-            "CveID": "CVE-2017-8917", 
-            "Severity": 8, 
-            "AssetID": {asset_id}, 
-            "Threat": 10, 
-            "Patch": true, 
-            "Connectors": [
-                {
-                    "DefinitionName": "Nessus XML", 
-                    "Vendor": "Tenable", 
-                    "ID": 152075, 
-                    "Name": "Nessus XML"
-                }, 
-                {
-                    "DefinitionName": "Kenna Data Importer", 
-                    "Vendor": "Kenna", 
-                    "ID": 152076, 
-                    "Name": "Generic"
-                }
-            ], 
-            "Score": 100, 
-            "ScannerVulnerabilities": [
-                {
-                    "Open": true, 
-                    "ExternalID": "generic scanner-id CVE-2017-8917", 
-                    "Port": null
-                }, 
-                {
-                    "Open": true, 
-                    "ExternalID": "nessus-external-id CVE-2017-8917 bfe89aea-8ba7-411e-9f48-9fd6e821526e", 
-                    "Port": null
-                }
-            ], 
-            "FixID": 1461409, 
-            "TopPriority": true, 
-            "ID": 631927
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-### Kenna Vulnerabilities
-|Name|Score|id|
-|---|---|---|
-| CVE-2018-1273 | 100 | 631199 |
-| CVE-2018-2628 | 100 | 631194 |
-| CVE-2018-20250 | 100 | 631026 |
-| CVE-2018-16858 | 100 | 631027 |
-| CVE-2017-8917 | 100 | 631927 |
+#### Human Readable Output
 
 
-### 2. Run a connector
----
+
+### kenna-run-connector
+***
 Executes a run of the specified connector. If file based, it will use the most recently uploaded data file.
 
-##### Base Command
+
+#### Base Command
 
 `kenna-run-connector`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The connector ID to run. | Required | 
 
 
-### 3. Search fixes
----
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### kenna-search-fixes
+***
 Filters fixes by a given set of vulnerability and asset parameters and returns the filtered fixes.
 
-##### Base Command
+
+#### Base Command
 
 `kenna-search-fixes`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The vulnerability ID for which to search. | Optional | 
-| top-priority | Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false". | Optional | 
+| top-priority | Whether to return vulnerabilities that Kenna deems a top priority to fix. Can be "true" or "false". Possible values are: true, false. | Optional | 
 | min-score | The minimum vulnerability score for which to return vulnerabilities. | Optional | 
-| status | The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive". | Optional | 
+| status | The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive". Possible values are: open, closed, risk_accepted, false_positive. | Optional | 
 | vulnerabilities | vulnerabilities for search. | Optional | 
-| limit | The maximum number of vulnerabilities to return. The default value is 500. | Optional | 
-| to_context | Whether to flush to context. Can be "True" or "False". The default value is "True". | Optional | 
+| limit | The maximum number of vulnerabilities to return. The default value is 500. Default is 500. | Optional | 
+| to_context | Whether to flush to context. Can be "True" or "False". The default value is "True". Possible values are: True, False. Default is True. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -330,103 +138,22 @@ Filters fixes by a given set of vulnerability and asset parameters and returns t
 | Kenna.Fixes.MaxScore | Number | The maximum score of the fix. | 
 
 
-##### Command Example
-```!kenna-search-fixes limit=3```
+#### Command Example
+``` ```
 
-##### Context Example
-```
-{
-    "Kenna.Fixes": [
-        {
-            "Category": null, 
-            "VulnerabilityCount": 1, 
-            "CveID": [
-                "CVE-2019-18408"
-            ], 
-            "Assets": [
-                {
-                    "PrimaryLocator": "ip_address", 
-                    "Locator": "{ip}", 
-                    "DisplayLocator": "{ip}", 
-                    "ID": {id}}
-                }
-            ], 
-            "Title": "CVE-2019-18408", 
-            "LastUpdatedAt": "2019-10-24T19:02:03.000Z", 
-            "MaxScore": 27, 
-            "ID": 1459069
-        }, 
-        {
-            "Category": null, 
-            "VulnerabilityCount": 1, 
-            "CveID": [
-                "CVE-2019-18409"
-            ], 
-            "Assets": [
-                {
-                    "PrimaryLocator": "ip_address", 
-                    "Locator": "{ip}", 
-                    "DisplayLocator": "{ip}", 
-                    "ID": 10963
-                }
-            ], 
-            "Title": "CVE-2019-18409", 
-            "LastUpdatedAt": "2019-10-24T19:02:03.000Z", 
-            "MaxScore": 16, 
-            "ID": 1459070
-        }, 
-        {
-            "Category": null, 
-            "VulnerabilityCount": 1, 
-            "CveID": [
-                "CVE-2019-18393"
-            ], 
-            "Assets": [
-                {
-                    "PrimaryLocator": "ip_address", 
-                    "Locator": "{ip}", 
-                    "DisplayLocator": "{ip}", 
-                    "ID": 10963
-                }
-            ], 
-            "Title": "CVE-2019-18393", 
-            "LastUpdatedAt": "2019-10-24T19:02:03.000Z", 
-            "MaxScore": 27, 
-            "ID": 1459071
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-CVE-2019-18408
-#### ID: 1459069
-1 vulnerabilities affected
-#### Diagnosis:
-   Related CVE IDs:   CVE-2019-18408  
-&nbsp;
-CVE-2019-18409
-#### ID: 1459070
-1 vulnerabilities affected
-#### Diagnosis:
-   Related CVE IDs:   CVE-2019-18409  
-&nbsp;
-CVE-2019-18393
-#### ID: 1459071
-1 vulnerabilities affected
-#### Diagnosis:
-   Related CVE IDs:   CVE-2019-18393  
-&nbsp;
+#### Human Readable Output
 
 
-### 4. Update an asset
----
+
+### kenna-update-asset
+***
 Updates the attributes of a single asset.
 
-##### Base Command
+
+#### Base Command
 
 `kenna-update-asset`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -434,58 +161,60 @@ Updates the attributes of a single asset.
 | notes | Notes about the asset. | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
-##### Command Example
-```!kenna-update-asset id={asset_id} notes="My personal asset."```
+#### Command Example
+``` ```
+
+#### Human Readable Output
 
 
-##### Human Readable Output
-Asset {asset_id} was updated
 
-### 5. Update a vulnerability
----
+### kenna-update-vulnerability
+***
 Updates the attributes of a single vulnerability.
 
-##### Base Command
+
+#### Base Command
 
 `kenna-update-vulnerability`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The ID of the vulnerability to update. | Required | 
-| status | The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive". | Optional | 
+| status | The status of the vulnerability. Can be "open", "closed", "risk_accepted", or "false_positive". Possible values are: open, closed, risk_accepted, false_positive. | Optional | 
 | notes | Notes about the vulnerability. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
-##### Command Example
-```!kenna-update-vulnerability id=631199 status=risk_accepted```
+#### Command Example
+``` ```
+
+#### Human Readable Output
 
 
-##### Human Readable Output
-Asset 631199 was updated
 
-### 6. Get a list of all connectors
----
+### kenna-get-connectors
+***
 Returns all connectors.
 
-##### Base Command
+
+#### Base Command
 
 `kenna-get-connectors`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -495,66 +224,22 @@ Returns all connectors.
 | Kenna.ConnectorsList.Host | String | The connector host. | 
 
 
-##### Command Example
-```!kenna-get-connectors```
+#### Command Example
+``` ```
 
-##### Context Example
-```
-{
-    "Kenna.ConnectorsList": [
-        {
-            "Host": null, 
-            "Running": false, 
-            "ID": 152075, 
-            "Name": "Nessus XML"
-        }, 
-        {
-            "Host": null, 
-            "Running": false, 
-            "ID": 152076, 
-            "Name": "Generic"
-        }, 
-        {
-            "Host": null, 
-            "Running": false, 
-            "ID": 152077, 
-            "Name": "Checkmarx XML"
-        }, 
-        {
-            "Host": "ven01347.service-now.com:443", 
-            "Running": false, 
-            "ID": 152078, 
-            "Name": "ServiceNow"
-        }, 
-        {
-            "Host": "8080", 
-            "Running": false, 
-            "ID": 152929, 
-            "Name": "AppScan Enterprise"
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-### Kenna Connectors
-|Host|ID|Name|Running|
-|---|---|---|---|
-|  | 152075 | Nessus XML | false |
-|  | 152076 | Generic | false |
-|  | 152077 | Checkmarx XML | false |
-| ven01347.service-now.com:443 | 152078 | ServiceNow | false |
-| 8080 | 152929 | AppScan Enterprise | false |
+#### Human Readable Output
 
 
-### 7. Search assets
----
+
+### kenna-search-assets
+***
 Searches for assets.
 
-##### Base Command
+
+#### Base Command
 
 `kenna-search-assets`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -562,11 +247,11 @@ Searches for assets.
 | hostname | The hostname of the asset to search for. | Optional | 
 | min-score | The minimum vulnerability score for which to return vulnerabilities. | Optional | 
 | tags | The tags by which to search. | Optional | 
-| limit | The maximum number of vulnerabilities to return. The default value is 500. | Optional | 
-| to_context | Whether to print output to context. Can be "True" or "False". The default value is "True". | Optional | 
+| limit | The maximum number of vulnerabilities to return. The default value is 500. Default is 500. | Optional | 
+| to_context | Whether to print output to context. Can be "True" or "False". The default value is "True". Possible values are: True, False. Default is True. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -585,110 +270,31 @@ Searches for assets.
 | Kenna.Assets.OperatingSystem | String | Operating system of asset | 
 
 
-##### Command Example
-```!kenna-search-assets limit=4```
+#### Command Example
+``` ```
 
-##### Context Example
-```
-{
-    "Kenna.Assets": [
-        {
-            "Status": "active", 
-            "Tags": [
-                "DMZ"
-            ], 
-            "Notes": "Test Update Notes Kenna", 
-            "Hostname": null, 
-            "Fqdn": null, 
-            "ID": {asset_id}, 
-            "Priority": 10, 
-            "Score": 1000, 
-            "Owner": null, 
-            "IpAddress": "{ip}", 
-            "OperatingSystem": "Ubuntu", 
-            "VulnerabilitiesCount": 55
-        }, 
-        {
-            "Status": "active", 
-            "Tags": [
-                "Category4"
-            ], 
-            "Notes": null, 
-            "Hostname": null, 
-            "Fqdn": null, 
-            "ID": {asset_id}, 
-            "Priority": 10, 
-            "Score": 1000, 
-            "Owner": null, 
-            "IpAddress": "{ip}", 
-            "OperatingSystem": "Windows", 
-            "VulnerabilitiesCount": 19
-        }, 
-        {
-            "Status": "active", 
-            "Tags": [
-                "Category4", 
-                "Category5"
-            ], 
-            "Notes": null, 
-            "Hostname": null, 
-            "Fqdn": null, 
-            "ID": {asset_id}, 
-            "Priority": 10, 
-            "Score": 1000, 
-            "Owner": null, 
-            "IpAddress": "{ip}", 
-            "OperatingSystem": "Windows", 
-            "VulnerabilitiesCount": 10
-        }, 
-        {
-            "Status": "active", 
-            "Tags": [
-                "Category3", 
-                "Category5"
-            ], 
-            "Notes": null, 
-            "Hostname": null, 
-            "Fqdn": null, 
-            "ID": {asset_id}, 
-            "Priority": 10, 
-            "Score": 1000, 
-            "Owner": null, 
-            "IpAddress": "{ip}", 
-            "OperatingSystem": "Windows", 
-            "VulnerabilitiesCount": 10
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-### Kenna Assets
-|IP-address|Operating System|Score|id|
-|---|---|---|---|
-| {ip} | Ubuntu | 1000 | {asset_id} |
-| {ip} | Windows | 1000 | {asset_id} |
-| {ip} | Windows | 1000 | {asset_id} |
-| {ip} | Windows | 1000 | {asset_id} |
+#### Human Readable Output
 
 
-### 8. Get an asset's vulnerabilities
----
+
+### kenna-get-asset-vulnerabilities
+***
 Gets vulnerabilities of the specified asset.
 
-##### Base Command
+
+#### Base Command
 
 `kenna-get-asset-vulnerabilities`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The asset ID for which to get vulnerabilities. | Required | 
-| limit | The maximum number of vulnerabilities to return. The default value is 500. | Optional | 
-| to_context | Whether to print output to context. Can be "True" or "False". The default value is "True". | Optional | 
+| limit | The maximum number of vulnerabilities to return. The default value is 500. Default is 500. | Optional | 
+| to_context | Whether to print output to context. Can be "True" or "False". The default value is "True". Possible values are: True, False. Default is True. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -701,93 +307,109 @@ Gets vulnerabilities of the specified asset.
 | Kenna.VulnerabilitiesOfAsset.Score | Number | The score of the vulnerability associated with the asset.  | 
 
 
-##### Command Example
-```!kenna-get-asset-vulnerabilities id={asset_id} limit=2```
+#### Command Example
+``` ```
 
-##### Context Example
-```
-{
-    "Kenna.VulnerabilitiesOfAsset": [
-        {
-            "Status": "open", 
-            "CveID": "CVE-2017-5817", 
-            "AssetID": {asset_id}, 
-            "Patch": true, 
-            "Score": 91, 
-            "TopPriority": true, 
-            "ID": 631229
-        }, 
-        {
-            "Status": "open", 
-            "CveID": "CVE-2018-0866", 
-            "AssetID": {asset_id}, 
-            "Patch": true, 
-            "Score": 85, 
-            "TopPriority": true, 
-            "ID": 631231
-        }
-    ]
-}
-```
-
-##### Human Readable Output
-### Kenna Vulnerabilities
-|Name|Score|id|
-|---|---|---|
-| CVE-2017-5817 | 91 | 631229 |
-| CVE-2018-0866 | 85 | 631231 |
+#### Human Readable Output
 
 
-### 9. Add a tag to an asset
----
+
+### kenna-add-tag
+***
 Adds a tag to the specified asset.
 
-##### Base Command
+
+#### Base Command
 
 `kenna-add-tag`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tag | A comma-separated list of tags to add to the asset. | Required | 
-| id | The asset ID to which to add the tag.  | Required | 
+| id | The asset ID to which to add the tag. . | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
-##### Command Example
-```!kenna-add-tag id={asset_id} tag="My test tag"```
+#### Command Example
+``` ```
+
+#### Human Readable Output
 
 
 
-##### Human Readable Output
-Tag My test tag was added to asset {asset_id}
-
-### 10. Delete a tag from an asset
----
+### kenna-delete-tag
+***
 Deletes tags from the specified asset.
 
-##### Base Command
+
+#### Base Command
 
 `kenna-delete-tag`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The asset ID from which to delete the tag. | Required | 
+| id | The asset ID from which to delete the tag. Possible values are: . | Required | 
 | tag | The tag to delete. | Required | 
 
 
-##### Context Output
+#### Context Output
 
 There is no context output for this command.
 
-##### Command Example
-```!kenna-delete-tag id={asset_id} tag="My test tag"```
+#### Command Example
+``` ```
+
+#### Human Readable Output
 
 
 
-##### Human Readable Output
-Tag My test tag was deleted to asset {asset_id}
+### kenna-get-connector-runs
+***
+Returns JSON data on all the runs of a given connector
+
+
+#### Base Command
+
+`kenna-get-connector-runs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| connector_id | Unique numerical ID of the connector. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Kenna.ConnectorRunsList.id | unknown | Connector Run ID | 
+| Kenna.ConnectorRunsList.start_time | unknown | Connector Run Start Time | 
+| Kenna.ConnectorRunsList.end_time | unknown | Connector Run End Time | 
+| Kenna.ConnectorRunsList.success | boolean | Boolean value showing connector success | 
+| Kenna.ConnectorRunsList.total_payload_count | unknown | Total connector payloads | 
+| Kenna.ConnectorRunsList.processed_payload_count | unknown | total payloads processed by connector | 
+| Kenna.ConnectorRunsList.failed_payload_count | unknown | Total failed payloads | 
+| Kenna.ConnectorRunsList.processed_assets_count | unknown | Count of processed assets | 
+| Kenna.ConnectorRunsList.assets_with_tags_reset_count | unknown | Count of assets with reset tags | 
+| Kenna.ConnectorRunsList.processed_scanner_vuln_count | unknown | Count of processed scanners with vulnerabilities | 
+| Kenna.ConnectorRunsList.updated_scanner_vlun_count | unknown | Count of updated scanners with vulnerabilities | 
+| Kenna.ConnectorRunsList.created_scanner_vuln_count | unknown | Count of created scanners with vulnerabilities  | 
+| Kenna.ConnectorRunsList.closed_scanner_vuln_count | unknown | Count of closed scanners with vulnerabilities  | 
+| Kenna.ConnectorRunsList.autoclosed_scanner_vuln_count | unknown | Count of auto-closed scanners with vulnerabilities | 
+| Kenna.ConnectorRunsList.reopened_scanner_vuln_count | unknown | Count of reopened scanners with vulnerabilities  | 
+| Kenna.ConnectorRunsList.closed_vuln_count | unknown | Count of closed vulnerabilities | 
+| Kenna.ConnectorRunsList.autoclosed_vuln_count | unknown | Count of auto-closed vulnerabilities | 
+| Kenna.ConnectorRunsList.reopened_vuln_count | unknown | Count of re-opened vulnerabilities | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
