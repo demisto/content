@@ -2,8 +2,7 @@ args:
 - auto: PREDEFINED
   default: true
   defaultValue: 'false'
-  description: If "true" will return all users, including users that are Out Of Office.
-    If "false", will return all users that are not Out Of Office. Default is "false".
+  description: If "true" will return all users, including users that are Out Of Office. If "false", will return all users that are not Out Of Office. Default is "false".
   isArray: false
   name: include_OOO_users
   predefined:

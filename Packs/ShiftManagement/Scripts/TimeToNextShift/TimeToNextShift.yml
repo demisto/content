@@ -1,4 +1,4 @@
-comment: Retrieves the time ledt to the next shift.
+comment: Retrieves the time left to the next shift.
 commonfields:
   id: TimeToNextShift
   version: -1

@@ -8,9 +8,7 @@ tags:
 - ooo
 - Shift Management
 comment: |-
-  Add/Remove yourself from the out of office list in XSOAR.
-
-  When used with the SimpleAssignAnalystToIncident automation, prevents Incidents from being assigned to you while out of office.
+  Add/Remove yourself from the out of office list in XSOAR. When used with the AssignAnalystToIncidentOOO automation, prevents Incidents from being assigned to you while out of office.
 enabled: true
 args:
 - name: option
@@ -24,12 +22,10 @@ args:
   description: Number of days you'll be off, default is 7
   defaultValue: "7"
 - name: listname
-  description: Optionally pass in a different XSOAR list to run this automation against
-    (defaults to OOO List)
+  description: Optionally pass in a different XSOAR list to run this automation against(defaults to OOO List)
   defaultValue: OOO List
 - name: username
-  description: Optionally pass in the XSOAR user name to add to the list (defaults
-    to current user), in case they forgot in their haste to go on vacation!
+  description: Optionally pass in the XSOAR user name to add to the list (defaults to current user), in case they forgot in their haste to go on vacation!
 scripttarget: 0
 subtype: python3
 runonce: false

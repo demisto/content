@@ -7,14 +7,11 @@ type: python
 tags:
 - ooo
 - Shift Management
-comment: Cleans the out of office list for XSOAR users, removing any where the off
-  until day is in the past.   Can be used with the JOB - Out of Office Cleanup Example
-  playbook.
+comment: Cleans the out of office list for XSOAR users, removing any where the off until day is in the past.
 enabled: true
 args:
 - name: listname
-  description: Optionally pass in a different XSOAR list to run this automation against
-    (defaults to OOO List)
+  description: Optionally pass in a different XSOAR list to run this automation against(defaults to OOO List)
   defaultValue: OOO List
 scripttarget: 0
 subtype: python3

@@ -7,8 +7,7 @@ type: python
 tags:
 - Shift Management
 - ooo
-comment: Create channel in Slack v2 or in Microsoft Teams, if both of them are available
-  it creates the channel in  Slack v2 or and Microsoft Teams
+comment: Creates a channel in Slack v2 or in Microsoft Teams, if both of them are available it creates the channel in Slack v2 and Microsoft Teams.
 enabled: true
 args:
 - name: name
