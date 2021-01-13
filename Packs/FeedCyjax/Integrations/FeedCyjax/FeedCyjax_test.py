@@ -8,7 +8,7 @@ from CommonServerUserPython import *
 
 from FeedCyjax import INDICATORS_LAST_FETCH_KEY, DATE_FORMAT, Client, main, cyjax_sdk, test_module as module_test, \
      get_indicators_last_fetch_date, map_indicator_type, map_reputation_to_score, convert_cyjax_indicator, \
-     fetch_indicators_command, get_indicators_command, indicator_sighting_command
+     fetch_indicators_command, get_indicators_command, indicator_sighting_command, arg_to_datetime
 from test_data.indicators import mocked_indicators
 
 
@@ -184,8 +184,8 @@ def test_get_indicators_command_arguments_specified(mocker):
     })
 
     result = get_indicators_command(client_for_testing, demisto.args())
-    list_call_spy.assert_called_with(since='2020-10-10T00:00:00',
-                                     until='2021-01-15T00:00:00',
+    list_call_spy.assert_called_with(since='2020-10-10T00:00:00Z',
+                                     until='2021-01-15T00:00:00Z',
                                      indicator_type='URL',
                                      source_type='incident-report',
                                      source_id=50000)

@@ -394,11 +394,11 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> Optional[Dic
 
     if since is not None:
         since_date = arg_to_datetime(since, 'since')
-        since = since_date.isoformat() if since_date else None
+        since = since_date.strftime(DATE_FORMAT) if since_date else None
 
     if until is not None:
         until_date = arg_to_datetime(until, 'until')
-        until = until_date.isoformat() if until_date else None
+        until = until_date.strftime(DATE_FORMAT) if until_date else None
 
     if source_id is not None:
         source_id = int(source_id)
@@ -474,6 +474,7 @@ def main() -> None:
     reputation = params.get('feedReputation', 'None')
 
     demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.info(f' --------- !!±!!!!!!!! ----------- CYJAX ----- Command being called is {demisto.command()}')
 
     try:
 
@@ -487,6 +488,8 @@ def main() -> None:
             return_results(test_module(client))
 
         elif demisto.command() == 'fetch-indicators':
+
+            demisto.info('-------------- CYJAX fetch-indicators called at {}'.format(datetime.now().isoformat()))
             last_fetch_date = get_indicators_last_fetch_date()  # type:datetime
             next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation)
 
