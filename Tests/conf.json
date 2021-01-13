@@ -525,10 +525,6 @@
             "playbookID": "Cloaken-Test"
         },
         {
-            "integrations": "Uptycs",
-            "playbookID": "TestUptycs"
-        },
-        {
             "integrations": "ThreatX",
             "playbookID": "ThreatX-test",
             "timeout": 600
@@ -1049,14 +1045,6 @@
             "integrations": "Threat Grid",
             "playbookID": "ThreatGridTest",
             "timeout": 600
-        },
-        {
-            "integrations": [
-                "Palo Alto Minemeld",
-                "Panorama"
-            ],
-            "instance_names": "palo_alto_firewall",
-            "playbookID": "block_indicators_-_generic_-_test"
         },
         {
             "integrations": "Signal Sciences WAF",
@@ -2693,10 +2681,6 @@
             "playbookID": "Elasticsearch_v2_test-v6"
         },
         {
-            "integrations": "IronDefense",
-            "playbookID": "IronDefenseTest"
-        },
-        {
             "integrations": "PolySwarm",
             "playbookID": "PolySwarm-Test"
         },
@@ -2961,11 +2945,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "CounterCraft Deception Director",
-            "playbookID": "CounterCraft - Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "SafeBreach v2",
             "playbookID": "playbook-SafeBreach-Test",
             "fromversion": "5.5.0"
@@ -3051,38 +3030,13 @@
             "fromversion": "5.5.0"
         },
         {
-            "playbookID": "PCAP Search test",
-            "fromversion": "5.0.0"
-        },
-        {
-            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
-            "fromversion": "5.0.0",
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general"
-        },
-        {
-            "playbookID": "PCAP File Carving Test",
-            "integrations": [
-                "VirusTotal",
-                "WildFire-v2"
-            ],
-            "instance_names": "virus_total_general",
-            "fromversion": "5.0.0"
-        },
-        {
             "playbookID": "PCAP Analysis Test",
             "integrations": [
-                "Recorded Future v2",
+                "ipinfo",
                 "WildFire-v2"
             ],
             "fromversion": "5.0.0",
             "timeout": 1200
-        },
-        {
-            "integrations": "VirusTotal",
-            "instance_names": "virus_total_general",
-            "playbookID": "PCAP Parsing And Indicator Enrichment Test",
-            "fromversion": "5.0.0"
         },
         {
             "integrations": "Workday",
@@ -3223,10 +3177,9 @@
     ],
     "skipped_tests": {
         "Github IAM - Test Playbook": "Issue 32383",
+        "Calculate Severity - Standard - Test": "Issue 32715",
+        "Calculate Severity - Generic v2 - Test": "Issue 32716",
         "Workday - Test": "No credentials Issue 29595",
-        "PCAP File Carving Test": "Merged with PCAP Analysis Test",
-        "PCAP Parsing And Indicator Enrichment Test": "Merged with PCAP Analysis Test",
-        "PCAP Search test": "Merged with PCAP Analysis Test",
         "Protectwise-Test": "Issue 28168",
         "Phishing Classifier V2 ML Test": "Issue 26066",
         "RedLockTest": "Issue 24600",
@@ -3242,33 +3195,19 @@
         "Git_Integration-Test": "Issue 20029",
         "Symantec Data Loss Prevention - Test": "Issue 20134",
         "NetWitness Endpoint Test": "Issue 19878",
-        "TestUptycs": "Issue 19750",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "ArcSight Logger test": "Issue 19117",
-        "TestDedupIncidentsByName": "skipped on purpose - this is part of the TestDedupIncidentsPlaybook - no need to execute separately as a test",
         "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "RecordedFutureFeed - Test": "Issue 18922",
         "IntSights Mssp Test": "Issue #16351",
         "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
-        "DeleteContext-auto-subplaybook-test": "used in DeleteContext-auto-test as sub playbook",
         "Test Playbook TrendMicroDDA": "Issue 16501",
-        "Process Email - Generic - Test - Actual Incident": "Should never run as standalone. Issue #25947",
-        "Phishing v2 - Test - Actual Incident": "Should never run as standalone. Issue #25947",
-        "Phishing - Core - Test - Actual Incident": "Should never run as standalone. Issue #25947",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
         "palo_alto_panorama_test_pb": "Issue #22835",
-        "GCS Bucket Management - Test": "used in GCS - Test as sub playbook",
-        "GCS Object Operations - Test": "used in GCS - Test as sub playbook",
-        "GCS Bucket Policy (ACL) - Test": "used in GCS - Test as sub playbook",
-        "GCS Object Policy (ACL) - Test": "used in GCS - Test as sub playbook",
-        "Send Email To Recipients": "used in EWS Mail Sender Test 2 as sub playbook",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
-        "Account Enrichment - Generic v2 - Test": "Issue 26452",
-        "Office365_Feed_Test": "Issue 26455",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
-        "Google Chronicle Backstory Asset - Test": "Issue 26460",
         "HybridAnalysis-Test": "Issue 26599",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
@@ -3292,13 +3231,9 @@
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
         "Trend Micro Apex - Test": "Issue 27280",
         "Azure Compute - Test": "Issue 28056",
-        "Test - CrowdStrike Falcon": "Issue 30068",
         "TestEmailRepPlaybook": "Issue 30070",
-        "CounterCraft - Test": "Issue 30069",
-        "Test-BPA": "Issue 28406",
         "SymantecEndpointProtection_Test": "Issue 30157",
         "forcepoint test": "Issue 28043",
-        "Test-BPA_Integration": "Issue 28236",
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
         "PhishLabsIOC TestPlaybook": "Issue 30874",
@@ -3308,7 +3243,6 @@
         "CuckooTest": "Issue 25601",
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
-        "Archer-Test-Playbook": "Issue 26851",
         "Carbon Black Live Response Test": "Issue 28237",
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
@@ -3323,7 +3257,6 @@
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
-        "Recorded Future v2": "Issue 29090",
         "Symantec Management Center": "Issue 23960",
         "IntSights": "Issue 26742",
         "Traps": "Issue 24122",
@@ -3346,24 +3279,17 @@
         "Cisco CloudLock": "No instance",
         "SentinelOne": "No instance",
         "Vectra v2": "No instance",
-        "Awake Security": "Issue 23376",
-        "ExtraHop": "No license, issue 23731",
         "AWS - IAM": "Issue 21401",
         "FortiGate": "License expired, and not going to get one (issue 14723)",
-        "IronDefense": "Test depends on making requests to a non-public API",
         "Attivo Botsink": "no instance, not going to get it",
         "VMware": "no License, and probably not going to get it",
         "AWS Sagemaker": "License expired, and probably not going to get it",
         "Symantec MSS": "No instance, probably not going to get it (issue 15513)",
         "Google Cloud Compute": "Can't test yet",
-        "Cymon": "The service was discontinued since April 30th, 2019.",
         "FireEye ETP": "No instance",
         "ProofpointTAP_v2": "No instance",
         "remedy_sr_beta": "No instance",
-        "ExtraHop v2": "No instance",
-        "Minerva Labs Anti-Evasion Platform": "Issue 18835",
         "fireeye": "Issue 19839",
-        "DomainTools": "Issue 8298",
         "Remedy On-Demand": "Issue 19835",
         "Check Point": "Issue 18643",
         "CheckPointFirewall_v2": "Issue 18643",
@@ -3394,9 +3320,7 @@
         "Phish.AI": "Issue 17291",
         "MaxMind GeoIP2": "Issue 18932.",
         "Exabeam": "Issue 19371",
-        "McAfee ESM-v10": "Issue 20225",
         "PaloAltoNetworks_PrismaCloudCompute": "Issue 27112",
-        "SecBI": "Issue 22545",
         "IBM Resilient Systems": "Issue 23722",
         "Ivanti Heat": "Issue 26259",
         "AWS - Athena - Beta": "Issue 19834",
@@ -3418,20 +3342,15 @@
         "Ipstack": "Issue 26266",
 
         "_comment4": "~~~ OTHER ~~~",
-        "XFE": "We have the new integration XFE_v2, so no need to test the old one because they use the same quote",
-        "Endace": "Issue 24304",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
         "EclecticIQ Platform": "Issue 8821",
-        "BitDam": "Issue #17247",
         "Zoom": "Issue 19832",
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "FortiManager": "Can only be run within PANW network",
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
-        "Cymulate": "Partner didn't provided test playbook",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "Palo Alto Minemeld": "Issue #26878",
         "AttackIQFireDrill": "License issues #29774",
         "CrowdStrike Falcon Intel v2": "License issues #32473",
         "CrowdStrikeMalquery": "License issues #32473",
