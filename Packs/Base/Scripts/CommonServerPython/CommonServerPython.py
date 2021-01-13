@@ -270,7 +270,7 @@ class DBotScoreReliability(object):
         # type: (str) -> bool
 
         return _type in (
-            DBotScoreReliability.CANNOT_BE_JUDGED,
+            DBotScoreReliability.THIRD_PT_ENRICHMENT,
             DBotScoreReliability.COMPLETELY,
             DBotScoreReliability.USUALLY,
             DBotScoreReliability.FAIRLY,
