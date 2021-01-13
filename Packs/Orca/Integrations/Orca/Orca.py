@@ -24,7 +24,7 @@ class OrcaClient:
 
         return "ok"
 
-    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[
+    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[  # pylint: disable=E1136 # noqa: E501
         List[Dict[str, Any]], str]:  # pylint: disable=E1136 # noqa: E125
         demisto.info("get_alerts_by_filter, enter")
 
@@ -143,7 +143,8 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int) -> List[Dict[str, A
         # demisto.setLastRun({'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
         demisto.incidents(incidents[:max_fetch])
         demisto.setLastRun(
-            {'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT), "incidents_for_next_run": incidents[max_fetch:]})
+            {'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT),
+             "incidents_for_next_run": incidents[max_fetch:]})
         return incidents
 
 
