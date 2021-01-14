@@ -21,8 +21,7 @@ sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
 params = demisto.params()
 SPLUNK_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VERIFY_CERTIFICATE = not bool(params.get('unsecure'))
-if VERIFY_CERTIFICATE and (os.environ.get('SSL_CERT_FILE') or os.environ.get('CERT_FILE')):
-    VERIFY_CERTIFICATE = os.environ.get('SSL_CERT_FILE') or os.environ.get('CERT_FILE')
+CUSTOM_CERT = os.environ.get('SSL_CERT_FILE') or os.environ.get('CERT_FILE')
 FETCH_LIMIT = int(params.get('fetch_limit')) if params.get('fetch_limit') else 50
 FETCH_LIMIT = max(min(200, FETCH_LIMIT), 1)
 PROBLEMATIC_CHARACTERS = ['.', '(', ')', '[', ']']
@@ -166,7 +165,7 @@ def updateNotableEvents(sessionKey, baseurl, comment, status=None, urgency=None,
     args['output_mode'] = 'json'
 
     mod_notables = requests.post(baseurl + 'services/notable_update', data=args, headers=auth_header,
-                                 verify=VERIFY_CERTIFICATE)
+                                 verify=VERIFY_CERTIFICATE if not CUSTOM_CERT else CUSTOM_CERT)
 
     return mod_notables.json()
 
@@ -238,7 +237,7 @@ def request(url, message):
     req = urllib2.Request(url, data, headers)  # guardrails-disable-line
     context = ssl.create_default_context()
 
-    if VERIFY_CERTIFICATE:
+    if VERIFY_CERTIFICATE if not CUSTOM_CERT else CUSTOM_CERT:
         context.verify_mode = ssl.CERT_REQUIRED
     else:
         context.check_hostname = False
@@ -266,7 +265,7 @@ def requests_handler(url, message, **kwargs):
             url,
             data=data,
             headers=headers,
-            verify=VERIFY_CERTIFICATE,
+            verify=VERIFY_CERTIFICATE if not CUSTOM_CERT else CUSTOM_CERT,
             **kwargs
         )
     except requests.exceptions.HTTPError as e:
@@ -592,7 +591,7 @@ def splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, sour
     }
 
     response = requests.post(baseurl + '/services/collector/event', data=json.dumps(args), headers=headers,
-                             verify=VERIFY_CERTIFICATE)
+                             verify=VERIFY_CERTIFICATE if not CUSTOM_CERT else CUSTOM_CERT)
     return response
 
 
@@ -630,7 +629,7 @@ def splunk_edit_notable_event_command(proxy):
     password = demisto.params()['authentication']['password']
     auth_req = requests.post(baseurl + 'services/auth/login',
                              data={'username': username, 'password': password, 'output_mode': 'json'},
-                             verify=VERIFY_CERTIFICATE)
+                             verify=VERIFY_CERTIFICATE if not CUSTOM_CERT else CUSTOM_CERT)
 
     sessionKey = auth_req.json()['sessionKey']
     eventIDs = None
@@ -703,7 +702,7 @@ def test_module(service):
         }
         try:
             requests.get(params.get('hec_url') + '/services/collector/health', headers=headers,
-                         verify=VERIFY_CERTIFICATE)
+                         verify=VERIFY_CERTIFICATE if not CUSTOM_CERT else CUSTOM_CERT)
         except Exception as e:
             return_error("Could not connect to HEC server. Make sure URL and token are correct.", e)
 
@@ -978,7 +977,7 @@ def main():
         'app': demisto.params().get('app', '-'),
         'username': demisto.params()['authentication']['identifier'],
         'password': demisto.params()['authentication']['password'],
-        'verify': VERIFY_CERTIFICATE
+        'verify': VERIFY_CERTIFICATE if not CUSTOM_CERT else CUSTOM_CERT
     }
 
     if use_requests_handler:
