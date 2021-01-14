@@ -1,0 +1,97 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ReversingLabs Titanium Cloud
+  version: -1
+configuration:
+- defaultvalue: https://data.reversinglabs.com
+  display: Base URL for malware presence
+  name: base
+  required: true
+  type: 0
+- defaultvalue: https://data.reversinglabs.com
+  display: Base URL for extended RL Data
+  name: baserl
+  required: false
+  type: 0
+- display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Return extended data if available
+  name: extended
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: ReversingLabs Data provides malware status of the sample
+display: ReversingLabs Titanium Cloud
+name: ReversingLabs Titanium Cloud
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: file hash
+      isArray: false
+      name: file
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Return as much data as available. Overrides the default setting.
+      isArray: false
+      name: extended
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve Malware Presence Status from ReversingLabs
+    execution: false
+    name: file
+    outputs:
+    - contextPath: File.MD5
+      description: Bad hash found
+      type: Unknown
+    - contextPath: File.SHA1
+      description: Bad hash SHA1
+      type: Unknown
+    - contextPath: File.SHA256
+      description: Bad hash SHA256
+      type: Unknown
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: Unknown
+    - contextPath: File.Malicious.Detections
+      description: For malicious files. Total detections.
+      type: Unknown
+    - contextPath: File.Malicious.TotalEngines
+      description: For malicious files. Total engines
+      type: Unknown
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python2
+  type: python
+tests:
+- ReversingLabsTCTest
+fromversion: 5.0.0
