@@ -10,26 +10,9 @@
      "complex": null,
      "simple": "urn:scim:schemas:extension:enterprise:1\\.0.costCenter"
     },
-    "Country Code Number": {
-     "complex": null,
-     "simple": "urn:scim:schemas:extension:enterprise:1\\.0.countryCode"
-    },
     "Department": {
      "complex": null,
      "simple": "urn:scim:schemas:extension:enterprise:1\\.0.department"
-    },
-    "Division": {
-     "complex": {
-      "accessor": "division",
-      "filters": [
-
-      ],
-      "root": "urn:scim:schemas:extension:enterprise:1\\.0",
-      "transformers": [
-
-      ]
-     },
-     "simple": ""
     },
     "Email": {
      "complex": null,
@@ -39,10 +22,6 @@
      "complex": null,
      "simple": "externalId"
     },
-    "Employee Number": {
-     "complex": null,
-     "simple": "urn:scim:schemas:extension:enterprise:1\\.0.employeeNumber"
-    },
     "Given Name": {
      "complex": null,
      "simple": "name.givenName"
@@ -51,10 +30,6 @@
      "complex": null,
      "simple": "phoneNumbers.[0].value"
     },
-    "People Manager Flag": {
-     "complex": null,
-     "simple": "urn:scim:schemas:extension:enterprise:1\\.0.managerflag"
-    },
     "Surname": {
      "complex": null,
      "simple": "name.familyName"
@@ -62,10 +37,6 @@
     "Title": {
      "complex": null,
      "simple": "title"
-    },
-    "User Type": {
-     "complex": null,
-     "simple": "userType"
     },
     "Username": {
      "complex": null,
