@@ -1,0 +1,123 @@
+category: IT Services
+commonfields:
+  id: UnifiVideo
+  version: -1
+configuration:
+- display: API Key
+  name: api_key
+  required: true
+  type: 0
+- display: IP address or hostname
+  name: addr
+  required: true
+  type: 0
+- defaultvalue: "7080"
+  display: Port number
+  name: port
+  required: false
+  type: 0
+- defaultvalue: http
+  display: Schema
+  name: schema
+  options:
+  - http
+  - https
+  required: false
+  type: 15
+- defaultvalue: "true"
+  display: Verify CA cert
+  name: verify_cert
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+display: UnifiVideo
+name: UnifiVideo
+script:
+  commands:
+  - arguments: []
+    description: Gets the list of cameras bound with the NVR
+    name: get_camera_list
+  - arguments:
+    - description: The name of the camera
+      name: camera_name
+      required: true
+    description: The name of the camera to take the snapshot from. If empty then all
+      camera snapshots will be taken
+    name: get_snapshot
+  - arguments:
+    - name: recording_id
+      required: true
+    - description: Get snapshot of frame. Put frame number here
+      name: frame
+    description: Download a recording to file
+    name: get_recording
+  - arguments:
+    - description: The camera name
+      name: camera_name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: motion
+      description: Recording setting, motion, always or disabled
+      name: rec_set
+      predefined:
+      - fulltime
+      - motion
+      - disabled
+      required: true
+    description: Set
+    execution: true
+    name: set_recording_settings
+  - arguments:
+    - description: The camera name
+      name: camera_name
+      required: true
+    - auto: PREDEFINED
+      defaultValue: auto
+      name: ir_leds
+      predefined:
+      - auto
+      - "on"
+      - "off"
+      required: true
+    execution: true
+    name: ir_leds
+  - arguments: []
+    name: create_inc
+  - arguments: []
+    execution: true
+    name: get_recording_list
+  - arguments:
+    - description: File entryID of the video file
+      name: entryid
+      required: true
+    - description: Frame to take from the video.
+      name: frame
+      required: true
+    description: Get a snapshot from video file based on the frame number
+    name: get_snapshot_at_frame
+  - arguments:
+    - defaultValue: "150"
+      description: The frame to snapshot
+      name: frame
+      required: true
+    - description: the ubnt_id of the recording
+      name: recording_id
+      required: true
+    description: Get the recording snapshot (at frame) based on the recording id
+    name: get_recording_snapshot
+  dockerimage: magicpl/unifi-video:latest
+  isfetch: true
+  runonce: true
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
