@@ -140,9 +140,8 @@ def create_pull_request_segment(pr: PullRequest) -> List[dict]:
         ('Contributor', contributor),
         ('Changed Files', number_of_changed_changed_files),
         ('Labels', labels),
-        ('URL', f'`{pr.html_url}`'),
     ])
-    return [pr_info_segment]
+    return [pr_info_segment, {'text': create_slack_markdown(f'*URL:* `{pr.html_url}`'), 'type': 'section'}]
 
 
 def create_pr_title(pr: PullRequest) -> List[dict]:
@@ -212,26 +211,6 @@ def main():
     # Send message
     slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
     client = WebClient(token=slack_token)
-    blocks = [{'text': {'emoji': True,
-                        'text': 'RST Cloud: Threat Feed Integration',
-                        'type': 'plain_text'},
-               'type': 'header'},
-              {'fields': [{'text': '*Assignees*:\n DeanArbel,altmannyarden',
-                           'type': 'mrkdwn'},
-                          {'text': '*Contributor*:\n k1r10n', 'type': 'mrkdwn'},
-                          {'text': '*Changed Files*:\n 18', 'type': 'mrkdwn'},
-                          {'text': '*Labels*:\n Contribution,Partner', 'type': 'mrkdwn'}],
-               'type': 'section'},
-              {'text': {'text': '`https://github.com/demisto/content/pull/10384`', 'type': 'mrkdwn'},
-               'type': 'section'},
-              {'text': {'text': '```Pack Name: RST Threat Feed\n```', 'type': 'mrkdwn'},
-               'type': 'section'},
-              {'text': {'text': '```Support Type: partner\n```', 'type': 'mrkdwn'},
-               'type': 'section'},
-              {'text': {'text': '```Version: 1.0.0\n```', 'type': 'mrkdwn'},
-               'type': 'section'},
-              {'type': 'divider'}]
-
     slack_post_message(client, blocks, pr)
     print(f'{t.cyan}Slack message sent successfully{t.normal}')
 
