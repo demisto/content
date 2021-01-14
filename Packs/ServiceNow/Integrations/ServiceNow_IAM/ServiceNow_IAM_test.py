@@ -1,7 +1,5 @@
 from requests import Response, Session
-from ServiceNow_IAM import Client, get_user_command, create_user_command, update_user_command, \
-    disable_user_command, get_mapping_fields_command
-from IAMModule import *
+from ServiceNow_IAM import *
 
 
 SERVICENOW_USER_OUTPUT = {

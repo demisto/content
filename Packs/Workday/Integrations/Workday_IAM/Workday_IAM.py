@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from IAMModule import *
 
 ''' IMPORTS '''
 import traceback
@@ -323,6 +322,9 @@ def main():
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command, Error: {e}. Traceback: {traceback.format_exc()}')
+
+
+from IAMModule import *  # noqa: E402
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from IAMModule import *
 import traceback
 import requests
 
@@ -385,6 +384,8 @@ def main():
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Exception: {e}. Traceback: {traceback.format_exc()}')
 
+
+from IAMModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
