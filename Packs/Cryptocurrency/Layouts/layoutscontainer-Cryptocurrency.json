@@ -111,7 +111,7 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "count",
+                "fieldId": "reportscount",
                 "height": 22,
                 "id": "9fa3c850-542b-11eb-9400-6b6990df09e4",
                 "index": 8,
@@ -615,7 +615,7 @@
               },
               {
                 "endCol": 2,
-                "fieldId": "count",
+                "fieldId": "reportscount",
                 "height": 22,
                 "id": "a42fb910-542b-11eb-9400-6b6990df09e4",
                 "index": 20,
