@@ -1,0 +1,557 @@
+category: Endpoint
+commonfields:
+  id: MobileIronCLOUD
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: MobileIron Cloud Device Incident
+  display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Server URL (i.e., https://eu1.mobileiron.com )
+  name: url
+  required: true
+  type: 0
+- display: User Name
+  name: credentials
+  required: true
+  type: 9
+- additionalinfo: Leave empty to automatically fetch the default partition ID for
+    the configured tenant.
+  display: Partition ID (leave empty to resolve default)
+  name: partition_id
+  required: false
+  type: 0
+- defaultvalue: '50'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: MobileIron Cloud Integration
+display: MobileIronCLOUD
+name: MobileIronCLOUD
+script:
+  commands:
+  - arguments:
+    - default: false
+      defaultValue: registrationState=ACTIVE
+      description: Filter query for fetching the device data. Default is "registrationState=ACTIVE".
+      isArray: false
+      name: query
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of items returned in the list.
+      isArray: false
+      name: max_fetch
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all the devices based on a particular
+      filter query. The command might execute multiple API calls depending on the
+      amount of devices that are returned.
+    execution: false
+    name: mobileiron-cloud-get-devices-data
+    outputs:
+    - contextPath: MobileIronCloud.Device.id
+      description: ID of the device that is fetched.
+      type: Number
+    - contextPath: MobileIronCloud.Device.guid
+      description: GUID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.deviceModel
+      description: Model of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.deviceName
+      description: Name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.platformType
+      description: Platform type of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.platformVersion
+      description: Platform version of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.osBuildVersion
+      description: Operating system build version of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.lastCheckin
+      description: Last check in time of the device that is fetched.
+      type: Date
+    - contextPath: MobileIronCloud.Device.registrationState
+      description: Registration state of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.displayName
+      description: Display name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.firstName
+      description: First name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.lastName
+      description: Last name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.uid
+      description: UID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.emailAddress
+      description: Email address of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.manufacturer
+      description: Manufacturer of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.imei
+      description: International Mobile Equipment Identity (IMEI) of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.imei2
+      description: International Mobile Equipment Identity 2 (IMEI2) of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.imsi
+      description: International mobile subscriber identity (IMSI) of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.wifiMacAddress
+      description: WiFi MAC address of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.serialNumber
+      description: Serial number of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.altSerialNumber
+      description: Alternative serial number of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.ownershipType
+      description: Ownership type of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.complianceState
+      description: Compliance state of the device that is fetched.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.roaming
+      description: Roaming status of the device that is fetched.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.supervised
+      description: Device supervised.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.udid
+      description: UDID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.policyViolationCount
+      description: Policy violation count of the device that is fetched.
+      type: Number
+    - contextPath: MobileIronCloud.Device.lastRegistrationTime
+      description: Last registration time of the device that is fetched.
+      type: Date
+    - contextPath: MobileIronCloud.Device.quarantined
+      description: Whether the device is quarantined.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.jailbroken
+      description: Whether the device is jailbroken.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: THe MAC address of the device to fetch.
+      isArray: false
+      name: device_mac
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a single device matching the provided MAC address.
+    execution: false
+    name: mobileiron-cloud-get-device-by-mac
+    outputs:
+    - contextPath: MobileIronCloud.Device.id
+      description: The ID of the device that is fetched.
+      type: Number
+    - contextPath: MobileIronCloud.Device.guid
+      description: GUID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.deviceModel
+      description: Model of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.deviceName
+      description: Name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.platformType
+      description: Platform type of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.platformVersion
+      description: Platform version of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.osBuildVersion
+      description: Operating system build version of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.lastCheckin
+      description: Last check in time of the device that is fetched.
+      type: Date
+    - contextPath: MobileIronCloud.Device.registrationState
+      description: Registration state of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.displayName
+      description: Display name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.firstName
+      description: First name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.lastName
+      description: Last name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.uid
+      description: UID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.emailAddress
+      description: Email address of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.manufacturer
+      description: Manufacturer of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.imei
+      description: International Mobile Equipment Identity (IMEI) of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.imei2
+      description: International Mobile Equipment Identity2 (IME2) of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.imsi
+      description: International mobile subscriber identity (IMSI) of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.wifiMacAddress
+      description: WiFi MAC address of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.serialNumber
+      description: Serial number of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.altSerialNumber
+      description: Alternative serial number of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.ownershipType
+      description: Ownership type of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.complianceState
+      description: Compliance state of the device that is fetched.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.roaming
+      description: Roaming status of the device that is fetched.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.supervised
+      description: Device supervised.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.udid
+      description: UDID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.policyViolationCount
+      description: Policy violation count of the device that is fetched.
+      type: Number
+    - contextPath: MobileIronCloud.Device.lastRegistrationTime
+      description: Last registration time of the device that is fetched.
+      type: Date
+    - contextPath: MobileIronCloud.Device.quarantined
+      description: Whether the device is quarantined.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.jailbroken
+      description: Whether the device is jailbroken.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Serial number of the device to fetch.
+      isArray: false
+      name: device_serial
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a single device matching the provided value for the device
+      serial number.
+    execution: false
+    name: mobileiron-cloud-get-device-by-serial
+    outputs:
+    - contextPath: MobileIronCloud.Device.id
+      description: The ID of the device that is fetched.
+      type: Number
+    - contextPath: MobileIronCloud.Device.guid
+      description: GUID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.deviceModel
+      description: Model of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.deviceName
+      description: Name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.platformType
+      description: Platform type of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.platformVersion
+      description: Platform version of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.osBuildVersion
+      description: Operating system build version of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.lastCheckin
+      description: Last check in time of the device that is fetched.
+      type: Date
+    - contextPath: MobileIronCloud.Device.registrationState
+      description: Registration state of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.displayName
+      description: Display name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.firstName
+      description: First name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.lastName
+      description: Last name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.uid
+      description: UID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.emailAddress
+      description: Email address of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.manufacturer
+      description: Manufacturer of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.imei
+      description: International Mobile Equipment Identity (IMEI) of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.imei2
+      description: International Mobile Equipment Identity 2 (IME2) of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.imsi
+      description: International mobile subscriber identity (IMSI) of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.wifiMacAddress
+      description: WiFi MAC address of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.serialNumber
+      description: Serial number of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.altSerialNumber
+      description: Alternative serial number of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.ownershipType
+      description: Ownership type of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.complianceState
+      description: Compliance state of the device that is fetched.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.roaming
+      description: Roaming status of the device that is fetched.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.supervised
+      description: Device supervised.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.udid
+      description: UDID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.policyViolationCount
+      description: Policy violation count of the device that is fetched.
+      type: Number
+    - contextPath: MobileIronCloud.Device.lastRegistrationTime
+      description: Last registration time of the device that is fetched.
+      type: Date
+    - contextPath: MobileIronCloud.Device.quarantined
+      description: Whether the device is quarantined.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.jailbroken
+      description: Whether the device is jailbroken.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the MobileIron device to fetch.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends an unlock action to the device.
+    execution: false
+    name: mobileiron-cloud-unlock-device
+  - arguments:
+    - default: false
+      description: The ID of the MobileIron device to fetch.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends a retire action to the device.
+    execution: false
+    name: mobileiron-cloud-retire-device
+  - arguments:
+    - default: false
+      description: The ID of the MobileIron device to fetch.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Sends a wipe action to the device. This is
+      a potentially destructive action as it will completely wipe the device.
+    execution: false
+    name: mobileiron-cloud-wipe-device
+  - arguments:
+    - default: false
+      description: The ID of the MobileIron device to fetch.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Forces a check in to the particular device based
+      on the device ID.
+    execution: false
+    name: mobileiron-cloud-force-check-in
+  - arguments:
+    - default: false
+      description: The ID of the MobileIron device to fetch.
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: push
+      description: 'The type of notification to send. Possible values are: "email" and "push". Default is "push".'
+      isArray: false
+      name: message_type
+      predefined:
+      - email
+      - push
+      required: true
+      secret: false
+    - default: false
+      description: The subject of the email. (Only used if an email should be sent.)
+      isArray: false
+      name: subject
+      required: false
+      secret: false
+    - default: false
+      description: The message to be sent.
+      isArray: false
+      name: message
+      required: true
+      secret: false
+    deprecated: false
+    description: Sends a message to the device.
+    execution: false
+    name: mobileiron-cloud-send-message
+  - arguments:
+    - default: false
+      description: The ID of the MobileIron device to fetch.
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the data for a particular device based on the device id
+    execution: false
+    name: mobileiron-cloud-get-device-by-id
+    outputs:
+    - contextPath: MobileIronCloud.Device.id
+      description: The ID of the device that is fetched.
+      type: Number
+    - contextPath: MobileIronCloud.Device.guid
+      description: GUID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.deviceModel
+      description: Model of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.deviceName
+      description: Name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.platformType
+      description: Platform type of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.platformVersion
+      description: Platform version of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.osBuildVersion
+      description: Operating system build version of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.lastCheckin
+      description: Last check in time of the device that is fetched.
+      type: Date
+    - contextPath: MobileIronCloud.Device.registrationState
+      description: Registration state of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.displayName
+      description: Display name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.firstName
+      description: First name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.lastName
+      description: Last name of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.uid
+      description: UID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.emailAddress
+      description: Email address of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.manufacturer
+      description: Manufacturer of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.imei
+      description: International Mobile Equipment Identity (IMEI) of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.imei2
+      description: International Mobile Equipment Identity 2 (IME2) of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.imsi
+      description: International mobile subscriber identity (IMSI) of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.wifiMacAddress
+      description: WiFi MAC address of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.serialNumber
+      description: Serial number of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.altSerialNumber
+      description: Alternative serial number of the device that is fetched.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.ownershipType
+      description: Ownership type of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.complianceState
+      description: Compliance state of the device that is fetched.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.roaming
+      description: Roaming status of the device that is fetched.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.supervised
+      description: Device supervised.
+      type: Unknown
+    - contextPath: MobileIronCloud.Device.udid
+      description: UDID of the device that is fetched.
+      type: String
+    - contextPath: MobileIronCloud.Device.policyViolationCount
+      description: Policy violation count of the device that is fetched.
+      type: Number
+    - contextPath: MobileIronCloud.Device.lastRegistrationTime
+      description: Last registration time of the device that is fetched.
+      type: Date
+    - contextPath: MobileIronCloud.Device.quarantined
+      description: Whether the device is quarantined.
+      type: Boolean
+    - contextPath: MobileIronCloud.Device.jailbroken
+      description: Whether the device is jailbroken.
+      type: Boolean
+  dockerimage: demisto/python3:3.9.1.14969
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+defaultmapperin: MobileIron Incident Incoming Mapper
+fromversion: 6.0.0

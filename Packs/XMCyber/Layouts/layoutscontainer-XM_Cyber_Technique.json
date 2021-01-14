@@ -366,15 +366,6 @@
 						"items": [
 							{
 								"endCol": 4,
-								"fieldId": "technique",
-								"height": 22,
-								"id": "af1cf400-1768-11eb-ae90-a7556e35a3ad",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 4,
 								"fieldId": "techniquename",
 								"height": 22,
 								"id": "6c0d16b0-17a2-11eb-ba78-db44622b4844",
@@ -429,15 +420,6 @@
 								"fieldId": "techniquename",
 								"height": 22,
 								"id": "b4dd4610-1768-11eb-ae90-a7556e35a3ad",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 4,
-								"fieldId": "techniqueassets",
-								"height": 22,
-								"id": "b1516030-1768-11eb-ae90-a7556e35a3ad",
 								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0

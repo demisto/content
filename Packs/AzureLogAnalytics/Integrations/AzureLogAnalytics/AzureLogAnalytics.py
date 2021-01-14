@@ -54,7 +54,7 @@ class Client:
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None,
-                     data=None, resource=None):
+                     data=None, resource=None, timeout=10):
         if not params:
             params = {}
         if not full_url:
@@ -66,7 +66,8 @@ class Client:
                                           json_data=data,
                                           params=params,
                                           resp_type='response',
-                                          resource=resource)
+                                          resource=resource,
+                                          timeout=timeout)
 
         if res.status_code in (200, 204) and not res.text:
             return res
@@ -159,6 +160,7 @@ def test_connection(client, params):
 
 def execute_query_command(client, args):
     query = args.get('query')
+    timeout = int(args.get('timeout', 10))
     workspace_id = demisto.params().get('workspaceID')
     full_url = f'https://api.loganalytics.io/v1/workspaces/{workspace_id}/query'
 
@@ -171,7 +173,7 @@ def execute_query_command(client, args):
     remove_nulls_from_dictionary(data)
 
     response = client.http_request('POST', full_url=full_url, data=data,
-                                   resource=LOG_ANALYTICS_RESOURCE)
+                                   resource=LOG_ANALYTICS_RESOURCE, timeout=timeout)
 
     output = []
 

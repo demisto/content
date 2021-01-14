@@ -143,29 +143,6 @@ class TestHelperFunctions:
 
     class TestGetAddedAfter:
         """Scenario: Test get_added_after"""
-        def test_get_filter_added_after(self):
-            """
-            Scenario: User decides to override added_after filter param
-
-            Given:
-            - fetch_full_feed is false
-            - user overrides added_after filter
-            - last fetch time is set
-
-            When:
-            - calling get_added_after
-
-            Then:
-            - return user determined added_after
-            """
-            fetch_full_feed = False
-            last_fetch_time = 'last_fetch_mock'
-            initial_interval = 'initial_mock'
-            original_added_after = 'original added_after'
-            full_filter_args = {'added_after': original_added_after}
-
-            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
-                                   full_filter_args) == original_added_after
 
         def test_get_last_fetch_time(self):
             """
@@ -184,10 +161,8 @@ class TestHelperFunctions:
             fetch_full_feed = False
             last_fetch_time = 'last_fetch_mock'
             initial_interval = 'initial_mock'
-            full_filter_args = {}
 
-            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
-                                   full_filter_args) == last_fetch_time
+            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == last_fetch_time
 
         def test_get_initial_interval__fetch_full_feed_true(self):
             """
@@ -207,10 +182,8 @@ class TestHelperFunctions:
             fetch_full_feed = True
             last_fetch_time = 'last_fetch_mock'
             initial_interval = 'initial_mock'
-            full_filter_args = {}
 
-            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
-                                   full_filter_args) == initial_interval
+            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == initial_interval
 
         def test_get_initial_interval__fetch_full_feed_false(self):
             """
@@ -230,7 +203,5 @@ class TestHelperFunctions:
             fetch_full_feed = False
             last_fetch_time = None
             initial_interval = 'initial_mock'
-            full_filter_args = {}
 
-            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time,
-                                   full_filter_args) == initial_interval
+            assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == initial_interval

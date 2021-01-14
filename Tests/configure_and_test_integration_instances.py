@@ -17,7 +17,6 @@ from distutils.version import LooseVersion
 import logging
 from typing import List, Tuple
 
-from Tests.mock_server import MITMProxy, run_with_mock, RESULT
 from Tests.scripts.utils.log_util import install_logging
 
 from paramiko.client import SSHClient, AutoAddPolicy
@@ -31,7 +30,10 @@ from Tests.test_content import extract_filtered_tests, get_server_numeric_versio
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.tools import update_server_configuration, run_with_proxy_configured
+from Tests.tools import run_with_proxy_configured
+from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
+from demisto_sdk.commands.test_content.tools import update_server_configuration
+
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
@@ -523,9 +525,12 @@ def set_integration_params(build,
             integration['validate_test'] = matched_integration_params.get('validate_test', True)
             if integration['name'] not in build.unmockable_integrations:
                 integration['params'].update({'proxy': True})
+                logging.debug(
+                    f'Configuring integration "{integration["name"]}" with proxy=True')
             else:
                 integration['params'].update({'proxy': False})
-        logging.debug(f'Configuring integration "{integration["name"]}" with params: {pformat(integration["params"])}')
+                logging.debug(
+                    f'Configuring integration "{integration["name"]}" with proxy=False')
 
     return True
 
@@ -1197,7 +1202,7 @@ def test_integration_with_mock(build: Build, instance: dict, pre_update: bool):
             result_holder[RESULT] = success
             if not success:
                 logging.warning(f'Running test-module for "{integration_of_instance}" has failed in playback mode')
-    if not success and pre_update:
+    if not success and not pre_update:
         logging.debug(f'Recording a mock file for integration "{integration_of_instance}".')
         with run_with_mock(build.proxy, integration_of_instance, record=True) as result_holder:
             success, _ = __test_integration_instance(testing_client, instance)
