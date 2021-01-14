@@ -1,4 +1,4 @@
-from IAMModule import *
+from IAMApiModule import *
 
 APP_USER_OUTPUT = {
     "user_id": "mock_id",

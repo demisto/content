@@ -324,7 +324,7 @@ def main():
         return_error(f'Failed to execute {demisto.command()} command, Error: {e}. Traceback: {traceback.format_exc()}')
 
 
-from IAMModule import *  # noqa: E402
+from IAMApiModule import *  # noqa: E402
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
