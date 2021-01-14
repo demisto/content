@@ -1,5 +1,5 @@
 {
-    "name": "Hello IAM World",
+    "name": "HelloWorld_IAM",
     "description": "An Identity and Access Management integration template.",
     "support": "xsoar",
     "currentVersion": "1.0.1",

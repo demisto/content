@@ -1,5 +1,5 @@
 from requests import Response, Session
-from HelloIAMWorld import Client, get_mapping_fields
+from HelloWorld_IAM import *
 from IAMApiModule import *
 
 APP_USER_OUTPUT = {
