@@ -1,7 +1,7 @@
 {
   "mock_response": "id,address,abuse_type_id,abuse_type_other,abuser,description,from_country,from_country_code,created_at\n205658,1KTm8vxjNiGE7W7K6mLx4p5ytBwrcgaGxG,1,,\"key logger\",\"Demanded $1893 or the video would be released to all my friends.\",\"United States\",US,2020-12-11T00:14:04.000000Z\n205659,3LUAWtJBu6h3drRy4pstYbQQK9HnoVtKgw,99,\"Ment to send to another address\",\"No clue\",\"No abuse just a simple transaction and the numbers and letters did match the final never\",\"United States\",US,2020-12-11T00:37:26.000000Z\n",
   "expected": {
-    "readable_output": "### Indicators\n|value|type|fields|\n|---|---|---|\n| bitcoin:1KTm8vxjNiGE7W7K6mLx4p5ytBwrcgaGxG | Cryptocurrency Address | Value: bitcoin:1KTm8vxjNiGE7W7K6mLx4p5ytBwrcgaGxG<br>rawaddress: 1KTm8vxjNiGE7W7K6mLx4p5ytBwrcgaGxG<br>countryname: United States<br>creationdate: 2020-12-11T00:14:04.000000Z<br>description: Demanded $1893 or the video would be released to all my friends.<br>abusetype: ransomware<br>tags: <br>count: 1<br>cryptocurrencyaddresstype: bitcoin |\n",
+    "readable_output": "### Indicators\n|value|type|fields|\n|---|---|---|\n| bitcoin:1KTm8vxjNiGE7W7K6mLx4p5ytBwrcgaGxG | Cryptocurrency Address | Value: bitcoin:1KTm8vxjNiGE7W7K6mLx4p5ytBwrcgaGxG<br>rawaddress: 1KTm8vxjNiGE7W7K6mLx4p5ytBwrcgaGxG<br>countryname: United States<br>creationdate: 2020-12-11T00:14:04.000000Z<br>description: Demanded $1893 or the video would be released to all my friends.<br>abusetype: ransomware<br>tags: <br>reportscount: 1<br>cryptocurrencyaddresstype: bitcoin |\n",
     "raw_response": [
       {
         "value": "bitcoin:1KTm8vxjNiGE7W7K6mLx4p5ytBwrcgaGxG",
@@ -27,7 +27,7 @@
           "description": "Demanded $1893 or the video would be released to all my friends.",
           "abusetype": "ransomware",
           "tags": [],
-          "count": 1,
+          "reportscount": 1,
           "cryptocurrencyaddresstype": "bitcoin"
         }
       }

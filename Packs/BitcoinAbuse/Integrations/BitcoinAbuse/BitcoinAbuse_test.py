@@ -6,17 +6,18 @@ import io
 
 import pytest
 
-from BitcoinAbuse import BitcoinAbuseClient, bitcoin_abuse_report_address_command, bitcoin_abuse_get_indicators_command
+from BitcoinAbuse import BitcoinAbuseClient, bitcoin_abuse_report_address_command, bitcoin_abuse_get_indicators_command, \
+    READER_CONFIG
 from CommonServerPython import DemistoException, Dict, json
 
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
 client = BitcoinAbuseClient(
     base_url=SERVER_URL,
-    verify=False,
+    insecure=True,
     proxy=False,
     api_key='',
     initial_fetch_interval='',
-    reader_config=dict(),
+    reader_config=READER_CONFIG,
     have_fetched_first_time=False
 )
 
@@ -151,5 +152,5 @@ def test_get_indicators_command(requests_mock):
     client.api_key = '123'
     client.have_fetched_first_time = False
     results = bitcoin_abuse_get_indicators_command(client, args={'limit': 1})
-    assert results.readable_output == get_indicators_scenarios['expected']['readable_output']
     assert results.raw_response == get_indicators_scenarios['expected']['raw_response']
+    assert results.readable_output == get_indicators_scenarios['expected']['readable_output']

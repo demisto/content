@@ -47,14 +47,15 @@ class BitcoinAbuseClient(BaseClient):
         'other': 99
     }
 
-    def __init__(self, base_url, verify, proxy, api_key, initial_fetch_interval, reader_config,
+    def __init__(self, base_url, insecure, proxy, api_key, initial_fetch_interval, reader_config,
                  have_fetched_first_time):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, verify=not insecure, proxy=proxy)
         self.server_url = base_url
         self.api_key = api_key
         self.initial_fetch_interval = initial_fetch_interval
         self.reader_config = reader_config
         self.have_fetched_first_time = have_fetched_first_time
+        self.insecure = insecure
 
     def report_address(self, address: str, abuse_type_id: int, abuse_type_other: Optional[str],
                        abuser: str, description: str) -> Dict:
@@ -184,6 +185,8 @@ class BitcoinAbuseClient(BaseClient):
         params['delimiter'] = ','
 
         params['encoding'] = 'utf-8'
+
+        params['insecure'] = self.insecure
 
         return params
 
@@ -316,7 +319,7 @@ def main() -> None:
     demisto.debug(f'Bitcoin Abuse: Command being called is {demisto.command()}')
 
     api_key = params.get('api_key', '')
-    verify_certificate = not params.get('insecure', False)
+    insecure = params.get('insecure', False)
     proxy = params.get('proxy', False)
     initial_fetch_interval = params.get('initial_fetch_interval', '30 Days')
 
@@ -325,7 +328,7 @@ def main() -> None:
     try:
         bitcoin_client = BitcoinAbuseClient(
             base_url=SERVER_URL,
-            verify=verify_certificate,
+            insecure=insecure,
             proxy=proxy,
             api_key=api_key,
             initial_fetch_interval=initial_fetch_interval,
