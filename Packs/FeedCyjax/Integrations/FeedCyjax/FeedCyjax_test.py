@@ -76,7 +76,7 @@ def test_convert_cyjax_indicator_with_default_score():
     xsoar_indicator = convert_cyjax_indicator(cyjax_indicator)
 
     assert xsoar_indicator.get('value') == cyjax_indicator.get('value')
-    assert xsoar_indicator.get('rawJSON') == json.dumps(cyjax_indicator)
+    assert xsoar_indicator.get('rawJSON') == cyjax_indicator
     assert FeedIndicatorType.URL == xsoar_indicator.get('type')
     assert 2 == xsoar_indicator.get('score')
     assert indicator_date.strftime(DATE_FORMAT) == xsoar_indicator['fields']['firstseenbysource']
@@ -95,7 +95,7 @@ def test_convert_cyjax_indicator_with_set_score():
     xsoar_indicator = convert_cyjax_indicator(cyjax_indicator, map_reputation_to_score('Bad'))
 
     assert xsoar_indicator.get('value') == cyjax_indicator.get('value')
-    assert xsoar_indicator.get('rawJSON') == json.dumps(cyjax_indicator)
+    assert xsoar_indicator.get('rawJSON') == cyjax_indicator
     assert FeedIndicatorType.File == xsoar_indicator.get('type')
     assert 3 == xsoar_indicator.get('score')
 
@@ -240,7 +240,8 @@ def test_get_indicators_command_response(mocker):
 def test_fetch_indicators_main_command_call(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'apikey': 'test-api-key',
-        'url': 'https://cyjax-api-for-testing.com'
+        'url': 'https://cyjax-api-for-testing.com',
+        'use_cyjax_tlp': True
     })
 
     last_fetch = datetime(2020, 12, 27, 15, 45)
@@ -297,6 +298,74 @@ def test_fetch_indicators_main_command_call_no_new_indicators(mocker):
 
     demisto.createIndicators.assert_not_called()
     demisto.setLastRun.assert_not_called()
+
+
+def test_fetch_indicators_main_command_call_use_cyjax_tlp(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'apikey': 'test-api-key',
+        'url': 'https://cyjax-api-for-testing.com',
+        'use_cyjax_tlp': True,
+        'tlp_color': 'AMBER'
+    })
+
+    last_fetch = datetime(2020, 12, 27, 15, 45)
+    last_fetch_timestamp = int(last_fetch.timestamp())
+
+    mocker.patch.object(demisto, 'getLastRun', return_value={
+        INDICATORS_LAST_FETCH_KEY: last_fetch_timestamp
+    })
+
+    cyjax_indicator = mocked_indicators
+    expected_indicators = [
+        convert_cyjax_indicator(cyjax_indicator[1])
+    ]
+
+    mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.list', return_value=[cyjax_indicator[1]])
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+    mocker.patch.object(demisto, 'createIndicators')
+    mocker.patch.object(demisto, 'setLastRun')
+
+    main()
+
+    assert demisto.createIndicators.call_count == 1
+    assert demisto.setLastRun.call_count == 1
+
+    demisto.createIndicators.assert_called_with(expected_indicators)
+    assert 'GREEN' == expected_indicators[0]['fields']['trafficlightprotocol']
+
+
+def test_fetch_indicators_main_command_call_use_set_tlp(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'apikey': 'test-api-key',
+        'url': 'https://cyjax-api-for-testing.com',
+        'use_cyjax_tlp': False,
+        'tlp_color': 'AMBER'
+    })
+
+    last_fetch = datetime(2020, 12, 27, 15, 45)
+    last_fetch_timestamp = int(last_fetch.timestamp())
+
+    mocker.patch.object(demisto, 'getLastRun', return_value={
+        INDICATORS_LAST_FETCH_KEY: last_fetch_timestamp
+    })
+
+    cyjax_indicator = mocked_indicators
+    expected_indicators = [
+        convert_cyjax_indicator(cyjax_indicator[1], None, 'AMBER')
+    ]
+
+    mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.list', return_value=[cyjax_indicator[1]])
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+    mocker.patch.object(demisto, 'createIndicators')
+    mocker.patch.object(demisto, 'setLastRun')
+
+    main()
+
+    assert demisto.createIndicators.call_count == 1
+    assert demisto.setLastRun.call_count == 1
+
+    demisto.createIndicators.assert_called_with(expected_indicators)
+    assert 'AMBER' == expected_indicators[0]['fields']['trafficlightprotocol']
 
 
 def test_get_indicators_main_command_call_with_one_new_indicator(mocker):

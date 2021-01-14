@@ -482,7 +482,7 @@ def main() -> None:
     base_url = params.get('url')
     verify_ssl = not params.get('insecure', False)
     proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
-    reputation = params.get('feedReputation', 'None')
+    reputation = params.get('feedReputation', 'Suspicious')
     use_cyjax_tlp = params.get('use_cyjax_tlp', False)
     tlp_color = params.get('tlp_color')
     tlp_to_use = tlp_color if use_cyjax_tlp is False else None  # Whether to use Cyjax TLP or TLP set by the user.
