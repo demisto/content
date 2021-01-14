@@ -8,17 +8,20 @@ Threat InDepth's correlated and contextualized intelligence helps enterprises im
 - Improved threat detection for existing security products such as SIEM and SOAR solutions
 
 ## What makes Threat InDepth unique
-- Global and Expanded Focus <br/>
- Provides **unique** threat **visibility** into the evolving email-borne threats
 
-- Synchronized Intelligence <br/>**Correlated, contextualized** insights **speed** up threat detection and response
+- Global and Expanded Focus
+  Provides **unique** threat **visibility** into the evolving email-borne threats
 
-- Machine Generated, Human Curated <br/> Industry **trusted** intelligence with **low** false positives **improves** detection efficacy of your security investments
+- Synchronized Intelligence
+  **Correlated, contextualized** insights **speed** up threat detection and response
 
-- First to Detect, First to Protect <br/>Provides **timely** protection against **evolving** email-borne threats
+- Machine Generated, Human Curated
+  Industry **trusted** intelligence with **low** false positives **improves** detection efficacy of your security investments
+
+- First to Detect, First to Protect
+  Provides **timely** protection against **evolving** email-borne threats
 
 ![Cyren GlobalView Cloud](https://raw.githubusercontent.com/demisto/content/master/Packs/FeedCyrenThreatInDepth/doc_files/Cyren_GlobalViewCloud_V2.png)
-
 
 ## Feeds included in Cyren Threat InDepth content pack
 
