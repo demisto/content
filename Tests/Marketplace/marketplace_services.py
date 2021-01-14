@@ -515,9 +515,9 @@ class Pack(object):
     def _get_certification(support_type, certification=None):
         """ Returns pack certification.
 
-        In case support type is xsoar, CERTIFIED is returned.
-        In case support is not xsoar but pack_metadata has certification field, certification value will be taken from
-        pack_metadata defined value.
+        In case support type is xsoar or partner, CERTIFIED is returned.
+        In case support is not xsoar or partner but pack_metadata has certification field, certification value will be
+        taken from pack_metadata defined value.
         Otherwise empty certification value (empty string) will be returned
 
         Args:
