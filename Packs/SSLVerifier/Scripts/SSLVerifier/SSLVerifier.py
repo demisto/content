@@ -21,11 +21,11 @@ def get_cert_info(hostname: str, port: str) -> dict:
     ctx = ssl.create_default_context()
     s = ctx.wrap_socket(socket.socket(), server_hostname=hostname)
     s.connect((hostname, int(port)))
-    cert = s.getpeercert()
-    issuer = json.dumps(cert['issuer'])
+    cert: Any = s.getpeercert()
+    issuer: str = json.dumps(cert['issuer'])
     jsonissuer = json.loads(
         issuer.replace('\",', '\":').replace('[[[', '{').replace(']]]', '}').replace('[[', '').replace(']]', ''))
-    expiration_obj = datetime.strptime(cert['notAfter'], '%b %d %H:%M:%S %Y %Z')
+    expiration_obj = datetime.strptime(str(cert['notAfter']), '%b %d %H:%M:%S %Y %Z')
     converteddate = datetime.strftime(expiration_obj, '%Y-%m-%dT%H:%M:%S.%fZ')
     now_obj = datetime.now()
     dateresults_obj = expiration_obj - now_obj
