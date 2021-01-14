@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#039BE5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Palo Alto Networks BPA",
+    "layout": "7ec4cdb6-2f88-43d1-800f-57fc01a002d9",
+    "locked": false,
+    "name": "Palo Alto Networks BPA",
+    "playbookId": "a7417206-191f-43a0-8527-21fc3beb2ab6",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

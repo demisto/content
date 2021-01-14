@@ -1,0 +1,17 @@
+{
+    "name": "Palo Alto Best Practice Assessment Pack",
+    "description": "This pack will provide best practice assessments \"or BPA\" starting with the Palo Alto Networks Firewalls.  Emails can be sent via single email address or a comma separated list.  The report will be displayed in an incident.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "scottbrumley",
+    "url": "",
+    "email": "",
+    "created": "2021-01-14T17:30:23Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "scottbrumley"
+    ]
+}
