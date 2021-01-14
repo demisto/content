@@ -1478,6 +1478,16 @@
             "instance_names": "use_default_handler"
         },
         {
+            "integrations": "AnsibleTower",
+            "playbookID": "AnsibleTower_Test_playbook",
+            "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AnsibleTower",
+            "playbookID": "Launch Job - Ansible Tower",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test",
             "memory_threshold": 200,
