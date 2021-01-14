@@ -31,7 +31,7 @@ Retrieves the list of inventories.
 | --- | --- | --- |
 | id | The inventory ID for which to retrieve the specific inventory. | Optional | 
 | page_number | Page number to retrieve. Default is 1. Default is 1. | Optional | 
-| page_size | Page size. Default is 50. Default is 50. | Optional | 
+| page_size | Page size. Default is 50. | Optional | 
 | search | The search query string used to perform a case-insensitive search within all designated text fields of a model. | Optional | 
 
 
@@ -108,7 +108,7 @@ Retrieves the list of hosts. If an inventory ID is specified, retrieve the host 
 | host_id | ID of the host to retrieve. | Optional | 
 | inventory_id | ID of the inventory to retrieve. | Optional | 
 | page | Page number to retrieve. Default is 1. Default is 1. | Optional | 
-| page_size | Page size. Default is 50. Default is 50. | Optional | 
+| page_size | Page size. Default is 50. | Optional | 
 | search | The search query string used to perform a case-insensitive search within all designated text fields of a model. | Optional | 
 
 
@@ -385,7 +385,7 @@ Retrieves the list of credentials. If an ID is specified, retrieve the specific 
 | --- | --- | --- |
 | id | ID of a specific credential. | Optional | 
 | page | Page number to retrieve. Default is 1. Default is 1. | Optional | 
-| page_size | Page size. Default is 50. Default is 50. | Optional | 
+| page_size | Page size. Default is 50. | Optional | 
 | search | The search query string used to perform a case-insensitive search within all designated text fields of a model. | Optional | 
 
 
@@ -958,7 +958,7 @@ Retrieves the list of job events.
 | --- | --- | --- |
 | id | The ID of the job event. | Optional | 
 | page | The page number to retrieve. Default is 1. Default is 1. | Optional | 
-| page_size | Page size. Default is 50. Default is 50. | Optional | 
+| page_size | Page size. Default is 50. | Optional | 
 | search | The search query string used to perform a case-insensitive search within all designated text fields of a model. | Optional | 
 
 
