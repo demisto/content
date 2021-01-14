@@ -71,6 +71,7 @@ configuration:
   name: actor
   required: false
   type: 0
+  defaultvalue: '*'
 - additionalinfo: How far back in time to go when performing the first fetch
   defaultvalue: '7 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
@@ -78,10 +79,10 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- additionalinfo: The JSON attribute that holds the indicator value. Default value
-    is 'indicator'.
-  display: JSON Indicator Attribute
-  name: indicator
+- additionalinfo: Supports CSV values.
+  display: Tags
+  hidden: false
+  name: feedTags
   required: false
   type: 0
 - additionalinfo: When selected, the exclusion list is ignored for indicators from
@@ -91,12 +92,6 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- additionalinfo: Supports CSV values.
-  display: Tags
-  hidden: false
-  name: feedTags
-  required: false
-  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
