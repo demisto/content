@@ -1,8 +1,10 @@
 from CommonServerPython import *
 
-reload(sys)
-sys.setdefaultencoding('utf-8')  # pylint: disable=E1101
+import sys
+import os
+import importlib
 
+importlib.reload(sys)
 requests.packages.urllib3.disable_warnings()
 
 URL = demisto.getParam('server')
