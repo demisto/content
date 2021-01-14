@@ -736,10 +736,9 @@ class TAXIIClient(object):
             result_id = None
             more = None
             tag_stack = collections.deque()  # type: ignore
-            xml_parser = etree.iterparse(result.raw, events=('start', 'end'), recover=True, dtd_validation=False,
-                                         load_dtd=False, encoding='utf-8')
 
             try:
+                xml_parser = etree.iterparse(result.raw, events=('start', 'end'), recover=True, encoding='utf-8')
                 for action, element in xml_parser:
                     if action == 'start':
                         tag_stack.append(element.tag)
