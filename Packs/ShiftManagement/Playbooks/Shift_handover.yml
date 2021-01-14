@@ -1,0 +1,1665 @@
+id: Shift handover
+version: -1
+name: Shift handover
+description: "This playbook is used to set shift handover meetings with all the accompanying\
+  \ processes such as online meeting ,notification to chatting app (for example Slack),SOC\
+  \ manager briefing, display of the active incidents,team members that are on call\
+  \ and team members that are out of the office.\nBy modifying the playbook inputs\
+  \ the user can decide if to activate the Assign Active Incidents to Next Shift or\
+  \ the user that out of the office will take in consideration. "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73f17db6-3b7d-4e7f-8f12-966f3efdcb0e
+    type: start
+    task:
+      id: 73f17db6-3b7d-4e7f-8f12-966f3efdcb0e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d8ec2809-c7b5-45e6-8596-68c55e30392f
+    type: title
+    task:
+      id: d8ec2809-c7b5-45e6-8596-68c55e30392f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: de8073a7-2c08-421a-87d3-6fcb7f70c362
+    type: regular
+    task:
+      id: de8073a7-2c08-421a-87d3-6fcb7f70c362
+      version: -1
+      name: Find similar incidents
+      description: |-
+        Finds similar incidents by common incident keys, labels, custom fields or context keys.
+        It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
+        For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      filterQuery: {}
+      hoursBack: {}
+      ignoreClosedIncidents: {}
+      incidentFieldsAppliedCondition: {}
+      maxNumberOfIncidents: {}
+      maxResults: {}
+      similarContextKeys: {}
+      similarCustomFields: {}
+      similarIncidentFields:
+        simple: type
+      similarIncidentKeys: {}
+      similarLabelsKeys: {}
+      skipMissingValues: {}
+      timeField: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 94a1ff3b-36df-4ab4-8b9a-71d9a7a77991
+    type: condition
+    task:
+      id: 94a1ff3b-36df-4ab4-8b9a-71d9a7a77991
+      version: -1
+      name: Found similar incidents?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: similarIncident
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 9c8c9a00-b552-4178-8ea7-2fdf55284b23
+    type: regular
+    task:
+      id: 9c8c9a00-b552-4178-8ea7-2fdf55284b23
+      version: -1
+      name: Close previous change shift incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Created a new incident.
+      closeReason: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: similarIncident
+          accessor: rawId
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 23e39110-27fc-462f-8abd-c42c0df89a59
+    type: playbook
+    task:
+      id: 23e39110-27fc-462f-8abd-c42c0df89a59
+      version: -1
+      name: Assign Active Incidents to Next Shift_V2
+      description: "This playbook reassigns Active Incidents to the current users\
+        \ on call, requires shift management to be setup.   Can be run as a job a\
+        \ few minutes after the scheduled shift change time.\n\nUpdate the playbook\
+        \ input with a different search query if required.  Will also branch if there\
+        \ are no Incidents that match the query, and no users on call. \n\nSearch\
+        \ results are the default 100 Incidents returned by the query.\n\nCases will\
+        \ not be assign to users that defined OOO (by OutOfOffice automation)."
+      playbookName: Assign Active Incidents to Next Shift_V2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      IncidentSearchQuery:
+        simple: status:active -category:job
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: d06c1f1e-a055-4abe-84ff-18307641a09d
+    type: regular
+    task:
+      id: d06c1f1e-a055-4abe-84ff-18307641a09d
+      version: -1
+      name: 'Assign shift handover incident to all analysts '
+      description: |-
+        Assign analyst to incident with consideration of PTO, OOO, or Disabled Users.
+
+        Users can use the OutOfOffice automation to add or remove themselves from the list.
+      scriptName: AssignAnalystToIncidentOOO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      assignAll:
+        simple: "true"
+      listname: {}
+      oncall:
+        simple: "true"
+      roles: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 5eaa35ff-ffca-482f-8b58-c0f25ecfedf7
+    type: playbook
+    task:
+      id: 5eaa35ff-ffca-482f-8b58-c0f25ecfedf7
+      version: -1
+      name: Set a Shift handover meeting
+      playbookName: Set a Shift handover meeting
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      "": {}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 73afa9d0-3661-4483-8a6f-8622b36d789e
+    type: condition
+    task:
+      id: 73afa9d0-3661-4483-8a6f-8622b36d789e
+      version: -1
+      name: Assign Active Incidents to Next Shift?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AssignActiveIncidentsToNextShift
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: a082446c-172a-43b5-8215-850d933a2bc9
+    type: title
+    task:
+      id: a082446c-172a-43b5-8215-850d933a2bc9
+      version: -1
+      name: Set up handover
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+      - "31"
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: a80646cc-327f-4cc1-805a-6867452cbd8e
+    type: title
+    task:
+      id: a80646cc-327f-4cc1-805a-6867452cbd8e
+      version: -1
+      name: OOO users
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 6ecfa720-5c3e-44b2-8daf-f451a2a67c12
+    type: regular
+    task:
+      id: 6ecfa720-5c3e-44b2-8daf-f451a2a67c12
+      version: -1
+      name: 'Set OOO users to context '
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      append: {}
+      key:
+        simple: OOOusers
+      stringify: {}
+      value:
+        complex:
+          root: lists
+          accessor: OOO List
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: f46df130-6dd8-4d8a-87c7-d131cd9d53ed
+    type: regular
+    task:
+      id: f46df130-6dd8-4d8a-87c7-d131cd9d53ed
+      version: -1
+      name: Set OOO users grid to layout
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      columns:
+        simple: User name,Off until, Added by
+      context_path:
+        simple: OOOusers
+      grid_id:
+        simple: outofftheoffice
+      keys:
+        simple: user,offuntil,addedby
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 0b6a512d-6294-40bf-8e3c-6ef75161b160
+    type: condition
+    task:
+      id: 0b6a512d-6294-40bf-8e3c-6ef75161b160
+      version: -1
+      name: Are there OOO users?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: StringContainsArray
+          left:
+            value:
+              simple: lists.OOO List
+            iscontext: true
+          right:
+            value:
+              simple: offuntil
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 61e1375b-0419-4b19-804a-ee861d967685
+    type: regular
+    task:
+      id: 61e1375b-0419-4b19-804a-ee861d967685
+      version: -1
+      name: Get OOO users and clean OOO list
+      description: Retrieves users that are currently out of office.
+      scriptName: GetUsersOOO
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      listname: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 826aa6e4-1259-44ea-85f7-187b161301ca
+    type: regular
+    task:
+      id: 826aa6e4-1259-44ea-85f7-187b161301ca
+      version: -1
+      name: Search for Incidents
+      description: Searches Demisto incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      details: {}
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id: {}
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query:
+        simple: ${inputs.IncidentSearchQuery}
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 0beb2ecd-fc46-44f9-800f-125b89ffdd7f
+    type: regular
+    task:
+      id: 0beb2ecd-fc46-44f9-800f-125b89ffdd7f
+      version: -1
+      name: Set open incidents  to layout
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      columns:
+        simple: Incident ID,Incident name,Incident owner,Link to incident
+      context_path:
+        simple: foundIncidents
+      grid_id:
+        simple: shiftopenincidents
+      keys:
+        simple: id,name,owner,incidentLink
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 26c61842-7348-4d51-8c9f-bfa1915a552f
+    type: regular
+    task:
+      id: 26c61842-7348-4d51-8c9f-bfa1915a552f
+      version: -1
+      name: 'Set apps Channel, team name and message to incident field '
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      addcctoemail: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      app: {}
+      appchannelname:
+        simple: ${inputs.AppChannelName }
+      appendMultiSelect: {}
+      applicationid: {}
+      applicationname: {}
+      appmessage:
+        simple: ${inputs.AppMessage }
+      assetid: {}
+      assettable: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      commandline: {}
+      compliancenotes: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      createddatefailedincidents: {}
+      credibilityoffense: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      descriptionasset: {}
+      descriptionoffense: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationipoffense: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationnetworkoffense: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      deviceid: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      displayname: {}
+      dnsname: {}
+      domainoffense: {}
+      dstports: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      failedincidentscreateddate: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      id: {}
+      idasset: {}
+      idoffense: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      integrationscategories: {}
+      integrationsfailedcategories: {}
+      integrationstestgrid: {}
+      internaladdresses: {}
+      investigationstage: {}
+      ipaddressasset: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      linktojointhemeeting: {}
+      linktooffense: {}
+      linktostartthemeeting: {}
+      linkzoom: {}
+      listofrulesevent: {}
+      listofrulesoffense: {}
+      location: {}
+      locationasset: {}
+      locationregion: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      lowlevelcategoriesoffense: {}
+      macaddress: {}
+      macaddressasset: {}
+      magnitudeoffense: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      numberofentriesiderrors: {}
+      numberofeventsinoffense: {}
+      numberoffailedincidents: {}
+      numberoffetchedevents: {}
+      numberofflows: {}
+      numberoflogsources: {}
+      occurred: {}
+      offenseinactive: {}
+      ooousers: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      outofftheoffice: {}
+      owner: {}
+      parentprocessid: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      playbooknameswithfailedtasks: {}
+      playbooksfailedcommands: {}
+      playbookswithfailedtasks: {}
+      playbooktaskserrors: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      reassignincidents: {}
+      region: {}
+      regionid: {}
+      relevanceoffense: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity: {}
+      severityoffense: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shiftmanagerbriefing: {}
+      shiftopenincidents: {}
+      signature: {}
+      similarincident: {}
+      similarincidents: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      slackchannelname: {}
+      slackmessage: {}
+      socmanagernotification: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceipoffense: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourcenetworkoffense: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      statusoffense: {}
+      streetaddress: {}
+      subcategory: {}
+      subtype: {}
+      surname: {}
+      switchidasset: {}
+      switchportidasset: {}
+      systems: {}
+      targetfirewallversion: {}
+      teamname:
+        simple: ${inputs.TeamName}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      tenantname: {}
+      terminatedaction: {}
+      testlink: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      tojointhemeeting: {}
+      tojoinzoommeeting: {}
+      tostartthemeeting: {}
+      tostartzoommeeting: {}
+      totalfailedinstances: {}
+      totalgoodinstances: {}
+      totalinstances: {}
+      trafficdirection: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      typeoffense: {}
+      unassignedincidents: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userid: {}
+      username: {}
+      usernamecountoffense: {}
+      usernames: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      zipcode: {}
+      zoomjoinmeeting: {}
+      zoomstartmeeting: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: f3a0509a-80f7-4b6d-825f-4ae3a9a161a2
+    type: title
+    task:
+      id: f3a0509a-80f7-4b6d-825f-4ae3a9a161a2
+      version: -1
+      name: Get SOC manager briefing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 3eaf1151-7598-4efd-84aa-772330c08cbb
+    type: condition
+    task:
+      id: 3eaf1151-7598-4efd-84aa-772330c08cbb
+      version: -1
+      name: Should get notification by Email?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: 'inputs.ShiftManagerBriefing '
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: f0eefd3d-efad-4d44-80e3-41da27a713cb
+    type: collection
+    task:
+      id: f0eefd3d-efad-4d44-80e3-41da27a713cb
+      version: -1
+      name: Get notification
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      execution-timeout:
+        simple: "0"
+    separatecontext: false
+    sla:
+      hours: 0
+      days: 0
+      weeks: 0
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.SOCManagerEmail}
+      subject:
+        simple: briefing  for the SOC team
+      body:
+        simple: Please enter the URL and submit your briefing for the SOC team.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+      defaultOption: "Yes"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What your briefing for the team?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: SOC manager briefing
+      description: Please enter the URL and provide briefing fir the team
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 4c8871e0-9c90-4758-846b-d09c156c67f2
+    type: regular
+    task:
+      id: 4c8871e0-9c90-4758-846b-d09c156c67f2
+      version: -1
+      name: Set SOC manager brief to the team
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      addcctoemail: {}
+      agentid: {}
+      alertid: {}
+      alertname: {}
+      app: {}
+      appchannelname: {}
+      appendMultiSelect: {}
+      applicationid: {}
+      applicationname: {}
+      appmessage: {}
+      assetid: {}
+      assettable: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      categorycount: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      closetime: {}
+      closingreason: {}
+      closinguser: {}
+      cloudservice: {}
+      commandline: {}
+      compliancenotes: {}
+      costcenter: {}
+      costcentercode: {}
+      country: {}
+      countryname: {}
+      createddatefailedincidents: {}
+      credibilityoffense: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cvssavailabilityrequirement: {}
+      cvsscollateraldamagepotential: {}
+      cvssconfidentialityrequirement: {}
+      cvssintegrityrequirement: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      department: {}
+      descriptionasset: {}
+      descriptionoffense: {}
+      dest: {}
+      desthostname: {}
+      destinationgeolocation: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationipoffense: {}
+      destinationips: {}
+      destinationipv6: {}
+      destinationmacaddress: {}
+      destinationnetwork: {}
+      destinationnetworkoffense: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicehash: {}
+      deviceid: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      devicetime: {}
+      displayname: {}
+      dnsname: {}
+      domainoffense: {}
+      dstports: {}
+      duration: {}
+      email: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailhtmlimage: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emaillabels: {}
+      emaillatestmessage: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      errorcode: {}
+      errormessage: {}
+      escalation: {}
+      eventaction: {}
+      eventdescriptions: {}
+      eventid: {}
+      eventnames: {}
+      events: {}
+      eventtype: {}
+      externaladdresses: {}
+      failedincidentscreateddate: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      followup: {}
+      givenname: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      highlevelcategories: {}
+      hostname: {}
+      id: {}
+      idasset: {}
+      idoffense: {}
+      incomingmirrorerror: {}
+      infectedhosts: {}
+      integrationscategories: {}
+      integrationsfailedcategories: {}
+      integrationstestgrid: {}
+      internaladdresses: {}
+      investigationstage: {}
+      ipaddressasset: {}
+      isolated: {}
+      jobcode: {}
+      jobfamily: {}
+      jobfunction: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      lastupdatetime: {}
+      leadership: {}
+      linktojointhemeeting: {}
+      linktooffense: {}
+      linktostartthemeeting: {}
+      linkzoom: {}
+      listofrulesevent: {}
+      listofrulesoffense: {}
+      location: {}
+      locationasset: {}
+      locationregion: {}
+      logsource: {}
+      logsourcename: {}
+      logsourcetype: {}
+      lowlevelcategoriesevents: {}
+      lowlevelcategoriesoffense: {}
+      macaddress: {}
+      macaddressasset: {}
+      magnitudeoffense: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      malwarename: {}
+      manageremail: {}
+      manageremailaddress: {}
+      managername: {}
+      md5: {}
+      mobiledevicemodel: {}
+      mobilephone: {}
+      name: {}
+      numberofentriesiderrors: {}
+      numberofeventsinoffense: {}
+      numberoffailedincidents: {}
+      numberoffetchedevents: {}
+      numberofflows: {}
+      numberoflogsources: {}
+      occurred: {}
+      offenseinactive: {}
+      ooousers: {}
+      os: {}
+      osversion: {}
+      outgoingmirrorerror: {}
+      outofftheoffice: {}
+      owner: {}
+      parentprocessid: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      personalemail: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      playbooknameswithfailedtasks: {}
+      playbooksfailedcommands: {}
+      playbookswithfailedtasks: {}
+      playbooktaskserrors: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      postnatdestinationip: {}
+      postnatdestinationport: {}
+      postnatsourceip: {}
+      postnatsourceport: {}
+      prenatdestinationport: {}
+      prenatsourceip: {}
+      prenatsourceport: {}
+      protocol: {}
+      protocolevent: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      rawevent: {}
+      reassignincidents: {}
+      region: {}
+      regionid: {}
+      relevanceoffense: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity: {}
+      severityoffense: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      shiftmanagerbriefing:
+        simple: ${SOC manager briefing.Answers.0}
+      shiftopenincidents: {}
+      signature: {}
+      similarincident: {}
+      similarincidents: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      slackchannelname: {}
+      slackmessage: {}
+      socmanagernotification: {}
+      sourcegeolocation: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourceipoffense: {}
+      sourceips: {}
+      sourceipv6: {}
+      sourcemacaddress: {}
+      sourcenetwork: {}
+      sourcenetworkoffense: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcports: {}
+      srcuser: {}
+      starttime: {}
+      state: {}
+      statusoffense: {}
+      streetaddress: {}
+      subcategory: {}
+      subtype: {}
+      surname: {}
+      switchidasset: {}
+      switchportidasset: {}
+      systems: {}
+      targetfirewallversion: {}
+      teamname: {}
+      technicalowner: {}
+      technicalownercontact: {}
+      technicaluser: {}
+      tenantname: {}
+      terminatedaction: {}
+      testlink: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      title: {}
+      tojointhemeeting: {}
+      tojoinzoommeeting: {}
+      tostartthemeeting: {}
+      tostartzoommeeting: {}
+      totalfailedinstances: {}
+      totalgoodinstances: {}
+      totalinstances: {}
+      trafficdirection: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      typeoffense: {}
+      unassignedincidents: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userid: {}
+      username: {}
+      usernamecountoffense: {}
+      usernames: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      workphone: {}
+      zipcode: {}
+      zoomjoinmeeting: {}
+      zoomstartmeeting: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 1955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 498546cd-483a-4643-8204-181d8de9c66e
+    type: title
+    task:
+      id: 498546cd-483a-4643-8204-181d8de9c66e
+      version: -1
+      name: 'Manager briefing completed '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_28_#default#": 0.58,
+      "26_24_yes": 0.64,
+      "26_5_#default#": 0.69,
+      "32_35_#default#": 0.72
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3595,
+        "width": 1960,
+        "x": -450,
+        "y": -1040
+      }
+    }
+  }
+inputs:
+- key: AssignActiveIncidentsToNextShift
+  value:
+    simple: "Yes"
+  required: false
+  description: "Yes - If you wish that the Playbook will reassign active incidents\
+    \ to on-call users, the playbook will take in consideration users that are out\
+    \ of the office.\nNo- If you do not wish to reassign active incidents, same incident\
+    \ owner will remain. \n"
+  playbookInputQuery:
+- key: IncidentSearchQuery
+  value:
+    simple: 'status:active  -category:job '
+  required: false
+  description: 'Query for the Incidents to reassign.  Incidents need to be active
+    for this to work, it will not reassign pending Incidents. '
+  playbookInputQuery:
+- key: 'AppChannelName '
+  value:
+    simple: daud
+  required: false
+  description: "The name of channel that would be created in your messaging app  for\
+    \ the shift handover.\nThe should not contain upper case or special characters.\
+    \  "
+  playbookInputQuery:
+- key: 'AppMessage '
+  value:
+    simple: Hi, please join the shift handover meeting.
+  required: false
+  description: The message that you wish to send to the handover to your messaging
+    app channel that was created above.
+  playbookInputQuery:
+- key: SOCManagerEmail
+  value:
+    simple: evisochek@paloaltonetworks.com
+  required: false
+  description: In case that the Shift manager briefing section will be left empty
+    when a new shift handover incident is opened, an Email will be send to this address
+    to provide Shift manager briefing.
+  playbookInputQuery:
+- key: 'ShiftManagerBriefing '
+  value:
+    simple: ${incident.shiftmanagerbriefing}
+  required: false
+  description: The incident field that will provide the shift manager briefing for
+    the layout.
+  playbookInputQuery:
+- key: TeamName
+  value:
+    simple: DemistoTeam
+  required: false
+  description: If using Microsoft Teams please provide your Microsoft team name.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
