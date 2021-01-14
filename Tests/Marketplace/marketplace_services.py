@@ -77,6 +77,7 @@ class Metadata(object):
     """
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
     XSOAR_SUPPORT = "xsoar"
+    PARTNER_SUPPORT = "partner"
     XSOAR_SUPPORT_URL = "https://www.paloaltonetworks.com/cortex"  # disable-secrets-detection
     XSOAR_AUTHOR = "Cortex XSOAR"
     SERVER_DEFAULT_MIN_VERSION = "6.0.0"
@@ -514,9 +515,9 @@ class Pack(object):
     def _get_certification(support_type, certification=None):
         """ Returns pack certification.
 
-        In case support type is xsoar, CERTIFIED is returned.
-        In case support is not xsoar but pack_metadata has certification field, certification value will be taken from
-        pack_metadata defined value.
+        In case support type is xsoar or partner, CERTIFIED is returned.
+        In case support is not xsoar or partner but pack_metadata has certification field, certification value will be
+        taken from pack_metadata defined value.
         Otherwise empty certification value (empty string) will be returned
 
         Args:
@@ -526,9 +527,9 @@ class Pack(object):
         Returns:
             str: certification value
         """
-        if support_type == Metadata.XSOAR_SUPPORT:
+        if support_type in [Metadata.XSOAR_SUPPORT, Metadata.PARTNER_SUPPORT]:
             return Metadata.CERTIFIED
-        elif support_type != Metadata.XSOAR_SUPPORT and certification:
+        elif certification:
             return certification
         else:
             return ""
