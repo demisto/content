@@ -172,6 +172,6 @@ def test_update_indicator_occurrences():
     update_indicator_occurrences(first_ind, address_to_count_dict)
     update_indicator_occurrences(first_ind, address_to_count_dict)
     update_indicator_occurrences(second_ind, address_to_count_dict)
-    assert (address_to_count_dict.get('12345abcde')) == 3
+    assert (address_to_count_dict.get('12345abcde')) == 2
     assert (address_to_count_dict.get('67890fghij', 0)) == 1
     assert (address_to_count_dict.get('12bxcas', 0)) == 0
