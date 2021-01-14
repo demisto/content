@@ -335,7 +335,6 @@ def main() -> None:
             initial_fetch_interval=initial_fetch_interval,
             reader_config=READER_CONFIG,
             have_fetched_first_time=have_fetched_first_time)
-        return_results(bitcoin_abuse_get_indicators_command(bitcoin_client, demisto.args()))
 
         if command == 'test-module':
             return_results(test_module_command(bitcoin_client))
