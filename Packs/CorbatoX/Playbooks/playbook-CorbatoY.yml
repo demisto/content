@@ -86,6 +86,7 @@ tasks:
       name: Manually deploy patch
       type: regular
       version: -1
+      description: ''
     taskid: c6207ea1-0976-41d3-8636-17088f23b054
     timertriggers: []
     type: regular
@@ -236,6 +237,7 @@ tasks:
       name: Query Carbon Black for events around the time of the incident
       type: regular
       version: -1
+      description: ''
     taskid: 55dad16e-31b0-4f56-8c98-4e0cf181a5fc
     timertriggers: []
     type: regular
@@ -479,6 +481,7 @@ tasks:
       name: Is there a AzureIndicatorTagName input?
       type: condition
       version: -1
+      description: ''
     taskid: 92e7d5e2-3945-47fd-8c25-f3c0c8ba7016
     timertriggers: []
     type: condition
@@ -550,6 +553,7 @@ tasks:
       script: 64a3dab3-0537-417e-81c3-b2b315891d1f
       type: regular
       version: -1
+      description: ''
     taskid: 80a94fe6-48bf-473c-8375-cd4cf7984bff
     timertriggers: []
     type: regular
@@ -692,6 +696,7 @@ tasks:
       name: Is Google Cloud Compute integration enabled?
       type: condition
       version: -1
+      description: ''
     taskid: 159b97e1-3e77-41e7-8ca4-c527d5dd1f70
     timertriggers: []
     type: condition
@@ -829,6 +834,7 @@ tasks:
       name: Any IPs in AWS allow list that should be removed?
       type: condition
       version: -1
+      description: ''
     taskid: ded851c7-5bc7-4f2e-8238-e57849966324
     timertriggers: []
     type: condition
@@ -856,6 +862,7 @@ tasks:
       name: Any IPs to allow which are not already in AWS?
       type: condition
       version: -1
+      description: ''
     taskid: 63f88ed9-a184-4062-8ed7-de7c170a81d8
     timertriggers: []
     type: condition
@@ -883,6 +890,7 @@ tasks:
       name: Is AWS EC2 integration enabled?
       type: condition
       version: -1
+      description: ''
     taskid: 8846755b-df88-477e-8075-dfbe8349b807
     timertriggers: []
     type: condition
@@ -910,6 +918,7 @@ tasks:
       name: Is the AWS Security Group input set?
       type: condition
       version: -1
+      description: ''
     taskid: c998f782-d62b-40eb-841f-f2771d701dd6
     timertriggers: []
     type: condition
@@ -1066,6 +1075,7 @@ tasks:
       script: 54938864-2d4f-4754-8736-85a338f938f5
       type: regular
       version: -1
+      description: ''
     taskid: 5662a600-2796-407d-8a9e-f0fe104b2f06
     timertriggers: []
     type: regular
@@ -1096,6 +1106,7 @@ tasks:
       script: 8011c226-e767-4449-8338-66fb919374c5
       type: regular
       version: -1
+      description: ''
     taskid: acece3f9-d885-4c49-8365-35ed2a615c1f
     timertriggers: []
     type: regular
@@ -1448,6 +1459,7 @@ tasks:
       name: Query Carbon Black for events around the time of the incident
       type: regular
       version: -1
+      description: ''
     taskid: 55dad16e-31b0-4f56-8c98-4e0cf181a5fc
     timertriggers: []
     type: regular
