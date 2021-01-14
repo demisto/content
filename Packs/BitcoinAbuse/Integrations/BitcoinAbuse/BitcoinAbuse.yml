@@ -98,8 +98,8 @@ configuration:
   type: 0
 description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers
   and criminals.
-display: BitcoinAbuse
-name: BitcoinAbuse
+display: BitcoinAbuse Feed
+name: BitcoinAbuse Feed
 script:
   commands:
   - arguments:
