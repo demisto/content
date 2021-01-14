@@ -493,19 +493,19 @@ def get_updated_private_packs(private_packs, index_folder_path):
     """
     updated_private_packs = []
 
-    with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")) as public_index_file:
-        public_index_json = json.load(public_index_file)
-    public_packs = public_index_json.get("packs", {})
+    public_index_file_path = os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json")
+    public_index_json = load_json(public_index_file_path)
+    private_packs_from_public_index = public_index_json.get("packs", {})
 
     for pack in private_packs:
         private_pack_id = pack.get('id')
-        new_private_commit_hash = pack.get('contentCommitHash', "")
-        old_private_commit_hash = ""
-        for public_pack in public_packs:
+        private_commit_hash_from_metadata = pack.get('contentCommitHash', "")
+        private_commit_hash_from_content_repo = ""
+        for public_pack in private_packs_from_public_index:
             if public_pack.get('id') == private_pack_id:
-                old_private_commit_hash = public_pack.get('contentCommitHash', "")
+                private_commit_hash_from_content_repo = public_pack.get('contentCommitHash', "")
 
-        private_pack_was_updated = new_private_commit_hash != old_private_commit_hash
+        private_pack_was_updated = private_commit_hash_from_metadata != private_commit_hash_from_content_repo
         if private_pack_was_updated:
             updated_private_packs.append(private_pack_id)
 
@@ -835,10 +835,10 @@ def main():
     # google cloud bigquery client initialized
     bq_client = init_bigquery_client(service_account)
     packs_statistic_df = get_packs_statistics_dataframe(bq_client)
-    updated_private_packs = []
+    updated_private_packs_ids = []
     if private_bucket_name:  # Add private packs to the index
         private_storage_bucket = storage_client.bucket(private_bucket_name)
-        private_packs, _, _, updated_private_packs = update_index_with_priced_packs(private_storage_bucket,
+        private_packs, _, _, updated_private_packs_ids = update_index_with_priced_packs(private_storage_bucket,
                                                                                     extract_destination_path,
                                                                                     index_folder_path, pack_names)
     else:  # skipping private packs
@@ -977,7 +977,7 @@ def main():
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
-        updated_private_packs
+        updated_private_packs_ids
     )
 
     # summary of packs status
