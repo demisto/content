@@ -366,9 +366,9 @@ Retrieves the list of job templates.
 #### Human Readable Output
 
 >### Job Templates List
->|name|id|type|url|created|modified|job_type|inventory|project|playbook|timeout|last_job_run|last_job_failed|status|survey_enabled|become_enabled|credential|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Demo Job Template | 5 | job_template | /api/v2/job_templates/5/ | 2019-11-19 11:53:43.446968 | 2021-01-13 07:46:49.462160 |  | run | 1 | 4 | hello_world.yml | 0 | 2021-01-13T07:46:49.418371Z | true | failed | false | false |  | 1 |  |
+>|name|id|type|url|created|modified|inventory|project|playbook|timeout|last_job_run|last_job_failed|status|survey_enabled|become_enabled|credential|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Demo Job Template | 5 | job_template | /api/v2/job_templates/5/ | 2019-11-19 11:53:43.446968 | 2021-01-13 07:46:49.462160 | run | 1 | 4 | hello_world.yml | 0 | 2021-01-13T07:46:49.418371Z | true | failed | false | false |  | 1 |  |
 
 
 ### ansible-tower-credentials-list
