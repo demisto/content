@@ -687,7 +687,7 @@ script:
       type: String
     - contextPath: MicrosoftTeams.Team.proxyAddresses
       description: 'Email addresses for the group that direct to the same group mailbox.
-        For example: ["SMTP: bob@contoso.com", "smtp: bob@sales.contoso.com"]'
+        For example: ["SMTP: bob@demisto.com", "smtp: bob@sales.demisto.com"]'
       type: String
     - contextPath: MicrosoftTeams.Team.mail
       description: The SMTP address for the group, for example, "serviceadmins@contoso.onmicrosoft.com".
