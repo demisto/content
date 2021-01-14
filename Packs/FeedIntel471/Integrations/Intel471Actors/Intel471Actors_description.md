@@ -1,4 +1,4 @@
-Fetch indicators from Intel471 Actors Stream feed.
+Fetch indicators from Intel 471 Actors Stream feed.
 
-* **Username** - Email address to access the intel471. 
-* **Password** - Api key to access the intel471. In order to get api key, enter [https://titan.intel471.com/api](https://titan.intel471.com/api) .
+* **Username** - Email address to access Intel 471. 
+* **Password** - API key to access Intel 471. To get the API key, see [https://titan.intel471.com/api](https://titan.intel471.com/api) .
