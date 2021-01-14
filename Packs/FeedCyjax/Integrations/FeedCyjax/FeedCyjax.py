@@ -271,7 +271,7 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score=None) -> Dict[str, Any]
     indicator = {
         'value': cyjax_indicator.get('value'),
         'type': map_indicator_type(cyjax_indicator.get('type')),
-        'rawJSON': json.dumps(cyjax_indicator),
+        'rawJSON': cyjax_indicator,
         'score': score
     }
 
@@ -489,11 +489,14 @@ def main() -> None:
 
         elif demisto.command() == 'fetch-indicators':
 
-            demisto.info('-------------- CYJAX fetch-indicators called at {}'.format(datetime.now().isoformat()))
             last_fetch_date = get_indicators_last_fetch_date()  # type:datetime
+            demisto.info('-------------- CYJAX fetch-indicators called at {}, use date: {}'.
+                         format(datetime.now().isoformat(), last_fetch_date.isoformat()))
+
             next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation)
 
             if indicators:
+                demisto.info('------------------ CYJAX FOUND INDICATORS')
                 for b in batch(indicators, batch_size=2000):
                     demisto.createIndicators(b)
 
