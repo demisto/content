@@ -30,3 +30,7 @@ Through a powerful set of Playbooks, analysts can correlate the discovered infor
 - **Handle Expanse Incident - Remediation**: An excerpt of the remediation stage of the main playbook. Note the different branches handling notifications, automatic network remediation and follow up Shadow IT investigation if the asset is marked as Shadow IT by the incident assignee.
 
     ![Handle Expanse Incident Remediation](https://raw.githubusercontent.com/demisto/content/b8efd3c2e9409b02b9c4b1873ff3e783524c5104/Packs/ExpanseV2/doc_files/Handle_Expanse_Incident_Remediation.png)
+
+##### Video
+
+[![Expanse and Cortex XSOAR](https://img.youtube.com/vi/I3Vj-f5VGMk/0.jpg)](https://www.youtube.com/watch?v=I3Vj-f5VGMk "Expanse and Cortex XSOAR")
