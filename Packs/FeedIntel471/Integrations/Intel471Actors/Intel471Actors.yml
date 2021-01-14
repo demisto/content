@@ -12,7 +12,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: feedInstanceReputationNotSet
   display: Indicator Reputation
   name: feedReputation
@@ -23,7 +23,7 @@ configuration:
   - Bad
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
+- additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: F - Reliability cannot be judged
   display: Source Reliability
   name: feedReliability
@@ -36,7 +36,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -71,7 +71,7 @@ configuration:
   name: actor
   required: false
   type: 0
-- additionalinfo: How far back in time to go when performing the first fetch
+- additionalinfo: How far back in time to go when performing the first fetch.
   defaultvalue: '7 days'
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
@@ -106,9 +106,9 @@ configuration:
   required: false
   type: 8
 description: |-
-  "Intel 471's Actors feed is an actor-centric intelligence capability.
-  It combines both a field-based intelligence collection and a headquartered based intelligence analysis component.
-  This feed allows getting data out of access to closed sources (typically referred to as the deep and dark web) where threat actors collaborate, communicate and plan cyber attacks."
+  "Intel 471's Actors feed is an actor-centric intelligence feature.
+  It combines both a field-based intelligence collection and a headquartered-based intelligence analysis component.
+  This feed allows getting data out of closed sources (typically referred to as the deep and dark web) where threat actors collaborate, communicate, and plan cyber attacks."
 display: Intel471 Actors Feed
 name: Intel471 Actors Feed
 script:
