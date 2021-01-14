@@ -1,7 +1,7 @@
 commonfields:
   id: GreatHorn
   version: -1
-fromversion: 5.0.0
+fromversion: 6.0.0
 name: GreatHorn
 display: GreatHorn
 category: Email Gateway
@@ -39,6 +39,7 @@ script:
     description: Return message details for the specified event
     arguments:
     - name: id
+      isArray: true
       required: true
       description: GreatHorn eventId, multiple values supported via CSV
     - name: includeheaders
@@ -58,339 +59,151 @@ script:
       defaultValue: "false"
     outputs:
     - contextPath: GreatHorn.Message.origin
-      description: ""
+      description: Mailbox email was discovered
       type: String
     - contextPath: GreatHorn.Message.status
-      description: ""
+      description: Has the system taken action on the event
       type: String
     - contextPath: GreatHorn.Message.xMailer
-      description: ""
+      description: X-Mailer header entry
       type: Unknown
     - contextPath: GreatHorn.Message.links.resolvedUrl
-      description: ""
+      description: The URL of the resolved link if it points elsewhere
       type: Unknown
     - contextPath: GreatHorn.Message.links.text
-      description: ""
+      description: The text showing for the link discovered in the body of the email
       type: String
     - contextPath: GreatHorn.Message.links.url
-      description: ""
+      description: URL of link discovered in body of email
       type: String
     - contextPath: GreatHorn.Message.links.tags
-      description: ""
+      description: List of tags describing the analysis of the event
       type: String
     - contextPath: GreatHorn.Message.sourcePath
-      description: ""
+      description: GreatHorn discovered domain of sender
       type: String
     - contextPath: GreatHorn.Message.ip
-      description: ""
+      description: GreatHorn discovered originating ip of sender
       type: String
     - contextPath: GreatHorn.Message.bodyOnlyWhitespace
-      description: ""
+      description: Body of email content is only whitespace
       type: Number
     - contextPath: GreatHorn.Message.quarReleasedBy
-      description: ""
+      description: Who released the quarantined email
       type: Unknown
     - contextPath: GreatHorn.Message.dmarc
-      description: ""
+      description: dmarc authentication result
       type: String
     - contextPath: GreatHorn.Message.collector
-      description: ""
+      description: Email provider email discovered
       type: Unknown
     - contextPath: GreatHorn.Message.dkim
-      description: ""
+      description: dmarc authentication result
       type: String
     - contextPath: GreatHorn.Message.spf
-      description: ""
+      description: spf authentication result 
       type: String
     - contextPath: GreatHorn.Message.contentHash
-      description: ""
+      description: Hash of email body conten
       type: String
     - contextPath: GreatHorn.Message.workflow
-      description: ""
+      description: Current action of event
       type: String
     - contextPath: GreatHorn.Message.targets
-      description: ""
+      description: All recepients of the email
       type: String
     - contextPath: GreatHorn.Message.source
-      description: ""
+      description: Email sender address
       type: String
     - contextPath: GreatHorn.Message.location
-      description: ""
+      description: Location of sender ip origin
       type: String
     - contextPath: GreatHorn.Message.quarDeleted
-      description: ""
+      description: Has the event been deleted from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.quarDeletedBy
-      description: ""
+      description: Who deleted the quarantined email
       type: Unknown
     - contextPath: GreatHorn.Message.violations
-      description: ""
+      description: All body of email policy matches
       type: Number
     - contextPath: GreatHorn.Message.subject
-      description: ""
+      description: Email subject
       type: String
     - contextPath: GreatHorn.Message.xAuthResults
-      description: ""
+      description: X-Original-Authentication-Results header entry
       type: Unknown
     - contextPath: GreatHorn.Message.returnPath
-      description: ""
+      description: Return-Path header entry'
       type: String
     - contextPath: GreatHorn.Message.eventId
-      description: ""
+      description: The GreatHorn event id
       type: Number
     - contextPath: GreatHorn.Message.quarDenied
-      description: ""
+      description: Has the event been denied released from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.received
-      description: ""
+      description: Received header entry
       type: String
     - contextPath: GreatHorn.Message.replyTo
-      description: ""
+      description: Reply-To header entry
       type: String
     - contextPath: GreatHorn.Message.timestamp
-      description: ""
+      description: timestamp of the event, usually receivedTime
       type: Date
     - contextPath: GreatHorn.Message.quarReleased
-      description: ""
+      description: Has the event been released from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.authenticationResults
-      description: ""
+      description: Authentication-Results header entry
       type: String
     - contextPath: GreatHorn.Message.quarantined
-      description: ""
+      description: Has the event been quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.flag
-      description: ""
+      description: All policies the event matched
       type: Number
     - contextPath: GreatHorn.Message.homographScore
-      description: ""
+      description: GreatHorn homograph score
       type: Number
     - contextPath: GreatHorn.Message.remediation
-      description: ""
+      description: Remediation action taken
       type: Unknown
     - contextPath: GreatHorn.Message.owlScore
-      description: ""
+      description: GreatHorn threat score
       type: Number
     - contextPath: GreatHorn.Message.quarReleaseRequested
-      description: ""
+      description: Has the event been requested to be relased from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.anomalyScore
-      description: ""
+      description: GreatHorn anomaly score
       type: Number
     - contextPath: GreatHorn.Message.quarExpired
-      description: ""
+      description: Has the event been expired from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.displayName
-      description: ""
+      description: Display name of sender
       type: String
     - contextPath: GreatHorn.Message.country
-      description: ""
+      description: Country of sender ip country
       type: String
     - contextPath: GreatHorn.Message.region
-      description: ""
+      description: Region of sender ip origin
       type: String
-    - contextPath: GreatHorn.Message.headers.received-spf
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.return-path
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-eoptenantattributedmessage
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-csa-complaints
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-authsource
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-processed-by-bccfoldering
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-messagedirectionality
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-expirationstarttimereason
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.subject
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-expirationstarttime
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.list-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.from
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.to
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-office365-filtering-correlation-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-transport-endtoendlatency
-      description: ""
-      type: Date
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-expirationintervalreason
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.list-unsubscribe
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.mime-version
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-scl
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-oob-tlc-oobclassifiers
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.authentication-results
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-authas
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-microsoft-antispam-mailbox-delivery
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-microsoft-antispam
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-traffic  typediagnostic
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-transport-crosstenantheadersstamped
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.dkim-signature
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-sfmc-stack
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.date
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.reply-to
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-network-message-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-authsource
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.received
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-originalarrivaltime
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-publictraffic  type
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.sender
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-job
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-expirationinterval
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-eopattributedmessage
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-microsoft-antispam-message-info
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-authas
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-fromentityheader
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-network-message-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-forefront-antispam-report
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.message-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.content-  type
-      description: ""
-      type: String
+    - contextPath: GreatHorn.Message.headers
+      description: Full set of headers for the email
+      type: Object
     - contextPath: GreatHorn.Message.messageId
-      description: ""
+      description: Message-Id header entry
       type: String
     - contextPath: GreatHorn.Message.authScore
-      description: ""
+      description: GreatHorn illegitmacy score
       type: Number
-    - contextPath: GreatHorn.Message.headers.x-msfbl
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.content-transfer-encoding
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.precedence
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.arc-seal
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.arc-authentication-results
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.arc-message-signature
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-received
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.to
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-unsubscribe-web
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-mailer
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-info
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.delivered-to
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.mime-version
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-tm-id
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-rpcampaign
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-google-smtp-source
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.content-type
-      description: ""
-      type: Unknown
   - name: gh-search-message
     description: Search for message based on filtering input
     arguments:
     - name: fields
+      isArray: true
       description: The fields to include in the response. By default, all fields are
         returned.
     - name: filters
@@ -415,335 +228,146 @@ script:
       defaultValue: desc
     outputs:
     - contextPath: GreatHorn.Message.origin
-      description: ""
+      description: Mailbox email was discovered
       type: String
     - contextPath: GreatHorn.Message.status
-      description: ""
+      description: Has the system taken action on the event
       type: String
     - contextPath: GreatHorn.Message.xMailer
-      description: ""
+      description: X-Mailer header entry
       type: Unknown
     - contextPath: GreatHorn.Message.links.resolvedUrl
-      description: ""
+      description: The URL of the resolved link if it points elsewhere
       type: Unknown
     - contextPath: GreatHorn.Message.links.text
-      description: ""
+      description: The text showing for the link discovered in the body of the email
       type: String
     - contextPath: GreatHorn.Message.links.url
-      description: ""
+      description: URL of link discovered in body of email
       type: String
     - contextPath: GreatHorn.Message.links.tags
-      description: ""
+      description: List of tags describing the analysis of the event
       type: String
     - contextPath: GreatHorn.Message.sourcePath
-      description: ""
+      description: GreatHorn discovered domain of sender
       type: String
     - contextPath: GreatHorn.Message.ip
-      description: ""
+      description: GreatHorn discovered originating ip of sender
       type: String
     - contextPath: GreatHorn.Message.bodyOnlyWhitespace
-      description: ""
+      description: Body of email content is only whitespace
       type: Number
     - contextPath: GreatHorn.Message.quarReleasedBy
-      description: ""
+      description: Who released the quarantined email
       type: Unknown
     - contextPath: GreatHorn.Message.dmarc
-      description: ""
+      description: dmarc authentication result
       type: String
     - contextPath: GreatHorn.Message.collector
-      description: ""
+      description: Email provider email discovered
       type: Unknown
     - contextPath: GreatHorn.Message.dkim
-      description: ""
+      description: dmarc authentication result
       type: String
     - contextPath: GreatHorn.Message.spf
-      description: ""
+      description: spf authentication result 
       type: String
     - contextPath: GreatHorn.Message.contentHash
-      description: ""
+      description: Hash of email body conten
       type: String
     - contextPath: GreatHorn.Message.workflow
-      description: ""
+      description: Current action of event
       type: String
     - contextPath: GreatHorn.Message.targets
-      description: ""
+      description: All recepients of the email
       type: String
     - contextPath: GreatHorn.Message.source
-      description: ""
+      description: Email sender address
       type: String
     - contextPath: GreatHorn.Message.location
-      description: ""
+      description: Location of sender ip origin
       type: String
     - contextPath: GreatHorn.Message.quarDeleted
-      description: ""
+      description: Has the event been deleted from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.quarDeletedBy
-      description: ""
+      description: Who deleted the quarantined email
       type: Unknown
     - contextPath: GreatHorn.Message.violations
-      description: ""
+      description: All body of email policy matches
       type: Number
     - contextPath: GreatHorn.Message.subject
-      description: ""
+      description: Email subject
       type: String
     - contextPath: GreatHorn.Message.xAuthResults
-      description: ""
+      description: X-Original-Authentication-Results header entry
       type: Unknown
     - contextPath: GreatHorn.Message.returnPath
-      description: ""
+      description: Return-Path header entry'
       type: String
     - contextPath: GreatHorn.Message.eventId
-      description: ""
+      description: The GreatHorn event id
       type: Number
     - contextPath: GreatHorn.Message.quarDenied
-      description: ""
+      description: Has the event been denied released from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.received
-      description: ""
+      description: Received header entry
       type: String
     - contextPath: GreatHorn.Message.replyTo
-      description: ""
+      description: Reply-To header entry
       type: String
     - contextPath: GreatHorn.Message.timestamp
-      description: ""
+      description: timestamp of the event, usually receivedTime
       type: Date
     - contextPath: GreatHorn.Message.quarReleased
-      description: ""
+      description: Has the event been released from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.authenticationResults
-      description: ""
+      description: Authentication-Results header entry
       type: String
     - contextPath: GreatHorn.Message.quarantined
-      description: ""
+      description: Has the event been quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.flag
-      description: ""
+      description: All policies the event matched
       type: Number
     - contextPath: GreatHorn.Message.homographScore
-      description: ""
+      description: GreatHorn homograph score
       type: Number
     - contextPath: GreatHorn.Message.remediation
-      description: ""
+      description: Remediation action taken
       type: Unknown
     - contextPath: GreatHorn.Message.owlScore
-      description: ""
+      description: GreatHorn threat score
       type: Number
     - contextPath: GreatHorn.Message.quarReleaseRequested
-      description: ""
+      description: Has the event been requested to be relased from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.anomalyScore
-      description: ""
+      description: GreatHorn anomaly score
       type: Number
     - contextPath: GreatHorn.Message.quarExpired
-      description: ""
+      description: Has the event been expired from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.displayName
-      description: ""
+      description: Display name of sender
       type: String
     - contextPath: GreatHorn.Message.country
-      description: ""
+      description: Country of sender ip country
       type: String
     - contextPath: GreatHorn.Message.region
-      description: ""
+      description: Region of sender ip origin
       type: String
-    - contextPath: GreatHorn.Message.headers.received-spf
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.return-path
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-eoptenantattributedmessage
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-csa-complaints
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-authsource
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-processed-by-bccfoldering
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-messagedirectionality
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-expirationstarttimereason
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.subject
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-expirationstarttime
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.list-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.from
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.to
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-office365-filtering-correlation-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-transport-endtoendlatency
-      description: ""
-      type: Date
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-expirationintervalreason
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.list-unsubscribe
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.mime-version
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-scl
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-oob-tlc-oobclassifiers
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.authentication-results
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-authas
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-microsoft-antispam-mailbox-delivery
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-microsoft-antispam
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-traffic  typediagnostic
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-transport-crosstenantheadersstamped
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.dkim-signature
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-sfmc-stack
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.date
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.reply-to
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-network-message-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-authsource
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.received
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-originalarrivaltime
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-publictraffic  type
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.sender
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-job
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-organization-expirationinterval
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-eopattributedmessage
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-microsoft-antispam-message-info
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-authas
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-fromentityheader
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-ms-exchange-crosstenant-network-message-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.x-forefront-antispam-report
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.message-id
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.content-  type
-      description: ""
-      type: String
+    - contextPath: GreatHorn.Message.headers
+      description: Full set of headers for the email
+      type: Object
     - contextPath: GreatHorn.Message.messageId
-      description: ""
+      description: Message-Id header entry
       type: String
     - contextPath: GreatHorn.Message.authScore
-      description: ""
+      description: GreatHorn illegitmacy score
       type: Number
-    - contextPath: GreatHorn.Message.headers.x-msfbl
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.content-transfer-encoding
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Message.headers.precedence
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.arc-seal
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.arc-authentication-results
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.arc-message-signature
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-received
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.to
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-unsubscribe-web
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-mailer
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-info
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.delivered-to
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.mime-version
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-tm-id
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-rpcampaign
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.x-google-smtp-source
-      description: ""
-      type: Unknown
-    - contextPath: GreatHorn.Message.headers.content-type
-      description: ""
-      type: Unknown
   - name: gh-remediate-message
     description: Perform the specified remediation action on message
     arguments:
@@ -783,16 +407,16 @@ script:
         not exist, it will be created.
     outputs:
     - contextPath: GreatHorn.Remediation.action
-      description: ""
+      description: Remediation action requested to be taken on the event
       type: String
     - contextPath: GreatHorn.Remediation.eventId
-      description: ""
+      description: The Greathorn event ID
       type: String
     - contextPath: GreatHorn.Remediation.reason
-      description: ""
+      description: Details of error seen if any  
       type: String
     - contextPath: GreatHorn.Remediation.success
-      description: ""
+      description: Indication if the request was successful 
       type: Number
   - name: gh-revert-remediate-message
     description: Revert the specified remediation action on the given message
@@ -813,55 +437,38 @@ script:
       description: The GreatHorn event ID
     outputs:
     - contextPath: GreatHorn.Remediation.action
-      description: ""
+      description: Remediation action that was reverted
       type: String
     - contextPath: GreatHorn.Remediation.eventId
-      description: ""
+      description: The GreatHorn event ID
       type: String
     - contextPath: GreatHorn.Remediation.reason
-      description: ""
+      description: Details of error seen if any
       type: String
     - contextPath: GreatHorn.Remediation.success
-      description: ""
+      description: Indication if the request was successful
       type: Number
   - name: gh-get-policy
     description: Retrieve details about the policy specified
     arguments:
     - name: policyid
-      description: The GreatHorn policy ID 
+      isArray: true
+      description: The ID of the policy
     outputs:
     - contextPath: GreatHorn.Policy.name
-      description: ""
+      description: The user-defined name of the policy
       type: String
     - contextPath: GreatHorn.Policy.enabled
-      description: ""
+      description: Whether the policy is enabled
       type: Number
     - contextPath: GreatHorn.Policy.config
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Policy.config.opt
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Policy.config.values
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Policy.config.type
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Policy.config.header
-      description: ""
-      type: String
-    - contextPath: GreatHorn.Policy.config.min
-      description: ""
-      type: Number
-    - contextPath: GreatHorn.Policy.config.value
-      description: ""
+      description: The match configuration of the policy
       type: String
     - contextPath: GreatHorn.Policy.id
-      description: ""
+      description: The ID of the policy
       type: Number
     - contextPath: GreatHorn.Policy.description
-      description: ""
+      description: The user-defined description of the policy
       type: String
   dockerimage: demisto/python3:3.9.1.14969
   runonce: false
