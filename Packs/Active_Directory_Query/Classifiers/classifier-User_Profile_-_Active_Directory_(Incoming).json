@@ -6,10 +6,6 @@
   "User Profile": {
    "dontMapEventToLabels": true,
    "internalMapping": {
-    " Street Address": {
-     "complex": null,
-     "simple": "streetAddress"
-    },
     "City": {
      "complex": null,
      "simple": "l"
@@ -46,7 +42,7 @@
      "complex": null,
      "simple": "mobile"
     },
-    "State Name": {
+    "State": {
      "complex": null,
      "simple": "st"
     },
