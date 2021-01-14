@@ -78,7 +78,7 @@ def test_module(client: Client) -> str:
         client.get_policy()
     except DemistoException as e:
         if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            raise 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
     return 'ok'
@@ -451,7 +451,7 @@ def gh_get_quarantine_release_command(client: Client):
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main():
     """main function, parses params and runs command functions
 
     :return:
