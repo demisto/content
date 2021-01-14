@@ -1,4 +1,4 @@
-This playbook is used to create an online meeting for shift handover, currently this playbook supports Zoom.
+This playbook is used to create an online meeting for shift handover. Currently, this playbook supports Zoom.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
