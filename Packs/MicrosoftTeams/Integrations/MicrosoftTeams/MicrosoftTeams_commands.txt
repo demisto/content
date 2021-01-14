@@ -1,7 +1,21 @@
-!sent-notification channel=General message="hello world!" team=DemistoTeam
+!send-notification channel=General message="hello world!" team=DemistoTeam
 !microsoft-teams-create-channel channel_name="example channel" team=DemistoTeam description="this is my new channel"
 !microsoft-teams-add-user-to-channel channel="example channel" member=itayadmin team=DemistoTeam
 !close-channel channel="example channel"
 !microsoft-teams-integration-health
 !microsoft-teams-ring-user username="Avishai Brandeis"
 !mirror-investigation team=DemistoTeam channel_name=General mirror_type=chat direction=ToDemisto
+!microsoft-teams-create-team display_name="Sample Engineering Team" owner=3fa9f28b-eb0e-463a-ba7b-8089fe9991e2
+!microsoft-teams-create-team-from-group group_id=7bc73bf4-c88e-4e0c-a927-6b52d19ca3e6
+!microsoft-teams-list-teams
+!microsoft-teams-update-team team_id=489080f2-98c3-4993-84ec-fa0aac622b2e description=lol
+!microsoft-teams-delete-team team_id=8d64be1b-590f-4afd-9bac-0b31b3703300
+!microsoft-teams-get-team team_id=489080f2-98c3-4993-84ec-fa0aac622b2e
+!microsoft-teams-get-member membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMzZmE5ZjI4Yi1lYjBlLTQ2M2EtYmE3Yi04MDg5ZmU5OTkxZTI= team_id=489080f2-98c3-4993-84ec-fa0aac622b2e
+!microsoft-teams-add-member user_id=2827c1e7-edb6-4529-b50d-25984e968637 team_id=489080f2-98c3-4993-84ec-fa0aac622b2e
+!microsoft-teams-remove-member team_id=489080f2-98c3-4993-84ec-fa0aac622b2e membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMxZTc2NTVhNC02ZThmLTQ2NjUtYWMxNS03ZWJhMmJmOGQ4ODY=
+!microsoft-teams-update-member membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyM4OTE4YzM5MC0zNWI4LTQyYzMtODNmMS04MzUyZTBlOWRmNjU= team_id=489080f2-98c3-4993-84ec-fa0aac622b2e is_owner=true
+!microsoft-teams-archive-team team_id=d74944a4-8dca-4cc5-9892-b1f73b4a4419
+!microsoft-teams-unarchive-team team_id=d74944a4-8dca-4cc5-9892-b1f73b4a4419
+!microsoft-teams-clone-team team_id=6e0d7429-4736-4373-bfb7-a1b59e3c463a display_name=Cloned
+!microsoft-teams-list-joined-teams user_id=3fa9f28b-eb0e-463a-ba7b-8089fe9991e2

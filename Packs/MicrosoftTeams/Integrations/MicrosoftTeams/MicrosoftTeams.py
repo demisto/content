@@ -688,6 +688,12 @@ def validate_auth_header(headers: dict) -> bool:
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
+@logger
+def list_teams_request() -> dict:
+    url = f"{GRAPH_BASE_URL}/beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')"
+    return cast(Dict[Any, Any], http_request('GET', url))
+
+
 def get_team_aad_id(team_name: str) -> str:
     """
     Gets Team AAD ID
@@ -700,8 +706,7 @@ def get_team_aad_id(team_name: str) -> str:
         for team in teams:
             if team_name == team.get('team_name', ''):
                 return team.get('team_aad_id', '')
-    url: str = f"{GRAPH_BASE_URL}/beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')"
-    response: dict = cast(Dict[Any, Any], http_request('GET', url))
+    response = list_teams_request()
     teams = response.get('value', [])
     for team in teams:
         if team.get('displayName', '') == team_name:
@@ -766,88 +771,503 @@ def add_user_to_channel_command():
     demisto.results(f'The User "{member}" has been added to channel "{channel_name}" successfully.')
 
 
-# def create_group_request(
-#         display_name: str, mail_enabled: bool, mail_nickname: str, security_enabled: bool,
-#         owners_ids: list, members_ids: list = None
-# ) -> str:
-#     url = f'{GRAPH_BASE_URL}/v1.0/groups'
-#     data: dict = {
-#         'displayName': display_name,
-#         'groupTypes': ['Unified'],
-#         'mailEnabled': mail_enabled,
-#         'mailNickname': mail_nickname,
-#         'securityEnabled': security_enabled,
-#         'owners@odata.bind': owners_ids,
-#         'members@odata.bind': members_ids or owners_ids
-#     }
-#     group_creation_response: dict = cast(Dict[Any, Any], http_request('POST', url, json_=data))
-#     group_id: str = group_creation_response.get('id', '')
-#     return group_id
-#
-#
-# def create_team_request(group_id: str) -> str:
-#     url = f'{GRAPH_BASE_URL}/v1.0/groups/{group_id}/team'
-#     team_creation_response: dict = cast(Dict[Any, Any], http_request('PUT', url, json_={}))
-#     team_id: str = team_creation_response.get('id', '')
-#     return team_id
-#
-#
-# def add_bot_to_team(team_id: str):
-#     url: str = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/installedApps'
-#     bot_app_id: str = ''
-#     data: dict = {
-#         'teamsApp@odata.bind': f'https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/{bot_app_id}'
-#     }
-#     print(http_request('POST', url, json_=data))
-#
-#
-# def create_team():
-#     display_name: str = demisto.args().get('display_name', '')
-#     mail_enabled: bool = bool(strtobool(demisto.args().get('mail_enabled', True)))
-#     mail_nickname: str = demisto.args().get('mail_nickname', '')
-#     security_enabled: bool = bool(strtobool(demisto.args().get('security_enabled', True)))
-#     owners = argToList(demisto.args().get('owner', ''))
-#     members = argToList(demisto.args().get('members', ''))
-#     owners_ids: list = list()
-#     members_ids: list = list()
-#     users: list = get_users()
-#     user_id: str = str()
-#     for member in members:
-#         found_member: bool = False
-#         for user in users:
-#             if member in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-#                 found_member = True
-#                 user_id = user.get('id', '')
-#                 members_ids.append(f'https://graph.microsoft.com/v1.0/users/{user_id}')
-#                 break
-#         if not found_member:
-#             demisto.results({
-#                 'Type': entryTypes['warning'],
-#                 'Contents': f'User {member} was not found',
-#                 'ContentsFormat': formats['text']
-#             })
-#     for owner in owners:
-#         found_owner: bool = False
-#         for user in users:
-#             if owner in {user.get('displayName', ''), user.get('mail'), user.get('userPrincipalName')}:
-#                 found_owner = True
-#                 user_id = user.get('id', '')
-#                 owners_ids.append(f'https://graph.microsoft.com/v1.0/users/{user_id}')
-#                 break
-#         if not found_owner:
-#             demisto.results({
-#                 'Type': entryTypes['warning'],
-#                 'Contents': f'User {owner} was not found',
-#                 'ContentsFormat': formats['text']
-#             })
-#     if not owners_ids:
-#         raise ValueError('Could not find given users to be Team owners.')
-#     group_id: str = create_group_request(
-#         display_name, mail_enabled, mail_nickname, security_enabled, owners_ids, members_ids
-#     )
-#     team_id: str = create_team_request(group_id)
-#     add_bot_to_team(team_id)
-#     demisto.results(f'Team {display_name} was created successfully')
+def create_team_request(
+        display_name: str,
+        owner: str,
+        description: Optional[str] = None,
+        visibility: str = 'public',
+        allow_guests_create_channels: bool = False,
+        allow_guests_delete_channels: bool = False,
+        allow_members_create_private_channels: bool = False,
+        allow_members_create_channels: bool = False,
+        allow_members_delete_channels: bool = False,
+        allow_members_add_remove_apps: bool = False,
+        allow_members_add_remove_tabs: bool = False,
+        allow_members_add_remove_connectors: bool = False,
+        allow_user_edit_messages: bool = False,
+        allow_user_delete_messages: bool = False,
+        allow_owner_delete_messages: bool = False,
+        allow_team_mentions: bool = False,
+        allow_channel_mentions: bool = False,
+) -> None:
+    url = f'{GRAPH_BASE_URL}/v1.0/teams'
+    http_request(
+        'POST',
+        url,
+        json_={
+            'template@odata.bind': "https://graph.microsoft.com/v1.0/teamsTemplates('standard')",
+            'displayName': display_name,
+            'description': description,
+            'visibility': visibility,
+            'members': [{
+                '@odata.type': '#microsoft.graph.aadUserConversationMember',
+                'roles': ['owner'],
+                'user@odata.bind': f"https://graph.microsoft.com/v1.0/users('{owner}')",
+            }],
+            'guestSettings': {
+                'allowCreateUpdateChannels': allow_guests_create_channels,
+                'allowDeleteChannels': allow_guests_delete_channels,
+            },
+            'memberSettings': {
+                'allowCreatePrivateChannels': allow_members_create_private_channels,
+                'allowCreateUpdateChannels': allow_members_create_channels,
+                'allowDeleteChannels': allow_members_delete_channels,
+                'allowAddRemoveApps': allow_members_add_remove_apps,
+                'allowCreateUpdateRemoveTabs': allow_members_add_remove_tabs,
+                'allowCreateUpdateRemoveConnectors': allow_members_add_remove_connectors,
+            },
+            'messagingSettings': {
+                'allowUserEditMessages': allow_user_edit_messages,
+                'allowUserDeleteMessages': allow_user_delete_messages,
+                'allowOwnerDeleteMessages': allow_owner_delete_messages,
+                'allowTeamMentions': allow_team_mentions,
+                'allowChannelMentions': allow_channel_mentions,
+            },
+        },
+    )
+
+
+def create_team():
+    display_name = demisto.args().get('display_name', '')
+    create_team_request(
+        display_name=display_name,
+        owner=demisto.args().get('owner', ''),
+        description=demisto.args().get('description'),
+        visibility=demisto.args().get('visibility', 'public'),
+        allow_guests_create_channels=argToBoolean(demisto.args().get('allow_guests_create_channels', 'false')),
+        allow_guests_delete_channels=argToBoolean(demisto.args().get('allow_guests_delete_channels', 'false')),
+        allow_members_create_private_channels=argToBoolean(
+            demisto.args().get('allow_members_create_private_channels', 'false')),
+        allow_members_create_channels=argToBoolean(demisto.args().get('allow_members_create_channels', 'false')),
+        allow_members_delete_channels=argToBoolean(demisto.args().get('allow_members_delete_channels', 'false')),
+        allow_members_add_remove_apps=argToBoolean(demisto.args().get('allow_members_add_remove_apps', 'false')),
+        allow_members_add_remove_tabs=argToBoolean(demisto.args().get('allow_members_add_remove_tabs', 'false')),
+        allow_members_add_remove_connectors=argToBoolean(
+            demisto.args().get('allow_members_add_remove_connectors', 'false')),
+        allow_user_edit_messages=argToBoolean(demisto.args().get('allow_user_edit_messages', 'false')),
+        allow_user_delete_messages=argToBoolean(demisto.args().get('allow_user_delete_messages', 'false')),
+        allow_owner_delete_messages=argToBoolean(demisto.args().get('allow_owner_delete_messages', 'false')),
+        allow_team_mentions=argToBoolean(demisto.args().get('allow_team_mentions', 'false')),
+        allow_channel_mentions=argToBoolean(demisto.args().get('allow_channel_mentions', 'false')),
+    )
+    demisto.results(f'Team {display_name} was created successfully.')
+
+
+def create_team_from_group_request(
+        group_id: str,
+        display_name: str,
+        description: Optional[str] = None,
+        visibility: str = 'public',
+        allow_guests_create_channels: bool = False,
+        allow_guests_delete_channels: bool = False,
+        allow_members_create_private_channels: bool = False,
+        allow_members_create_channels: bool = False,
+        allow_members_delete_channels: bool = False,
+        allow_members_add_remove_apps: bool = False,
+        allow_members_add_remove_tabs: bool = False,
+        allow_members_add_remove_connectors: bool = False,
+        allow_user_edit_messages: bool = False,
+        allow_user_delete_messages: bool = False,
+        allow_owner_delete_messages: bool = False,
+        allow_team_mentions: bool = False,
+        allow_channel_mentions: bool = False,
+) -> None:
+    url = f'{GRAPH_BASE_URL}/v1.0/groups/{group_id}/team'
+    http_request(
+        'PUT',
+        url,
+        json_={
+            'displayName': display_name,
+            'description': description,
+            'visibility': visibility,
+            'guestSettings': {
+                'allowCreateUpdateChannels': allow_guests_create_channels,
+                'allowDeleteChannels': allow_guests_delete_channels,
+            },
+            'memberSettings': {
+                'allowCreatePrivateChannels': allow_members_create_private_channels,
+                'allowCreateUpdateChannels': allow_members_create_channels,
+                'allowDeleteChannels': allow_members_delete_channels,
+                'allowAddRemoveApps': allow_members_add_remove_apps,
+                'allowCreateUpdateRemoveTabs': allow_members_add_remove_tabs,
+                'allowCreateUpdateRemoveConnectors': allow_members_add_remove_connectors,
+            },
+            'messagingSettings': {
+                'allowUserEditMessages': allow_user_edit_messages,
+                'allowUserDeleteMessages': allow_user_delete_messages,
+                'allowOwnerDeleteMessages': allow_owner_delete_messages,
+                'allowTeamMentions': allow_team_mentions,
+                'allowChannelMentions': allow_channel_mentions,
+            },
+        },
+    )
+
+
+def create_team_from_group():
+    group_id = demisto.args().get('group_id', '')
+    create_team_from_group_request(
+        group_id=group_id,
+        display_name=demisto.args().get('display_name'),
+        description=demisto.args().get('description'),
+        visibility=demisto.args().get('visibility', 'public'),
+        allow_guests_create_channels=argToBoolean(demisto.args().get('allow_guests_create_channels', 'false')),
+        allow_guests_delete_channels=argToBoolean(demisto.args().get('allow_guests_delete_channels', 'false')),
+        allow_members_create_private_channels=argToBoolean(
+            demisto.args().get('allow_members_create_private_channels', 'false')),
+        allow_members_create_channels=argToBoolean(demisto.args().get('allow_members_create_channels', 'false')),
+        allow_members_delete_channels=argToBoolean(demisto.args().get('allow_members_delete_channels', 'false')),
+        allow_members_add_remove_apps=argToBoolean(demisto.args().get('allow_members_add_remove_apps', 'false')),
+        allow_members_add_remove_tabs=argToBoolean(demisto.args().get('allow_members_add_remove_tabs', 'false')),
+        allow_members_add_remove_connectors=argToBoolean(
+            demisto.args().get('allow_members_add_remove_connectors', 'false')),
+        allow_user_edit_messages=argToBoolean(demisto.args().get('allow_user_edit_messages', 'false')),
+        allow_user_delete_messages=argToBoolean(demisto.args().get('allow_user_delete_messages', 'false')),
+        allow_owner_delete_messages=argToBoolean(demisto.args().get('allow_owner_delete_messages', 'false')),
+        allow_team_mentions=argToBoolean(demisto.args().get('allow_team_mentions', 'false')),
+        allow_channel_mentions=argToBoolean(demisto.args().get('allow_channel_mentions', 'false')),
+    )
+    demisto.results(f'The team was created from group {group_id} successfully.')
+
+
+def list_teams():
+    response = list_teams_request()
+    teams = response.get('value', [])
+    return_results(CommandResults(
+        outputs_prefix='MicrosoftTeams.Team',
+        outputs_key_field='id',
+        readable_output=tableToMarkdown(
+            'Microsoft Teams List',
+            teams,
+            ['id', 'displayName', 'createdDateTime', 'description']
+        ),
+        outputs=teams,
+        raw_response=response,
+    ))
+
+
+@logger
+def get_team_request(team_id: str) -> dict:
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}'
+    return cast(Dict[Any, Any], http_request('GET', url))
+
+
+def get_team():
+    team_id = demisto.args().get('team_id')
+    team = get_team_request(team_id)
+    team.pop('@odata.context', None)
+    return_results(CommandResults(
+        outputs_prefix='MicrosoftTeams.Team',
+        outputs_key_field='id',
+        readable_output=tableToMarkdown(f'Team {team_id}', team),
+        outputs=team,
+    ))
+
+
+@logger
+def update_team_request(
+        team_id: str,
+        display_name: Optional[str] = None,
+        description: Optional[str] = None,
+        visibility: Optional[str] = None,
+        allow_guests_create_channels: Optional[bool] = None,
+        allow_guests_delete_channels: Optional[bool] = None,
+        allow_members_create_private_channels: Optional[bool] = None,
+        allow_members_create_channels: Optional[bool] = None,
+        allow_members_delete_channels: Optional[bool] = None,
+        allow_members_add_remove_apps: Optional[bool] = None,
+        allow_members_add_remove_tabs: Optional[bool] = None,
+        allow_members_add_remove_connectors: Optional[bool] = None,
+        allow_user_edit_messages: Optional[bool] = None,
+        allow_user_delete_messages: Optional[bool] = None,
+        allow_owner_delete_messages: Optional[bool] = None,
+        allow_team_mentions: Optional[bool] = None,
+        allow_channel_mentions: Optional[bool] = None,
+) -> None:
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}'
+    http_request(
+        'PATCH',
+        url,
+        json_={
+            'displayName': display_name,
+            'description': description,
+            'visibility': visibility,
+            'guestSettings': {
+                'allowCreateUpdateChannels': allow_guests_create_channels,
+                'allowDeleteChannels': allow_guests_delete_channels,
+            },
+            'memberSettings': {
+                'allowCreatePrivateChannels': allow_members_create_private_channels,
+                'allowCreateUpdateChannels': allow_members_create_channels,
+                'allowDeleteChannels': allow_members_delete_channels,
+                'allowAddRemoveApps': allow_members_add_remove_apps,
+                'allowCreateUpdateRemoveTabs': allow_members_add_remove_tabs,
+                'allowCreateUpdateRemoveConnectors': allow_members_add_remove_connectors,
+            },
+            'messagingSettings': {
+                'allowUserEditMessages': allow_user_edit_messages,
+                'allowUserDeleteMessages': allow_user_delete_messages,
+                'allowOwnerDeleteMessages': allow_owner_delete_messages,
+                'allowTeamMentions': allow_team_mentions,
+                'allowChannelMentions': allow_channel_mentions,
+            },
+        },
+    )
+
+
+def update_team():
+    team_id = demisto.args().get('team_id', '')
+    update_team_args = {
+        'team_id': team_id,
+        'display_name': demisto.args().get('display_name'),
+        'description': demisto.args().get('description'),
+        'visibility': demisto.args().get('visibility'),
+    }
+    for bool_arg in [
+        'allow_guests_create_channels', 'allow_guests_delete_channels', 'allow_members_create_private_channels',
+        'allow_members_create_channels', 'allow_members_delete_channels', 'allow_members_delete_channels',
+        'allow_members_add_remove_apps', 'allow_members_add_remove_tabs', 'allow_members_add_remove_connectors',
+        'allow_user_edit_messages', 'allow_user_delete_messages', 'allow_owner_delete_messages',
+        'allow_team_mentions', 'allow_channel_mentions'
+    ]:
+        if bool_arg in demisto.args():
+            update_team_args[bool_arg] = argToBoolean(demisto.args()[bool_arg])
+    update_team_request(**update_team_args)
+    demisto.results(f'Team {team_id} was updated successfully.')
+
+
+@logger
+def delete_team_request(team_id: str) -> None:
+    url = f'{GRAPH_BASE_URL}/v1.0/groups/{team_id}'
+    http_request('DELETE', url)
+
+
+def delete_team():
+    team_id = demisto.args().get('team_id')
+    delete_team_request(team_id)
+    demisto.results(f'Team {team_id} was deleted successfully.')
+
+
+@logger
+def list_members_request(team_id: str):
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/members'
+    return http_request('GET', url)
+
+
+def list_members():
+    team_id = demisto.args().get('team_id')
+    response = list_members_request(team_id)
+    members = response.get('value', [])
+    return_results(CommandResults(
+        outputs_prefix='MicrosoftTeams.TeamMember',
+        outputs_key_field='id',
+        readable_output=tableToMarkdown(
+            f'Team {team_id} Members List',
+            members,
+            ['id', 'displayName', 'email', 'roles'],
+        ),
+        outputs=members,
+        raw_response=response,
+    ))
+
+
+@logger
+def get_member_request(team_id: str, membership_id: str):
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/members/{membership_id}'
+    return http_request('GET', url)
+
+
+def get_member():
+    team_id = demisto.args().get('team_id')
+    membership_id = demisto.args().get('membership_id')
+    team_member = get_member_request(team_id, membership_id)
+    return_results(CommandResults(
+        outputs_prefix='MicrosoftTeams.TeamMember',
+        outputs_key_field='id',
+        readable_output=tableToMarkdown(
+            f'Team Member {membership_id} Details',
+            team_member,
+            ['id', 'displayName', 'email', 'roles'],
+        ),
+        outputs=team_member,
+        raw_response=team_member,
+    ))
+
+
+@logger
+def add_member_request(team_id: str, user_id: str, roles: Optional[list] = None) -> dict:
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/members'
+    return cast(Dict[Any, Any], http_request(
+        'POST',
+        url,
+        json_={
+            '@odata.type': '#microsoft.graph.aadUserConversationMember',
+            'roles': roles,
+            'user@odata.bind': f"https://graph.microsoft.com/v1.0/users('{user_id}')",
+        }
+    ))
+
+
+def add_member():
+    team_id = demisto.args().get('team_id', '')
+    user_id = demisto.args().get('user_id', '')
+    team_member = add_member_request(
+        team_id=team_id,
+        user_id=user_id,
+        roles=['owner'] if argToBoolean(demisto.args().get('is_owner', 'false')) else [],
+    )
+    return_results(CommandResults(
+        outputs_prefix='MicrosoftTeams.TeamMember',
+        outputs_key_field='id',
+        readable_output=tableToMarkdown(
+            f'User {user_id} was added to the team {team_id} successfully.',
+            team_member,
+            ['id', 'displayName', 'email', 'roles'],
+        ),
+        outputs=team_member,
+        raw_response=team_member,
+    ))
+
+
+@logger
+def remove_member__request(team_id: str, membership_id: str) -> None:
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/members/{membership_id}'
+    http_request('DELETE', url)
+
+
+def remove_member():
+    team_id = demisto.args().get('team_id')
+    membership_id = demisto.args().get('membership_id')
+    remove_member__request(team_id, membership_id)
+    demisto.results(f'Team member {membership_id} was removed from the team {team_id} successfully.')
+
+
+@logger
+def update_member_request(team_id: str, membership_id: str, roles: Optional[list] = None) -> dict:
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/members/{membership_id}'
+    return cast(Dict[Any, Any], http_request(
+        'PATCH',
+        url,
+        json_={
+            '@odata.type': '#microsoft.graph.aadUserConversationMember',
+            'roles': roles
+        }
+    ))
+
+
+def update_member():
+    team_id = demisto.args().get('team_id', '')
+    membership_id = demisto.args().get('membership_id', '')
+    team_member = update_member_request(
+        team_id=team_id,
+        membership_id=membership_id,
+        roles=['owner'] if argToBoolean(demisto.args().get('is_owner', 'false')) else [],
+    )
+    return_results(CommandResults(
+        outputs_prefix='MicrosoftTeams.TeamMember',
+        outputs_key_field='id',
+        readable_output=tableToMarkdown(
+            f'Team member {membership_id} was updated successfully.',
+            team_member,
+            ['id', 'displayName', 'email', 'roles'],
+        ),
+        outputs=team_member,
+        raw_response=team_member,
+    ))
+
+
+@logger
+def archive_team_request(team_id: str) -> None:
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/archive'
+    http_request('POST', url)
+
+
+def archive_team():
+    team_id = demisto.args().get('team_id')
+    archive_team_request(team_id)
+    demisto.results(f'Team {team_id} was archived successfully.')
+
+
+@logger
+def unarchive_team_request(team_id: str) -> None:
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/unarchive'
+    http_request('POST', url)
+
+
+def unarchive_team():
+    team_id = demisto.args().get('team_id')
+    unarchive_team_request(team_id)
+    demisto.results(f'Team {team_id} was unarchived successfully.')
+
+
+@logger
+def clone_team_request(
+        team_id: str,
+        display_name: str,
+        description: Optional[str] = None,
+        visibility: Optional[str] = None,
+        parts_to_clone: Optional[str] = None,
+) -> None:
+    url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/clone'
+    http_request(
+        'POST',
+        url,
+        json_={
+            'displayName': display_name,
+            # from Microsoft docs: "mailNickname property must be specified when a group is created.
+            # If this property is not specified, it will be computed from the displayName.
+            # Known issue: this property is currently ignored."
+            'mailNickname': display_name,
+            'description': description,
+            'visibility': visibility,
+            'partsToClone': parts_to_clone,
+        }
+    )
+
+
+def clone_team():
+    team_id = demisto.args().get('team_id')
+    parts_to_clone = []
+    if argToBoolean(demisto.args().get('clone_apps', 'true')):
+        parts_to_clone.append('apps')
+    if argToBoolean(demisto.args().get('clone_tabs', 'true')):
+        parts_to_clone.append('tabs')
+    if argToBoolean(demisto.args().get('clone_settings', 'true')):
+        parts_to_clone.append('settings')
+    if argToBoolean(demisto.args().get('clone_channels', 'true')):
+        parts_to_clone.append('channels')
+    if not parts_to_clone:
+        raise ValueError('At least one of the parts of the team must be cloned: apps, tabs, settings, channels')
+    clone_team_request(
+        team_id=team_id,
+        display_name=demisto.args().get('display_name'),
+        description=demisto.args().get('description'),
+        visibility=demisto.args().get('visibility'),
+        parts_to_clone=','.join(parts_to_clone),
+    )
+    demisto.results(f'Team {team_id} was cloned successfully.')
+
+
+@logger
+def list_joined_teams_request(user_id: str):
+    url = f'{GRAPH_BASE_URL}/v1.0/users/{user_id}/joinedTeams'
+    return http_request('GET', url)
+
+
+def list_joined_teams():
+    user_id = demisto.args().get('user_id')
+    response = list_joined_teams_request(user_id)
+    teams = response.get('value', [])
+    return_results(CommandResults(
+        outputs_prefix='MicrosoftTeams.Team',
+        outputs_key_field='id',
+        readable_output=tableToMarkdown(
+            f'User {user_id} Teams',
+            teams,
+            ['id', 'displayName', 'description'],
+        ),
+        outputs=teams,
+        raw_response=response,
+    ))
 
 
 def create_channel(team_aad_id: str, channel_name: str, channel_description: str = '') -> str:
@@ -1669,11 +2089,25 @@ def main():
         'microsoft-teams-integration-health': integration_health,
         'create-channel': create_channel_command,
         'add-user-to-channel': add_user_to_channel_command,
-        # 'microsoft-teams-create-team': create_team,
+        'microsoft-teams-create-team': create_team,
         # 'microsoft-teams-send-file': send_file,
         'microsoft-teams-ring-user': ring_user,
         'microsoft-teams-create-channel': create_channel_command,
-        'microsoft-teams-add-user-to-channel': add_user_to_channel_command,
+        'microsoft-teams-add-user-to-channel': add_user_to_channel,
+        'microsoft-teams-create-team-from-group': create_team_from_group,
+        'microsoft-teams-list-teams': list_teams,
+        'microsoft-teams-get-team': get_team,
+        'microsoft-teams-update-team': update_team,
+        'microsoft-teams-delete-team': delete_team,
+        'microsoft-teams-list-members': list_members,
+        'microsoft-teams-get-member': get_member,
+        'microsoft-teams-add-member': add_member,
+        'microsoft-teams-remove-member': remove_member,
+        'microsoft-teams-update-member': update_member,
+        'microsoft-teams-archive-team': archive_team,
+        'microsoft-teams-unarchive-team': unarchive_team,
+        'microsoft-teams-clone-team': clone_team,
+        'microsoft-teams-list-joined-teams': list_joined_teams,
     }
 
     ''' EXECUTION '''

@@ -207,7 +207,7 @@ To mention a user in the message, add a semicolon ";" at the end of the user men
 There is no context output for this command.
 
 ##### Command Example
-```!sent-notification channel=General message="hello world!" team=DemistoTeam```
+```!send-notification channel=General message="hello world!" team=DemistoTeam```
 
 ##### Human Readable Output
 Message was sent successfully.

@@ -1207,39 +1207,6 @@ def test_update_message(requests_mock):
     assert json.loads(requests_mock.request_history[0].body) == expected_conversation
 
 
-# def test_create_team(mocker, requests_mock):
-#     from MicrosoftTeams import create_team
-#     mocker.patch.object(
-#         demisto,
-#         'args',
-#         return_value={
-#             'display_name': 'OhMyTeam',
-#             'mail_nickname': 'NoNicknamesPlease',
-#             'owner': 'nonexistingmmember@demisto.com',
-#             'mail_enabled': 'true',
-#             'security_enabled': 'false'
-#         }
-#     )
-#     requests_mock.get(
-#         f'https://graph.microsoft.com/v1.0/users',
-#         json={
-#             'value': team_members
-#         }
-#     )
-#     with pytest.raises(ValueError) as e:
-#         create_team()
-#     assert str(e.value) == 'Could not find given users to be Team owners.'
-#     mocker.patch.object(
-#         demisto,
-#         'args',
-#         return_value={
-#             'display_name': 'OhMyTeam',
-#             'mail_nickname': 'NoNicknamesPlease',
-#             'owner': 'dwashinton@email.com'
-#         }
-#     )
-
-
 def test_direct_message_handler(mocker, requests_mock):
     from MicrosoftTeams import direct_message_handler
     mocker.patch.object(
@@ -1419,3 +1386,714 @@ def test_integration_health(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['HumanReadable'] == expected_results
+
+
+def test_create_team(requests_mock, mocker):
+    """
+    Given:
+        - Team display name and owner ID to create team of
+
+    When:
+        - Creating a team
+
+    Then:
+        - Ensure expected request body is sent
+        - Verify human readable output
+    """
+    from MicrosoftTeams import create_team
+    requests_mock.post('https://graph.microsoft.com/v1.0/teams', status_code=202)
+    display_name = 'TestTeamName'
+    owner = 'uuid'
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'display_name': display_name,
+            'owner': owner,
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    create_team()
+    assert requests_mock.request_history[0].json() == {
+        'template@odata.bind': "https://graph.microsoft.com/v1.0/teamsTemplates('standard')",
+        'displayName': display_name,
+        'description': None,
+        'visibility': 'public',
+        'members': [{
+            '@odata.type': '#microsoft.graph.aadUserConversationMember',
+            'roles': ['owner'],
+            'user@odata.bind': f"https://graph.microsoft.com/v1.0/users('{owner}')",
+        }],
+        'guestSettings': {
+            'allowCreateUpdateChannels': False,
+            'allowDeleteChannels': False,
+        },
+        'memberSettings': {
+            'allowCreatePrivateChannels': False,
+            'allowCreateUpdateChannels': False,
+            'allowDeleteChannels': False,
+            'allowAddRemoveApps': False,
+            'allowCreateUpdateRemoveTabs': False,
+            'allowCreateUpdateRemoveConnectors': False,
+        },
+        'messagingSettings': {
+            'allowUserEditMessages': False,
+            'allowUserDeleteMessages': False,
+            'allowOwnerDeleteMessages': False,
+            'allowTeamMentions': False,
+            'allowChannelMentions': False,
+        },
+    }
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == f'Team {display_name} was created successfully.'
+
+
+def test_create_team_from_group(requests_mock, mocker):
+    """
+    Given:
+        - Team display name and owner ID to create team of
+
+    When:
+        - Creating a team
+
+    Then:
+        - Ensure expected request body is sent
+        - Verify human readable output
+    """
+    from MicrosoftTeams import create_team_from_group
+    group_id = 'uuid'
+    requests_mock.put(f'https://graph.microsoft.com/v1.0/groups/{group_id}/team', status_code=202)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'group_id': group_id,
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    create_team_from_group()
+    assert requests_mock.request_history[0].json() == {
+        'displayName': None,
+        'description': None,
+        'visibility': 'public',
+        'guestSettings': {
+            'allowCreateUpdateChannels': False,
+            'allowDeleteChannels': False,
+        },
+        'memberSettings': {
+            'allowCreatePrivateChannels': False,
+            'allowCreateUpdateChannels': False,
+            'allowDeleteChannels': False,
+            'allowAddRemoveApps': False,
+            'allowCreateUpdateRemoveTabs': False,
+            'allowCreateUpdateRemoveConnectors': False,
+        },
+        'messagingSettings': {
+            'allowUserEditMessages': False,
+            'allowUserDeleteMessages': False,
+            'allowOwnerDeleteMessages': False,
+            'allowTeamMentions': False,
+            'allowChannelMentions': False,
+        },
+    }
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == f'The team was created from group {group_id} successfully.'
+
+
+def test_list_teams(requests_mock, mocker):
+    """
+    Given:
+        - Teams list
+
+    When:
+        - Listing teams
+
+    Then:
+        - Verify entry context is populated as expected
+    """
+    from MicrosoftTeams import list_teams
+    teams = {
+        '@odata.context': 'https://graph.microsoft.com/beta/$metadata#groups',
+        'value': [
+            {
+                'id': '02bd9fd6-8f93-4758-87c3-1fb73740a315',
+                'displayName': 'MyGreatTeam',
+                'groupTypes': [
+                    'Unified'
+                ],
+                'mailEnabled': True,
+                'resourceBehaviorOptions': [],
+                'resourceProvisioningOptions': [
+                    'Team'
+                ],
+                'securityEnabled': False,
+                'visibility': 'Private'
+            },
+            {
+                'id': '8090c93e-ba7c-433e-9f39-08c7ba07c0b3',
+                'displayName': 'WooahTeam',
+                'groupTypes': [
+                    'Unified'
+                ],
+                'mailEnabled': True,
+                'mailNickname': 'X1050LaunchTeam',
+                'resourceBehaviorOptions': [],
+                'resourceProvisioningOptions': [
+                    'Team'
+                ],
+                'securityEnabled': False,
+                'visibility': 'Private'
+            }
+        ]
+    }
+    requests_mock.get(
+        "https://graph.microsoft.com/beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')",
+        json=teams
+    )
+    mocker.patch.object(demisto, 'results')
+    list_teams()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['EntryContext']['MicrosoftTeams.Team(val.id == obj.id)'] == teams['value']
+
+
+def test_update_team(requests_mock, mocker):
+    """
+    Given:
+        - Team ID, display name and member setting to update team with
+
+    When:
+        - Updating a team
+
+    Then:
+        - Ensure expected request body is sent
+        - Verify human readable output
+    """
+    from MicrosoftTeams import update_team
+    team_id = 'uuid'
+    display_name = 'UpdatedDisplayName'
+    requests_mock.patch(f'https://graph.microsoft.com/v1.0/teams/{team_id}', status_code=204)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+            'display_name': display_name,
+            'allow_channel_mentions': 'true',
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    update_team()
+    assert requests_mock.request_history[0].json() == {
+        'displayName': display_name,
+        'description': None,
+        'visibility': None,
+        'guestSettings': {
+            'allowCreateUpdateChannels': None,
+            'allowDeleteChannels': None,
+        },
+        'memberSettings': {
+            'allowCreatePrivateChannels': None,
+            'allowCreateUpdateChannels': None,
+            'allowDeleteChannels': None,
+            'allowAddRemoveApps': None,
+            'allowCreateUpdateRemoveTabs': None,
+            'allowCreateUpdateRemoveConnectors': None,
+        },
+        'messagingSettings': {
+            'allowUserEditMessages': None,
+            'allowUserDeleteMessages': None,
+            'allowOwnerDeleteMessages': None,
+            'allowTeamMentions': None,
+            'allowChannelMentions': True,
+        },
+    }
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == f'Team {team_id} was updated successfully.'
+
+
+def test_delete_team(requests_mock, mocker):
+    """
+    Given:
+        - ID of team to delete
+
+    When:
+        - Deleting a team
+
+    Then:
+        - Ensure expected request body is sent
+        - Verify human readable output
+    """
+    from MicrosoftTeams import delete_team
+    team_id = 'uuid'
+    requests_mock.delete(f'https://graph.microsoft.com/v1.0/groups/{team_id}', status_code=204)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    delete_team()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == f'Team {team_id} was deleted successfully.'
+
+
+def test_get_team(requests_mock, mocker):
+    """
+    Given:
+        - ID of team to get
+
+    When:
+        - Getting a team
+
+    Then:
+        - Ensure expected request body is sent
+        - Verify entry context output
+    """
+    from MicrosoftTeams import get_team
+    team = {
+        'isArchived': False,
+        'discoverySettings': {
+            'showInTeamsSearchAndSuggestions': True
+        },
+        'memberSettings': {
+            'allowCreateUpdateChannels': True,
+            'allowDeleteChannels': True,
+            'allowAddRemoveApps': True,
+            'allowCreateUpdateRemoveTabs': True,
+            'allowCreateUpdateRemoveConnectors': True
+        },
+        'guestSettings': {
+            'allowCreateUpdateChannels': True,
+            'allowDeleteChannels': True
+        },
+        'messagingSettings': {
+            'allowUserEditMessages': True,
+            'allowUserDeleteMessages': True,
+            'allowOwnerDeleteMessages': True,
+            'allowTeamMentions': True,
+            'allowChannelMentions': True
+        },
+        'funSettings': {
+            'allowGiphy': True,
+            'giphyContentRating': 'strict',
+            'allowStickersAndMemes': True,
+            'allowCustomMemes': True
+        }
+    }
+    team_id = 'uuid'
+    requests_mock.get(f'https://graph.microsoft.com/v1.0/teams/{team_id}', json=team)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    get_team()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['EntryContext']['MicrosoftTeams.Team(val.id == obj.id)'] == team
+
+
+def test_list_members(requests_mock, mocker):
+    """
+    Given:
+        - Team members
+
+    When:
+        - Listing team members
+
+    Then:
+        - Verify entry context is populated as expected
+    """
+    from MicrosoftTeams import list_members
+    team_id = 'ee0f5ae2-8bc6-4ae5-8466-7daeebb'
+    members = {
+        '@odata.context': f"https://graph.microsoft.com/v1.0/$metadata#teams('{team_id}')/members",
+        '@odata.count': 3,
+        'value': [
+            {
+                '@odata.type': '#microsoft.graph.aadUserConversationMember',
+                'id': 'ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhjY3Zjk=',
+                'roles': [],
+                'displayName': 'Adele Vance',
+                'userId': '73761f06-2ac9-469c-9f10-279a8cc267f9',
+                'email': 'AdeleV@M365x987948.OnMicrosoft.com'
+            },
+            {
+                '@odata.type': '#microsoft.graph.aadUserConversationMember',
+                'id': 'ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM1OThlZmNkNC1lNTQ5LTQwMmEtOTYwMi0MjAxZmFlYmU=',
+                'roles': [
+                    'owner'
+                ],
+                'displayName': 'MOD Administrator',
+                'userId': '598efcd4-e549-402a-9602-0b50201faebe',
+                'email': 'admin@M365x987948.OnMicrosoft.com'
+            },
+            {
+                '@odata.type': '#microsoft.graph.aadUserConversationMember',
+                'id': 'MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyM3NTJmNTBiNy0yNTZmLTQ1MzktYjc3QxMmYyZTQ3MjI=',
+                'roles': [],
+                'displayName': 'Harry Johnson',
+                'userId': '752f50b7-256f-4539-b775-c4d12f2e4722',
+                'email': 'harry@M365x987948.OnMicrosoft.com'
+            }
+        ]
+    }
+    requests_mock.get(
+        f'https://graph.microsoft.com/v1.0/teams/{team_id}/members',
+        json=members
+    )
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+        }
+    )
+    list_members()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['EntryContext']['MicrosoftTeams.TeamMember(val.id == obj.id)'] == members['value']
+
+
+def test_get_member(requests_mock, mocker):
+    """
+    Given:
+        - ID of member to get
+
+    When:
+        - Getting a memeber
+
+    Then:
+        - Verify entry context output
+    """
+    from MicrosoftTeams import get_member
+    team_id = 'uuid'
+    membership_id = 'id'
+    member = {
+        '@odata.context': f"https://graph.microsoft.com/v1.0/$metadata#teams('{team_id}')/"
+                          f"members/microsoft.graph.aadUserConversationMember/$entity",
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        'id': '/ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk=',
+        'roles': ['owner'],
+        'displayName': 'John Doe',
+        'userId': '8b081ef6-4792-4def-b2c9-c363a1bf41d5',
+        'email': None
+    }
+    requests_mock.get(f'https://graph.microsoft.com/v1.0/teams/{team_id}/members/{membership_id}', json=member)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+            'membership_id': membership_id
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    get_member()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['EntryContext']['MicrosoftTeams.TeamMember(val.id == obj.id)'] == member
+
+
+def test_add_member(requests_mock, mocker):
+    """
+    Given:
+        - ID of team to the add a user to
+        - ID of user to add to a team
+    When:
+        - Adding a user to the team
+
+    Then:
+        - Ensure expected request body is sent
+        - Verify entry context output
+    """
+    from MicrosoftTeams import add_member
+    team_id = 'uuid'
+    user_id = 'user_id'
+    added_member = {
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        'id': 'ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk=',
+        'roles': [
+            'owner'
+        ],
+        'userId': user_id,
+        'displayName': 'Cameron White',
+        'email': 'CameronW@M365x987948.OnMicrosoft.com'
+    }
+    requests_mock.post(
+        f'https://graph.microsoft.com/v1.0/teams/{team_id}/members',
+        json=added_member,
+        status_code=201
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+            'user_id': user_id,
+            'is_owner': 'true',
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    add_member()
+    assert requests_mock.request_history[0].json() == {
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        'roles': ['owner'],
+        'user@odata.bind': f"https://graph.microsoft.com/v1.0/users('{user_id}')"
+    }
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['EntryContext']['MicrosoftTeams.TeamMember(val.id == obj.id)'] == added_member
+
+
+def test_remove_member(requests_mock, mocker):
+    """
+    Given:
+        - ID of team to remove the member from
+        - ID of member to remove
+
+    When:
+        - Removing a member from team
+
+    Then:
+        - Ensure expected request body is sent
+        - Verify human readable output
+    """
+    from MicrosoftTeams import remove_member
+    team_id = 'uuid'
+    membership_id = 'id'
+    requests_mock.delete(f'https://graph.microsoft.com/v1.0/teams/{team_id}/members/{membership_id}', status_code=204)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+            'membership_id': membership_id,
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    remove_member()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == f'Team member {membership_id} was removed from the team {team_id} successfully.'
+
+
+def test_update_member(requests_mock, mocker):
+    """
+    Given:
+        - ID of team to update the member in
+        - ID of member to update
+
+    When:
+        - Updating a member to be team owner
+
+    Then:
+        - Ensure expected request body is sent
+        - Verify entry context output
+    """
+    from MicrosoftTeams import update_member
+    team_id = 'uuid'
+    membership_id = 'id'
+    updated_member = {
+        "@odata.context": f"https://graph.microsoft.com/v1.0/$metadata#teams('{team_id}')/members/"
+                          f"microsoft.graph.aadUserConversationMember/$entity",
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        'id': 'ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk=',
+        'roles': ['owner'],
+        'displayName': 'John Doe',
+        'userId': '8b081ef6-4792-4def-b2c9-c363a1bf41d5',
+        'email': None
+    }
+    requests_mock.patch(
+        f'https://graph.microsoft.com/v1.0/teams/{team_id}/members/{membership_id}',
+        json=updated_member
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+            'membership_id': membership_id,
+            'is_owner': 'true',
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    update_member()
+    assert requests_mock.request_history[0].json() == {
+        '@odata.type': '#microsoft.graph.aadUserConversationMember',
+        'roles': ['owner']
+    }
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['EntryContext']['MicrosoftTeams.TeamMember(val.id == obj.id)'] == updated_member
+
+
+def test_archive_team(requests_mock, mocker):
+    """
+    Given:
+        - ID of team to archive
+
+    When:
+        - Archiving a team
+
+    Then:
+        - Verify human readable output
+    """
+    from MicrosoftTeams import archive_team
+    team_id = 'uuid'
+    requests_mock.post(f'https://graph.microsoft.com/v1.0/teams/{team_id}/archive', status_code=202)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    archive_team()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == f'Team {team_id} was archived successfully.'
+
+
+def test_unarchive_team(requests_mock, mocker):
+    """
+    Given:
+        - ID of team to unarchive
+
+    When:
+        - Unarchiving a team
+
+    Then:
+        - Verify human readable output
+    """
+    from MicrosoftTeams import unarchive_team
+    team_id = 'uuid'
+    requests_mock.post(f'https://graph.microsoft.com/v1.0/teams/{team_id}/unarchive', status_code=202)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    unarchive_team()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == f'Team {team_id} was unarchived successfully.'
+
+
+def test_clone_team(requests_mock, mocker):
+    """
+    Given:
+        - ID of team to clone
+        - Display name of cloned team
+
+    When:
+        - Cloning a team
+
+    Then:
+        - Ensure expected request body is sent
+        - Verify human readable output
+    """
+    from MicrosoftTeams import clone_team
+    team_id = 'uuid'
+    display_name = 'TestClonedTeam'
+    requests_mock.post(f'https://graph.microsoft.com/v1.0/teams/{team_id}/clone', status_code=202)
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'team_id': team_id,
+            'display_name': display_name,
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    clone_team()
+    assert requests_mock.request_history[0].json() == {
+        'displayName': display_name,
+        'mailNickname': display_name,
+        'description': None,
+        'visibility': None,
+        'partsToClone': 'apps,tabs,settings,channels',
+    }
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0] == f'Team {team_id} was cloned successfully.'
+
+
+def test_list_joined_teams(requests_mock, mocker):
+    """
+    Given:
+        - ID of user to get teams for
+
+    When:
+        - Listing user teams
+
+    Then:
+        - Verify entry context is populated as expected
+    """
+    from MicrosoftTeams import list_joined_teams
+    user_id = 'id'
+    teams = {
+        '@odata.context': 'https://graph.microsoft.com/beta/$metadata#groups',
+        'value': [
+            {
+                'id': '02bd9fd6-8f93-4758-87c3-1fb73740a315',
+                'displayName': 'MyGreatTeam',
+                'groupTypes': [
+                    'Unified'
+                ],
+                'mailEnabled': True,
+                'resourceBehaviorOptions': [],
+                'resourceProvisioningOptions': [
+                    'Team'
+                ],
+                'securityEnabled': False,
+                'visibility': 'Private'
+            },
+            {
+                'id': '8090c93e-ba7c-433e-9f39-08c7ba07c0b3',
+                'displayName': 'WooahTeam',
+                'groupTypes': [
+                    'Unified'
+                ],
+                'mailEnabled': True,
+                'mailNickname': 'X1050LaunchTeam',
+                'resourceBehaviorOptions': [],
+                'resourceProvisioningOptions': [
+                    'Team'
+                ],
+                'securityEnabled': False,
+                'visibility': 'Private'
+            }
+        ]
+    }
+    requests_mock.get(
+        f'https://graph.microsoft.com/v1.0/users/{user_id}/joinedTeams',
+        json=teams
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'user_id': user_id,
+        }
+    )
+    mocker.patch.object(demisto, 'results')
+    list_joined_teams()
+    results = demisto.results.call_args[0]
+    assert len(results) == 1
+    assert results[0]['EntryContext']['MicrosoftTeams.Team(val.id == obj.id)'] == teams['value']
