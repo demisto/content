@@ -535,7 +535,7 @@ tasks:
     task:
       id: 61e1375b-0419-4b19-804a-ee861d967685
       version: -1
-      name: Get OOO users and clean OOO list
+      name: Get OOO users
       description: Retrieves users that are currently out of office.
       scriptName: GetUsersOOO
       type: regular
