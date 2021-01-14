@@ -1510,14 +1510,10 @@ def web_filter_builder(client: Client, is_for_update: bool, endpoint_tag: str,
     return remove_empty_elements(json_data)
 
 
-def app_category_builder(client: Client, is_for_update: bool, endpoint_tag: str, # pylint: disable=unused-argument
-                         name: str, description: str = None, qos_policy: str = None) -> dict:
+def app_category_builder(name: str, description: str = None, qos_policy: str = None) -> dict:
     """Builder for app category object
 
     Args:
-        client (Client): Sophos XG Firewall Client
-        is_for_update (bool): True if the object should be updated
-        endpoint_tag (str): The endpoint_tag of the object we want to get data from
         name (str): The name of the object we want to add/update
         description (str, optional): Description information of the app category
         qos_policy (str, optional): Qos Policy information of the app category
@@ -1614,8 +1610,7 @@ def app_policy_builder(client: Client, is_for_update: bool, endpoint_tag: str,
     return remove_empty_elements(json_data)
 
 
-def user_builder(client: Client, is_for_update: bool, endpoint_tag: str, # pylint: disable=unused-argument
-                 name: str, username: str, email: str = None, password: str = None,
+def user_builder(name: str, username: str, email: str = None, password: str = None,
                  description: str = None, group: str = None, user_type: str = None,
                  profile: str = None, surfing_quota_policy: str = None,
                  access_time_policy: str = None, ssl_vpn_policy: str = None,
@@ -1625,9 +1620,6 @@ def user_builder(client: Client, is_for_update: bool, endpoint_tag: str, # pylin
     """Builder for the user object - build the body of the request
 
     Args:
-        client (Client): Sophos XG Firewall Client
-        is_for_update (bool): True if the object should be updated
-        endpoint_tag (str): The endpoint_tag of the object we want to get data from
         name (str): The name of the object we want to add/update
         username (str, optional): Username information of the user
         email (str, optional): Email information of the user
@@ -1716,7 +1708,11 @@ def generic_save_and_get(client: Client, endpoint_tag: str, params: dict, builde
     Returns:
         CommandResults: Command results object
     """
-    data = builder(client, to_update, endpoint_tag, **params)
+    funcs_without_extra_args = [user_builder, app_category_builder]
+    if builder in funcs_without_extra_args:
+        data = builder(**params)
+    else:
+        data = builder(client, to_update, endpoint_tag, **params)
     operation = 'update' if to_update else 'add'
     response = client.set_request((endpoint_tag, data), operation)
     response = json.loads(xml2json(response.text))
