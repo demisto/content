@@ -38,7 +38,7 @@ tasks:
       id: b6b9047d-5a20-4857-8090-f089a2a713e9
       version: -1
       name: 'Create Zoom meeting '
-      description: Create a new zoom meeting (scheduled or instant)
+      description: Create a new Zoom meeting (scheduled or instant).
       script: '|||zoom-create-meeting'
       type: regular
       iscommand: true
@@ -501,5 +501,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: This playbook is used to create an online meeting for shift handover,
-  currently this playbook supports Zoom.
+description: This playbook is used to create an online meeting for shift handover.
+  Currently, this playbook supports Zoom.
