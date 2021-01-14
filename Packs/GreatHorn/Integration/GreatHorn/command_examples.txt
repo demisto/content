@@ -1,0 +1,5 @@
+!gh-get-message id="12345" includeheaders="true"
+!gh-search-message filters
+!gh-remediate-message action="banner" message="This email may be a phishing attempt" eventId="12345"
+!gh-revert-remediate-message action="banner" eventId="12345"
+!gh-get-policy policyid="1234"
