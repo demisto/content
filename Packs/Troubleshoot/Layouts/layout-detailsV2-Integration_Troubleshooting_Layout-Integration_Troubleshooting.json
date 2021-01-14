@@ -1,0 +1,197 @@
+{
+ "TypeName": "Integration Troubleshooting",
+ "kind": "details",
+ "layout": {
+  "TypeName": "",
+  "id": "Integration Troubleshooting Layout",
+  "kind": "details",
+  "modified": "2021-01-10T14:08:44.380597028Z",
+  "name": "Integration Troubleshooting Layout",
+  "system": false,
+  "tabs": [
+   {
+    "id": "summary",
+    "name": "Legacy Summary",
+    "type": "summary"
+   },
+   {
+    "id": "caseinfoid",
+    "name": "Incident Info",
+    "sections": [
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+      "isVisible": true,
+      "items": [
+       {
+        "endCol": 2,
+        "fieldId": "type",
+        "height": 22,
+        "id": "incident-type-field",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "severity",
+        "height": 22,
+        "id": "incident-severity-field",
+        "index": 1,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "owner",
+        "height": 22,
+        "id": "incident-owner-field",
+        "index": 2,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "dbotsource",
+        "height": 22,
+        "id": "incident-source-field",
+        "index": 3,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourcebrand",
+        "height": 22,
+        "id": "incident-sourceBrand-field",
+        "index": 4,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "sourceinstance",
+        "height": 22,
+        "id": "incident-sourceInstance-field",
+        "index": 5,
+        "sectionItemType": "field",
+        "startCol": 0
+       },
+       {
+        "endCol": 2,
+        "fieldId": "playbookid",
+        "height": 22,
+        "id": "incident-playbookId-field",
+        "index": 6,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "moved": false,
+      "name": "Case Details",
+      "static": false,
+      "w": 1,
+      "x": 0,
+      "y": 0
+     },
+     {
+      "h": 2,
+      "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+      "moved": false,
+      "name": "Notes",
+      "static": false,
+      "type": "notes",
+      "w": 1,
+      "x": 0,
+      "y": 6
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+      "moved": false,
+      "name": "Work Plan",
+      "static": false,
+      "type": "workplan",
+      "w": 1,
+      "x": 0,
+      "y": 4
+     },
+     {
+      "displayType": "ROW",
+      "h": 2,
+      "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+      "moved": false,
+      "name": "Evidence",
+      "static": false,
+      "type": "evidence",
+      "w": 1,
+      "x": 0,
+      "y": 2
+     },
+     {
+      "displayType": "ROW",
+      "h": 8,
+      "hideItemTitleOnlyOne": true,
+      "hideName": false,
+      "i": "caseinfoid-3d903420-534d-11eb-a95b-75eba4cc266f",
+      "items": [
+       {
+        "endCol": 4,
+        "fieldId": "troubleshootsummary",
+        "height": 106,
+        "id": "56c2b440-534d-11eb-a95b-75eba4cc266f",
+        "index": 0,
+        "sectionItemType": "field",
+        "startCol": 0
+       }
+      ],
+      "maxW": 3,
+      "minH": 1,
+      "minW": 1,
+      "moved": false,
+      "name": "Troubleshooting Summary",
+      "static": false,
+      "w": 2,
+      "x": 1,
+      "y": 0
+     }
+    ],
+    "type": "custom"
+   },
+   {
+    "id": "warRoom",
+    "name": "War Room",
+    "type": "warRoom"
+   },
+   {
+    "id": "workPlan",
+    "name": "Work Plan",
+    "type": "workPlan"
+   },
+   {
+    "id": "evidenceBoard",
+    "name": "Evidence Board",
+    "type": "evidenceBoard"
+   },
+   {
+    "id": "relatedIncidents",
+    "name": "Related Incidents",
+    "type": "relatedIncidents"
+   },
+   {
+    "id": "canvas",
+    "name": "Canvas",
+    "type": "canvas"
+   }
+  ],
+  "typeId": "Integration Troubleshooting",
+  "version": -1
+ },
+ "typeId": "Integration Troubleshooting",
+ "version": -1,
+ "toVersion": "5.9.9",
+ "fromVersion": "5.0.0",
+ "description": ""
+}
