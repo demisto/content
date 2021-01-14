@@ -6,18 +6,18 @@ import io
 
 import pytest
 
-from BitcoinAbuse import BitcoinAbuseClient, bitcoin_abuse_report_address_command, build_fetch_indicators_url_suffixes, \
-    bitcoin_abuse_get_indicators_command
+from BitcoinAbuse import BitcoinAbuseClient, bitcoin_abuse_report_address_command, bitcoin_abuse_get_indicators_command
 from CommonServerPython import DemistoException, Dict, json
-from demistomock import setIntegrationContext
 
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
-
 client = BitcoinAbuseClient(
     base_url=SERVER_URL,
     verify=False,
     proxy=False,
-    api_key=''
+    api_key='',
+    initial_fetch_interval='',
+    reader_config=dict(),
+    have_fetched_first_time=False
 )
 
 
@@ -61,7 +61,7 @@ def test_report_address_successful_command(requests_mock, response: Dict, addres
         'https://www.bitcoinabuse.com/api/reports/create',
         json=response
     )
-    assert bitcoin_abuse_report_address_command({}, address_report).readable_output == expected
+    assert bitcoin_abuse_report_address_command(client, address_report).readable_output == expected
 
 
 @pytest.mark.parametrize('address_report, expected',
@@ -84,7 +84,7 @@ def test_report_address_command_invalid_arguments(address_report: Dict, expected
        """
 
     with pytest.raises(DemistoException, match=expected):
-        bitcoin_abuse_report_address_command({}, address_report)
+        bitcoin_abuse_report_address_command(client, address_report)
 
 
 def test_failure_response_from_bitcoin_abuse(requests_mock):
@@ -104,15 +104,17 @@ def test_failure_response_from_bitcoin_abuse(requests_mock):
         json=bitcoin_responses['failure']
     )
     with pytest.raises(DemistoException, match=failure_bitcoin_report_command_output):
-        bitcoin_abuse_report_address_command({}, report_address_scenarios['valid'])
+        bitcoin_abuse_report_address_command(client, report_address_scenarios['valid'])
 
 
-@pytest.mark.parametrize('params, have_fetched_first_time, expected_url_suffix, expected_have_fetched_first_time',
-                         [({'initial_fetch_interval': '30 Days'}, False, {'download/30d'}, True),
-                          ({'initial_fetch_interval': 'Forever'}, False, {'download/forever', 'download/30d'}, True),
-                          ({'initial_fetch_interval': '30 Days'}, True, {'download/1d'}, True)
-                          ])
-def test_url_suffixes_builder(params, have_fetched_first_time, expected_url_suffix, expected_have_fetched_first_time):
+@pytest.mark.parametrize(
+    'initial_fetch_interval, have_fetched_first_time, expected_url_suffix, expected_have_fetched_first_time',
+    [('30 Days', False, {'download/30d'}, True),
+     ('Forever', False, {'download/forever', 'download/30d'}, True),
+     ('30 Days', True, {'download/1d'}, True)
+     ])
+def test_url_suffixes_builder(initial_fetch_interval, have_fetched_first_time, expected_url_suffix,
+                              expected_have_fetched_first_time):
     """
     Given:
      - Request for url to fetch indicators
@@ -127,8 +129,9 @@ def test_url_suffixes_builder(params, have_fetched_first_time, expected_url_suff
      - Case b: Ensure that the monthly and forever download suffix is returned.
      - Case c: Ensure that the daily download suffix is returned
     """
-    setIntegrationContext({'have_fetched_first_time': have_fetched_first_time})
-    assert build_fetch_indicators_url_suffixes(params) == expected_url_suffix
+    client.have_fetched_first_time = have_fetched_first_time
+    client.initial_fetch_interval = initial_fetch_interval
+    assert client.build_fetch_indicators_url_suffixes() == expected_url_suffix
 
 
 def test_get_indicators_command(requests_mock):
@@ -141,11 +144,12 @@ def test_get_indicators_command(requests_mock):
     Then:
         - Assert the CommandResults object returned is as expected.
     """
-    setIntegrationContext({'have_fetched_first_time': False})
     requests_mock.get(
         'https://www.bitcoinabuse.com/api/download/30d?api_token=123',
         content=get_indicators_scenarios['mock_response'].encode('utf-8')
     )
-    results = bitcoin_abuse_get_indicators_command(params={'api_key': '123'}, args={'limit': 1})
+    client.api_key = '123'
+    client.have_fetched_first_time = False
+    results = bitcoin_abuse_get_indicators_command(client, args={'limit': 1})
     assert results.readable_output == get_indicators_scenarios['expected']['readable_output']
     assert results.raw_response == get_indicators_scenarios['expected']['raw_response']
