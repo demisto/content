@@ -35,7 +35,7 @@ def create_relationship_object(value: str, relationship_type: str, indicator_typ
 
 
 def cyren_feed_relationship(args) -> CommandResults:
-    if not "indicator" in args:
+    if "indicator" not in args:
         raise ValueError("Please provide 'indicator' argument!")
 
     indicator = args["indicator"]
