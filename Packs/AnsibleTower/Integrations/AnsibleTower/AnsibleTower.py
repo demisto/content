@@ -177,11 +177,12 @@ def create_host(client: Client, args: dict) -> CommandResults:
             }
     response = client.api_request(method='POST', url_suffix=url_suffix, json_data=body)
     context_data = output_data(response)
+    headers = get_headers(context_data)
     return CommandResults(
         outputs_prefix='AnsibleAWX.Host',
         outputs_key_field='id',
         outputs=context_data,
-        readable_output=tableToMarkdown(name='Created Host', t=context_data, removeNull=True),
+        readable_output=tableToMarkdown(name='Created Host', t=context_data, removeNull=True, headers=headers),
         raw_response=response
     )
 
@@ -206,7 +207,7 @@ def templates_list(client: Client, args: dict) -> CommandResults:
     else:
         url_suffix = 'job_templates/'
 
-    response = client.api_request(method='GET', url_suffix=url_suffix, params=args)
+    response = client.api_request(method='GET', url_suffix=url_suffix, params=args, removeNull=True)
     results = response.get('results', [])
 
     if not results:
