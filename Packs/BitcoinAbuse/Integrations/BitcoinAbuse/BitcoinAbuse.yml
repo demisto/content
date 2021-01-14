@@ -99,7 +99,7 @@ configuration:
 description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers
   and criminals.
 display: BitcoinAbuse Feed
-name: BitcoinAbuse Feed
+name: BitcoinAbuse
 script:
   commands:
   - arguments:

@@ -236,7 +236,6 @@ def bitcoin_abuse_report_address_command(bitcoin_client: BitcoinAbuseClient, arg
         str: 'bitcoin address (address reported) by abuser (abuser reported) was
         reported to BitcoinAbuse API' if http request was successful'
     """
-    raise DemistoException('')
     abuse_type_id = BitcoinAbuseClient.abuse_type_name_to_id.get(args.get('abuse_type', ''))
     abuse_type_other = args.get('abuse_type_other')
     address = args.get('address', '')
