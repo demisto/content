@@ -3,12 +3,12 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Assign Active Incidents to Next Shift_V2
-description: "This playbook reassigns Active Incidents to the current users on call,\
-  \ requires shift management to be setup.   Can be run as a job a few minutes after\
-  \ the scheduled shift change time.\n\nUpdate the playbook input with a different\
-  \ search query if required.  Will also branch if there are no Incidents that match\
-  \ the query, and no users on call. \n\nSearch results are the default 100 Incidents\
-  \ returned by the query.\n\nCases will not be assign to users that defined OOO (by\
+description: "This playbook reassigns Active Incidents to the current users on call.\
+  \ It requires shift management to be set up.  The playbook can be run as a job a few minutes after\
+  \ the scheduled shift change time.\n\nYou can update the playbook input with a different\
+  \ search query, if required.  Will branch if there are no incidents that match\
+  \ the query and no users on call. \n\nSearch results are the default 100 incidents\
+  \ returned by the query.\n\nCases will not be assigned to users that defined OOO (by\
   \ OutOfOffice automation)."
 starttaskid: "0"
 tasks:
@@ -47,7 +47,7 @@ tasks:
       id: a9a33550-08a7-47d8-86b4-88ff7ccb277a
       version: -1
       name: Search for Incidents
-      description: Searches Demisto incidents
+      description: Searches Cortex XSOAR incidents.
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -96,7 +96,7 @@ tasks:
     task:
       id: 6aadb57e-7e9f-4f73-88ea-5076e7918d07
       version: -1
-      name: Are there open Incidents?
+      name: Are there open incidents?
       type: condition
       iscommand: false
       brand: ""
@@ -137,11 +137,11 @@ tasks:
       version: -1
       name: Assign Incidents to next shift
       description: |-
-        Randomly assigns the incidents to users on call (requires shift management) and users on call.   This is an example automation for reassigning a large number of Incidents to the next shift.   This automation works with the other Out of Office automations to ensure only available users get assigned.
+        Randomly assigns the incidents to users on call (requires shift management). This is an example automation for reassigning a large number of incidents to the next shift. This automation works with the  Out of Office automation to ensure only available users get assigned.
 
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/users-and-roles/shift-management.html#idf554fd0f-f93b-40cd-9111-1393bf25ac6e
 
-        Incident Ids should be passed in as a comma separated list.
+        Incident IDs should be passed in a comma-separated list.
       scriptName: AssignToNextShiftOOO
       type: regular
       iscommand: false
@@ -173,7 +173,7 @@ tasks:
     task:
       id: c9aebe9c-0692-4f6c-8454-157709aa68b8
       version: -1
-      name: Get Users on call
+      name: Get Users on Call
       description: commands.local.cmd.get.users
       script: Builtin|||getUsers
       type: regular
@@ -257,7 +257,7 @@ tasks:
       id: 9156d781-74e6-4d09-8b0f-f3bb1ccb25ed
       version: -1
       name: Set open incidents  to layout
-      description: Creates a Grid table from items or key-value pairs.
+      description: Creates a grid table from items or key-value pairs.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -323,7 +323,7 @@ tasks:
       id: 52cd9a7e-8163-4256-8796-fb31e70eb386
       version: -1
       name: Search for Incidents
-      description: Searches Demisto incidents
+      description: Searches Cortex XSOAR incidents.
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -384,8 +384,7 @@ inputs:
   value:
     simple: 'status:active  -category:job '
   required: false
-  description: 'Query for the Incidents to reassign.  Incidents need to be active
-    for this to work, it will not reassign pending Incidents. '
+  description: 'Query for the incidents to reassign. Incidents need to be active. It will not reassign pending incidents. '
   playbookInputQuery:
 outputs: []
 tests:
