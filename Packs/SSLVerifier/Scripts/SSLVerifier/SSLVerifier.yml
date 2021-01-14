@@ -1,12 +1,12 @@
 commonfields:
-  id: 08b3fdcb-3344-4ed9-907f-9c4591ecd1bc
-  version: 17
-vcShouldKeepItemLegacyProdMachine: false
+  id: SSLVerifier
+  version: -1
 name: SSLVerifier
 script: ''
 type: python
 tags: []
-description: Use this automation to check for validity of your SSL certificate and get the time until expiration.
+comment: Use this automation to check for validity of your SSL certificate and get
+  the time until expiration.
 enabled: true
 args:
 - name: URL
@@ -31,7 +31,9 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.9.1.14969
 runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

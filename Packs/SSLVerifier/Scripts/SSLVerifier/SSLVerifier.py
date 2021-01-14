@@ -29,7 +29,6 @@ def get_cert_info(hostname: str, port: str) -> dict:
     converteddate = datetime.strftime(expiration_obj, '%Y-%m-%dT%H:%M:%S.%fZ')
     now_obj = datetime.now()
     dateresults_obj = expiration_obj - now_obj
-    seconds = int(dateresults_obj.seconds)
     days = int(dateresults_obj.days)
     data['Expiry'] = converteddate
     data['Site'] = hostname
