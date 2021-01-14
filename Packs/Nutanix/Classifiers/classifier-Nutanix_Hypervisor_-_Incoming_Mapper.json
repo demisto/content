@@ -1,0 +1,73 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "NutanixHypervisor-mapper",
+    "mapping": {
+        "Nutanix Hypervisor Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Acknowledged": {
+                    "complex": null,
+                    "simple": "acknowledged"
+                },
+                "Acknowledged By Username": {
+                    "complex": null,
+                    "simple": "acknowledged_by_username"
+                },
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "alert_title"
+                },
+                "Alert Type UUID": {
+                    "complex": null,
+                    "simple": "alert_type_uuid"
+                },
+                "Check Id": {
+                    "complex": null,
+                    "simple": "check_id"
+                },
+                "Classifications": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "classifications",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Closing User": {
+                    "complex": null,
+                    "simple": "resolved_by_username"
+                },
+                "Cluster_UUID": {
+                    "complex": null,
+                    "simple": "cluster_uuid"
+                },
+                "Last Seen": {
+                    "complex": null,
+                    "simple": "last_occurrence_time_stamp_in_usecs"
+                },
+                "Message": {
+                    "complex": null,
+                    "simple": "message"
+                },
+                "Operation Type": {
+                    "complex": null,
+                    "simple": "operation_type"
+                },
+                "Resolved": {
+                    "complex": null,
+                    "simple": "resolved"
+                }
+            }
+        }
+    },
+    "name": "Nutanix Hypervisor - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

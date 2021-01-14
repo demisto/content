@@ -1,11 +1,11 @@
 {
     "id": "incident_ticketacknowledgeddate",
     "version": -1,
-    "modified": "2021-01-13T12:54:29.675226Z",
+    "modified": "2021-01-13T15:38:46.386876Z",
     "name": "Ticket Acknowledged Date",
     "ownerOnly": false,
     "cliName": "ticketacknowledgeddate",
-    "type": "shortText",
+    "type": "date",
     "closeForm": false,
     "editForm": true,
     "required": false,

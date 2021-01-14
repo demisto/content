@@ -5,11 +5,32 @@ import pytz
 import urllib3
 
 from CommonServerPython import *
+from enum import Enum
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+''' ENUMS '''
+
+
+class DemistoSeverities(Enum):
+    UNKNOWN = 0
+    INFO = 0.5
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
+
+
 ''' CONSTANTS '''
 CONTENT_JSON = {'content-type': 'application/json'}
+
+NUTANIX_SEVERITIES_TO_DEMISTO_SEVERITIES = {
+    'kaudit': DemistoSeverities.UNKNOWN,  # TODO figure
+    'kinfo': DemistoSeverities.INFO,
+    'kwarning': DemistoSeverities.MEDIUM,  # TODO TOM
+    'kcritical': DemistoSeverities.CRITICAL
+}
 
 ''' LOWER AND UPPER BOUNDS FOR INTEGER ARGUMENTS '''
 MINIMUM_PAGE_VALUE = 1
@@ -271,6 +292,22 @@ def get_page_argument(args: Dict) -> Optional[int]:
     return page_value
 
 
+def convert_to_demisto_severity(severity: str) -> int:
+    """Maps Nutanix Hypervisor severity to Cortex XSOAR severity
+
+    Converts the Nutanix Hypervisor alert severity level ('kAudit', 'kInfo',
+    'kWarning', 'kCritical') to Cortex XSOAR incident severity (1 to 4)
+    for mapping.
+
+    Args:
+        severity (str): severity as returned from the Nutanix Hypervisor service.
+
+    Returns:
+        Cortex XSOAR Severity (1 to 4)
+    """
+    return NUTANIX_SEVERITIES_TO_DEMISTO_SEVERITIES.get(severity.lower(), DemistoSeverities.UNKNOWN).value
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -297,15 +334,18 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
     impact_types = params.get('impact_types')
     classifications = params.get('classifications')
 
-    alerts = client.fetch_incidents(auto_resolved, resolved, acknowledged, severity, alert_type_ids, impact_types,
-                                    classifications)
+    response = client.fetch_incidents(auto_resolved, resolved, acknowledged, severity, alert_type_ids, impact_types,
+                                      classifications)
+
+    alerts = response.get('entities')
+    if alerts is None:
+        raise DemistoException('Unexpected TODO')
 
     last_fetch_epoch_time = last_run.get('last_fetch_epoch_time', 0)
     current_run_max_epoch_time = 0
     incidents: List[Dict[str, Any]] = []
 
     for alert in alerts:
-        # maybe created time and not last occurrence
         last_occurrence_time = alert.get('last_occurrence_time_stamp_in_usecs', 0)
         if last_occurrence_time <= last_fetch_epoch_time:
             continue
@@ -313,22 +353,9 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
         current_run_max_epoch_time = max(current_run_max_epoch_time, last_occurrence_time)
         incident = {
             'name': 'Nutanix Hypervisor Alert',
-            'alerttypeuuid': alert.get('alert_type_uuid'),
-            'checkid': alert.get('check_id'),
-            'resolved': alert.get('resolved'),
-            'closinguser': alert.get('resolved_by_username'),
-            'acknowledged': alert.get('acknowledged'),
-            'acknowledgedbyusername': alert.get('acknowledged_by_username'),
-            'ticketopeneddate': alert.get('created_time_stamp_in_usecs'),
-            'lastseen': last_occurrence_time,
-            'ticketacknowledgeddate': alert.get('acknowledged_time_stamp_in_usecs'),
-            'ticketcloseddate': alert.get('resolved_time_stamp_in_usecs'),
-            'clusteruuid': alert.get('cluster_uuid'),
-            'severity': alert.get('severity'),
-            'classifications': alert.get('classifications'),
-            'alertname': alert.get('alert_title'),
-            'message': alert.get('message'),
-            'operationtype': alert.get('operation_type')
+            'occurred': timestamp_to_datestring(0), # timestamp_to_datestring(alert.get('created_time_stamp_in_usecs'), is_utc=True),
+            'rawJSON': json.dumps(alert),
+            'severity': convert_to_demisto_severity(alert.get('severity', ''))
         }
 
         incidents.append(incident)
@@ -738,7 +765,7 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
 
 def main() -> None:
     command = demisto.command()
-    command = 'nutanix-hypervisor-hosts-list'
+    # command = 'nutanix-hypervisor-hosts-list'
     params = demisto.params()
 
     commands = {
@@ -768,6 +795,8 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy,
             auth=(username, password))
+        # last_run = demisto.getLastRun()
+        # incidents, next_run = fetch_incidents_command(client, params, last_run)
 
         if command == 'test-module':
             test_module_command(client)
