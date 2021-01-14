@@ -149,7 +149,7 @@ Retrieves the list of hosts. If an inventory ID is specified, retrieve the host 
                 "insights_system_id": null,
                 "instance_id": "",
                 "inventory": 1,
-                "last_job": 703,
+                "last_job": 700,
                 "modified": "2021-01-13 07:46:49.267924",
                 "name": "test",
                 "type": "host",
@@ -288,7 +288,7 @@ Retrieves the list of job templates.
 | --- | --- | --- |
 | inventory_id | Inventory ID of the jobs that are managed with hosts under this inventory. | Optional | 
 | page | Page number to retrieve. Default is 1. Default is 1. | Optional | 
-| page_size | Page size. Default is 50. Default is 50. | Optional | 
+| page_size | Page size. Default is 50. | Optional | 
 | search | The search query string used to perform a case-insensitive search within all designated text fields of a model. | Optional | 
 | id | The ID of the job template. | Optional | 
 
@@ -525,7 +525,7 @@ Launches the job template.
             "launch_type": "manual",
             "limit": "",
             "modified": "2021-01-14 09:22:08.080092",
-            "name": "Eample Job Template",
+            "name": "Example Job Template",
             "passwords_needed_to_start": [],
             "playbook": "hello_world.yml",
             "project": 4,
@@ -545,10 +545,10 @@ Launches the job template.
 
 #### Human Readable Output
 
->### Job: 706 status is: pending
+>### Job: 1 status is: pending
 >|name|id|type|url|created|modified|job_type|inventory|project|playbook|extra_vars|timeout|launch_type|status|failed|elapsed|job_template|credential|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Demo Job Template | 1 | job | /api/v2/jobs/1/ | 2021-01-14 09:22:07.965061 | 2021-01-14 09:22:08.080092 | run | 1 | 4 | hello_world.yml | {} | 0 | manual | pending | false | 0.0 | 5 | 1 |
+>| Example Job Template | 1 | job | /api/v2/jobs/1/ | 2021-01-14 09:22:07.965061 | 2021-01-14 09:22:08.080092 | run | 1 | 4 | hello_world.yml | {} | 0 | manual | pending | false | 0.0 | 5 | 1 |
 
 
 ### ansible-tower-job-relaunch
@@ -712,7 +712,7 @@ Cancels a pending or running job.
 
 
 #### Command Example
-```!ansible-tower-job-status job_id=2```
+```!ansible-tower-job-cancel job_id=2```
 
 #### Context Example
 ```json
@@ -764,7 +764,7 @@ Cancels a pending or running job.
 >### Job 2 status canceled
 >|name|id|type|url|created|modified|job_type|inventory|project|playbook|extra_vars|timeout|launch_type|status|failed|finished|elapsed|job_template|credential|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Demo Job Template | 2 | job | /api/v2/jobs/2/ | 2021-01-14 12:11:11.430693 | 2021-01-14 12:11:17.297511 | run | 1 | 4 | hello_world.yml | {} | 0 | manual | canceled | true | 2021-01-14T12:11:17.297156Z | 0.0 | 5 | 1 |
+>| Example Job Template | 2 | job | /api/v2/jobs/2/ | 2021-01-14 12:11:11.430693 | 2021-01-14 12:11:17.297511 | run | 1 | 4 | hello_world.yml | {} | 0 | manual | canceled | true | 2021-01-14T12:11:17.297156Z | 0.0 | 5 | 1 |
 
 
 
@@ -804,12 +804,7 @@ Retrieves the standard output by running the provided job.
     "AnsibleAWX": {
         "JobStdout": {
             "content": "\n\nPLAY [Hello World Sample] ******************************************************\n\nTASK [Gathering Facts] *********************************************************\n\u001b[1;31mfatal: [check8]: UNREACHABLE! => {\"changed\": false, \"msg\": \"Failed to connect to the host via ssh: ssh: Could not resolve hostname check8: Name or service not known\\\\r\\\\n\", \"unreachable\": true}\u001b[0m\n\u001b[0;32mok: [localhost]\u001b[0m\n\nTASK [Hello Message] ***********************************************************\n\u001b[0;32mok: [localhost] => {\u001b[0m\n\u001b[0;32m    \"msg\": \"Hello World!\"\u001b[0m\n\u001b[0;32m}\u001b[0m\n\nPLAY RECAP *********************************************************************\n\u001b[0;31mcheck8\u001b[0m                     : ok=0    changed=0    \u001b[1;31munreachable=1   \u001b[0m failed=0   \n\u001b[0;32mlocalhost\u001b[0m                  : \u001b[0;32mok=2   \u001b[0m changed=0    unreachable=0    failed=0   \n\n",
-            "job_id": "3",
-            "range": {
-                "absolute_end": 17,
-                "end": 17,
-                "start": 0
-            }
+            "job_id": "3"
         }
     }
 }
@@ -1286,7 +1281,7 @@ Cancel a job of the specified ad hoc command.
             "id": 2,
             "inventory": 1,
             "job_args": "[]",
-            "job_cwd": "/tmp/awx_2__xyz",
+            "job_cwd": "",
             "job_explanation": "",
             "job_type": "run",
             "launch_type": "manual",
@@ -1307,10 +1302,10 @@ Cancel a job of the specified ad hoc command.
 
 #### Human Readable Output
 
->### Ad hoc command - 2 status - running
+>### Ad hoc command - 2 status - canceled
 >|name|id|type|url|created|modified|launch_type|status|failed|started|elapsed|job_args|job_cwd|execution_node|job_type|inventory|credential|module_name|become_enabled|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| ping | 737 | ad_hoc_command | /api/v2/ad_hoc_commands/737/ | 2021-01-14 12:21:28.382292 | 2021-01-14 12:21:30.557684 | manual | running | false | 2021-01-14T12:21:28.668796Z | 2.280328 | ["ansible", "-i", "/tmp/awx_737__rrjZy/tmpuIURF_", "-u", "admin", "-e", "@/tmp/awx_737__rrjZy/tmpmFjJP6", "-m", "ping", "-a", "", "all"] | /tmp/awx_737__rrjZy | awx | run | 1 | 1 | ping | false |
+>| ping | 2 | ad_hoc_command | /api/v2/ad_hoc_commands/2/ | 2021-01-14 12:21:28.382292 | 2021-01-14 12:21:30.557684 | manual | canceled | false | 2021-01-14T12:21:28.668796Z | 2.280328 | [] |  | awx | run | 1 | 1 | ping | false |
 
 
 
@@ -1348,12 +1343,7 @@ Retrieves the standard output from running this ad hoc command.
     "AnsibleAWX": {
         "AdhocCommandStdout": {
             "command_id": "1",
-            "content": "\u001b[1;31mteat_demo | UNREACHABLE! => {\u001b[0m\n\u001b[1;31m    \"changed\": false, \u001b[0m\n\u001b[1;31m    \"msg\": \"Failed to connect to the host via ssh: ssh: Could not resolve hostname teat_demo: Name or service not known\\\\r\\\\n\", \u001b[0m\n\u001b[1;31m    \"unreachable\": true\u001b[0m\n\u001b[1;31m}\u001b[0m\n\u001b[0;32mlocalhost | SUCCESS => {\u001b[0m\n\u001b[0;32m    \"changed\": false, \u001b[0m\n\u001b[0;32m    \"ping\": \"pong\"\u001b[0m\n\u001b[0;32m}\u001b[0m\n\n",
-            "range": {
-                "absolute_end": 10,
-                "end": 10,
-                "start": 0
-            }
+            "content": "\u001b[1;31mteat_demo | UNREACHABLE! => {\u001b[0m\n\u001b[1;31m    \"changed\": false, \u001b[0m\n\u001b[1;31m    \"msg\": \"Failed to connect to the host via ssh: ssh: Could not resolve hostname teat_demo: Name or service not known\\\\r\\\\n\", \u001b[0m\n\u001b[1;31m    \"unreachable\": true\u001b[0m\n\u001b[1;31m}\u001b[0m\n\u001b[0;32mlocalhost | SUCCESS => {\u001b[0m\n\u001b[0;32m    \"changed\": false, \u001b[0m\n\u001b[0;32m    \"ping\": \"pong\"\u001b[0m\n\u001b[0;32m}\u001b[0m\n\n"
         }
     }
 }

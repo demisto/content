@@ -311,13 +311,14 @@ def job_stdout(client: Client, args: dict) -> CommandResults:
     url_suffix = f'jobs/{job_id}/stdout/'
     params = {"format": "json"}
     response = client.api_request(method='GET', url_suffix=url_suffix, params=params)
-    response['job_id'] = job_id
-    output_text = output_content(response.get('content', ''), print_output, text_filter,
+    context_data = output_data(response)
+    context_data['job_id'] = job_id
+    output_text = output_content(context_data.get('content', ''), print_output, text_filter,
                                  f'### Job {job_id} output ### \n\n')
     return CommandResults(
         outputs_prefix='AnsibleAWX.JobStdout',
         outputs_key_field='job_id',
-        outputs=response,
+        outputs=context_data,
         readable_output=output_text,
         raw_response=response
     )
@@ -421,13 +422,14 @@ def ad_hoc_command_stdout(client: Client, args: dict) -> CommandResults:
     url_suffix = f'ad_hoc_commands/{command_id}/stdout/'
     request_params = {"format": "json"}
     response = client.api_request(method='GET', url_suffix=url_suffix, params=request_params)
-    response['command_id'] = command_id
-    output_text = output_content(response.get('content', ''), print_output, text_filter,
+    context_data = output_data(response)
+    context_data['command_id'] = command_id
+    output_text = output_content(context_data.get('content', ''), print_output, text_filter,
                                  f'### Ad hoc command {command_id} output ### \n\n')
     return CommandResults(
         outputs_prefix='AnsibleAWX.AdhocCommandStdout',
-        outputs_key_field='job_id',
-        outputs=response,
+        outputs_key_field='command_id',
+        outputs=context_data,
         readable_output=output_text,
         raw_response=response
     )
