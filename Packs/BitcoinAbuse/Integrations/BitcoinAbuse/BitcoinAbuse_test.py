@@ -7,7 +7,7 @@ import io
 import pytest
 
 from BitcoinAbuse import BitcoinAbuseClient, bitcoin_abuse_report_address_command, bitcoin_abuse_get_indicators_command, \
-    READER_CONFIG
+    update_indicator_occurrences, READER_CONFIG
 from CommonServerPython import DemistoException, Dict, json
 
 SERVER_URL = 'https://www.bitcoinabuse.com/api/'
@@ -49,14 +49,14 @@ get_indicators_scenarios = util_load_json('test_data/get_indicators_command.json
 def test_report_address_successful_command(requests_mock, response: Dict, address_report: Dict, expected: str):
     """
         Given:
-         - Bitcoin address to report
+         - Bitcoin address to report.
 
         When:
-         - Reporting valid address to Bitcoin Abuse Api
+         - Reporting valid address to Bitcoin Abuse service.
 
         Then:
-         - When reporting to the API should return failure - the command fails and the correct output is given
-         - When reporting to the API should success - the command succeeds and the correct output is given
+         - When reporting to the API should return failure - the command fails and the correct output is given.
+         - When reporting to the API should success - the command succeeds and the correct output is given.
         """
     requests_mock.post(
         'https://www.bitcoinabuse.com/api/reports/create',
@@ -74,14 +74,14 @@ def test_report_address_successful_command(requests_mock, response: Dict, addres
 def test_report_address_command_invalid_arguments(address_report: Dict, expected: str):
     """
        Given:
-        - Invalid bitcoin address report
+        - Invalid bitcoin address report.
 
        When:
-        - Trying to report the address to Bitcoin Abuse Api
+        - Trying to report the address to Bitcoin Abuse service.
 
        Then:
-        - Ensure the command throws an error
-        - Ensure the expected error with the expected error message is returned
+        - Ensure the command throws an error.
+        - Ensure the expected error with the expected error message is returned.
        """
 
     with pytest.raises(DemistoException, match=expected):
@@ -91,14 +91,14 @@ def test_report_address_command_invalid_arguments(address_report: Dict, expected
 def test_failure_response_from_bitcoin_abuse(requests_mock):
     """
        Given:
-        - bitcoin address report
+        - bitcoin address report.
 
        When:
-        - Trying to report the address to Bitcoin Abuse Api, and receiving a failure response from Bitcoin Abuse service
+        - Trying to report the address to Bitcoin Abuse Api, and receiving a failure response from Bitcoin Abuse service.
 
        Then:
-        - Ensure the command throws an error
-        - Ensure the expected error with the expected error message is returned
+        - Ensure the command throws an error.
+        - Ensure the expected error with the expected error message is returned.
        """
     requests_mock.post(
         'https://www.bitcoinabuse.com/api/reports/create',
@@ -118,7 +118,7 @@ def test_url_suffixes_builder(initial_fetch_interval, have_fetched_first_time, e
                               expected_have_fetched_first_time):
     """
     Given:
-     - Request for url to fetch indicators
+     - Request for url to fetch indicators.
 
     When:
      - Case a: First fetch time is 30 Days, fetching for the first time.
@@ -128,7 +128,7 @@ def test_url_suffixes_builder(initial_fetch_interval, have_fetched_first_time, e
     Then:
      - Case a: Ensure that the monthly download suffix is returned.
      - Case b: Ensure that the monthly and forever download suffix is returned.
-     - Case c: Ensure that the daily download suffix is returned
+     - Case c: Ensure that the daily download suffix is returned.
     """
     client.have_fetched_first_time = have_fetched_first_time
     client.initial_fetch_interval = initial_fetch_interval
@@ -138,10 +138,10 @@ def test_url_suffixes_builder(initial_fetch_interval, have_fetched_first_time, e
 def test_get_indicators_command(requests_mock):
     """
     Given:
-        - params: Demisto params for get-indicators command
+        - params: Demisto params for get-indicators command.
         - args: Demisto args for get-indicators command.
     When:
-        - Command `bitcoinabuse-get-indicators` is being called
+        - Command `bitcoinabuse-get-indicators` is being called.
     Then:
         - Assert the CommandResults object returned is as expected.
     """
@@ -154,3 +154,24 @@ def test_get_indicators_command(requests_mock):
     results = bitcoin_abuse_get_indicators_command(client, args={'limit': 1})
     assert results.raw_response == get_indicators_scenarios['expected']['raw_response']
     assert results.readable_output == get_indicators_scenarios['expected']['readable_output']
+
+
+def test_update_indicator_occurrences():
+    """
+    Given:
+        - indicator: Indicator fetched from Bitcoin Abuse service.
+        - address_to_count_dict: Dict of Bitcoin addresses to count of occurrences.
+    When:
+        - Update_indicator_occurrences is being called.
+    Then:
+        - Assert that 'address_to_count_dict' is updated as expected.
+    """
+    first_ind = {'value': '12345abcde'}
+    second_ind = {'value': '67890fghij'}
+    address_to_count_dict = dict()
+    update_indicator_occurrences(first_ind, address_to_count_dict)
+    update_indicator_occurrences(first_ind, address_to_count_dict)
+    update_indicator_occurrences(second_ind, address_to_count_dict)
+    assert (address_to_count_dict.get('12345abcde')) == 3
+    assert (address_to_count_dict.get('67890fghij', 0)) == 1
+    assert (address_to_count_dict.get('12bxcas', 0)) == 0

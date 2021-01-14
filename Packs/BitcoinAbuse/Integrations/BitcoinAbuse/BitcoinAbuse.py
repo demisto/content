@@ -98,7 +98,7 @@ class BitcoinAbuseClient(BaseClient):
             - Returns indicators list if the call to Bitcoin Abuse service was successful.
         """
 
-        indicators_name_to_count_dict: Dict[str, int] = dict()
+        bitcoin_address_count_dict: Dict[str, int] = dict()
 
         params = self.build_params_for_csv_module()
         csv_module_client = Client(**params)
@@ -118,7 +118,7 @@ class BitcoinAbuseClient(BaseClient):
         # duplicates
         if self.have_fetched_first_time:
             for indicator in indicators:
-                update_indicator_occurrences(indicator, indicators_name_to_count_dict)
+                update_indicator_occurrences(indicator, bitcoin_address_count_dict)
             indicators_without_duplicates = indicators
 
         # in first fetch according to configurations, we might fetch more than one csv file, so we need to remove
@@ -129,14 +129,14 @@ class BitcoinAbuseClient(BaseClient):
                 try:
                     indicator_id = int(indicator['rawJSON']['id'])
                     if indicator_id not in indicators_ids:
-                        update_indicator_occurrences(indicator, indicators_name_to_count_dict)
+                        update_indicator_occurrences(indicator, bitcoin_address_count_dict)
                         indicators_without_duplicates.append(indicator)
                         indicators_ids.add(indicator_id)
                 except ValueError:
                     demisto.debug(f'The following indicator was found invalid and was skipped: {indicator}')
 
         for indicator in indicators_without_duplicates:
-            indicator_count = indicators_name_to_count_dict.get(indicator['value'])
+            indicator_count = bitcoin_address_count_dict.get(indicator['value'])
             indicator['fields']['reportscount'] = indicator_count
             indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
 
@@ -208,17 +208,28 @@ class BitcoinAbuseClient(BaseClient):
         Returns:
             - Throws DemistoException in case an incorrect api key was given.
         """
-        if indicators and '<html lang="en">' == indicators[0]['value']:
+        if indicators and '<html lang="en">' == indicators[0].get('value'):
             raise DemistoException('api token inserted is not valid')
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def update_indicator_occurrences(indicator_obj: Dict, indicators_name_to_count_dict: Dict[str, int]) -> None:
+def update_indicator_occurrences(indicator_obj: Dict, bitcoin_address_count_dict: Dict[str, int]) -> None:
+    """
+    Receives an indicator object 'indicator_obj' and a dict 'bitcoin_address_count_dict' which counts occurrences
+    of bitcoin addresses.
+    Updates the occurrences in 'bitcoin_address_count_dict' according to 'indicator_obj' address.
+    Args:
+        indicator_obj (Dict): The indicator.
+        bitcoin_address_count_dict(Dict[str, int]): Bitcoin addresses to occurrences dict.
+
+    Returns:
+
+    """
     indicator_name = indicator_obj['value']
-    updated_count = indicators_name_to_count_dict.get(indicator_name, 0) + 1
-    indicators_name_to_count_dict[indicator_name] = updated_count
+    updated_count = bitcoin_address_count_dict.get(indicator_name, 0) + 1
+    bitcoin_address_count_dict[indicator_name] = updated_count
 
 
 ''' COMMAND FUNCTIONS '''
@@ -226,7 +237,7 @@ def update_indicator_occurrences(indicator_obj: Dict, indicators_name_to_count_d
 
 def bitcoin_abuse_report_address_command(bitcoin_client: BitcoinAbuseClient, args: Dict) -> CommandResults:
     """
-    Reports a bitcoin abuse to Bitcoin Abuse service
+    Reports a bitcoin abuse to Bitcoin Abuse service.
 
     Args:
         bitcoin_client (BitcoinAbuseClient): Client object to perform request.
@@ -234,7 +245,7 @@ def bitcoin_abuse_report_address_command(bitcoin_client: BitcoinAbuseClient, arg
 
     Returns:
         str: 'bitcoin address (address reported) by abuser (abuser reported) was
-        reported to BitcoinAbuse API' if http request was successful'
+        reported to BitcoinAbuse API' if http request was successful'.
     """
     abuse_type_id = BitcoinAbuseClient.abuse_type_name_to_id.get(args.get('abuse_type', ''))
     abuse_type_other = args.get('abuse_type_other')
@@ -252,13 +263,13 @@ def bitcoin_abuse_report_address_command(bitcoin_client: BitcoinAbuseClient, arg
                                                   abuser=abuser,
                                                   description=description)
 
-    if argToBoolean(http_response.get('success')):
+    if argToBoolean(http_response.get('success', False)):
         return CommandResults(
             readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
                             f' was reported to BitcoinAbuse service'
         )
     else:
-        failure_message = http_response.get('response')
+        failure_message = http_response.get('response', 'Unknown failure reason')
         raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
 
 
@@ -296,7 +307,7 @@ def bitcoin_abuse_get_indicators_command(bitcoin_client: BitcoinAbuseClient, arg
     Wrapper for retrieving indicators from the feed to the war-room.
 
     Args:
-        bitcoin_client (BitcoinAbuseClient): Client object to perform request.
+        bitcoin_client (BitcoinAbuseClient): Client object.
         args (Dict): Demsisto args.
 
     Returns:
