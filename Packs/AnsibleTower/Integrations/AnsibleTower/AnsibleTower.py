@@ -207,7 +207,7 @@ def templates_list(client: Client, args: dict) -> CommandResults:
     else:
         url_suffix = 'job_templates/'
 
-    response = client.api_request(method='GET', url_suffix=url_suffix, params=args, removeNull=True)
+    response = client.api_request(method='GET', url_suffix=url_suffix, params=args)
     results = response.get('results', [])
 
     if not results:
@@ -222,7 +222,7 @@ def templates_list(client: Client, args: dict) -> CommandResults:
         outputs_prefix='AnsibleAWX.JobTemplate',
         outputs_key_field='id',
         outputs=context_data,
-        readable_output=tableToMarkdown(name='Job Templates List', t=context_data, headers=headers),
+        readable_output=tableToMarkdown(name='Job Templates List', t=context_data, headers=headers, removeNull=True),
         raw_response=response)
 
 
