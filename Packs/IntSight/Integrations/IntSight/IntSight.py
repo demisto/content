@@ -1,4 +1,4 @@
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
 
 reload(sys)
 sys.setdefaultencoding('utf-8')  # pylint: disable=E1101
@@ -701,19 +701,179 @@ def search_for_ioc():
             }
         )
     else:
-        results_for_no_content('IOC Information')
+        results_for_no_content('IOC Information', 'Could not get any results.')
 
 
-def results_for_no_content(cmd_name):
+def results_for_no_content(cmd_name, additional_information):
     demisto.results(
         {
             'Type': entryTypes['note'],
             'EntryContext': {'IntSights': {}},
             'Contents': {},
-            'HumanReadable': '### {} \n\n Could not get any results.'.format(cmd_name),
+            'HumanReadable': '### {} \n\n {}'.format(cmd_name, additional_information),
             'ContentsFormat': formats['json']
         }
     )
+
+
+def ioc_enrichment_to_readable(ioc_data):
+    """
+    Convert IOC to readable format
+    """
+    ioc_context = {
+        'Type': demisto.get(ioc_data, 'Data.Type'),
+        'Value': demisto.get(ioc_data, 'Data.Value'),
+        'FirstSeen': demisto.get(ioc_data, 'Data.FirstSeen'),
+        'LastSeen': demisto.get(ioc_data, 'Data.LastSeen'),
+        'Status': demisto.get(ioc_data, 'Status'),
+        'Severity': demisto.get(ioc_data, 'Data.Severity.Value'),
+        'RelatedMalwares': demisto.get(ioc_data, 'Data.RelatedMalwares'),
+        'Sources': demisto.get(ioc_data, 'Data.Sources'),
+        'IsKnownIoc': demisto.get(ioc_data, 'Data.IsKnownIoc'),
+        'RelatedThreatActors': demisto.get(ioc_data, 'Data.RelatedThreatActors'),
+        'SystemTags': demisto.get(ioc_data, 'Data.SystemTags'),
+        'Tags': demisto.get(ioc_data, 'Data.Tags'),
+        'Whitelisted': demisto.get(ioc_data, 'Data.Whitelisted'),
+        'OriginalValue': demisto.get(ioc_data, 'Data.OriginalValue'),
+
+    }
+    ioc_readable = {
+        'Type': demisto.get(ioc_data, 'Data.Type'),
+        'Value': demisto.get(ioc_data, 'Data.Value'),
+        'FirstSeen': demisto.get(ioc_data, 'Data.FirstSeen'),
+        'LastSeen': demisto.get(ioc_data, 'Data.LastSeen'),
+        'Status': demisto.get(ioc_data, 'Status'),
+        'Severity': demisto.get(ioc_data, 'Data.Severity.Value'),
+        'RelatedMalwares': demisto.get(ioc_data, 'Data.RelatedMalwares'),
+        'Sources': demisto.get(ioc_data, 'Data.Sources'),
+        'IsKnownIoc': demisto.get(ioc_data, 'Data.IsKnownIoc'),
+        'RelatedThreatActors': demisto.get(ioc_data, 'Data.RelatedThreatActors'),
+        'SystemTags': demisto.get(ioc_data, 'Data.SystemTags'),
+        'Tags': demisto.get(ioc_data, 'Data.Tags'),
+        'Whitelisted': demisto.get(ioc_data, 'Data.Whitelisted'),
+        'OriginalValue': demisto.get(ioc_data, 'OriginalValue'),
+
+    }
+    dbot_score = {
+        'Indicator': ioc_context['Value'],
+        'Type': IOC_TYPE_TO_DBOT_TYPE[ioc_context['Type']],
+        'Vendor': 'IntSights',
+        'Score': translate_severity(ioc_readable['Severity'])
+    }
+    malicious_dict = {
+        'Vendor': 'IntSights',
+        'Description': 'IntSights severity level is High'
+    }
+    domain = {}
+    if ioc_context['Type'] == 'Domains':
+        domain['Name'] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            domain['Malicious'] = malicious_dict
+        domain['DNS'] = demisto.get(ioc_data, 'Data.DnsRecords')
+        domain['Resolutions'] = demisto.get(ioc_data, 'Data.Resolutions')
+        domain['Subdomains'] = demisto.get(ioc_data, 'Data.Subdomains')
+        domain['WHOIS/History'] = demisto.get(ioc_data, 'Data.Whois.History')
+        domain['WHOIS'] = {
+            'Registrant': {
+                'Name': demisto.get(ioc_data, 'Data.Whois.Current.RegistrantDetails.Name'),
+                'Email': demisto.get(ioc_data, 'Data.Whois.Current.RegistrantDetails.Email'),
+                'Phone': demisto.get(ioc_data, 'Data.Whois.Current.RegistrantDetails.Telephone'),
+            },
+            'DomainStatus': ', '.join(demisto.get(ioc_data, 'Data.Whois.Current.RegistrationDetails.Statuses')),
+            'NameServers': ', '.join(demisto.get(ioc_data, 'Data.Whois.Current.RegistrationDetails.NameServers')),
+            'CreationDate': demisto.get(ioc_data, 'Data.Whois.Current.RegistrationDetails.CreatedDate'),
+            'UpdatedDate': demisto.get(ioc_data, 'Data.Whois.Current.RegistrationDetails.UpdatedDate'),
+            'ExpirationDate': demisto.get(ioc_data, 'Data.Whois.Current.RegistrationDetails.ExpiresDate')
+        }
+
+    ip_info = {}
+    if ioc_context['Type'] == 'IpAddresses':
+        ip_info['Address'] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            ip_info['Malicious'] = malicious_dict
+
+        ip_info['IpDetails'] = demisto.get(ioc_data, 'Data.IpDetails')
+        ip_info['RelatedHashes'] = demisto.get(ioc_data, 'Data.RelatedHashes')
+        ip_info['WHOIS'] = {
+            'NetworkDetails': demisto.get(ioc_data, 'Data.Whois.NetworkDetails'),
+            'RegistrantDetails': demisto.get(ioc_data, 'Data.Whois.RegistrantDetails')
+        }
+
+    url_info = {}
+    if ioc_context['Type'] == 'Urls':
+        url_info['Data'] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            url_info['Malicious'] = malicious_dict
+
+        url_info['AntivirusDetectedEngines'] = demisto.get(ioc_data, 'Data.AntivirusDetectedEngines')
+        url_info['AntivirusDetectionRatio'] = demisto.get(ioc_data, 'Data.AntivirusDetectionRatio')
+        url_info['AntivirusDetections'] = demisto.get(ioc_data, 'Data.AntivirusDetections')
+        url_info['AntivirusScanDate'] = demisto.get(ioc_data, 'Data.AntivirusScanDate')
+        url_info['RelatedHashes'] = {
+            'communicating': demisto.get(ioc_data, 'Data.RelatedHashes.communicating'),
+            'downloaded': demisto.get(ioc_data, 'Data.RelatedHashes.downloaded'),
+            'referencing': demisto.get(ioc_data, 'Data.RelatedHashes.referencing'),
+        }
+
+    hash_info = {}
+    if ioc_context['Type'] == 'Hashes':
+        hash_info['Name'] = ioc_context['Value']
+        hash_info[hash_identifier(ioc_context['Value'])] = ioc_context['Value']
+        if translate_severity(ioc_readable['Severity']) == 3:
+            hash_info['Malicious'] = malicious_dict
+
+        hash_info['AntivirusDetectedEngines'] = demisto.get(ioc_data, 'Data.AntivirusDetectedEngines')
+        hash_info['AntivirusDetectionRatio'] = demisto.get(ioc_data, 'Data.AntivirusDetectionRatio')
+        hash_info['AntivirusDetections'] = demisto.get(ioc_data, 'Data.AntivirusDetections')
+        hash_info['AntivirusScanDate'] = demisto.get(ioc_data, 'Data.AntivirusScanDate')
+
+    return ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info
+
+
+def request_for_ioc_enrichment():
+    """
+    Request for IOC enrichment
+    """
+    ioc_value = demisto.getArg('value')
+    request_url = 'public/v1/iocs/enrich/{}'.format(ioc_value)
+    ENRICHMENT_REQUEST_TIMEOUT_IN_SECONDS = 60 * 5
+    start_time = time.time()
+    while True:
+        if time.time() - start_time > ENRICHMENT_REQUEST_TIMEOUT_IN_SECONDS:
+            results_for_no_content('IOC Enrichment', 'Could not get any results. Reason: Request timeout.')
+            break
+        response = http_request('GET', request_url, json_response=True)
+        status = response.get('Status')
+        if status == 'Done':
+            ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(response)
+
+            demisto.results(
+                {
+                    'Type': entryTypes['note'],
+                    'EntryContext': {
+                        'IntSights.Iocs(val.ID === obj.ID)': ioc_context,
+                        'DBotScore': dbot_score,
+                        'Domain': domain,
+                        'IP': ip_info,
+                        'URL': url_info,
+                        'File': hash_info
+                    },
+                    'Contents': response,
+                    'HumanReadable': tableToMarkdown('IOC Enrichment', ioc_readable),
+                    'ContentsFormat': formats['json']
+                }
+            )
+            break
+        elif status == 'Queued' or status == 'InProgress':
+            time.sleep(2)
+            continue
+        elif status == 'QuotaExceeded':
+            results_for_no_content('IOC Enrichment', 'Could not get any results. Reason: Quota exceded.')
+            break
+        else:
+            reason = response.get('FailedReason', '')
+            results_for_no_content('IOC Enrichment', 'Could not get any results. Reason: {}.'.format(reason))
+            break
 
 
 def translate_severity(sev):
@@ -742,8 +902,8 @@ def fetch_incidents():
     alert_type = demisto.getParam('type')
     min_severity_level = demisto.params().get('severity_level', 'All')
     if min_severity_level not in SEVERITY_LEVEL:
-        raise Exception("Minimum Alert severity level to fetch incidents incidents from, allowed values are: All,"
-                        " Low, Medium, High. (Setting to All will fetch all incidents)")
+        raise Exception("Minimum Alert severity level to fetch incidents incidents from, allowed values are: ''All'',"
+                        " ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)")
 
     _, alerts_context = get_alerts_helper(handle_filters(fetch_delta))
     incidents = []
@@ -883,6 +1043,7 @@ def get_ioc_blocklist_status():
 
 def get_mssp_sub_accounts():
     account_id = demisto.getParam('credentials')['identifier']
+    MSSP_ACCOUNT_ID = demisto.getParam('mssp_sub_account_id')
     accounts = http_request('GET', 'public/v1/mssp/customers', json_response=True)
     if not accounts:
         return_error("intsights-mssp-get-sub-accounts failed to return data.")
@@ -929,7 +1090,7 @@ def test_module():
         min_severity_level = demisto.params().get('severity_level', 'All')
         if min_severity_level not in SEVERITY_LEVEL:
             return_error("Minimum Alert severity level to fetch incidents incidents from, allowed values are: "
-                         "All, Low, Medium, High. (Setting to All will fetch all incidents)")
+                         "''All'', ''Low'', ''Medium'',''High''(Setting to All will fetch all incidents)")
 
     demisto.results('ok')
 
@@ -967,6 +1128,8 @@ try:
         get_alert_by_id()
     elif demisto.command() == 'intsights-get-ioc-by-value':
         search_for_ioc()
+    elif demisto.command() == 'intsights-request-ioc-enrichment':
+        request_for_ioc_enrichment()
     elif demisto.command() == 'intsights-get-iocs':
         get_iocs()
     elif demisto.command() == 'intsights-alert-takedown-request':
@@ -979,6 +1142,8 @@ try:
         update_ioc_blocklist_status()
     elif demisto.command() == 'intsights-close-alert':
         close_alert()
+    elif demisto.command() == 'intsights-test-action':
+        pass
     else:
         raise Exception('Unrecognized command: ' + demisto.command())
 except Exception as err:
