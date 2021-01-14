@@ -1,0 +1,493 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 8e4fde93-5819-443a-80a7-1f19d0b61d5c
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  This playbook pulls content update file from SCP server ,checks the reputation of the content update file by using external reputation providers and uploads it to SMB share.
+  This playbook should run in “Air Gap external network”, accessible to internet and works together with “Air Gap - Panorama Content Update Receiver - Internal” playbook that runs in the "Air Gap internal network".
+
+  This playbook should be run as part of a Job in the external network.
+
+  Playbook inputs:
+
+  scpcontent - SCP folder Panorama pushes the Content files to. Example: /home/content.
+  smbfilepath - SMB Share and Path to upload the content file to. Example: Share/Content.
+  panoramaadmin - email address of the Panorama admin.
+id: Air Gap - Panorama Content Update Sender - External
+inputs:
+- description: SCP folder Panorama pushes the Content files to.
+  key: scpcontent
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: 'SMB Share and Path to upload the content file to. Example: Share/Content'
+  key: smbfilepath
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Email of the Panorama admin.
+  key: panoramaadmin
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Air Gap - Panorama Content Update Sender - External
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 40fbf79b-4703-42ec-8c7e-066926c624fc
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 40fbf79b-4703-42ec-8c7e-066926c624fc
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cmd:
+        simple: ls ${inputs.scpcontent}
+      extend-context:
+        simple: Results=
+      system: {}
+      timeout: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.server.remoteacess.ssh.description
+      id: 9e89ccd7-5dcf-4a5d-8f14-a536b53cfe62
+      iscommand: true
+      name: List files in SCP content folder
+      script: '|||ssh'
+      type: regular
+      version: -1
+    taskid: 9e89ccd7-5dcf-4a5d-8f14-a536b53cfe62
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 195
+        }
+      }
+  "2":
+    fieldMapping:
+    - incidentfield: File Name
+      output:
+        complex:
+          accessor: Name
+          root: File
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: /
+            operator: split
+          - operator: LastArrayElement
+          - args:
+              delimiter:
+                value:
+                  simple: ' '
+            operator: splitAndTrim
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file:
+        simple: ${inputs.scpcontent}/${Results.output}
+      system: {}
+      timeout: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.server.remoteacess.copyfrom.description
+      id: c385e7f0-bf1c-4472-878e-fb01a856a6e8
+      iscommand: true
+      name: Get content update file to war room
+      script: '|||copy-from'
+      type: regular
+      version: -1
+    taskid: c385e7f0-bf1c-4472-878e-fb01a856a6e8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file:
+        complex:
+          accessor: SHA1
+          root: File
+          transformers:
+          - operator: FirstArrayElement
+      long: {}
+      retries: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the file reputation of the specified hash.
+      id: 82d5b79a-193d-441c-8c96-1c4a551fb399
+      iscommand: true
+      name: Check file reputation
+      script: '|||file'
+      type: regular
+      version: -1
+    taskid: 82d5b79a-193d-441c-8c96-1c4a551fb399
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Results.output}
+          operator: containsGeneral
+          right:
+            value:
+              simple: content
+        - left:
+            iscontext: true
+            value:
+              simple: ${Results.output}
+          operator: containsGeneral
+          right:
+            value:
+              simple: wildfire
+        - left:
+            iscontext: true
+            value:
+              simple: ${Results.output}
+          operator: containsGeneral
+          right:
+            value:
+              simple: antivirus
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c2570ff6-2e1a-4732-8264-18864b30a120
+      iscommand: false
+      name: Is there content update file?
+      type: condition
+      version: -1
+    taskid: c2570ff6-2e1a-4732-8264-18864b30a120
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 633f7372-73a1-4344-86e4-3750f70b0a4d
+      iscommand: false
+      name: End Playbook
+      type: title
+      version: -1
+      description: ''
+    taskid: 633f7372-73a1-4344-86e4-3750f70b0a4d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "2"
+      label: "yes"
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 181933a6-006d-49bb-8612-316019ca2dbb
+      iscommand: false
+      name: Is Malicious?
+      type: condition
+      version: -1
+    taskid: 181933a6-006d-49bb-8612-316019ca2dbb
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: 'The following file: ${incident.filename} was found Malicious by:
+          ${File.DetectionEngines} engines.'
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'A content update file ${incident.filename} was found Malicious '
+      templateParams: {}
+      to:
+        simple: ${inputs.panoramaadmin}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send an email
+      id: 03d1585c-7872-4710-8d7b-3b8700ce3871
+      iscommand: true
+      name: Send email update to Panorama administrator
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 03d1585c-7872-4710-8d7b-3b8700ce3871
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      content: {}
+      domain: {}
+      entryID:
+        simple: ${File.EntryID}
+      file_path:
+        simple: ${inputs.smbfilepath}/${incident.filename}
+      hostname: {}
+      nbname: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Uploads a file to the SMB server to be collected by the uni-directional
+        diode and moved to the internal "Offline" network.
+      id: 37a2d950-b256-4dad-870c-56862964dc78
+      iscommand: true
+      name: Upload content file to SMB Share
+      script: '|||smb-upload'
+      type: regular
+      version: -1
+    taskid: 37a2d950-b256-4dad-870c-56862964dc78
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cmd:
+        simple: rm ${inputs.scpcontent}/${incident.filename}
+      system: {}
+      timeout: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.server.remoteacess.ssh.description
+      id: 7d21e653-c01c-4ccb-8980-fdda052161ca
+      iscommand: true
+      name: Delete content file from the SCP server
+      script: '|||ssh'
+      type: regular
+      version: -1
+    taskid: 7d21e653-c01c-4ccb-8980-fdda052161ca
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Closed.
+      closeReason:
+        simple: Resolved
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: e23d32eb-28db-43de-8844-c8ae8d07e296
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: e23d32eb-28db-43de-8844-c8ae8d07e296
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

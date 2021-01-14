@@ -1,0 +1,449 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 8e4fde93-5819-443a-80a7-1f19d0b61d5c
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  This playbooks runs a query for indicators (reputation:None ad default)
+   ,places the indicators in "content" field and then uses the "content" filed
+   to build a Syslog message. nExample: "timestamp: 2020-09-28 19:53:36 +0300 IDTn
+  content: Air Hopper: 60c22925a3417696011567e9205885ef18943aec3bfbb297c3a519387e7e7186,194.90.1.5n
+  client: 192.168.106.174:43169ntls_peer: nhostname: 192.168.106.174ntag: npriority:
+   46nfacility: 5nseverity: 6"nnThis message then transmitted via UDP syslog
+   to the "XSOAR" server in the "Air Gap external network" to be queried by external
+   reputation services.nThis playbook can be used as a sub-playbook or as part of
+   a scheduled job.nnJSON feed considerations:nnThe answer is then returned by
+   the external "XSOAR server" as a JSON Feed file. nJSON file should be served
+   by web service for the "internal "XSOAR server" to consume.nFor  each reputation
+   type (Unknown, Bad , Good, Suspicious) ,there must be a separate JSON feed instance
+   with the Indicator Reputation specified (Unknown, Bad , Good, Suspicious) and
+   with the following JMESPath configuration as example: n nFor "Bad"Reputation
+   feed - Reputation[?Score==`3`]nFor "Good" Reputation feed - Reputation[?Score==`1`]n
+  For "Unknown" Reputation feed - Reputation[?Score==`0`]nFor "Suspicious" Reputation
+   feed - Reputation[?Score==`2`]nnPlaybook inputs:nnFrom Indicators Query :
+   reputation:None (please try to minimise the query as possible as syslog is non
+   reliable protocol).nnFrom Context data: syslogserver - External XSOAR ip address
+   for syslog messages.
+id: Air Gap - Reputation Query - Internal indicators Sender
+inputs:
+- description: Query for indicators to be send for reputation check. Default reputation:None.
+  key: ""
+  playbookInputQuery:
+    daterange:
+      fromdate: "0001-01-01T00:00:00Z"
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
+      period:
+        by: ""
+        byfrom: ""
+        byto: ""
+        field: ""
+        fromvalue:
+        tovalue:
+      todate: "0001-01-01T00:00:00Z"
+    query: reputation:None
+    queryEntity: indicators
+    results:
+    runFromLastJobTime: true
+  required: false
+  value: {}
+- description: External XSOAR ip address for syslog messages.
+  key: syslogserver
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Air Gap - Reputation Query - Internal indicators Sender
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9ae14c73-b578-4999-8c89-3f96e2b580b4
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 9ae14c73-b578-4999-8c89-3f96e2b580b4
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: value
+                root: playbookQuery
+          operator: isNotEmpty
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: de680258-7148-4610-896a-3922ec10cd4d
+      iscommand: false
+      name: Are there Indicators with no reputation?
+      type: condition
+      version: -1
+    taskid: de680258-7148-4610-896a-3922ec10cd4d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 110
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address:
+        simple: ${inputs.syslogserver}
+      facility: {}
+      level: {}
+      message:
+        simple: 'Air Hopper: ${incident.content}'
+      port:
+        simple: "514"
+      protocol:
+        simple: UDP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a message to Syslog.
+      id: 43b58bca-2f80-40f4-8c1f-5e1c525737ae
+      iscommand: true
+      name: Hop Content over UDP 514
+      script: '|||syslog-send'
+      type: regular
+      version: -1
+    taskid: 43b58bca-2f80-40f4-8c1f-5e1c525737ae
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7ccf486e-c979-4451-81c9-503d11d59c40
+      iscommand: false
+      name: End Playbook
+      type: title
+      version: -1
+      description: ''
+    taskid: 7ccf486e-c979-4451-81c9-503d11d59c40
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accountid: {}
+      accountname: {}
+      addLabels: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      assetid: {}
+      assignmentgroup: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      blockedaction: {}
+      bugtraq: {}
+      caller: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      commandline: {}
+      content:
+        complex:
+          accessor: value
+          root: playbookQuery
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ','
+            operator: join
+      country: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      devicehash: {}
+      devicename: {}
+      duration: {}
+      emailauthenticitycheck: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      escalation: {}
+      eventid: {}
+      eventtype: {}
+      externaladdresses: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      firstname: {}
+      firstseen: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      id: {}
+      infectedhosts: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      logsource: {}
+      macaddress: {}
+      maliciousbehavior: {}
+      malwarefamily: {}
+      mobiledevicemodel: {}
+      name: {}
+      occurred: {}
+      os: {}
+      osversion: {}
+      owner: {}
+      parentprocessid: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      rating: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      samaccountname: {}
+      severity: {}
+      signature: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      subcategory: {}
+      subtype: {}
+      systems: {}
+      targetfirewallversion: {}
+      tenantname: {}
+      terminatedaction: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: fd06b9a5-c301-4d08-899b-b50327037fa5
+      iscommand: true
+      name: Populate Content Filed with Indicators
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: fd06b9a5-c301-4d08-899b-b50327037fa5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1035,
+        "width": 380,
+        "x": 450,
+        "y": -110
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

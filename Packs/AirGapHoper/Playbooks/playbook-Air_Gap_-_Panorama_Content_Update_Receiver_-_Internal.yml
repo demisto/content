@@ -1,0 +1,1218 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 8e4fde93-5819-443a-80a7-1f19d0b61d5c
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: |-
+  This playbook pulls Panorama content update file from shared SMB folder, uploads it to the Panorama server and installs it. It also uploads the content file to SCP folder for future use of the Panorama Device Deployment content updates engine which can be scheduled to pull the files automatically from SCP server.
+  This playbook should run in "Air Gap internal network" and works together with "Air Gap - Panorama Content Update Sender - External" playbook that runs in "Air Gap external network".
+
+  This playbook should be run as part of a Job in the internal network.
+
+  Playbook inputs:
+  panorama_admin_email - email address of the panorama admin for sending the output of the update.
+  smbshare - the SMB share of the content update folder. Example: Folder
+  scpwildfire - scp folder for wildfire content update file. Example: /home/demisto/Folder/wildfire
+  scpcontents - scp folder for contents  (antivirus and apps) content update file. Example: /home/demisto/Folder/contents
+  scpantivirus - scp folder for Anti-Virus content update file. Example: /home/demisto/Folder/antivirus
+  smbpath - SMB path to the content files files. Example: Content
+id: Air Gap - Panorama Content Update Receiver - Internal
+inputs:
+- description: Panorama Admin Email Address.
+  key: panorama_admin_email
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: SMB Shared folder name.
+  key: smbshare
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: SCP folder for wildfire content update file.
+  key: scpwildfire
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: SCP folder for contents content update file.
+  key: scpcontents
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: SCP folder for Anti-Virus content update file.
+  key: scpantivirus
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: SMB path to the content files files.
+  key: smbpath
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Air Gap - Panorama Content Update Receiver - Internal
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9da180dd-4ed1-4153-8996-8c116b5e922e
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 9da180dd-4ed1-4153-8996-8c116b5e922e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": -220
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file_path:
+        simple: ${inputs.smbpath}
+      file_share:
+        simple: ${inputs.smbshare}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Lists the files in specified path on the SMB server.
+      id: c9bf3782-6730-4938-8432-644c1c0c9d80
+      iscommand: true
+      name: List files in the content shared folder
+      script: '|||smb-list-files'
+      type: regular
+      version: -1
+    taskid: c9bf3782-6730-4938-8432-644c1c0c9d80
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": -25
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: SMB.File.Name
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: SMB.File.Size
+          operator: greaterThan
+          right:
+            value:
+              simple: "0"
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6c9c7719-daac-4798-8dfe-7b8532201af4
+      iscommand: false
+      name: Is there content update?
+      type: condition
+      version: -1
+    taskid: 6c9c7719-daac-4798-8dfe-7b8532201af4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 160
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: brand
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: 325a46ba-cab1-4d59-85c1-0bd9fd945b7a
+      iscommand: false
+      name: Check if Panorama connected
+      type: condition
+      version: -1
+    taskid: 325a46ba-cab1-4d59-85c1-0bd9fd945b7a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 400
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4bcb89ad-7b18-4821-8f7d-0c0d4b1ae454
+      iscommand: false
+      name: Playbook End
+      type: title
+      version: -1
+      description: ''
+    taskid: 4bcb89ad-7b18-4821-8f7d-0c0d4b1ae454
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: SMB.File.Name
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: contents
+                root: SMB.File.Name
+          operator: isExists
+      label: Content
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: SMB.File.Name
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: wildfire
+                root: SMB.File.Name
+          operator: isExists
+      label: Wildfire
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: SMB.File.Name
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: antivirus
+                root: SMB.File.Name
+          operator: isExists
+      label: Anti-Virus
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: SMB.File.Name
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: apps
+                root: SMB.File.Name
+          operator: isExists
+      label: Apps
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "22"
+      Anti-Virus:
+      - "21"
+      Apps:
+      - "33"
+      Content:
+      - "25"
+      Wildfire:
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Uploads content file to Panorama
+      id: b9209b59-295d-4d4c-83b1-ae3535d116f9
+      iscommand: false
+      name: What content type do we have?
+      type: condition
+      version: -1
+    taskid: b9209b59-295d-4d4c-83b1-ae3535d116f9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 610
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      category:
+        simple: content
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Uploads content file to Panorama
+      id: 76fb399d-4708-4129-8bf6-aded57e1155a
+      iscommand: true
+      name: Upload Apps content update to Panorama
+      script: '|||panorama-upload-content-update-file'
+      type: regular
+      version: -1
+    taskid: 76fb399d-4708-4129-8bf6-aded57e1155a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 1245
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      category:
+        simple: wildfire
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Uploads content file to Panorama
+      id: 69174a35-4d80-4624-85a5-dba9dbcb9f24
+      iscommand: true
+      name: Upload Wildfire content update to Panorama
+      script: '|||panorama-upload-content-update-file'
+      type: regular
+      version: -1
+    taskid: 69174a35-4d80-4624-85a5-dba9dbcb9f24
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2322.5,
+          "y": 1245
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      category:
+        simple: anti-virus
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Uploads content file to Panorama
+      id: 16dd89fa-d445-47dc-8357-0e0c067fd77b
+      iscommand: true
+      name: Upload Anti-Virus content update to Panorama
+      script: '|||panorama-upload-content-update-file'
+      type: regular
+      version: -1
+    taskid: 16dd89fa-d445-47dc-8357-0e0c067fd77b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1245
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain: {}
+      download_and_attach:
+        simple: "yes"
+      file_path:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SMB.File.Path
+              operator: containsGeneral
+              right:
+                value:
+                  simple: wildfire
+          root: SMB.File.Path
+      hostname: {}
+      nbname: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads a file from the SMB server.
+      id: 0b236bf9-77fa-4541-87ab-e9f52558ac68
+      iscommand: true
+      name: Get Wildfire update file to war room
+      script: '|||smb-download'
+      type: regular
+      version: -1
+    taskid: 0b236bf9-77fa-4541-87ab-e9f52558ac68
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2322.5,
+          "y": 895
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file_path:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SMB.File.Path
+              operator: containsGeneral
+              right:
+                value:
+                  simple: antivirus
+          root: SMB.File.Path
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Deleted file from SMB share.
+      id: 41376de6-667f-4125-853e-48596005e2c1
+      iscommand: true
+      name: Delete Content update file from source system
+      script: '|||smb-delete-files'
+      type: regular
+      version: -1
+    taskid: 41376de6-667f-4125-853e-48596005e2c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 1070
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      category:
+        simple: wildfire
+      version_name:
+        simple: ${File.Name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Installs specific content update file.
+      id: dc7694b9-5833-4994-866b-2e19f2de77bf
+      iscommand: true
+      name: Install Wildfire content update
+      script: '|||panorama-install-file-content-update'
+      type: regular
+      version: -1
+    taskid: dc7694b9-5833-4994-866b-2e19f2de77bf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2322.5,
+          "y": 1420
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      category:
+        simple: content
+      version_name:
+        simple: ${File.Name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Installs specific content update file.
+      id: 92cc9d00-7a6f-43d7-89d5-3d50ea571082
+      iscommand: true
+      name: Install Apps content update
+      script: '|||panorama-install-file-content-update'
+      type: regular
+      version: -1
+    taskid: 92cc9d00-7a6f-43d7-89d5-3d50ea571082
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 1420
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      job_id:
+        simple: ${Panorama.Content.Install.JobID}
+      target: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets the installation status of the PAN-OS software.
+      id: 1e8a1df8-e950-47a9-8bb0-9d0bab1efd5a
+      iscommand: true
+      name: Get installation status
+      script: '|||panorama-install-panos-status'
+      type: regular
+      version: -1
+    taskid: 1e8a1df8-e950-47a9-8bb0-9d0bab1efd5a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 1945
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        complex:
+          accessor: line
+          root: Panorama.PANOS.Install.Details.details
+          transformers:
+          - operator: FirstArrayElement
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'Status of the latest Panorama content update ${File.Name} installation:
+          ${Panorama.PANOS.Install.Status}'
+      templateParams: {}
+      to:
+        simple: ${inputs.panorama_admin_email}
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Send an email
+      id: c09593c5-5649-4a03-8dd1-f0ee7c615da6
+      iscommand: true
+      name: Send mail with content update status to Panorama admin
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: c09593c5-5649-4a03-8dd1-f0ee7c615da6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 2120
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain: {}
+      download_and_attach:
+        simple: "yes"
+      file_path:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SMB.File.Path
+              operator: containsGeneral
+              right:
+                value:
+                  simple: antivirus
+          root: SMB.File.Path
+      hostname: {}
+      nbname: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads a file from the SMB server.
+      id: b27f2cbc-60d4-4540-8b42-6d7a14d5eb4a
+      iscommand: true
+      name: Get Anti-Virus content update file to war room
+      script: '|||smb-download'
+      type: regular
+      version: -1
+    taskid: b27f2cbc-60d4-4540-8b42-6d7a14d5eb4a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 895
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: 'Content update process completed with the following Staus: ${Panorama.PANOS.Install.Status}'
+      closeReason:
+        simple: Resolved
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 228d8503-55ec-42a6-8dad-5906fc7e9ed3
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 228d8503-55ec-42a6-8dad-5906fc7e9ed3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file_path:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SMB.File.Path
+              operator: containsGeneral
+              right:
+                value:
+                  simple: wildfire
+          root: SMB.File.Path
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Deleted file from SMB share.
+      id: 482e1997-c81b-4cc5-86d2-b5f0d9402c5a
+      iscommand: true
+      name: Delete Content update file from source system
+      script: '|||smb-delete-files'
+      type: regular
+      version: -1
+    taskid: 482e1997-c81b-4cc5-86d2-b5f0d9402c5a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2322.5,
+          "y": 1070
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file_path:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SMB.File.Path
+              operator: containsGeneral
+              right:
+                value:
+                  simple: contents
+          root: SMB.File.Path
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Deleted file from SMB share.
+      id: 9e9f1411-78ad-424e-8a04-281257e02fec
+      iscommand: true
+      name: Delete Content update file from source system
+      script: '|||smb-delete-files'
+      type: regular
+      version: -1
+    taskid: 9e9f1411-78ad-424e-8a04-281257e02fec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1060
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain: {}
+      download_and_attach:
+        simple: "yes"
+      file_path:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SMB.File.Path
+              operator: containsGeneral
+              right:
+                value:
+                  simple: contents
+          root: SMB.File.Path
+      hostname: {}
+      nbname: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads a file from the SMB server.
+      id: 79da15f6-140b-4468-8e3f-c48f212d47d1
+      iscommand: true
+      name: Get Contents (applications and Threats) update file to war room
+      script: '|||smb-download'
+      type: regular
+      version: -1
+    taskid: 79da15f6-140b-4468-8e3f-c48f212d47d1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 895
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          accessor: JobID
+          root: Panorama.Content.Install
+      Interval:
+        simple: "3"
+      PollingCommandArgName:
+        simple: job_id
+      PollingCommandName:
+        simple: panorama-install-panos-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Panorama.PANOS.Install(val.Status !== 'Completed' && val.Status !==
+          'Failed').JobID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 6636f83a-5d75-4063-81c1-e10ec5df594e
+      iscommand: false
+      name: 'GenericPolling'
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 6636f83a-5d75-4063-81c1-e10ec5df594e
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1247.5,
+          "y": 1770
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      category:
+        simple: anti-virus
+      version_name:
+        simple: ${File.Name}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Installs specific content update file.
+      id: d88ea7e2-46ff-43ee-8659-25c425559646
+      iscommand: true
+      name: Install Anti-Virus content update for installation
+      script: '|||panorama-install-file-content-update'
+      type: regular
+      version: -1
+    taskid: d88ea7e2-46ff-43ee-8659-25c425559646
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1420
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dest-dir:
+        simple: ${inputs.scpantivirus}
+      entry: {}
+      fileID:
+        simple: ${File.EntryID}
+      system: {}
+      timeout: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.server.remoteacess.copyto.description
+      id: f02cbd33-8d51-42df-89e2-3cec7088952a
+      iscommand: true
+      name: Upload Anti-Virus content Update to SCP server
+      script: '|||copy-to'
+      type: regular
+      version: -1
+    taskid: f02cbd33-8d51-42df-89e2-3cec7088952a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1245
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dest-dir:
+        simple: ${inputs.scpwildfire}
+      entry: {}
+      fileID:
+        simple: ${File.EntryID}
+      system: {}
+      timeout: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.server.remoteacess.copyto.description
+      id: 87e9279b-bae3-4453-8aa7-70cab9735376
+      iscommand: true
+      name: Upload Wildfire content Update to SCP server
+      script: '|||copy-to'
+      type: regular
+      version: -1
+    taskid: 87e9279b-bae3-4453-8aa7-70cab9735376
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2950,
+          "y": 1245
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dest-dir:
+        simple: ${inputs.scpcontents}
+      entry: {}
+      fileID:
+        simple: ${File.EntryID}
+      system: {}
+      timeout: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: commands.server.remoteacess.copyto.description
+      id: 4b4a7a1f-61ba-4fb6-8125-8ec5b7ff5aa1
+      iscommand: true
+      name: Upload Contents (Applications and Threats) content Update to SCP server
+      script: '|||copy-to'
+      type: regular
+      version: -1
+    taskid: 4b4a7a1f-61ba-4fb6-8125-8ec5b7ff5aa1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1245
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain: {}
+      download_and_attach:
+        simple: "yes"
+      file_path:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SMB.File.Path
+              operator: containsGeneral
+              right:
+                value:
+                  simple: apps
+          root: SMB.File.Path
+      hostname: {}
+      nbname: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads a file from the SMB server.
+      id: a84e1e25-9a67-461c-82f6-825b1a09302b
+      iscommand: true
+      name: Get Contents Apps update file to war room
+      script: '|||smb-download'
+      type: regular
+      version: -1
+    taskid: a84e1e25-9a67-461c-82f6-825b1a09302b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 885
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file_path:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: SMB.File.Path
+              operator: containsGeneral
+              right:
+                value:
+                  simple: apps
+          root: SMB.File.Path
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Deleted file from SMB share.
+      id: 3ea05cd9-de2a-4049-8611-e86e0354525e
+      iscommand: true
+      name: Delete Content update file from source system
+      script: '|||smb-delete-files'
+      type: regular
+      version: -1
+    taskid: 3ea05cd9-de2a-4049-8611-e86e0354525e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1720,
+          "y": 1060
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2755,
+        "width": 3280,
+        "x": 50,
+        "y": -220
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
