@@ -362,12 +362,9 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
         if last_occurrence_time <= last_fetch_epoch_time:
             continue
 
-        print(alert)
-
         current_run_max_epoch_time = max(current_run_max_epoch_time, last_occurrence_time)
         incident = {
             'name': 'Nutanix Hypervisor Alert',
-            # Because time is given in microseconds and not milliseconds.
             'occurred': convert_epoch_time_to_datetime(last_occurrence_time),
             'rawJSON': json.dumps(alert),
             'severity': convert_to_demisto_severity(alert.get('severity', ''))
