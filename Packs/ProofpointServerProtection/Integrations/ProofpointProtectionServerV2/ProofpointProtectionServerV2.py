@@ -92,6 +92,7 @@ class Client(BaseClient):
                                   headerfrom: Optional[str] = None,
                                   to: Optional[str] = None,
                                   comment: Optional[str] = None,
+                                  resp_type: str = 'json',
                                   ) -> Dict[str, str]:
         return self._http_request(
             method='POST',
@@ -111,7 +112,8 @@ class Client(BaseClient):
                 'headerfrom': headerfrom,
                 'to': to,
                 'comment': comment,
-            }
+            },
+            resp_type=resp_type,
         )
 
     @logger
@@ -185,9 +187,10 @@ def list_quarantined_messages(client: Client, args: Dict[str, Any]) -> CommandRe
     if isinstance(result, dict) and result.get('records'):
         records = result.get('records')
         command_results_args = {
-            'readable_output': tableToMarkdown(  # TODO: add headers
+            'readable_output': tableToMarkdown(
                 'Proofpoint Protection Server Quarantined Messages',
-                records
+                records,
+                ['localguid', 'folder', 'spamscore', 'from', 'rcpts', 'date', 'subject', 'size', 'host_ip'],
             ),
             'outputs_prefix': 'Proofpoint.QuarantinedMessage',
             'outputs_key_field': 'guid',
@@ -200,7 +203,7 @@ def list_quarantined_messages(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def release_message(client: Client, args: Dict[str, Any]) -> CommandResults:
-    result = client.quarantine_action_request(
+    result = str(client.quarantine_action_request(
         action='release',
         folder=args.get('folder_name'),
         localguid=args.get('local_guid'),
@@ -208,25 +211,23 @@ def release_message(client: Client, args: Dict[str, Any]) -> CommandResults:
         scan='t' if args.get('scan') == 'true' else 'f',
         brandtemplate=args.get('brand_template'),
         securitypolicy=args.get('security_policy'),
-    )
-    if isinstance(result, dict) and result.get('status'):
-        return CommandResults(readable_output='The message was released successfully.')
-    raise RuntimeError(f'Message release action failed.\n{result}')
+        resp_type='text',
+    ))
+    return CommandResults(readable_output=result)
 
 
 def resubmit_message(client: Client, args: Dict[str, Any]) -> CommandResults:
-    result = client.quarantine_action_request(
+    result = str(client.quarantine_action_request(
         action='resubmit',
         folder=args.get('folder_name'),
         localguid=args.get('local_guid'),
-    )
-    if isinstance(result, dict) and result.get('status'):
-        return CommandResults(readable_output='The message was resubmitted successfully.')
-    raise RuntimeError(f'Message resubmit action failed.\n{result}')
+        resp_type='text',
+    ))
+    return CommandResults(readable_output=result)
 
 
 def forward_message(client: Client, args: Dict[str, Any]) -> CommandResults:
-    result = client.quarantine_action_request(
+    result = str(client.quarantine_action_request(
         action='forward',
         folder=args.get('folder_name'),
         localguid=args.get('local_guid'),
@@ -237,33 +238,34 @@ def forward_message(client: Client, args: Dict[str, Any]) -> CommandResults:
         headerfrom=args.get('header_from'),
         to=args.get('to'),
         comment=args.get('comment'),
-    )
-    if isinstance(result, dict) and result.get('status'):
-        return CommandResults(readable_output='The message was forwarded successfully.')
-    raise RuntimeError(f'Message forward action failed.\n{result}')
+        resp_type='text',
+    ))
+    return CommandResults(readable_output=result)
 
 
 def move_message(client: Client, args: Dict[str, Any]) -> CommandResults:
+    local_guid = args.get('local_guid')
     result = client.quarantine_action_request(
         action='move',
         folder=args.get('folder_name'),
-        localguid=args.get('local_guid'),
+        localguid=local_guid,
         targetfolder=args.get('target_folder'),
     )
-    if isinstance(result, dict) and result.get('status'):
-        return CommandResults(readable_output='The message was moved successfully.')
+    if isinstance(result, dict):
+        return CommandResults(readable_output=result.get('status', f'Successfully moved message {local_guid}'))
     raise RuntimeError(f'Message move action failed.\n{result}')
 
 
 def delete_message(client: Client, args: Dict[str, Any]) -> CommandResults:
+    local_guid = args.get('local_guid')
     result = client.quarantine_action_request(
         action='delete',
         folder=args.get('folder_name'),
-        localguid=args.get('local_guid'),
+        localguid=local_guid,
         deletedfolder=args.get('deleted_folder'),
     )
-    if isinstance(result, dict) and result.get('status'):
-        return CommandResults(readable_output='The message was deleted successfully.')
+    if isinstance(result, dict):
+        return CommandResults(readable_output=result.get('status', f'Successfully deleted message {local_guid}'))
     raise RuntimeError(f'Message delete action failed.\n{result}')
 
 
@@ -275,7 +277,6 @@ def download_message(client: Client, args: Dict[str, Any]) -> Union[CommandResul
     return fileResult(guid + '.eml', result.content)
 
 
-# TODO: version
 def main() -> None:
     try:
         command = demisto.command()

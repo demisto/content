@@ -1,6 +1,6 @@
 Proofpoint email security appliance.
 
-This integration was integrated and tested with version xx of Proofpoint Protection Server.
+This integration was integrated and tested with version 8.16.2 of Proofpoint Protection Server.
 ## Authentication
 An administrator must have a Role that includes access to a specific REST API. 
 
@@ -14,7 +14,7 @@ The required managed modules for this integration:
  - pss
  - Quarantine
  
- TODO: add screenshot
+  <img height="400" src="./../../doc_imgs/api_role.png" />
 
 The operations are accessed through port 10000.
 
@@ -302,7 +302,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->The message was released successfully.
+>Request sent. Message 4:2:6 will be released momentarily'
 
 ### proofpoint-pps-resubmit-message
 ***
@@ -329,7 +329,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->The message was resubmitted successfully.
+>Request sent. Message 4:2:6 will be resubmitted momentarily
 
 ### proofpoint-pps-forward-message
 ***
@@ -363,7 +363,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->The message was forwarded successfully.
+>Request sent. Message 4:2:6 will be forwarded momentarily
 
 ### proofpoint-pps-move-message
 ***
@@ -391,7 +391,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->The message was moved successfully.
+>Successfully moved message 4:2:6
 
 ### proofpoint-pps-delete-message
 ***
@@ -419,7 +419,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->The message was deleted successfully.
+>Successfully deleted message 4:2:6
 
 ### proofpoint-pps-download-message
 ***

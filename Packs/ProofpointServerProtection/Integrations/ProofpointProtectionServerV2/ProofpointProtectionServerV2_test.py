@@ -76,15 +76,16 @@ def test_release_message(requests_mock, client):
         - Verify expected action is sent
         - Ensure command readable outputs
     """
+    local_guid = '14:14:7'
     args = {
         'folder_name': 'PCI',
-        'local_guid': '14:14:7'
+        'local_guid': local_guid,
     }
-    api_response = load_test_data('./test_data/quarantine_action_response.json')
-    requests_mock.post(SERVER_URL + '/quarantine', status_code=204, json=api_response)
+    api_response = f'Request sent. Message {local_guid} will be released momentarily'
+    requests_mock.post(SERVER_URL + '/quarantine', status_code=202, content=api_response.encode('utf-8'))
     result = release_message(client=client, args=args)
     assert requests_mock.request_history[0].json()['action'] == 'release'
-    assert result.readable_output == 'The message was released successfully.'
+    assert result.readable_output == api_response
 
 
 def test_resubmit_message(requests_mock, client):
@@ -97,15 +98,16 @@ def test_resubmit_message(requests_mock, client):
         - Verify expected action is sent
         - Ensure command readable outputs
     """
+    local_guid = '14:14:7'
     args = {
         'folder_name': 'PCI',
-        'local_guid': '14:14:7'
+        'local_guid': local_guid,
     }
-    api_response = load_test_data('./test_data/quarantine_action_response.json')
-    requests_mock.post(SERVER_URL + '/quarantine', status_code=204, json=api_response)
+    api_response = f'Request sent. Message {local_guid} will be resubmitted momentarily'
+    requests_mock.post(SERVER_URL + '/quarantine', status_code=202, content=api_response.encode('utf-8'))
     result = resubmit_message(client=client, args=args)
     assert requests_mock.request_history[0].json()['action'] == 'resubmit'
-    assert result.readable_output == 'The message was resubmitted successfully.'
+    assert result.readable_output == api_response
 
 
 def test_forward_message(requests_mock, client):
@@ -118,15 +120,16 @@ def test_forward_message(requests_mock, client):
         - Verify expected action is sent
         - Ensure command readable outputs
     """
+    local_guid = '14:14:7'
     args = {
         'folder_name': 'PCI',
-        'local_guid': '14:14:7'
+        'local_guid': local_guid
     }
-    api_response = load_test_data('./test_data/quarantine_action_response.json')
-    requests_mock.post(SERVER_URL + '/quarantine', status_code=204, json=api_response)
+    api_response = f'Request sent. Message {local_guid} will be forwarded momentarily'
+    requests_mock.post(SERVER_URL + '/quarantine', status_code=202, content=api_response.encode('utf-8'))
     result = forward_message(client=client, args=args)
     assert requests_mock.request_history[0].json()['action'] == 'forward'
-    assert result.readable_output == 'The message was forwarded successfully.'
+    assert result.readable_output == api_response
 
 
 def test_move_message(requests_mock, client):
@@ -139,16 +142,18 @@ def test_move_message(requests_mock, client):
         - Verify expected action is sent
         - Ensure command readable outputs
     """
+    local_guid = '14:14:7'
     args = {
         'folder_name': 'PCI',
-        'local_guid': '14:14:7',
+        'local_guid': local_guid,
         'target_folder': 'HIPAA'
     }
-    api_response = load_test_data('./test_data/quarantine_action_response.json')
-    requests_mock.post(SERVER_URL + '/quarantine', status_code=204, json=api_response)
+    status = f'Successfully moved message {local_guid}'
+    api_response = {'status': status}
+    requests_mock.post(SERVER_URL + '/quarantine', status_code=200, json=api_response)
     result = move_message(client=client, args=args)
     assert requests_mock.request_history[0].json()['action'] == 'move'
-    assert result.readable_output == 'The message was moved successfully.'
+    assert result.readable_output == status
 
 
 def test_delete_message(requests_mock, client):
@@ -161,16 +166,18 @@ def test_delete_message(requests_mock, client):
         - Verify expected action is sent
         - Ensure command readable outputs
     """
+    local_guid = '14:14:7'
     args = {
         'folder_name': 'PCI',
-        'local_guid': '14:14:7',
+        'local_guid': local_guid,
         'deleted_folder': 'Deleted Incidents'
     }
-    api_response = load_test_data('./test_data/quarantine_action_response.json')
-    requests_mock.post(SERVER_URL + '/quarantine', status_code=204, json=api_response)
+    status = f'Successfully deleted message {local_guid}'
+    api_response = {'status': status}
+    requests_mock.post(SERVER_URL + '/quarantine', status_code=200, json=api_response)
     result = delete_message(client=client, args=args)
     assert requests_mock.request_history[0].json()['action'] == 'delete'
-    assert result.readable_output == 'The message was deleted successfully.'
+    assert result.readable_output == status
 
 
 def test_download_message_positive(mocker, request, requests_mock, client):

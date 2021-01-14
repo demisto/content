@@ -11,6 +11,4 @@ The required managed modules for this integration:
  - pss
  - Quarantine
  
- TODO: add screenshot
-
 The operations are accessed through port 10000.
