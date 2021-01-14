@@ -26,6 +26,12 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this  implementation, no special attributes defined
     """
+    def __init__(self, base_url, verify, ok_codes, headers):
+        super().__init__(base_url=base_url, verify=verify, ok_codes=ok_codes, headers=headers)
+
+    def fetch_incidents(self):
+        incidents 
+
 
 
 
