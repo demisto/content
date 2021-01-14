@@ -308,6 +308,18 @@ def convert_to_demisto_severity(severity: str) -> int:
     return NUTANIX_SEVERITIES_TO_DEMISTO_SEVERITIES.get(severity.lower(), DemistoSeverities.UNKNOWN).value
 
 
+def convert_epoch_time_to_datetime(epoch_time: int):
+    """
+    Receives epoch time, and returns epoch_time representation as date with UTC timezone.
+    Args:
+        epoch_time (int): The epoch_time to convert.
+
+    Returns:
+        - The date time with UTC timezone that matches the epoch time.
+    """
+    return datetime.utcfromtimestamp(epoch_time / 1000000.0).strftime('%Y-%m-%d %H:%M:%S.%f')
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -350,10 +362,13 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
         if last_occurrence_time <= last_fetch_epoch_time:
             continue
 
+        print(alert)
+
         current_run_max_epoch_time = max(current_run_max_epoch_time, last_occurrence_time)
         incident = {
             'name': 'Nutanix Hypervisor Alert',
-            'occurred': timestamp_to_datestring(0), # timestamp_to_datestring(alert.get('created_time_stamp_in_usecs'), is_utc=True),
+            # Because time is given in microseconds and not milliseconds.
+            'occurred': convert_epoch_time_to_datetime(last_occurrence_time),
             'rawJSON': json.dumps(alert),
             'severity': convert_to_demisto_severity(alert.get('severity', ''))
         }
@@ -795,8 +810,6 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy,
             auth=(username, password))
-        # last_run = demisto.getLastRun()
-        # incidents, next_run = fetch_incidents_command(client, params, last_run)
 
         if command == 'test-module':
             test_module_command(client)

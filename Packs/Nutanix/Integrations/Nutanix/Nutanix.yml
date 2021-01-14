@@ -509,6 +509,9 @@ script:
       in case no task had finished, returns a time out response.
     name: nutanix-hypervisor-task-poll
     outputs:
+    - contextPath: NutanixHypervisor.Task.timed_out
+      description: Indicates if time out occurred during the task poll request from Nutanix.
+      type: Boolean
     - contextPath: NutanixHypervisor.Task..uuid
       description: The task uuid.
       type: String

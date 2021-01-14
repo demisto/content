@@ -1,0 +1,31 @@
+{
+    "id": "Nutanix Hypervisor Alert",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Nutanix Hypervisor Alert",
+    "prevName": "Nutanix Hypervisor Alert",
+    "color": "#3F51B5",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 1,
+    "layout": "7db506fa-1e88-4294-85db-87f167bb163a",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {
+
+        }
+    },
+    "fromVersion": "5.0.0"
+}
