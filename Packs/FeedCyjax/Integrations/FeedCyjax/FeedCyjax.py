@@ -251,20 +251,27 @@ def map_reputation_to_score(reputation: str) -> int:
     return reputation_map.get(reputation.lower(), 0)
 
 
-def convert_cyjax_indicator(cyjax_indicator: dict, score=None) -> Dict[str, Any]:
+def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, tlp: Optional[str] = None) \
+        -> Dict[str, Any]:
     """Convert Cyjax indicator into XSOAR indicator
 
     :type cyjax_indicator: ``dict``
     :param cyjax_indicator: The Cyjax indicator dict
 
-    :type score: ``str``
+    :type score: ``Optional[int]``
     :param score: The score that should be applied to the XSOAR indicator
+
+    :type tlp: ``Optional[str]``
+    :param tlp: The score that should be applied to the XSOAR indicator
 
     :return: Indicator dict
     :rtype: ``Dict[str, Any]``
     """
     if score is None:
         score = map_reputation_to_score('Suspicious')
+
+    if tlp is None and 'handling_condition' in cyjax_indicator:
+        tlp = cyjax_indicator.get('handling_condition')
 
     indicator_date = dateparser.parse(cyjax_indicator.get('discovered_at'))
 
@@ -280,8 +287,8 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score=None) -> Dict[str, Any]
         'firstseenbysource': indicator_date.strftime(DATE_FORMAT)
     }
 
-    if 'handling_condition' in cyjax_indicator:
-        fields['trafficlightprotocol'] = cyjax_indicator.get('handling_condition')
+    if tlp is not None:
+        fields['trafficlightprotocol'] = tlp
 
     if 'description' in cyjax_indicator:
         fields['description'] = cyjax_indicator.get('description')
@@ -333,7 +340,8 @@ def test_module(client: Client) -> str:
         return 'Could not connect to Cyjax API ({})'.format(error_msg)
 
 
-def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputation: str) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputation: str, tlp: Optional[str] = None) -> \
+        Tuple[Dict[str, int], List[dict]]:
     """Fetch indicators from Cyjax API.
     This function retrieves new indicators every interval (default is 60 minutes).
 
@@ -345,6 +353,9 @@ def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputati
 
     :type reputation: ``str``
     :param reputation: The feed reputation as string
+
+    :type tlp: ``Optional[str]``
+    :param tlp: TLP to apply to indicators fetched from the feed. If None, use TLP set by Cyjax.
 
     :return: A tuple containing two elements:
             next_run (``Dict[str, int]``): Contains the timestamp that will be
@@ -358,13 +369,13 @@ def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputati
     indicators = []  # type:List
     cyjax_indicators = client.fetch_indicators(since=since)   # type:List
 
-    indicators_score = map_reputation_to_score(reputation)
+    indicators_score = map_reputation_to_score(reputation)  # type: int
 
     for cyjax_indicator in cyjax_indicators:
         indicator_date = dateparser.parse(cyjax_indicator.get('discovered_at'))
         indicator_timestamp = int(indicator_date.timestamp())
 
-        indicators.append(convert_cyjax_indicator(cyjax_indicator))
+        indicators.append(convert_cyjax_indicator(cyjax_indicator, indicators_score, tlp))
 
         # Update last run
         if indicator_timestamp > last_run_timestamp:
@@ -472,6 +483,9 @@ def main() -> None:
     verify_ssl = not params.get('insecure', False)
     proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
     reputation = params.get('feedReputation', 'None')
+    use_cyjax_tlp = params.get('use_cyjax_tlp', False)
+    tlp_color = params.get('tlp_color')
+    tlp_to_use = tlp_color if use_cyjax_tlp is False else None  # Whether to use Cyjax TLP or TLP set by the user.
 
     demisto.debug(f'Command being called is {demisto.command()}')
     demisto.info(f' --------- !!±!!!!!!!! ----------- CYJAX ----- Command being called is {demisto.command()}')
@@ -493,7 +507,7 @@ def main() -> None:
             demisto.info('-------------- CYJAX fetch-indicators called at {}, use date: {}'.
                          format(datetime.now().isoformat(), last_fetch_date.isoformat()))
 
-            next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation)
+            next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation, tlp_to_use)
 
             if indicators:
                 demisto.info('------------------ CYJAX FOUND INDICATORS')

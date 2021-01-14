@@ -65,6 +65,12 @@ configuration:
     - WHITE
   required: false
   type: 15
+- name: use_cyjax_tlp
+  display: Use Cyjax feed TLP
+  additionalinfo: Whether to use TLP set by Cyjax. Will override TLP set above.
+  required: false
+  defaultvalue: 'true'
+  type: 8
 - name: feedTags
   display: Tags
   additionalinfo: Supports CSV values.
@@ -72,7 +78,7 @@ configuration:
   type: 0
 - display: ""
   name: feedExpirationPolicy
-  defaultvalue: suddenDeath
+  defaultvalue: never
   type: 17
   required: false
   options:
