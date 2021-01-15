@@ -4,6 +4,7 @@
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "LogPoint",
+    "authorImage": "content/Packs/LogPoint_SIEM_Integration/doc_files/LogPoint_image.png",
     "url": "https://servicedesk.logpoint.com",
     "email": "support@logpoint.com",
     "created": "2020-12-31T10:10:17Z",
