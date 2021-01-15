@@ -3,7 +3,7 @@ commonfields:
   id: ReversingLabs A1000
   version: -1
 configuration:
-- defaultvalue: https://a1000-integrations.rl.lan
+- defaultvalue: https://a1000.reversinglabs.com
   display: Base URL of the A1000 box
   name: base
   required: true
