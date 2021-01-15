@@ -112,7 +112,7 @@ Trace and analyze information about messages after they have been filtered by th
 
 
 #### Command Example
-```!proofpoint-pps-smart-search```
+```!proofpoint-pps-smart-search recipient=user@example.com sender=root@user.example.com start_time="24 hours ago"```
 
 #### Context Example
 ```json
@@ -175,10 +175,52 @@ Trace and analyze information about messages after they have been filtered by th
 #### Human Readable Output
 
 >### Proofpoint Protection Server Smart Search Results
->|Agent|Attachment_Names|Date|Disposition_Action|Disposition_SmtpProfile|Duration|FID|FQIN|Final_Action|Final_Rule|GUID|Message_Encrypted|Message_ID|Message_Size|Message_Split|Module_ID|PE_Recipients|Policy_Routes|QID|Quarantine_Folder|Quarantine_Rule|Raw_Log|Recipients|Rule_ID|SID|SMIME_Recipients|SMIME_Recipients_Signed|Sender|Sender_Host|Sender_IP_Address|SendmailRaw_Log|Sendmail_Action|Sendmail_Errorcode|Sendmail_Stat|Sendmail_To|Sendmail_To_Stat|Spam_Score|Subject|Suborg|TLS|Virus_Names|country|current_folder|module_rules|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| example.com |  | 2020-05-20 14:13:02 [UTC-0600] |  |  | 0.124094999905240 | 8lLtu31xs8H24NF8McYw-S6EidtLK-y_ | example.com-10000_instance1 | accept | access.system | 9rLtu31xs8H24NF8KcRw-S6EihtLK-y_ |  | <551609250613.u8P6D1l3019878@user.example.com> | 1142 |  | access |  | allow_relay,firewallsafe,internalnet | u8P6D24m919880 |  |  |  | user@example.com | system | 25nnq08028 |  |  | root@user.example.com | localhost | 127.0.0.1 |  |  |  |  |  |  |  | Cron <pps@user> /opt/proofpoint/pps8.0.1.1446/admin/tools/dbutil.sh -optimize -db msgqueue |  |  |  | ** |  | access.system |
+>|GUID|Date|Sender|Recipients|Subject|Final_Action|
+>|---|---|---|---|---|---|
+>| 8lLtu31xs8H24NF8McYw-S6EidtLK-y_ | 2020-05-20 14:13:02 [UTC-0600] | root@user.example.com | user@example.com | Cron \<pps@user\> /opt/proofpoint/pps8.0.1.1446/admin/tools/dbutil.sh -optimize -db msgqueue | accept |
 
+
+#### Partial Search Matches
+
+Smart Search parses email addresses to support a variety of partial matches.
+
+For example, the email address a.b@c.d can be found with these partial searches:
+- a.b
+- a.b*
+- a.b@
+- a.b@*
+- *@c.d
+- @c.d
+- a.*@
+- a*@
+- @*.d
+- @*d
+
+If there is an @ sign, the * is not ignored. If you enter only @, no results are returned.
+
+|Source Address|Matching Search|
+|---|---|
+|example\.user@abc.com|\*example\\*|
+|user.example\@abc.com|\*example\\*|
+|example@abc.com|\*example\*|
+|user@example.com|\*example\*|
+|user@example.org|\*example\*|
+|user@example.com|@\*example\*|
+|user@example.org|@\*example\*|
+
+#### Analyzed Fields
+
+The subject is passed through an Analyzer that applies stemming and removes stop words.
+
+Here is a list of Stop words:
+
+"a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", 
+
+"is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then", 
+
+"there", "these", "they", "this", "to", "was", "will", "with"
+
+Example: "I'm going to a party" becomes "I go party"
 
 ### proofpoint-pps-list-quarantined-messages
 ***
@@ -220,7 +262,7 @@ Search for quarantine messages.
 
 
 #### Command Example
-```!proofpoint-pps-list-quarantined-messages```
+```!proofpoint-pps-list-quarantined-messages subject=Loan* sender=john@doe.com```
 
 #### Context Example
 ```json
@@ -267,10 +309,10 @@ Search for quarantine messages.
 #### Human Readable Output
 
 >### Proofpoint Protection Server Quarantined Messages
->|date|folder|from|guid|host_ip|localguid|messageid|processingserver|rcpts|size|spamscore|subject|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2020-01-15 20:00:00 | Quarantine | john@doe.com | lR_SjEF1Llfn9gML8YZzpVPUukjXQcPO | [10.54.40.3] [10.54.40.3] | 6:6:239 | YATQ2LPCWC3MFA2YUTDH.448380834@example.net | ... | foo@bar.com | 6496 | 100 | Loan |
->| 2020-01-22 10:00:18 | Quarantine | john@doe.com | edlp0pU9YXkWB5nmat91i9HUl7J-K-ep | [10.12.40.4] [10.12.40.4] | 6:6:4 | TLW25LKOCDR72DBE06JF.221045479@email1.example.com | ... | user@test.com | 6143 | 100 | Loan |
+>|localguid|folder|spamscore|from|rcpts|subject|date|size|host_ip|
+>|---|---|---|---|---|---|---|---|---|
+>| 6:6:239 | Quarantine | 100 | john@doe.com | foo@bar.com | Loan | 2020-01-15 20:00:00 | 6496 | [10.54.40.3] [10.54.40.3] |
+>| 6:6:4 | Quarantine | 100 | john@doe.com | user@test.com | Loan | 2020-01-22 10:00:18 | 6143 | [10.12.40.4] [10.12.40.4] |
 
 
 ### proofpoint-pps-release-message

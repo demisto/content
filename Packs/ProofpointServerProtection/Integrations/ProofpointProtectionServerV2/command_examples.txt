@@ -1,4 +1,4 @@
-!proofpoint-pps-smart-search
+!proofpoint-pps-smart-search recipient=user@example.com sender=root@user.example.com start_time="24 hours ago"
 !proofpoint-pps-list-quarantined-messages
 !proofpoint-pps-release-message folder_name=HIPAA local_guid=4:2:6
 !proofpoint-pps-forward-message folder_name=HIPAA local_guid=4:2:6

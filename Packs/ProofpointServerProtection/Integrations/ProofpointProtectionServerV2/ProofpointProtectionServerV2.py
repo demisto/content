@@ -132,7 +132,8 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    client.health_check()
+    client.health_check()  # test pss managed module
+    client.list_quarantined_messages_request(subject='Test')  # test Quarantine managed module
     return 'ok'
 
 
@@ -156,9 +157,10 @@ def smart_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     if isinstance(result, dict) and result.get('result'):
         search_result = result.get('result')
         command_results_args = {
-            'readable_output': tableToMarkdown(  # TODO: add headers
+            'readable_output': tableToMarkdown(
                 'Proofpoint Protection Server Smart Search Results',
-                search_result
+                search_result,
+                ['GUID', 'Date', 'Sender', 'Recipients', 'Subject', 'Final_Action'],
             ),
             'outputs_prefix': 'Proofpoint.SmartSearch',
             'outputs_key_field': 'GUID',
