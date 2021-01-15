@@ -15,7 +15,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 GREEN_COLOR = "#6eb788"
 SLACK_CHANNEL_TO_SEND_PR_TO = 'contribution-reviews'
-SLACK_CHANNEL_TO_SEND_PR_TO = 'WHCL130LE'
 
 
 def get_metadata_file(file: File) -> dict:
@@ -164,13 +163,12 @@ def create_pr_title(pr: PullRequest) -> List[dict]:
     return header
 
 
-def slack_post_message(client: WebClient, message_blocks: List, pr: PullRequest):
+def slack_post_message(client: WebClient, message_blocks: List):
     """Post a message to a slack channel
 
         Args:
             client (WebClient): Slack web-client object.
             message_blocks (List): List of blocks representing the message blocks.
-            pr (PullRequest): object that represents the pull request.
 
         Returns:
             (List): List containing a dictionary which represents the message title
@@ -182,7 +180,6 @@ def slack_post_message(client: WebClient, message_blocks: List, pr: PullRequest)
                 "color": GREEN_COLOR,
                 "blocks": message_blocks
             }])
-    # text=f"<{pr.html_url}|*New Contribution:* {pr.title}>")
 
 
 def main():
