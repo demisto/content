@@ -208,7 +208,7 @@ def main():
     # Send message
     slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
     client = WebClient(token=slack_token)
-    slack_post_message(client, blocks, pr)
+    slack_post_message(client, blocks)
     print(f'{t.cyan}Slack message sent successfully{t.normal}')
 
 
