@@ -2,7 +2,7 @@ commonfields:
   id: Kennav2
   version: -1
 name: Kennav2
-display: Kenna v2
+display: Kenna v2 Integration
 category: Vulnerability Management
 description: Use the Kenna v2 integration to search and update vulnerabilities, schedule
   a run connector, and manage tags and attributes.
@@ -25,8 +25,6 @@ configuration:
   name: insecure
   defaultvalue: "false"
   type: 8
-description: Use the Kenna v2 integration to search and update vulnerabilities, schedule
-  a run connector, and manage tags and attributes.
 display: Kenna v2
 name: Kennav2
 script:
@@ -145,14 +143,14 @@ script:
       type: Number
     description: Searches for vulnerabilities in Kenna.
   - name: kenna-run-connector
+    description: Executes a run of the specified connector. If file based, it will
+      use the most recently uploaded data file.
     arguments:
     - name: id
       required: true
 
       secret: false
     deprecated: false
-    description: Executes a run of the specified connector. If file based, it will
-      use the most recently uploaded data file.
     execution: true
   - name: kenna-search-fixes
     arguments:
@@ -219,7 +217,6 @@ script:
     description: Filters fixes by a given set of vulnerability and asset parameters
       and returns the filtered fixes.
     execution: false
-    name: kenna-search-fixes
     outputs:
     - contextPath: Kenna.Fixes.ID
       description: The fix ID.
@@ -231,7 +228,8 @@ script:
       description: The asset ID related to the current fix.
       type: Number
     - contextPath: Kenna.Fixes.Assets.Locator
-      description: The asset locator related to the current fix.
+      description: The asset locator related to the current fix.  isArray: false
+      name: min-score
       type: String
     - contextPath: Kenna.Fixes.Assets.PrimaryLocator
       description: The asset primary locator related to the current fix.
@@ -264,8 +262,6 @@ script:
     - contextPath: Kenna.Fixes.MaxScore
       description: The maximum score of the fix.
       type: Number
-    description: Filters fixes by a given set of vulnerability and asset parameters
-      and returns the filtered fixes.
   - name: kenna-update-asset
     arguments:
     - name: id
@@ -279,6 +275,7 @@ script:
     arguments:
     - name: id
       required: true
+      description: Unique ID of vulnerability
       secret: false
     - auto: PREDEFINED
       default: false
@@ -474,41 +471,58 @@ script:
     outputs:
     - contextPath: Kenna.ConnectorRunsList.id
       description: Connector Run ID
+      type: number
     - contextPath: Kenna.ConnectorRunsList.start_time
       description: Connector Run Start Time
+      type: string
     - contextPath: Kenna.ConnectorRunsList.end_time
       description: Connector Run End Time
+      type: string
     - contextPath: Kenna.ConnectorRunsList.success
       description: Boolean value showing connector success
       type: boolean
     - contextPath: Kenna.ConnectorRunsList.total_payload_count
       description: Total connector payloads
+      type: number
     - contextPath: Kenna.ConnectorRunsList.processed_payload_count
       description: total payloads processed by connector
+      type: number
     - contextPath: Kenna.ConnectorRunsList.failed_payload_count
       description: Total failed payloads
+      type: number
     - contextPath: Kenna.ConnectorRunsList.processed_assets_count
       description: Count of processed assets
+      type: number
     - contextPath: Kenna.ConnectorRunsList.assets_with_tags_reset_count
       description: Count of assets with reset tags
+      type: number
     - contextPath: Kenna.ConnectorRunsList.processed_scanner_vuln_count
       description: Count of processed scanners with vulnerabilities
+      type: number
     - contextPath: Kenna.ConnectorRunsList.updated_scanner_vlun_count
       description: Count of updated scanners with vulnerabilities
+      type: number
     - contextPath: Kenna.ConnectorRunsList.created_scanner_vuln_count
       description: 'Count of created scanners with vulnerabilities '
+      type: number
     - contextPath: Kenna.ConnectorRunsList.closed_scanner_vuln_count
       description: 'Count of closed scanners with vulnerabilities '
+      type: number
     - contextPath: Kenna.ConnectorRunsList.autoclosed_scanner_vuln_count
       description: Count of auto-closed scanners with vulnerabilities
+      type: number
     - contextPath: Kenna.ConnectorRunsList.reopened_scanner_vuln_count
       description: 'Count of reopened scanners with vulnerabilities '
+      type: number
     - contextPath: Kenna.ConnectorRunsList.closed_vuln_count
       description: Count of closed vulnerabilities
+      type: number
     - contextPath: Kenna.ConnectorRunsList.autoclosed_vuln_count
       description: Count of auto-closed vulnerabilities
+      type: number
     - contextPath: Kenna.ConnectorRunsList.reopened_vuln_count
       description: Count of re-opened vulnerabilities
+      type: number
     description: Returns JSON data on all the runs of a given connector
   dockerimage: demisto/python3:3.8.6.14516
   runonce: false
