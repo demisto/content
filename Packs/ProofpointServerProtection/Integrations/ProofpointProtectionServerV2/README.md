@@ -234,8 +234,8 @@ Search for quarantine messages.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from | Envelope message sender equals, starts with, ends with or is in a domain such as "bar.com". At least one of the following arguments must be specified: from, to, subject. | Optional | 
-| to | Envelope message recipient equals, starts with, ends with or is in a domain such as "bar.com". At least one of the following arguments must be specified: from, to, subject. | Optional | 
+| sender | Envelope message sender equals, starts with, ends with or is in a domain such as "bar.com". At least one of the following arguments must be specified: from, to, subject. | Optional | 
+| recipient | Envelope message recipient equals, starts with, ends with or is in a domain such as "bar.com". At least one of the following arguments must be specified: from, to, subject. | Optional | 
 | subject | Message subject starts with, ends with or contains. At least one of the following arguments must be specified: from, to, subject. | Optional | 
 | start_time | Beginning time the search is performed against. Can be either free text (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). Default is 24 hours. | Optional | 
 | end_time | Ending time the search is performed against. Can be either free text (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). | Optional | 
@@ -387,12 +387,12 @@ Forwards the message to another recipient. The message remains in the folder and
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
 | local_guid | Message GUID (comma separated string). Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ<br/>wmmxwP6lQkr5k7). | Required | 
+| recipient | Recipient email address (comma separated string). | Required | 
 | deleted_folder | Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP Incidents, and vice versa. | Optional | 
 | subject | Overwrite the original subject for the message with a new subject. | Optional | 
 | append_old_subject | Whether to append original subject to the string specified in the `subject` argument. Possible values are: true, false. Default is false. | Optional | 
-| from | The envelope from email address. | Optional | 
+| sender | The envelope from email address. | Optional | 
 | header_from | The header from email address. | Optional | 
-| to | Recipient email address (comma separated string). | Optional | 
 | comment | New message body (The original message is<br/>sent as an attachment). | Optional | 
 
 
@@ -474,7 +474,7 @@ Downloads email message raw data.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder_name | Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-smart-search command or the proofpoint-pps-list-quarantined-messages. | Required | 
+| folder_name | Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-smart-search command or the proofpoint-pps-list-quarantined-messages command. | Required | 
 
 
 #### Context Output

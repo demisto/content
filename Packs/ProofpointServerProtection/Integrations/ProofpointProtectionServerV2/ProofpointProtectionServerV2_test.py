@@ -123,7 +123,8 @@ def test_forward_message(requests_mock, client):
     local_guid = '14:14:7'
     args = {
         'folder_name': 'PCI',
-        'local_guid': local_guid
+        'local_guid': local_guid,
+        'to': 'user@example.com',
     }
     api_response = f'Request sent. Message {local_guid} will be forwarded momentarily'
     requests_mock.post(SERVER_URL + '/quarantine', status_code=202, content=api_response.encode('utf-8'))

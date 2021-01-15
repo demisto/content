@@ -484,7 +484,7 @@ script:
     - default: false
       description: The envelope from email address.
       isArray: false
-      name: from
+      name: sender
       required: false
       secret: false
     - default: false
@@ -496,8 +496,8 @@ script:
     - default: false
       description: Recipient email address (comma separated string).
       isArray: false
-      name: to
-      required: false
+      name: recipient
+      required: true
       secret: false
     - default: false
       description: |-
@@ -572,7 +572,8 @@ script:
   - arguments:
     - default: false
       description: Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7).
-        Can be retrieved using the proofpoint-pps-smart-search command or the proofpoint-pps-list-quarantined-messages.
+        Can be retrieved using the proofpoint-pps-smart-search command or the proofpoint-pps-list-quarantined-messages
+        command.
       isArray: false
       name: guid
       required: true
@@ -590,6 +591,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No test
+fromversion: 5.0.0
