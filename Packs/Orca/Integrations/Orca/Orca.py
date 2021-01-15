@@ -2,8 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 from typing import Any, Dict, Union, Optional
+ORCA_API_DNS_NAME = "https://api.orcasecurity.io/api"
 
-ORCA_API_DNS_NAME = "https://orcadeveden-internal-dev.orcasecurity.net/api"
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
@@ -24,7 +24,8 @@ class OrcaClient:
 
         return "ok"
 
-    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[  # pylint: disable=E1136 # noqa: E501
+    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[
+        # pylint: disable=E1136 # noqa: E501
         List[Dict[str, Any]], str]:  # pylint: disable=E1136 # noqa: E125
         demisto.info("get_alerts_by_filter, enter")
 
@@ -55,12 +56,12 @@ class OrcaClient:
         demisto.info("get_all_alerts, enter")
 
         alerts: List[Dict[str, Any]] = []
-        params: Dict[str, str] = {}
+        params: Dict[str, Any] = {"show_informational_alerts": True}
         next_page_token = None
 
         while True:
             if next_page_token:
-                params = {"next_page_token": next_page_token}
+                params["next_page_token"] = next_page_token
 
             response = self.client._http_request(method="GET", url_suffix="/query/alerts", params=params)
             if response['status'] != 'success':
@@ -93,7 +94,15 @@ class OrcaClient:
 
 
 def map_orca_score_to_demisto_score(orca_score: int) -> int:
-    MAPPING = {1: 1, 2: 1, 3: 2, 4: 3}
+    demisto_unknown = 0
+    demisto_informational = 0.5
+    demisto_low = 1
+    demisto_medium = 2
+    demisto_high = 3
+    demisto_critical =4
+
+    MAPPING = {1: demisto_critical, 2: demisto_high, 3: demisto_medium, 4: demisto_informational}
+
     return MAPPING[orca_score]
 
 

@@ -24,7 +24,7 @@
                 },
                 "details": {
                     "complex": null,
-                    "simple": "description"
+                    "simple": "details"
                 },
                 "severity": {
                     "complex": null,
