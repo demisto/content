@@ -395,31 +395,32 @@ def unpacked():
     demisto.results(file_result_existing_file(filename))
 
 
-if demisto.command() == 'test-module':
-    ok, r = validate_http(requests.get(
-        url=BASE_URL + '/api/samples/21841b32c6165b27dddbd4d6eb3a672defe54271/ticloud/',
-        headers=HEADERS,
-        verify=VERIFY_CERT
-    ))
-    if ok:
-        demisto.results('ok')
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    if demisto.command() == 'test-module':
+        ok, r = validate_http(requests.get(
+            url=BASE_URL + '/api/samples/21841b32c6165b27dddbd4d6eb3a672defe54271/ticloud/',
+            headers=HEADERS,
+            verify=VERIFY_CERT
+        ))
+        if ok:
+            demisto.results('ok')
+        else:
+            return_error(r)
+    elif demisto.command() == 'file':
+        hash_value = demisto.args()['file']
+        hash_type = validate_hash(hash_value)
+        file(hash_type, hash_value)
+    elif demisto.command() == 'reversinglabs-upload':
+        upload()
+    elif demisto.command() == 'reversinglabs-delete':
+        delete_sample()
+    elif demisto.command() == 'reversinglabs-extracted-files':
+        extracted_files()
+    elif demisto.command() == 'reversinglabs-download':
+        download()
+    elif demisto.command() == 'reversinglabs-analyze':
+        reanalyze()
+    elif demisto.command() == 'reversinglabs-download-unpacked':
+        unpacked()
     else:
-        return_error(r)
-elif demisto.command() == 'file':
-    hash_value = demisto.args()['file']
-    hash_type = validate_hash(hash_value)
-    file(hash_type, hash_value)
-elif demisto.command() == 'reversinglabs-upload':
-    upload()
-elif demisto.command() == 'reversinglabs-delete':
-    delete_sample()
-elif demisto.command() == 'reversinglabs-extracted-files':
-    extracted_files()
-elif demisto.command() == 'reversinglabs-download':
-    download()
-elif demisto.command() == 'reversinglabs-analyze':
-    reanalyze()
-elif demisto.command() == 'reversinglabs-download-unpacked':
-    unpacked()
-else:
-    return_error('Command [{}] not implemented'.format(demisto.command()))
+        return_error('Command [{}] not implemented'.format(demisto.command()))
