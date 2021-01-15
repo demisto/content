@@ -46,7 +46,7 @@ description: "PowerShell Remoting is a comprehensive built-in remoting subsystem
   \ to windows hosts and executing commands in the created session.\nThe integration\
   \ includes out of the box commands which supports agentless forensics for remote\
   \ hosts "
-display: PowerShell Remoting
+display: PowerShell Remoting (Beta)
 name: PowerShell Remoting
 script:
   commands:
@@ -67,10 +67,6 @@ script:
     execution: true
     name: ps-remote-command
     outputs:
-    - contextPath: PsRemote.Command
-      description: Object that contains data about the response of a command run in
-        target machine
-      type: unknown
     - contextPath: PsRemote.Command.Result
       description: The result of the command run from target machine
       type: string
@@ -107,22 +103,22 @@ script:
     description: Download a file from the remote endpoint.
     name: ps-remote-download-file
     outputs:
-    - contextPath: PsRemote.FileName
+    - contextPath: PsRemoteDownloadedFile.FileName
       description: File name.
       type: String
-    - contextPath: PsRemote.FileSize
+    - contextPath: PsRemoteDownloadedFile.FileSize
       description: File size.
       type: Number
-    - contextPath: PsRemote.FileMD5
+    - contextPath: PsRemoteDownloadedFile.FileMD5
       description: The MD5 hash of the file.
       type: String
-    - contextPath: PsRemote.FileSHA1
+    - contextPath: PsRemoteDownloadedFile.FileSHA1
       description: The SHA1 hash of the file.
       type: String
-    - contextPath: PsRemote.FileSHA256
+    - contextPath: PsRemoteDownloadedFile.FileSHA256
       description: The SHA256 hash of the file.
       type: String
-    - contextPath: PsRemote.FileExtension
+    - contextPath: PsRemoteDownloadedFile.FileExtension
       description: The extension of the file.
       type: String
     - contextPath: File.Size
@@ -249,6 +245,9 @@ script:
       ETL is just like a PCAP file which is created by the Windows Netsh command.
     name: ps-remote-etl-create-start
     outputs:
+    - contextPath: PsRemote.CommandResult
+      description: The start ETL command results.
+      type: string
     - contextPath: PsRemote.EtlFileName
       description: The file name for the ETL
       type: string
@@ -265,6 +264,15 @@ script:
       name: ip
     description: This command ends the recording of an ETL file on a windows endpoint.
     name: ps-remote-etl-create-stop
+    outputs:
+      - contextPath: PsRemote.CommandResult
+        description: The stop ETL command results.
+        type: string
+      - contextPath: PsRemote.EtlFileName
+        description: The file name for the ETL
+        type: string
+      - contextPath: PsRemote.EtlFilePath
+        description: The file path and name for the ETL
   - arguments:
     - description: The hostname on which to create the ETL file. For example myhost.
         The user can provide a comma delimited list of values.
@@ -289,8 +297,8 @@ script:
     - contextPath: PsRemote.RegFileSha256
       description: The SHA256 for the registry file.
       type: string
-    - contextPath: PsRemote.RegFileSize
-      description: The file size for the registry file.
+    - contextPath: PsRemote.CommandResult
+      description: The command results in the remote host - regedit for all or reg export.
       type: string
     - contextPath: PsRemote.RegFilePath
       description: The file path and name for the registry file.
@@ -314,6 +322,9 @@ script:
       name: output_path
     description: Extract master file table from volume.
     name: ps-remote-export-mft
+    outputs:
+      - contextPath: PsRemote.ExportMFT
+        description: The command result for
   dockerimage: demisto/powershell-ubuntu:7.0.3.12001
   runonce: false
   script: ''
