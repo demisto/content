@@ -714,14 +714,6 @@ def get_team_aad_id(team_name: str) -> str:
     raise ValueError('Could not find requested team.')
 
 
-# def add_member_to_team(user_principal_name: str, team_id: str):
-#     url: str = f'{GRAPH_BASE_URL}/v1.0/groups/{team_id}/members/$ref'
-#     requestjson_: dict = {
-#          '@odata.id': f'{GRAPH_BASE_URL}/v1.0/directoryObjects/{user_principal_name}'
-#     }
-#     http_request('POST', url, json_=requestjson_)
-
-
 def get_user(user: str) -> list:
     """Retrieves the AAD ID of requested user
 
@@ -2098,7 +2090,6 @@ def main():
         'create-channel': create_channel_command,
         'add-user-to-channel': add_user_to_channel_command,
         'microsoft-teams-create-team': create_team,
-        # 'microsoft-teams-send-file': send_file,
         'microsoft-teams-ring-user': ring_user,
         'microsoft-teams-create-channel': create_channel_command,
         'microsoft-teams-add-user-to-channel': add_user_to_channel,
