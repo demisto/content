@@ -231,32 +231,32 @@ def mwp(hash_type, hash_value):
     return True, (md, ec, r)
 
 
-if demisto.command() == 'test-module':
-    ok, r = validate_http(requests.get(BASE_URL + '/api/databrowser/malware_presence/query/md5/6a95d3d00267c9fd80bd42122738e726?extended=true&format=json', auth=AUTH))
-    if ok:
-        demisto.results('ok')
-    else:
-        return_error(r)
-elif demisto.command() == 'file':
-    hash_value = demisto.args()['file']
-    hash_type = validate_hash(hash_value)
-    ok, res = mwp(hash_type, hash_value)
-    if not ok:
-        return_error(res)
-    md, ec, r = res
-    if demisto.get(demisto.args(), 'extended'):
-        EXTENDED = True if demisto.args()['extended'].lower() == 'true' else False
-    if EXTENDED:
-        ok, extended_res = rldata(hash_type, hash_value)
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    if demisto.command() == 'test-module':
+        ok, r = validate_http(requests.get(BASE_URL + '/api/databrowser/malware_presence/query/md5/6a95d3d00267c9fd80bd42122738e726?extended=true&format=json', auth=AUTH))
         if ok:
-            md += '\n' + extended_res[0]
-            r['rl']['sample'] = extended_res[2]['rl']['sample']
-            # Add all the relevant context data
-            score = ec['DBotScore'][0]['Score']
-            for k in extended_res[1]:
-                ec[outputPaths['file']][k] = extended_res[1][k]
-                if k in ('MD5', 'SHA1', 'SHA256') and k.lower() != hash_type:
-                    ec['DBotScore'].append({'Indicator': extended_res[1][k], 'Type': 'hash', 'Vendor': 'ReversingLabs', 'Score': score})
-                    ec['DBotScore'].append({'Indicator': extended_res[1][k], 'Type': 'file', 'Vendor': 'ReversingLabs', 'Score': score})
+            demisto.results('ok')
+        else:
+            return_error(r)
+    elif demisto.command() == 'file':
+        hash_value = demisto.args()['file']
+        hash_type = validate_hash(hash_value)
+        ok, res = mwp(hash_type, hash_value)
+        if not ok:
+            return_error(res)
+        md, ec, r = res
+        if demisto.get(demisto.args(), 'extended'):
+            EXTENDED = True if demisto.args()['extended'].lower() == 'true' else False
+        if EXTENDED:
+            ok, extended_res = rldata(hash_type, hash_value)
+            if ok:
+                md += '\n' + extended_res[0]
+                r['rl']['sample'] = extended_res[2]['rl']['sample']
+                score = ec['DBotScore'][0]['Score']
+                for k in extended_res[1]:
+                    ec[outputPaths['file']][k] = extended_res[1][k]
+                    if k in ('MD5', 'SHA1', 'SHA256') and k.lower() != hash_type:
+                        ec['DBotScore'].append({'Indicator': extended_res[1][k], 'Type': 'hash', 'Vendor': 'ReversingLabs', 'Score': score})
+                        ec['DBotScore'].append({'Indicator': extended_res[1][k], 'Type': 'file', 'Vendor': 'ReversingLabs', 'Score': score})
 
-    demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': r, 'EntryContext': ec, 'HumanReadable': md})
+        demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': r, 'EntryContext': ec, 'HumanReadable': md})
