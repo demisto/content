@@ -828,27 +828,28 @@ def create_team_request(
 
 
 def create_team():
-    display_name = demisto.args().get('display_name', '')
+    args = demisto.args()
+    display_name = args.get('display_name', '')
     create_team_request(
         display_name=display_name,
-        owner=demisto.args().get('owner', ''),
-        description=demisto.args().get('description'),
-        visibility=demisto.args().get('visibility', 'public'),
-        allow_guests_create_channels=argToBoolean(demisto.args().get('allow_guests_create_channels', 'false')),
-        allow_guests_delete_channels=argToBoolean(demisto.args().get('allow_guests_delete_channels', 'false')),
+        owner=args.get('owner', ''),
+        description=args.get('description'),
+        visibility=args.get('visibility', 'public'),
+        allow_guests_create_channels=argToBoolean(args.get('allow_guests_create_channels', 'false')),
+        allow_guests_delete_channels=argToBoolean(args.get('allow_guests_delete_channels', 'false')),
         allow_members_create_private_channels=argToBoolean(
-            demisto.args().get('allow_members_create_private_channels', 'false')),
-        allow_members_create_channels=argToBoolean(demisto.args().get('allow_members_create_channels', 'false')),
-        allow_members_delete_channels=argToBoolean(demisto.args().get('allow_members_delete_channels', 'false')),
-        allow_members_add_remove_apps=argToBoolean(demisto.args().get('allow_members_add_remove_apps', 'false')),
-        allow_members_add_remove_tabs=argToBoolean(demisto.args().get('allow_members_add_remove_tabs', 'false')),
+            args.get('allow_members_create_private_channels', 'false')),
+        allow_members_create_channels=argToBoolean(args.get('allow_members_create_channels', 'false')),
+        allow_members_delete_channels=argToBoolean(args.get('allow_members_delete_channels', 'false')),
+        allow_members_add_remove_apps=argToBoolean(args.get('allow_members_add_remove_apps', 'false')),
+        allow_members_add_remove_tabs=argToBoolean(args.get('allow_members_add_remove_tabs', 'false')),
         allow_members_add_remove_connectors=argToBoolean(
-            demisto.args().get('allow_members_add_remove_connectors', 'false')),
-        allow_user_edit_messages=argToBoolean(demisto.args().get('allow_user_edit_messages', 'false')),
-        allow_user_delete_messages=argToBoolean(demisto.args().get('allow_user_delete_messages', 'false')),
-        allow_owner_delete_messages=argToBoolean(demisto.args().get('allow_owner_delete_messages', 'false')),
-        allow_team_mentions=argToBoolean(demisto.args().get('allow_team_mentions', 'false')),
-        allow_channel_mentions=argToBoolean(demisto.args().get('allow_channel_mentions', 'false')),
+            args.get('allow_members_add_remove_connectors', 'false')),
+        allow_user_edit_messages=argToBoolean(args.get('allow_user_edit_messages', 'false')),
+        allow_user_delete_messages=argToBoolean(args.get('allow_user_delete_messages', 'false')),
+        allow_owner_delete_messages=argToBoolean(args.get('allow_owner_delete_messages', 'false')),
+        allow_team_mentions=argToBoolean(args.get('allow_team_mentions', 'false')),
+        allow_channel_mentions=argToBoolean(args.get('allow_channel_mentions', 'false')),
     )
     return_results(f'Team {display_name} was created successfully.')
 
@@ -904,27 +905,28 @@ def create_team_from_group_request(
 
 
 def create_team_from_group():
-    group_id = demisto.args().get('group_id', '')
+    args = demisto.args()
+    group_id = args.get('group_id', '')
     create_team_from_group_request(
         group_id=group_id,
-        display_name=demisto.args().get('display_name'),
-        description=demisto.args().get('description'),
-        visibility=demisto.args().get('visibility', 'public'),
-        allow_guests_create_channels=argToBoolean(demisto.args().get('allow_guests_create_channels', 'false')),
-        allow_guests_delete_channels=argToBoolean(demisto.args().get('allow_guests_delete_channels', 'false')),
+        display_name=args.get('display_name'),
+        description=args.get('description'),
+        visibility=args.get('visibility', 'public'),
+        allow_guests_create_channels=argToBoolean(args.get('allow_guests_create_channels', 'false')),
+        allow_guests_delete_channels=argToBoolean(args.get('allow_guests_delete_channels', 'false')),
         allow_members_create_private_channels=argToBoolean(
-            demisto.args().get('allow_members_create_private_channels', 'false')),
-        allow_members_create_channels=argToBoolean(demisto.args().get('allow_members_create_channels', 'false')),
-        allow_members_delete_channels=argToBoolean(demisto.args().get('allow_members_delete_channels', 'false')),
-        allow_members_add_remove_apps=argToBoolean(demisto.args().get('allow_members_add_remove_apps', 'false')),
-        allow_members_add_remove_tabs=argToBoolean(demisto.args().get('allow_members_add_remove_tabs', 'false')),
+            args.get('allow_members_create_private_channels', 'false')),
+        allow_members_create_channels=argToBoolean(args.get('allow_members_create_channels', 'false')),
+        allow_members_delete_channels=argToBoolean(args.get('allow_members_delete_channels', 'false')),
+        allow_members_add_remove_apps=argToBoolean(args.get('allow_members_add_remove_apps', 'false')),
+        allow_members_add_remove_tabs=argToBoolean(args.get('allow_members_add_remove_tabs', 'false')),
         allow_members_add_remove_connectors=argToBoolean(
-            demisto.args().get('allow_members_add_remove_connectors', 'false')),
-        allow_user_edit_messages=argToBoolean(demisto.args().get('allow_user_edit_messages', 'false')),
-        allow_user_delete_messages=argToBoolean(demisto.args().get('allow_user_delete_messages', 'false')),
-        allow_owner_delete_messages=argToBoolean(demisto.args().get('allow_owner_delete_messages', 'false')),
-        allow_team_mentions=argToBoolean(demisto.args().get('allow_team_mentions', 'false')),
-        allow_channel_mentions=argToBoolean(demisto.args().get('allow_channel_mentions', 'false')),
+            args.get('allow_members_add_remove_connectors', 'false')),
+        allow_user_edit_messages=argToBoolean(args.get('allow_user_edit_messages', 'false')),
+        allow_user_delete_messages=argToBoolean(args.get('allow_user_delete_messages', 'false')),
+        allow_owner_delete_messages=argToBoolean(args.get('allow_owner_delete_messages', 'false')),
+        allow_team_mentions=argToBoolean(args.get('allow_team_mentions', 'false')),
+        allow_channel_mentions=argToBoolean(args.get('allow_channel_mentions', 'false')),
     )
     return_results(f'The team was created from group {group_id} successfully.')
 
@@ -1015,12 +1017,13 @@ def update_team_request(
 
 
 def update_team():
-    team_id = demisto.args().get('team_id', '')
+    args = demisto.args()
+    team_id = args.get('team_id', '')
     update_team_args = {
         'team_id': team_id,
-        'display_name': demisto.args().get('display_name'),
-        'description': demisto.args().get('description'),
-        'visibility': demisto.args().get('visibility'),
+        'display_name': args.get('display_name'),
+        'description': args.get('description'),
+        'visibility': args.get('visibility'),
     }
     for bool_arg in [
         'allow_guests_create_channels', 'allow_guests_delete_channels', 'allow_members_create_private_channels',
@@ -1029,8 +1032,8 @@ def update_team():
         'allow_user_edit_messages', 'allow_user_delete_messages', 'allow_owner_delete_messages',
         'allow_team_mentions', 'allow_channel_mentions'
     ]:
-        if bool_arg in demisto.args():
-            update_team_args[bool_arg] = argToBoolean(demisto.args()[bool_arg])
+        if bool_arg in args:
+            update_team_args[bool_arg] = argToBoolean(args[bool_arg])
     update_team_request(**update_team_args)
     return_results(f'Team {team_id} was updated successfully.')
 
@@ -1077,8 +1080,9 @@ def get_member_request(team_id: str, membership_id: str):
 
 
 def get_member():
-    team_id = demisto.args().get('team_id')
-    membership_id = demisto.args().get('membership_id')
+    args = demisto.args()
+    team_id = args.get('team_id')
+    membership_id = args.get('membership_id')
     team_member = get_member_request(team_id, membership_id)
     return_results(CommandResults(
         outputs_prefix='MicrosoftTeams.TeamMember',
@@ -1108,12 +1112,13 @@ def add_member_request(team_id: str, user_id: str, roles: Optional[list] = None)
 
 
 def add_member():
-    team_id = demisto.args().get('team_id', '')
-    user_id = demisto.args().get('user_id', '')
+    args = demisto.args()
+    team_id = args.get('team_id', '')
+    user_id = args.get('user_id', '')
     team_member = add_member_request(
         team_id=team_id,
         user_id=user_id,
-        roles=['owner'] if argToBoolean(demisto.args().get('is_owner', 'false')) else [],
+        roles=['owner'] if argToBoolean(args.get('is_owner', 'false')) else [],
     )
     return_results(CommandResults(
         outputs_prefix='MicrosoftTeams.TeamMember',
@@ -1135,8 +1140,9 @@ def remove_member__request(team_id: str, membership_id: str) -> None:
 
 
 def remove_member():
-    team_id = demisto.args().get('team_id')
-    membership_id = demisto.args().get('membership_id')
+    args = demisto.args()
+    team_id = args.get('team_id')
+    membership_id = args.get('membership_id')
     remove_member__request(team_id, membership_id)
     return_results(f'Team member {membership_id} was removed from the team {team_id} successfully.')
 
@@ -1155,12 +1161,13 @@ def update_member_request(team_id: str, membership_id: str, roles: Optional[list
 
 
 def update_member():
-    team_id = demisto.args().get('team_id', '')
-    membership_id = demisto.args().get('membership_id', '')
+    args = demisto.args()
+    team_id = args.get('team_id', '')
+    membership_id = args.get('membership_id', '')
     team_member = update_member_request(
         team_id=team_id,
         membership_id=membership_id,
-        roles=['owner'] if argToBoolean(demisto.args().get('is_owner', 'false')) else [],
+        roles=['owner'] if argToBoolean(args.get('is_owner', 'false')) else [],
     )
     return_results(CommandResults(
         outputs_prefix='MicrosoftTeams.TeamMember',
@@ -1225,23 +1232,24 @@ def clone_team_request(
 
 
 def clone_team():
-    team_id = demisto.args().get('team_id')
+    args = demisto.args()
+    team_id = args.get('team_id')
     parts_to_clone = []
-    if argToBoolean(demisto.args().get('clone_apps', 'true')):
+    if argToBoolean(args.get('clone_apps', 'true')):
         parts_to_clone.append('apps')
-    if argToBoolean(demisto.args().get('clone_tabs', 'true')):
+    if argToBoolean(args.get('clone_tabs', 'true')):
         parts_to_clone.append('tabs')
-    if argToBoolean(demisto.args().get('clone_settings', 'true')):
+    if argToBoolean(args.get('clone_settings', 'true')):
         parts_to_clone.append('settings')
-    if argToBoolean(demisto.args().get('clone_channels', 'true')):
+    if argToBoolean(args.get('clone_channels', 'true')):
         parts_to_clone.append('channels')
     if not parts_to_clone:
         raise ValueError('At least one of the parts of the team must be cloned: apps, tabs, settings, channels')
     clone_team_request(
         team_id=team_id,
-        display_name=demisto.args().get('display_name'),
-        description=demisto.args().get('description'),
-        visibility=demisto.args().get('visibility'),
+        display_name=args.get('display_name'),
+        description=args.get('description'),
+        visibility=args.get('visibility'),
         parts_to_clone=','.join(parts_to_clone),
     )
     return_results(f'Team {team_id} was cloned successfully.')
