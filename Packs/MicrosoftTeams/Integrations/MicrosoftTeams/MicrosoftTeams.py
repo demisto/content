@@ -1134,7 +1134,7 @@ def add_member():
 
 
 @logger
-def remove_member__request(team_id: str, membership_id: str) -> None:
+def remove_member_request(team_id: str, membership_id: str) -> None:
     url = f'{GRAPH_BASE_URL}/v1.0/teams/{team_id}/members/{membership_id}'
     http_request('DELETE', url)
 
@@ -1143,7 +1143,7 @@ def remove_member():
     args = demisto.args()
     team_id = args.get('team_id')
     membership_id = args.get('membership_id')
-    remove_member__request(team_id, membership_id)
+    remove_member_request(team_id, membership_id)
     return_results(f'Team member {membership_id} was removed from the team {team_id} successfully.')
 
 
