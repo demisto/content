@@ -108,9 +108,8 @@ def test_do_deception_host_command_decoy_exists(mocker):
         text=test_decoy_host_true.__getitem__('HTTP Body')
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
-    result = do_deception_host_command(client, {'host': decoy_host})
+    result = do_deception_host_command(client, {'Host': decoy_host})
     assert result.outputs['IsDeception'] is True
-    assert result.outputs['Host'] == decoy_host
 
 
 def test_do_deception_host_command_decoy_not_exists(mocker):
@@ -123,9 +122,8 @@ def test_do_deception_host_command_decoy_not_exists(mocker):
         text=test_decoy_host_false.__getitem__('HTTP Body')
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
-    result = do_deception_host_command(client, {'host': decoy_host})
+    result = do_deception_host_command(client, {'Host': decoy_host})
     assert result.outputs['IsDeception'] is False
-    assert result.outputs['Host'] == decoy_host
 
 
 def test_do_deception_file_command_decoy_file_exists(mocker):
@@ -139,11 +137,9 @@ def test_do_deception_file_command_decoy_file_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_deception_file_command(client,
-                                       {'filename': decoy_filename,
-                                        'endpoint': ep_host})
+                                       {'Filename': decoy_filename,
+                                        'Endpoint': ep_host})
     assert result.outputs['IsDeception'] is True
-    assert result.outputs['Filename'] == decoy_filename
-    assert result.outputs['Endpoint'] == ep_host
 
 
 def test_do_deception_file_command_decoy_file_not_exists(mocker):
@@ -157,11 +153,9 @@ def test_do_deception_file_command_decoy_file_not_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_deception_file_command(client,
-                                       {'filename': decoy_filename,
-                                        'endpoint': ep_host})
+                                       {'Filename': decoy_filename,
+                                        'Endpoint': ep_host})
     assert result.outputs['IsDeception'] is False
-    assert result.outputs['Filename'] == decoy_filename
-    assert result.outputs['Endpoint'] == ep_host
 
 
 def test_do_deception_user_command_user_exists(mocker):
@@ -175,11 +169,9 @@ def test_do_deception_user_command_user_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_deception_user_command(client,
-                                       {'username': decoy_user,
-                                        'domain': domain})
+                                       {'Username': decoy_user,
+                                        'Domain': domain})
     assert result.outputs['IsDeception'] is True
-    assert result.outputs['Username'] == decoy_user
-    assert result.outputs['Domain'] == domain
 
 
 def test_do_deception_user_command_user_not_exists(mocker):
@@ -193,11 +185,9 @@ def test_do_deception_user_command_user_not_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_deception_user_command(client,
-                                       {'username': decoy_user,
-                                        'domain': domain})
+                                       {'Username': decoy_user,
+                                        'Domain': domain})
     assert result.outputs['IsDeception'] is False
-    assert result.outputs['Username'] == decoy_user
-    assert result.outputs['Domain'] == domain
 
 
 def test_do_mute_deception_host_command_decoy_exists(mocker):
@@ -211,9 +201,8 @@ def test_do_mute_deception_host_command_decoy_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_mute_deception_host_command(client,
-                                            {'host': decoy_host})
+                                            {'Host': decoy_host})
     assert result.outputs['IsMute'] is True
-    assert result.outputs['Host'] == decoy_host
 
 
 def test_do_mute_deception_host_command_decoy_not_exists(mocker):
@@ -227,9 +216,8 @@ def test_do_mute_deception_host_command_decoy_not_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_mute_deception_host_command(client,
-                                            {'host': decoy_host})
+                                            {'Host': decoy_host})
     assert result.outputs['IsMute'] is False
-    assert result.outputs['Host'] == decoy_host
 
 
 def test_do_mute_deception_host_command_decoy_already_muted(mocker):
@@ -244,9 +232,8 @@ def test_do_mute_deception_host_command_decoy_already_muted(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_mute_deception_host_command(client,
-                                            {'host': decoy_host})
+                                            {'Host': decoy_host})
     assert result.outputs['IsMute'] is True
-    assert result.outputs['Host'] == decoy_host
 
 
 def test_do_unmute_deception_host_command_decoy_exists(mocker):
@@ -260,9 +247,8 @@ def test_do_unmute_deception_host_command_decoy_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_unmute_deception_host_command(client,
-                                              {'host': decoy_host})
+                                              {'Host': decoy_host})
     assert result.outputs['IsUnmute'] is True
-    assert result.outputs['Host'] == decoy_host
 
 
 def test_do_unmute_deception_host_command_decoy_not_exists(mocker):
@@ -276,9 +262,8 @@ def test_do_unmute_deception_host_command_decoy_not_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_unmute_deception_host_command(client,
-                                              {'host': decoy_host})
+                                              {'Host': decoy_host})
     assert result.outputs['IsUnmute'] is False
-    assert result.outputs['Host'] == decoy_host
 
 
 def test_do_unmute_deception_host_command_decoy_already_unmuted(mocker):
@@ -296,9 +281,8 @@ def test_do_unmute_deception_host_command_decoy_already_unmuted(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_unmute_deception_host_command(client,
-                                              {'host': decoy_host})
+                                              {'Host': decoy_host})
     assert result.outputs['IsUnmute'] is True
-    assert result.outputs['Host'] == decoy_host
 
 
 def test_do_mute_deception_ep_command_ep_exists(mocker):
@@ -312,9 +296,8 @@ def test_do_mute_deception_ep_command_ep_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_mute_deception_ep_command(client,
-                                          {'endpoint': ep_host})
+                                          {'Endpoint': ep_host})
     assert result.outputs['IsMute'] is True
-    assert result.outputs['Endpoint'] == ep_host
 
 
 def test_do_mute_deception_ep_command_ep_not_exists(mocker):
@@ -328,9 +311,8 @@ def test_do_mute_deception_ep_command_ep_not_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_mute_deception_ep_command(client,
-                                          {'endpoint': ep_host})
+                                          {'Endpoint': ep_host})
     assert result.outputs['IsMute'] is False
-    assert result.outputs['Endpoint'] == ep_host
 
 
 def test_do_mute_deception_ep_command_ep_already_muted(mocker):
@@ -345,9 +327,8 @@ def test_do_mute_deception_ep_command_ep_already_muted(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_mute_deception_ep_command(client,
-                                          {'endpoint': ep_host})
+                                          {'Endpoint': ep_host})
     assert result.outputs['IsMute'] is True
-    assert result.outputs['Endpoint'] == ep_host
 
 
 def test_do_unmute_deception_ep_command_ep_exists(mocker):
@@ -361,9 +342,8 @@ def test_do_unmute_deception_ep_command_ep_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_unmute_deception_ep_command(client,
-                                            {'endpoint': ep_host})
+                                            {'Endpoint': ep_host})
     assert result.outputs['IsUnmute'] is True
-    assert result.outputs['Endpoint'] == ep_host
 
 
 def test_do_unmute_deception_ep_command_ep_not_exists(mocker):
@@ -377,9 +357,8 @@ def test_do_unmute_deception_ep_command_ep_not_exists(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_unmute_deception_ep_command(client,
-                                            {'endpoint': ep_host})
+                                            {'Endpoint': ep_host})
     assert result.outputs['IsUnmute'] is False
-    assert result.outputs['Endpoint'] == ep_host
 
 
 def test_do_unmute_deception_ep_command_ep_already_unmuted(mocker):
@@ -394,9 +373,8 @@ def test_do_unmute_deception_ep_command_ep_already_unmuted(mocker):
     )
     mocker.patch.object(Client, '_http_request', return_value=mock_response)
     result = do_unmute_deception_ep_command(client,
-                                            {'endpoint': ep_host})
+                                            {'Endpoint': ep_host})
     assert result.outputs['IsUnmute'] is True
-    assert result.outputs['Endpoint'] == ep_host
 
 
 def test_do_deception_host_command_missing_parameter(mocker):

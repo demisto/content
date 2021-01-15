@@ -171,12 +171,13 @@ def do_deception_host_command(client, args):
 
         out_result = {
             'IsDeception': res_json['result'],
-            'Host': str(host)
+            'Host': str(host),
+            'DateTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         }
 
         results = CommandResults(
             outputs_prefix='Acalvio.IsDeceptionHost',
-            outputs_key_field=['host'],
+            outputs_key_field='Host',
             outputs=out_result,
             readable_output=tableToMarkdown
             ('Acalvio ShadowPlex - Deception Host', out_result),
@@ -207,12 +208,13 @@ def do_deception_file_command(client, args):
         out_result = {
             'IsDeception': res_json['result'],
             'Filename': str(filename),
-            'Endpoint': str(endpoint)
+            'Endpoint': str(endpoint),
+            'DateTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         }
 
         results = CommandResults(
             outputs_prefix='Acalvio.IsDeceptionFile',
-            outputs_key_field=['filename', 'endpoint'],
+            outputs_key_field=['Filename', 'Endpoint'],
             outputs=out_result,
             readable_output=tableToMarkdown
             ('Acalvio ShadowPlex - Deception File', out_result),
@@ -243,12 +245,13 @@ def do_deception_user_command(client, args):
         out_result = {
             'IsDeception': res_json['result'],
             'Username': str(username),
-            'Domain': str(domain) if domain is not None else None
+            'Domain': str(domain) if domain is not None else None,
+            'DateTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         }
 
         results = CommandResults(
             outputs_prefix='Acalvio.IsDeceptionUser',
-            outputs_key_field=['username', 'domain'],
+            outputs_key_field=['Username', 'Domain'],
             outputs=out_result,
             readable_output=tableToMarkdown
             ('Acalvio ShadowPlex - Deception User', out_result),
@@ -275,12 +278,13 @@ def do_mute_deception_host_command(client, args):
 
         out_result = {
             'IsMute': True if 0 == res_json['rescode'] else False,
-            'Host': str(host)
+            'Host': str(host),
+            'DateTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         }
 
         results = CommandResults(
             outputs_prefix='Acalvio.MuteDeceptionHost',
-            outputs_key_field=['host'],
+            outputs_key_field='Host',
             outputs=out_result,
             readable_output=tableToMarkdown
             ('Acalvio ShadowPlex - Mute Deception Host', out_result),
@@ -307,12 +311,13 @@ def do_unmute_deception_host_command(client, args):
 
         out_result = {
             'IsUnmute': True if 0 == res_json['rescode'] else False,
-            'Host': str(host)
+            'Host': str(host),
+            'DateTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         }
 
         results = CommandResults(
             outputs_prefix='Acalvio.UnmuteDeceptionHost',
-            outputs_key_field=['host'],
+            outputs_key_field='Host',
             outputs=out_result,
             readable_output=tableToMarkdown
             ('Acalvio ShadowPlex - Unmute Deception Host', out_result),
@@ -339,12 +344,13 @@ def do_mute_deception_ep_command(client, args):
 
         out_result = {
             'IsMute': True if 0 == res_json['rescode'] else False,
-            'Endpoint': str(ep)
+            'Endpoint': str(ep),
+            'DateTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         }
 
         results = CommandResults(
             outputs_prefix='Acalvio.MuteDeceptionEndpoint',
-            outputs_key_field=['endpoint'],
+            outputs_key_field='Endpoint',
             outputs=out_result,
             readable_output=tableToMarkdown
             ('Acalvio ShadowPlex - Mute Deception on Endpoint',
@@ -372,12 +378,13 @@ def do_unmute_deception_ep_command(client, args):
 
         out_result = {
             'IsUnmute': True if 0 == res_json['rescode'] else False,
-            'Endpoint': str(ep)
+            'Endpoint': str(ep),
+            'DateTime': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         }
 
         results = CommandResults(
             outputs_prefix='Acalvio.UnmuteDeceptionEndpoint',
-            outputs_key_field=['endpoint'],
+            outputs_key_field='Endpoint',
             outputs=out_result,
             readable_output=tableToMarkdown
             ('Acalvio ShadowPlex - Unmute Deception on Endpoint',

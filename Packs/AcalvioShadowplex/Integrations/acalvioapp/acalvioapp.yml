@@ -12,7 +12,7 @@ configuration:
   hidden: false
   name: apikey
   required: true
-  type: 0
+  type: 4
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -45,6 +45,9 @@ script:
     - contextPath: Acalvio.IsDeceptionHost.Host
       description: Host to be checked if Deception
       type: String
+    - contextPath: Acalvio.IsDeceptionHost.DateTime
+      description: Date including Time
+      type: String
   - arguments:
     - default: false
       description: Username of the Domain User
@@ -71,6 +74,9 @@ script:
       type: String
     - contextPath: Acalvio.IsDeceptionUser.Domain
       description: Users Domain
+      type: String
+    - contextPath: Acalvio.IsDeceptionUser.DateTime
+      description: Date including Time
       type: String
   - arguments:
     - default: false
@@ -99,6 +105,9 @@ script:
     - contextPath: Acalvio.IsDeceptionFile.Endpoint
       description: Hostname or IP Address of Endpoint where file resides
       type: String
+    - contextPath: Acalvio.IsDeceptionFile.DateTime
+      description: Date including Time
+      type: String
   - arguments:
     - default: false
       description: Hostname or IP Address of Deception Host
@@ -117,6 +126,9 @@ script:
     - contextPath: Acalvio.MuteDeceptionHost.IsMute
       description: Returns 'True' if Deception is Muted else 'False'
       type: Boolean
+    - contextPath: Acalvio.MuteDeceptionHost.DateTime
+      description: Date including Time
+      type: String
   - arguments:
     - default: false
       description: Hostname or IP Address of Deception Host
@@ -135,6 +147,9 @@ script:
     - contextPath: Acalvio.UnmuteDeceptionHost.IsUnmute
       description: Returns 'True' if Deception is Unmuted else 'False'
       type: Boolean
+    - contextPath: Acalvio.UnmuteDeceptionHost.DateTime
+      description: Date including Time
+      type: String
   - arguments:
     - default: false
       description: Hostname or IP Address of Endpoint
@@ -153,6 +168,9 @@ script:
     - contextPath: Acalvio.MuteDeceptionEndpoint.IsMute
       description: Returns 'True' if Deception is Muted else 'False'
       type: Boolean
+    - contextPath: Acalvio.MuteDeceptionEndpoint.DateTime
+      description: Date including Time
+      type: String
   - arguments:
     - default: false
       description: Hostname or IP Address of Endpoint
@@ -171,6 +189,9 @@ script:
     - contextPath: Acalvio.UnmuteDeceptionEndpoint.IsUnmute
       description: Returns 'True' if Deception is Unmuted else 'False'
       type: Boolean
+    - contextPath: Acalvio.UnmuteDeceptionEndpoint.DateTime
+      description: Date including Time
+      type: String
   dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
