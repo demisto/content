@@ -1,4 +1,5 @@
 Use this Content Pack to fetch incident logs from LogPoint, analyze them for underlying threats, and respond to these threats in real-time.
+This integration was integrated and tested with version 6.7.4 of LogPoint.
 
 ## Use Cases
 
@@ -20,10 +21,10 @@ Use this Content Pack to fetch incident logs from LogPoint, analyze them for und
     | apikey | API Key | True |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
-    | first_fetch | First fetch timestamp \(\<number\> \<time unit\>, e.g., 6 hours, 1 day\) | False |
+    | first_fetch | First fetch timestamp  (\<number\> \<time unit\>, e.g., 6 hours, 1 day) | False |
     | incidentType | Incident type | False |
     | isFetch | Fetch incidents | False |
-    | max_fetch | Fetch limit (Max value is 200, Recommended value is 50 or less) | False
+    | max_fetch | Fetch limit \(Max value is 200, Recommended value is 50 or less\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -31,7 +32,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### lp-get-incidents
 ***
-Gets first 50 incidents between the provided two Timestamps. If ts_from and ts_to is not provided, this command will display incident data of past 24 hours.
+Displays incidents between the provided two Timestamps ts_from and ts_to. By default, this command will display first 50 incidents of the past 24 hours but limit can be set to get desired number of incidents.
 
 
 #### Base Command
@@ -43,6 +44,7 @@ Gets first 50 incidents between the provided two Timestamps. If ts_from and ts_t
 | --- | --- | --- |
 | ts_from | From Timestamp. | Optional | 
 | ts_to | To Timestamp. | Optional | 
+| limit | Number of incidents to fetch. Accepts integer value. | Optional | 
 
 
 #### Context Output
@@ -78,7 +80,7 @@ Gets first 50 incidents between the provided two Timestamps. If ts_from and ts_t
 
 
 #### Command Example
-```!lp-get-incidents ts_from=1608284280 ts_to=1608284400```
+```!lp-get-incidents ts_from=1610700720 ts_to=1610700900 limit=5```
 
 #### Context Example
 ```json
@@ -87,28 +89,17 @@ Gets first 50 incidents between the provided two Timestamps. If ts_from and ts_t
         "Incidents": [
             {
                 "alert_obj_id": "5fc8b1743dee69827459bc70",
-                "assigned_to": "5fd9d95769d3a4ea5684fccf",
-                "comments": [
-                    {
-                        "comment": "Example comment",
-                        "time": 1608284475,
-                        "title": "admin"
-                    }
-                ],
+                "assigned_to": "5bebd9fdd8aaa42840edc853",
+                "comments": [],
                 "commentscount": 0,
                 "description": "",
-                "detection_timestamp": 1608284302.3569734,
-                "id": "5fdc788ecf35d7ae0f6b791b",
-                "incident_id": "cff43115719e19cd04ddf5a7e61d982d",
-                "lastaction": {
-                    "comment": "Reassigned",
-                    "time": 1608286422,
-                    "title": "admin"
-                },
+                "detection_timestamp": 1610700740.2248185,
+                "id": "600157c44a2018070b627f6a",
+                "incident_id": "8a676c39450e099b3512961d71ec4f7d",
                 "loginspect_ip_dns": "127.0.0.1",
                 "logpoint_name": "LogPoint",
-                "name": "Test Incident",
-                "query": "\"col_type\"=\"filesystem\" use>60",
+                "name": "Memory usages is greater than 50 percent",
+                "query": "\"col_type\"=\"filesystem\" use>=50",
                 "repos": [
                     "127.0.0.1:5504"
                 ],
@@ -118,8 +109,49 @@ Gets first 50 incidents between the provided two Timestamps. If ts_from and ts_t
                 "throttle_enabled": false,
                 "tid": "",
                 "time_range": [
-                    1608283560,
-                    1608284160
+                    1610700000,
+                    1610700600
+                ],
+                "type": "Alert",
+                "user_id": null,
+                "username": "5bebd9fdd8aaa42840edc853",
+                "visible_to": []
+            },
+            {
+                "alert_obj_id": "5fc8b1743dee69827459bc70",
+                "assigned_to": "5bebd9fdd8aaa42840edc853",
+                "comments": [
+                    {
+                        "comment": "Example Incident",
+                        "time": 1610700910,
+                        "title": "admin"
+                    }
+                ],
+                "commentscount": 0,
+                "description": "",
+                "detection_timestamp": 1610700860.245085,
+                "id": "6001583c4a2018070b627f6b",
+                "incident_id": "8a676c39450e099b3512961d71ec4f7d",
+                "lastaction": {
+                    "action": "Commented",
+                    "time": 1610700910,
+                    "title": "admin"
+                },
+                "loginspect_ip_dns": "127.0.0.1",
+                "logpoint_name": "LogPoint",
+                "name": "Memory usages is greater than 50 percent",
+                "query": "\"col_type\"=\"filesystem\" use>=50",
+                "repos": [
+                    "127.0.0.1:5504"
+                ],
+                "risk_level": "medium",
+                "rows_count": 5,
+                "status": "unresolved",
+                "throttle_enabled": false,
+                "tid": "",
+                "time_range": [
+                    1610700120,
+                    1610700720
                 ],
                 "type": "Alert",
                 "user_id": null,
@@ -133,10 +165,11 @@ Gets first 50 incidents between the provided two Timestamps. If ts_from and ts_t
 
 #### Human Readable Output
 
->### Incidents
->|type|incident_id|name|description|username|user_id|assigned_to|visible_to|tid|rows_count|risk_level|detection_timestamp|loginspect_ip_dns|logpoint_name|status|comments|commentscount|query|repos|time_range|alert_obj_id|throttle_enabled|lastaction|id|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Alert | cff43115719e19cd04ddf5a7e61d982d | Test Incident |  | 5bebd9fdd8aaa42840edc853 |  | 5fd9d95769d3a4ea5684fccf |  |  | 5 | medium | 1608284302.3569734 | 127.0.0.1 | LogPoint | unresolved | {'title': 'admin', 'comment': 'Example comment', 'time': 1608284475} | 0 | "col_type"="filesystem" use>60 | 127.0.0.1:5504 | 1608283560,<br/>1608284160 | 5fc8b1743dee69827459bc70 | false | title: admin<br/>comment: Reassigned<br/>time: 1608286422 | 5fdc788ecf35d7ae0f6b791b |
+>### Displaying all 2 incidents between 1610700720 and 1610700900
+>|type|incident_id|name|description|username|user_id|assigned_to|visible_to|tid|rows_count|risk_level|detection_timestamp|loginspect_ip_dns|logpoint_name|status|comments|commentscount|query|repos|time_range|alert_obj_id|throttle_enabled|id|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Alert | 8a676c39450e099b3512961d71ec4f7d | Memory usages is greater than 50 percent |  | 5bebd9fdd8aaa42840edc853 |  | 5bebd9fdd8aaa42840edc853 |  |  | 5 | medium | 1610700740.2248185 | 127.0.0.1 | LogPoint | unresolved |  | 0 | "col_type"="filesystem" use>=50 | 127.0.0.1:5504 | 1610700000,<br/>1610700600 | 5fc8b1743dee69827459bc70 | false | 600157c44a2018070b627f6a |
+>| Alert | 8a676c39450e099b3512961d71ec4f7d | Memory usages is greater than 50 percent |  | 5bebd9fdd8aaa42840edc853 |  | 5bebd9fdd8aaa42840edc853 |  |  | 5 | medium | 1610700860.245085 | 127.0.0.1 | LogPoint | unresolved | {'title': 'admin', 'comment': 'Example Incident', 'time': 1610700910} | 0 | "col_type"="filesystem" use>=50 | 127.0.0.1:5504 | 1610700120,<br/>1610700720 | 5fc8b1743dee69827459bc70 | false | 6001583c4a2018070b627f6b |
 
 
 ### lp-get-incident-data
@@ -186,10 +219,114 @@ Retrieves a Particular Incident's Data
 | LogPoint.Incidents.data.col_type | String | LogPoint Incidents Data Col Type | 
 | LogPoint.Incidents.data.object | String | LogPoint Incidents Data Object | 
 | LogPoint.Incidents.data._labels | String | LogPoint Incidents Data Labels | 
+| LogPoint.Incidents.data.source_address | String | Source Address | 
+| LogPoint.Incidents.data.destination_address | String | Destination Address | 
+| LogPoint.Incidents.data.workstation | String | Workstation | 
+| LogPoint.Incidents.data.domain | String | Domain | 
+| LogPoint.Incidents.data.user | String | User | 
+| LogPoint.Incidents.data.caller_user | String | Caller User | 
+| LogPoint.Incidents.data.target_user | String | Target User | 
+| LogPoint.Incidents.data.source_machine_id | String | Source Machie Id | 
+| LogPoint.Incidents.data.destination_machine_id | String | Destination Machine Id | 
+| LogPoint.Incidents.data.destination_port | String | Destination Port | 
+| LogPoint.Incidents.data.event_type | String | Event Type | 
+| LogPoint.Incidents.data.share_path | String | Share Path | 
+| LogPoint.Incidents.data.object_name | String | Object Name | 
+| LogPoint.Incidents.data.sub_status_code | String | Sub Status Code | 
+| LogPoint.Incidents.data.object_type | String | Object Type | 
+| LogPoint.Incidents.data.request_method | String | Request Method | 
+| LogPoint.Incidents.data.status_code | String | Status Code | 
+| LogPoint.Incidents.data.received_datasize | String | Received Datasize | 
+| LogPoint.Incidents.data.received_packet | String | Received Packet | 
+| LogPoint.Incidents.data.user_agent | String | User Agent | 
+| LogPoint.Incidents.data.sent_datasize | String | Sent Datasize | 
+| LogPoint.Incidents.data.sender | String | Sender | 
+| LogPoint.Incidents.data.receiver | String | Receiver | 
+| LogPoint.Incidents.data.datasize | String | Datasize | 
+| LogPoint.Incidents.data.file | String | File | 
+| LogPoint.Incidents.data.subject | String | Subject | 
+| LogPoint.Incidents.data.status | String | Status | 
+| LogPoint.Incidents.data.file_count | String | File Count | 
+| LogPoint.Incidents.data.protocol_id | String | Protocol Id | 
+| LogPoint.Incidents.data.sent_packet | String | Sent Packet | 
+| LogPoint.Incidents.data.service | String | Service | 
+| LogPoint.Incidents.data.printer | String | Printer | 
+| LogPoint.Incidents.data.print_count | String | Print Count | 
+| LogPoint.Incidents.data.event_id | String | Event Id | 
+| LogPoint.Incidents.data.country_name | String | Country Name | 
+| LogPoint.Incidents.data.host | String | Host | 
+| LogPoint.Incidents.data.hash | String | Hash | 
+| LogPoint.Incidents.data.hash_sha1 | String | Hash SHA1 | 
+| LogPoint.Incidents.data.agent_address | String | Agent Address | 
+| LogPoint.Incidents.data.attacker_address | String | Attacker Address | 
+| LogPoint.Incidents.data.broadcast_address | String | Broadcast Address | 
+| LogPoint.Incidents.data.client_address | String | Client Address | 
+| LogPoint.Incidents.data.client_hardware_address | String | Client Hardware Address | 
+| LogPoint.Incidents.data.destination_hardware_address | String | Destination Hardware Address | 
+| LogPoint.Incidents.data.destination_nat_address | String | Destination NAT Address | 
+| LogPoint.Incidents.data.device_address | String | Device Address | 
+| LogPoint.Incidents.data.external_address | String | External Address | 
+| LogPoint.Incidents.data.gateway_address | String | Gateway Address | 
+| LogPoint.Incidents.data.hardware_address | String | Hardware Address | 
+| LogPoint.Incidents.data.host_address | String | Host Address | 
+| LogPoint.Incidents.data.interface_address | String | Interface Address | 
+| LogPoint.Incidents.data.lease_address | String | Lease Address | 
+| LogPoint.Incidents.data.local_address | String | Local Address | 
+| LogPoint.Incidents.data.nas_address | String | Nas ddress | 
+| LogPoint.Incidents.data.nas_ipv6_address | String | Nas_IPV6 Address | 
+| LogPoint.Incidents.data.nat_address | String | NAT Address | 
+| LogPoint.Incidents.data.nat_source_address | String | NAT Source Address | 
+| LogPoint.Incidents.data.network_address | String | Network Address | 
+| LogPoint.Incidents.data.new_hardware_address | String | New Hardware Address | 
+| LogPoint.Incidents.data.old_hardware_address | String | Old Hardware Address | 
+| LogPoint.Incidents.data.original_address | String | Original Address | 
+| LogPoint.Incidents.data.original_client_address | String | Original Client Address | 
+| LogPoint.Incidents.data.original_destination_address | String | Original Destination Address | 
+| LogPoint.Incidents.data.original_server_address | String | Original Server Address | 
+| LogPoint.Incidents.data.original_source_address | String | Original Source Address | 
+| LogPoint.Incidents.data.originating_address | String | Originating Address | 
+| LogPoint.Incidents.data.peer_address | String | Peer Address | 
+| LogPoint.Incidents.data.private_address | String | Private Address | 
+| LogPoint.Incidents.data.proxy_address | String | Proxy Address | 
+| LogPoint.Incidents.data.proxy_source_address | String | Proxy Source Address | 
+| LogPoint.Incidents.data.relay_address | String | Relay Address | 
+| LogPoint.Incidents.data.remote_address | String | Remote Address | 
+| LogPoint.Incidents.data.resolved_address | String | Resolved Address | 
+| LogPoint.Incidents.data.route_address | String | Route Address | 
+| LogPoint.Incidents.data.scanner_address | String | Scanner Address | 
+| LogPoint.Incidents.data.server_address | String | Server Address | 
+| LogPoint.Incidents.data.server_hardware_address | String | Server Hardware Address | 
+| LogPoint.Incidents.data.source_hardware_address | String | Source Hardware Address | 
+| LogPoint.Incidents.data.start_address | String | Start Address | 
+| LogPoint.Incidents.data.supplier_address | String | Supplier Address | 
+| LogPoint.Incidents.data.switch_address | String | Switch Address | 
+| LogPoint.Incidents.data.translated_address | String | Translated Address | 
+| LogPoint.Incidents.data.virtual_address | String | Virtual Address | 
+| LogPoint.Incidents.data.virtual_server_address | String | Virtual Server Address | 
+| LogPoint.Incidents.data.vpn_address | String | VPN Address | 
+| LogPoint.Incidents.data.hash_length | String | Hash Length | 
+| LogPoint.Incidents.data.hash_sha256 | String | Hash SHA256 | 
+| LogPoint.Incidents.data.alternate_user | String | Alternate User | 
+| LogPoint.Incidents.data.authenticated_user | String | Authenticated User | 
+| LogPoint.Incidents.data.authorized_user | String | Authorized User | 
+| LogPoint.Incidents.data.certificate_user | String | Certificate User | 
+| LogPoint.Incidents.data.current_user | String | Current User | 
+| LogPoint.Incidents.data.database_user | String | Database User | 
+| LogPoint.Incidents.data.destination_user | String | Destination User | 
+| LogPoint.Incidents.data.logon_user | String | Logon User | 
+| LogPoint.Incidents.data.new_max_user | String | New Max User | 
+| LogPoint.Incidents.data.new_user | String | New User | 
+| LogPoint.Incidents.data.old_max_user | String | Old Max User | 
+| LogPoint.Incidents.data.os_user | String | OS User | 
+| LogPoint.Incidents.data.remote_user | String | Remote User | 
+| LogPoint.Incidents.data.source_user | String | Source User | 
+| LogPoint.Incidents.data.system_user | String | System User | 
+| LogPoint.Incidents.data.target_logon_user | String | Target Logon User | 
+| LogPoint.Incidents.data.zone_user | String | Zone User | 
 
 
 #### Command Example
-```!lp-get-incident-data date=1608284302.3569734 incident_id=cff43115719e19cd04ddf5a7e61d982d incident_obj_id=5fdc788ecf35d7ae0f6b791b```
+```!lp-get-incident-data date=1610700740.2248185 incident_id=8a676c39450e099b3512961d71ec4f7d incident_obj_id=600157c44a2018070b627f6a```
 
 #### Context Example
 ```json
@@ -207,28 +344,61 @@ Retrieves a Particular Incident's Data
                         "Memory",
                         "LogPoint"
                     ],
-                    "_offset": 6112,
+                    "_offset": 195673,
                     "_type_ip": "device_ip",
                     "_type_num": "log_ts col_ts free total use used sig_id _offset _identifier",
                     "_type_str": "msg col_type device_name collected_at device_ip source_name _tz _enrich_policy label norm_id object _fromV550 repo_name logpoint_name",
                     "_tz": "UTC",
-                    "col_ts": 1608284135,
+                    "col_ts": 1610700549,
                     "col_type": "filesystem",
                     "collected_at": "LogPoint",
                     "device_ip": "127.0.0.1",
                     "device_name": "localhost",
-                    "free": "1749",
-                    "log_ts": 1608284133,
+                    "free": "1963",
+                    "log_ts": 1610700541,
                     "logpoint_name": "LogPoint",
-                    "msg": "2020-12-18_09:35:33 Metrics; Physical Memory; total=7977 MB; use=73.8%; used=5889 MB; free=1749 MB",
+                    "msg": "2021-01-15_08:49:01 Metrics; Physical Memory; total=7977 MB; use=71.0%; used=5664 MB; free=1963 MB",
                     "norm_id": "LogPoint",
                     "object": "Physical Memory",
                     "repo_name": "_logpoint",
                     "sig_id": "10507",
                     "source_name": "/opt/immune/var/log/system_metrics/system_metrics.log",
                     "total": "7977",
-                    "use": "73.8",
-                    "used": "5889"
+                    "use": "71.0",
+                    "used": "5664"
+                },
+                {
+                    "_enrich_policy": "None",
+                    "_fromV550": "t",
+                    "_identifier": "0",
+                    "_labels": [
+                        "Metrics",
+                        "Usage",
+                        "Memory",
+                        "LogPoint"
+                    ],
+                    "_offset": 101372,
+                    "_type_ip": "device_ip",
+                    "_type_num": "log_ts col_ts free total use used sig_id _offset _identifier",
+                    "_type_str": "msg col_type device_name collected_at device_ip source_name _tz _enrich_policy label norm_id object _fromV550 repo_name logpoint_name",
+                    "_tz": "UTC",
+                    "col_ts": 1610700428,
+                    "col_type": "filesystem",
+                    "collected_at": "LogPoint",
+                    "device_ip": "127.0.0.1",
+                    "device_name": "localhost",
+                    "free": "1965",
+                    "log_ts": 1610700421,
+                    "logpoint_name": "LogPoint",
+                    "msg": "2021-01-15_08:47:01 Metrics; Physical Memory; total=7977 MB; use=71.0%; used=5662 MB; free=1965 MB",
+                    "norm_id": "LogPoint",
+                    "object": "Physical Memory",
+                    "repo_name": "_logpoint",
+                    "sig_id": "10507",
+                    "source_name": "/opt/immune/var/log/system_metrics/system_metrics.log",
+                    "total": "7977",
+                    "use": "71.0",
+                    "used": "5662"
                 }
             ]
         }
@@ -241,12 +411,12 @@ Retrieves a Particular Incident's Data
 >### Incident Data
 >|msg|use|used|log_ts|_type_str|total|device_name|_offset|logpoint_name|repo_name|free|source_name|col_ts|_tz|norm_id|_identifier|collected_at|device_ip|_fromV550|_enrich_policy|_type_num|_type_ip|sig_id|col_type|object|_labels|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2020-12-18_09:35:33 Metrics; Physical Memory; total=7977 MB; use=73.8%; used=5889 MB; free=1749 MB | 73.8 | 5889 | 1608284133 | msg col_type device_name collected_at device_ip source_name _tz _enrich_policy label norm_id object _fromV550 repo_name logpoint_name | 7977 | localhost | 6112 | LogPoint | _logpoint | 1749 | /opt/immune/var/log/system_metrics/system_metrics.log | 1608284135 | UTC | LogPoint | 0 | LogPoint | 127.0.0.1 | t | None | log_ts col_ts free total use used sig_id _offset _identifier | device_ip | 10507 | filesystem | Physical Memory | Metrics,<br/>Usage,<br/>Memory,<br/>LogPoint |
-
+>| 2021-01-15_08:49:01 Metrics; Physical Memory; total=7977 MB; use=71.0%; used=5664 MB; free=1963 MB | 71.0 | 5664 | 1610700541 | msg col_type device_name collected_at device_ip source_name _tz _enrich_policy label norm_id object _fromV550 repo_name logpoint_name | 7977 | localhost | 195673 | LogPoint | _logpoint | 1963 | /opt/immune/var/log/system_metrics/system_metrics.log | 1610700549 | UTC | LogPoint | 0 | LogPoint | 127.0.0.1 | t | None | log_ts col_ts free total use used sig_id _offset _identifier | device_ip | 10507 | filesystem | Physical Memory | Metrics,<br/>Usage,<br/>Memory,<br/>LogPoint |
+>| 2021-01-15_08:47:01 Metrics; Physical Memory; total=7977 MB; use=71.0%; used=5662 MB; free=1965 MB | 71.0 | 5662 | 1610700421 | msg col_type device_name collected_at device_ip source_name _tz _enrich_policy label norm_id object _fromV550 repo_name logpoint_name | 7977 | localhost | 101372 | LogPoint | _logpoint | 1965 | /opt/immune/var/log/system_metrics/system_metrics.log | 1610700428 | UTC | LogPoint | 0 | LogPoint | 127.0.0.1 | t | None | log_ts col_ts free total use used sig_id _offset _identifier | device_ip | 10507 | filesystem | Physical Memory | Metrics,<br/>Usage,<br/>Memory,<br/>LogPoint |
 
 ### lp-get-incident-states
 ***
-Gets the first 50 Incident States. Arguments are optional. If ts_from and ts_to arguments are not provided, it will get incidents of the past 24 hours.
+Displays incident states data between the provided two Timestamps ts_from and ts_to. By default, this command will display first 50 data of the past 24 hours but limit can be set to get desired number of incident states data.
 
 
 #### Base Command
@@ -258,6 +428,7 @@ Gets the first 50 Incident States. Arguments are optional. If ts_from and ts_to 
 | --- | --- | --- |
 | ts_from | From Timestamp. | Optional | 
 | ts_to | To Timestamp. | Optional | 
+| limit | Number of incident states data to fetch. Accepts integer value. | Optional | 
 
 
 #### Context Output
@@ -271,7 +442,7 @@ Gets the first 50 Incident States. Arguments are optional. If ts_from and ts_to 
 
 
 #### Command Example
-```!lp-get-incident-states ts_from="1608281509" ts_to="1608281523"```
+```!lp-get-incident-states ts_from="1610700720" ts_to="1610700900" limit=5```
 
 #### Context Example
 ```json
@@ -279,15 +450,38 @@ Gets the first 50 Incident States. Arguments are optional. If ts_from and ts_to 
     "LogPoint": {
         "Incidents": {
             "states": [
-            {
-              "id": "5a62bd8cce983de89085429b", 
-              "status": "resolved",
-              "assigned_to": "59b0eecfd8aaa4334ee41707",
-              "title": "sample title 1",
-              "time": 1516420000,
-              "comment": "sample comment 1"
-            }
-          ]
+                {
+                    "assigned_to": "5fd9d95769d3a4ea5684fccf",
+                    "comments": [
+                        {
+                            "comment": "Example comment",
+                            "time": 1610700740,
+                            "title": "admin"
+                        },
+                        {
+                            "comment": "Reassigned",
+                            "time": 1610700745,
+                            "title": "admin"
+                        }
+                    ],
+                    "id": "5fdc788ecf35d7ae0f6b791b",
+                    "name": "Greater than 60",
+                    "status": "unresolved"
+                },
+                {
+                    "assigned_to": "5fd9d95769d3a4ea5684fccf",
+                    "comments": [
+                        {
+                            "comment": "Reassigned",
+                            "time": 1610700745,
+                            "title": "admin"
+                        }
+                    ],
+                    "id": "5fdc788ecf35d7ae0f6b791c",
+                    "name": "Memory use greater than 50",
+                    "status": "unresolved"
+                }
+            ]
         }
     }
 }
@@ -295,11 +489,11 @@ Gets the first 50 Incident States. Arguments are optional. If ts_from and ts_to 
 
 #### Human Readable Output
 
->### Incident States
-
->|id|status|assigned_to|title|time|comment|
->|---|---|---|---|---|---|
->| 5a62bd8cce983de89085429b | resolved | 59b0eecfd8aaa4334ee41707 | sample title 1 | 1516420000 | sample comment 1 |
+>### Displaying all 2 incident states data.
+>|id|name|assigned_to|status|comments|
+>|---|---|---|---|---|
+>| 5fdc788ecf35d7ae0f6b791b | Greater than 60 | 5fd9d95769d3a4ea5684fccf | unresolved | {'title': 'admin', 'comment': 'Example comment', 'time': 1610700740},<br/>{'title': 'admin', 'comment': 'Reassigned', 'time': 1610700745} |
+>| 5fdc788ecf35d7ae0f6b791c | Memory use greater than 50 | 5fd9d95769d3a4ea5684fccf | unresolved | {'title': 'admin', 'comment': 'Reassigned', 'time': 1610700745} |
 
 
 ### lp-add-incident-comment
@@ -326,7 +520,7 @@ Add comments to the incidents
 
 
 #### Command Example
-```!lp-add-incident-comment comment="Example comment" incident_obj_id=5fdc788ecf35d7ae0f6b791b```
+```!lp-add-incident-comment comment="Example comment" incident_obj_id=600157c44a2018070b627f6a```
 
 #### Context Example
 ```json
@@ -367,7 +561,7 @@ Assigning/Re-assigning Incidents
 
 
 #### Command Example
-```!lp-assign-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791b,5fdc788ecf35d7ae0f6b791c" new_assignee=5fd9d95769d3a4ea5684fccf```
+```!lp-assign-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b" new_assignee=5bebd9fdd8aaa42840edc853```
 
 #### Context Example
 ```json
@@ -407,7 +601,7 @@ Resolves the Incidents.
 
 
 #### Command Example
-```!lp-resolve-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791c,5fdc788ecf35d7ae0f6b791d"```
+```!lp-resolve-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"```
 
 #### Context Example
 ```json
@@ -447,7 +641,7 @@ Closes the Incidents.
 
 
 #### Command Example
-```!lp-close-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791c,5fdc788ecf35d7ae0f6b791d"```
+```!lp-close-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"```
 
 #### Context Example
 ```json
@@ -487,7 +681,7 @@ Re-opens the closed incidents
 
 
 #### Command Example
-```!lp-reopen-incidents incident_obj_ids="5fdc788ecf35d7ae0f6b791c,5fdc788ecf35d7ae0f6b791d"```
+```!lp-reopen-incidents incident_obj_ids="600157c44a2018070b627f6a,6001583c4a2018070b627f6b"```
 
 #### Context Example
 ```json

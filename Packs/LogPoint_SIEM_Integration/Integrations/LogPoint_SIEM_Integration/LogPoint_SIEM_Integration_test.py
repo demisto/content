@@ -39,6 +39,7 @@ def test_get_incidents_command(requests_mock):
     args = {
         'ts_from': 1607314566,
         'ts_to': 1607228166,
+        'limit': 50
     }
 
     response = get_incidents_command(client, args)
@@ -111,6 +112,7 @@ def test_get_incident_states_command(requests_mock):
     args = {
         'ts_from': 1607314566,
         'ts_to': 1607228166,
+        'limit': 50
     }
 
     response = get_incident_states_command(client, args)

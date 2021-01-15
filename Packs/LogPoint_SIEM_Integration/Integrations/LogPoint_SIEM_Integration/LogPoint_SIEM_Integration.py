@@ -256,35 +256,60 @@ def test_module(client, max_fetch):
     if max_fetch:
         try:
             max_fetch = int(max_fetch)
-        except Exception:
-            raise DemistoException("Fetch limit does not seem to be valid integer. Suggested: 50 or less, max: 200")
+        except ValueError:
+            return "Fetch limit does not seem to be valid integer. Suggested: 50 or less, max: 200"
         if max_fetch > 200:
-            raise DemistoException("Fetch limit should not be greater than 200.")
+            return "Fetch limit should not be greater than 200."
     ts_from = ts_to = round(datetime.timestamp(datetime.utcnow()))
-    result = client.get_incidents(ts_from, ts_to)
-    if not result.get('success'):
-        raise DemistoException(result['message'])
+    try:
+        result = client.get_incidents(ts_from, ts_to)
+        if not result.get('success'):
+            msg = result['message']
+            if msg == 'Authentication Failed':
+                return "LogPoint authentication failed. Please make sure that the API Key is correct."
+            else:
+                return msg
+    except DemistoException as err:
+        if '<requests.exceptions.ConnectionError>' in str(err):
+            msg = "Could not connect to the LogPoint server. " \
+                  "Verify that the server URL parameter is correct " \
+                  "and that you have access to the server from your host."
+            return msg
+        else:
+            raise err
     return "ok"
 
 
 def get_incidents_command(client, args):
     ts_from = args.get('ts_from')
     ts_to = args.get('ts_to')
+    limit = args.get('limit') if args.get('limit') else 50
+    if limit:
+        try:
+            limit = int(limit)
+        except ValueError:
+            raise DemistoException(f"The provided argument '{limit}' for limit is not a valid integer.")
     result = client.get_incidents(ts_from, ts_to)
     if not result.get('success'):
         raise DemistoException(result['message'])
     incidents = result.get('incidents', [])
     table_header = []
+    display_title = 'Incidents'
     if incidents and len(incidents) > 0:
         table_header = list(incidents[0].keys())
-    markdown_name = 'Incidents'
-    if len(incidents) > 50:
-        incidents = incidents[:50]
+        if not ts_from:
+            ts_from = incidents[0].get('detection_timestamp')
+    if len(incidents) > limit:
+        incidents = incidents[:limit]
         last_detection_ts = incidents[-1].get('detection_timestamp')
-        markdown_name = f"Displaying first 50 incidents. \
-        \n Only first 50 incidents are displayed. Detection time of the 50th incident is: {last_detection_ts}\
-        \n Please narrow down your ts_from and ts_to filter to get all the required incidents"
-    markdown = tableToMarkdown(markdown_name, incidents, headers=table_header)
+        display_title = f"Displaying first {limit} incidents between {ts_from} and {last_detection_ts} timestamps." \
+                        f"\nPlease narrow down ts_from and ts_to arguments or increase the limit argument to " \
+                        f"get more incidents."
+    elif len(incidents) <= limit and len(incidents) != 0:
+        if not ts_to:
+            ts_to = incidents[-1].get('detection_timestamp')
+        display_title = f"Displaying all {len(incidents)} incidents between {ts_from} and {ts_to}"
+    markdown = tableToMarkdown(display_title, incidents, headers=table_header)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.Incidents',
@@ -316,20 +341,28 @@ def get_incident_data_command(client, args):
 def get_incident_states_command(client, args):
     ts_from = args.get('ts_from')
     ts_to = args.get('ts_to')
+    limit = args.get('limit') if args.get('limit') else 50
+    if limit:
+        try:
+            limit = int(limit)
+        except ValueError:
+            raise DemistoException(f"The provided argument '{limit}' for limit is not a valid integer.")
     result = client.get_incident_states(ts_from, ts_to)
     if not result.get('success'):
         raise DemistoException(result['message'])
     incident_states = result.get('states', [])
     table_header = []
+    display_title = 'Incident States'
     if incident_states and len(incident_states) > 0:
         table_header = list(incident_states[0].keys())
-    markdown_name = 'Incident States'
-    if len(incident_states) > 50:
-        incident_states = incident_states[:50]
-        markdown_name = "Displaying first 50 Incident States\
-            \nOnly first 50 incident states are displayed.\
-            \nPlease narrow down your ts_from and ts_to filter to get all the required data."
-    markdown = tableToMarkdown(markdown_name, incident_states, headers=table_header)
+    if len(incident_states) > limit:
+        incident_states = incident_states[:limit]
+        display_title = f"Displaying first {limit} incident states data. " \
+                        f"\nPlease narrow down ts_from and ts_to arguments or increase the limit argument to " \
+                        f"get more."
+    elif len(incident_states) <= limit and len(incident_states) != 0:
+        display_title = f"Displaying all {len(incident_states)} incident states data."
+    markdown = tableToMarkdown(display_title, incident_states, headers=table_header)
     return CommandResults(
         readable_output=markdown,
         outputs_prefix='LogPoint.Incidents.states',
@@ -490,7 +523,7 @@ def main():
     first_fetch_param = params.get('first_fetch') if params.get('first_fetch') else '1 day'
     first_fetch_dt = dateparser.parse(first_fetch_param, settings={'TIMEZONE': 'UTC'})
     if first_fetch_param and not first_fetch_dt:
-        raise DemistoException(f"First fetch input '{first_fetch_param}' is invalid. Valid format eg.:1 day")
+        return_error(f"First fetch input '{first_fetch_param}' is invalid. Valid format eg.:1 day")
     first_fetch = first_fetch_dt.timestamp()
     max_fetch = params.get('max_fetch')
     max_fetch = int(params.get('max_fetch')) if (max_fetch and max_fetch.isdigit()) else 50
