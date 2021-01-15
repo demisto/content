@@ -850,7 +850,7 @@ def create_team():
         allow_team_mentions=argToBoolean(demisto.args().get('allow_team_mentions', 'false')),
         allow_channel_mentions=argToBoolean(demisto.args().get('allow_channel_mentions', 'false')),
     )
-    demisto.results(f'Team {display_name} was created successfully.')
+    return_results(f'Team {display_name} was created successfully.')
 
 
 def create_team_from_group_request(
@@ -926,7 +926,7 @@ def create_team_from_group():
         allow_team_mentions=argToBoolean(demisto.args().get('allow_team_mentions', 'false')),
         allow_channel_mentions=argToBoolean(demisto.args().get('allow_channel_mentions', 'false')),
     )
-    demisto.results(f'The team was created from group {group_id} successfully.')
+    return_results(f'The team was created from group {group_id} successfully.')
 
 
 def list_teams():
@@ -1032,7 +1032,7 @@ def update_team():
         if bool_arg in demisto.args():
             update_team_args[bool_arg] = argToBoolean(demisto.args()[bool_arg])
     update_team_request(**update_team_args)
-    demisto.results(f'Team {team_id} was updated successfully.')
+    return_results(f'Team {team_id} was updated successfully.')
 
 
 @logger
@@ -1044,7 +1044,7 @@ def delete_team_request(team_id: str) -> None:
 def delete_team():
     team_id = demisto.args().get('team_id')
     delete_team_request(team_id)
-    demisto.results(f'Team {team_id} was deleted successfully.')
+    return_results(f'Team {team_id} was deleted successfully.')
 
 
 @logger
@@ -1138,7 +1138,7 @@ def remove_member():
     team_id = demisto.args().get('team_id')
     membership_id = demisto.args().get('membership_id')
     remove_member__request(team_id, membership_id)
-    demisto.results(f'Team member {membership_id} was removed from the team {team_id} successfully.')
+    return_results(f'Team member {membership_id} was removed from the team {team_id} successfully.')
 
 
 @logger
@@ -1184,7 +1184,7 @@ def archive_team_request(team_id: str) -> None:
 def archive_team():
     team_id = demisto.args().get('team_id')
     archive_team_request(team_id)
-    demisto.results(f'Team {team_id} was archived successfully.')
+    return_results(f'Team {team_id} was archived successfully.')
 
 
 @logger
@@ -1196,7 +1196,7 @@ def unarchive_team_request(team_id: str) -> None:
 def unarchive_team():
     team_id = demisto.args().get('team_id')
     unarchive_team_request(team_id)
-    demisto.results(f'Team {team_id} was unarchived successfully.')
+    return_results(f'Team {team_id} was unarchived successfully.')
 
 
 @logger
@@ -1244,7 +1244,7 @@ def clone_team():
         visibility=demisto.args().get('visibility'),
         parts_to_clone=','.join(parts_to_clone),
     )
-    demisto.results(f'Team {team_id} was cloned successfully.')
+    return_results(f'Team {team_id} was cloned successfully.')
 
 
 @logger
