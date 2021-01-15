@@ -504,8 +504,10 @@ def get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_i
 def create_incident_id(incident):
     incident_raw_data = json.loads(incident['rawJSON'])['_raw']
     incident_occurred = incident['occurred']
-    incident_raw_start = incident_raw_data if len(incident_raw_data) < 100 else incident_raw_data[:100]
-    incident_id = incident_occurred + incident_raw_start
+    # incident_raw_start = incident_raw_data if len(incident_raw_data) < 100 else incident_raw_data[:100]
+    # incident_id = incident_occurred + incident_raw_start
+    incident_id = incident_occurred + incident_raw_data
+    demisto.debug('\n\nlength of incident new ID is: {}\n\n'.format(len(incident_id)))
     return incident_id
 
 
