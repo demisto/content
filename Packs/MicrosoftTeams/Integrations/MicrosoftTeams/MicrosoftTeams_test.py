@@ -1469,6 +1469,7 @@ def test_create_team_from_group(requests_mock, mocker):
         'args',
         return_value={
             'group_id': group_id,
+            'allow_guests_create_channels': 'true',
         }
     )
     mocker.patch.object(demisto, 'results')
@@ -1478,7 +1479,7 @@ def test_create_team_from_group(requests_mock, mocker):
         'description': None,
         'visibility': 'public',
         'guestSettings': {
-            'allowCreateUpdateChannels': False,
+            'allowCreateUpdateChannels': True,
             'allowDeleteChannels': False,
         },
         'memberSettings': {
