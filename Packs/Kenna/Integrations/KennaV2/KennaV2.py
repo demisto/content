@@ -50,7 +50,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=header)
 
     def http_request(self, message: str, suffix: str, params: Optional[dict] = None,
-                     data: Optional[dict] = None):  # -> Dict[str, Any]
+                     data: Optional[dict] = None): -> Dict[str, Any]
         """Connects to api and Returns response.
            Args:
                message: The HTTP message, for example: GET, POST, and so on
@@ -108,7 +108,7 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
     """Search vulnerability command.
     Args:
         client: Client which connects to api
-        args: arguments for the request
+        args: arguments for the requesthttps://www.youtube.com/watch?v=3RWAVmrIZCs
     Returns:
         Human Readable
         Entry Context
@@ -123,7 +123,7 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
         'id': argToList(args.get('id')),
         'top_priority': argToList(args.get('top-priority')),
         'min_risk_meter_score': args.get('min-score'),
-        'status': argToList(args.get('status')),
+        'status[]': argToList(args.get('status')),
     }
     response = client.http_request(message='GET', suffix=url_suffix,
                                    params=params).get('vulnerabilities')
@@ -198,7 +198,7 @@ def get_connectors(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[s
     return human_readable_markdown, context, connectors
 
 
-def get_connector_runs(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
+def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """Get Connector Runs command.
     Args:
         client:  Client which connects to api
@@ -207,8 +207,8 @@ def get_connector_runs(client: Client, *_) -> Tuple[str, Dict[str, Any], List[Di
         Entry Context
         Raw Data
     """
-    connector_id = demisto.getArg("connector_id")
-    url_suffix = '/connectors/%s/connector_runs' % connector_id
+    connector_id = str(args.get("connector_id"))
+    url_suffix = f'/connectors/{connector_id}/connector_runs'
     human_readable = []
     context: Dict[str, Any] = {}
     connectors: List[Dict[str, Any]] = client.http_request(message='GET', suffix=url_suffix)
@@ -300,7 +300,7 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
         'id': argToList(args.get('id')),
         'top_priority': argToList(args.get('top-priority')),
         'min_risk_meter_score': args.get('min-score'),
-        'status': argToList(args.get('status')),
+        'status[]': argToList(args.get('status')),
     }
     response = client.http_request(message='GET', suffix=url_suffix, params=params).get('fixes')
     if response:
