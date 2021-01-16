@@ -779,8 +779,11 @@ def get_report(task_id):
         Response JSON from ANYRUN API call.
     """
 
-    url_suffix = 'analysis/' + task_id
-    response = http_request('GET', url_suffix=url_suffix)
+    url_suffix = 'analysis/'
+    params = {
+        'task': task_id,
+    }
+    response = http_request('GET', url_suffix=url_suffix, params=params)
     return response
 
 
