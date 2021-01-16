@@ -77,6 +77,7 @@ class Metadata(object):
     """
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
     XSOAR_SUPPORT = "xsoar"
+    PARTNER_SUPPORT = "partner"
     XSOAR_SUPPORT_URL = "https://www.paloaltonetworks.com/cortex"  # disable-secrets-detection
     XSOAR_AUTHOR = "Cortex XSOAR"
     SERVER_DEFAULT_MIN_VERSION = "6.0.0"
@@ -514,9 +515,9 @@ class Pack(object):
     def _get_certification(support_type, certification=None):
         """ Returns pack certification.
 
-        In case support type is xsoar, CERTIFIED is returned.
-        In case support is not xsoar but pack_metadata has certification field, certification value will be taken from
-        pack_metadata defined value.
+        In case support type is xsoar or partner, CERTIFIED is returned.
+        In case support is not xsoar or partner but pack_metadata has certification field, certification value will be
+        taken from pack_metadata defined value.
         Otherwise empty certification value (empty string) will be returned
 
         Args:
@@ -526,9 +527,9 @@ class Pack(object):
         Returns:
             str: certification value
         """
-        if support_type == Metadata.XSOAR_SUPPORT:
+        if support_type in [Metadata.XSOAR_SUPPORT, Metadata.PARTNER_SUPPORT]:
             return Metadata.CERTIFIED
-        elif support_type != Metadata.XSOAR_SUPPORT and certification:
+        elif certification:
             return certification
         else:
             return ""
@@ -737,19 +738,37 @@ class Pack(object):
         finally:
             return task_status
 
-    def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
+    @staticmethod
+    def encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
+                     private_artifacts_dir):
+        """ decrypt the pack in order to see that the pack was encrypted in the first place.
+
+        Args:
+            zip_pack_path (str): The path to the encrypted zip pack.
+            pack_name (str): The name of the pack that should be encrypted.
+            encryption_key (str): The key which we can decrypt the pack with.
+            extract_destination_path (str): The path in which the pack resides.
+            private_artifacts_dir (str): The chosen name for the private artifacts diriectory.
+        """
         try:
+            current_working_dir = os.getcwd()
             shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
-            current_working_dir = os.getcwd()
             os.chdir(extract_destination_path)
             output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
             subprocess.call('chmod +x ./encryptor', shell=True)
             full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "' \
                            f'{encryption_key}"'
+
             subprocess.call(full_command, shell=True)
+            new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
+            if os.path.exists(new_artefacts):
+                shutil.rmtree(new_artefacts)
+            os.mkdir(path=new_artefacts)
+            shutil.copy(zip_pack_path, os.path.join(new_artefacts, f'{pack_name}_not_encrypted.zip'))
+            shutil.copy(output_file, os.path.join(new_artefacts, f'{pack_name}.zip'))
             os.chdir(current_working_dir)
-        except subprocess.CalledProcessError as error:
+        except (subprocess.CalledProcessError, shutil.Error) as error:
             print(f"Error while trying to encrypt pack. {error}")
 
     def decrypt_pack(self, encrypted_zip_pack_path, decryption_key):
@@ -803,7 +822,8 @@ class Pack(object):
         """
         return self.decrypt_pack(encrypted_zip_pack_path, decryption_key)
 
-    def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
+    def zip_pack(self, extract_destination_path="", pack_name="", encryption_key="",
+                 private_artifacts_dir='private_artifacts'):
         """ Zips pack folder.
 
         Returns:
@@ -822,7 +842,8 @@ class Pack(object):
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
             if encryption_key:
-                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
+                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
+                                  private_artifacts_dir)
             task_status = True
             logging.success(f"Finished zipping {self._pack_name} pack.")
         except Exception:
