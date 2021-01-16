@@ -242,11 +242,9 @@ def test_not_find_malformed_pack_id():
     When
     - Run find_malformed_pack_id command.
     Then
-    - Ensure Exception is returned with the error message.
+    - Ensure an empty list is returned.
     """
-    with pytest.raises(Exception, match='The request to install packs has failed. '
-                                        'Reason: This is an error message without pack ID'):
-        script.find_malformed_pack_id('This is an error message without pack ID')
+    assert script.find_malformed_pack_id('This is an error message without pack ID') == []
 
 
 @timeout_decorator.timeout(3)

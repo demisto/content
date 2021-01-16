@@ -263,10 +263,13 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         # If we force upload we don't want to update the commit in the index.json file,
         # this is to be able to identify all changed packs in the next upload
         commit = previous_commit_hash
+        logging.info('Force upload flow - Index commit hash shuould not be changed')
     else:
         # Otherwise, update the index with the current commit hash (the commit of the upload)
         commit = current_commit_hash
+        logging.info('Updating production index commit hash to master last commit hash')
 
+    logging.debug(f'commit hash is: {commit}')
     with open(os.path.join(index_folder_path, f"{GCPConfig.INDEX_NAME}.json"), "w+") as index_file:
         index = {
             'revision': build_number,

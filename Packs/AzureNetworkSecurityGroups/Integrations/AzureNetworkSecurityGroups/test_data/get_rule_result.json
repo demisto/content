@@ -1,0 +1,21 @@
+{
+    "name": "wow",
+    "id": "some_id",
+    "etag": "",
+    "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+    "properties": {
+        "provisioningState": "Succeeded",
+        "protocol": "*",
+        "sourcePortRange": "*",
+        "destinationPortRange": "*",
+        "sourceAddressPrefix": "3.2.3.2",
+        "destinationAddressPrefix": "1.1.1.1",
+        "access": "Allow",
+        "priority": 3323,
+        "direction": "Inbound",
+        "sourcePortRanges": [],
+        "destinationPortRanges": [],
+        "sourceAddressPrefixes": [],
+        "destinationAddressPrefixes": []
+    }
+}

@@ -75,84 +75,100 @@ class Client:
         self.cert = (cert_file, key_file) if cert_file and key_file else None
         self.tlp_color = tlp_color
 
-    def build_iterator(self, **kwargs) -> List:
-        results = []
-        for feed_name, feed in self.feed_name_to_config.items():
-            r = requests.get(
-                url=feed.get('url', self.url),
-                verify=self.verify,
-                auth=self.auth,
-                cert=self.cert,
-                headers=self.headers,
-                **kwargs
-            )
+    def build_iterator(self, feed: dict, **kwargs) -> List:
+        r = requests.get(
+            url=feed.get('url', self.url),
+            verify=self.verify,
+            auth=self.auth,
+            cert=self.cert,
+            headers=self.headers,
+            **kwargs
+        )
 
-            try:
-                r.raise_for_status()
-                data = r.json()
-                result = jmespath.search(expression=feed.get('extractor'), data=data)
-                results.append({feed_name: result})
+        try:
+            r.raise_for_status()
+            data = r.json()
+            result = jmespath.search(expression=feed.get('extractor'), data=data)
 
-            except ValueError as VE:
-                raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
+        except ValueError as VE:
+            raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {VE}')
 
-        return results
+        return result
 
 
-def test_module(client, params) -> str:
-    client.build_iterator()
+def test_module(client: Client, limit) -> str:
+    for feed_name, feed in client.feed_name_to_config.items():
+        custom_build_iterator = feed.get('custom_build_iterator')
+        if custom_build_iterator:
+            custom_build_iterator(client, feed, limit)
+        else:
+            client.build_iterator(feed)
     return 'ok'
 
 
-def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool, **kwargs) \
-        -> Union[Dict, List[Dict]]:
+def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list, auto_detect: bool,
+                             limit: int = 0, **kwargs) -> Union[Dict, List[Dict]]:
     """
     Fetches the indicators from client.
     :param client: Client of a JSON Feed
     :param indicator_type: the default indicator type
     :param feedTags: the indicator tags
+    :param auto_detect: a boolean indicates if we should automatically detect the indicator_type
+    :param limit: given only when get-indicators command is running. function will return number indicators as the limit
     """
     indicators = []
-    for result in client.build_iterator(**kwargs):
-        for service_name, items in result.items():
-            feed_config = client.feed_name_to_config.get(service_name, {})
-            indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
-            indicator_type = feed_config.get('indicator_type', indicator_type)
-            for item in items:
-                mapping = feed_config.get('mapping')
+    feeds_results = {}
+    for feed_name, feed in client.feed_name_to_config.items():
+        custom_build_iterator = feed.get('custom_build_iterator')
+        if custom_build_iterator:
+            indicators_from_feed = custom_build_iterator(client, feed, limit, **kwargs)
+            if not isinstance(indicators_from_feed, list):
+                raise Exception("Custom function to handle with pagination must return a list type")
+            feeds_results[feed_name] = indicators_from_feed
+        else:
+            feeds_results[feed_name] = client.build_iterator(feed, **kwargs)
 
-                if isinstance(item, str):
-                    item = {indicator_field: item}
-                indicator_value = item.get(indicator_field)
+    for service_name, items in feeds_results.items():
+        feed_config = client.feed_name_to_config.get(service_name, {})
+        indicator_field = feed_config.get('indicator') if feed_config.get('indicator') else 'indicator'
+        indicator_type = feed_config.get('indicator_type', indicator_type)
+        for item in items:
+            mapping = feed_config.get('mapping')
+            if isinstance(item, str):
+                item = {indicator_field: item}
+            indicator_value = item.get(indicator_field)
 
-                current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
-                if not current_indicator_type:
-                    continue
+            current_indicator_type = determine_indicator_type(indicator_type, auto_detect, indicator_value)
+            if not current_indicator_type:
+                continue
 
-                indicator = {
-                    'value': indicator_value,
-                    'type': current_indicator_type,
-                    'fields': {
-                        'tags': feedTags,
-                    }
+            indicator = {
+                'value': indicator_value,
+                'type': current_indicator_type,
+                'fields': {
+                    'tags': feedTags,
                 }
+            }
 
-                if client.tlp_color:
-                    indicator['fields']['trafficlightprotocol'] = client.tlp_color
+            if client.tlp_color:
+                indicator['fields']['trafficlightprotocol'] = client.tlp_color
 
-                attributes = {'source_name': service_name, 'value': indicator_value,
-                              'type': current_indicator_type}
+            attributes = {'source_name': service_name, 'value': indicator_value,
+                          'type': current_indicator_type}
 
-                attributes.update(extract_all_fields_from_indicator(item, indicator_field))
+            attributes.update(extract_all_fields_from_indicator(item, indicator_field))
 
-                if mapping:
-                    for map_key in mapping:
-                        if map_key in attributes:
-                            indicator['fields'][mapping[map_key]] = attributes.get(map_key)  # type: ignore
+            if mapping:
+                for map_key in mapping:
+                    if map_key in attributes:
+                        indicator['fields'][mapping[map_key]] = attributes.get(map_key)  # type: ignore
 
-                indicator['rawJSON'] = item
+            indicator['rawJSON'] = item
 
-                indicators.append(indicator)
+            indicators.append(indicator)
+            if limit and len(indicators) % limit == 0:  # We have a limitation only when get-indicators command is
+                # called, and then we return for each service_name "limit" of indicators
+                break
 
     return indicators
 
@@ -210,10 +226,12 @@ def extract_all_fields_from_indicator(indicator, indicator_key):
 
 def feed_main(params, feed_name, prefix):
     handle_proxy()
-
     client = Client(**params)
     indicator_type = params.get('indicator_type')
+    auto_detect = params.get('auto_detect_type')
+
     feedTags = argToList(params.get('feedTags'))
+    limit = int(demisto.args().get('limit', 10))
     command = demisto.command()
     if prefix and not prefix.endswith('-'):
         prefix += '-'
@@ -221,21 +239,21 @@ def feed_main(params, feed_name, prefix):
         demisto.info(f'Command being called is {demisto.command()}')
     try:
         if command == 'test-module':
-            return_outputs(test_module(client, params))
+            return_results(test_module(client, limit))
 
         elif command == 'fetch-indicators':
-            indicators = fetch_indicators_command(client, params.get('indicator_type'), feedTags,
-                                                  params.get('auto_detect_type'))
-            for b in batch(indicators, batch_size=2000):
-                demisto.createIndicators(b)
+            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect)
+            if not len(indicators):
+                demisto.createIndicators(indicators)
+            else:
+                for b in batch(indicators, batch_size=2000):
+                    demisto.createIndicators(b)
 
         elif command == f'{prefix}get-indicators':
             # dummy command for testing
-            limit = int(demisto.args().get('limit', 10))
-            auto_detect = params.get('auto_detect_type')
-            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect)[:limit]
+            indicators = fetch_indicators_command(client, indicator_type, feedTags, auto_detect, limit)
             hr = tableToMarkdown('Indicators', indicators, headers=['value', 'type', 'rawJSON'])
-            return_outputs(hr, {}, indicators)
+            return_results(CommandResults(readable_output=hr, raw_response=indicators))
 
     except Exception as err:
         err_msg = f'Error in {feed_name} integration [{err}]'

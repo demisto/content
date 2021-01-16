@@ -1,6 +1,6 @@
 The Nozomi Networks Guardian platform is a hardware or virtual appliance that is used to monitor OT/IoT/IT networks. It combines asset discovery, network visualization, vulnerability assessment, risk monitoring and threat detection in a single solution.
   This integration is used to gather alert and asset information from Nozomi.
-This integration was integrated and tested with version xx of Nozomi Networks
+
 ## Configure Nozomi Networks on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

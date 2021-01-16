@@ -2,7 +2,7 @@
     "name": "Uptycs",
     "description": "Fetches data from the Uptycs database.",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Uptycs Inc.",
     "url": "https://www.uptycs.com",
     "email": "support@uptycs.com",

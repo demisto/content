@@ -1,5 +1,4 @@
 category: Network Security
-fromversion: 5.0.0
 commonfields:
   id: Cisco Firepower
   version: -1
@@ -2260,7 +2259,7 @@ script:
     - contextPath: CiscoFP.TaskStatus.Status
       description: task status
       type: String
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
   longRunning: false
@@ -2269,3 +2268,4 @@ script:
   script: '-'
   subtype: python3
   type: python
+fromversion: 5.0.0

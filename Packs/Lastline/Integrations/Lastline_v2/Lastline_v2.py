@@ -105,13 +105,9 @@ class Client(BaseClient):
         return human_readable, context_entry, result
 
     def test_module_command(self):
-        try:
-            self.get_report()
-        except DemistoException as error:
-            if str(error) == 'error Missing required field \'uuid\'.':
-                return 'ok', {}, {}
-            else:
-                raise error
+        self.command_params.update({'after': datetime.now().strftime("%Y-%m-%dT%H:%M:%S")})
+        self.get_task_list()
+        return 'ok', {}, {}
 
     def get_status_and_time(self, uuids) -> List:
         task_list: List[List] = []
@@ -317,7 +313,7 @@ def main():
     }
     api_params.update(demisto.args())
 
-    if not credentials.get('identifier') or not credentials.get('password'):
+    if not credentials or not credentials.get('identifier') or not credentials.get('password'):
         credentials = {}
 
     if not ((params.get('api_key') and params.get('api_token')) or credentials):

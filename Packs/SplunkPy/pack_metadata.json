@@ -1,5 +1,5 @@
 {
-    "name": "SplunkPy",
+    "name": "Splunk",
     "description": "Run queries on Splunk servers.",
     "support": "xsoar",
     "currentVersion": "1.2.6",

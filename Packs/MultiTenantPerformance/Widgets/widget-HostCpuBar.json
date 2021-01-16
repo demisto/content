@@ -1,0 +1,17 @@
+{
+ "id": "host-cpu-bar",
+ "version": -1,
+ "fromVersion": "6.1.0",
+ "name": "CPU Usage per Host",
+ "description": "Percentage of CPU usage per host.",
+ "dataType": "system",
+ "widgetType": "bar",
+ "query": "host.cpu",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "host"
+  ]
+ },
+ "size": 61
+}

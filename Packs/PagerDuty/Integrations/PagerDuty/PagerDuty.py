@@ -17,14 +17,17 @@ requests.packages.urllib3.disable_warnings()
 USE_SSL = not demisto.params().get('insecure', False)
 
 USE_PROXY = demisto.params().get('proxy', True)
-API_KEY = ''
-SERVICE_KEY = ''
-FETCH_INTERVAL = ''
+API_KEY = demisto.params()['APIKey']
+SERVICE_KEY = demisto.params()['ServiceKey']
+FETCH_INTERVAL = demisto.params()['FetchInterval']
 
 SERVER_URL = 'https://api.pagerduty.com/'
 CREATE_EVENT_URL = 'https://events.pagerduty.com/v2/enqueue'
 
-DEFAULT_HEADERS = {}  # type: Dict[str, str]
+DEFAULT_HEADERS = {
+    'Authorization': 'Token token=' + API_KEY,
+    'Accept': 'application/vnd.pagerduty+json;version=2'
+}
 
 '''HANDLE PROXY'''
 if not USE_PROXY:
@@ -718,16 +721,6 @@ def get_service_keys():
 
 def main():
     LOG('command is %s' % (demisto.command(), ))
-
-    global API_KEY, SERVICE_KEY, FETCH_INTERVAL, DEFAULT_HEADERS
-    API_KEY = demisto.params()['APIKey']
-    SERVICE_KEY = demisto.params()['ServiceKey']
-    FETCH_INTERVAL = demisto.params()['FetchInterval']
-    DEFAULT_HEADERS = {
-        'Authorization': 'Token token=' + API_KEY,
-        'Accept': 'application/vnd.pagerduty+json;version=2'
-    }
-
     try:
         if demisto.command() == 'test-module':
             test_module()

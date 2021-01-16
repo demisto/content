@@ -1,5 +1,5 @@
 IBM X-Force Exchange lets you receive threat intelligence about applications, IP addresses, URls and hashes
-This integration was integrated and tested with version xx of XFE_v2
+
 ## Configure XFE_v2 on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

@@ -1,17 +1,17 @@
+import argparse
 import json
+import logging
 import os
 import re
 import sys
-import argparse
+
 import requests
-import logging
 from circleci.api import Api as circle_api
+from slack import WebClient as SlackClient
 
-from slackclient import SlackClient
-
+from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import str2bool, run_command
-from Tests.Marketplace.marketplace_services import BucketUploadFlow, get_successful_and_failed_packs
 
 DEMISTO_GREY_ICON = 'https://3xqz5p387rui1hjtdv1up7lw-wpengine.netdna-ssl.com/wp-content/' \
                     'uploads/2018/07/Demisto-Icon-Dark.png'
@@ -307,10 +307,10 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         slack_client = SlackClient(slack_token)
         slack_client.api_call(
             "chat.postMessage",
-            channel="dmst-content-team",
-            username="Content CircleCI",
-            as_user="False",
-            attachments=content_team_attachments
+            json={'channel': 'dmst-content-team',
+                  'username': 'Content CircleCI',
+                  'as_user': 'False',
+                  'attachments': content_team_attachments}
         )
 
 

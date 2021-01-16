@@ -16,6 +16,7 @@ timeout: 0s
 alt_dockerimages: # used for unit testing
 - demisto/python3:3.7.3.286
 - demisto/python3:3.8.3.8494
+- demisto/python3:3.9.1.14969
 tests:
 - TestCommonPython
 - Test-debug-mode

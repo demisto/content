@@ -4306,3 +4306,49 @@ def test_slack_send_filter_no_entry_tags(mocker):
     mocker.patch.object(demisto, 'params', return_value={'filtered_tags': 'tag1'})
     Slack.slack_send()
     assert demisto.results.mock_calls == []
+
+
+def test_send_message_to_destinations_non_strict():
+    """
+    Given:
+        Blocks with non-strict json
+
+    When:
+        Sending message
+
+    Then:
+        No error is raised
+    """
+    from Slack import send_message_to_destinations
+    blocks = """[
+                  {
+                      "type": "section",
+                      "text": {
+                          "type": "mrkdwn",
+                          "text": "*<${incident.siemlink}|${incident.name}>*\n${incident.details}"
+                      }
+                  },
+                  {
+                      "type": "section",
+                      "fields": [
+                          {
+                              "type": "mrkdwn",
+                              "text": "*Account ID:*\n${incident.accountid} "
+                          }
+                      ]
+                  },
+                  {
+                      "type": "actions",
+                      "elements": [
+                          {
+                              "type": "button",
+                              "text": {
+                                  "type": "plain_text",
+                                  "text": "Acknowledge"
+                              },
+                              "value": "ack"
+                          }
+                      ]
+                  }
+              ]"""
+    send_message_to_destinations([], "", "", blocks=blocks)  # No destinations, no response

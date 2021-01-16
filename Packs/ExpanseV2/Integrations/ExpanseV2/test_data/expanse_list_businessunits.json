@@ -1,0 +1,23 @@
+{
+    "data": [
+        {
+            "id": "134c4a76-6a2c-4ad3-9adb-7546b07e4d2d",
+            "name": "BU1 Dev"
+        },
+        {
+            "id": "e9308766-be41-46bc-ab36-1ae417ba341e",
+            "name": "BU2 Dev"
+        },
+        {
+            "id": "fffff766-be41-46bc-ab36-1ae417ba341e",
+            "name": "BU3"
+        }
+    ],
+    "pagination": {
+        "next": null,
+        "pref": null
+    },
+    "meta": {
+        "totalCount": 2
+    }
+}

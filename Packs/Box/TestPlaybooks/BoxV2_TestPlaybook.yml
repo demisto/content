@@ -1,0 +1,917 @@
+id: BoxV2_TestPlaybook
+name: BoxV2_TestPlaybook
+version: -1
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  "0":
+    id: "0"
+    taskid: "0"
+    type: start
+    task:
+      id: "0"
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 4ba7c3a1-fb70-487c-8587-70ff2fc66b99
+    type: regular
+    task:
+      id: 4ba7c3a1-fb70-487c-8587-70ff2fc66b99
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4ba7c3a1-fb70-487c-8587-70ff2fc66bd2
+    type: regular
+    task:
+      id: 4ba7c3a1-fb70-487c-8587-70ff2fc66bd2
+      version: -1
+      name: box-search-content
+      script: '|||box-search-content'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ancestor_folder_ids: {}
+      comments: {}
+      created_range: {}
+      file_extensions: {}
+      item_description: {}
+      item_name:
+        simple: test
+      limit:
+        simple: "1"
+      offset: {}
+      owner_uids: {}
+      query: {}
+      tag: {}
+      trash_content: {}
+      type:
+        simple: file
+      updated_at_range: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 97205ff8-48f5-42d8-80e0-edbb076bb630
+    type: condition
+    task:
+      id: 97205ff8-48f5-42d8-80e0-edbb076bb630
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.Query.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.Query.etag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.Query.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7b7d402c-0876-4339-8d05-72b5d4d7f37a
+    type: regular
+    task:
+      id: 7b7d402c-0876-4339-8d05-72b5d4d7f37a
+      version: -1
+      name: box-find-file-folder-by-share-link
+      script: '|||box-find-file-folder-by-share-link'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      password: {}
+      shared_link:
+        simple: https://app.box.com/s/oyujr5qpxy1nbky394slw7n98v8pnpmy
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 3122d7f2-0c30-407c-8fe0-d4f299cf88e5
+    type: condition
+    task:
+      id: 3122d7f2-0c30-407c-8fe0-d4f299cf88e5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.ShareLink.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.ShareLink.etag
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f864dfd8-6c25-46ba-8ded-b13f2e3b2e82
+    type: regular
+    task:
+      id: f864dfd8-6c25-46ba-8ded-b13f2e3b2e82
+      version: -1
+      name: box-get-shared-link-by-file
+      script: '|||box-get-shared-link-by-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      as_user: {}
+      file_id:
+        simple: "742246263170"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 85c9361e-2bbb-4771-8288-22143f90bbd7
+    type: condition
+    task:
+      id: 85c9361e-2bbb-4771-8288-22143f90bbd7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.ShareLink.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f55b1740-8a53-41c2-8baa-90bab9a561b2
+    type: regular
+    task:
+      id: f55b1740-8a53-41c2-8baa-90bab9a561b2
+      version: -1
+      name: box-create-file-share-link
+      script: '|||box-create-file-share-link'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      access:
+        simple: open
+      as_user: {}
+      can_download: {}
+      file_id:
+        simple: "742246263170"
+      password: {}
+      unshared_at: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: f8d3d698-c354-4993-8cc5-83810b315294
+    type: condition
+    task:
+      id: f8d3d698-c354-4993-8cc5-83810b315294
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.ShareLink.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 87ef27f1-0aa7-4607-8b69-11f196d197a8
+    type: regular
+    task:
+      id: 87ef27f1-0aa7-4607-8b69-11f196d197a8
+      version: -1
+      name: box-update-file-share-link
+      script: '|||box-update-file-share-link'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      access:
+        simple: open
+      as_user: {}
+      can_download: {}
+      file_id:
+        simple: "742246263170"
+      password: {}
+      unshared_at: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: de2950ea-940e-4b03-8a2c-c18fddbc736a
+    type: condition
+    task:
+      id: de2950ea-940e-4b03-8a2c-c18fddbc736a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.ShareLink.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: e288cbb0-8756-4d26-8b6e-4b19e9ecf039
+    type: regular
+    task:
+      id: e288cbb0-8756-4d26-8b6e-4b19e9ecf039
+      version: -1
+      name: box-remove-file-share-link
+      script: '|||box-remove-file-share-link'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      as_user: {}
+      file_id:
+        simple: "742246263170"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2ff4e9e0-13d3-43e5-8da8-a3e7b66d15ca
+    type: regular
+    task:
+      id: 2ff4e9e0-13d3-43e5-8da8-a3e7b66d15ca
+      version: -1
+      name: box-get-shared-link-by-folder
+      script: '|||box-get-shared-link-by-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      as_user: {}
+      folder_id:
+        simple: "125959916474"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 4894f828-cde6-43d4-81ca-d6b6a14d9d34
+    type: condition
+    task:
+      id: 4894f828-cde6-43d4-81ca-d6b6a14d9d34
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.ShareLink.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 25086c20-fe51-4f7d-8f80-14996ccf37ac
+    type: regular
+    task:
+      id: 25086c20-fe51-4f7d-8f80-14996ccf37ac
+      version: -1
+      name: box-create-folder-share-link
+      script: '|||box-create-folder-share-link'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      access:
+        simple: open
+      as_user: {}
+      can_download: {}
+      folder_id:
+        simple: "125959916474"
+      password: {}
+      unshared_at: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 89bc2e27-de47-4b1a-8848-dd7904edfa61
+    type: condition
+    task:
+      id: 89bc2e27-de47-4b1a-8848-dd7904edfa61
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.ShareLink.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b1492e61-a912-4bae-8b5b-1a9e8cd3afb1
+    type: regular
+    task:
+      id: b1492e61-a912-4bae-8b5b-1a9e8cd3afb1
+      version: -1
+      name: box-update-folder-share-link
+      script: '|||box-update-folder-share-link'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      access:
+        simple: open
+      as_user: {}
+      can_download: {}
+      folder_id:
+        simple: "125959916474"
+      password: {}
+      unshared_at: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 20de152e-d921-4627-803d-5ea51a39f45c
+    type: condition
+    task:
+      id: 20de152e-d921-4627-803d-5ea51a39f45c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Box.ShareLink.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: a0a4b18d-cab0-40ba-8759-3523d78d04de
+    type: regular
+    task:
+      id: a0a4b18d-cab0-40ba-8759-3523d78d04de
+      version: -1
+      name: box-remove-folder-share-link
+      script: '|||box-remove-folder-share-link'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      as_user: {}
+      folder_id:
+        simple: "125959916474"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: f236805c-1e30-4494-881e-83865e6cecdf
+    type: regular
+    task:
+      id: f236805c-1e30-4494-881e-83865e6cecdf
+      version: -1
+      name: box-get-folder
+      script: '|||box-get-folder'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      as_user: {}
+      folder_id:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 6b8a9fb5-0624-4941-8987-e778592a3a6e
+    type: regular
+    task:
+      id: 6b8a9fb5-0624-4941-8987-e778592a3a6e
+      version: -1
+      name: box-list-folder-items
+      script: '|||box-list-folder-items'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      as_user: {}
+      folder_id:
+        simple: "0"
+      limit:
+        simple: "1"
+      offset: {}
+      sort: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: c25e08f2-a867-4809-8d10-08087b59f081
+    type: regular
+    task:
+      id: c25e08f2-a867-4809-8d10-08087b59f081
+      version: -1
+      name: box-list-users
+      script: '|||box-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      fields:
+        simple: name
+      filter_term:
+        simple: Andrew
+      limit: {}
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 7ea9e8d2-8a24-496f-8489-7c43a3b811ef
+    type: regular
+    task:
+      id: 7ea9e8d2-8a24-496f-8489-7c43a3b811ef
+      version: -1
+      name: box-trashed-items-list
+      script: '|||box-trashed-items-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      as_user: {}
+      limit:
+        simple: "1"
+      offset: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 8fa5184b-ff24-41e1-8a4b-cb927a004dc6
+    type: regular
+    task:
+      id: 8fa5184b-ff24-41e1-8a4b-cb927a004dc6
+      version: -1
+      name: box-get-current-user
+      script: '|||box-get-current-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      as_user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: "45"
+    type: title
+    task:
+      id: "45"
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4410,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -1,0 +1,162 @@
+id: Feed iDefense Test
+version: -1
+name: Feed iDefense Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8fc904a3-8de2-40e9-8567-2cd9fd5ce631
+    type: start
+    task:
+      id: 8fc904a3-8de2-40e9-8567-2cd9fd5ce631
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: bbf89b27-5af5-4d8e-8e76-23aa7433863b
+    type: condition
+    task:
+      id: bbf89b27-5af5-4d8e-8e76-23aa7433863b
+      version: -1
+      name: Is Instance Running
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: iDefense Feed
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 62038f42-98db-4354-847a-12b4c0a6438a
+    type: title
+    task:
+      id: 62038f42-98db-4354-847a-12b4c0a6438a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6fadef50-8a65-4a89-89ad-0d9a7298ac97
+    type: regular
+    task:
+      id: 6fadef50-8a65-4a89-89ad-0d9a7298ac97
+      version: -1
+      name: idefense-get-indicators
+      description: Gets the feed indicators.
+      script: '|||idefense-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit:
+        simple: ${inputs.Limit}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1015,
+        "width": 620,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Limit
+  value:
+    simple: "50"
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 5.5.0
+description: Test playbook for iDefense feed

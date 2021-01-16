@@ -1,0 +1,3418 @@
+description: Test Playbook for Expanse V2
+id: ExpanseV2 Test
+inputs: []
+name: ExpanseV2 Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e491d578-04b1-4743-8ac4-c94e65a8a253
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: e491d578-04b1-4743-8ac4-c94e65a8a253
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1f21ca22-2c0a-440d-81de-1c61b8b9e77c
+      iscommand: true
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 1f21ca22-2c0a-440d-81de-1c61b8b9e77c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      activity_status: {}
+      assignee: {}
+      business_unit: {}
+      content_search: {}
+      created_after: {}
+      created_before: {}
+      domain_search: {}
+      inet_search: {}
+      issue_type: {}
+      limit:
+        simple: "1"
+      modified_after: {}
+      modified_before: {}
+      port_number: {}
+      progress_status: {}
+      provider:
+        simple: Amazon Web Services
+      sort:
+        simple: -created
+      tag: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fe54a85b-9f0b-44dd-8995-e7fe874105c3
+      iscommand: true
+      name: expanse-get-issues
+      script: '|||expanse-get-issues'
+      type: regular
+      version: -1
+    taskid: fe54a85b-9f0b-44dd-8995-e7fe874105c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.activityStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.assets.assetKey
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.assets.assetType
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.assets.displayName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.assets.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.assigneeUsername
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.businessUnits.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.businessUnits.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.category
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.created
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.headline
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.helpText
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.initialEvidence
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.ip
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.issueType.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.issueType.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.latestEvidence
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.modified
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.portNumber
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.portProtocol
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.priority
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.progressStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.providers.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.providers.name
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "49"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6bd0dc06-1b9d-4ccd-8ef3-0e752b3de368
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 6bd0dc06-1b9d-4ccd-8ef3-0e752b3de368
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      created_after:
+        complex:
+          accessor: created
+          root: incident
+      issue_id:
+        complex:
+          root: ExpanseIssueID
+      limit:
+        simple: "10"
+      update_types:
+        simple: Comment,ProgressStatus
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cef48207-ceeb-4d43-818e-2b981703a919
+      iscommand: true
+      name: expanse-get-issue-updates
+      script: '|||expanse-get-issue-updates'
+      type: regular
+      version: -1
+    taskid: cef48207-ceeb-4d43-818e-2b981703a919
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.created
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.issueId
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseIssueID
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.updateType
+          operator: isEqualString
+          right:
+            value:
+              simple: ProgressStatus
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.user.username
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.value
+          operator: isEqualString
+          right:
+            value:
+              simple: InProgress
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 29b3d1ef-701d-4b62-8c4a-1c9a38931b31
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 29b3d1ef-701d-4b62-8c4a-1c9a38931b31
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      created_after:
+        complex:
+          accessor: created
+          root: incident
+      issue_id:
+        complex:
+          root: ExpanseIssueID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d13427ab-2cce-4b29-8033-1198966079b4
+      iscommand: true
+      name: expanse-get-issue-comments
+      script: '|||expanse-get-issue-comments'
+      type: regular
+      version: -1
+    taskid: d13427ab-2cce-4b29-8033-1198966079b4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueComment.created
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueComment.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueComment.issueId
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseIssueID
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueComment.updateType
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueComment.value
+          operator: isEqualString
+          right:
+            value:
+              simple: XSOAR Test Playbook Comment
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "52"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3c8382c8-ed8f-40ca-8aa8-341d6c8d57ef
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 3c8382c8-ed8f-40ca-8aa8-341d6c8d57ef
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      issue_id:
+        complex:
+          root: ExpanseIssueID
+      update_type:
+        simple: Comment
+      value:
+        simple: XSOAR Test Playbook Comment
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 433b8656-2cbc-421f-87ae-0531c7cbebc5
+      iscommand: true
+      name: expanse-update-issue (Add Comment)
+      script: '|||expanse-update-issue'
+      type: regular
+      version: -1
+    taskid: 433b8656-2cbc-421f-87ae-0531c7cbebc5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.created
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.issueId
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseIssueID
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.updateType
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.user.username
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IssueUpdate.value
+          operator: isNotEmpty
+      label: "yes"
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "50"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6981a23d-0e29-444e-8ad9-208b3fde3fa8
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 6981a23d-0e29-444e-8ad9-208b3fde3fa8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      issue_id:
+        complex:
+          root: ExpanseIssueID
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 02ee7964-cfe7-4a04-8c6e-41e5cb8b0089
+      iscommand: true
+      name: expanse-get-issue
+      script: '|||expanse-get-issue'
+      type: regular
+      version: -1
+    taskid: 02ee7964-cfe7-4a04-8c6e-41e5cb8b0089
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.activityStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.assets.assetKey
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.assets.assetType
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.assets.displayName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.assets.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.assigneeUsername
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.businessUnits.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.businessUnits.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.category
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.created
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.headline
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.helpText
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.id
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseIssueID
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.initialEvidence
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.ip
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.issueType.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.issueType.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.latestEvidence
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.modified
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.portNumber
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.portProtocol
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.priority
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.progressStatus
+          operator: isEqualString
+          right:
+            value:
+              simple: InProgress
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.providers.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Issue.providers.name
+          operator: isNotEmpty
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b43e3900-8cf0-4f2b-8957-1754b23950a5
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: b43e3900-8cf0-4f2b-8957-1754b23950a5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "5"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c13962d0-7526-4829-8118-01fbd63ac732
+      iscommand: true
+      name: expanse-list-businessunits
+      script: '|||expanse-list-businessunits'
+      type: regular
+      version: -1
+    taskid: c13962d0-7526-4829-8118-01fbd63ac732
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.BusinessUnit.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.BusinessUnit.name
+          operator: isNotEmpty
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f0f632e0-db36-4454-89bb-be5bd6f77f1d
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: f0f632e0-db36-4454-89bb-be5bd6f77f1d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "5"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8239ed43-0dbe-4370-87fc-ddc66d9d1d23
+      iscommand: true
+      name: expanse-list-providers
+      script: '|||expanse-list-providers'
+      type: regular
+      version: -1
+    taskid: 8239ed43-0dbe-4370-87fc-ddc66d9d1d23
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Provider.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Provider.name
+          operator: isNotEmpty
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 455e410c-7175-4d8f-8561-7945183b21c7
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 455e410c-7175-4d8f-8561-7945183b21c7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      limit:
+        simple: "100"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 02dbdf81-07b5-4e4b-8ae9-1044fb6a7119
+      iscommand: true
+      name: expanse-list-tags
+      script: '|||expanse-list-tags'
+      type: regular
+      version: -1
+    taskid: 02dbdf81-07b5-4e4b-8ae9-1044fb6a7119
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Tag.created
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Tag.description
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Tag.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Tag.modified
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Tag.name
+          operator: isEqualString
+          right:
+            value:
+              simple: xsoar-test-pb-tag
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Tag.tenantId
+          operator: isNotEmpty
+      label: "yes"
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 035c1dae-dfea-4380-8f5a-bac197d2229d
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 035c1dae-dfea-4380-8f5a-bac197d2229d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        complex:
+          root: ExpanseIPRangeID
+      asset_type:
+        simple: IpRange
+      tag_names: {}
+      tags:
+        complex:
+          accessor: id
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Expanse.Tag.name
+              operator: isEqualString
+              right:
+                value:
+                  simple: xsoar-test-pb-tag
+          root: Expanse.Tag
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 18064046-c2f2-41f9-85ed-ac7c0e3629b4
+      iscommand: true
+      name: expanse-assign-tags-to-asset
+      script: '|||expanse-assign-tags-to-asset'
+      type: regular
+      version: -1
+    taskid: 18064046-c2f2-41f9-85ed-ac7c0e3629b4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        complex:
+          root: ExpanseIPRangeID
+      asset_type:
+        simple: IpRange
+      tag_names: {}
+      tags:
+        complex:
+          accessor: id
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: Expanse.Tag.name
+              operator: isEqualString
+              right:
+                value:
+                  simple: xsoar-test-pb-tag
+          root: Expanse.Tag
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 296ea607-b5f1-4a5c-8606-5ea874fa9f0f
+      iscommand: true
+      name: expanse-unassign-tags-from-asset
+      script: '|||expanse-unassign-tags-from-asset'
+      type: regular
+      version: -1
+    taskid: 296ea607-b5f1-4a5c-8606-5ea874fa9f0f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+  "20":
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "46"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        complex:
+          root: ExpanseIPRangeID
+      tag_names:
+        simple: xsoar-test-pb-tag
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a7ca335c-c856-460b-8323-34020701dcc3
+      iscommand: true
+      name: expanse-assign-tags-to-iprange
+      script: '|||expanse-assign-tags-to-iprange'
+      type: regular
+      version: -1
+    taskid: a7ca335c-c856-460b-8323-34020701dcc3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        complex:
+          root: ExpanseIPRangeID
+      tag_names:
+        simple: xsoar-test-pb-tag
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f439c6b9-6982-45ee-8c88-73458a9c294a
+      iscommand: true
+      name: expanse-unassign-tags-from-iprange
+      script: '|||expanse-unassign-tags-from-iprange'
+      type: regular
+      version: -1
+    taskid: f439c6b9-6982-45ee-8c88-73458a9c294a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        complex:
+          root: ExpanseCertificateID
+      tag_names:
+        simple: xsoar-test-pb-tag
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3f65b65b-37e7-4426-8d26-27bd7b6c610c
+      iscommand: true
+      name: expanse-assign-tags-to-certificate
+      script: '|||expanse-assign-tags-to-certificate'
+      type: regular
+      version: -1
+    taskid: 3f65b65b-37e7-4426-8d26-27bd7b6c610c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        complex:
+          root: ExpanseCertificateID
+      tag_names:
+        simple: xsoar-test-pb-tag
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 226a8b06-e029-4345-887d-278a02bb6b42
+      iscommand: true
+      name: expanse-unassign-tags-from-certificate
+      script: '|||expanse-unassign-tags-from-certificate'
+      type: regular
+      version: -1
+    taskid: 226a8b06-e029-4345-887d-278a02bb6b42
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7895
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        complex:
+          root: ExpanseDomainID
+      tag_names:
+        simple: xsoar-test-pb-tag
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 36c83a80-0070-4383-8899-a0f8bed96fd2
+      iscommand: true
+      name: expanse-assign-tags-to-domain
+      script: '|||expanse-assign-tags-to-domain'
+      type: regular
+      version: -1
+    taskid: 36c83a80-0070-4383-8899-a0f8bed96fd2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8945
+        }
+      }
+  "25":
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "48"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_id:
+        complex:
+          root: ExpanseDomainID
+      tag_names:
+        simple: xsoar-test-pb-tag
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ac874582-8b87-4ba5-897a-f0ee26e0e1b4
+      iscommand: true
+      name: expanse-unassign-tags-from-domain
+      script: '|||expanse-unassign-tags-from-domain'
+      type: regular
+      version: -1
+    taskid: ac874582-8b87-4ba5-897a-f0ee26e0e1b4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9470
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: XSOAR Test Playbook Tag
+      name:
+        simple: xsoar-test-pb-tag
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6297a5d0-9a53-48b2-8f49-1d0416fea934
+      iscommand: true
+      name: expanse-create-tag
+      script: '|||expanse-create-tag'
+      type: regular
+      version: -1
+    taskid: 6297a5d0-9a53-48b2-8f49-1d0416fea934
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      businessunit_names: {}
+      businessunits: {}
+      id: {}
+      include: {}
+      inet: {}
+      limit:
+        simple: "1"
+      tag_names: {}
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e33bee41-4ff7-4a7e-84b3-a77bcffcbada
+      iscommand: true
+      name: expanse-get-iprange
+      script: '|||expanse-get-iprange'
+      type: regular
+      version: -1
+    taskid: e33bee41-4ff7-4a7e-84b3-a77bcffcbada
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+  "29":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.businessUnits.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.businessUnits.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.cidr
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.created
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.ipVersion
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.modified
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.rangeIntroduced
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.rangeSize
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.rangeType
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.responsiveIpCount
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Vendor
+          operator: isEqualString
+          right:
+            value:
+              simple: ExpanseV2
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: isEqualString
+          right:
+            value:
+              simple: cidr
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Indicator
+          operator: isNotEmpty
+      label: "yes"
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "54"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 44015640-5a65-4d24-8cf5-82b2a5346118
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 44015640-5a65-4d24-8cf5-82b2a5346118
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      businessunit_names: {}
+      businessunits: {}
+      domain: {}
+      has_active_service: {}
+      has_dns_resolution: {}
+      has_related_cloud_resources: {}
+      last_observed_date: {}
+      limit:
+        simple: "1"
+      provider_names: {}
+      providers: {}
+      search: {}
+      tag_names: {}
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e8c371c3-9699-4693-8447-01dbeba68ac7
+      iscommand: true
+      name: expanse-get-domain
+      script: '|||expanse-get-domain'
+      type: regular
+      version: -1
+    taskid: e8c371c3-9699-4693-8447-01dbeba68ac7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8070
+        }
+      }
+  "31":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.businessUnits.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.businessUnits.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.businessUnits.tenantId
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.dateAdded
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.dnsResolutionStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.domain
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.firstObserved
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.lastObserved
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.lastSampledIp
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.providers.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.providers.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.serviceStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.sourceDomain
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.tenant.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.tenant.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.tenant.tenantId
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.whois
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.Name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.CreationDate
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.UpdatedDate
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.ExpirationDate
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.DomainStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.NameServers
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.Organization
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Indicator
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: inList
+          right:
+            value:
+              simple: domain,domainglob
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Vendor
+          operator: isEqualString
+          right:
+            value:
+              simple: ExpanseV2
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0"
+      label: "yes"
+    id: "31"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "61"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a6cdc1f4-b57a-4de9-8d47-e78a77472b24
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: a6cdc1f4-b57a-4de9-8d47-e78a77472b24
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8245
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      businessunit_names: {}
+      businessunits: {}
+      has_active_service: {}
+      has_certificate_advertisement: {}
+      has_related_cloud_resources: {}
+      last_observed_date: {}
+      limit:
+        simple: "1"
+      md5_hash: {}
+      provider_names: {}
+      providers: {}
+      search: {}
+      tag_names: {}
+      tags: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 127e9502-37fd-4cf8-8633-2e36506c9659
+      iscommand: true
+      name: expanse-get-certificate
+      script: '|||expanse-get-certificate'
+      type: regular
+      version: -1
+    taskid: 127e9502-37fd-4cf8-8633-2e36506c9659
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+  "35":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.businessUnits.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.businessUnits.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.businessUnits.tenantId
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.issuer
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.md5Hash
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.pemSha1
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.pemSha256
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.publicKey
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.publicKeyAlgorithm
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.publicKeyBits
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.publicKeySpki
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.serialNumber
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.signatureAlgorithm
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.subject
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.validNotAfter
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.validNotBefore
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.version
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificateAdvertisementStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.commonName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.dateAdded
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.properties
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.providers.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.providers.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.serviceStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.tenant.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.tenant.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.tenant.tenantId
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.Name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.SubjectDN
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.IssuerDN
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.SerialNumber
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.ValidityNotAfter
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.ValidityNotBefore
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.SHA256
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.SHA1
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.MD5
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.PublicKey.Algorithm
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.PublicKey.Length
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.SPKISHA256
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.Signature.Algorithm
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Vendor
+          operator: isEqualString
+          right:
+            value:
+              simple: ExpanseV2
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Indicator
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: isEqualString
+          right:
+            value:
+              simple: certificate
+      label: "yes"
+    id: "35"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "57"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2b422cc7-c256-4e8f-8483-f30f7b760592
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 2b422cc7-c256-4e8f-8483-f30f7b760592
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      certificate:
+        complex:
+          root: ExpanseCertificateMD5
+      set_expanse_fields:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 49509d5e-1b0b-4c6a-8f23-70854c333326
+      iscommand: true
+      name: certificate
+      script: '|||certificate'
+      type: regular
+      version: -1
+    taskid: 49509d5e-1b0b-4c6a-8f23-70854c333326
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+  "37":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.businessUnits.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.businessUnits.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.businessUnits.tenantId
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.issuer
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.md5Hash
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.pemSha1
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.pemSha256
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.publicKey
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.publicKeyAlgorithm
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.publicKeyBits
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.publicKeySpki
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.serialNumber
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.signatureAlgorithm
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.subject
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.validNotAfter
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.validNotBefore
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificate.version
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.certificateAdvertisementStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.commonName
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.dateAdded
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.id
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseCertificateID
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.properties
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.providers.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.providers.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.serviceStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.tenant.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.tenant.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.tenant.tenantId
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.Name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.SubjectDN
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.IssuerDN
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.SerialNumber
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.ValidityNotAfter
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.ValidityNotBefore
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.SHA256
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.SHA1
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.MD5
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseCertificateMD5
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.PublicKey.Algorithm
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.PublicKey.Length
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.SPKISHA256
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Certificate.Signature.Algorithm
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Vendor
+          operator: isEqualString
+          right:
+            value:
+              simple: ExpanseV2
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Indicator
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseCertificateSHA256
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: isEqualString
+          right:
+            value:
+              simple: certificate
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Certificate.annotations.tags.name
+          operator: isEqualString
+          right:
+            value:
+              simple: xsoar-test-pb-tag
+      label: "yes"
+    id: "37"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4bef1a09-1ad7-4f9e-84d7-b8a724dc1677
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 4bef1a09-1ad7-4f9e-84d7-b8a724dc1677
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+  "42":
+    id: "42"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "43"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        complex:
+          root: ExpanseDomainName
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3b1c5766-8c44-49e8-8860-53091bef6ab6
+      iscommand: true
+      name: domain
+      script: '|||domain'
+      type: regular
+      version: -1
+    taskid: 3b1c5766-8c44-49e8-8860-53091bef6ab6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9120
+        }
+      }
+  "43":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.businessUnits.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.businessUnits.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.businessUnits.tenantId
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.dateAdded
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.dnsResolutionStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.domain
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseDomainName
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.firstObserved
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.id
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseDomainID
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.lastObserved
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.lastSampledIp
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.providers.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.providers.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.serviceStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.sourceDomain
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.tenant.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.tenant.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.tenant.tenantId
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.Domain.whois
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.Name
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseDomainName
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.CreationDate
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.UpdatedDate
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.ExpirationDate
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.DomainStatus
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.NameServers
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Domain.Organization
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Indicator
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseDomainName
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: inList
+          right:
+            value:
+              simple: domain,domainglob
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Vendor
+          operator: isEqualString
+          right:
+            value:
+              simple: ExpanseV2
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0"
+      label: "yes"
+    id: "43"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eaf21d60-9a1b-4a7b-87fd-71e850bf1c1f
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: eaf21d60-9a1b-4a7b-87fd-71e850bf1c1f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9295
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "47"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      cidr:
+        complex:
+          root: ExpanseIPRangeCIDR
+      include:
+        simple: severityCounts,annotations
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5dd690cd-1e61-4958-8699-a0fe6100d938
+      iscommand: true
+      name: cidr
+      script: '|||cidr'
+      type: regular
+      version: -1
+    taskid: 5dd690cd-1e61-4958-8699-a0fe6100d938
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+  "47":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.businessUnits.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.businessUnits.name
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.cidr
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseIPRangeCIDR
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.created
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.id
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.ipVersion
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.modified
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.rangeIntroduced
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.rangeSize
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.rangeType
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: Expanse.IPRange.responsiveIpCount
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Score
+          operator: isEqualNumber
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Vendor
+          operator: isEqualString
+          right:
+            value:
+              simple: ExpanseV2
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Indicator
+          operator: isEqualString
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: ExpanseIPRangeCIDR
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Type
+          operator: isEqualString
+          right:
+            value:
+              simple: cidr
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                root: Expanse.IPRange.annotations.tags
+          operator: isEqualString
+          right:
+            value:
+              simple: xsoar-test-pb-tag
+      label: "yes"
+    id: "47"
+    ignoreworker: false
+    nexttasks:
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 36ac637a-39cb-4bad-86e2-7694df87fd37
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 36ac637a-39cb-4bad-86e2-7694df87fd37
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: aa15b2a0-e038-4088-8cd8-eab5b2876e99
+      iscommand: false
+      name: Test Done
+      type: title
+      version: -1
+      description: ''
+    taskid: aa15b2a0-e038-4088-8cd8-eab5b2876e99
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9650
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "64"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExpanseIssueID
+      stringify: {}
+      value:
+        complex:
+          accessor: id
+          root: Expanse.Issue
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: b64b4202-99ae-4107-8bc8-48daae103681
+      iscommand: false
+      name: Save Expanse Issue Id to Context
+      script: Set
+      type: regular
+      version: -1
+    taskid: b64b4202-99ae-4107-8bc8-48daae103681
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      issue_id:
+        complex:
+          root: ExpanseIssueID
+      update_type:
+        simple: ProgressStatus
+      value:
+        simple: InProgress
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fdba973c-1b69-4f71-8c59-014033ddca9e
+      iscommand: true
+      name: expanse-update-issue (Change Progress Status)
+      script: '|||expanse-update-issue'
+      type: regular
+      version: -1
+    taskid: fdba973c-1b69-4f71-8c59-014033ddca9e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExpanseIssueProgressStatus
+      stringify: {}
+      value:
+        complex:
+          accessor: progressStatus
+          root: Expanse.Issue
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: e3b395d2-c15b-41c8-8eac-8ed738f873ad
+      iscommand: false
+      name: Save Expanse Issue Progress Status to Context
+      script: Set
+      type: regular
+      version: -1
+    taskid: e3b395d2-c15b-41c8-8eac-8ed738f873ad
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "no"
+      index: {}
+      key:
+        simple: Expanse.Issue
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 8d00e1f4-ec36-4062-823f-bbb22986a7fb
+      iscommand: false
+      name: Delete Expanse Issue From Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8d00e1f4-ec36-4062-823f-bbb22986a7fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      issue_id:
+        complex:
+          root: ExpanseIssueID
+      update_type:
+        simple: ProgressStatus
+      value:
+        complex:
+          root: ExpanseIssueProgressStatus
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a6373f9e-d646-4724-86bc-e331aee955d3
+      iscommand: true
+      name: expanse-update-issue (Reset Progress Status to Original Value)
+      script: '|||expanse-update-issue'
+      type: regular
+      version: -1
+    taskid: a6373f9e-d646-4724-86bc-e331aee955d3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+  "54":
+    id: "54"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "56"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ExpanseIPRangeID
+      stringify: {}
+      value:
+        complex:
+          accessor: id
+          root: Expanse.IPRange
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 2f659921-56c2-4373-8bf9-62ba78c914be
+      iscommand: false
+      name: Save Expanse IP Range ID
+      script: Set
+      type: regular
+      version: -1
+    taskid: 2f659921-56c2-4373-8bf9-62ba78c914be
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+  "55":
+    id: "55"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: ExpanseIPRangeID,ExpanseIPRangeCIDR,Expanse.Tag,ExpanseIssueIP
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 5e9ee44c-81ce-43ab-86b2-f1cf9bed233a
+      iscommand: false
+      name: Delete Context (Except things to keep)
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 5e9ee44c-81ce-43ab-86b2-f1cf9bed233a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+  "56":
+    id: "56"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "55"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ExpanseIPRangeCIDR
+      stringify: {}
+      value:
+        complex:
+          accessor: cidr
+          root: Expanse.IPRange
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 8028cf4d-efbc-4070-8777-f72573ea0773
+      iscommand: false
+      name: Save Expanse IP Range CIDR
+      script: Set
+      type: regular
+      version: -1
+    taskid: 8028cf4d-efbc-4070-8777-f72573ea0773
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+  "57":
+    id: "57"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "58"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ExpanseCertificateID
+      stringify: {}
+      value:
+        complex:
+          accessor: id
+          root: Expanse.Certificate
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 9f500300-93f6-4708-8623-bb1386aee49c
+      iscommand: false
+      name: Save Expanse Certificate ID
+      script: Set
+      type: regular
+      version: -1
+    taskid: 9f500300-93f6-4708-8623-bb1386aee49c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+  "58":
+    id: "58"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "60"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ExpanseCertificateMD5
+      stringify: {}
+      value:
+        complex:
+          accessor: MD5
+          root: Certificate
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 17c96ac7-1ce6-49f3-8880-9ecd170ca87a
+      iscommand: false
+      name: Save Expanse Certificate MD5
+      script: Set
+      type: regular
+      version: -1
+    taskid: 17c96ac7-1ce6-49f3-8880-9ecd170ca87a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+  "59":
+    id: "59"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: ExpanseCertificateID,ExpanseCertificateMD5,ExpanseCertificateSHA256,ExpanseIssueIP
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: d8ba5e6a-2ac1-4f51-8332-87288a3f5c2b
+      iscommand: false
+      name: Delete Context (Except things to keep)
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: d8ba5e6a-2ac1-4f51-8332-87288a3f5c2b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+  "60":
+    id: "60"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "59"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ExpanseCertificateSHA256
+      stringify: {}
+      value:
+        complex:
+          accessor: SHA256
+          root: Certificate
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 3fb4d4b2-44b0-4278-8f23-d13121b768a4
+      iscommand: false
+      name: Save Expanse Certificate SHA256
+      script: Set
+      type: regular
+      version: -1
+    taskid: 3fb4d4b2-44b0-4278-8f23-d13121b768a4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+  "61":
+    id: "61"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "62"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ExpanseDomainID
+      stringify: {}
+      value:
+        complex:
+          accessor: id
+          root: Expanse.Domain
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 94be788d-b0db-4818-8e38-59ee7254a6f5
+      iscommand: false
+      name: Save Expanse Domain ID
+      script: Set
+      type: regular
+      version: -1
+    taskid: 94be788d-b0db-4818-8e38-59ee7254a6f5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8420
+        }
+      }
+  "62":
+    id: "62"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "63"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ExpanseDomainName
+      stringify: {}
+      value:
+        complex:
+          accessor: Name
+          root: Domain
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 361d556a-f944-4c92-8f7a-be32ac44bc6f
+      iscommand: false
+      name: Save Expanse Domain Name
+      script: Set
+      type: regular
+      version: -1
+    taskid: 361d556a-f944-4c92-8f7a-be32ac44bc6f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8595
+        }
+      }
+  "63":
+    id: "63"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep:
+        simple: ExpanseDomainID,ExpanseDomainName,ExpanseIssueIP
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: e06759db-3cde-44a1-8a23-3cf17c97f08d
+      iscommand: false
+      name: Delete Context (Except things to keep)
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: e06759db-3cde-44a1-8a23-3cf17c97f08d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8770
+        }
+      }
+  "64":
+    id: "64"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: ExpanseIssueIP
+      stringify: {}
+      value:
+        complex:
+          accessor: ip
+          root: Expanse.Issue
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 7491a0a4-5a1b-419a-8aa3-ee3c9e46b8f6
+      iscommand: false
+      name: Save Expanse Issue IP to Context
+      script: Set
+      type: regular
+      version: -1
+    taskid: 7491a0a4-5a1b-419a-8aa3-ee3c9e46b8f6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 9665,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0

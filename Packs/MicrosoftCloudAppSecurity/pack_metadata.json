@@ -2,7 +2,7 @@
     "name": "Microsoft Cloud App Security",
     "description": "Microsoft Cloud App Security Integration, a Cloud Access Security Broker that supports various deployment modes",
     "support": "xsoar",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

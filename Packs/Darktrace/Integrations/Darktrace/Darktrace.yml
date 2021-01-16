@@ -1,0 +1,491 @@
+category: Network Security
+commonfields:
+  id: Darktrace
+  version: -1
+configuration:
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: Public token obtained by creating an API token pair on the /config
+    configuration page
+  display: Public API Token
+  hidden: false
+  name: public_api_token
+  required: true
+  type: 4
+- additionalinfo: Private token obtained by creating an API token pair on the /config
+    configuration page
+  display: Private API Token
+  hidden: false
+  name: private_api_token
+  required: true
+  type: 4
+- additionalinfo: Minimum Darktrace score for fetched incidents (0-100)
+  defaultvalue: '0'
+  display: Minimum Score
+  hidden: false
+  name: min_score
+  required: true
+  type: 0
+- additionalinfo: Maximum number of Darktrace model breaches to fetch at a time
+  defaultvalue: '50'
+  display: Maximum Model Breaches per Fetch
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: Time to start fetching the first incidents. Default is to begin
+    fetching 1 day ago. Max number of model breaches that will be populated upon first
+    fetch is 20.
+  defaultvalue: 1 day ago
+  display: First fetch time
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+description: Rapid detection of malicious behavior can make all the difference in
+  the response to a security event. This pack includes configurations to combine the
+  world-class threat detection of Darktrace with the synchrony and automation abilities
+  of XSOAR, allowing security teams to investigate and manage security events before
+  they have time to escalate.
+display: Darktrace
+name: Darktrace
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Model breach ID
+      isArray: false
+      name: pbid
+      required: true
+      secret: false
+    deprecated: false
+    description: Darktrace-get-breach returns a model breach based on its model breach
+      id (pbid)
+    execution: false
+    name: darktrace-get-breach
+    outputs:
+    - contextPath: Darktrace.ModelBreach.pbid
+      description: Model breach ID
+      type: Number
+    - contextPath: Darktrace.ModelBreach.time
+      description: Model breach generated time.
+      type: Date
+    - contextPath: Darktrace.ModelBreach.commentCount
+      description: Number of comments on the model breach
+      type: Number
+    - contextPath: Darktrace.ModelBreach.score
+      description: Score of Darktrace model breach (0 to 1)
+      type: Number
+    - contextPath: Darktrace.ModelBreach.device.did
+      description: Darktrace device ID of Device that breached the model
+      type: String
+    - contextPath: Darktrace.ModelBreach.device.macaddress
+      description: MAC address of the device involved in the model breach (if applicable)
+      type: String
+    - contextPath: Darktrace.ModelBreach.device.vendor
+      description: Vendor of the device involved in the model breach (if applicable)
+      type: String
+    - contextPath: Darktrace.ModelBreach.device.ip
+      description: IP of the device involved in the model breach (if applicable)
+      type: String
+    - contextPath: Darktrace.ModelBreach.device.hostname
+      description: Hostname of the device involved in the model breach (if applicable)
+      type: String
+    - contextPath: Darktrace.ModelBreach.device.devicelabel
+      description: Device label of the device involved in the model breach (if applicable)
+      type: String
+    - contextPath: Darktrace.ModelBreach.model.name
+      description: Darktrace model that was breached
+      type: String
+    - contextPath: Darktrace.ModelBreach.model.pid
+      description: Model ID of the model that was breached
+      type: Number
+    - contextPath: Darktrace.ModelBreach.model.uuid
+      description: Model UUID of the model that was breached
+      type: String
+    - contextPath: Darktrace.ModelBreach.model.tags
+      description: List of model tags for the model that was breached
+      type: Unknown
+    - contextPath: Darktrace.ModelBreach.model.priority
+      description: Priority of the model that was breached (0 to 5)
+      type: Number
+    - contextPath: Darktrace.ModelBreach.model.description
+      description: Darktrace model description
+      type: String
+  - arguments:
+    - default: false
+      description: Model Breach ID
+      isArray: false
+      name: pbid
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns the comments on a model breach based on its model breach
+      id (pbid)
+    execution: false
+    name: darktrace-get-comments
+    outputs:
+    - contextPath: Darktrace.ModelBreach.comments
+      description: Array of the comments on the model breach
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Model Breach ID
+      isArray: false
+      name: pbid
+      required: true
+      secret: false
+    deprecated: false
+    description: Acknowledge a model breach as specified by Model Breach ID
+    execution: false
+    name: darktrace-acknowledge
+    outputs:
+    - contextPath: Darktrace.ModelBreach.acknowledged
+      description: Whether the model breach is acknowledged in Darktrace
+      type: String
+    - contextPath: Darktrace.ModelBreach.pbid
+      description: Model breach ID
+      type: Number
+  - arguments:
+    - default: false
+      description: Darktrace model breach ID
+      isArray: false
+      name: pbid
+      required: true
+      secret: false
+    deprecated: false
+    description: Unacknowledges a model breach as specified by Model Breach ID
+    execution: false
+    name: darktrace-unacknowledge
+    outputs:
+    - contextPath: Darktrace.ModelBreach.acknowledged
+      description: Whether the model breach is acknowledged
+      type: String
+    - contextPath: Darktrace.ModelBreach.pbid
+      description: Model breach ID
+      type: Number
+  - arguments:
+    - default: false
+      description: Darktrace Device ID
+      isArray: false
+      name: did
+      required: true
+      secret: false
+    - default: true
+      defaultValue: '5'
+      description: Maximum number of results to return
+      isArray: false
+      name: max_results
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of similar devices to a device specified by Darktrace
+      DID
+    execution: false
+    name: darktrace-list-similar-devices
+    outputs:
+    - contextPath: Darktrace.SimilarDevices.did
+      description: Darktrace Device ID of the device with the similar devices.
+      type: Number
+    - contextPath: Darktrace.SimilarDevices.devices
+      description: List of similar devices and their available information
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'Type of endpoint: IP or hostname'
+      isArray: true
+      name: endpoint_type
+      predefined:
+      - IP
+      - hostname
+      required: true
+      secret: false
+    - default: false
+      description: IP or hostname to look up
+      isArray: false
+      name: endpoint_value
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'true'
+      description: 'Boolean: Include devices that have recently connected to the endpoint'
+      isArray: true
+      name: devices
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'true'
+      description: 'Boolean: Return additional info about the devices'
+      isArray: true
+      name: additional_info
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'true'
+      description: 'Boolean: Return rarity data for this endpoint'
+      isArray: false
+      name: score
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns details collected by Darktrace about external IP addresses
+      or hostnames.
+    execution: false
+    name: darktrace-get-external-endpoint-details
+    outputs:
+    - contextPath: Darktrace.ExternalEndpointDetails
+      description: Returned information about the external endpoint
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Darktrace Device ID
+      isArray: false
+      name: did
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify whether to return data for either connections (co), data
+        size out (sizeout) or data size in (sizein).
+      isArray: true
+      name: data_type
+      predefined:
+      - co
+      - sizeout
+      - sizein
+      required: true
+      secret: false
+    - default: false
+      description: Restrict external data to a particular domain name.
+      isArray: false
+      name: external_domain
+      predefined:
+      - ''
+      required: false
+      secret: false
+    - default: false
+      description: Darktrace Device DID of destination device to restrict data to.
+      isArray: false
+      name: destination_did
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'false'
+      description: Return an entry for all time intervals in the graph data, including
+        zero counts. (Not recommended)
+      isArray: true
+      name: show_all_graph_data
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '0'
+      description: Return data for the primary device and this number of similar devices.
+      isArray: false
+      name: num_similar_devices
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'false'
+      description: Return the full device detail objects for all devices referenced
+        by data in an API response. Use of this parameter will alter the JSON structure
+        of the API response for certain calls.
+      isArray: true
+      name: full_device_details
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns the graphable data used in the "Connections Data" view for
+      a specific device that can be accessed from the Threat Visualizer omnisearch
+      in Darktrace. Data returned covers a 4 week period. Parameters are further documented
+      at https://customerportal.darktrace.com/product-guides/main/api-deviceinfo-request.
+      It is recommended to run the command to check the relevant fields in context.
+    execution: false
+    name: darktrace-get-device-connection-info
+    outputs:
+    - contextPath: Darktrace.DeviceConnectionInfo
+      description: Graphable data used in the "Connections Data" view for a specific
+        device that can be accessed from the Threat Visualizer omnisearch in Darktrace.
+        Data returned covers a 4 week period. Parameters are further documented at
+        https://customerportal.darktrace.com/product-guides/main/api-deviceinfo-request.
+        It is recommended to run the command to check the relevant fields in context.
+      type: Unknown
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: Max number of devices to return. Default is 50.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: lastSeen
+      description: 'Orders the response by the specified filter. Default value is
+        lastSeen. '
+      isArray: true
+      name: order_by
+      predefined:
+      - priority
+      - hostname
+      - ip
+      - macaddress
+      - vendor
+      - os
+      - firstSeen
+      - lastSeen
+      - devicelabel
+      - typelabel
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: true
+      defaultValue: desc
+      description: Sets the sort order for returned devices as ascending (asc) or
+        descending (desc). Default is ascending.
+      isArray: true
+      name: order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A string search. Can query all fields or take a specific field to filter. The query parameter can take a string directly to search all key/value pairs (.e.g query="value") or be limited to a certain data type (.e.g query="label:test"). Fields to filter on are:
+        - label
+        - tag
+        - type
+        - hostname
+        - ip
+        - mac
+        - vendor
+        - os
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets device identity information based on label, tag, type, hostname,
+      ip, mac, vendor and os. It is recommended to run the command to check the relevant
+      fields in context.
+    execution: false
+    name: darktrace-get-device-identity-info
+    outputs:
+    - contextPath: Darktrace.DeviceIdentityInfo
+      description: Information about the device’s identity. It is recommended to run
+        the command to check the relevant fields in context.
+      type: Unknown
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: Maximum number of items to return. Default is 50.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: true
+      defaultValue: '0'
+      description: Starting index to return results from (for example offset=20 with
+        max_results=50 will bring results from index 20 to index 70)
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Comma-separated list of values to filter by.
+
+        Examples:
+        query="did=1,count=100,eventtype=unusualconnection"
+        query="pdid=1,from=2014-12-01T12:00:00,to=2014-12-02T12:00:00"
+        query="msg=USER123"
+
+        Possible values:
+        - applicationprotocol
+        - count
+        - ddid: Identification number of a destination device modelled in the Darktrace system to restrict data to
+        - deduplicate: Display only one equivalent connection per hour. (true/false)
+        - destinationport: This filter can be used to filter the returned data by destination port.
+        - did: Identification number of a device modelled in the Darktrace system.
+        - endtime: End time of data to return in millisecond format, relative to midnight January 1st 1970 UTC.
+        - eventtype: Specifies an type of event to return details for. (connection/unusualconnection/newconnection/notice/devicehistory/modelbreach/userdetails)
+        - externalhostname: Specifies an hostname to return details for.
+        - sourceport: This filter can be used to filter the returned data by source port.
+        - starttime: Start time of data to return in millisecond format, relative to midnight January 1st 1970 UTC.
+        - to: End time of data to return in YYYY-MM-DD HH:MM:SS format
+        - uid: Specifies a connection UID to return. (Example: CcdXo43n8B75cdYyI5)
+        - from: Start time of data to return in YYYY-MM-DD HH:MM:SS format.
+        - fulldevicedetails: Returns the full device detail objects for all devices referenced by data in an API response.
+        - intext: This filter can be used to filter the returned data to that which interacts with external sources and destinations, or is restricted to internal. (internal/external)
+        - msg: Specifies the value of the message field in notice events to return details for. Typically used to specify user credential strings.
+        - odid: Identification number of a device modelled in the Darktrace system to restrict data to. Typically used with ddid and odid to specify device pairs regardless of source/destination.
+        - pbid: ID for a model breach
+        - port: This filter can be used to filter the returned data by source or destination port.
+        - protocol
+
+        For more info on this query visit: https://<your-Darktrace-server-url>/apihelp ('details' tab)
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a time sorted list of connections and events for a device
+      or an entity such as a user credential.
+    execution: false
+    name: darktrace-get-entity-details
+    outputs:
+    - contextPath: Darktrace.EntityDetails
+      description: List of entities and their details. Each entity might have different
+        keys. It is recommended to run the command once to check the relevant outputs
+        in context.
+      type: Unknown
+  dockerimage: demisto/python3:3.9.1.14969
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.0.0

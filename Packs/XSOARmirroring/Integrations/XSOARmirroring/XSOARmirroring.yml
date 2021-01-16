@@ -13,7 +13,7 @@ configuration:
   required: false
 - display: XSOAR Server URL
   name: url
-  defaultvalue: https://127.0.0.1
+  defaultvalue: https://host.docker.internal:443
   type: 0
   required: true
   additionalinfo: The URL of the XSOAR server to which you are connecting.
@@ -45,20 +45,19 @@ configuration:
   required: false
 - display: Entry Categories
   name: categories
-  defaultvalue: notes,chats
+  defaultvalue: notes,chats,attachments
   type: 0
   required: false
   additionalinfo: Which entries to retrieve from the XSOAR server.
-- display: Entry tags
+- display: Incoming Entry tags
   name: tags
   type: 0
   required: false
   additionalinfo: Only entries with these tags are retrieved from the XSOAR server.
     If no tags are listed, no entries are retrieved.
-- additionalinfo: Choose the tag to add to an entry to mirror it as an entry to the
-    other XSOAR instance.
-  defaultvalue: Ping
-  display: Entry Tag
+- additionalinfo: Choose the tags to filter the enties you wish to send to the other XSOAR instance.
+  defaultvalue: ""
+  display: Outgoing Entry Tags
   hidden: false
   name: mirror_tag
   required: false
@@ -73,13 +72,24 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
+- display: Disable fetching for incidents came from this integration
+  additionalinfo: Enable this option to disable mirroring of incidents came from the integration of XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to your query.
+  name: disable_from_same_integration
+  defaultvalue: "true"
+  type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Debug mode (will print debug logs to info)
+  name: debug_mode
   defaultvalue: ""
   type: 8
   required: false
@@ -132,12 +142,13 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.8.5.11789
+  dockerimage: demisto/python3:3.8.6.14516
   isfetch: true
   runonce: false
   subtype: python3
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
+defaultmapperin: XSOAR-Incoming-Mapper
 tests:
 - No tests (auto formatted)

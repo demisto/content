@@ -256,7 +256,7 @@ script:
       Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: false
   longRunning: false
   longRunningPort: false
@@ -267,5 +267,5 @@ script:
   ismappable: true
   isremotesyncout: true
 tests:
-- No tests
+- ServiceNow IAM - Test Playbook
 fromversion: 6.0.0

@@ -162,8 +162,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. xdr-get-incidents
 ---
 Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created. If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported. This command requires at least one query argument.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `xdr-get-incidents`
@@ -302,8 +301,7 @@ Returns a list of incidents, which you can filter by a list of incident IDs (max
 ### 2. xdr-get-incident-extra-data
 ---
 Returns additional data for the specified incident, for example, related alerts, file artifacts, network artifacts, and so on.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `xdr-get-incident-extra-data`
@@ -731,8 +729,6 @@ Returns additional data for the specified incident, for example, related alerts,
 ### 3. xdr-update-incident
 ---
 Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in assignee email argument.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-update-incident`
@@ -764,8 +760,6 @@ Incident 4 has been updated
 Upload alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
 successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
 maximum of 60 alerts.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-insert-parsed-alert`
@@ -798,8 +792,6 @@ Alert inserted successfully
 ### 5. xdr-insert-cef-alerts
 ---
 Upload alerts in CEF format from external alert sources. After you map CEF alert fields to Cortex XDR fields, Cortex XDR displays the alerts in related incidents and views. You can send 600 requests per minute. Each request can contain a maximum of 60 alerts.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-insert-cef-alerts`
@@ -823,8 +815,6 @@ Alerts inserted successfully
 ### 6. xdr-isolate-endpoint
 ---
 Isolates the specified endpoint.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-isolate-endpoint`
@@ -848,8 +838,6 @@ Endpoint f8a2f58846b542579c12090652e79f3d has isolated successfully
 ### 7. xdr-unisolate-endpoint
 ---
 Reverses the isolation of an endpoint.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-unisolate-endpoint`
@@ -873,8 +861,6 @@ Endpoint f8a2f58846b542579c12090652e79f3d already unisolated
 ### 8. xdr-get-endpoints
 ---
 Gets a list of endpoints, according to the passed filters. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-get-endpoints`
@@ -1018,8 +1004,7 @@ Gets a list of endpoints, according to the passed filters. Filtering by multiple
 ### 9. xdr-get-distribution-versions
 ---
 Gets a list of all the agent versions to use for creating a distribution list.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `xdr-get-distribution-versions`
@@ -1088,8 +1073,6 @@ There are no input arguments for this command.
 ### 10. xdr-create-distribution
 ---
 Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-create-distribution`
@@ -1138,8 +1121,6 @@ Distribution 43aede7f846846fa92b50149663fbb25 created successfully
 ### 11. xdr-get-distribution-url
 ---
 Gets the distribution URL for downloading the installation package.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-get-distribution-url`
@@ -1168,8 +1149,6 @@ Gets the distribution URL for downloading the installation package.
 ### 12. xdr-get-create-distribution-status
 ---
 Gets the status of the installation package.
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-get-create-distribution-status`
@@ -1213,8 +1192,6 @@ Gets the status of the installation package.
 ### 13. xdr-get-audit-management-logs
 ---
 Gets management logs. You can filter by multiple fields, which will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of management logs from the start of the result set (start by counting from 0).
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-get-audit-management-logs`
@@ -1307,8 +1284,6 @@ Gets management logs. You can filter by multiple fields, which will be concatena
 ### 14. xdr-get-audit-agent-reports
 ---
 Gets agent event reports. You can filter by multiple fields, which will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `xdr-get-audit-agent-reports`

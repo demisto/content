@@ -268,14 +268,26 @@ class DemistoObject {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        return $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } })
+        $integration_context = $this.ServerRequest(@{type = "executeCommand"; command = "getIntegrationContext"; args = @{ } })
+        # When Demisto Version is greater equal then "6.0.0".  integration_context will be under "context" attribute.
+        if (DemistoVersionGreaterEqualThen -version "6.0.0") {
+            $integration_context = $integration_context.context
+        }
+
+        return $integration_context
     }
 
     SetIntegrationContext ($Value) {
         if ( -not $this.IsIntegration ) {
             throw "Method not supported"
         }
-        $this.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{ value = $Value } })
+        $this.ServerRequest(@{type = "executeCommand"; command = "setIntegrationContext"; args = @{
+            value = $Value
+            version =  @{
+                "version" = -1
+                "sequenceNumber" = -1
+                "primaryTerm" = -1
+            } } })
     }
 }
 
@@ -561,3 +573,49 @@ End {
     }
 }
 Set-Alias -Name ConvertTo-Markdown -Value TableToMarkdown
+
+function ConvertTo-Boolean
+{
+  param
+  (
+    [Parameter(Mandatory=$false)][string] $value
+  )
+  switch ($value)
+  {
+    "y" { return $true; }
+    "yes" { return $true; }
+    "true" { return $true; }
+    "t" { return $true; }
+    1 { return $true; }
+    "n" { return $false; }
+    "no" { return $false; }
+    "false" { return $false; }
+    "f" { return $false; }
+    0 { return $false; }
+  }
+}
+
+function FileResult([string]$file_name, [string]$data, [string]$file_type) {
+    if (!$file_type) {
+        $file_type = [EntryTypes]::file
+    }
+    $temp = $demisto.UniqueFile()
+    Out-File -FilePath "$($demisto.Investigation().id)_$temp" -Encoding "utf8" -InputObject $data
+
+    return @{
+        "Contents" = ''
+        "ContentsFormat" = [EntryFormats]::text.ToString()
+        "Type" = 3
+        "File" = $file_name
+        "FileID" = $temp
+    }
+}
+
+function DemistoVersionGreaterEqualThen([string]$version) {
+    $demisto_version = $demisto.DemistoVersion().version
+    $version_pattern = "\d{1,2}\.\d{1,2}\.\d{1,2}"
+    $demisto_version = (Select-string -Pattern $version_pattern -InputObject $demisto_version).Matches[0].Value
+    $version = (Select-string -Pattern $version_pattern -InputObject $version).Matches[0].Value
+
+    return [version]::Parse($demisto_version) -ge  [version]::Parse($version)
+}

@@ -37,7 +37,7 @@ script:
     - name: message_id
       required: true
       default: true
-      description: Email message ID to download.
+      description: The GUID of the email message to download.
     description: Download quarantine email message by ID.
   - name: proofpoint-quarantine-messages
     arguments:

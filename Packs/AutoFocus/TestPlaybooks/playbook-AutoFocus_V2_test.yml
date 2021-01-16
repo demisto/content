@@ -1995,7 +1995,7 @@ tasks:
       - "48"
     scriptarguments:
       domain:
-        simple: dropwellsfargo.com,google.com
+        simple: dropwellsfargo.com,google.com,terraini.com
       fullResponse: {}
       long: {}
       retries: {}
