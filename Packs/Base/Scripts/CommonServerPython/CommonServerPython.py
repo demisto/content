@@ -1271,7 +1271,7 @@ def logger(func):
         LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
         ret_val = func(*args, **kwargs)
         if is_debug_mode():
-            demisto.debug('Return value: {}'.format(str(ret_val)))
+            LOG('Return value [{}]: {}'.format(func.__name__, str(ret_val)))
         return ret_val
 
     return func_wrapper
