@@ -3262,7 +3262,9 @@
         "Process Email - Generic - Test - Incident Starter": "Issue 32459",
         "HelloWorldPremium_Scan-Test": "Issue 32512",
         "RSA NetWitness Test": "Issue 32566",
-        "ThreatMiner-Test": "Issue 32688"
+        "ThreatMiner-Test": "Issue 32688",
+        "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
+        "Microsoft Graph Groups - Test": "Issue 27890"
     },
     "skipped_integrations": {
         
