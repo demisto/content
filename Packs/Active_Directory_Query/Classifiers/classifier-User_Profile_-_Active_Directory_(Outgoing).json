@@ -124,7 +124,7 @@
     },
     "st": {
      "complex": null,
-     "simple": "statename"
+     "simple": "state"
     },
     "streetAddress": {
      "complex": null,

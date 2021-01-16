@@ -200,6 +200,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     enc_key = upload_config.encryption_key
     is_private_build = upload_config.is_private
     packs_artifacts_dir = upload_config.artifacts_path
+    private_artifacts_dir = upload_config.private_artifacts
 
     task_status, user_metadata = pack.load_user_metadata()
     if not task_status:
@@ -260,7 +261,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key)
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key, private_artifacts_dir)
 
     if not task_status:
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
@@ -374,6 +375,9 @@ def option_handler():
                         help='The encryption key for the pack, if it should be encrypted.', default='')
     parser.add_argument('-pr', '--is_private', type=str2bool,
                         help='The encryption key for the pack, if it should be encrypted.', default=False)
+    parser.add_argument('-pa', '--private_artifacts', type=str,
+                        help='The name of the pack in which the private artifacts should be saved',
+                        default='private_artifacts')
     # disable-secrets-detection-end
     return parser.parse_args()
 
