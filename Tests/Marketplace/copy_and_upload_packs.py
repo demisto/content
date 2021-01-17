@@ -315,11 +315,12 @@ def main():
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
-    pc_successful_packs_dict, pc_failed_packs_dict = get_successful_and_failed_packs(
+    pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict = get_successful_and_failed_packs(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING
     )
     logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
     logging.debug(f"Failed packs from Prepare Content: {pc_failed_packs_dict}")
+    logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
 
     # Check if needs to upload or not
     check_if_need_to_upload(pc_successful_packs_dict, pc_failed_packs_dict)
@@ -394,7 +395,8 @@ def main():
 
     # Store successful and failed packs list in CircleCI artifacts
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs, failed_packs
+        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs, failed_packs,
+        list(pc_successful_private_packs_dict)
     )
 
     # verify that the successful from Prepare content and are the ones that were copied
