@@ -38,6 +38,7 @@ class BucketUploadFlow(object):
     PREPARE_CONTENT_FOR_TESTING = "prepare_content_for_testing"
     UPLOAD_PACKS_TO_MARKETPLACE_STORAGE = "upload_packs_to_marketplace_storage"
     SUCCESSFUL_PACKS = "successful_packs"
+    SUCCESSFUL_PRIVATE_PACKS = "successful_private_packs"
     FAILED_PACKS = "failed_packs"
     STATUS = "status"
     AGGREGATED = "aggregated"
@@ -579,6 +580,7 @@ class Pack(object):
             pack_metadata['premium'] = True
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
+            pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash')
             if user_metadata.get('previewOnly'):
                 pack_metadata['previewOnly'] = True
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
@@ -1081,7 +1083,7 @@ class Pack(object):
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]"\
+            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]" \
                               f" => {latest_release_notes}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
@@ -1235,7 +1237,8 @@ class Pack(object):
                 return task_status
         else:
             task_status = False
-            logging.error(f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
+            logging.error(
+                f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
 
         return task_status and self.is_changelog_exists()
 
@@ -1891,7 +1894,7 @@ class Pack(object):
 # HELPER FUNCTIONS
 
 
-def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) -> Tuple[dict, dict]:
+def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) -> Tuple[dict, dict, dict]:
     """ Loads the packs_results.json file to get the successful and failed packs dicts
 
     Args:
@@ -1902,18 +1905,21 @@ def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) ->
     Returns:
         dict: The successful packs dict
         dict: The failed packs dict
+        dict : The successful private packs dict
 
     """
     if os.path.exists(packs_results_file_path):
         packs_results_file = load_json(packs_results_file_path)
         successful_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
         failed_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.FAILED_PACKS, {})
-        return successful_packs_dict, failed_packs_dict
-    return {}, {}
+        successful_private_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS,
+                                                                              {})
+        return successful_packs_dict, failed_packs_dict, successful_private_packs_dict
+    return {}, {}, {}
 
 
 def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
-                                                      failed_packs: list):
+                                                      failed_packs: list, updated_private_packs: list):
     """ Write the successful and failed packs to the correct section in the packs_results.json file
 
     Args:
@@ -1922,6 +1928,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         successful_packs (list): The list of all successful packs
         failed_packs (list): The list of all failed packs
+        updated_private_packs (list) : The list of all private packs that were updated
 
     """
     packs_results = load_json(packs_results_file_path)
@@ -1952,6 +1959,13 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         }
         packs_results[stage].update(successful_packs_dict)
         logging.debug(f"Successful packs {successful_packs_dict}")
+
+    if updated_private_packs:
+        successful_private_packs_dict = {
+            BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS: {pack_name: {} for pack_name in updated_private_packs}
+        }
+        packs_results[stage].update(successful_private_packs_dict)
+        logging.debug(f"Successful private packs {successful_private_packs_dict}")
 
     if packs_results:
         json_write(packs_results_file_path, packs_results)
