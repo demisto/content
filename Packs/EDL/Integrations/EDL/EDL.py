@@ -8,7 +8,7 @@ from multiprocessing import Process
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
 from flask import Flask, Response, request
-from netaddr import IPAddress, iprange_to_cidrs
+from netaddr import IPAddress, IPSet, iprange_to_cidrs
 from typing import Callable, List, Any, Dict, cast, Tuple
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 
@@ -224,36 +224,14 @@ def ip_groups_to_cidrs(ip_range_groups: list):
         list. a list of CIDRs.
     """
     ip_ranges = []  # type:List
-    for group in ip_range_groups:
+    for cidr in ip_range_groups:
         # handle single ips
-        if len(group) == 1:
-            ip_ranges.append(str(group[0]))
+        if len(cidr) == 1:
+            # CIDR with a single IP appears with "/32" suffix so handle them differently
+            ip_ranges.append(str(cidr[0]))
             continue
 
-        min_ip = group[0]
-        max_ip = group[-1]
-        moved_ip = False
-        # CIDR must begin with an even LSB
-        # if the first ip does not - separate it from the rest of the range
-        if (int(str(min_ip).split('.')[-1]) % 2) != 0:
-            ip_ranges.append(str(min_ip))
-            min_ip = group[1]
-            moved_ip = True
-
-        # CIDR must end with uneven LSB
-        # if the last ip does not - separate it from the rest of the range
-        if (int(str(max_ip).split('.')[-1]) % 2) == 0:
-            ip_ranges.append(str(max_ip))
-            max_ip = group[-2]
-            moved_ip = True
-
-        # if both min and max ips were shifted and there are only 2 ips in the range
-        # we added both ips by the shift and now we move to the next  range
-        if moved_ip and len(group) == 2:
-            continue
-
-        else:
-            ip_ranges.append(str(iprange_to_cidrs(min_ip, max_ip)[0].cidr))
+        ip_ranges.append(str(cidr))
 
     return ip_ranges
 
@@ -274,9 +252,7 @@ def ip_groups_to_ranges(ip_range_groups: list):
             ip_ranges.append(str(group[0]))
             continue
 
-        min_ip = group[0]
-        max_ip = group[-1]
-        ip_ranges.append(str(min_ip) + "-" + str(max_ip))
+        ip_ranges.append(str(group))
 
     return ip_ranges
 
@@ -291,30 +267,14 @@ def ips_to_ranges(ips: list, collapse_ips):
     Returns:
         list. a list to Ranges or CIDRs.
     """
-    ips_range_groups = []  # type:List
-    ips = sorted(ips)
-
-    if len(ips) > 0:
-        ips_range_groups.append([ips[0]])
-
-    if len(ips) > 1:
-        for ip in ips[1:]:
-            appended = False
-
-            for group in ips_range_groups:
-                if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
-                    group.append(ip)
-                    sorted(group)
-                    appended = True
-
-            if not appended:
-                ips_range_groups.append([ip])
 
     if collapse_ips == COLLAPSE_TO_RANGES:
+        ips_range_groups = IPSet(ips).iter_ipranges()
         return ip_groups_to_ranges(ips_range_groups)
 
     else:
-        return ip_groups_to_cidrs(ips_range_groups)
+        cidrs = IPSet(ips).iter_cidrs()
+        return ip_groups_to_cidrs(cidrs)
 
 
 def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) -> Tuple[dict, int]:
