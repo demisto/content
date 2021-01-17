@@ -1461,6 +1461,7 @@ class TestGetSuccessfulAndFailedPacks:
         successful_list = [*successful]
         ans = 'TestPack1' in successful_list
         assert ans
+
         assert failed == {"TestPack2": {
             f"{BucketUploadFlow.STATUS}": "status2",
             f"{BucketUploadFlow.AGGREGATED}": False}
@@ -1468,10 +1469,11 @@ class TestGetSuccessfulAndFailedPacks:
         failed_list = [*failed]
         ans = 'TestPack2' in failed_list
         assert ans
+
         assert private_packs == {"TestPack3": {
             f"{BucketUploadFlow.STATUS}": "status3",
             f"{BucketUploadFlow.AGGREGATED}": True
         }}
-        successful_list = [*successful]
-        ans = 'TestPack3' in successful_list
+        private_successful_list = [*private_packs]
+        ans = 'TestPack3' in private_successful_list
         assert ans
