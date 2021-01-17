@@ -268,8 +268,8 @@ class DBotScoreReliability(object):
         # required to create __init__ for create_server_docs.py purpose
         pass
 
-    @classmethod
-    def is_valid_type(cls, _type):
+    @staticmethod
+    def is_valid_type(_type):
         # type: (str) -> bool
 
         return _type in (
