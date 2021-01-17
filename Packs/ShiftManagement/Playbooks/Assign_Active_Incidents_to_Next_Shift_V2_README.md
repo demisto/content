@@ -2,8 +2,6 @@ This playbook reassigns active incidents to the current users on call. It requir
 
 Update the playbook input with a different search query if required.  Will branch if there are no incidents that match the query and no users on call. 
 
-Search results are the default 100 incidents returned by the query.
-
 Cases will not be assigned to users who defined OOO (by OutOfOffice automation).
 
 ## Dependencies
