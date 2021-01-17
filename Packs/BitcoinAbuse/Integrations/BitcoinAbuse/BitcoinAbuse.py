@@ -162,7 +162,7 @@ class BitcoinAbuseClient(BaseClient):
             self.initial_fetch_interval, '30d')
 
         if self.have_fetched_first_time:
-            return {'download/1d'}
+            return {f'{feed_endpoint_suffix}1d'}
         else:
             return {feed_endpoint_suffix + first_feed_interval_url_suffix, feed_endpoint_suffix + '30d'}
 

@@ -130,7 +130,7 @@ script:
     name: bitcoinabuse-report-address
   - arguments:
     - defaultValue: "50"
-      description: The maximum number of results to return. The default value is 50.
+      description: The maximum number of results to return.
       name: limit
     description: Gets indicators from the feed.
     name: bitcoinabuse-get-indicators
