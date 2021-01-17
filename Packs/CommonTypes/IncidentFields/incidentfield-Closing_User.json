@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Qradar Generic",
-        "Nutanix Hypervisor Alert"
+        "Qradar Generic"
     ],
     "breachScript": "",
     "caseInsensitive": true,
