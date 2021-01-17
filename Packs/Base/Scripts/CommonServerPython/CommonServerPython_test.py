@@ -1578,7 +1578,7 @@ class TestCommandResults:
             integration_name='Virus Total',
             score=Common.DBotScore.GOOD,
             indicator_type=DBotScoreType.IP,
-            reliability=DBotScoreReliability.USUALLY,
+            reliability=DBotScoreReliability.B,
         )
 
         ip = Common.IP(
