@@ -421,11 +421,12 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
         except KeyError:
             demisto.debug('TODO: WEIRD')
 
-    return CommandResults(
-        outputs_prefix='NutanixHypervisor.Host',
-        outputs_key_field='uuid',
-        outputs=outputs
-    )
+    raise DemistoException('')
+    # return CommandResults(
+    #     outputs_prefix='NutanixHypervisor.Host',
+    #     outputs_key_field='uuid',
+    #     outputs=outputs
+    # )
 
 
 def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
@@ -777,7 +778,6 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
 
 def main() -> None:
     command = demisto.command()
-    # command = 'nutanix-hypervisor-hosts-list'
     params = demisto.params()
 
     commands = {
