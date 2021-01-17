@@ -538,21 +538,22 @@ class TestUpdatedPrivatePacks:
         # index json has no contentCommitHash for this pack
         metadata_no_commit_hash = self.get_pack_metadata()
         metadata_no_commit_hash.update({"contentCommitHash": ""})
-        metadata_no_commit_hash.update({"id": "A"})
+        metadata_no_commit_hash.update({"id": "first_non_updated_pack"})
         private_packs.append(metadata_no_commit_hash)
 
         # index json has the same contentCommitHash for this pack (nothing was updated)
         metadata_not_updated_commit_hash = self.get_pack_metadata()
         metadata_not_updated_commit_hash.update({"contentCommitHash": "111"})
-        metadata_not_updated_commit_hash.update({"id": "B"})
+        metadata_not_updated_commit_hash.update({"id": "second_non_updated_pack"})
         private_packs.append(metadata_not_updated_commit_hash)
 
         # index json has an old contentCommitHash for this pack (should be recognize as an updated pack)
         metadata_updated_commit_hash = self.get_pack_metadata()
         metadata_updated_commit_hash.update({"contentCommitHash": "222"})
-        metadata_updated_commit_hash.update({"id": "C"})
+        metadata_updated_commit_hash.update({"id": "updated_pack"})
         private_packs.append(metadata_updated_commit_hash)
 
         updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
         assert len(updated_private_packs) == 1
-        assert updated_private_packs[0] == "C" and updated_private_packs[0] != "A" and updated_private_packs[0] != "B"
+        assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
+               updated_private_packs[0] != "second_non_updated_pack"
