@@ -460,6 +460,18 @@ function TestModuleCommand {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '', Scope='Function')]
     param([RemotingClient]$client)
 
+    if ($client.ssl) {
+        $res = Test-Connection -TcpPort 5986 -TargetName $client.fqdn_list
+        if (-not $res) {
+            throw 'Could not create connection for host ' + $client.fqdn_list + ' via port 5986.'
+        }
+    }
+    else {
+        $res = Test-Connection -TcpPort 5985 -TargetName $client.fqdn_list
+        if (-not $res) {
+            throw 'Could not create connection for host ' + $client.fqdn_list + ' via port 5985.'
+        }
+    }
     $tmp = $client.InvokeCommandInSession('$PSVersionTable')
 
     $human_readable = "ok"
@@ -774,7 +786,12 @@ function Main
         }
         else
         {
-            ReturnError $_.Exception.Message
+            $err_msg = $_.Exception.Message
+            if ($err_msg -match 'Authorization failed') {
+                $err_msg = 'The integration was able to resolve and perform a connectivity test to the specified host. There seems to be an issue with the credentials or host settings.
+                For further troubleshooting please review the following article.'
+        }
+            ReturnError $err_msg
         }
     }
 }
