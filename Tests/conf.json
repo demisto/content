@@ -1483,11 +1483,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "AnsibleTower",
-            "playbookID": "Launch Job - Ansible Tower",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test",
             "memory_threshold": 200,
@@ -3269,8 +3264,7 @@
         "RSA NetWitness Test": "Issue 32566",
         "ThreatMiner-Test": "Issue 32688",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
-        "Microsoft Graph Groups - Test": "Issue 27890",
-        "whois_test": "Issue 25648"
+        "Microsoft Graph Groups - Test": "Issue 27890"
     },
     "skipped_integrations": {
         
