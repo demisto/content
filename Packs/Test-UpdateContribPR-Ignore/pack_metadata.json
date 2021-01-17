@@ -1,0 +1,17 @@
+{
+    "name": "test - update contrib PR - ignore",
+    "description": "description_test",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "author_test",
+    "url": "",
+    "email": "",
+    "created": "2021-01-17T11:52:16Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "dantavori"
+    ]
+}

@@ -1,0 +1,43 @@
+args:
+- description: User's unique CN
+  name: cn
+  required: true
+- description: User's manager email if available
+  name: manager_email
+- description: Sets basic or custom attributes of the user object. For example, custom-attributes="{\"notes\":\"a
+    note about the contact\",\"company\":\"company name\"}"
+  name: custom_attributes
+- description: sAMAccountName of the user to be created
+  name: sAMAccountName
+  required: true
+- description: email id of the account to be created
+  name: email
+  required: true
+- description: Mapping of location region to OU. User will be created in this OU
+  name: ad_locationregion_ou_mapping
+  required: true
+- description: 'Eg: Americas, Japan, EMEA, Asia Pacific'
+  name: location_region
+  required: true
+comment: Creates an Active Directory user
+commonfields:
+  id: AD-Create-User-IAM
+  version: -1
+dependson:
+  must:
+  - Active Directory Query v2|||ad-search
+dockerimage: demisto/python3:3.9.1.14969
+enabled: true
+name: AD-Create-User-IAM
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- active directory
+- Utility
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
