@@ -204,7 +204,7 @@ List of all DataBases for server.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | server_name | Server name. | Required | 
-| limit | The maximum number of DataBases returned to the War Room. Default is 50. | Optional | 
+| limit | (Int) The maximum number of DataBases returned to the War Room. Default is 50. | Optional | 
 | offset | (Int) Offset in the data set. Default is 0. | Optional | 
 
 
@@ -215,13 +215,13 @@ List of all DataBases for server.
 | AzureSQL.DB | Unknown | All DB related to the server. | 
 | AzureSQL.DB.kind | String | Kind of database. | 
 | AzureSQL.DB.location | String | Database location. | 
-| AzureSQL.DB.id | String | Database id | 
-| AzureSQL.DB.name | String | Database name | 
+| AzureSQL.DB.id | String | Database id. | 
+| AzureSQL.DB.name | String | Database name. | 
 | AzureSQL.DB.type | String | Database type. | 
 | AzureSQL.DB.managedBy | String | Recource that manages database. | 
 | AzureSQL.DB.sku | Unknown | Database SKU. | 
 | AzureSQL.DB.catalogCollation | String | Collation of catalog. | 
-| AzureSQL.DB.collation | String | Database collation | 
+| AzureSQL.DB.collation | String | Database collation. | 
 | AzureSQL.DB.creationDate | String | Creation date of the database, in ISO format. | 
 | AzureSQL.DB.currentServiceObjectiveName | String | Database's current service level objective name. | 
 | AzureSQL.DB.currentSku | Unknown | Name, Tier and capacity of the SKU. | 
@@ -315,10 +315,10 @@ List of all DataBases for server.
 #### Human Readable Output
 
 >### Database List
->|Id|Database Id|Name|Location|Status|Managed By|
->|---|---|---|---|---|---|
->| /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/master | 16b60b0c-53ef-4de0-b367-2c2bcc9617cd | master | eastus | Online | /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration |
->| /subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db | 5343c264-7cf0-47c4-8cbb-1593d2337b69 | sql-integration-db | eastus | Online |  |
+>|Name|Location|Status|Managed By|
+>|---|---|---|---|
+>| master | eastus | Online | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration |
+>| sql-integration-db | eastus | Online |  |
 
 
 ### azure-sql-db-audit-policy-list
@@ -335,7 +335,7 @@ Auditing settings of a database.
 | --- | --- | --- |
 | server_name | Server name. | Required | 
 | db_name | Database name. | Required | 
-| limit | The maximum number of DataBases audit policies returned to the War Room. Default is 50. | Optional | 
+| limit | (Int) The maximum number of DataBases audit policies returned to the War Room. Default is 50. | Optional | 
 | offset | (Int) Offset in the data set. Default is 0. | Optional | 
 
 
@@ -343,15 +343,17 @@ Auditing settings of a database.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSQL.DbAuditPolicy | Unknown | All DB related to the server. | 
-| AzureSQL.DbAuditPolicy.kind | String | Kind of audit policy. | 
-| AzureSQL.DbAuditPolicy.id | String | Audit policy id | 
-| AzureSQL.DbAuditPolicy.name | String | Audit policy name | 
-| AzureSQL.DbAuditPolicy.type | String | Database type. | 
-| AzureSQL.DbAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. the value is " Enabled" or "Disabled". | 
-| AzureSQL.DbAuditPolicy.retentionDays | Number | Number of days to keep in the audit logs in the storage account | 
-| AzureSQL.DbAuditPolicy.state | String | Policy state | 
-| AzureSQL.DbAuditPolicy.storageAccountSubscriptionId | String | storage subscription Id. | 
+| AzureSQL.DBAuditPolicy | Unknown | All DB related to the server. | 
+| AzureSQL.DBAuditPolicy.kind | String | Kind of audit policy. | 
+| AzureSQL.DBAuditPolicy.id | String | Audit policy id. | 
+| AzureSQL.DBAuditPolicy.name | String | Audit policy name. | 
+| AzureSQL.DBAuditPolicy.type | String | Database type. | 
+| AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. the value is " Enabled" or "Disabled". | 
+| AzureSQL.DBAuditPolicy.retentionDays | Number | Number of days to keep in the audit logs in the storage account. | 
+| AzureSQL.DBAuditPolicy.state | String | Policy state. | 
+| AzureSQL.DBAuditPolicy.storageAccountSubscriptionId | String | storage subscription Id. | 
+| AzureSQL.DBAuditPolicy.databaseName | String | The name of database, that audit policy related to. | 
+| AzureSQL.DBAuditPolicy.serverName | String | The name of server, that audit policy related to. | 
 
 
 #### Command Example
@@ -361,16 +363,19 @@ Auditing settings of a database.
 ```json
 {
     "AzureSQL": {
-        "DbAuditPolicy": {
+        "DBAuditPolicy": {
             "auditActionsAndGroups": [
                 "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
                 "FAILED_DATABASE_AUTHENTICATION_GROUP",
                 "BATCH_COMPLETED_GROUP"
             ],
+            "databaseName": "sql-integration-db",
             "id": "/subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/auditingSettings/Default",
             "isAzureMonitorTargetEnabled": true,
             "name": "Default",
-            "retentionDays": 0,
+            "queueDelayMs": 123,
+            "retentionDays": 3,
+            "serverName": "sqlintegration",
             "state": "Enabled",
             "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000",
             "storageEndpoint": "",
@@ -383,14 +388,14 @@ Auditing settings of a database.
 #### Human Readable Output
 
 >### Database Audit Settings
->|Audit Actions And Groups|Id|Is Azure Monitor Target Enabled|Name|Retention Days|State|Storage Account Subscription Id|Type|
->|---|---|---|---|---|---|---|---|
->| SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP,<br/>FAILED_DATABASE_AUTHENTICATION_GROUP,<br/>BATCH_COMPLETED_GROUP | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/auditingSettings/Default | true | Default | 0 | Enabled | 00000000-0000-0000-0000-000000000000 | Microsoft.Sql/servers/databases/auditingSettings |
+>|Audit Actions And Groups|Database Name|Id|Is Azure Monitor Target Enabled|Name|Queue Delay Ms|Retention Days|Server Name|State|Storage Account Subscription Id|Type|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP,<br/>FAILED_DATABASE_AUTHENTICATION_GROUP,<br/>BATCH_COMPLETED_GROUP | sql-integration-db | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/auditingSettings/Default | true | Default | 123 | 3 | sqlintegration | Enabled | 00000000-0000-0000-0000-000000000000 | Microsoft.Sql/servers/databases/auditingSettings |
 
 
 ### azure-sql-db-threat-policy-get
 ***
-Threat detection policies of a database
+Threat detection policy of a database.
 
 
 #### Base Command
@@ -411,11 +416,11 @@ Threat detection policies of a database
 | AzureSQL.DBThreatPolicy | Unknown | All Threat Policy related to the database. | 
 | AzureSQL.DBThreatPolicy.kind | String | Kind of Threat Policy. | 
 | AzureSQL.DBThreatPolicy.location | String | Threat Policy location. | 
-| AzureSQL.DBThreatPolicy.id | String | Threat Policy id | 
-| AzureSQL.DBThreatPolicy.name | String | Threat Policy name | 
+| AzureSQL.DBThreatPolicy.id | String | Threat Policy id. | 
+| AzureSQL.DBThreatPolicy.name | String | Threat Policy name. | 
 | AzureSQL.DBThreatPolicy.type | String | Threat Policy type. | 
-| AzureSQL.DBThreatPolicy.state | String | Policy state | 
-| AzureSQL.DBThreatPolicy.creationTime | String | Policy creation Time | 
+| AzureSQL.DBThreatPolicy.state | String | Policy state. | 
+| AzureSQL.DBThreatPolicy.creationTime | String | Policy creation Time. | 
 | AzureSQL.DBThreatPolicy.retentionDays | Number | Number of days to keep in the Threat Detection audit logs. | 
 | AzureSQL.DBThreatPolicy.storageAccountAccessKey | String | Specifies the identifier key of the Threat Detection audit storage account. | 
 | AzureSQL.DBThreatPolicy.storageEndpoint | String | Threat Detection audit storage account. | 
@@ -423,6 +428,8 @@ Threat detection policies of a database
 | AzureSQL.DBThreatPolicy.emailAddresses | String | list of e-mail addresses to which the alert is sent. | 
 | AzureSQL.DBThreatPolicy.disabledAlerts | String | list of alerts that are disabled, or empty string to disable no alerts. | 
 | AzureSQL.DBThreatPolicy.useServerDefault | Unknown | whether to use the default server policy. | 
+| AzureSQL.DBThreatPolicy.databaseName | String | The name of database, that threat policy related to. | 
+| AzureSQL.DBThreatPolicy.serverName | String | The name of server, that threat policy related to. | 
 
 
 #### Command Example
@@ -434,16 +441,19 @@ Threat detection policies of a database
     "AzureSQL": {
         "DBThreatPolicy": {
             "creationTime": "2021-01-04T08:05:32.05Z",
+            "databaseName": "sql-integration-db",
             "disabledAlerts": [
-                ""
+                "Sql_Injection",
+                "Sql_Injection_Vulnerability"
             ],
             "emailAccountAdmins": false,
             "emailAddresses": [
                 ""
             ],
-            "id": "/subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/securityAlertPolicies/Default",
+            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/securityAlertPolicies/Default",
             "name": "Default",
-            "retentionDays": 0,
+            "retentionDays": 5,
+            "serverName": "sqlintegration",
             "state": "Enabled",
             "storageAccountAccessKey": "",
             "storageEndpoint": "",
@@ -456,9 +466,9 @@ Threat detection policies of a database
 #### Human Readable Output
 
 >### Database Threat Detection Policies
->|Creation Time|Disabled Alerts|Email Account Admins|Email Addresses|Id|Name|Retention Days|State|Type|
->|---|---|---|---|---|---|---|---|---|
->| 2021-01-04T08:05:32.05Z |  | false |  | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/securityAlertPolicies/Default | Default | 0 | Enabled | Microsoft.Sql/servers/databases/securityAlertPolicies |
+>|Creation Time|Database Name|Disabled Alerts|Email Account Admins|Email Addresses|Id|Name|Retention Days|Server Name|State|Type|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 2021-01-04T08:05:32.05Z | sql-integration-db | Sql_Injection,<br/>Sql_Injection_Vulnerability | false |  | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/securityAlertPolicies/Default | Default | 5 | sqlintegration | Enabled | Microsoft.Sql/servers/databases/securityAlertPolicies |
 
 
 ### azure-sql-db-audit-policy-create-update
@@ -475,13 +485,13 @@ Create or update database's auditing policy.
 | --- | --- | --- |
 | server_name | Server name. | Required | 
 | db_name | Database name. | Required | 
-| state | set state 'Enable' or 'Disable'. Possible values are: Enabled, Disabled. | Required | 
-| audit_actions_groups | Comma-separated Actions-Groups and Actions to audit. Possible values: APPLICATION_ROLE_CHANGE_PASSWORD_GROUP BACKUP_RESTORE_GROUP DATABASE_LOGOUT_GROUP DATABASE_OBJECT_CHANGE_GROUP DATABASE_OBJECT_OWNERSHIP_CHANGE_GROUP DATABASE_OBJECT_PERMISSION_CHANGE_GROUP DATABASE_OPERATION_GROUP DATABASE_PERMISSION_CHANGE_GROUP DATABASE_PRINCIPAL_CHANGE_GROUP DATABASE_PRINCIPAL_IMPERSONATION_GROUP DATABASE_ROLE_MEMBER_CHANGE_GROUP FAILED_DATABASE_AUTHENTICATION_GROUP SCHEMA_OBJECT_ACCESS_GROUP SCHEMA_OBJECT_CHANGE_GROUP SCHEMA_OBJECT_OWNERSHIP_CHANGE_GROUP SCHEMA_OBJECT_PERMISSION_CHANGE_GROUP SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP USER_CHANGE_PASSWORD_GROUP BATCH_STARTED_GROUP BATCH_COMPLETED_GROUP| Optional | 
+| state | Set state 'Enable' or 'Disable'. When state is Enabled, storage_endpoint or is_azure_monitor_target_enabled are required. Possible values are: Enabled, Disabled. | Required | 
+| audit_actions_groups | Comma-separated Actions-Groups and Actions to audit. For all Possible values visit integration documentation at https://xsoar.pan.dev/. | Optional | 
 | is_azure_monitor_target_enabled | Is audit events are sent to Azure Monitor. Possible values are: true, false. | Optional | 
 | is_storage_secondary_key_in_use | Is storage Account Access Key value is the storage's secondary key. Possible values are: true, false. | Optional | 
 | queue_delay_ms | Time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second). | Optional | 
 | retention_days | Number of days to keep the policy in the audit logs. | Optional | 
-| storage_account_access_key | identifier key of the auditing storage account. | Optional | 
+| storage_account_access_key | Identifier key of the auditing storage account. | Optional | 
 | storage_account_subscription_id | storage subscription Id. | Optional | 
 | storage_endpoint | Storage endpoint. If state is Enabled, storageEndpoint or isAzureMonitorTargetEnabled is required. | Optional | 
 
@@ -490,19 +500,21 @@ Create or update database's auditing policy.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSQL.DbAuditPolicy.kind | String | Kind of audit policy. | 
-| AzureSQL.DbAuditPolicy.id | String | Audit policy id | 
-| AzureSQL.DbAuditPolicy.name | String | Audit policy name | 
-| AzureSQL.DbAuditPolicy.type | String | Database type. | 
-| AzureSQL.DbAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. the value is " Enabled" or "Disabled". | 
-| AzureSQL.DbAuditPolicy.retentionDays | Number | Number of days to keep in the audit logs in the storage account | 
-| AzureSQL.DbAuditPolicy.state | String | Policy state | 
-| AzureSQL.DbAuditPolicy.storageAccountSubscriptionId | String | storage subscription Id. | 
-| AzureSQL.DbAuditPolicy.auditActionsAndGroups | Unknown | audit Actions And Groups to audit. | 
-| AzureSQL.DbAuditPolicy.isStorageSecondaryKeyInUse | String | Is storageAccountAccessKey value is the storage's secondary key | 
-| AzureSQL.DbAuditPolicy.queueDelayMs | String | Time in milliseconds that can elapse before audit actions are forced to be processed. | 
-| AzureSQL.DbAuditPolicy.storageAccountAccessKey | String | identifier key of the auditing storage account | 
-| AzureSQL.DbAuditPolicy.storageEndpoint | String | Storage endpoint. | 
+| AzureSQL.DBAuditPolicy.kind | String | Kind of audit policy. | 
+| AzureSQL.DBAuditPolicy.id | String | Audit policy id. | 
+| AzureSQL.DBAuditPolicy.name | String | Audit policy name. | 
+| AzureSQL.DBAuditPolicy.type | String | Database type. | 
+| AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. the value is " Enabled" or "Disabled". | 
+| AzureSQL.DBAuditPolicy.retentionDays | Number | Number of days to keep in the audit logs in the storage account. | 
+| AzureSQL.DBAuditPolicy.state | String | Policy state | 
+| AzureSQL.DBAuditPolicy.storageAccountSubscriptionId | String | storage subscription Id. | 
+| AzureSQL.DBAuditPolicy.auditActionsAndGroups | Unknown | audit Actions And Groups to audit. | 
+| AzureSQL.DBAuditPolicy.isStorageSecondaryKeyInUse | String | Is storageAccountAccessKey value is the storage's secondary key. | 
+| AzureSQL.DBAuditPolicy.queueDelayMs | String | Time in milliseconds that can elapse before audit actions are forced to be processed. | 
+| AzureSQL.DBAuditPolicy.storageAccountAccessKey | String | identifier key of the auditing storage account. | 
+| AzureSQL.DBAuditPolicy.storageEndpoint | String | Storage endpoint. | 
+| AzureSQL.DBAuditPolicy.databaseName | String | The name of database, that audit policy related to. | 
+| AzureSQL.DBAuditPolicy.serverName | String | The name of server, that audit policy related to. | 
 
 
 #### Command Example
@@ -512,17 +524,19 @@ Create or update database's auditing policy.
 ```json
 {
     "AzureSQL": {
-        "DbAuditPolicy": {
+        "DBAuditPolicy": {
             "auditActionsAndGroups": [
                 "SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP",
                 "FAILED_DATABASE_AUTHENTICATION_GROUP",
                 "BATCH_COMPLETED_GROUP"
             ],
+            "databaseName": "sql-integration-db",
             "id": "/subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/auditingSettings/Default",
             "isAzureMonitorTargetEnabled": true,
             "name": "Default",
             "queueDelayMs": 123,
             "retentionDays": 3,
+            "serverName": "sqlintegration",
             "state": "Enabled",
             "storageAccountSubscriptionId": "00000000-0000-0000-0000-000000000000",
             "type": "Microsoft.Sql/servers/databases/auditingSettings"
@@ -534,9 +548,9 @@ Create or update database's auditing policy.
 #### Human Readable Output
 
 >### Create Or Update Database Auditing Settings
->|Audit Actions And Groups|Id|Is Azure Monitor Target Enabled|Name|Queue Delay Ms|Retention Days|State|Storage Account Subscription Id|Type|
->|---|---|---|---|---|---|---|---|---|
->| SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP,<br/>FAILED_DATABASE_AUTHENTICATION_GROUP,<br/>BATCH_COMPLETED_GROUP | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/auditingSettings/Default | true | Default | 123 | 3 | Enabled | 00000000-0000-0000-0000-000000000000 | Microsoft.Sql/servers/databases/auditingSettings |
+>|Audit Actions And Groups|Database Name|Id|Is Azure Monitor Target Enabled|Name|Queue Delay Ms|Retention Days|Server Name|State|Storage Account Subscription Id|Type|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| SUCCESSFUL_DATABASE_AUTHENTICATION_GROUP,<br/>FAILED_DATABASE_AUTHENTICATION_GROUP,<br/>BATCH_COMPLETED_GROUP | sql-integration-db | /subscriptions/012345678/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/auditingSettings/Default | true | Default | 123 | 3 | sqlintegration | Enabled | 00000000-0000-0000-0000-000000000000 | Microsoft.Sql/servers/databases/auditingSettings |
 
 
 ### azure-sql-db-threat-policy-create-update
@@ -555,9 +569,9 @@ Create or update database's threat detection policy.
 | db_name | Database name. | Required | 
 | state | set state 'Enable' or 'Disable'. Possible values are: Enabled, Disabled. | Required | 
 | retention_days | Number of days to keep the policy in the audit logs. | Optional | 
-| storage_account_access_key | identifier key of the auditing storage account. | Optional | 
+| storage_account_access_key | The identifier key of the Threat Detection audit storage account. | Optional | 
 | storage_endpoint | Storage endpoint. If state is Enabled, storageEndpoint or isAzureMonitorTargetEnabled is required. | Optional | 
-| disabled_alerts | Comma-separated list of alerts that are disabled, or "none" to disable no alerts. Possible values: Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action. | Optional | 
+| disabled_alerts | Comma-separated list of alerts that are disabled. Possible values: None, Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action. | Optional | 
 | email_addresses | Comma-separated list of e-mail addresses to which the alert is sent. | Optional | 
 | email_account_admins | The alert is sent to the account administrators. Possible values are: true, false. | Optional | 
 | use_server_default | Whether to use the default server policy or not. Possible values are: Enabled, Disabled. | Optional | 
@@ -575,12 +589,14 @@ Create or update database's threat detection policy.
 | AzureSQL.DBThreatPolicy.state | String | Policy state | 
 | AzureSQL.DBThreatPolicy.creationTime | String | Policy creation Time | 
 | AzureSQL.DBThreatPolicy.retentionDays | Number | Number of days to keep in the Threat Detection audit logs. | 
-| AzureSQL.DBThreatPolicy.storageAccountAccessKey | String | Specifies the identifier key of the Threat Detection audit storage account. | 
+| AzureSQL.DBThreatPolicy.storageAccountAccessKey | String | The identifier key of the Threat Detection audit storage account. | 
 | AzureSQL.DBThreatPolicy.storageEndpoint | String | Threat Detection audit storage account. | 
 | AzureSQL.DBThreatPolicy.emailAccountAdmins | Boolean | Email account administrators that alert is sent to. | 
 | AzureSQL.DBThreatPolicy.emailAddresses | String | list of e-mail addresses to which the alert is sent. | 
 | AzureSQL.DBThreatPolicy.disabledAlerts | String | list of alerts that are disabled, or empty string to disable no alerts. | 
 | AzureSQL.DBThreatPolicy.useServerDefault | Unknown | whether to use the default server policy. | 
+| AzureSQL.DBThreatPolicy.databaseName | String | The name of database, that threat policy related to. | 
+| AzureSQL.DBThreatPolicy.serverName | String | The name of server, that threat policy related to. | 
 
 
 #### Command Example
@@ -592,6 +608,7 @@ Create or update database's threat detection policy.
     "AzureSQL": {
         "DBThreatPolicy": {
             "creationTime": "0001-01-01T00:00:00Z",
+            "databaseName": "sql-integration-db",
             "disabledAlerts": [
                 "Sql_Injection",
                 "Sql_Injection_Vulnerability"
@@ -601,6 +618,7 @@ Create or update database's threat detection policy.
             "id": "/subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/securityAlertPolicies/Default",
             "name": "Default",
             "retentionDays": 5,
+            "serverName": "sqlintegration",
             "state": "Enabled",
             "storageAccountAccessKey": "",
             "type": "Microsoft.Sql/servers/databases/securityAlertPolicies"
@@ -612,7 +630,7 @@ Create or update database's threat detection policy.
 #### Human Readable Output
 
 >### Create Or Update Database Threat Detection Policies
->|Creation Time|Disabled Alerts|Email Account Admins|Id|Name|Retention Days|State|Type|
->|---|---|---|---|---|---|---|---|
->| 0001-01-01T00:00:00Z | Sql_Injection,<br/>Sql_Injection_Vulnerability | false | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/securityAlertPolicies/Default | Default | 5 | Enabled | Microsoft.Sql/servers/databases/securityAlertPolicies |
+>|Creation Time|Database Name|Disabled Alerts|Email Account Admins|Id|Name|Retention Days|Server Name|State|Type|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 0001-01-01T00:00:00Z | sql-integration-db | Sql_Injection,<br/>Sql_Injection_Vulnerability | false | /subscriptions/0123456789/resourceGroups/sql-integration/providers/Microsoft.Sql/servers/sqlintegration/databases/sql-integration-db/securityAlertPolicies/Default | Default | 5 | sqlintegration | Enabled | Microsoft.Sql/servers/databases/securityAlertPolicies |
 
