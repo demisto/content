@@ -346,17 +346,18 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
     impact_types = params.get('impact_types')
     classifications = params.get('classifications')
 
-    fetch_time = params.get('fetch_time', '3 days').strip()
-    first_fetch_time = dateparser.parse(fetch_time).timestamp()
+    fetch_time = params.get('fetch_time', '5 days').strip()
+    # to match the shape of the time returned by Nutanix service.
+    first_fetch_time = int((dateparser.parse(fetch_time).timestamp()) * 1000000)
+    last_fetch_epoch_time = last_run.get('last_fetch_epoch_time', first_fetch_time)
 
     response = client.fetch_incidents(auto_resolved, resolved, acknowledged, severity, alert_type_ids, impact_types,
                                       classifications)
 
     alerts = response.get('entities')
     if alerts is None:
-        raise DemistoException('Unexpected TODO')
+        raise DemistoException('Unexpected returned results from Nutanix service.')
 
-    last_fetch_epoch_time = last_run.get('last_fetch_epoch_time', first_fetch_time)
     current_run_max_epoch_time = 0
     incidents: List[Dict[str, Any]] = []
 
@@ -422,7 +423,7 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
             del (output['usage_stats'])
 
         except KeyError:
-            demisto.debug('TODO: WEIRD')
+            raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
 
     raise DemistoException('')
     # return CommandResults(

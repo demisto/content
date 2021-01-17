@@ -1,11 +1,4 @@
 {
-  "fetch-incidents": {
-    "suffix": "a",
-    "response": {
-    },
-    "expected": {
-    }
-  },
   "nutanix-hypervisor-hosts-list": {
     "suffix": "hosts",
     "response": {
@@ -84,7 +77,9 @@
           "cpu_frequency_in_hz": 2095000000,
           "cpu_capacity_in_hz": 16760000000,
           "memory_capacity_in_bytes": 33722204160,
-          "details": "many details about the host"
+          "details": "many details about the host",
+          "stats": {},
+          "usage_stats": {}
         }
       ]
     },
@@ -219,28 +214,54 @@
     "suffix": "alerts",
     "response": {
       "metadata": "a few rows containing meta data about the request",
-      "entities": {
-        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "alert_type_uuid": "A140001",
-        "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
-        "resolved": true,
-        "auto_resolved": false,
-        "acknowledged": true,
-        "details": "many details about the alert"
-      }
+      "entities": [
+        {
+          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "alert_type_uuid": "A140001",
+          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136
+        },
+        {
+          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "alert_type_uuid": "A140002",
+          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914
+        }
+      ]
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Alerts",
       "outputs_key_field": "id",
-      "outputs": {
-        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "alert_type_uuid": "A140001",
-        "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
-        "resolved": true,
-        "auto_resolved": false,
-        "acknowledged": true,
-        "details": "many details about the alert"
-      }
+      "outputs": [
+        {
+          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "alert_type_uuid": "A140001",
+          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136
+        },
+        {
+          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "alert_type_uuid": "A140002",
+          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914
+        }
+      ]
     },
     "args": {}
   },

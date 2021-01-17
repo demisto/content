@@ -13,7 +13,7 @@ from Nutanix import nutanix_hypervisor_hosts_list_command, \
     nutanix_hypervisor_vms_list_command, nutanix_hypervisor_vm_power_status_change_command, \
     nutanix_hypervisor_task_poll_command, nutanix_alerts_list_command, nutanix_alert_acknowledge_command, \
     nutanix_alert_resolve_command, nutanix_alerts_acknowledge_by_filter_command, \
-    nutanix_alerts_resolve_by_filter_command
+    nutanix_alerts_resolve_by_filter_command, fetch_incidents_command
 
 MOCKED_BASE_URL = 'https://prefix:11111/PrismGateway/services/rest/v2.0'
 client = Client(base_url=MOCKED_BASE_URL, verify=False, proxy=False, auth=('fake_username', 'fake_password'))
@@ -334,3 +334,73 @@ def test_commands_post_methods(requests_mock, command_function: Callable[[Client
     assert returned_command_results.outputs_prefix == expected_command_results.outputs_prefix
     assert returned_command_results.outputs_key_field == expected_command_results.outputs_key_field
     assert returned_command_results.outputs == expected_command_results.outputs
+
+
+@pytest.mark.parametrize('params, last_run, expected_incidents_raw_json',
+                         [({},
+                           {},
+                           [command_tests_data['nutanix-alerts-list']['expected']['outputs'][0]]),
+
+                          ({'fetch_time': '6 days'},
+                           {},
+                           command_tests_data['nutanix-alerts-list']['expected']['outputs']),
+
+                          ({'fetch_time': '4 days'},
+                           {},
+                           [command_tests_data['nutanix-alerts-list']['expected']['outputs'][0]]),
+
+                          ({}, {'last_fetch_epoch_time': 1610360118147914},
+                           command_tests_data['nutanix-alerts-list']['expected']['outputs']),
+
+                          ({}, {'last_fetch_epoch_time': 1610560118147914},
+                           [command_tests_data['nutanix-alerts-list']['expected']['outputs'][0]])
+                          ])
+def test_fetch_incidents(requests_mock, params, last_run, expected_incidents_raw_json):
+    """
+    Given:
+     - Demisto parameters.
+     - Demisto arguments.
+     - Last run of fetch-incidents
+
+    When:
+     - Case a: Fetching incidents ,first run, fetch_time is not given, fallback to default '3 days' where one alert
+               time is before default last fetch and the second alert is after default last fetch.
+
+     - Case b: Fetching incidents, first run, fetch time is given and its time is before both alerts.
+
+     - Case c: Fetching incidents, first run, fetch time is given and its time is after one alert and before
+               second alert.
+
+     - Case d: Fetching incidents, not first run. last run fetch time is before both alerts.
+
+     - Case e: Fetching incidents, not first run. last run fetch time is after one alert and before the second alert.
+
+    Then:
+     - Case a: Ensure fallback to fetch_time '3 days' is being made and one alert is being filtered due to timestamp.
+               Ensure that last run is set with latest alert time stamp.
+
+     - Case b: Ensure that both alerts are returned as incidents.
+               Ensure that last run is set with latest alert time stamp.
+
+     - Case c: Ensure that only latest alert is returned as incident.
+               Ensure that last run is set with latest alert time stamp.
+
+     - Case d: Ensure that both alerts are returned as incidents.
+               Ensure that last run is set with latest alert time stamp.
+
+     - Case e: Ensure that only latest alert is returned as incident.
+               Ensure that last run is set with latest alert time stamp.
+    """
+    requests_mock.get(
+        f'{MOCKED_BASE_URL}/alerts',
+        json=command_tests_data['nutanix-alerts-list']['response']
+    )
+
+    incidents, next_run = fetch_incidents_command(
+        client=client,
+        params=params,
+        last_run=last_run
+    )
+    incidents_raw_json = [json.loads(incident['rawJSON']) for incident in incidents]
+    assert incidents_raw_json == expected_incidents_raw_json
+    assert next_run.get('last_fetch_epoch_time') == 1610718924821136
