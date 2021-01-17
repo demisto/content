@@ -2,15 +2,15 @@ Proofpoint email security appliance.
 
 This integration was integrated and tested with version 8.16.2 of Proofpoint Protection Server.
 ## Authentication
-An administrator must have a Role that includes access to a specific REST API. 
+An administrator must have a role that includes access to a specific REST API. 
 
 Proofpoint on Demand (PoD) administrators must file a support ticket to Proofpoint support to obtain a role with access to an API.
 
-On premise administrators: edit the **filter.cfg** file and set the following key to true: `com.proofpoint.admin.apigui.enable=t`
+On premise administrators: Edit the **filter.cfg** file and set the following key to true: com.proofpoint.admin.apigui.enable=t
 
-In the management interface, create a Role of Type API and select the APIs under ***Managed Modules*** for the Role so that you can give an administrator that Role.
+In the management interface, create a role of type API and select the APIs under **Managed Modules** for the role and assign an administrator that role.
 
-The required managed modules for this integration:
+The following are the required managed modules for this integration:
  - pss
  - Quarantine
  
@@ -47,68 +47,69 @@ Trace and analyze information about messages after they have been filtered by th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Final message disposition. Possible values are: accept, continue, discard, redirect, reject, retry. | Optional | 
-| start_time | Beginning time the search is performed against. Can be either free text (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). Default is 24 hours. | Optional | 
-| end_time | Ending time the search is performed against. Can be either free text (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). | Optional | 
-| virus | Detected virus name that infected the message (comma separated string). | Optional | 
-| sender | Sender email address. | Optional | 
-| recipient | Recipient email address. | Optional | 
-| attachment | Message attachments (comma separated string). | Optional | 
-| queue_id | Message queue ID. | Optional | 
-| host | Sending host/IP address of the email message. | Optional | 
-| sid | SID of the email message. | Optional | 
-| subject | Subject of the email message. | Optional | 
-| guid | Global unique ID of the email message. | Optional | 
-| message_id | Header message ID. Corresponds to Message ID field<br/>in UI. | Optional | 
+| action | Final disposition action message. Possible values are: "accept", "continue", "discard", "redirect", "reject", "retry". | Optional | 
+| start_time | Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). Default is "24 hours". | Optional | 
+| end_time | Time of when the search should end. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). | Optional | 
+| virus | Comma-separated list of the detected virus names that infected the message. | Optional | 
+| sender | Email address of the sender. | Optional | 
+| recipient | Email address of the recipient. | Optional | 
+| attachment | Comma-separated list of the message attachments. | Optional | 
+| queue_id | ID of the message queue. | Optional | 
+| host | The host or IP address of the sent email message. | Optional | 
+| sid | The SID of the email message. | Optional | 
+| subject | The subject of the email message. | Optional | 
+| guid | The global unique ID of the email message. | Optional | 
+| message_id | The ID of the header message. This corresponds to the Message ID field in the UI. | Optional | 
+| limit | The maximum number of email messages to return. The maximum value is set by the com.proofpoint.pss.query.default-count value in the filter.cfg file. Default is "100". | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Proofpoint.SmartSearch.Rule_ID | String | Message rule ID \(e.g., system\). | 
+| Proofpoint.SmartSearch.Rule_ID | String | The ID of the message rule (e.g., system). | 
 | Proofpoint.SmartSearch.Disposition_Action | String | Message disposition action. | 
 | Proofpoint.SmartSearch.Sendmail_Action | String | Message send mail action. | 
-| Proofpoint.SmartSearch.Attachment_Names | String | Message attachment names. | 
-| Proofpoint.SmartSearch.Recipients | String | Mail message recipient email addresses. | 
-| Proofpoint.SmartSearch.SendmailRaw_Log | String | Mail message send mail raw log. | 
-| Proofpoint.SmartSearch.GUID | String | Mail message GUID. | 
-| Proofpoint.SmartSearch.Date | Date | Mail message date. | 
-| Proofpoint.SmartSearch.Raw_Log | String | Mail message raw log. | 
-| Proofpoint.SmartSearch.Sender_Host | String | Mail message sender host. | 
-| Proofpoint.SmartSearch.Module_ID | String | Mail message module ID \(e.g., access\). | 
-| Proofpoint.SmartSearch.Sender_IP_Address | String | Mail message sender IP address. | 
-| Proofpoint.SmartSearch.Quarantine_Folder | String | Mail message quarantine folder. | 
-| Proofpoint.SmartSearch.QID | String | Mail message queue ID. | 
-| Proofpoint.SmartSearch.Quarantine_Rule | String | Mail message quarantine rule. | 
-| Proofpoint.SmartSearch.Spam_Score | String | Mail message spam score. | 
-| Proofpoint.SmartSearch.country | String | Mail message country \(e.g., \*\*\). | 
-| Proofpoint.SmartSearch.TLS | String | Mail message TLS. | 
-| Proofpoint.SmartSearch.Policy_Routes | String | Mail message policy routes \(comma separated string, e.g., allow_relay,firewallsafe\). | 
-| Proofpoint.SmartSearch.current_folder | String | Mail message current folder. | 
-| Proofpoint.SmartSearch.FID | String | Mail message folder ID. | 
-| Proofpoint.SmartSearch.module_rules | String | Mail message module rules \(e.g., access.system\). | 
-| Proofpoint.SmartSearch.PE_Recipients | String | Mail message PE recipients. | 
-| Proofpoint.SmartSearch.Virus_Names | String | Mail message virus names. | 
-| Proofpoint.SmartSearch.Sendmail_Errorcode | String | Mail message error codes. | 
-| Proofpoint.SmartSearch.FQIN | String | Mail message FQIN \(e.g., example.com-10000_instance1\). | 
-| Proofpoint.SmartSearch.SMIME_Recipients | String | Mail message SMIME recipients. | 
-| Proofpoint.SmartSearch.Agent | String | Mail message agent host, | 
-| Proofpoint.SmartSearch.Subject | String | Mail message subject. | 
-| Proofpoint.SmartSearch.Final_Rule | String | Mail message final rule \(e.g., access.system\). | 
-| Proofpoint.SmartSearch.Suborg | String | Mail message sub-organization. | 
-| Proofpoint.SmartSearch.SMIME_Recipients_Signed | String | Mail message SMIME recipients signed. | 
-| Proofpoint.SmartSearch.Message_Encrypted | String | Mail message encypted. | 
-| Proofpoint.SmartSearch.Message_Split | String | Mail message splitted. | 
-| Proofpoint.SmartSearch.Disposition_SmtpProfile | String | Mail message disposition SMTP profile. | 
-| Proofpoint.SmartSearch.Sendmail_To | String | Mail message send mail to. | 
-| Proofpoint.SmartSearch.Sendmail_Stat | String | Mail message send mail stat. | 
-| Proofpoint.SmartSearch.SID | String | Mail message SID. | 
-| Proofpoint.SmartSearch.Message_ID | String | Mail message ID. | 
-| Proofpoint.SmartSearch.Final_Action | String | Mail message final action \(e.g., accept\) | 
-| Proofpoint.SmartSearch.Sender | String | Mail message sender. | 
-| Proofpoint.SmartSearch.Sendmail_To_Stat | String | Mail message send mail to stat. | 
-| Proofpoint.SmartSearch.Message_Size | String | Mail message size. | 
+| Proofpoint.SmartSearch.Attachment_Names | String | Names of the email attachments. | 
+| Proofpoint.SmartSearch.Recipients | String | Email addresses of the recipient of the email message. | 
+| Proofpoint.SmartSearch.SendmailRaw_Log | String | The raw log of the send mail email message. | 
+| Proofpoint.SmartSearch.GUID | String | GUID of the email message. | 
+| Proofpoint.SmartSearch.Date | Date |Date of the email message. | 
+| Proofpoint.SmartSearch.Raw_Log | String | Raw log of the email message. | 
+| Proofpoint.SmartSearch.Sender_Host | String | The sender host of the email message. | 
+| Proofpoint.SmartSearch.Module_ID | String | The module ID of the email message (e.g., access). | 
+| Proofpoint.SmartSearch.Sender_IP_Address | String | IP address of the email message sender. | 
+| Proofpoint.SmartSearch.Quarantine_Folder | String | The email message quarantine folder. | 
+| Proofpoint.SmartSearch.QID | String | The queue ID of the email message. | 
+| Proofpoint.SmartSearch.Quarantine_Rule | String | The quarantine rule of the email message. | 
+| Proofpoint.SmartSearch.Spam_Score | String | The spam score of the email message. | 
+| Proofpoint.SmartSearch.country | String | The country of the email message (e.g., **). | 
+| Proofpoint.SmartSearch.TLS | String | The TLS of the email message. | 
+| Proofpoint.SmartSearch.Policy_Routes | String | Comma-separated list of mail message policy routes (e.g., allow_relay,firewallsafe). | 
+| Proofpoint.SmartSearch.current_folder | String | The current folder of the email message. | 
+| Proofpoint.SmartSearch.FID | String | The folder ID of the email message. | 
+| Proofpoint.SmartSearch.module_rules | String | The module rules of the email message (e.g., access.system). | 
+| Proofpoint.SmartSearch.PE_Recipients | String | The PE recipients of the email message. | 
+| Proofpoint.SmartSearch.Virus_Names | String | The virus names of the email message. | 
+| Proofpoint.SmartSearch.Sendmail_Errorcode | String | The error codes of the email message. | 
+| Proofpoint.SmartSearch.FQIN | String | The FQIN of the email message (e.g., example.com-10000_instance1). | 
+| Proofpoint.SmartSearch.SMIME_Recipients | String | The SMIME recipients of the email message. | 
+| Proofpoint.SmartSearch.Agent | String | The agent host of the email message. | 
+| Proofpoint.SmartSearch.Subject | String | The subject of the email message. | 
+| Proofpoint.SmartSearch.Final_Rule | String | The final rule of the email message (e.g., access.system). | 
+| Proofpoint.SmartSearch.Suborg | String | The sub-organization of the email message. | 
+| Proofpoint.SmartSearch.SMIME_Recipients_Signed | String | The SMIME signed recipients  for the email message. | 
+| Proofpoint.SmartSearch.Message_Encrypted | String | The encrypted email message. | 
+| Proofpoint.SmartSearch.Message_Split | String | The split of the email message. | 
+| Proofpoint.SmartSearch.Disposition_SmtpProfile | String | The disposition SMTP profile of the email message. | 
+| Proofpoint.SmartSearch.Sendmail_To | String | The send to address in the email message. | 
+| Proofpoint.SmartSearch.Sendmail_Stat | String | The send email status of the email message. | 
+| Proofpoint.SmartSearch.SID | String | The SID of the email message. | 
+| Proofpoint.SmartSearch.Message_ID | String | The ID of the email message. | 
+| Proofpoint.SmartSearch.Final_Action | String | The final action of the email message (e.g., accept). | 
+| Proofpoint.SmartSearch.Sender | String | The sender of the email message. | 
+| Proofpoint.SmartSearch.Sendmail_To_Stat | String | The send mail to status of the email message. | 
+| Proofpoint.SmartSearch.Message_Size | String | The size of the email message. | 
 
 
 #### Command Example
@@ -212,7 +213,7 @@ If there is an @ sign, the * is not ignored. If you enter only @, no results are
 
 The subject is passed through an Analyzer that applies stemming and removes stop words.
 
-Here is a list of Stop words:
+Here is a list of stop words:
 
 "a", "an", "and", "are", "as", "at", "be", "but", "by", "for", "if", "in", "into", 
 
@@ -224,7 +225,7 @@ Example: "I'm going to a party" becomes "I go party"
 
 ### proofpoint-pps-list-quarantined-messages
 ***
-Search for quarantine messages.
+Search for quarantined messages.
 
 
 #### Base Command
@@ -234,12 +235,12 @@ Search for quarantine messages.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sender | Envelope message sender equals, starts with, ends with or is in a domain such as "bar.com". At least one of the following arguments must be specified: from, to, subject. | Optional | 
-| recipient | Envelope message recipient equals, starts with, ends with or is in a domain such as "bar.com". At least one of the following arguments must be specified: from, to, subject. | Optional | 
-| subject | Message subject starts with, ends with or contains. At least one of the following arguments must be specified: from, to, subject. | Optional | 
-| start_time | Beginning time the search is performed against. Can be either free text (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). Default is 24 hours. | Optional | 
-| end_time | Ending time the search is performed against. Can be either free text (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). | Optional | 
-| folder_name | Quarantine folder name. Default is Quarantine. | Optional | 
+| sender | Envelope message sender equals, starts with, ends with, or is in a domain such as "bar.com". At least one of the following arguments must be specified: sender, recipient, subject. | Optional | 
+| recipient | Envelope message recipient equals, starts with, ends with, or is in a domain such as "bar.com". At least one of the following arguments must be specified: sender, recipient, subject. | Optional | 
+| subject | Message subject starts with, ends with, or contains. At least one of the following arguments must be specified: sender, recipient, subject. | Optional | 
+| start_time | Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). Default is "24 hours". | Optional | 
+| end_time | Time of when the search should end. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). | Optional | 
+| folder_name | Quarantine folder name. Default is "Quarantine". | Optional | 
 | guid | Message Global Unique Identifier (generated by PPS) to retrieve raw data for a message. If it is specified and a message is found, the message’s raw data will be returned. | Optional | 
 
 
@@ -247,18 +248,18 @@ Search for quarantine messages.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Proofpoint.QuarantinedMessage.processingserver | String | Quarantined message processing server. | 
-| Proofpoint.QuarantinedMessage.date | Date | Quarantined message date. | 
-| Proofpoint.QuarantinedMessage.subject | String | Quarantined message subject. | 
-| Proofpoint.QuarantinedMessage.messageid | String | Quarantined message ID. | 
-| Proofpoint.QuarantinedMessage.folder | String | Quarantined message folder. | 
-| Proofpoint.QuarantinedMessage.size | String | Quarantined message size. | 
-| Proofpoint.QuarantinedMessage.rcpts | String | Quarantined message recipients. | 
-| Proofpoint.QuarantinedMessage.from | String | Quarantined message sender. | 
-| Proofpoint.QuarantinedMessage.spamscore | String | Quarantined message spam score. | 
-| Proofpoint.QuarantinedMessage.guid | String | Quarantined message GUID. | 
-| Proofpoint.QuarantinedMessage.host_ip | String | Quarantined message host IP address. | 
-| Proofpoint.QuarantinedMessage.localguid | String | Quarantined message local GUID. | 
+| Proofpoint.QuarantinedMessage.processingserver | String | The processing server of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.date | Date | The date of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.subject | String | The subject of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.messageid | String | The ID of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.folder | String | The folder of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.size | String | The size of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.rcpts | String | The recipients of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.from | String | The sender of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.spamscore | String | The spam score of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.guid | String | The GUID of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.host_ip | String | The host IP address of the quarantined message. | 
+| Proofpoint.QuarantinedMessage.localguid | String | The local GUID of the quarantined message. | 
 
 
 #### Command Example
@@ -317,7 +318,7 @@ Search for quarantine messages.
 
 ### proofpoint-pps-release-message
 ***
-Releases the message to the email infrastructure without further scanning. The message remains in the folder and will be moved to the `deleted_folder` if specified.
+Releases the message to the email infrastructure without further scanning. The message remains in the folder and is moved to the deleted_folder if specified.
 
 
 #### Base Command
@@ -328,11 +329,11 @@ Releases the message to the email infrastructure without further scanning. The m
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
-| local_guid | Message GUID (comma separated string). Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ<br/>wmmxwP6lQkr5k7). | Required | 
-| deleted_folder | Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP Incidents, and vice versa. | Optional | 
-| scan | Whether to rescan the message by the DLP and Attachment Defense filtering modules. Possible values are: true, false. Default is false. | Optional | 
-| brand_template | When Encryption is licensed, uses this Branding Template when an encrypted message is released. The Branding Templates are listed on the System &gt; End User Services &gt; Branding Templates page in the management interface (admin GUI). | Optional | 
-| security_policy | The Secure Reader response profile to use when release is used for an encrypted message.The Response Profiles are listed on the Information Protection &gt; Encryption &gt; Response Profiles page in the management interface (admin GUI). | Optional | 
+| local_guid | Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). | Required | 
+| deleted_folder | Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP incidents, and vice versa. | Optional | 
+| scan | Whether to rescan the message by the DLP and Attachment Defense filtering modules. Possible values are: "true" and "false". Default is "false". | Optional | 
+| brand_template | When encryption is licensed, the Branding Template to use when an encrypted message is released. The Branding Templates are listed on the System > End User Services > Branding Templates page in the management interface (admin GUI). | Optional | 
+| security_policy | The Secure Reader response profile to use when the release is used for an encrypted message.The Response Profiles are listed on the Information Protection &gt; Encryption &gt; Response Profiles page in the management interface (admin GUI). | Optional | 
 
 
 #### Context Output
@@ -348,7 +349,7 @@ There is no context output for this command.
 
 ### proofpoint-pps-resubmit-message
 ***
-Resubmits the message to the filtering modules. The message is removed from the folder and will not be moved to any folder.
+Resubmits the message to the filtering modules. The message is removed from the folder and is moved to any folder.
 
 
 #### Base Command
@@ -359,7 +360,7 @@ Resubmits the message to the filtering modules. The message is removed from the 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
-| local_guid | Message GUID (comma separated string). Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ<br/>wmmxwP6lQkr5k7). | Required | 
+| local_guid | Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). | Required | 
 
 
 #### Context Output
@@ -375,7 +376,7 @@ There is no context output for this command.
 
 ### proofpoint-pps-forward-message
 ***
-Forwards the message to another recipient. The message remains in the folder and will be moved to the `deleted_folder` if specified.
+Forwards the message to another recipient. The message remains in the folder and will be moved to the deleted_folder if specified.
 
 
 #### Base Command
@@ -386,14 +387,14 @@ Forwards the message to another recipient. The message remains in the folder and
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
-| local_guid | Message GUID (comma separated string). Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ<br/>wmmxwP6lQkr5k7). | Required | 
-| recipient | Recipient email address (comma separated string). | Required | 
+| local_guid | Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). | Required | 
 | deleted_folder | Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP Incidents, and vice versa. | Optional | 
-| subject | Overwrite the original subject for the message with a new subject. | Optional | 
-| append_old_subject | Whether to append original subject to the string specified in the `subject` argument. Possible values are: true, false. Default is false. | Optional | 
-| sender | The envelope from email address. | Optional | 
+| subject | The new subject with which to overwrite the original subject for the message. | Optional | 
+| append_old_subject | Whether to append the original subject to the string specified in the subject argument. Possible values are: "true" and "false". Default is "false". | Optional | 
+| sender |The envelope email address of the sender. | Optional | 
 | header_from | The header from email address. | Optional | 
-| comment | New message body (The original message is<br/>sent as an attachment). | Optional | 
+| recipient | Comma-separate list of recipient email addresses. | Required | 
+| comment | New message body. (The original message is sent as an attachment.) | Optional | 
 
 
 #### Context Output
@@ -420,7 +421,7 @@ Moves the message to the specified target folder.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
-| local_guid | Message GUID (comma separated string). Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ<br/>wmmxwP6lQkr5k7). | Required | 
+| local_guid | Comma-separate list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). | Required | 
 | target_folder | Name of the folder to move the email message to (e.g., PCI).The folder for moved messages must be for quarantined messages from the same type of module. For example, you cannot move spam messages to a folder for DLP Incidents, and vice versa. | Required | 
 
 
@@ -437,7 +438,7 @@ There is no context output for this command.
 
 ### proofpoint-pps-delete-message
 ***
-Deletes the message from the Quarantine. The message is removed from its folder and is moved to the `deleted_folder if specified.
+Deletes the message from the quarantine folder. The message is removed from its folder and is moved to the deleted_folder if specified.
 
 
 #### Base Command
@@ -448,7 +449,7 @@ Deletes the message from the Quarantine. The message is removed from its folder 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
-| local_guid | Message GUID (comma separated string). Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ<br/>wmmxwP6lQkr5k7). | Required | 
+| local_guid | Comma-separate list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). | Required | 
 | deleted_folder | Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP Incidents, and vice versa. | Optional | 
 
 
@@ -465,7 +466,7 @@ There is no context output for this command.
 
 ### proofpoint-pps-download-message
 ***
-Downloads email message raw data.
+Downloads an email message's raw data.
 
 #### Base Command
 
