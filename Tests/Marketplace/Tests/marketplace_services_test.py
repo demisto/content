@@ -195,7 +195,7 @@ class TestParsingInternalFunctions:
 
         assert result_certification == Metadata.CERTIFIED
 
-    @pytest.mark.parametrize("support_type, certification", [("partner", None), ("developer", "")])
+    @pytest.mark.parametrize("support_type, certification", [("community", None), ("developer", "")])
     def test_get_certification_non_xsoar_support_empty(self, support_type, certification):
         """ Tests case when support is set to non xsoar. Expected result should empty certification string.
         """
