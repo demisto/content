@@ -31,20 +31,20 @@ READER_CONFIG = {
     }
 }
 
+ABUSE_TYPE_NAME_TO_ID = {
+    'ransomware': 1,
+    'darknet market': 2,
+    'bitcoin tumbler': 3,
+    'blackmail scam': 4,
+    'sextortio': 5,
+    'other': 99
+}
+
 
 class BitcoinAbuseClient(BaseClient):
-    first_fetch_interval_to_url_suffix: Dict[str, str] = {
+    FIRST_FETCH_INTERVAL_TO_URL_SUFFIX: Dict[str, str] = {
         'Forever': 'forever',
         '30 Days': '30d'
-    }
-
-    abuse_type_name_to_id = {
-        'ransomware': 1,
-        'darknet market': 2,
-        'bitcoin tumbler': 3,
-        'blackmail scam': 4,
-        'sextortio': 5,
-        'other': 99
     }
 
     def __init__(self, base_url, insecure, proxy, api_key, initial_fetch_interval, reader_config,
@@ -158,7 +158,7 @@ class BitcoinAbuseClient(BaseClient):
             - Set of the url suffixes to be used in the fetch process.
         """
         feed_endpoint_suffix = 'download/'
-        first_feed_interval_url_suffix = BitcoinAbuseClient.first_fetch_interval_to_url_suffix.get(
+        first_feed_interval_url_suffix = self.FIRST_FETCH_INTERVAL_TO_URL_SUFFIX.get(
             self.initial_fetch_interval, '30d')
 
         if self.have_fetched_first_time:
@@ -247,7 +247,7 @@ def bitcoin_abuse_report_address_command(bitcoin_client: BitcoinAbuseClient, arg
         str: 'bitcoin address (address reported) by abuser (abuser reported) was
         reported to BitcoinAbuse API' if http request was successful'.
     """
-    abuse_type_id = BitcoinAbuseClient.abuse_type_name_to_id.get(args.get('abuse_type', ''))
+    abuse_type_id = ABUSE_TYPE_NAME_TO_ID.get(args.get('abuse_type', ''))
     abuse_type_other = args.get('abuse_type_other')
     address = args.get('address', '')
     abuser = args.get('abuser', '')
@@ -255,7 +255,7 @@ def bitcoin_abuse_report_address_command(bitcoin_client: BitcoinAbuseClient, arg
 
     if abuse_type_id is None:
         raise DemistoException('Bitcoin Abuse: invalid type of abuse, please insert a correct abuse type')
-    if abuse_type_id == BitcoinAbuseClient.abuse_type_name_to_id['other'] and abuse_type_other is None:
+    if abuse_type_id == ABUSE_TYPE_NAME_TO_ID['other'] and abuse_type_other is None:
         raise DemistoException('Bitcoin Abuse: abuse_type_other is mandatory when abuse type is other')
     http_response = bitcoin_client.report_address(address=address,
                                                   abuse_type_id=abuse_type_id,
