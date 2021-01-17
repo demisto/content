@@ -728,10 +728,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_servicenowresolutionnotes",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_ticketnumber",
                         "isVisible": true
                     }
