@@ -183,60 +183,70 @@
                             {
                                 "endCol": 1,
                                 "fieldId": "occurred",
-                                "height": 55,
+                                "height": 53,
                                 "id": "incident-occurred-field",
                                 "index": 0,
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 1,
-                                "fieldId": "dbotmodified",
-                                "height": 55,
-                                "id": "incident-modified-field",
-                                "index": 1,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "ticketopeneddate",
+                                "height": 53,
+                                "id": "3ea660d0-58b8-11eb-b3d4-8f0be28b19ef",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
                                 "fieldId": "ticketacknowledgeddate",
-                                "height": 55,
-                                "id": "a6382a50-58ac-11eb-8a3e-f3dc5749d27e",
+                                "height": 53,
+                                "id": "642c6e30-5683-11eb-82f3-a704b07b2b2e",
                                 "index": 2,
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "ticketcloseddate",
+                                "height": 53,
+                                "id": "35ddfee0-58b8-11eb-b3d4-8f0be28b19ef",
+                                "index": 3,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "resolved",
-                                "height": 55,
-                                "id": "a2d5c570-58ac-11eb-8a3e-f3dc5749d27e",
-                                "index": 3,
+                                "height": 53,
+                                "id": "4e650580-5683-11eb-82f3-a704b07b2b2e",
+                                "index": 4,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "dbotduedate",
-                                "height": 55,
-                                "id": "incident-dueDate-field",
-                                "index": 4,
+                                "height": 53,
+                                "id": "a0d41450-5683-11eb-82f3-a704b07b2b2e",
+                                "index": 5,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "dbotcreated",
-                                "height": 55,
-                                "id": "incident-created-field",
-                                "index": 0,
-                                "startCol": 1
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "dbotclosed",
-                                "height": 55,
-                                "id": "incident-closed-field",
-                                "index": 1,
-                                "startCol": 1
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 53,
+                                "id": "incident-modified-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
+                        "maxW": 3,
                         "moved": false,
                         "name": "Timeline Information",
                         "static": false,
