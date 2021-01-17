@@ -1474,3 +1474,4 @@ class TestGetSuccessfulAndFailedPacks:
         }}
         successful_list = [*successful]
         ans = 'TestPack3' in successful_list
+        assert ans
