@@ -263,15 +263,14 @@ def bitcoin_abuse_report_address_command(bitcoin_client: BitcoinAbuseClient, arg
                                                   abuser=abuser,
                                                   description=description)
 
-    raise DemistoException('')
-    # if argToBoolean(http_response.get('success', False)):
-    #     return CommandResults(
-    #         readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
-    #                         f' was reported to BitcoinAbuse service'
-    #     )
-    # else:
-    #     failure_message = http_response.get('response', 'Unknown failure reason')
-    #     raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
+    if argToBoolean(http_response.get('success', False)):
+        return CommandResults(
+            readable_output=f'Bitcoin address {address} by abuse bitcoin user {abuser}'
+                            f' was reported to BitcoinAbuse service'
+        )
+    else:
+        failure_message = http_response.get('response', 'Unknown failure reason')
+        raise DemistoException(f'bitcoin report address did not succeed: {failure_message}')
 
 
 def test_module_command(bitcoin_client: BitcoinAbuseClient):
