@@ -1,8 +1,8 @@
 {
     "name": "Shift Management",
-    "description": "Shift management related content",
+    "description": "This pack's purpose is to provide a single interface for all those essential elements of Shift management and handover in one place.",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
