@@ -3377,6 +3377,8 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "DShield Feed": "Has a command that downloads a file (!dshield-get-indicators)",
+        "Office 365 Feed": "Client sends a unique uuid as first request of every run",
         "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
         "urlscan.io": "Uses data that comes in the headers",
