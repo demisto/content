@@ -1,0 +1,17 @@
+{
+    "name": "test - resubmit pack - ignore",
+    "description": "author_description",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "author_test",
+    "url": "",
+    "email": "",
+    "created": "2021-01-17T18:16:22Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "dantavori"
+    ]
+}

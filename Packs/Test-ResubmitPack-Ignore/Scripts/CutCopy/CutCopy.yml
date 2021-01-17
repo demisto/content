@@ -1,0 +1,38 @@
+args:
+- description: Value to split
+  name: value
+  required: true
+- description: Delimiter to cut the string by. Pass '' to set delimiter to be empty
+    string
+  name: delimiter
+  required: true
+- description: 'Comma separated field numbers (e.g.: 1,5,7)'
+  isArray: true
+  name: fields
+  required: true
+comment: |
+  Cut a string by delimiter and return specific fields.
+  Example
+  =================
+  input: "A-B-C-D-E"
+  delimiter: "-"
+  fields: "1,5"
+
+  return: "A-E"
+commonfields:
+  id: Cut
+  version: -1
+enabled: true
+name: Cut
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python2
+tags:
+- transformer
+- string
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
