@@ -139,7 +139,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         }] + steps_fields
 
     if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
-        successful_packs, failed_packs = get_successful_and_failed_packs(
+        successful_packs, failed_packs, successful_private_packs_dict = get_successful_and_failed_packs(
             packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         )
         if successful_packs:
@@ -153,6 +153,12 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
                 "title": "Failed Packs:",
                 "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
                                     for pack_name, pack_data in failed_packs.items()]),
+                "short": False
+            }]
+        if successful_private_packs_dict:
+            steps_fields += [{
+                "title": "Successful Private Packs:",
+                "value": "\n".join([pack_name for pack_name in {*successful_private_packs_dict}]),
                 "short": False
             }]
 
