@@ -592,10 +592,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_dbotpredictionprobability",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_destinationhostname",
                         "isVisible": true
                     },
