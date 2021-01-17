@@ -277,9 +277,6 @@ script:
       - contextPath: NutanixHypervisor.Host..state
         description: Host state.
         type: String
-      - contextPath: NutanixHypervisor.Host..dynamic_ring_changing_node
-        description: Host dynamic ring changing mode.
-        type: Unknown # TODO TOM
       - contextPath: NutanixHypervisor.Host..removal_status
         description: Host removal status.
         type: String
