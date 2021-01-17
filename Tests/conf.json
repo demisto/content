@@ -3264,7 +3264,8 @@
         "RSA NetWitness Test": "Issue 32566",
         "ThreatMiner-Test": "Issue 32688",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
-        "Microsoft Graph Groups - Test": "Issue 27890"
+        "Microsoft Graph Groups - Test": "Issue 27890",
+        "whois_test": "Issue 25648"
     },
     "skipped_integrations": {
         
