@@ -8,15 +8,15 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Key
-  additionalinfo: The API Key to use for connection
+- additionalinfo: The API Key to use for connection
+  display: API Key
   name: api_token
   required: true
   type: 4
 - display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
+  type: 8
 - additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   display: First fetch time
   hidden: false
@@ -37,6 +37,102 @@ configuration:
   name: proxy
   required: false
   type: 8
+- additionalinfo: Alert class to filter by. Only one class can be configured at
+    a time. If none was chosen, all classes will be fetched.
+  display: Alert Class
+  hidden: false
+  name: alert_class
+  options:
+  - bgp
+  - cloudsignal
+  - data
+  - dos
+  - smart
+  - system_error
+  - system_event
+  - tms
+  - traffic
+  required: false
+  type: 15
+- additionalinfo: Alert type to filter by. Only one type can be configured at
+    a time. If none was chosen, all types will be fetched.
+  display: Alert Type
+  hidden: false
+  name: alert_type
+  options:
+  - autoclassify_restart
+  - bgp_down
+  - bgp_hijack
+  - bgp_instability
+  - bgp_trap
+  - blob_thresh
+  - cloud_mit_request
+  - cloudsignal_fault
+  - collector_down
+  - collector_start
+  - config_change
+  - device_system_error
+  - dns_baseline
+  - dos
+  - dos_host_detection
+  - dos_mo_profiled
+  - dos_profiled_network
+  - dos_profiled_router
+  - fingerprint_thresh
+  - flexible_license_error
+  - flow_down
+  - flow_missing
+  - gre_down
+  - hw_failure
+  - smart_thresh
+  - interface_usage
+  - nucleus_fault
+  - routing_failover
+  - routing_interface_failover
+  - service_thresh
+  - smart_thresh
+  - snmp_down
+  - spcomm_failure
+  - tms_fault
+  - traffic_auto_mitigation
+  required: false
+  type: 15
+- additionalinfo: Alert importance to filter by. For more complex operations use
+    the 'Importance Operator' parameter. If none was chosen, all importances will
+    be fetched.
+  display: Importance
+  hidden: false
+  name: importance
+  options:
+  - Low
+  - Medium
+  - High
+  required: false
+  type: 15
+- additionalinfo: 'The chosen operator will be applied on the ''Importance'' parameter.
+    For example: if the chosen operator is ''<'' and the importance is ''1'', only
+    alerts with importance equals to 1 wil be fetched. Default is ''='''
+  defaultvalue: =
+  display: Importance Operator
+  hidden: false
+  name: importance_operator
+  options:
+  - =
+  - <
+  - >
+  required: false
+  type: 15
+- additionalinfo: Alert status to filter by. If none was chosen, all statuses will
+    be fetched.
+  defaultvalue: All
+  display: Event Status
+  hidden: false
+  name: ongoing
+  options:
+  - Ongoing
+  - Not Ongoing
+  required: false
+  type: 15
 description: '[Enter a comprehensive, yet concise, description of what the integration
   does, what use cases it is designed for, etc.]'
 display: NetscoutArborSightline
@@ -60,12 +156,15 @@ script:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.14516
-fromversion: 5.0.0
+  type: python
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
