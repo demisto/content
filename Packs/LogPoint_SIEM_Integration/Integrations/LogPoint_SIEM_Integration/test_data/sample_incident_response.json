@@ -9,7 +9,7 @@
       "repos": [
         "127.0.0.1:5504"
       ],
-      "loginspect_ip_dns": "10.45.3.131",
+      "loginspect_ip_dns": "127.0.0.1",
       "visible_to": [
         "5a466e9dd8aaa4748d3977c3"
       ],
