@@ -30,11 +30,13 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | AssignActiveIncidentsToNextShift | Yes - If you wish that the Playbook will reassign active incidents to on-call users, the playbook will take in consideration users that are out of the office.<br/>No- If you do not wish to reassign active incidents, same incident owner will remain. <br/> | Yes | Optional |
 | IncidentSearchQuery | Query for the Incidents to reassign.  Incidents need to be active for this to work, it will not reassign pending Incidents.  | status:active  -category:job  | Optional |
-| AppChannelName  | The name of channel that would be created in your messaging app  for the shift handover.<br/>The should not contain upper case or special characters.   | daud | Optional |
+| AppChannelName  | The name of channel that would be created in your messaging app  for the shift handover.<br/>The should not contain upper case or special characters.<br/>If you want to use an already existing channel make sure to provide it as well.
+Currently this input supports only two integration: Microsoft Teams and Slack.
+   | | Optional |
 | AppMessage  | The message that you wish to send to the handover to your messaging app channel that was created above. | Hi, please join the shift handover meeting. | Optional |
-| SOCManagerEmail | In case that the Shift manager briefing section will be left empty when a new shift handover incident is opened, an Email will be send to this address to provide Shift manager briefing. | evisochek@paloaltonetworks.com | Optional |
+| SOCManagerEmail | In case that the Shift manager briefing section will be left empty when a new shift handover incident is opened, an Email will be send to this address to provide Shift manager briefing.<br/>The playbook doesn't have dependency in the SOC manager replay answer, the answer will be updated in the proper layout section at the moment she will be provided.  |  | Optional |
 | ShiftManagerBriefing  | The incident field that will provide the shift manager briefing for the layout. | ${incident.shiftmanagerbriefing} | Optional |
-| TeamName | If using Microsoft Teams please provide your Microsoft team name. | DemistoTeam | Optional |
+| TeamName | If using Microsoft Teams please provide your Microsoft team name.<br/>This input is mandatory for Microsoft Teams.   |  | Optional |
 
 ## Playbook Outputs
 ---
