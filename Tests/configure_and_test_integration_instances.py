@@ -17,7 +17,6 @@ from distutils.version import LooseVersion
 import logging
 from typing import List, Tuple
 
-from Tests.mock_server import MITMProxy, run_with_mock, RESULT
 from Tests.scripts.utils.log_util import install_logging
 
 from paramiko.client import SSHClient, AutoAddPolicy
@@ -31,7 +30,10 @@ from Tests.test_content import extract_filtered_tests, get_server_numeric_versio
 from Tests.update_content_data import update_content
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
-from Tests.tools import update_server_configuration, run_with_proxy_configured
+from Tests.tools import run_with_proxy_configured
+from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
+from demisto_sdk.commands.test_content.tools import update_server_configuration
+
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
