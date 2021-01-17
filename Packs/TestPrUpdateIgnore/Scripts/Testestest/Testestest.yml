@@ -1,8 +1,8 @@
 args:
-- name: field1
+- name: field
   required: true
 - name: field2
-comment: test description
+comment: test description 2
 commonfields:
   id: testestest
   version: -1
