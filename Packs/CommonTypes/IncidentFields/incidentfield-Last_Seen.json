@@ -25,6 +25,9 @@
         "AWS EC2 Instance Misconfiguration",
         "Nutanix Hypervisor Alert"
     ],
+    "systemAssociatedTypes": [
+        "Nutanix Hypervisor Alert"
+    ],
     "associatedToAll": false,
     "unsearchable": false,
     "caseInsensitive": true,
