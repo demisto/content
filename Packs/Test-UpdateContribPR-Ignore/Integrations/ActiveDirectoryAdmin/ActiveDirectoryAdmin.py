@@ -15,7 +15,7 @@ from ldap3.utils.log import (EXTENDED, get_library_log_detail_level,
 # global connection
 conn: Optional[Connection] = None
 
-''' GLOBAL VARS '''
+''' GLOBAL VARIABLES '''
 
 # userAccountControl is a bitmask used to store a number of settings.
 # find more at:
