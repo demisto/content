@@ -1257,7 +1257,7 @@ class TestStoreInCircleCIArtifacts:
 
     @staticmethod
     def get_successful_packs():
-        successful_packs = [Pack(pack_name='A', pack_path='.'), Pack(pack_name='B', pack_path='.')]
+        successful_packs = [Pack(pack_name='TestPack1', pack_path='.'), Pack(pack_name='TestPack2', pack_path='.')]
         for pack in successful_packs:
             pack._status = PackStatus.SUCCESS.name
             pack._aggregated = True
@@ -1266,64 +1266,76 @@ class TestStoreInCircleCIArtifacts:
 
     @staticmethod
     def get_failed_packs():
-        failed_packs = [Pack(pack_name='C', pack_path='.'), Pack(pack_name='D', pack_path='.')]
+        failed_packs = [Pack(pack_name='TestPack3', pack_path='.'), Pack(pack_name='TestPack4', pack_path='.')]
         for pack in failed_packs:
             pack._status = PackStatus.FAILED_UPLOADING_PACK.name
             pack._aggregated = False
         return failed_packs
 
+    @staticmethod
+    def get_updated_private_packs():
+        return ['TestPack5', 'TestPack6']
+
     def test_store_successful_and_failed_packs_in_ci_artifacts_both(self, tmp_path):
         """
            Given:
-               - Successful packs list - A,B
-               - Failed packs list - C,D
+               - Successful packs list - TestPack1 , TestPack2
+               - Failed packs list - TestPack3 , TestPack4
+               - Private updated packs list - TestPack5 , TestPack6
                - A path to the circle ci artifacts dir
            When:
                - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
            Then:
-               - Verify that the file content contains the successful and failed packs A, B & C, D respectively.
+               - Verify that the file content contains the successful, failed and private
+                packs TestPack1, TestPack2 & TestPack3, TestPack4, TestPack5 & TestPack6 respectively.
        """
         successful_packs = self.get_successful_packs()
         failed_packs = self.get_failed_packs()
+        updated_private_packs = self.get_updated_private_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
+            updated_private_packs
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
             f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
                 f'{BucketUploadFlow.FAILED_PACKS}': {
-                    'C': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
-                    'D': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
+                    'TestPack3': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
+                    'TestPack4': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
                 },
                 f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
-                    'A': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
-                    'B': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
-                }
+                    'TestPack1': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'TestPack2': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                },
+                f'{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}': {
+                    'TestPack5': {},
+                    'TestPack6': {}
+                },
             }
         }
 
     def test_store_successful_and_failed_packs_in_ci_artifacts_successful_only(self, tmp_path):
         """
            Given:
-               - Successful packs list - A,B
+               - Successful packs list - TestPack1, TestPack2
                - A path to the circle ci artifacts dir
            When:
                - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
            Then:
-               - Verify that the file content contains the successful packs A & B.
+               - Verify that the file content contains the successful packs TestPack1 & TestPack2.
        """
         successful_packs = self.get_successful_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, list()
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, list(), list()
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
             f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
                 f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
-                    'A': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
-                    'B': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                    'TestPack1': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'TestPack2': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
                 }
             }
         }
@@ -1331,24 +1343,49 @@ class TestStoreInCircleCIArtifacts:
     def test_store_successful_and_failed_packs_in_ci_artifacts_failed_only(self, tmp_path):
         """
            Given:
-               - Failed packs list - C,D
+               - Failed packs list - TestPack3 , TestPack4
                - A path to the circle ci artifacts dir
            When:
                - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
            Then:
-               - Verify that the file content contains the failed packs C & D.
+               - Verify that the file content contains the failed packs TestPack & TestPack4.
        """
         failed_packs = self.get_failed_packs()
         packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
         store_successful_and_failed_packs_in_ci_artifacts(
-            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), failed_packs
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), failed_packs, list()
         )
         packs_results_file = load_json(packs_results_file_path)
         assert packs_results_file == {
             f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
                 f'{BucketUploadFlow.FAILED_PACKS}': {
-                    'C': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
-                    'D': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
+                    'TestPack3': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
+                    'TestPack4': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
+                }
+            }
+        }
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_updated_private_packs_only(self, tmp_path):
+        """
+           Given:
+               - Updated private packs list - TestPack5 , TestPack6
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content contains the successful packs TestPack5 & TestPack6.
+       """
+        updated_private_packs = self.get_updated_private_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), updated_private_packs
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}': {
+                    'TestPack5': {},
+                    'TestPack6': {}
                 }
             }
         }
@@ -1358,6 +1395,7 @@ class TestGetSuccessfulAndFailedPacks:
     """ Test the get_successful_and_failed_packs function
 
     """
+
     def test_get_successful_and_failed_packs(self, tmp_path):
         """
            Given:
@@ -1375,16 +1413,20 @@ class TestGetSuccessfulAndFailedPacks:
         file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
 
         # Case 1: assert file does not exist
-        successful, failed = get_successful_and_failed_packs(file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        successful, failed, private_packs = get_successful_and_failed_packs(file,
+                                                                            BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
         assert successful == {}
         assert failed == {}
+        assert private_packs == {}
 
         # Case 2: assert empty file
         with open(file, "w") as f:
             f.write('')
-        successful, failed = get_successful_and_failed_packs(file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        successful, failed, private_packs = get_successful_and_failed_packs(file,
+                                                                            BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
         assert successful == {}
         assert failed == {}
+        assert private_packs == {}
 
         # Case 3: assert valid file
         with open(file, "w") as f:
@@ -1401,10 +1443,17 @@ class TestGetSuccessfulAndFailedPacks:
                             f"{BucketUploadFlow.STATUS}": "status1",
                             f"{BucketUploadFlow.AGGREGATED}": True
                         }
+                    },
+                    f"{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}": {
+                        "TestPack3": {
+                            f"{BucketUploadFlow.STATUS}": "status3",
+                            f"{BucketUploadFlow.AGGREGATED}": True
+                        }
                     }
                 }
             }))
-        successful, failed = get_successful_and_failed_packs(file, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        successful, failed, private_packs = get_successful_and_failed_packs(file,
+                                                                            BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
         assert successful == {"TestPack1": {
             f"{BucketUploadFlow.STATUS}": "status1",
             f"{BucketUploadFlow.AGGREGATED}": True
@@ -1412,10 +1461,19 @@ class TestGetSuccessfulAndFailedPacks:
         successful_list = [*successful]
         ans = 'TestPack1' in successful_list
         assert ans
+
         assert failed == {"TestPack2": {
             f"{BucketUploadFlow.STATUS}": "status2",
             f"{BucketUploadFlow.AGGREGATED}": False}
         }
         failed_list = [*failed]
         ans = 'TestPack2' in failed_list
+        assert ans
+
+        assert private_packs == {"TestPack3": {
+            f"{BucketUploadFlow.STATUS}": "status3",
+            f"{BucketUploadFlow.AGGREGATED}": True
+        }}
+        private_successful_list = [*private_packs]
+        ans = 'TestPack3' in private_successful_list
         assert ans
