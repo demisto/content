@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 from typing import Any, Dict, Union, Optional
+
 ORCA_API_DNS_NAME = "https://api.orcasecurity.io/api"
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -24,8 +25,7 @@ class OrcaClient:
 
         return "ok"
 
-    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[
-        # pylint: disable=E1136 # noqa: E501
+    def get_alerts_by_filter(self, alert_type: Optional[str] = None, asset_unique_id: Optional[str] = None) -> Union[  # pylint: disable=E1136 # noqa: E501
         List[Dict[str, Any]], str]:  # pylint: disable=E1136 # noqa: E125
         demisto.info("get_alerts_by_filter, enter")
 
@@ -93,14 +93,15 @@ class OrcaClient:
         return response
 
 
-def map_orca_score_to_demisto_score(orca_score: int) -> int:
-    demisto_unknown = 0
+def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # pylint: disable=E1136
+    demisto_unknown = 0  # noqa: F841
     demisto_informational = 0.5
-    demisto_low = 1
+    demisto_low = 1  # noqa: F841
     demisto_medium = 2
     demisto_high = 3
-    demisto_critical =4
+    demisto_critical = 4
 
+    # LHS is Orca score
     MAPPING = {1: demisto_critical, 2: demisto_high, 3: demisto_medium, 4: demisto_informational}
 
     return MAPPING[orca_score]

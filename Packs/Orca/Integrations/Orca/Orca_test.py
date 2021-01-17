@@ -438,10 +438,10 @@ def test_fetch_incidents_first_run_should_succeed(mocker, requests_mock, orca_cl
     fetched_incidents = fetch_incidents(orca_client, max_fetch=20)
     assert fetched_incidents[0]['name'] == 'Orca Cloud Incident: orca-59.'
     loaded_raw_alert = json.loads(fetched_incidents[0]['rawJSON'])
-    assert loaded_raw_alert['demisto_score'] == 1
+    assert loaded_raw_alert['demisto_score'] == 4
     assert fetched_incidents[1]['name'] == 'Orca Cloud Incident: orca-242.'
     loaded_raw_alert = json.loads(fetched_incidents[1]['rawJSON'])
-    assert loaded_raw_alert['demisto_score'] == 1
+    assert loaded_raw_alert['demisto_score'] == 4
 
 
 def test_fetch_incidents_not_first_run_return_empty(mocker, orca_client: OrcaClient) -> None:
