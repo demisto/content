@@ -1,10 +1,11 @@
 {
-    "description": "",
-    "feed": false,
+    "brandName": "Nutanix Hypervisor",
+    "custom": true,
     "id": "NutanixHypervisor-mapper",
+    "isDefault": false,
     "mapping": {
         "Nutanix Hypervisor Alert": {
-            "dontMapEventToLabels": true,
+            "dontMapEventToLabels": false,
             "internalMapping": {
                 "Acknowledged": {
                     "complex": null,
@@ -39,17 +40,9 @@
                     },
                     "simple": ""
                 },
-                "Closing User": {
-                    "complex": null,
-                    "simple": "resolved_by_username"
-                },
                 "Cluster_UUID": {
                     "complex": null,
                     "simple": "cluster_uuid"
-                },
-                "Last Seen": {
-                    "complex": null,
-                    "simple": "last_occurrence_time_stamp_in_usecs"
                 },
                 "Message": {
                     "complex": null,
@@ -193,8 +186,11 @@
             }
         }
     },
-    "name": "Nutanix Hypervisor - Incoming Mapper",
-    "type": "mapping-incoming",
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
     "version": -1,
-    "fromVersion": "6.0.0"
+    "toVersion": "5.9.9",
+    "fromVersion": "5.0.0"
 }
