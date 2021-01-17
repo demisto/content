@@ -1,13 +1,13 @@
 ### Authentication
-An administrator must have a Role that includes access to a specific REST API. 
+An administrator must have a role that includes access to a specific REST API. 
 
 Proofpoint on Demand (PoD) administrators must file a support ticket to Proofpoint support to obtain a role with access to an API.
 
-On premise administrators: edit the **filter.cfg** file and set the following key to true: `com.proofpoint.admin.apigui.enable=t`
+On premise administrators: Edit the **filter.cfg** file and set the following key to true: com.proofpoint.admin.apigui.enable=t
 
-In the management interface, create a Role of Type API and select the APIs under ***Managed Modules*** for the Role so that you can give an administrator that Role.
+In the management interface, create a role of type API. Select the APIs under **Managed Modules** for the role and assign an administrator that role.
 
-The required managed modules for this integration:
+The following are the required managed modules for this integration:
  - pss
  - Quarantine
  
