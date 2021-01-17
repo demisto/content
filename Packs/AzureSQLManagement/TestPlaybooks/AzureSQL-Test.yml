@@ -303,12 +303,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureSQL.DbAuditPolicy
+              simple: AzureSQL.DBAuditPolicy
             iscontext: true
       - - operator: isEqualString
           left:
             value:
-              simple: AzureSQL.DbAuditPolicy.name
+              simple: AzureSQL.DBAuditPolicy.name
             iscontext: true
           right:
             value:
@@ -316,7 +316,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: AzureSQL.DbAuditPolicy.type
+              simple: AzureSQL.DBAuditPolicy.type
             iscontext: true
           right:
             value:
@@ -410,12 +410,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureSQL.DbAuditPolicy
+              simple: AzureSQL.DBAuditPolicy
             iscontext: true
       - - operator: isEqualNumber
           left:
             value:
-              simple: AzureSQL.DbAuditPolicy.retentionDays
+              simple: AzureSQL.DBAuditPolicy.retentionDays
             iscontext: true
           right:
             value:
@@ -509,12 +509,12 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureSQL.DbAuditPolicy
+              simple: AzureSQL.DBAuditPolicy
             iscontext: true
       - - operator: isEqualNumber
           left:
             value:
-              simple: AzureSQL.DbAuditPolicy.retentionDays
+              simple: AzureSQL.DBAuditPolicy.retentionDays
             iscontext: true
           right:
             value:

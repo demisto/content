@@ -190,7 +190,7 @@ def azure_sql_db_list_command(client: Client, args: Dict[str, str]) -> CommandRe
             del db['properties']
 
     human_readable = tableToMarkdown(name='Database List', t=database_list_fixed,
-                                     headers=['id', 'databaseId', 'name', 'location', 'status', 'managedBy'],
+                                     headers=['name', 'location', 'status', 'managedBy'],
                                      headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
@@ -226,6 +226,8 @@ def azure_sql_db_audit_policy_list_command(client: Client, args: Dict[str, str])
     audit_list_raw = client.azure_sql_db_audit_policy_list(server_name, db_name)
     audit_list_fixed = copy.deepcopy(audit_list_raw.get('value', '')[offset_int:(offset_int + limit_int)])
     for db in audit_list_fixed:
+        db['serverName'] = server_name
+        db['databaseName'] = db_name
         if properties := db.get('properties', {}):
             db.update(properties)
             del db['properties']
@@ -235,7 +237,7 @@ def azure_sql_db_audit_policy_list_command(client: Client, args: Dict[str, str])
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='AzureSQL.DbAuditPolicy',
+        outputs_prefix='AzureSQL.DBAuditPolicy',
         outputs_key_field='id',
         outputs=audit_list_fixed,
         raw_response=audit_list_raw
@@ -291,6 +293,8 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, args: Dict[s
                                                                   storage_endpoint=storage_endpoint)
     fixed_response = copy.deepcopy(raw_response)
     if properties := fixed_response.get('properties', {}):
+        fixed_response['serverName'] = server_name
+        fixed_response['databaseName'] = db_name
         fixed_response.update(properties)
         del fixed_response['properties']
 
@@ -299,7 +303,7 @@ def azure_sql_db_audit_policy_create_update_command(client: Client, args: Dict[s
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix='AzureSQL.DbAuditPolicy',
+        outputs_prefix='AzureSQL.DBAuditPolicy',
         outputs_key_field='id',
         outputs=fixed_response,
         raw_response=raw_response
@@ -325,6 +329,8 @@ def azure_sql_db_threat_policy_get_command(client: Client, args: Dict[str, str])
     threat_fixed = copy.deepcopy(threat_raw)
 
     if properties := threat_fixed.get('properties', {}):
+        threat_fixed['serverName'] = server_name
+        threat_fixed['databaseName'] = db_name
         threat_fixed.update(properties)
         del threat_fixed['properties']
 
@@ -388,6 +394,8 @@ def azure_sql_db_threat_policy_create_update_command(client: Client, args: Dict[
                                                                    storage_endpoint=storage_endpoint)
     fixed_response = copy.deepcopy(raw_response)
     if properties := fixed_response.get('properties', {}):
+        fixed_response['serverName'] = server_name
+        fixed_response['databaseName'] = db_name
         fixed_response.update(properties)
         del fixed_response['properties']
 

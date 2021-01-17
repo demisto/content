@@ -236,33 +236,39 @@ script:
     execution: false
     name: azure-sql-db-audit-policy-list
     outputs:
-    - contextPath: AzureSQL.DbAuditPolicy
+    - contextPath: AzureSQL.DBAuditPolicy
       description: All DB related to the server.
       type: Unknown
-    - contextPath: AzureSQL.DbAuditPolicy.kind
+    - contextPath: AzureSQL.DBAuditPolicy.kind
       description: Kind of audit policy.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.id
+    - contextPath: AzureSQL.DBAuditPolicy.id
       description: Audit policy id.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.name
+    - contextPath: AzureSQL.DBAuditPolicy.name
       description: Audit policy name.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.type
+    - contextPath: AzureSQL.DBAuditPolicy.type
       description: Database type.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.isAzureMonitorTargetEnabled
+    - contextPath: AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled
       description: Whether audit events are sent to Azure Monitor. the value is "
         Enabled" or "Disabled".
       type: Boolean
-    - contextPath: AzureSQL.DbAuditPolicy.retentionDays
+    - contextPath: AzureSQL.DBAuditPolicy.retentionDays
       description: Number of days to keep in the audit logs in the storage account.
       type: Number
-    - contextPath: AzureSQL.DbAuditPolicy.state
+    - contextPath: AzureSQL.DBAuditPolicy.state
       description: Policy state.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.storageAccountSubscriptionId
+    - contextPath: AzureSQL.DBAuditPolicy.storageAccountSubscriptionId
       description: storage subscription Id.
+      type: String
+    - contextPath: AzureSQL.DBAuditPolicy.databaseName
+      description: The name of database, that audit policy related to.
+      type: String
+    - contextPath: AzureSQL.DBAuditPolicy.serverName
+      description: The name of server, that audit policy related to.
       type: String
   - arguments:
     - default: false
@@ -329,6 +335,12 @@ script:
     - contextPath: AzureSQL.DBThreatPolicy.useServerDefault
       description: whether to use the default server policy.
       type: Unknown
+    - contextPath: AzureSQL.DBThreatPolicy.databaseName
+      description: The name of database, that threat policy related to.
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.serverName
+      description: The name of server, that threat policy related to.
+      type: String
   - arguments:
     - default: false
       description: Server name.
@@ -418,46 +430,52 @@ script:
     execution: false
     name: azure-sql-db-audit-policy-create-update
     outputs:
-    - contextPath: AzureSQL.DbAuditPolicy.kind
+    - contextPath: AzureSQL.DBAuditPolicy.kind
       description: Kind of audit policy.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.id
+    - contextPath: AzureSQL.DBAuditPolicy.id
       description: Audit policy id.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.name
+    - contextPath: AzureSQL.DBAuditPolicy.name
       description: Audit policy name.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.type
+    - contextPath: AzureSQL.DBAuditPolicy.type
       description: Database type.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.isAzureMonitorTargetEnabled
+    - contextPath: AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled
       description: Whether audit events are sent to Azure Monitor. the value is "
         Enabled" or "Disabled".
       type: Boolean
-    - contextPath: AzureSQL.DbAuditPolicy.retentionDays
+    - contextPath: AzureSQL.DBAuditPolicy.retentionDays
       description: Number of days to keep in the audit logs in the storage account.
       type: Number
-    - contextPath: AzureSQL.DbAuditPolicy.state
+    - contextPath: AzureSQL.DBAuditPolicy.state
       description: Policy state
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.storageAccountSubscriptionId
+    - contextPath: AzureSQL.DBAuditPolicy.storageAccountSubscriptionId
       description: storage subscription Id.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.auditActionsAndGroups
+    - contextPath: AzureSQL.DBAuditPolicy.auditActionsAndGroups
       description: audit Actions And Groups to audit.
       type: Unknown
-    - contextPath: AzureSQL.DbAuditPolicy.isStorageSecondaryKeyInUse
+    - contextPath: AzureSQL.DBAuditPolicy.isStorageSecondaryKeyInUse
       description: Is storageAccountAccessKey value is the storage's secondary key.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.queueDelayMs
+    - contextPath: AzureSQL.DBAuditPolicy.queueDelayMs
       description: Time in milliseconds that can elapse before audit actions are forced
         to be processed.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.storageAccountAccessKey
+    - contextPath: AzureSQL.DBAuditPolicy.storageAccountAccessKey
       description: identifier key of the auditing storage account.
       type: String
-    - contextPath: AzureSQL.DbAuditPolicy.storageEndpoint
+    - contextPath: AzureSQL.DBAuditPolicy.storageEndpoint
       description: Storage endpoint.
+      type: String
+    - contextPath: AzureSQL.DBAuditPolicy.databaseName
+      description: The name of database, that audit policy related to.
+      type: String
+    - contextPath: AzureSQL.DBAuditPolicy.serverName
+      description: The name of server, that audit policy related to.
       type: String
   - arguments:
     - default: false
@@ -489,7 +507,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: identifier key of the auditing storage account
+      description: The identifier key of the Threat Detection audit storage account.
       isArray: false
       name: storage_account_access_key
       required: false
@@ -566,8 +584,7 @@ script:
       description: Number of days to keep in the Threat Detection audit logs.
       type: Number
     - contextPath: AzureSQL.DBThreatPolicy.storageAccountAccessKey
-      description: Specifies the identifier key of the Threat Detection audit storage
-        account.
+      description: The identifier key of the Threat Detection audit storage account.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.storageEndpoint
       description: Threat Detection audit storage account.
@@ -585,6 +602,12 @@ script:
     - contextPath: AzureSQL.DBThreatPolicy.useServerDefault
       description: whether to use the default server policy.
       type: Unknown
+    - contextPath: AzureSQL.DBThreatPolicy.databaseName
+      description: The name of database, that threat policy related to.
+      type: String
+    - contextPath: AzureSQL.DBThreatPolicy.serverName
+      description: The name of server, that threat policy related to.
+      type: String
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
   isfetch: false
