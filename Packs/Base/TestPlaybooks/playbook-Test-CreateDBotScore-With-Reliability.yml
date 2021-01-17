@@ -52,7 +52,7 @@ tasks:
       - "7"
     scriptarguments:
       indicator_type:
-        simple: ip
+        simple: domain
       integration_name:
         simple: Source A
       malicious_description: {}
@@ -577,7 +577,7 @@ tasks:
       - "23"
     scriptarguments:
       indicator_type:
-        simple: ip
+        simple: domain
       integration_name:
         simple: Source A
       malicious_description: {}
