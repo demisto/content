@@ -4,12 +4,13 @@ from CommonServerPython import *  # noqa: F401
 args = demisto.args()
 
 value = args.get("value")
-fields = args.get("fields")
-delim = args.get("delimiter")
+fields = args.get("fields_2")
+delim = args.get("delimiter_2")
 if delim == "''":
     delim = ""
 
 data = value.split(delim)
+
 fields = [int(_) for _ in fields.split(",")]
 
 max_index = max(fields)
