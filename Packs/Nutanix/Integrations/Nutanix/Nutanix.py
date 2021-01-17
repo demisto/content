@@ -366,13 +366,13 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
         incident = {
             'name': 'Nutanix Hypervisor Alert',
             'occurred': convert_epoch_time_to_datetime(last_occurrence_time),
-            'rawJSON': json.dumps(alert),
+            'rawJSON': json.dumps(remove_empty_elements(alert)),
             'severity': convert_to_demisto_severity(alert.get('severity', ''))
         }
 
         incidents.append(incident)
 
-    return incidents, {'last_fetch_epoch_time': current_run_max_epoch_time}
+    return incidents, {'last_fetch_epoch_time': max(current_run_max_epoch_time, last_fetch_epoch_time)}
 
 
 def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):

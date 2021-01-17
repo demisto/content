@@ -924,5 +924,5 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- Nutanix-test
 defaultmapperin: NutanixHypervisor-mapper
