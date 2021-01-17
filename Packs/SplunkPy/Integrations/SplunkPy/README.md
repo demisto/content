@@ -99,6 +99,7 @@ Returns the results of a previous Splunk search. This command can be used in con
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sid | The ID of the search for which to return results. | Required | 
+| count | The maximum number of returned results per search. To retrieve all results, enter "0". | Optional | 
 
 
 ##### Context Output
@@ -106,7 +107,7 @@ Returns the results of a previous Splunk search. This command can be used in con
 There is no context output for this command.
 
 ##### Command Example
-``` !splunk-results sid="1566221331.1186" ```
+``` !splunk-results sid="1566221331.1186" count="200" ```
 
 ### Search for events
 ***

@@ -122,6 +122,13 @@ script:
       name: sid
       required: true
       secret: false
+    - default: true
+      defaultValue: '100'
+      description: The maximum number of returned results per search. To retrieve all results, enter "0".
+      isArray: false
+      name: count
+      required: false
+      secret: false
     deprecated: false
     description: Returns the results of a previous Splunk search. You can use this command in conjunction with the splunk-job-create command.
     execution: false

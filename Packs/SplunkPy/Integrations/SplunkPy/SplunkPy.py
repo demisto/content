@@ -448,6 +448,7 @@ def splunk_job_create_command(service):
 def splunk_results_command(service):
     res = []
     sid = demisto.args().get('sid', '')
+    count = int(demisto.args().get('count'))
     try:
         job = service.job(sid)
     except HTTPError as error:
@@ -456,7 +457,7 @@ def splunk_results_command(service):
         else:
             return_error(error.message, error)
     else:
-        for result in results.ResultsReader(job.results()):
+        for result in results.ResultsReader(job.results(count=count)):
             if isinstance(result, results.Message):
                 demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
             elif isinstance(result, dict):
