@@ -8,7 +8,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
-PROXIES = handle_proxy()
+handle_proxy()
 VERIFY_CERTIFICATE = not demisto.params().get('insecure', False)
 URL = demisto.params()['server']
 XML_NS = demisto.params()['xml_ns']
@@ -175,7 +175,7 @@ CREATE_TICKET_BODY = """<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.
 
 def http_request(body=''):
     ''' Makes an API call with the given arguments '''
-    response = requests.post(URL, data=body, headers=HEADERS, verify=VERIFY_CERTIFICATE, proxies=PROXIES)
+    response = requests.post(URL, data=body, headers=HEADERS, verify=VERIFY_CERTIFICATE)
 
     if response.status_code < 200 or response.status_code >= 300:
         if response.status_code == 404:
