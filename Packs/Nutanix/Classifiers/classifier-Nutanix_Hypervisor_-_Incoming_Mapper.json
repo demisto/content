@@ -1,73 +1,121 @@
 {
-    "description": "",
-    "feed": false,
-    "id": "NutanixHypervisor-mapper",
-    "mapping": {
-        "Nutanix Hypervisor Alert": {
-            "dontMapEventToLabels": true,
-            "internalMapping": {
-                "Acknowledged": {
-                    "complex": null,
-                    "simple": "acknowledged"
+  "brands": null,
+  "defaultIncidentType": "",
+  "description": "",
+  "feed": false,
+  "fromServerVersion": "",
+  "id": "NutanixHypervisor-mapper",
+  "incidentSamples": null,
+  "indicatorSamples": null,
+  "instanceIds": null,
+  "itemVersion": "",
+  "keyTypeMap": {},
+  "locked": false,
+  "logicalVersion": 1,
+  "mapping": {
+    "Nutanix Hypervisor Alert": {
+      "dontMapEventToLabels": true,
+      "internalMapping": {
+        "Acknowledged": {
+          "complex": null,
+          "simple": "acknowledged"
+        },
+        "Acknowledged By Username": {
+          "complex": null,
+          "simple": "acknowledged_by_username"
+        },
+        "Alert Name": {
+          "complex": null,
+          "simple": "alert_title"
+        },
+        "Alert Type UUID": {
+          "complex": null,
+          "simple": "alert_type_uuid"
+        },
+        "Check Id": {
+          "complex": null,
+          "simple": "check_id"
+        },
+        "Classifications": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "classifications",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Closing User": {
+          "complex": null,
+          "simple": "resolved_by_username"
+        },
+        "Cluster_UUID": {
+          "complex": null,
+          "simple": "cluster_uuid"
+        },
+        "Last Seen": {
+          "complex": null,
+          "simple": "last_occurrence_time_stamp_in_usecs"
+        },
+        "Message": {
+          "complex": null,
+          "simple": "message"
+        },
+        "Operation Type": {
+          "complex": null,
+          "simple": "operation_type"
+        },
+        "Resolved": {
+          "complex": null,
+          "simple": "resolved"
+        },
+        "severity": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "severity",
+            "transformers": [
+              {
+                "args": {},
+                "operator": "toLowerCase"
+              },
+              {
+                "args": {
+                  "input_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "\"kaudit,kinfo,kwarning,kcritical\""
+                    }
+                  },
+                  "mapped_values": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "\"Low,Informational,Medium,Critical\""
+                    }
+                  }
                 },
-                "Acknowledged By Username": {
-                    "complex": null,
-                    "simple": "acknowledged_by_username"
-                },
-                "Alert Name": {
-                    "complex": null,
-                    "simple": "alert_title"
-                },
-                "Alert Type UUID": {
-                    "complex": null,
-                    "simple": "alert_type_uuid"
-                },
-                "Check Id": {
-                    "complex": null,
-                    "simple": "check_id"
-                },
-                "Classifications": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "classifications",
-                        "transformers": [
-
-                        ]
-                    },
-                    "simple": ""
-                },
-                "Closing User": {
-                    "complex": null,
-                    "simple": "resolved_by_username"
-                },
-                "Cluster_UUID": {
-                    "complex": null,
-                    "simple": "cluster_uuid"
-                },
-                "Last Seen": {
-                    "complex": null,
-                    "simple": "last_occurrence_time_stamp_in_usecs"
-                },
-                "Message": {
-                    "complex": null,
-                    "simple": "message"
-                },
-                "Operation Type": {
-                    "complex": null,
-                    "simple": "operation_type"
-                },
-                "Resolved": {
-                    "complex": null,
-                    "simple": "resolved"
-                }
-            }
+                "operator": "MapValuesTransformer"
+              }
+            ]
+          },
+          "simple": ""
         }
-    },
-    "name": "Nutanix Hypervisor - Incoming Mapper",
-    "type": "mapping-incoming",
-    "version": -1,
-    "fromVersion": "6.0.0"
+      }
+    }
+  },
+  "name": "Nutanix Hypervisor - Incoming Mapper",
+  "nameRaw": "Nutanix Hypervisor - Incoming Mapper",
+  "packID": "",
+  "sourceClassifierId": "",
+  "system": false,
+  "toServerVersion": "",
+  "transformer": {
+    "complex": null,
+    "simple": ""
+  },
+  "type": "mapping-incoming",
+  "unclassifiedCases": null,
+  "version": -1
 }

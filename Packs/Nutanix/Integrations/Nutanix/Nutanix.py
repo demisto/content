@@ -317,7 +317,7 @@ def convert_epoch_time_to_datetime(epoch_time: int):
     Returns:
         - The date time with UTC timezone that matches the epoch time.
     """
-    return datetime.utcfromtimestamp(epoch_time / 1000000.0).strftime('%Y-%m-%d %H:%M:%S.%f')
+    return datetime.utcfromtimestamp(epoch_time / 1000000.0).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -365,9 +365,9 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
         current_run_max_epoch_time = max(current_run_max_epoch_time, last_occurrence_time)
         incident = {
             'name': 'Nutanix Hypervisor Alert',
+            'type': 'Nutanix Hypervisor Alert',
             'occurred': convert_epoch_time_to_datetime(last_occurrence_time),
-            'rawJSON': json.dumps(remove_empty_elements(alert)),
-            'severity': convert_to_demisto_severity(alert.get('severity', ''))
+            'rawJSON': json.dumps(remove_empty_elements(alert))
         }
 
         incidents.append(incident)
