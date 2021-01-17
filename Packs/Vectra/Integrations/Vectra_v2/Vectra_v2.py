@@ -11,7 +11,7 @@ urllib3.disable_warnings()
 
 # CONSTANTS #
 MAX_FETCH_SIZE = 50
-DATE_FORMAT = "%Y-%m-%dT%H%M"  # 2019-09-01T1012
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 PARAMS_KEYS = {
     "threat_score": "t_score",
     "threat_score_gte": "t_score_gte",
@@ -134,7 +134,7 @@ class Client:
         last_timestamp: str = last_run.get('last_timestamp', self.first_fetch)  # type: ignore
         query_string = f'detection.threat:>={self.t_score_gte}'
         query_string += f' and detection.certainty:>={self.c_score_gte}'
-        query_string += f' and detection.last_timestamp:>{last_timestamp}'  # format: "%Y-%m-%dT%H%M"
+        query_string += f' and detection.last_timestamp:>{last_timestamp}'  # format: "%Y-%m-%dT%H:%M:%SZ"
         query_string += f' and detection.state:{self.state}' if self.state != 'all' else ''
         demisto.info(f'\n\nQuery String:\n{query_string}\n\n')
         params = {
@@ -153,11 +153,7 @@ class Client:
             try:
                 for detection in detections:
                     incidents.append(create_incident_from_detection(detection))  # type: ignore
-                    # format from response: %Y-%m-%dT%H:%M:%SZ
-                    response_last_timestamp = datetime.strptime(detection.get('last_timestamp'),    # type: ignore
-                                                                "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%dT%H%M")
-                    last_timestamp = max_timestamp(last_timestamp, response_last_timestamp)  # type: ignore
-
+                    last_timestamp = max_timestamp(last_timestamp, detection.get('last_timestamp'))  # type: ignore
                 if incidents:
                     last_run = {'last_timestamp': last_timestamp}
 
