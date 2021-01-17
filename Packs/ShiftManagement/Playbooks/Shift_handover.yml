@@ -202,7 +202,7 @@ tasks:
         \ input with a different search query if required.  Will also branch if there\
         \ are no Incidents that match the query, and no users on call. \n\nSearch\
         \ results are the default 100 Incidents returned by the query.\n\nCases will\
-        \ not be assign to users that defined OOO (by OutOfOffice automation)."
+        \ not be assign to users that defined OOO (by ManageOOOusers automation)."
       playbookName: Assign Active Incidents to Next Shift_V2
       type: playbook
       iscommand: false
@@ -242,7 +242,7 @@ tasks:
       description: |-
         Assign analyst to incident with consideration of PTO, OOO, or Disabled Users.
 
-        Users can use the OutOfOffice automation to add or remove themselves from the list.
+        Users can use the ManageOOOusers automation to add or remove themselves from the list.
       scriptName: AssignAnalystToIncidentOOO
       type: regular
       iscommand: false
@@ -1625,26 +1625,30 @@ inputs:
   playbookInputQuery:
 - key: 'AppChannelName '
   value:
-    simple: daud
+    simple:
   required: false
-  description: "The name of channel that would be created in your messaging app  for\
-    \ the shift handover.\nThe should not contain upper case or special characters.\
-    \  "
+  description: "The name of channel that would be created in your messaging app for\
+    \ the shift handover.\nThe should not contain upper case or special characters.If\
+    \ you want to use an already existing channel make sure to provide it as well.\
+    \ Currently this input supports only two integration: Microsoft Teams and Slack."
   playbookInputQuery:
 - key: 'AppMessage '
   value:
     simple: Hi, please join the shift handover meeting.
   required: false
   description: The message that you wish to send to the handover to your messaging
-    app channel that was created above.
+    app channel that was created above, or for an existing channel that was provided
+    as input (AppChannelName)
   playbookInputQuery:
 - key: SOCManagerEmail
   value:
-    simple: evisochek@paloaltonetworks.com
+    simple:
   required: false
   description: In case that the Shift manager briefing section will be left empty
     when a new shift handover incident is opened, an Email will be send to this address
-    to provide Shift manager briefing.
+    to provide Shift manager briefing. The playbook doesn't have dependency in the
+    SOC manager replay answer, the answer will be updated in the proper layout section
+    at the moment she will be provided.
   playbookInputQuery:
 - key: 'ShiftManagerBriefing '
   value:
@@ -1657,7 +1661,8 @@ inputs:
   value:
     simple: DemistoTeam
   required: false
-  description: If using Microsoft Teams please provide your Microsoft team name.
+  description: If using Microsoft Teams please provide your Microsoft team name, This
+    input is mandatory for Microsoft Teams.
   playbookInputQuery:
 outputs: []
 tests:
