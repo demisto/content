@@ -23,39 +23,6 @@ ONGOING_DICTIONARY = {
     'Not Ongoing': 'false',
 }
 
-ALERTS_DICTIONARY = {
-    'alert_class': {
-        'key': 'alert_class',
-        'operator': '=',
-        'value': ''
-    },
-    'alert_type': {
-        'key': 'alert_type',
-        'operator': '=',
-        'value': ''
-    },
-    'classification': {
-        'key': 'classification',
-        'operator': '=',
-        'value': ''
-    },
-    'importance': {
-        'key': 'importance',
-        'operator': '=',
-        'value': ''
-    },
-    'importance_operator': {
-        'key': 'importance_operator',
-        'operator': '=',
-        'value': ''
-    },
-    'ongoing': {
-        'key': 'ongoing',
-        'operator': '=',
-        'value': ''
-    }
-}
-
 ''' CLIENT CLASS '''
 
 
@@ -69,8 +36,16 @@ class NetscoutClient(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, verify, ok_codes, headers, proxy, alert_class, alert_type, classification, importance,
-                 importance_operator, ongoing):
+    OPERATOR_NAME_DICTIONARY = {
+        'importance': 'importance_operator',
+        'start_time': 'start_time_operator',
+        'stop_time': 'stop_time_operator',
+    }
+
+
+
+    def __init__(self, base_url, verify, ok_codes, headers, proxy, alert_class=None, alert_type=None,
+                 classification=None, importance=None, importance_operator=None, ongoing=None):
         self.alert_class = alert_class
         self.alert_type = alert_type
         self.classification = classification
@@ -81,15 +56,27 @@ class NetscoutClient(BaseClient):
         super().__init__(base_url=base_url, verify=verify, ok_codes=ok_codes, headers=headers, proxy=proxy)
 
     @staticmethod
-    def build_url_attribute_filters(**kwargs):
-        param_list = [f'/data/attributes/{key}{operator}{val}' for key, val in kwargs.items()]
+    def build_data_attribute_filter(self, **kwargs):
+        param_list = []
+        operator_names = self.OPERATOR_NAME_DICTIONARY.values()
+        for key, val in kwargs.items():
+            if key not in operator_names:
+                operator = '='
+                if operator_name := self.OPERATOR_NAME_DICTIONARY.get(key):
+                    operator = kwargs.get(operator_name, '=')
+                param_list += f'/data/attributes/{key + operator + val}'
+
         return ' AND '.join(param_list)
 
-    def get_alerts(self, alert_class: str, alert_type: str, classification: str, importance: int,
-                   importance_operator: str, ongoing: str):
-        self._http_request()
+    mckibbenc: master
+    def get_alerts(self, **kwargs):
+        filter_value = self.build_data_attribute_filter(kwargs)
 
-        incidents
+        self._http_request(
+            method=
+        )
+
+        # incidents
 
     def fetch_incidents(self):
         self.get_alerts(
@@ -101,12 +88,12 @@ class NetscoutClient(BaseClient):
             ongoing=self.ongoing,
         )
 
-
     ''' HELPER FUNCTIONS '''
 
     # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
     ''' COMMAND FUNCTIONS '''
+
 
 def test_module(client: NetscoutClient) -> str:
     """Tests API connectivity and authentication'
@@ -134,10 +121,13 @@ def test_module(client: NetscoutClient) -> str:
             raise e
     return message
 
-def fetch_incidents_command(client: NetscoutClient):
-    client.
+
+# def fetch_incidents_command(client: NetscoutClient):
+#     client.
+
 
 ''' MAIN FUNCTION '''
+
 
 def main() -> None:
     params = demisto.params()
@@ -180,10 +170,7 @@ def main() -> None:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
+
 ''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-bgp, cloudsignal, data, dos, smart, system_error, system_event, tms, traffic
-
-autoclassify_restart, bgp_down, bgp_hijack, bgp_instability, bgp_trap, blob_thresh, cloud_mit_request, cloudsignal_fault, collector_down, collector_start, config_change, device_system_error, dns_baseline, dos, dos_host_detection, dos_mo_profiled, dos_profiled_network, dos_profiled_router, fingerprint_thresh, flexible_license_error, flow_down, flow_missing, gre_down, hw_failure, smart_thresh, interface_usage, nucleus_fault, routing_failover, routing_interface_failover, service_thresh, smart_thresh, snmp_down, spcomm_failure, tms_fault, traffic_auto_mitigation,
