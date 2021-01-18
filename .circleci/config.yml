@@ -463,10 +463,7 @@ jobs:
             python3 ./Tests/Marketplace/zip_packs.py -b 'marketplace-dist' -z $ZIP_FOLDER -a $CIRCLE_ARTIFACTS -s $GCS_PATH
             rm $GCS_PATH
           when: always
-      - run:
-          name: Store Artifacts to GCS
-          command: ./Tests/scripts/upload_artifacts.sh
-          when: always
+
       - run:
           name: Create Instance
           when: on_success
@@ -550,6 +547,42 @@ jobs:
                   fi
             - *destroy_instances
             - *store_artifacts
+            - *persist_to_workspace
+
+
+  Is Successful Build:
+    <<: *container_config
+    resource_class: medium
+    <<: *environment
+    steps:
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - run:
+                name: Not running this job
+                when: always
+                command: |
+                  echo "Not running this job when triggered with one of instance_tests, contrib_branch, demisto_sdk_nightly, nightly or non_ami_run"
+      - unless:
+          condition:
+            or:
+              - << pipeline.parameters.instance_tests >>
+              - << pipeline.parameters.contrib_branch >>
+              - << pipeline.parameters.non_ami_run >>
+          steps:
+            - *attach_workspace
+            - *add_ssh_keys
+            - *prepare_environment
+            - run:
+                name: Store Artifacts to GCS
+                command: ./Tests/scripts/upload_artifacts.sh
+                when: always
+            - *destroy_instances
+            - *store_artifacts
 workflows:
   version: 2
   commit:
@@ -571,6 +604,13 @@ workflows:
               ignore: /pull\/[0-9]+/
           requires:
             - Create Instances
+      - Is Successful Build:
+        requires:
+          - Setup Environment
+          - Create Instances
+          - Run Unit Testing And Lint
+          - Run Validations
+          - Server 4_5
 
   nightly:
     triggers:
