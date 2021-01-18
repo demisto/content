@@ -137,9 +137,12 @@ def test_header_to_date():
     valid_header_date = Client.get_date_from_email_header("Mon, 26 Aug 2019 14:40:04 +0300")
     semi_valid_header_date = Client.get_date_from_email_header("26 Aug 2019 14:40:04 +0300")
     header_date_no_tz = Client.get_date_from_email_header("26 Aug 2019 11:40:04")
+    header_x_recevied = Client.get_date_from_email_header('by 2002:a17:90a:77cb:0:0:0:0 with SMTP id e11csp4670216pjs;        '
+                                                          'Mon, 26 Aug 2019 03:40:04 -0800 (PST)')
     # all should be the same
     assert valid_header_date == semi_valid_header_date
     assert valid_header_date == header_date_no_tz
+    assert header_x_recevied == valid_header_date
 
 
 def test_no_label_mail_context_creation():

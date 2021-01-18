@@ -50,6 +50,7 @@ Additional info available at: https://support.google.com/a/answer/7281227
     * __Fetch incidents__
     * __First fetch timestamp, in days.__
     * __Events query (e.g. "from:example@demisto.com")__
+    * __Maximum number of emails to pull per fetch__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.

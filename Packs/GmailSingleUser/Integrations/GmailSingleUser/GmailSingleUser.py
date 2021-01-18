@@ -44,8 +44,6 @@ TOKEN_FORM_HEADERS = {
     'Accept': 'application/json',
 }
 
-TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
-
 
 ''' HELPER FUNCTIONS '''
 
@@ -242,23 +240,18 @@ class Client:
 
         return body, html, attachments
 
-    def localization_extract(self, time_from_mail):
-        if time_from_mail is None or len(time_from_mail) < 5:
-            return '-0000', 0
-
-        utc = time_from_mail[-5:]
-        if utc[0] != '-' and utc[0] != '+':
-            return '-0000', 0
-
-        for ch in utc[1:]:
-            if not ch.isdigit():
-                return '-0000', 0
-
-        delta_in_seconds = int(utc[0] + utc[1:3]) * 3600 + int(utc[0] + utc[3:]) * 60
-        return utc, delta_in_seconds
-
     @staticmethod
     def get_date_from_email_header(header: str) -> Optional[datetime]:
+        """Parse an email header such as Date or Received. The format is either just the date
+        or name value pairs followed by ; and the date specification. For example:
+        by 2002:a17:90a:77cb:0:0:0:0 with SMTP id e11csp4670216pjs;        Mon, 21 Dec 2020 12:11:57 -0800 (PST)
+
+        Args:
+            header (str): header value to parse
+
+        Returns:
+            Optional[datetime]: parsed datetime
+        """
         if not header:
             return None
         try:
@@ -273,8 +266,8 @@ class Client:
         return None
 
     @staticmethod
-    def get_occured_date(email_data: dict) -> Tuple[datetime, bool]:
-        """Get the occured date of an email. The date gmail uses is actually the X-Received or the top Received
+    def get_occurred_date(email_data: dict) -> Tuple[datetime, bool]:
+        """Get the occurred date of an email. The date gmail uses is actually the X-Received or the top Received
         dates in the header. If fails finding these dates will fall back to internal date.
 
         Args:
@@ -287,7 +280,7 @@ class Client:
         if not headers or not isinstance(headers, list):
             demisto.error(f"couldn't get headers for msg (shouldn't happen): {email_data}")
         else:
-            # use x-received or recvived
+            # use x-received or recvived. We want to use x-received first and fallback to received.
             for name in ['x-received', 'received', ]:
                 header = next(filter(lambda ht: ht.get('name', '').lower() == name, headers), None)
                 if header:
@@ -295,10 +288,10 @@ class Client:
                     if val:
                         res = Client.get_date_from_email_header(val)
                         if res:
-                            demisto.debug(f"Using occured date: {res} from header: {name} value: {val}")
+                            demisto.debug(f"Using occurred date: {res} from header: {name} value: {val}")
                             return res, True
         internalDate = email_data.get('internalDate')
-        demisto.info(f"couldn't extract occured date from headers trying internalDate: {internalDate}")
+        demisto.info(f"couldn't extract occurred date from headers trying internalDate: {internalDate}")
         if internalDate and internalDate != '0':
             # intenalDate timestamp has 13 digits, but epoch-timestamp counts the seconds since Jan 1st 1970
             # (which is currently less than 13 digits) thus a need to cut the timestamp down to size.
@@ -318,9 +311,11 @@ class Client:
             mailbox (str): mail box name
 
         Returns:
-            (context_gmail, headers, context_email, received_date): note that if date is not resolved
+            (context_gmail, headers, context_email, received_date, is_valid_recieved): note that if received date is not
+                resolved properly is_valid_recieved will be false
+
         """
-        occured, occured_is_valid = Client.get_occured_date(email_data)
+        occurred, occurred_is_valid = Client.get_occurred_date(email_data)
         context_headers = email_data.get('payload', {}).get('headers', [])
         context_headers = [{'Name': v['name'], 'Value':v['value']}
                            for v in context_headers]
@@ -330,9 +325,9 @@ class Client:
         parsed_body = base64.urlsafe_b64decode(body)
         base_time = headers.get('date', '')
         if not base_time or not Client.get_date_from_email_header(base_time):
-            # we have an invalid date. use the occured in rfc 2822
-            demisto.debug(f'Using Date base time from occured: {occured} instead of date header: [{base_time}]')
-            base_time = format_datetime(occured)
+            # we have an invalid date. use the occurred in rfc 2822
+            demisto.debug(f'Using Date base time from occurred: {occurred} instead of date header: [{base_time}]')
+            base_time = format_datetime(occurred)
         context_gmail = {
             'Type': 'Gmail',
             'Mailbox': EMAIL if mailbox == 'me' else mailbox,
@@ -394,7 +389,7 @@ class Client:
             context_email['Attachment Names'] = ', '.join(
                 [attachment['Name'] for attachment in context_email['Attachments']])  # type: ignore
 
-        return context_gmail, headers, context_email, occured, occured_is_valid
+        return context_gmail, headers, context_email, occurred, occurred_is_valid
 
     def create_incident_labels(self, parsed_msg, headers):
         labels = [
@@ -417,7 +412,7 @@ class Client:
 
     @staticmethod
     def get_date_isoformat_server(dt: datetime) -> str:
-        """Get the  datetime str in the format a server can parse. UTC basded with Z at the end
+        """Get the  datetime str in the format a server can parse. UTC based with Z at the end
 
         Args:
             dt (datetime): datetime
@@ -451,11 +446,11 @@ class Client:
             Exception: when problem getting attachements
 
         Returns:
-            Tuple[dict, datetime, bool]: incident object, occured datetime, boolean indicating if date is internal or not
+            Tuple[dict, datetime, bool]: incident object, occurred datetime, boolean indicating if date is valid or not
         """
-        parsed_msg, headers, _, occured, occured_is_internal = self.get_email_context(msg, user_key)
-        # conver occured to gmt and then isoformat + Z
-        occured_str = Client.get_date_isoformat_server(occured)
+        parsed_msg, headers, _, occurred, occurred_is_valid = self.get_email_context(msg, user_key)
+        # conver occurred to gmt and then isoformat + Z
+        occurred_str = Client.get_date_isoformat_server(occurred)
         file_names = []
         command_args = {
             'messageId': parsed_msg['ID'],
@@ -485,11 +480,11 @@ class Client:
             'name': parsed_msg['Subject'],
             'details': parsed_msg['Body'],
             'labels': self.create_incident_labels(parsed_msg, headers),
-            'occurred': occured_str,
+            'occurred': occurred_str,
             'attachment': file_names,
             'rawJSON': json.dumps(parsed_msg),
         }
-        return incident, occured, occured_is_internal
+        return incident, occurred, occurred_is_valid
 
     def sent_mail_to_entry(self, title, response, to, emailfrom, cc, bcc, bodyHtml, body, subject):
         gmail_context = []
@@ -939,10 +934,13 @@ def fetch_incidents(client: Client):
     # use seconds for the filter (note that it is inclusive)
     # see: https://developers.google.com/gmail/api/guides/filtering
     query += f' after:{int(last_fetch.timestamp())}'
-    LOG(f'GMAIL: fetch parameters: user: {user_key} query={query} fetch time: {last_fetch} page_token: {page_token}')
-
+    max_results = MAX_FETCH
+    if MAX_FETCH > 200:
+        max_results = 200
+    LOG(f'GMAIL: fetch parameters: user: {user_key} query={query}'
+        f' fetch time: {last_fetch} page_token: {page_token} max results: {max_results}')
     result = service.users().messages().list(
-        userId=user_key, maxResults=MAX_FETCH, pageToken=page_token, q=query).execute()
+        userId=user_key, maxResults=max_results, pageToken=page_token, q=query).execute()
 
     incidents = []
     # so far, so good
@@ -955,20 +953,20 @@ def fetch_incidents(client: Client):
             continue
         msg_result = service.users().messages().get(
             id=msg_id, userId=user_key).execute()
-        incident, occured, is_valid_date = client.mail_to_incident(msg_result, service, user_key)
+        incident, occurred, is_valid_date = client.mail_to_incident(msg_result, service, user_key)
         if not is_valid_date:  # if  we can't trust the date store the msg id in the ignore list
             demisto.info(f'appending to ignore list msg id: {msg_id}. name: {incident.get("name")}')
             ignore_list_used = True
             ignore_ids.append(msg_id)
-        # update last run only if we trust the occured timestamp
-        if is_valid_date and occured > next_last_fetch:
-            next_last_fetch = occured + timedelta(seconds=1)
+        # update last run only if we trust the occurred timestamp
+        if is_valid_date and occurred > next_last_fetch:
+            next_last_fetch = occurred + timedelta(seconds=1)
 
         # avoid duplication due to weak time query
-        if occured >= last_fetch:
+        if occurred >= last_fetch:
             incidents.append(incident)
         else:
-            demisto.info(f'skipped incident with lower date: {occured} than fetch: {last_fetch} name: {incident.get("name")}')
+            demisto.info(f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
 
     demisto.info('extract {} incidents'.format(len(incidents)))
     next_page_token = result.get('nextPageToken', '')
