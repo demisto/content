@@ -287,7 +287,7 @@ script:
     - contextPath: Netmiko.Command
       description: The command that was executed.
       type: string
-    - contextPath: Netmiko.DateTime(UTC)
+    - contextPath: Netmiko.DateTimeUTC
       description: The datetime at which the command was executed (in UTC).
       type: date
     - contextPath: Netmiko.Hostname
