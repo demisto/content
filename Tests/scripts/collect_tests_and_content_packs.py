@@ -1267,7 +1267,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name)
 
-    tests_string = '\n'.join(tests)
+    tests_string = '\n'.join(test for test in tests if 'no test' not in test.lower())
     packs_to_install_string = '\n'.join(packs_to_install)
 
     if not skip_save:
