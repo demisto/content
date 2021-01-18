@@ -6,6 +6,7 @@ from CommonServerPython import IAMActions, IAMErrors
 
 def mock_client():
     client = Client(
+        demisto_params={},
         base_url='base_url',
         conn_client_id="client_id",
         conn_client_secret="client_secret",

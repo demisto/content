@@ -3,7 +3,7 @@ To set up Salesforce to work with Demisto:
 Add a new connected App in salesforce by following the instruction [here](https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/intro_defining_remote_access_applications.htm)
 If you already have a connected App, go to “Setup” -> “App Manager” -> choose the correct App from the list and press “View”.
 The Consumer Key / Secret is under “API (Enable OAuth Settings)”
-For detailed instructions see the Credentials walkthrough section at [demisto support](https://support.demisto.com/hc/en-us/articles/360001848133-Integration-Salesforce).
+For detailed instructions see the Credentials walkthrough section at [xsoar.pan.dev](https://xsoar.pan.dev/docs/reference/integrations/salesforce).
 
 ## Enable/Disable CRUD Commands
 You can select which CRUD commands are enabled in the integration instance configuration settings. By default, all commands are enabled.
@@ -22,6 +22,7 @@ Follow these steps to add custom fields to the User Profile indicator.
 2. Duplicate the **User Profile - Salesforce (Incoming)** mapper and/or the **User Profile - Salesforce (Outging)** mapper.
 3. Add and map the custom field to the necessary mapper(s).
 4. Go to the Salesforce IAM integration instance and in the mapper textbox, replace the name of the default mapper with the custom mapper you created.
+For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
 
 ## Automatically create user if not found in update command
 The *create-if-not-exists* parameter specifies if a new user should be created when the User Profile passed was not found in the 3rd-party integration.

@@ -24,7 +24,7 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, base_url, conn_client_id, conn_client_secret, conn_username, conn_password,
+    def __init__(self, demisto_params, base_url, conn_client_id, conn_client_secret, conn_username, conn_password,
                  ok_codes, verify=True, proxy=False):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes)
         self._conn_client_id = conn_client_id
@@ -32,6 +32,7 @@ class Client(BaseClient):
         self._conn_username = conn_username
         self._conn_password = conn_password
         self.token = self.get_access_token_()
+        self.demisto_params = demisto_params
 
     def get_access_token_(self):
         params = {
@@ -213,7 +214,7 @@ def create_user_command(client, args, mapper_out, is_create_enabled, is_update_e
                 salesforce_user = iam_user_profile.map_object(mapper_name=mapper_out)
                 # Removing empty elements from salesforce_user
                 salesforce_user = {key: value for key, value in salesforce_user.items() if value is not None}
-                salesforce_user = check_and_set_manndatory_fields(salesforce_user)
+                salesforce_user = check_and_set_manndatory_fields(salesforce_user, client.demisto_params)
                 res = client.create_user(salesforce_user)
                 iam_user_profile.set_result(success=True,
                                             iden=res.get('id'),
@@ -330,12 +331,11 @@ def disable_user_command(client, args, mapper_out, is_command_enabled):
         return iam_user_profile
 
 
-def check_and_set_manndatory_fields(salesforce_user):
-    params = demisto.params()
+def check_and_set_manndatory_fields(salesforce_user, demisto_params):
 
     for field in DEFAULT_FIELDS:
         if not salesforce_user.get(field):
-            salesforce_user[field] = params.get(field)
+            salesforce_user[field] = demisto_params.get(field)
 
     return salesforce_user
 
@@ -402,6 +402,7 @@ def main():
 
     try:
         client = Client(
+            demisto_params=params,
             base_url=base_url,
             conn_client_id=client_id,
             conn_client_secret=client_secret,
