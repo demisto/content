@@ -61,8 +61,8 @@ doc_source_name = "TruSTAR" + realTime
 # TruSTAR API URLs
 auth_endpoint = 'https://api.trustar.co/oauth/token'
 api_endpoint = 'https://api.trustar.co/api/1.3'
-enclave_ids = demisto.params()['enclave_ids']
-client_metatag = demisto.params()['client_metatag']
+enclave_ids = argToList(demisto.params()['enclave_ids'])
+client_metatag = demisto.params().get('client_metatag')
 user_api_key = demisto.params()['trustar']['identifier']
 user_api_secret = demisto.params()['trustar']['password']
 
@@ -166,7 +166,7 @@ def cleanData(uncleanListOfIndicators):
 
             # Make calls to the check functions for URLs, emails, IPv4 addresses, IPv6 addresses
             if itype == 'ipv4' or itype == 'ipv6' or itype == 'ip':
-                if validateIP(indicator['value']) is True:
+                if validateIP(indicator.get('value')) is True:
                     cleanListOfIndicators.append(indicator)
 
             if itype == 'email_address':
@@ -272,8 +272,8 @@ def sendData(data, title):
     demisto.results(len(data))
     iocs = []
     for item in data:
-        itype = item['indicatorType'].lower()
-        indicator = item['value']
+        itype = item.get('indicatorType').lower()
+        indicator = item.get('value')
         if itype == 'sha1' or itype == 'sha256' or itype == 'sha512' or itype == 'md5':
             indicator_dict = {'Type': 'Hashes', "Value": indicator}
             iocs.append(indicator_dict)
