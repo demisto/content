@@ -9,7 +9,7 @@ By modifying the playbook inputs, you can decide whether to activate the Assign 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Set a Shift handover meeting
+* Set up a Shift handover meeting
 * Assign Active Incidents to Next Shift V2
 
 ### Integrations

@@ -1,9 +1,10 @@
 id: Shift handover
 version: -1
 name: Shift handover
-description: "This playbook is used to set up shift handover meetings with all the accompanying\
-  \ processes such as creating an online meeting, creating a notification in a integrated chat app (for example Slack), creating a SOC\
-  \ manager briefing, and creating a display of the active incidents, team members who are on-call,\
+description: "This playbook is used to set up shift handover meetings with all the\
+  \ accompanying processes such as creating an online meeting, creating a notification\
+  \ in a integrated chat app (for example Slack), creating a SOC manager briefing,\
+  \ and creating a display of the active incidents, team members who are on-call,\
   \ and team members who are out of the office.\nBy modifying the playbook inputs\
   \ you can decide whether to activate the Assign Active Incidents to Next Shift and\
   \ whether a user who is out of the office will be taken into consideration."
@@ -197,12 +198,13 @@ tasks:
       version: -1
       name: Assign Active Incidents to Next Shift V2
       description: "This playbook reassigns Active Incidents to the current users\
-        \ on call. It requires shift management to be setup. This playbook can be run as a job a\
-        \ few minutes after the scheduled shift change time.\n\nYou can update the playbook\
-        \ input with a different search query if required.  The flow will branch if there\
-        \ are no incidents that match the query or no users on call. \n\nSearch\
-        \ results are the default 100 incidents returned by the query.\n\nCases will\
-        \ not be assigned to users who are defined as OOO (by the OutOfOffice automation)."
+        \ on call. It requires shift management to be setup. This playbook can be\
+        \ run as a job a few minutes after the scheduled shift change time.\n\nYou\
+        \ can update the playbook input with a different search query if required.\
+        \  The flow will branch if there are no incidents that match the query or\
+        \ no users on call. \n\nSearch results are the default 100 incidents returned\
+        \ by the query.\n\nCases will not be assigned to users who are defined as\
+        \ OOO (by the OutOfOffice automation)."
       playbookName: Assign Active Incidents to Next Shift V2
       type: playbook
       iscommand: false
@@ -276,8 +278,8 @@ tasks:
     task:
       id: 5eaa35ff-ffca-482f-8b58-c0f25ecfedf7
       version: -1
-      name: Set a Shift handover meeting
-      playbookName: Set a Shift handover meeting
+      name: Set up a Shift handover meeting
+      playbookName: Set up a Shift handover meeting
       type: playbook
       iscommand: false
       brand: ""
@@ -1610,39 +1612,42 @@ inputs:
   value:
     simple: "Yes"
   required: false
-  description: "Yes - If you want the playbook to reassign active incidents\
-    \ to on-call users. The playbook will take into consideration users that are out\
-    \ of the office.\nNo- If you do not want to reassign active incidents to on-call users. The current incident\
-    \ owner will remain. \n"
+  description: "Yes - If you want the playbook to reassign active incidents to on-call\
+    \ users. The playbook will take into consideration users that are out of the office.\n\
+    No- If you do not want to reassign active incidents to on-call users. The current\
+    \ incident owner will remain. \n"
   playbookInputQuery:
 - key: IncidentSearchQuery
   value:
-    simple: 'status:active  -category:job '
+    simple: '-status:closed -category:job type:"Shift handover" '
   required: false
-  description: 'Query for the incidents to reassign.  Incidents need to be active. The playbook will not reassign pending incidents. '
+  description: 'Query for the incidents to reassign.  Incidents need to be active.
+    The playbook will not reassign pending incidents. '
   playbookInputQuery:
 - key: 'AppChannelName '
   value:
     simple: daud
   required: false
   description: "The name of channel that will be created in your messaging app for\
-    \ the shift handover.\nThe name of the channel should not contain uppercase or special characters.\ If you want to use an existing channel, add that name here. Currently this input supports only two integrations: Microsoft Teams and Slack V2.
-    \  "
+    \ the shift handover.\nThe name of the channel should not contain uppercase or\
+    \ special characters. If you want to use an existing channel, add that name here.\
+    \ Currently this input supports only two integrations: Microsoft Teams and Slack\
+    \ V2.   "
   playbookInputQuery:
 - key: 'AppMessage '
   value:
     simple: Hi, please join the shift handover meeting.
   required: false
-  description: The message to send for the handover to your messaging
-    app channel that you created.
+  description: The message to send for the handover to your messaging app channel
+    that you created.
   playbookInputQuery:
 - key: SOCManagerEmail
   value:
     simple: evisochek@paloaltonetworks.com
   required: false
-  description: If the Shift manager briefing section is left empty
-    when a new shift handover incident is opened, an email will be sent to this address
-    to request a shift manager briefing.
+  description: If the Shift manager briefing section is left empty when a new shift
+    handover incident is opened, an email will be sent to this address to request
+    a shift manager briefing.
   playbookInputQuery:
 - key: 'ShiftManagerBriefing '
   value:
@@ -1655,7 +1660,8 @@ inputs:
   value:
     simple: DemistoTeam
   required: false
-  description: If using Microsoft Teams, provide your Microsoft team name. This input is mandatory for Microsoft Teams.
+  description: If using Microsoft Teams, provide your Microsoft team name. This input
+    is mandatory for Microsoft Teams.
   playbookInputQuery:
 outputs: []
 tests:

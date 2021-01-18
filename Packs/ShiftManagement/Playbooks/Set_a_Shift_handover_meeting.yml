@@ -1,6 +1,6 @@
-id: Set a Shift handover meeting
+id: Set up a Shift handover meeting
 version: -1
-name: Set a Shift handover meeting
+name: Set up a Shift handover meeting
 starttaskid: "0"
 tasks:
   "0":
