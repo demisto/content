@@ -26,7 +26,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Use system proxy settings
+- display: Use system proxy settings.
   name: proxy
   defaultvalue: ""
   type: 8
@@ -48,7 +48,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether or not to include full message headers in the War Room output.
+      description: Whether or not to include full message headers in the War Room output
       defaultValue: "false"
     - name: showalllinks
       auto: PREDEFINED
@@ -58,6 +58,9 @@ script:
       description: Whether or not to show all links in the War Room output. When false only suspicious and malicious links will be returned to the War Room.
       defaultValue: "false"
     outputs:
+    - contextPath: GreatHorn.Message.eventId
+      description: The GreatHorn event id
+      type: Number
     - contextPath: GreatHorn.Message.origin
       description: Mailbox email was discovered
       type: String
@@ -67,18 +70,6 @@ script:
     - contextPath: GreatHorn.Message.xMailer
       description: X-Mailer header entry
       type: Unknown
-    - contextPath: GreatHorn.Message.links.resolvedUrl
-      description: The URL of the resolved link if it points elsewhere
-      type: Unknown
-    - contextPath: GreatHorn.Message.links.text
-      description: The text showing for the link discovered in the body of the email
-      type: String
-    - contextPath: GreatHorn.Message.links.url
-      description: URL of link discovered in body of email
-      type: String
-    - contextPath: GreatHorn.Message.links.tags
-      description: List of tags describing the analysis of the event
-      type: String
     - contextPath: GreatHorn.Message.sourcePath
       description: GreatHorn discovered domain of sender
       type: String
@@ -88,12 +79,6 @@ script:
     - contextPath: GreatHorn.Message.bodyOnlyWhitespace
       description: Body of email content is only whitespace
       type: Number
-    - contextPath: GreatHorn.Message.quarReleasedBy
-      description: Who released the quarantined email
-      type: Unknown
-    - contextPath: GreatHorn.Message.dmarc
-      description: dmarc authentication result
-      type: String
     - contextPath: GreatHorn.Message.collector
       description: Email provider email discovered
       type: Unknown
@@ -106,6 +91,9 @@ script:
     - contextPath: GreatHorn.Message.contentHash
       description: Hash of email body conten
       type: String
+    - contextPath: GreatHorn.Message.violations
+      description: All body of email policy matches
+      type: Number
     - contextPath: GreatHorn.Message.workflow
       description: Current action of event
       type: String
@@ -118,30 +106,30 @@ script:
     - contextPath: GreatHorn.Message.location
       description: Location of sender ip origin
       type: String
+    - contextPath: GreatHorn.Message.quarReleasedBy
+      description: Who released the quarantined email
+      type: Unknown
     - contextPath: GreatHorn.Message.quarDeleted
       description: Has the event been deleted from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.quarDeletedBy
       description: Who deleted the quarantined email
       type: Unknown
-    - contextPath: GreatHorn.Message.violations
-      description: All body of email policy matches
-      type: Number
+    - contextPath: GreatHorn.Message.quarDenied
+      description: Has the event been denied released from quarantined
+      type: Unknown
     - contextPath: GreatHorn.Message.subject
       description: Email subject
       type: String
     - contextPath: GreatHorn.Message.xAuthResults
       description: X-Original-Authentication-Results header entry
       type: Unknown
+    - contextPath: GreatHorn.Message.dmarc
+      description: dmarc authentication result
+      type: String
     - contextPath: GreatHorn.Message.returnPath
       description: Return-Path header entry'
       type: String
-    - contextPath: GreatHorn.Message.eventId
-      description: The GreatHorn event id
-      type: Number
-    - contextPath: GreatHorn.Message.quarDenied
-      description: Has the event been denied released from quarantined
-      type: Unknown
     - contextPath: GreatHorn.Message.received
       description: Received header entry
       type: String
@@ -151,35 +139,35 @@ script:
     - contextPath: GreatHorn.Message.timestamp
       description: timestamp of the event, usually receivedTime
       type: Date
-    - contextPath: GreatHorn.Message.quarReleased
-      description: Has the event been released from quarantined
-      type: Unknown
-    - contextPath: GreatHorn.Message.authenticationResults
-      description: Authentication-Results header entry
-      type: String
-    - contextPath: GreatHorn.Message.quarantined
-      description: Has the event been quarantined
-      type: Unknown
     - contextPath: GreatHorn.Message.flag
       description: All policies the event matched
       type: Number
     - contextPath: GreatHorn.Message.homographScore
       description: GreatHorn homograph score
       type: Number
-    - contextPath: GreatHorn.Message.remediation
-      description: Remediation action taken
-      type: Unknown
     - contextPath: GreatHorn.Message.owlScore
       description: GreatHorn threat score
       type: Number
-    - contextPath: GreatHorn.Message.quarReleaseRequested
-      description: Has the event been requested to be relased from quarantined
-      type: Unknown
     - contextPath: GreatHorn.Message.anomalyScore
       description: GreatHorn anomaly score
       type: Number
+    - contextPath: GreatHorn.Message.authScore
+      description: GreatHorn illegitmacy score
+      type: Number
+    - contextPath: GreatHorn.Message.remediation
+      description: Remediation action taken
+      type: Unknown
+    - contextPath: GreatHorn.Message.quarantined
+      description: Has the event been quarantined
+      type: Unknown
     - contextPath: GreatHorn.Message.quarExpired
       description: Has the event been expired from quarantined
+      type: Unknown
+    - contextPath: GreatHorn.Message.quarReleaseRequested
+      description: Has the event been requested to be relased from quarantined
+      type: Unknown
+    - contextPath: GreatHorn.Message.quarReleased
+      description: Has the event been released from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.displayName
       description: Display name of sender
@@ -190,15 +178,27 @@ script:
     - contextPath: GreatHorn.Message.region
       description: Region of sender ip origin
       type: String
-    - contextPath: GreatHorn.Message.headers
-      description: Full set of headers for the email
-      type: Object
+    - contextPath: GreatHorn.Message.authenticationResults
+      description: Authentication-Results header entry
+      type: String
     - contextPath: GreatHorn.Message.messageId
       description: Message-Id header entry
       type: String
-    - contextPath: GreatHorn.Message.authScore
-      description: GreatHorn illegitmacy score
-      type: Number
+    - contextPath: GreatHorn.Message.headers
+      description: Full set of headers for the email
+      type: Object
+    - contextPath: GreatHorn.Message.links.resolvedUrl
+      description: The URL of the resolved link if it points elsewhere
+      type: Unknown
+    - contextPath: GreatHorn.Message.links.text
+      description: The text showing for the link discovered in the body of the email
+      type: String
+    - contextPath: GreatHorn.Message.links.url
+      description: URL of link discovered in body of email
+      type: String
+    - contextPath: GreatHorn.Message.links.tags
+      description: List of tags describing the analysis of the event
+      type: String
   - name: gh-search-message
     description: Search for message based on filtering input
     arguments:
@@ -216,7 +216,7 @@ script:
       description: The zero-based offset of the first item in the collection. Default
         is 0; max is 10000.
     - name: sort
-      description: The field to use in sorting results. Default is eventId.
+      description: The field to use in sorting results. Default is eventId
       defaultValue: eventId
     - name: sortDir
       auto: PREDEFINED
@@ -227,6 +227,9 @@ script:
         is descending.
       defaultValue: desc
     outputs:
+    - contextPath: GreatHorn.Message.eventId
+      description: The GreatHorn event id
+      type: Number
     - contextPath: GreatHorn.Message.origin
       description: Mailbox email was discovered
       type: String
@@ -236,18 +239,6 @@ script:
     - contextPath: GreatHorn.Message.xMailer
       description: X-Mailer header entry
       type: Unknown
-    - contextPath: GreatHorn.Message.links.resolvedUrl
-      description: The URL of the resolved link if it points elsewhere
-      type: Unknown
-    - contextPath: GreatHorn.Message.links.text
-      description: The text showing for the link discovered in the body of the email
-      type: String
-    - contextPath: GreatHorn.Message.links.url
-      description: URL of link discovered in body of email
-      type: String
-    - contextPath: GreatHorn.Message.links.tags
-      description: List of tags describing the analysis of the event
-      type: String
     - contextPath: GreatHorn.Message.sourcePath
       description: GreatHorn discovered domain of sender
       type: String
@@ -257,12 +248,6 @@ script:
     - contextPath: GreatHorn.Message.bodyOnlyWhitespace
       description: Body of email content is only whitespace
       type: Number
-    - contextPath: GreatHorn.Message.quarReleasedBy
-      description: Who released the quarantined email
-      type: Unknown
-    - contextPath: GreatHorn.Message.dmarc
-      description: dmarc authentication result
-      type: String
     - contextPath: GreatHorn.Message.collector
       description: Email provider email discovered
       type: Unknown
@@ -275,6 +260,9 @@ script:
     - contextPath: GreatHorn.Message.contentHash
       description: Hash of email body conten
       type: String
+    - contextPath: GreatHorn.Message.violations
+      description: All body of email policy matches
+      type: Number
     - contextPath: GreatHorn.Message.workflow
       description: Current action of event
       type: String
@@ -287,30 +275,30 @@ script:
     - contextPath: GreatHorn.Message.location
       description: Location of sender ip origin
       type: String
+    - contextPath: GreatHorn.Message.quarReleasedBy
+      description: Who released the quarantined email
+      type: Unknown
     - contextPath: GreatHorn.Message.quarDeleted
       description: Has the event been deleted from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.quarDeletedBy
       description: Who deleted the quarantined email
       type: Unknown
-    - contextPath: GreatHorn.Message.violations
-      description: All body of email policy matches
-      type: Number
+    - contextPath: GreatHorn.Message.quarDenied
+      description: Has the event been denied released from quarantined
+      type: Unknown
     - contextPath: GreatHorn.Message.subject
       description: Email subject
       type: String
     - contextPath: GreatHorn.Message.xAuthResults
       description: X-Original-Authentication-Results header entry
       type: Unknown
+    - contextPath: GreatHorn.Message.dmarc
+      description: dmarc authentication result
+      type: String
     - contextPath: GreatHorn.Message.returnPath
       description: Return-Path header entry'
       type: String
-    - contextPath: GreatHorn.Message.eventId
-      description: The GreatHorn event id
-      type: Number
-    - contextPath: GreatHorn.Message.quarDenied
-      description: Has the event been denied released from quarantined
-      type: Unknown
     - contextPath: GreatHorn.Message.received
       description: Received header entry
       type: String
@@ -320,35 +308,35 @@ script:
     - contextPath: GreatHorn.Message.timestamp
       description: timestamp of the event, usually receivedTime
       type: Date
-    - contextPath: GreatHorn.Message.quarReleased
-      description: Has the event been released from quarantined
-      type: Unknown
-    - contextPath: GreatHorn.Message.authenticationResults
-      description: Authentication-Results header entry
-      type: String
-    - contextPath: GreatHorn.Message.quarantined
-      description: Has the event been quarantined
-      type: Unknown
     - contextPath: GreatHorn.Message.flag
       description: All policies the event matched
       type: Number
     - contextPath: GreatHorn.Message.homographScore
       description: GreatHorn homograph score
       type: Number
-    - contextPath: GreatHorn.Message.remediation
-      description: Remediation action taken
-      type: Unknown
     - contextPath: GreatHorn.Message.owlScore
       description: GreatHorn threat score
       type: Number
-    - contextPath: GreatHorn.Message.quarReleaseRequested
-      description: Has the event been requested to be relased from quarantined
-      type: Unknown
     - contextPath: GreatHorn.Message.anomalyScore
       description: GreatHorn anomaly score
       type: Number
+    - contextPath: GreatHorn.Message.authScore
+      description: GreatHorn illegitmacy score
+      type: Number
+    - contextPath: GreatHorn.Message.remediation
+      description: Remediation action taken
+      type: Unknown
+    - contextPath: GreatHorn.Message.quarantined
+      description: Has the event been quarantined
+      type: Unknown
     - contextPath: GreatHorn.Message.quarExpired
       description: Has the event been expired from quarantined
+      type: Unknown
+    - contextPath: GreatHorn.Message.quarReleaseRequested
+      description: Has the event been requested to be relased from quarantined
+      type: Unknown
+    - contextPath: GreatHorn.Message.quarReleased
+      description: Has the event been released from quarantined
       type: Unknown
     - contextPath: GreatHorn.Message.displayName
       description: Display name of sender
@@ -359,15 +347,27 @@ script:
     - contextPath: GreatHorn.Message.region
       description: Region of sender ip origin
       type: String
-    - contextPath: GreatHorn.Message.headers
-      description: Full set of headers for the email
-      type: Object
+    - contextPath: GreatHorn.Message.authenticationResults
+      description: Authentication-Results header entry
+      type: String
     - contextPath: GreatHorn.Message.messageId
       description: Message-Id header entry
       type: String
-    - contextPath: GreatHorn.Message.authScore
-      description: GreatHorn illegitmacy score
-      type: Number
+    - contextPath: GreatHorn.Message.headers
+      description: Full set of headers for the email
+      type: Object
+    - contextPath: GreatHorn.Message.links.resolvedUrl
+      description: The URL of the resolved link if it points elsewhere
+      type: Unknown
+    - contextPath: GreatHorn.Message.links.text
+      description: The text showing for the link discovered in the body of the email
+      type: String
+    - contextPath: GreatHorn.Message.links.url
+      description: URL of link discovered in body of email
+      type: String
+    - contextPath: GreatHorn.Message.links.tags
+      description: List of tags describing the analysis of the event
+      type: String
   - name: gh-remediate-message
     description: Perform the specified remediation action on message
     arguments:
@@ -470,6 +470,27 @@ script:
     - contextPath: GreatHorn.Policy.description
       description: The user-defined description of the policy
       type: String
+  - name: gh-set-policy
+    description: Retrieve details about the policy specified.
+    arguments:
+    - name: updatemethod
+      description: Update method for the given policy.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - patch
+      - put
+    - name: policyid
+      type: Number
+      description: The ID of the policy.
+    - name: policyjson
+      type: String
+      description: Json policy defintion.
+      required: true
+    outputs:
+    - contextPath: GreatHorn.Policy.id
+      description: The ID of the policy.
+      type: Number
   dockerimage: demisto/python3:3.9.1.14969
   runonce: false
   subtype: python3

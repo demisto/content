@@ -2,4 +2,5 @@
 !gh-search-message filters
 !gh-remediate-message action="banner" message="This email may be a phishing attempt" eventId="12345"
 !gh-revert-remediate-message action="banner" eventId="12345"
-!gh-get-policy policyid="1234"
+!gh-get-policy policyid="16567"
+!gh-set-policy policyid="16567" updatemethod="patch" policyjson='{"config": ["or", ["and", {"opt": "from", "values": ["asdf@asdf.com","asdf2@asdf2.com"], "type": "regex"}]]}'

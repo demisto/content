@@ -1,5 +1,5 @@
 The only cloud-native security platform that stops targeted social engineering and phishing attacks on cloud email platforms like Office 365 and G Suite.
-This integration was integrated and tested with version 2 of GreatHorn
+This integration was integrated and tested with version xx of GreatHorn
 ## Configure GreatHorn on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -12,7 +12,7 @@ This integration was integrated and tested with version 2 of GreatHorn
     | api_version | API Version | True |
     | apikey | API Key | True |
     | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+    | proxy | Use system proxy settings. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -39,53 +39,53 @@ Return message details for the specified event
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| GreatHorn.Message.eventId | Number | The GreatHorn event id | 
 | GreatHorn.Message.origin | String | Mailbox email was discovered | 
 | GreatHorn.Message.status | String | Has the system taken action on the event | 
 | GreatHorn.Message.xMailer | Unknown | X-Mailer header entry | 
-| GreatHorn.Message.links.resolvedUrl | Unknown | The URL of the resolved link if it points elsewhere | 
-| GreatHorn.Message.links.text | String | The text showing for the link discovered in the body of the email | 
-| GreatHorn.Message.links.url | String | URL of link discovered in body of email | 
-| GreatHorn.Message.links.tags | String | List of tags describing the analysis of the event | 
 | GreatHorn.Message.sourcePath | String | GreatHorn discovered domain of sender | 
 | GreatHorn.Message.ip | String | GreatHorn discovered originating ip of sender | 
 | GreatHorn.Message.bodyOnlyWhitespace | Number | Body of email content is only whitespace | 
-| GreatHorn.Message.quarReleasedBy | Unknown | Who released the quarantined email | 
-| GreatHorn.Message.dmarc | String | dmarc authentication result | 
 | GreatHorn.Message.collector | Unknown | Email provider email discovered | 
 | GreatHorn.Message.dkim | String | dmarc authentication result | 
 | GreatHorn.Message.spf | String | spf authentication result | 
 | GreatHorn.Message.contentHash | String | Hash of email body conten | 
+| GreatHorn.Message.violations | Number | All body of email policy matches | 
 | GreatHorn.Message.workflow | String | Current action of event | 
 | GreatHorn.Message.targets | String | All recepients of the email | 
 | GreatHorn.Message.source | String | Email sender address | 
 | GreatHorn.Message.location | String | Location of sender ip origin | 
+| GreatHorn.Message.quarReleasedBy | Unknown | Who released the quarantined email | 
 | GreatHorn.Message.quarDeleted | Unknown | Has the event been deleted from quarantined | 
 | GreatHorn.Message.quarDeletedBy | Unknown | Who deleted the quarantined email | 
-| GreatHorn.Message.violations | Number | All body of email policy matches | 
+| GreatHorn.Message.quarDenied | Unknown | Has the event been denied released from quarantined | 
 | GreatHorn.Message.subject | String | Email subject | 
 | GreatHorn.Message.xAuthResults | Unknown | X-Original-Authentication-Results header entry | 
+| GreatHorn.Message.dmarc | String | dmarc authentication result | 
 | GreatHorn.Message.returnPath | String | Return-Path header entry' | 
-| GreatHorn.Message.eventId | Number | The GreatHorn event id | 
-| GreatHorn.Message.quarDenied | Unknown | Has the event been denied released from quarantined | 
 | GreatHorn.Message.received | String | Received header entry | 
 | GreatHorn.Message.replyTo | String | Reply-To header entry | 
 | GreatHorn.Message.timestamp | Date | timestamp of the event, usually receivedTime | 
-| GreatHorn.Message.quarReleased | Unknown | Has the event been released from quarantined | 
-| GreatHorn.Message.authenticationResults | String | Authentication-Results header entry | 
-| GreatHorn.Message.quarantined | Unknown | Has the event been quarantined | 
 | GreatHorn.Message.flag | Number | All policies the event matched | 
 | GreatHorn.Message.homographScore | Number | GreatHorn homograph score | 
-| GreatHorn.Message.remediation | Unknown | Remediation action taken | 
 | GreatHorn.Message.owlScore | Number | GreatHorn threat score | 
-| GreatHorn.Message.quarReleaseRequested | Unknown | Has the event been requested to be relased from quarantined | 
 | GreatHorn.Message.anomalyScore | Number | GreatHorn anomaly score | 
+| GreatHorn.Message.authScore | Number | GreatHorn illegitmacy score | 
+| GreatHorn.Message.remediation | Unknown | Remediation action taken | 
+| GreatHorn.Message.quarantined | Unknown | Has the event been quarantined | 
 | GreatHorn.Message.quarExpired | Unknown | Has the event been expired from quarantined | 
+| GreatHorn.Message.quarReleaseRequested | Unknown | Has the event been requested to be relased from quarantined | 
+| GreatHorn.Message.quarReleased | Unknown | Has the event been released from quarantined | 
 | GreatHorn.Message.displayName | String | Display name of sender | 
 | GreatHorn.Message.country | String | Country of sender ip country | 
 | GreatHorn.Message.region | String | Region of sender ip origin | 
-| GreatHorn.Message.headers | Object | Full set of headers for the email | 
+| GreatHorn.Message.authenticationResults | String | Authentication-Results header entry | 
 | GreatHorn.Message.messageId | String | Message-Id header entry | 
-| GreatHorn.Message.authScore | Number | GreatHorn illegitmacy score | 
+| GreatHorn.Message.headers | Object | Full set of headers for the email | 
+| GreatHorn.Message.links.resolvedUrl | Unknown | The URL of the resolved link if it points elsewhere | 
+| GreatHorn.Message.links.text | String | The text showing for the link discovered in the body of the email | 
+| GreatHorn.Message.links.url | String | URL of link discovered in body of email | 
+| GreatHorn.Message.links.tags | String | List of tags describing the analysis of the event | 
 
 
 #### Command Example
@@ -119,53 +119,53 @@ Search for message based on filtering input
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| GreatHorn.Message.eventId | Number | The GreatHorn event id | 
 | GreatHorn.Message.origin | String | Mailbox email was discovered | 
 | GreatHorn.Message.status | String | Has the system taken action on the event | 
 | GreatHorn.Message.xMailer | Unknown | X-Mailer header entry | 
-| GreatHorn.Message.links.resolvedUrl | Unknown | The URL of the resolved link if it points elsewhere | 
-| GreatHorn.Message.links.text | String | The text showing for the link discovered in the body of the email | 
-| GreatHorn.Message.links.url | String | URL of link discovered in body of email | 
-| GreatHorn.Message.links.tags | String | List of tags describing the analysis of the event | 
 | GreatHorn.Message.sourcePath | String | GreatHorn discovered domain of sender | 
 | GreatHorn.Message.ip | String | GreatHorn discovered originating ip of sender | 
 | GreatHorn.Message.bodyOnlyWhitespace | Number | Body of email content is only whitespace | 
-| GreatHorn.Message.quarReleasedBy | Unknown | Who released the quarantined email | 
-| GreatHorn.Message.dmarc | String | dmarc authentication result | 
 | GreatHorn.Message.collector | Unknown | Email provider email discovered | 
 | GreatHorn.Message.dkim | String | dmarc authentication result | 
 | GreatHorn.Message.spf | String | spf authentication result | 
 | GreatHorn.Message.contentHash | String | Hash of email body conten | 
+| GreatHorn.Message.violations | Number | All body of email policy matches | 
 | GreatHorn.Message.workflow | String | Current action of event | 
 | GreatHorn.Message.targets | String | All recepients of the email | 
 | GreatHorn.Message.source | String | Email sender address | 
 | GreatHorn.Message.location | String | Location of sender ip origin | 
+| GreatHorn.Message.quarReleasedBy | Unknown | Who released the quarantined email | 
 | GreatHorn.Message.quarDeleted | Unknown | Has the event been deleted from quarantined | 
 | GreatHorn.Message.quarDeletedBy | Unknown | Who deleted the quarantined email | 
-| GreatHorn.Message.violations | Number | All body of email policy matches | 
+| GreatHorn.Message.quarDenied | Unknown | Has the event been denied released from quarantined | 
 | GreatHorn.Message.subject | String | Email subject | 
 | GreatHorn.Message.xAuthResults | Unknown | X-Original-Authentication-Results header entry | 
+| GreatHorn.Message.dmarc | String | dmarc authentication result | 
 | GreatHorn.Message.returnPath | String | Return-Path header entry' | 
-| GreatHorn.Message.eventId | Number | The GreatHorn event id | 
-| GreatHorn.Message.quarDenied | Unknown | Has the event been denied released from quarantined | 
 | GreatHorn.Message.received | String | Received header entry | 
 | GreatHorn.Message.replyTo | String | Reply-To header entry | 
 | GreatHorn.Message.timestamp | Date | timestamp of the event, usually receivedTime | 
-| GreatHorn.Message.quarReleased | Unknown | Has the event been released from quarantined | 
-| GreatHorn.Message.authenticationResults | String | Authentication-Results header entry | 
-| GreatHorn.Message.quarantined | Unknown | Has the event been quarantined | 
 | GreatHorn.Message.flag | Number | All policies the event matched | 
 | GreatHorn.Message.homographScore | Number | GreatHorn homograph score | 
-| GreatHorn.Message.remediation | Unknown | Remediation action taken | 
 | GreatHorn.Message.owlScore | Number | GreatHorn threat score | 
-| GreatHorn.Message.quarReleaseRequested | Unknown | Has the event been requested to be relased from quarantined | 
 | GreatHorn.Message.anomalyScore | Number | GreatHorn anomaly score | 
+| GreatHorn.Message.authScore | Number | GreatHorn illegitmacy score | 
+| GreatHorn.Message.remediation | Unknown | Remediation action taken | 
+| GreatHorn.Message.quarantined | Unknown | Has the event been quarantined | 
 | GreatHorn.Message.quarExpired | Unknown | Has the event been expired from quarantined | 
+| GreatHorn.Message.quarReleaseRequested | Unknown | Has the event been requested to be relased from quarantined | 
+| GreatHorn.Message.quarReleased | Unknown | Has the event been released from quarantined | 
 | GreatHorn.Message.displayName | String | Display name of sender | 
 | GreatHorn.Message.country | String | Country of sender ip country | 
 | GreatHorn.Message.region | String | Region of sender ip origin | 
-| GreatHorn.Message.headers | Object | Full set of headers for the email | 
+| GreatHorn.Message.authenticationResults | String | Authentication-Results header entry | 
 | GreatHorn.Message.messageId | String | Message-Id header entry | 
-| GreatHorn.Message.authScore | Number | GreatHorn illegitmacy score | 
+| GreatHorn.Message.headers | Object | Full set of headers for the email | 
+| GreatHorn.Message.links.resolvedUrl | Unknown | The URL of the resolved link if it points elsewhere | 
+| GreatHorn.Message.links.text | String | The text showing for the link discovered in the body of the email | 
+| GreatHorn.Message.links.url | String | URL of link discovered in body of email | 
+| GreatHorn.Message.links.tags | String | List of tags describing the analysis of the event | 
 
 
 #### Command Example
@@ -269,6 +269,37 @@ Retrieve details about the policy specified
 | GreatHorn.Policy.config | String | The match configuration of the policy | 
 | GreatHorn.Policy.id | Number | The ID of the policy | 
 | GreatHorn.Policy.description | String | The user-defined description of the policy | 
+
+
+#### Command Example
+``` ```
+
+#### Human Readable Output
+
+
+
+### gh-set-policy
+***
+Retrieve details about the policy specified.
+
+
+#### Base Command
+
+`gh-set-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| updatemethod | Update method for the given policy. Possible values are: patch, put. | Required | 
+| policyid | The ID of the policy. | Optional | 
+| policyjson | Json policy defintion. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GreatHorn.Policy.id | Number | The ID of the policy. | 
 
 
 #### Command Example
