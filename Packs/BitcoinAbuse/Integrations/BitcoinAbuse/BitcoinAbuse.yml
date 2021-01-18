@@ -75,7 +75,6 @@ configuration:
     - WHITE
   required: false
   type: 15
-  defaultvalue: WHITE
 - defaultvalue: '1440'
   display: Feed Fetch Interval
   name: feedFetchInterval
@@ -99,7 +98,7 @@ configuration:
   type: 0
 description: BitcoinAbuse.com is a public database of bitcoin addresses used by hackers
   and criminals.
-display: BitcoinAbuse
+display: BitcoinAbuse Feed
 name: BitcoinAbuse
 script:
   commands:
@@ -129,7 +128,13 @@ script:
     description: Reports an abuser to Bitcoin Abuse service. 'abuse_type_other' field is
       required when 'abuse_type' is other
     name: bitcoinabuse-report-address
-  dockerimage: demisto/python3:3.8.6.14516
+  - arguments:
+    - defaultValue: "50"
+      description: The maximum number of results to return.
+      name: limit
+    description: Gets indicators from the feed.
+    name: bitcoinabuse-get-indicators
+  dockerimage: demisto/python3:3.9.1.14969
   feed: true
   isFetchSamples: true
   runonce: false

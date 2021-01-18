@@ -1111,6 +1111,7 @@ class IntegrationLogger(object):
                 demisto.debug(text)
         else:
             demisto.info(text)
+        return text
 
     def add_replace_strs(self, *args):
         '''
@@ -1157,8 +1158,9 @@ class IntegrationLogger(object):
         """
         http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
         data = text.split("send: b'")[1]
-        if data.startswith('{'):
+        if data and data[0] in {'{', '<'}:
             # it is the request url query params/post body - will always come after we already have the url and headers
+            # `<` is for xml body
             self.curl[-1] += "-d '{}".format(data)
         elif any(http_method in data for http_method in http_methods):
             method = ''
@@ -1187,7 +1189,7 @@ class IntegrationLogger(object):
                 if proxy_address:
                     curl += '--proxy {} '.format(proxy_address)
             else:
-                curl += '--noproxy '
+                curl += '--noproxy "*" '
             if demisto.params().get('insecure'):
                 curl += '-k '
             self.curl.append(curl)
@@ -1267,7 +1269,10 @@ def logger(func):
 
     def func_wrapper(*args, **kwargs):
         LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
-        return func(*args, **kwargs)
+        ret_val = func(*args, **kwargs)
+        if is_debug_mode():
+            LOG('Return value [{}]: {}'.format(func.__name__, str(ret_val)))
+        return ret_val
 
     return func_wrapper
 
@@ -4389,7 +4394,7 @@ def return_error(message, error='', outputs=None):
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
         message = "{}\n\n{}".format(message, traceback.format_exc())
 
-    LOG(message)
+    message = LOG(message)
     if error:
         LOG(str(error))
 

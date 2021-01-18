@@ -14,9 +14,9 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "IAM-Scim": {
+        "IAM-SCIM": {
             "mandatory": true,
-            "display_name": "IAM Scim"
+            "display_name": "IAM SCIM"
         }
     }
 }

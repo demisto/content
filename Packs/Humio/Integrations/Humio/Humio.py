@@ -73,8 +73,14 @@ def test_module(client, headers=None):
 def humio_query(client, args, headers):
     data = {}
     data["queryString"] = args.get("queryString")
-    data["start"] = args.get("start")
-    data["end"] = args.get("end")
+    try:
+        data["start"] = int(args.get("start"))
+    except ValueError:
+        data["start"] = args.get("start")
+    try:
+        data["end"] = int(args.get("end"))
+    except ValueError:
+        data["end"] = args.get("end")
     data["isLive"] = args.get("isLive").lower() in ["true", "1", "t", "y", "yes"]
     data["timeZoneOffsetMinutes"] = int(args.get("timeZoneOffsetMinutes", 0))
     if args.get("arguments"):

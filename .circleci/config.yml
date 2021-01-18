@@ -46,11 +46,11 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "20.12.1"
+      CONTENT_VERSION: "21.1.0"
       SERVER_VERSION: "6.0.0"
       # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
       DONT_CACHE_LAST_RESPONSE: "true"
-      GIT_SHA1: "758aee8a0dc3e5c905ebbab94a91bb4bf7931cf5" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "f18e964994f46475e5f0057c0981d8aade06b03c" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -311,6 +311,31 @@ references:
         demisto-sdk create-id-set -o ./Tests/id_set.json
         cp ./Tests/id_set.json $CIRCLE_ARTIFACTS
 
+  merge_public_and_private_id_sets: &merge_public_and_private_id_sets
+    run:
+      name: Merge public and private ID sets
+      when: always
+      command: |
+        if [[ $CIRCLE_BRANCH =~ pull/[0-9]+ ]]; then
+            echo "Skipping, Should not run on contributor's branch."
+            exit 0
+        fi
+
+        GCS_PATH=$(mktemp)
+        echo "$GCS_MARKET_KEY" > "$GCS_PATH"
+        gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
+        echo "successfully activated google cloud service account"
+
+        # Download private ID set
+        gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
+        echo "successfully downloaded private ID set"
+        gcloud auth revoke --all
+        rm $GCS_PATH
+
+        # Merge public and private ID sets
+        demisto-sdk merge-id-sets -i1 ./Tests/id_set.json -i2 $CIRCLE_ARTIFACTS/unified_id_set.json -o $CIRCLE_ARTIFACTS/unified_id_set.json
+        echo "successfully merged public and private ID sets"
+
   build_content_descriptor: &build_content_descriptor
     run:
       name: Build Content Descriptor
@@ -545,13 +570,9 @@ jobs:
       - *prepare_environment
       - *secrets
       - *create_id_set
+      - *merge_public_and_private_id_sets
       - *update_tests_step
       - *validate_files_and_yaml
-      - run:
-          name: Content Docs Site
-          when: always
-          command: |
-            ./Documentation/docs_site_update.sh
       - run:
           name: Spell Checks
           command: |
@@ -640,6 +661,10 @@ jobs:
                 name: Prepare Content Packs For Testing
                 when: always
                 command: |
+                  if [ -n "$NIGHTLY" ] ; then
+                    echo "Skipping Preparing Content Packs For Testing since nightly instances uses production bucket"
+                    exit 0
+                  fi
                   ./Tests/scripts/prepare_content_packs_for_testing.sh
                   echo "$CIRCLE_BUILD_NUM" > create_instances_build_num.txt  # so that later jobs in this workflow could configure the right path
             - run:
@@ -1090,10 +1115,11 @@ jobs:
       - *prepare_environment
       - *secrets
       - *update_tests_step
+      - *create_id_set
+      - *merge_public_and_private_id_sets
       - *validate_files_and_yaml
       - *run_unit_testing_and_lint
       - *infrastructure_testing
-      - *create_id_set
       - *build_content_descriptor
       - *common_server_documentation
       - *collect_test_list_and_content_packs
