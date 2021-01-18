@@ -1,0 +1,37 @@
+category: Case Management
+commonfields:
+  id: AsanaConnect
+  version: -1
+configuration:
+- display: Access Token
+  name: accesstoken
+  required: true
+  type: 4
+description: This is the integration with asana.
+display: AsanaConnect
+name: AsanaConnect
+script:
+  commands:
+  - arguments:
+    - description: id of the project in asana
+      name: project_id
+      required: true
+    description: Get the project from Asana
+    name: asana-get-project
+  - arguments:
+    - description: project id of the project to send task to
+      name: project_id
+      required: true
+    - description: name of the task to create
+      name: name
+      required: true
+    description: creates a task in the given project
+    name: asana-create-task
+  dockerimage: demisto/asana:latest
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

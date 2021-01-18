@@ -1,0 +1,17 @@
+{
+    "name": "AsanaConnect",
+    "description": "Simple Asana Integration using Personal Access Tokens.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "zh-lim",
+    "url": "",
+    "email": "",
+    "created": "2021-01-18T04:27:25Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "zh-lim"
+    ]
+}
