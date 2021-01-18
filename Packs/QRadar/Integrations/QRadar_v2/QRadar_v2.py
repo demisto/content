@@ -21,6 +21,7 @@ urllib3.disable_warnings()
 """ ADVANCED GLOBAL PARAMETERS """
 EVENTS_INTERVAL_SECS = 15           # interval between events polling
 EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
+EVENTS_FAILURE_SLEEP = 15           # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60                    # sleep between fetches
 BATCH_SIZE = 100                    # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10   # max amount of IPs to enrich per offense
@@ -34,6 +35,7 @@ SLEEP_FETCH_EVENT_RETIRES = 10      # sleep between iteration to try search the 
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
     "EVENTS_FAILURE_LIMIT",
+    "EVENTS_FAILURE_SLEEP",
     "FETCH_SLEEP",
     "BATCH_SIZE",
     "OFF_ENRCH_LIMIT",
@@ -878,6 +880,8 @@ def try_poll_offense_events_with_retry(
             print_debug_msg(f"Error while fetching offense {offense_id} events, search_id: {search_id}. "
                             f"Error details: {str(e)}")
             failures += 1
+            if failures < max_retries:
+                time.sleep(EVENTS_FAILURE_SLEEP)
     return []
 
 
@@ -2323,7 +2327,7 @@ def main():
             demisto.results(normal_commands[command](client, **args))
         elif command == "fetch-incidents":
             demisto.incidents(fetch_incidents_long_running_samples())
-        elif command == "long-running-execution" or True:
+        elif command == "long-running-execution":
             long_running_main(
                 client,
                 incident_type,
