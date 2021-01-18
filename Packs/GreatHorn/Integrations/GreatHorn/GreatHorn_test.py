@@ -123,7 +123,7 @@ def test_gh_revert_remediate_message_command(requests_mock):
 def test_gh_set_policy_command(requests_mock):
     from GreatHorn import Client, gh_set_policy_command
     mock_response = util_load_json('test_data/set_policy_success.json')
-    requests_mock.patch('https://api.greathorn.com/v2/policy/', json=mock_response)
+    requests_mock.patch('https://api.greathorn.com/v2/policy/16567', json=mock_response)
 
     client = Client(
         base_url='https://api.greathorn.com/v2',

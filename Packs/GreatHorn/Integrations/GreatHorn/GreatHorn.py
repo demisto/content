@@ -78,7 +78,7 @@ def test_module(client: Client) -> str:
         client.get_policy()
     except DemistoException as e:
         if 'Forbidden' in str(e):
-            raise 'Authorization Error: make sure API Key is correctly set'
+            raise ValueError('Authorization Error: make sure API Key is correctly set')
         else:
             raise e
     return 'ok'
@@ -241,14 +241,14 @@ def gh_remediate_message_command(client: Client, args: Dict[str, Any]) -> Comman
 
 def gh_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     update_method = args.get('updatemethod', "").lower()
-    policy_id = args.get('policiyid', "")
+    policy_id = args.get('policyid', "")
     policy_json = json.loads(args.get('policyjson', {}))
     if update_method not in ['patch', 'put']:
         raise ValueError("Invalid updatemethod specified, please use either put or patch.")
     results = client.set_policy(policy_id, update_method, policy_json)
     if results.get("success") is True:
-        human_readable = "Update applied successfully to policy {}".format(args.get("policiyid"))
-    results['id'] = args.get('policiyid')
+        human_readable = "Update applied successfully to policy {}".format(args.get("policyid"))
+    results['id'] = args.get('policyid')
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='GreatHorn.Policy',
