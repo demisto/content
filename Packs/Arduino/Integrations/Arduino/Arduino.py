@@ -37,19 +37,20 @@ class Server():
                 if data.decode().startswith("Response"):
                     return 'ok'
                 else:
-                    return f"There was an issue. Check the Arduino code - {data}"
+                    return "There was an issue. Please check your Arduino code"
         except Exception as err:
-            return err
+            return_error(err)
 
-    def send_data(self, value) -> str:
+    def send_data(self, value) -> byte:
+        data = None
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.connect((self.host, self.port))
                 s.sendall(value.encode())
                 data = s.recv(1024)
-                return data
         except Exception as err:
             return_error(err)
+        return data
 
 
 ''' HELPER FUNCTIONS '''
@@ -62,7 +63,7 @@ def test_module(server: Server) -> str:
     return server.test_connect()
 
 
-def arduino_set_pin_command(server: Server, args: any) -> str:
+def arduino_set_pin_command(server: Server, args: list) -> CommandResults:
     pin_type = args.get('pin_type')
     prefix = "Arduino.DigitalPins" if pin_type == "digital" else "Arduino.AnalogPins"
     pin_number = args.get('pin_number')
@@ -90,7 +91,7 @@ def arduino_set_pin_command(server: Server, args: any) -> str:
     return command_results
 
 
-def arduino_get_pin_command(server: Server, args: any) -> str:
+def arduino_get_pin_command(server: Server, args: list) -> CommandResults:
     pin_type = args.get('pin_type')
     prefix = "Arduino.DigitalPins" if pin_type == "digital" else "Arduino.AnalogPins"
     pin_number = args.get('pin_number')
@@ -113,7 +114,7 @@ def arduino_get_pin_command(server: Server, args: any) -> str:
     return command_results
 
 
-def arduino_send_data_command(server: Server, args: any) -> str:
+def arduino_send_data_command(server: Server, args: list) -> CommandResults:
     data = args.get('data')
     result = server.send_data(data)
     results = [{
