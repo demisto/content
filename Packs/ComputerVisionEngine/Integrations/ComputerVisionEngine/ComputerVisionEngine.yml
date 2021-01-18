@@ -2,19 +2,11 @@ category: Utilities
 commonfields:
   id: Computer Vision Engine
   version: -1
-configuration:
-- hidden: false
-  name: CV engine
-  options:
-  - YOLO-COCO
-  required: false
-  type: 16
+configuration: []
 description: |-
   This integration is processing images or movies and detects objects on them by using Machine Learning.
   It is using OpenCV with:
-  YOLO COCO,
-  Mask R-CNN,
-  Single Shot Detector(SSD)
+  YOLO COCO
 display: Computer Vision Engine
 name: Computer Vision Engine
 script:
@@ -26,14 +18,14 @@ script:
       name: entryid
       required: true
       secret: false
-    - default: false
+    - default: true
       defaultValue: '0.5'
       description: minimum probability to filter weak detections
       isArray: false
       name: confidence
       required: false
       secret: false
-    - default: false
+    - default: true
       defaultValue: '0.3'
       description: threshold when applying non-maxima suppression
       isArray: false
