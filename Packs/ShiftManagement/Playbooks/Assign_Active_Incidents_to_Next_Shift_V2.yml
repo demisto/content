@@ -1,8 +1,8 @@
-id: Assign Active Incidents to Next Shift_V2
+id: Assign Active Incidents to Next Shift V2
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Assign Active Incidents to Next Shift_V2
+name: Assign Active Incidents to Next Shift V2
 description: "This playbook reassigns Active Incidents to the current users on call.\
   \ It requires shift management to be set up.  The playbook can be run as a job a few minutes after\
   \ the scheduled shift change time.\n\nYou can update the playbook input with a different\

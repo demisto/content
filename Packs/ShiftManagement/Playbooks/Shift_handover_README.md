@@ -10,7 +10,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Set a Shift handover meeting
-* Assign Active Incidents to Next Shift_V2
+* Assign Active Incidents to Next Shift V2
 
 ### Integrations
 This playbook does not use any integrations.
