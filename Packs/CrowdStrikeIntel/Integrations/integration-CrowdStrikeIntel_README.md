@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the CrowdStrike Falcon Intelligence v2 integration to identify threats.</p>
+<p>Deprecated. Use the CrowdStrike Falcon Intelligence v2 integration instead.</p>
 <p>This integration was integrated and tested with CrowdStrike Falcon Intel v2.</p>
 <h2>Use Cases</h2>
 <ul>
