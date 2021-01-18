@@ -1,5 +1,6 @@
+
 The only cloud-native security platform that stops targeted social engineering and phishing attacks on cloud email platforms like Office 365 and G Suite.
-This integration was integrated and tested with version xx of GreatHorn
+This integration was integrated and tested with version 2 of GreatHorn
 ## Configure GreatHorn on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -12,7 +13,7 @@ This integration was integrated and tested with version xx of GreatHorn
     | api_version | API Version | True |
     | apikey | API Key | True |
     | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings. | False |
+    | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -291,7 +292,7 @@ Retrieve details about the policy specified.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | updatemethod | Update method for the given policy. Possible values are: patch, put. | Required | 
-| policyid | The ID of the policy. | Optional | 
+| policyid | The ID of the policy. | Required | 
 | policyjson | Json policy defintion. | Required | 
 
 

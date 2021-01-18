@@ -11,6 +11,7 @@ configuration:
   name: url
   type: 0
   required: true
+  defaultvalue: https://api.greathorn.com
 - display: API Version
   name: api_version
   defaultvalue: v2
@@ -26,7 +27,7 @@ configuration:
   defaultvalue: ""
   type: 8
   required: false
-- display: Use system proxy settings.
+- display: Use system proxy settings
   name: proxy
   defaultvalue: ""
   type: 8
@@ -481,10 +482,9 @@ script:
       - patch
       - put
     - name: policyid
-      type: Number
+      required: true
       description: The ID of the policy.
     - name: policyjson
-      type: String
       description: Json policy defintion.
       required: true
     outputs:
