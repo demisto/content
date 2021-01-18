@@ -287,6 +287,8 @@ tasks:
     scriptarguments:
       sid:
         simple: ${Splunk.Job}
+      count:
+        simple: "200"
     separatecontext: false
     view: |-
       {
