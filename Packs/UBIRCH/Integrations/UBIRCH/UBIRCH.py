@@ -1,157 +1,214 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
+import paho.mqtt.client as mqtt
+import paho
+from typing import Callable
 
-import requests
 import traceback
-from typing import Dict, Any
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
+import json
+import re
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+QOS_AT_LEAST_ONCE = 1
 
 ''' CLIENT CLASS '''
 
 
 class Client:
-    """Client class to interact with the service API
+    """Client class to subscribe the error from MQTT server
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
+    This Client class is a wrapper class of the paho mqtt Client.
+
+    Args:
+        mqtt_host(str): MQTT server's host name
+        mqtt_port(int): MQTT server's port number
+        username(str): MQTT server's user name
+        password(str): MQTT server's password
+        stage(str): MQTT server's environment
+        customer_id(str): customer id related with errors subscribed
+
+    Return:
+        None
     """
 
-    def __init__(self, mqtt_url: str, username: str, password: str):
-        # initialize mqtt client
-        return
+    def __init__(self, mqtt_host: str, mqtt_port: int, username: str, password: str, stage: str, customer_id: str):
+        self.mqtt_client = mqtt.Client()
+        self.mqtt_client.username_pw_set(username, password)
+        self.mqtt_host = mqtt_host
+        self.mqtt_port = mqtt_port
+        self.topic = "ubirch/incidents/{}/customer/{}".format(stage, customer_id)
 
-    def fetch_incidents(self, dummy: str) -> Dict[str, str]:
-        """
-        fetch incidents from mqtt
+    def connect(self, on_connect_callback: Callable[[mqtt.Client, dict, dict, int], None] = None):
+        if on_connect_callback is not None:
+            self.mqtt_client.on_connect = on_connect_callback
+        self.mqtt_client.connect(self.mqtt_host, self.mqtt_port)
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
+    def subscribe(self, on_message_callback: Callable[[mqtt.Client, dict, mqtt.MQTTMessage], None] = None):
+        if on_message_callback is not None:
+            self.mqtt_client.on_message = on_message_callback
+        self.mqtt_client.subscribe(self.topic, QOS_AT_LEAST_ONCE)
 
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
+    def loop_forever(self):
+        self.mqtt_client.loop_forever()
 
-        return {"dummy": dummy}
+    def loop_stop(self):
+        self.mqtt_client.loop_stop()
 
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def create_incidents(binary_message: bytes) -> list:
+    """
+    Return the incidents
+
+    Args:
+        binary_message (bytes): this is the message payload from MQTT server
+
+    Return:
+        list: list of incidents
+    """
+    incident_dict = json.loads(binary_message.decode("utf-8"))
+    return [{
+        "name": incident_dict.get("error"),
+        "labels": [{"type": "requestId", "value": incident_dict.get("requestId")},
+                   {"type": "hwDeviceId", "value": incident_dict.get("hwDeviceId")}],
+        "rawJSON": json.dumps(incident_dict),
+        "details": json.dumps(incident_dict)
+    }]
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+def long_running_execution(client: Client) -> None:
+    """Connects to a MQTT Server and subscribe the error from it in a loop.
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    Args:
+        client(Client): client class which is a wrapper of the mqtt.Client class.
 
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
+    Return:
+        None: no data returned
     """
 
-    message: str = ''
-    try:
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+    def on_connect(_client: mqtt.Client, _userdata: dict, _flags: dict, rc: int) -> None:
+        # The rc argument is the connection result
+        if rc != mqtt.MQTT_ERR_SUCCESS:
+            demisto.info(mqtt.connack_string(rc))
+            raise paho.mqtt.MQTTException(mqtt.connack_string(rc))
         else:
-            raise e
-    return message
+            demisto.info("connection was succeeded for a long-running container")
+
+    def on_message(_client: mqtt.Client, _userdata: dict, massage: mqtt.MQTTMessage) -> None:
+        # create incidents, when the client subscribes to an error from the mqtt server.
+        incidents = create_incidents(massage.payload)
+        demisto.createIncidents(incidents)
+
+    try:
+        client.connect(on_connect)
+        client.subscribe(on_message)
+        client.loop_forever()
+    except Exception as e:
+        demisto.error(f'An error occurred in the long running loop: {e}')
+    finally:
+        client.loop_stop()
 
 
-# TODO: REMOVE the following dummy command function
-def fetch_incidents_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def test_module(client: Client) -> None:
+    """Check if the user configuration is correct
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+    Return:
+        None: no data returned
+    """
 
-    # Call the Client function and get the raw response
-    result = client.fetch_incident(dummy)
+    def on_connect(_client: mqtt.Client, _userdata: dict, _flags: dict, rc: int) -> None:
+        # The rc argument is the connection result
+        # stop the loop, whether the connection is succeeded or failed.
+        _client.disconnect()
+        _client.loop_stop()
+        if rc != mqtt.MQTT_ERR_SUCCESS:
+            demisto.info(mqtt.connack_string(rc))
+            raise paho.mqtt.MQTTException(mqtt.connack_string(rc))
+        else:
+            demisto.info("connection was succeeded for test")
 
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
+    try:
+        client.connect(on_connect)
+        client.subscribe()
+        client.loop_forever()
+    except Exception as e:
+        raise DemistoException(
+            f"Test failed. Please check your parameters. \n {e}")
+    demisto.results('ok')
 
 
-''' MAIN FUNCTION '''
+def get_sample_events() -> None:
+    """Extracts sample events stored in the integration context and returns them as incidents
+
+    Return:
+        None: no data returned
+    """
+    integration_context = get_integration_context()
+    demisto.info(json.dumps(integration_context))
+    sample_events = integration_context.get('sample_events')
+    if sample_events:
+        try:
+            demisto.results(json.loads(sample_events))
+        except json.decoder.JSONDecodeError as e:
+            raise ValueError(f'Failed deserializing sample events - {e}')
+    else:
+        output = 'No sample events found.'
+        demisto.results(output)
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
+    """ main function, parses params and runs command functions """
 
-    :return:
-    :rtype:
-    """
+    params = demisto.params()
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
+    customer_id = params.get('customerId')
+    mqtt_host = params.get('url')
+    mqtt_port = params.get('port')
+    stage = params.get('stage', 'prod')
 
-    username = demisto.params().get('credentials').get('identifier')
-    password = demisto.params().get('credentials').get('password')
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
 
-    # get the service API url
-    mqtt_url = demisto.params()['url']
-
-    demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        if not re.match(r'^[a-z0-9]{0,64}$', customer_id):
+            raise ValueError('Customer id is invalid: Must be a max. of 64 alphanumeric characters (a-z, 0-9).')
+
+        try:
+            mqtt_port = int(mqtt_port)
+        except ValueError as e:
+            raise ValueError(f"Invalid the mqtt server's port - {e}")
 
         client = Client(
-            mqtt_url=mqtt_url,
+            mqtt_host=mqtt_host,
+            mqtt_port=mqtt_port,
             username=username,
-            password=password
-           )
+            password=password,
+            stage=stage,
+            customer_id=customer_id
+        )
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            test_module(client)
 
-        elif demisto.command() == 'fetch-incidents':
-            return_results(fetch_incidents_command(client, demisto.args()))
+        elif command == 'long-running-execution':
+            long_running_execution(client)
+
+        elif command == 'get-sample-events':
+            get_sample_events()
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
-
-
-''' ENTRY POINT '''
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

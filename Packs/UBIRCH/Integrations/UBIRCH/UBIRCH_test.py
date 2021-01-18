@@ -1,42 +1,32 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-import json
-import io
+from UBIRCH import create_incidents
 
 
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+def util_load_bin(path: str):
+    with open(path, 'rb') as f:
+        return f.read()
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+def test_create_incidents():
+    """Test create_incidents function.
 
-    Checks the output of the command function with the expected output.
+    Checks the output of the function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
+    No mock is needed here.
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    RAW_BINARY_MESSAGE = util_load_bin('test_data/raw_subscribe_message.bin')
+    incidents = create_incidents(RAW_BINARY_MESSAGE)
+    assert incidents == INCIDENT_RESPONSE
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
-    }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+INCIDENT_RESPONSE = [{
+    "name": "SignatureException: Invalid signature",
+    "labels": [
+        {"type": "requestId", "value": "ec15d266-5822-4fa5-ba82-64f1653d46a4"},
+        {"type": "hwDeviceId", "value": "ba70ad8b-a564-4e58-9a3b-224ac0f0153f"}
+    ],
+    "rawJSON": '{"requestId": "ec15d266-5822-4fa5-ba82-64f1653d46a4", "hwDeviceId": '
+               '"ba70ad8b-a564-4e58-9a3b-224ac0f0153f", "error": "SignatureException: Invalid signature", '
+               '"microservice": "niomon-decoder", "timestamp": "2021-01-07T18:47:52.025Z"}',
+    "details": '{"requestId": "ec15d266-5822-4fa5-ba82-64f1653d46a4", "hwDeviceId": '
+               '"ba70ad8b-a564-4e58-9a3b-224ac0f0153f", "error": "SignatureException: Invalid signature", '
+               '"microservice": "niomon-decoder", "timestamp": "2021-01-07T18:47:52.025Z"}'}]

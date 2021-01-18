@@ -1,55 +1,61 @@
-category: Utilities
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: UBIRCH
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
+- display: Your MQTT host name
   name: url
   required: true
   type: 0
-- display: API Key
-  additionalinfo: The API Key to use for connection
-  name: apikey
+- defaultvalue: '1883'
+  display: port
+  name: port
   required: true
-  type: 4
-- display: Trust any certificate (not secure)
-  name: insecure
+  type: 0
+- display: Username
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'true'
+  display: Long running instance
+  hidden: true
+  name: longRunning
   required: false
   type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+- display: Customer id
+  name: customerId
+  required: true
+  type: 0
+- defaultvalue: prod
+  display: Stage
+  hidden: false
+  name: stage
+  options:
+  - prod
+  - dev
+  - demo
+  required: true
+  type: 15
+description: The UBIRCH solution can be seen as an external data certification provider,
+  as a data notary service, giving data receivers the capability to verify data they
+  have received with regard to its authenticity and integrity and correctness of sequence.
 display: UBIRCH
 name: UBIRCH
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+  - deprecated: false
+    description: Create a list of sample incidents
     execution: false
-    name: fetch-incidents
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    name: get-sample-events
+  dockerimage: demisto/paho-mqtt:1.0.0.15491
+  feed: false
   isfetch: false
+  longRunning: true
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.1.14969
-fromversion: 5.0.0
+  type: python
 tests:
 - No tests (auto formatted)
+fromversion: 5.0.0
