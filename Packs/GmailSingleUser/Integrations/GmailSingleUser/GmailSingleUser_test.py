@@ -156,7 +156,7 @@ def test_no_label_mail_context_creation():
     assert context_gmail.get('Subject') == EXPECTED_GMAIL_CONTEXT.get('Subject')
 
 
-def test_extract_occurred_no_heaers():
+def test_extract_occurred_no_headers():
     occurred, is_valid = Client.get_occurred_date({
         'payload': {
             'headers': [{'name': 'stam', 'value': 'stam'}]
