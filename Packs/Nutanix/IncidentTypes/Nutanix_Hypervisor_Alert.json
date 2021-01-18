@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 1,
-    "layout": "7db506fa-1e88-4294-85db-87f167bb163a",
+    "layout": "Nutanix Hypervisor Alert",
     "detached": false,
     "extractSettings": {
         "mode": "All",

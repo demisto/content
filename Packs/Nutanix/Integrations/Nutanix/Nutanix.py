@@ -363,6 +363,7 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
 
     for alert in alerts:
         last_occurrence_time = alert.get('last_occurrence_time_stamp_in_usecs', 0)
+        alert_created_time = alert.get('created_time_stamp_in_usecs')
         if last_occurrence_time <= last_fetch_epoch_time:
             continue
 
@@ -370,7 +371,7 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
         incident = {
             'name': 'Nutanix Hypervisor Alert',
             'type': 'Nutanix Hypervisor Alert',
-            'occurred': convert_epoch_time_to_datetime(last_occurrence_time),
+            'occurred': convert_epoch_time_to_datetime(alert_created_time),
             'rawJSON': json.dumps(remove_empty_elements(alert))
         }
 

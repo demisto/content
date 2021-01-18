@@ -14,6 +14,10 @@
                     "complex": null,
                     "simple": "acknowledged_by_username"
                 },
+                "Alert Closing User": {
+                    "complex": null,
+                    "simple": "resolved_by_username"
+                },
                 "Alert Name": {
                     "complex": null,
                     "simple": "alert_title"
@@ -39,17 +43,39 @@
                     },
                     "simple": ""
                 },
-                "Closing User": {
-                    "complex": null,
-                    "simple": "resolved_by_username"
-                },
                 "Cluster_UUID": {
                     "complex": null,
                     "simple": "cluster_uuid"
                 },
                 "Last Seen": {
-                    "complex": null,
-                    "simple": "last_occurrence_time_stamp_in_usecs"
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "last_occurrence_time_stamp_in_usecs",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "by": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1000"
+                                        }
+                                    }
+                                },
+                                "operator": "division"
+                            },
+                            {
+                                "args": {
+
+                                },
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    },
+                    "simple": ""
                 },
                 "Message": {
                     "complex": null,
