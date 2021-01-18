@@ -8,14 +8,14 @@ from multiprocessing import Process
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
 from flask import Flask, Response, request
-from netaddr import IPAddress, IPSet, iprange_to_cidrs
+from netaddr import IPAddress, IPSet
 from typing import Callable, List, Any, Dict, cast, Tuple
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 
 
 class Handler:
     @staticmethod
-    def write(msg):
+    def write(msg: str):
         demisto.info(msg)
 
 
@@ -60,7 +60,7 @@ class RequestArguments:
         self.drop_invalids = drop_invalids
         self.collapse_ips = collapse_ips
 
-    def is_request_change(self, last_update_data):
+    def is_request_change(self, last_update_data: Dict):
         if self.limit != last_update_data.get('last_limit'):
             return True
 
@@ -257,7 +257,7 @@ def ip_groups_to_ranges(ip_range_groups: list):
     return ip_ranges
 
 
-def ips_to_ranges(ips: list, collapse_ips):
+def ips_to_ranges(ips: list, collapse_ips: str):
     """Collapse IPs to Ranges or CIDRs.
 
     Args:
@@ -509,7 +509,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(_, params):
+def test_module(_: Dict, params: Dict):
     """
     Validates:
         1. Valid port.
@@ -539,7 +539,7 @@ def test_module(_, params):
     return 'ok', {}, {}
 
 
-def run_long_running(params, is_test=False):
+def run_long_running(params: Dict, is_test: bool = False):
     """
     Start the long running server
     :param params: Demisto params
@@ -598,18 +598,18 @@ def run_long_running(params, is_test=False):
             os.unlink(private_key_path)
 
 
-def update_edl_command(args, params):
+def update_edl_command(args: Dict, params: Dict):
     """
     Updates the EDL values and format on demand
     """
-    on_demand = demisto.params().get('on_demand')
+    on_demand = params.get('on_demand')
     if not on_demand:
         raise DemistoException(
             '"Update EDL On Demand" is off. If you want to update the EDL manually please toggle it on.')
     limit = try_parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
-    query = args.get('query')
-    collapse_ips = args.get('collapse_ips')
+    query = args.get('query', '')
+    collapse_ips = args.get('collapse_ips', DONT_COLLAPSE)
     url_port_stripping = args.get('url_port_stripping', '').lower() == 'true'
     drop_invalids = args.get('drop_invalids', '').lower() == 'true'
     offset = try_parse_integer(args.get('offset', 0), EDL_OFFSET_ERR_MSG)
@@ -635,18 +635,20 @@ def main():
         raise DemistoException(err_msg)
 
     command = demisto.command()
-    demisto.debug('Command being called is {}'.format(command))
+    demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': test_module,
-        'edl-update': update_edl_command
+        'edl-update': update_edl_command,
     }
 
     try:
         if command == 'long-running-execution':
             run_long_running(params)
-        else:
+        elif command in commands:
             readable_output, outputs, raw_response = commands[command](demisto.args(), params)
             return_outputs(readable_output, outputs, raw_response)
+        else:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)

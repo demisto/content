@@ -146,7 +146,7 @@ script:
     description: Updates values stored in the EDL (only available On-Demand).
     execution: false
     name: edl-update
-  dockerimage: demisto/teams:1.0.0.13080
+  dockerimage: demisto/teams:1.0.0.15261
   feed: false
   isfetch: false
   longRunning: true
