@@ -63,7 +63,7 @@ def test_module(server: Server) -> str:
     return server.test_connect()
 
 
-def arduino_set_pin_command(server: Server, args: list) -> CommandResults:
+def arduino_set_pin_command(server: Server, args: dict) -> CommandResults:
     pin_type = args.get('pin_type')
     prefix = "Arduino.DigitalPins" if pin_type == "digital" else "Arduino.AnalogPins"
     pin_number = args.get('pin_number')
@@ -91,7 +91,7 @@ def arduino_set_pin_command(server: Server, args: list) -> CommandResults:
     return command_results
 
 
-def arduino_get_pin_command(server: Server, args: list) -> CommandResults:
+def arduino_get_pin_command(server: Server, args: dict) -> CommandResults:
     pin_type = args.get('pin_type')
     prefix = "Arduino.DigitalPins" if pin_type == "digital" else "Arduino.AnalogPins"
     pin_number = args.get('pin_number')
@@ -114,7 +114,7 @@ def arduino_get_pin_command(server: Server, args: list) -> CommandResults:
     return command_results
 
 
-def arduino_send_data_command(server: Server, args: list) -> CommandResults:
+def arduino_send_data_command(server: Server, args: dict) -> CommandResults:
     data = args.get('data')
     result = server.send_data(data)
     results = [{
