@@ -605,12 +605,12 @@ workflows:
           requires:
             - Create Instances
       - Is Successful Build:
-        requires:
-          - Setup Environment
-          - Create Instances
-          - Run Unit Testing And Lint
-          - Run Validations
-          - Server 4_5
+          requires:
+            - Setup Environment
+            - Create Instances
+            - Run Unit Testing And Lint
+            - Run Validations
+            - Server 4_5
 
   nightly:
     triggers:
