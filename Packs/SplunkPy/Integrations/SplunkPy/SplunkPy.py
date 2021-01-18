@@ -448,7 +448,7 @@ def splunk_job_create_command(service):
 def splunk_results_command(service):
     res = []
     sid = demisto.args().get('sid', '')
-    count = int(demisto.args().get('count'))
+    count = int(demisto.args().get('count', '100'))
     try:
         job = service.job(sid)
     except HTTPError as error:

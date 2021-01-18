@@ -99,7 +99,7 @@ Returns the results of a previous Splunk search. This command can be used in con
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sid | The ID of the search for which to return results. | Required | 
-| count | The maximum number of returned results per search. To retrieve all results, enter "0". | Optional | 
+| count | The maximum number of returned results per search. To retrieve all results, enter "0" (Not recommended). | Optional | 
 
 
 ##### Context Output

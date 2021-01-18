@@ -122,9 +122,9 @@ script:
       name: sid
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '100'
-      description: The maximum number of returned results per search. To retrieve all results, enter "0".
+      description: The maximum number of returned results per search. To retrieve all results, enter "0" (Not recommended).
       isArray: false
       name: count
       required: false
