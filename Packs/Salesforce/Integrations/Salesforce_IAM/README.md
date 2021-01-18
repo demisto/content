@@ -13,7 +13,7 @@ For more information, please refer to the [Identity Lifecycle Management article
 When creating a user in Salesforce there are mandatory fields that need to be set. Some of them are set with default values in the integration parameters:
 **Default Local Sid Key**, **Default Email Encoding Key** and **Default Language Locale Key**.
 **ProfileId** and **Timezone Sid Key** are also required, but are filled using the Salesforce mapper in the following manner:
-Duplicate the **DemoGenerateProfileId** and the **DemoGenerateTimeZone** automations, edit them according to your needs, and use them as transformers in the **User Profile - Salesforce (Outgoing)** mapper under the **ProfileId** and **TimeZoneSidKey** fields respectively.
+Duplicate the **GenerateProfileId** and the **GenerateTimeZone** automations, edit them according to your needs, and use them as transformers in the **User Profile - Salesforce (Outgoing)** mapper under the **ProfileId** and **TimeZoneSidKey** fields respectively.
 This configuration ensures that the user being created is created with the right permissions and settings in Salesforce.
 
 | **Parameter** | **Description** | **Required** |
