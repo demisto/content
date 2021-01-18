@@ -426,12 +426,11 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
         except KeyError:
             raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
 
-    raise DemistoException('')
-    # return CommandResults(
-    #     outputs_prefix='NutanixHypervisor.Host',
-    #     outputs_key_field='uuid',
-    #     outputs=outputs
-    # )
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.Host',
+        outputs_key_field='uuid',
+        outputs=outputs
+    )
 
 
 def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):

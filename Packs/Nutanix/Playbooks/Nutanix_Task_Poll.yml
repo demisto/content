@@ -1,0 +1,241 @@
+id: Nutanix_Task_Poll
+version: 8
+vcShouldKeepItemLegacyProdMachine: false
+name: Nutanix Task Poll
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0a72c1d2-819c-4839-81fd-facb5161d194
+    type: start
+    task:
+      id: 0a72c1d2-819c-4839-81fd-facb5161d194
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3a3fedc2-7d77-4267-8948-36a87ed1d757
+    type: playbook
+    task:
+      id: 3a3fedc2-7d77-4267-8948-36a87ed1d757
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${inputs.task_id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: task_ids
+      PollingCommandName:
+        simple: nutanix-hypervisor-task-poll
+      Timeout:
+        simple: "10"
+      dt:
+        simple: NutanixHypervisor.Task(val.uuid!=${inputs.task_id} || val.timed_out==true)
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 2cf73a9b-3112-4dfe-8a64-563e70451573
+    type: title
+    task:
+      id: 2cf73a9b-3112-4dfe-8a64-563e70451573
+      version: -1
+      name: Playbook Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0d37f840-91f4-4ddf-81f6-3991fbabdb87
+    type: regular
+    task:
+      id: 0d37f840-91f4-4ddf-81f6-3991fbabdb87
+      version: -1
+      name: Nutanix Get Completed Task Info
+      description: Poll tasks given by task_ids to check if they are ready. Returns
+        all the tasks from 'task_ids' list that are ready at the moment Nutanix service
+        was polled. In case no task is ready, waits until at least one task is ready,
+        unless given argument 'timeout_interval' which waits time_interval seconds
+        and in case no task had finished, returns a time out response.
+      script: '|||nutanix-hypervisor-task-poll'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      task_ids:
+        simple: ${inputs.task_id}
+      timeout_interval: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: bc334fd2-fb5a-400d-818e-6946bffbae15
+    type: condition
+    task:
+      id: bc334fd2-fb5a-400d-818e-6946bffbae15
+      version: -1
+      name: Check If Task Was Returned
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: NutanixHypervisor.Task
+                accessor: uuid
+            iscontext: true
+          right:
+            value:
+              simple: inputs.task_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d4f75064-b617-4232-8fca-53f0372009e0
+    type: regular
+    task:
+      id: d4f75064-b617-4232-8fca-53f0372009e0
+      version: -1
+      name: Print Error Message
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Task Was Expected to exist.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: task_id
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs:
+- type: unknown
