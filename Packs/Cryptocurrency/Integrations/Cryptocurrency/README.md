@@ -8,6 +8,7 @@ Cryptocurrency will help classify Cryptocurrency indicators as suspicious when i
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | reliability | Source Reliability | False |
+    | reputation | Reputation | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
