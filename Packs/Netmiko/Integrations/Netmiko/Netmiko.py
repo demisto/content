@@ -4,23 +4,19 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 
 
-import io
-import json
-import re
 import sys
 from datetime import datetime
-from time import sleep
 
 import paramiko
 from netmiko import Netmiko
-from netmiko.ssh_dispatcher import platforms
+
 
 ''' HELPER FUNCTIONS '''
 
 
-def myfakefile(keys):
-    myfakefile.readlines = lambda: keys.split("\n")
-    return myfakefile
+def return_file(keys):
+    return_file.readlines = lambda: keys.split("\n")
+    return return_file
 
 
 class Client:
@@ -54,7 +50,7 @@ class Client:
         except Exception as err:
             return_error(err)
 
-    def cmds(self, exitRequired, exitChar, commands, enable, isConfig):
+    def cmds(self, exitRequired, exit_argument, commands, enable, isConfig):
         try:
             output = {"Hostname": self.hostname, "Platform": self.platform, "Commands": []}
             self.connect()
@@ -99,7 +95,7 @@ def cmds_command(client, args):
     isConfig = True if args.get('isConfig', 'false') == 'true' else False
     enable = True if args.get('require_enable', 'false') == 'true' else False
     require_exit = True if args.get('require_exit', 'false') == 'true' else False
-    exit_argument = args.get('exit_argument')
+    exit_argument = args.get('exit_argument', None)
     raw_print = True if args.get('raw_print', 'false') == 'true' else False
     disable_context = True if args.get('disable_context', 'false') == 'true' else False
     override_host = args.get('override_host', None)
@@ -164,11 +160,11 @@ def main():
     if ssh_key:
         if password:
             try:
-                keys = paramiko.RSAKey.from_private_key(myfakefile(ssh_key), password=password)
+                keys = paramiko.RSAKey.from_private_key(return_file(ssh_key), password=password)
             except Exception as err:
                 return_error(f"There was an error - {err} - Did you provide the correct password?")
         else:
-            keys = paramiko.RSAKey.from_private_key(myfakefile(ssh_key))
+            keys = paramiko.RSAKey.from_private_key(return_file(ssh_key))
 
     client = Client(platform, hostname, username, password, port, keys)
 
