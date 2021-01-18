@@ -223,7 +223,8 @@
           "auto_resolved": false,
           "acknowledged": true,
           "details": "many details about the alert",
-          "last_occurrence_time_stamp_in_usecs": 1610718924821136
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136,
+          "created_time_stamp_in_usecs": 1610718924821136
         },
         {
           "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -233,7 +234,8 @@
           "auto_resolved": false,
           "acknowledged": true,
           "details": "many details about the alert",
-          "last_occurrence_time_stamp_in_usecs": 1610460118147914
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914,
+          "created_time_stamp_in_usecs": 1610460118147914
         }
       ]
     },
@@ -249,7 +251,8 @@
           "auto_resolved": false,
           "acknowledged": true,
           "details": "many details about the alert",
-          "last_occurrence_time_stamp_in_usecs": 1610718924821136
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136,
+          "created_time_stamp_in_usecs": 1610718924821136
         },
         {
           "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -259,7 +262,8 @@
           "auto_resolved": false,
           "acknowledged": true,
           "details": "many details about the alert",
-          "last_occurrence_time_stamp_in_usecs": 1610460118147914
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914,
+          "created_time_stamp_in_usecs": 1610460118147914
         }
       ]
     },

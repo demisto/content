@@ -2,13 +2,14 @@
 
 import io
 import json
+from typing import *
 
 import pytest
-from typing import *
+
 from CommonServerPython import DemistoException, CommandResults
+from Nutanix import Client
 from Nutanix import MINIMUM_LIMIT_VALUE
 from Nutanix import MINIMUM_PAGE_VALUE
-from Nutanix import Client
 from Nutanix import nutanix_hypervisor_hosts_list_command, \
     nutanix_hypervisor_vms_list_command, nutanix_hypervisor_vm_power_status_change_command, \
     nutanix_hypervisor_task_poll_command, nutanix_alerts_list_command, nutanix_alert_acknowledge_command, \
@@ -337,19 +338,7 @@ def test_commands_post_methods(requests_mock, command_function: Callable[[Client
 
 
 @pytest.mark.parametrize('params, last_run, expected_incidents_raw_json',
-                         [({},
-                           {},
-                           [command_tests_data['nutanix-alerts-list']['expected']['outputs'][0]]),
-
-                          ({'fetch_time': '6 days'},
-                           {},
-                           command_tests_data['nutanix-alerts-list']['expected']['outputs']),
-
-                          ({'fetch_time': '4 days'},
-                           {},
-                           [command_tests_data['nutanix-alerts-list']['expected']['outputs'][0]]),
-
-                          ({}, {'last_fetch_epoch_time': 1610360118147914},
+                         [({}, {'last_fetch_epoch_time': 1610360118147914},
                            command_tests_data['nutanix-alerts-list']['expected']['outputs']),
 
                           ({}, {'last_fetch_epoch_time': 1610560118147914},
@@ -363,32 +352,15 @@ def test_fetch_incidents(requests_mock, params, last_run, expected_incidents_raw
      - Last run of fetch-incidents
 
     When:
-     - Case a: Fetching incidents ,first run, fetch_time is not given, fallback to default '3 days' where one alert
-               time is before default last fetch and the second alert is after default last fetch.
+     - Case a: Fetching incidents, not first run. last run fetch time is before both alerts.
 
-     - Case b: Fetching incidents, first run, fetch time is given and its time is before both alerts.
-
-     - Case c: Fetching incidents, first run, fetch time is given and its time is after one alert and before
-               second alert.
-
-     - Case d: Fetching incidents, not first run. last run fetch time is before both alerts.
-
-     - Case e: Fetching incidents, not first run. last run fetch time is after one alert and before the second alert.
+     - Case b: Fetching incidents, not first run. last run fetch time is after one alert and before the second alert.
 
     Then:
-     - Case a: Ensure fallback to fetch_time '3 days' is being made and one alert is being filtered due to timestamp.
+     - Case a: Ensure that both alerts are returned as incidents.
                Ensure that last run is set with latest alert time stamp.
 
-     - Case b: Ensure that both alerts are returned as incidents.
-               Ensure that last run is set with latest alert time stamp.
-
-     - Case c: Ensure that only latest alert is returned as incident.
-               Ensure that last run is set with latest alert time stamp.
-
-     - Case d: Ensure that both alerts are returned as incidents.
-               Ensure that last run is set with latest alert time stamp.
-
-     - Case e: Ensure that only latest alert is returned as incident.
+     - Case b: Ensure that only latest alert is returned as incident.
                Ensure that last run is set with latest alert time stamp.
     """
     requests_mock.get(
@@ -402,5 +374,5 @@ def test_fetch_incidents(requests_mock, params, last_run, expected_incidents_raw
         last_run=last_run
     )
     incidents_raw_json = [json.loads(incident['rawJSON']) for incident in incidents]
-    assert incidents_raw_json == expected_incidents_raw_json
     assert next_run.get('last_fetch_epoch_time') == 1610718924821136
+    assert incidents_raw_json == expected_incidents_raw_json

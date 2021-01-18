@@ -292,22 +292,6 @@ def get_page_argument(args: Dict) -> Optional[int]:
     return page_value
 
 
-def convert_to_demisto_severity(severity: str) -> int:
-    """Maps Nutanix Hypervisor severity to Cortex XSOAR severity
-
-    Converts the Nutanix Hypervisor alert severity level ('kAudit', 'kInfo',
-    'kWarning', 'kCritical') to Cortex XSOAR incident severity (1 to 4)
-    for mapping.
-
-    Args:
-        severity (str): severity as returned from the Nutanix Hypervisor service.
-
-    Returns:
-        Cortex XSOAR Severity (1 to 4)
-    """
-    return NUTANIX_SEVERITIES_TO_DEMISTO_SEVERITIES.get(severity.lower(), DemistoSeverities.UNKNOWN).value
-
-
 def convert_epoch_time_to_datetime(epoch_time: int):
     """
     Receives epoch time, and returns epoch_time representation as date with UTC timezone.
@@ -367,11 +351,17 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
         if last_occurrence_time <= last_fetch_epoch_time:
             continue
 
+        try:
+            occurred = convert_epoch_time_to_datetime(alert_created_time)
+        except TypeError:
+            demisto.debug(f'The following incident was found invalid and was skipped: {alert}')
+            continue
+
         current_run_max_epoch_time = max(current_run_max_epoch_time, last_occurrence_time)
         incident = {
             'name': 'Nutanix Hypervisor Alert',
             'type': 'Nutanix Hypervisor Alert',
-            'occurred': convert_epoch_time_to_datetime(alert_created_time),
+            'occurred': occurred,
             'rawJSON': json.dumps(remove_empty_elements(alert))
         }
 
@@ -424,7 +414,7 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
             del (output['usage_stats'])
 
         except KeyError:
-            raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
+            demisto.debug('Unexpected response for host by nutanix-hypervisor-hosts-list command, skipping host')
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Host',
