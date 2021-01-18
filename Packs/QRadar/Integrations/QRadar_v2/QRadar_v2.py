@@ -28,6 +28,8 @@ LOCK_WAIT_TIME = 0.5                # time to wait for lock.acquire
 MAX_WORKERS = 8                     # max concurrent workers used for events enriching
 DOMAIN_ENRCH_FLG = "True"           # when set to true, will try to enrich offense and assets with domain names
 RULES_ENRCH_FLG = "True"            # when set to true, will try to enrich offense with rule names
+MAX_FETCH_EVENT_RETIRES = 3         # max iteration to try search the events of an offense
+SLEEP_FETCH_EVENT_RETIRES = 10      # sleep between iteration to try search the events of an offense
 
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
@@ -38,6 +40,8 @@ ADVANCED_PARAMETER_NAMES = [
     "MAX_WORKERS",
     "DOMAIN_ENRCH_FLG",
     "RULES_ENRCH_FLG",
+    "MAX_FETCH_EVENT_RETIRES",
+    "SLEEP_FETCH_EVENT_RETIRES",
 ]
 
 """ GLOBAL VARS """
@@ -805,12 +809,18 @@ def perform_offense_events_enrichment(
     events_query = {"headers": "", "query_expression": query_expression}
     print_debug_msg(f'Starting events fetch for offense {offense["id"]}.', client.lock)
     try:
-        query_status, search_id = try_create_search_with_retry(
-            client, events_query, offense
-        )
-        offense["events"] = try_poll_offense_events_with_retry(
-            client, offense["id"], query_status, search_id
-        )
+        for i in range(MAX_FETCH_EVENT_RETIRES):
+            query_status, search_id = try_create_search_with_retry(
+                client, events_query, offense
+            )
+            offense["events"] = try_poll_offense_events_with_retry(
+                client, offense["id"], query_status, search_id
+            )
+            if not len(offense["events"]) < min(offense['event_count'], client.offenses_per_fetch):
+                break
+            elif i == MAX_FETCH_EVENT_RETIRES:
+                break
+            time.sleep(SLEEP_FETCH_EVENT_RETIRES)
     except Exception as e:
         print_debug_msg(
             f'Failed fetching event for offense {offense["id"]}: {str(e)}.',
@@ -2313,7 +2323,7 @@ def main():
             demisto.results(normal_commands[command](client, **args))
         elif command == "fetch-incidents":
             demisto.incidents(fetch_incidents_long_running_samples())
-        elif command == "long-running-execution":
+        elif command == "long-running-execution" or True:
             long_running_main(
                 client,
                 incident_type,
