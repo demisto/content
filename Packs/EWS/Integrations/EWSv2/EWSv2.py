@@ -4,7 +4,6 @@ import subprocess
 import warnings
 from collections import deque
 from multiprocessing import Process
-from typing import Callable
 
 import exchangelib
 from CommonServerPython import *
