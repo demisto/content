@@ -1,12 +1,12 @@
 id: Shift handover
 version: -1
 name: Shift handover
-description: "This playbook is used to set shift handover meetings with all the accompanying\
-  \ processes such as online meeting ,notification to chatting app (for example Slack),SOC\
-  \ manager briefing, display of the active incidents,team members that are on call\
-  \ and team members that are out of the office.\nBy modifying the playbook inputs\
-  \ the user can decide if to activate the Assign Active Incidents to Next Shift or\
-  \ the user that out of the office will take in consideration. "
+description: "This playbook is used to set up shift handover meetings with all the accompanying\
+  \ processes such as creating an online meeting, creating a notification in a integrated chat app (for example Slack), creating a SOC\
+  \ manager briefing, and creating a display of the active incidents, team members who are on-call,\
+  \ and team members who are out of the office.\nBy modifying the playbook inputs\
+  \ you can decide whether to activate the Assign Active Incidents to Next Shift and\
+  \ whether a user who is out of the office will be taken into consideration."
 starttaskid: "0"
 tasks:
   "0":
@@ -70,7 +70,7 @@ tasks:
       version: -1
       name: Find similar incidents
       description: |-
-        Finds similar incidents by common incident keys, labels, custom fields or context keys.
+        Finds similar incidents by common incident keys, labels, custom fields, or context keys.
         It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
         For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
       scriptName: FindSimilarIncidents
@@ -197,12 +197,12 @@ tasks:
       version: -1
       name: Assign Active Incidents to Next Shift_V2
       description: "This playbook reassigns Active Incidents to the current users\
-        \ on call, requires shift management to be setup.   Can be run as a job a\
-        \ few minutes after the scheduled shift change time.\n\nUpdate the playbook\
-        \ input with a different search query if required.  Will also branch if there\
-        \ are no Incidents that match the query, and no users on call. \n\nSearch\
-        \ results are the default 100 Incidents returned by the query.\n\nCases will\
-        \ not be assign to users that defined OOO (by ManageOOOusers automation)."
+        \ on call. It requires shift management to be setup. This playbook can be run as a job a\
+        \ few minutes after the scheduled shift change time.\n\nYou can update the playbook\
+        \ input with a different search query if required.  The flow will branch if there\
+        \ are no incidents that match the query or no users on call. \n\nSearch\
+        \ results are the default 100 incidents returned by the query.\n\nCases will\
+        \ not be assigned to users who are defined as OOO (by the OutOfOffice automation)."
       playbookName: Assign Active Incidents to Next Shift_V2
       type: playbook
       iscommand: false
@@ -240,9 +240,8 @@ tasks:
       version: -1
       name: 'Assign shift handover incident to all analysts '
       description: |-
-        Assign analyst to incident with consideration of PTO, OOO, or Disabled Users.
-
-        Users can use the ManageOOOusers automation to add or remove themselves from the list.
+        Assign an analyst to an incident if the user is not on PTO, OOO, or otherwise unavailable.
+        Users can use the OutOfOffice automation to add or remove themselves from the out of office list.
       scriptName: AssignAnalystToIncidentOOO
       type: regular
       iscommand: false
@@ -454,7 +453,7 @@ tasks:
       id: f46df130-6dd8-4d8a-87c7-d131cd9d53ed
       version: -1
       name: Set OOO users grid to layout
-      description: Creates a Grid table from items or key-value pairs.
+      description: Creates a grid table from items or key-value pairs.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -535,7 +534,7 @@ tasks:
     task:
       id: 61e1375b-0419-4b19-804a-ee861d967685
       version: -1
-      name: Get OOO users
+      name: Get OOO users and clean OOO list
       description: Retrieves users that are currently out of office.
       scriptName: GetUsersOOO
       type: regular
@@ -567,7 +566,7 @@ tasks:
       id: 826aa6e4-1259-44ea-85f7-187b161301ca
       version: -1
       name: Search for Incidents
-      description: Searches Demisto incidents
+      description: Searches Cortex XSOAR incidents.
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -616,8 +615,8 @@ tasks:
     task:
       id: 0beb2ecd-fc46-44f9-800f-125b89ffdd7f
       version: -1
-      name: Set open incidents  to layout
-      description: Creates a Grid table from items or key-value pairs.
+      name: Add open incidents to layout
+      description: Creates a grid table from items or key-value pairs.
       scriptName: SetGridField
       type: regular
       iscommand: false
@@ -1138,9 +1137,9 @@ tasks:
       to:
         simple: ${inputs.SOCManagerEmail}
       subject:
-        simple: briefing  for the SOC team
+        simple: Briefing for the SOC team
       body:
-        simple: Please enter the URL and submit your briefing for the SOC team.
+        simple: Enter the URL and submit your briefing for the SOC team.
       methods:
       - email
       format: ""
@@ -1159,7 +1158,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: What your briefing for the team?
+          simple: What is your briefing for the team?
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1171,7 +1170,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: SOC manager briefing
-      description: Please enter the URL and provide briefing fir the team
+      description: Enter the URL and provide the briefing for the team.
       sender: ""
       expired: false
       totalanswers: 0
@@ -1184,7 +1183,7 @@ tasks:
     task:
       id: 4c8871e0-9c90-4758-846b-d09c156c67f2
       version: -1
-      name: Set SOC manager brief to the team
+      name: Set SOC manager briefing for the team
       description: commands.local.cmd.set.incident
       script: Builtin|||setIncident
       type: regular
@@ -1611,44 +1610,39 @@ inputs:
   value:
     simple: "Yes"
   required: false
-  description: "Yes - If you wish that the Playbook will reassign active incidents\
-    \ to on-call users, the playbook will take in consideration users that are out\
-    \ of the office.\nNo- If you do not wish to reassign active incidents, same incident\
+  description: "Yes - If you want the playbook to reassign active incidents\
+    \ to on-call users. The playbook will take into consideration users that are out\
+    \ of the office.\nNo- If you do not want to reassign active incidents to on-call users. The current incident\
     \ owner will remain. \n"
   playbookInputQuery:
 - key: IncidentSearchQuery
   value:
     simple: 'status:active  -category:job '
   required: false
-  description: 'Query for the Incidents to reassign.  Incidents need to be active
-    for this to work, it will not reassign pending Incidents. '
+  description: 'Query for the incidents to reassign.  Incidents need to be active. The playbook will not reassign pending incidents. '
   playbookInputQuery:
 - key: 'AppChannelName '
   value:
-    simple:
+    simple: daud
   required: false
-  description: "The name of channel that would be created in your messaging app for\
-    \ the shift handover.\nThe should not contain upper case or special characters.If\
-    \ you want to use an already existing channel make sure to provide it as well.\
-    \ Currently this input supports only two integration: Microsoft Teams and Slack."
+  description: "The name of channel that will be created in your messaging app for\
+    \ the shift handover.\nThe name of the channel should not contain uppercase or special characters.\ If you want to use an existing channel, add that name here. Currently this input supports only two integrations: Microsoft Teams and Slack V2.
+    \  "
   playbookInputQuery:
 - key: 'AppMessage '
   value:
     simple: Hi, please join the shift handover meeting.
   required: false
-  description: The message that you wish to send to the handover to your messaging
-    app channel that was created above, or for an existing channel that was provided
-    as input (AppChannelName)
+  description: The message to send for the handover to your messaging
+    app channel that you created.
   playbookInputQuery:
 - key: SOCManagerEmail
   value:
-    simple:
+    simple: evisochek@paloaltonetworks.com
   required: false
-  description: In case that the Shift manager briefing section will be left empty
-    when a new shift handover incident is opened, an Email will be send to this address
-    to provide Shift manager briefing. The playbook doesn't have dependency in the
-    SOC manager replay answer, the answer will be updated in the proper layout section
-    at the moment she will be provided.
+  description: If the Shift manager briefing section is left empty
+    when a new shift handover incident is opened, an email will be sent to this address
+    to request a shift manager briefing.
   playbookInputQuery:
 - key: 'ShiftManagerBriefing '
   value:
@@ -1661,8 +1655,7 @@ inputs:
   value:
     simple: DemistoTeam
   required: false
-  description: If using Microsoft Teams please provide your Microsoft team name, This
-    input is mandatory for Microsoft Teams.
+  description: If using Microsoft Teams, provide your Microsoft team name. This input is mandatory for Microsoft Teams.
   playbookInputQuery:
 outputs: []
 tests:
