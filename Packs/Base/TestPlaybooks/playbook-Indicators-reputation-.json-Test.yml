@@ -981,6 +981,30 @@ tasks:
           right:
             value:
               simple: http://example.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://test.com#fragment3
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://test.com#fragment3/
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://test.com#fragment3#fragment3
     view: |-
       {
         "position": {
