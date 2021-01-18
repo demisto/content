@@ -499,7 +499,10 @@ def test_module():
         full_url = '{0}/api/ariel/databases'.format(SERVER)
         headers = dict(AUTH_HEADERS)
         send_request('GET', full_url, headers)
-    # If encountered error, send_request will return_error
+    if demisto.params().get('isFetch'):
+        fetch_incidents()
+
+    # If encountered error, send_request or fetch_incidents will return error
     return 'ok'
 
 
