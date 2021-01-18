@@ -10,5 +10,24 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "Zoom": {
+            "mandatory": false,
+            "display_name": "Zoom"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "CommonTypes",
+        "Zoom"
+    ]
 }
