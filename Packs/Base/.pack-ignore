@@ -1,2 +1,5 @@
+[file:playbook-DeleteContext-auto-subplaybook-test.yml]
+ignore=auto-test
+
 [file:dashboard-SystemHealth.json]
 ignore=BA101

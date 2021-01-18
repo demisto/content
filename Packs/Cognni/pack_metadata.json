@@ -1,11 +1,12 @@
 {
     "name": "Cognni",
-    "description": "Cognni integration",
+    "description": "Autonomous detection and investigation of information security incidents and other potential threats.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Cognni",
-    "url": "https://github.com/AVAILOTECH/x2o-demisto-content",
-    "email": "vered@cognni.ai",
+    "certification": "certified",
+    "url": "https://cognni.ai/contact-support",
+    "email": "",
     "created": "2020-09-24T16:39:50Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"

@@ -183,7 +183,7 @@ URL_COMMAND_LIST = [
         "### PhishTankV2 Database - URL Query \n#### Found matches for URL http://url.example1 \n|online"
         "|phish_id|submission_time|target|verification_time|verified|\n|---|---|---|---|---|---|\n| yes | 1 | "
         "2019-10-20T23:54:13+00:00 | Other | 2019-10-20T23:54:13+00:00 | yes |\nAdditional details at "
-        "http://www.phishtank.com/phish_detail.php?phish_id=1 \n"
+        "[http://www.phishtank.com/phish_detail.php?phish_id=1](http://www.phishtank.com/phish_detail.php?phish_id=1) \n"
     ),
     (  # no exists key verified
         {"phish_id": "1", "submission_time": "2019-10-20T23:54:13+00:00",
@@ -201,7 +201,7 @@ URL_COMMAND_LIST = [
         "### PhishTankV2 Database - URL Query \n#### Found matches for URL http://url.example1 \n|online"
         "|phish_id|submission_time|target|verification_time|verified|\n|---|---|---|---|---|---|\n| yes | 1 | "
         "2019-10-20T23:54:13+00:00 | Other | 2019-10-20T23:54:13+00:00 | no |\nAdditional details at "
-        "http://www.phishtank.com/phish_detail.php?phish_id=1 \n"
+        "[http://www.phishtank.com/phish_detail.php?phish_id=1](http://www.phishtank.com/phish_detail.php?phish_id=1) \n"
     ),
     (  # no data
         {}, ['http://url.example1'],
