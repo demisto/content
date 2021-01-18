@@ -213,7 +213,8 @@ tasks:
       signatureinternalname: {}
       signed: {}
       size: {}
-      source: {}
+      source:
+        simple: DBot
       sourceTimeStamp: {}
       sourceoriginalseverity: {}
       spkisha256: {}
@@ -787,4 +788,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.5.0
+fromversion: 6.0.0
