@@ -4,6 +4,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
+import shutil
 import urllib3
 import traceback
 from typing import Any, Dict, List, Optional
@@ -16,6 +17,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 INTEGRATION_NAME = 'TOPdesk'
+XSOAR_ENTRY_TYPE = 'XSOAR'
 
 ''' CLIENT CLASS '''
 
@@ -24,7 +26,8 @@ class Client(BaseClient):
     """Client class to interact with the TOPdesk service API"""
 
     def get_list_with_query(self, list_type: str, start: Optional[int] = None, page_size: Optional[int] = None,
-                            query: Optional[str] = None) -> Dict[str, Any]:
+                            query: Optional[str] = None, modification_date_start: Optional[str] = None,
+                            modification_date_end: Optional[str] = None) -> Dict[str, Any]:
         """Get list of objects that support start, page_size and query arguments."""
 
         allowed_list_type = ["persons", "operators", "branches", "incidents"]
@@ -39,6 +42,10 @@ class Client(BaseClient):
             request_params["page_size"] = page_size
         if query:
             request_params["query"] = query
+        if modification_date_start:
+            request_params["modification_date_start"] = modification_date_start
+        if modification_date_end:
+            request_params["modification_date_end"] = modification_date_end
 
         return self._http_request(
             method='GET',
@@ -53,6 +60,117 @@ class Client(BaseClient):
             method='GET',
             url_suffix=f"{endpoint}",
         )
+
+    def create_incident(self, args: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Create incident in TOPdesk"""
+
+        request_params: Dict[str, Any] = {}
+        if not args.get("caller", None):
+            raise ValueError('Caller must be specified to create incident.')
+        request_params['caller'] = args["caller"]
+
+        if args.get("entry_type", None):
+            request_params["entry_type"] = args["entry_type"]
+        else:
+            request_params["entry_type"] = XSOAR_ENTRY_TYPE
+        optional_params = ["status", "description", "request", "action", "actionInvisibleForCaller",
+                           "call_type", "category", "subcategory", "external_number", "mainIncident"]
+        if args:
+            for optional_param in optional_params:
+                if args.get(optional_param, None):
+                    request_params[optional_param] = args[optional_param]
+
+        if args.get("additional_params", None):
+            request_params.update(args["additional_params"])
+
+        return self._http_request(
+            method='POST',
+            url_suffix="/incidents/",
+            json_data=request_params
+        )
+
+    def update_incident(self, args: Dict[str, Any]) -> Dict[str, Any]:
+        """Update incident in TOPdesk"""
+
+        request_params: Dict[str, Any] = {}
+        if not args.get("id", None) and not args.get("number", None):
+            raise ValueError('Either id or number must be specified to update incident.')
+        if args.get("id", None):
+            endpoint = f"/incidents/id/{args['id']}"
+        else:
+            endpoint = f"/incidents/number/{args['number']}"
+
+        if args.get("entry_type", None):
+            request_params["entry_type"] = args["entry_type"]
+        else:
+            request_params["entry_type"] = XSOAR_ENTRY_TYPE
+
+        optional_params = ["caller", "status", "description", "request", "action",
+                           "actionInvisibleForCaller", "call_type", "category", "subcategory",
+                           "external_number", "mainIncident"]
+        if args:
+            for optional_param in optional_params:
+                if args.get(optional_param, None):
+                    request_params[optional_param] = args[optional_param]
+
+        if args.get("additional_params", None):
+            request_params.update(args["additional_params"])
+
+        return self._http_request(
+            method='PATCH',
+            url_suffix=endpoint,
+            json_data=request_params
+        )
+
+    def incident_do(self, action: str,
+                    incident_id: Optional[str],
+                    incident_number: Optional[str]) -> Dict[str, Any]:
+        """ """
+        allowed_actions = ["escalate", "deescalate", "archive", "unarchive"]
+        if action not in allowed_actions:
+            raise ValueError(f'Endpoint {action} not in allowed endpoint list: {allowed_actions}')
+        if not incident_id and not incident_number:
+            raise ValueError('Either id or number must be specified to update incident.')
+        if incident_id:
+            endpoint = f"/incidents/id/{incident_id}"
+        else:
+            endpoint = f"/incidents/number/{incident_number}"
+
+        return self._http_request(
+            method='PATCH',
+            url_suffix=f"{endpoint}/{action}"
+        )
+
+    def attachment_upload(self,
+                          incident_id: Optional[str],
+                          incident_number: Optional[str],
+                          file_entry: str,
+                          file_name: str,
+                          invisible_for_caller: bool,
+                          file_description: str):
+        """ """
+        if not incident_id and not incident_number:
+            raise ValueError('Either id or number must be specified to update incident.')
+        if incident_id:
+            endpoint = f"/incidents/id/{incident_id}"
+        else:
+            endpoint = f"/incidents/number/{incident_number}"
+        request_params: Dict[str, Any] = {}
+        if isinstance(invisible_for_caller, bool):
+            request_params["invisibleForCaller"] = invisible_for_caller
+        else:
+            raise ValueError('invisibleForCaller must be either ture or false')
+        if file_description:
+            request_params["description"] = file_description
+
+        shutil.copy(demisto.getFilePath(file_entry)['path'], file_name)
+        files = {'file': open(file_name, 'rb')}
+        response = self._http_request(method='POST',
+                                      url_suffix=f"{endpoint}/attachments",
+                                      files=files,
+                                      json_data=request_params)
+        shutil.rmtree(file_name)
+        return response
 
 
 ''' HELPER FUNCTIONS '''
@@ -279,9 +397,7 @@ def replace_none(value, replacement):
     return replacement
 
 
-def incidents_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """Get list of incidents from TOPdesk"""
-
+def get_incidents_list(client: Client, args: Dict[str, Any], is_fetch: bool = False) -> List[Dict[str, Any]]:
     if args.get('incident_id', None) or args.get('incident_number', None):
         if args.get('incident_id', None):
             incidents = [client.get_list(f"/incidents/id/{args.get('incident_id', None)}")]
@@ -296,32 +412,38 @@ def incidents_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
                              f"the allowed statuses list: {allowed_statuses}"))
 
         query = args.get('query', None)
-        query = add_filter_to_query(query=query,
-                                    filter_name="status",
-                                    args=args)
-        query = add_filter_to_query(query=query,
-                                    filter_name="caller_id",
-                                    args=args)
-        query = add_filter_to_query(query=query,
-                                    filter_name="branch_id",
-                                    args=args)
-        query = add_filter_to_query(query=query,
-                                    filter_name="category",
-                                    args=args)
-        query = add_filter_to_query(query=query,
-                                    filter_name="subcategory",
-                                    args=args)
-        query = add_filter_to_query(query=query,
-                                    filter_name="call_type",
-                                    args=args)
-        query = add_filter_to_query(query=query,
-                                    filter_name="entry_type",
-                                    args=args)
+        filter_arguments = ["status", "caller_id", "branch_id", "category", "subcategory",
+                            "call_type", "entry_type"]
+        for filter_arg in filter_arguments:
+            query = add_filter_to_query(query=query,
+                                        filter_name=filter_arg,
+                                        args=args)
 
-        incidents = client.get_list_with_query(list_type="incidents",
-                                               start=args.get('start', None),
-                                               page_size=args.get('page_size', None),
-                                               query=query)
+        if args.get('max_fetch', 10) > 10000:
+            # implement pagination properly
+            pass
+        else:
+            page_size = max(args.get('page_size', 0), args.get('max_fetch', 0))
+            if page_size == 0:
+                page_size = None
+            if is_fetch:
+                modification_date_start = demisto.params().get('modification_date_start', None)
+                modification_date_end = demisto.params().get('modification_date_end', None)
+            else:
+                modification_date_start = None
+                modification_date_end = None
+            incidents = client.get_list_with_query(list_type="incidents",
+                                                   start=args.get('start', None),
+                                                   page_size=page_size,
+                                                   query=query,
+                                                   modification_date_start=modification_date_start,
+                                                   modification_date_end=modification_date_end)
+
+    return incidents
+
+
+def incidents_to_command_results(client, incidents) -> CommandResults:
+    """Receive Incidents from api and convert to CommandResults"""
     if len(incidents) == 0:
         return CommandResults(readable_output='No incidents found')
 
@@ -379,10 +501,111 @@ def incidents_list_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
+def incident_func_command(client: Client, args: Dict[str, Any], client_func, action) -> CommandResults:
+    """Abstract class for executing client_func and returning TOPdesk incident as a result."""
+    response = client_func(args)
+    if not response.get('incident', None):
+        raise Exception(f"Recieved Error when {action} incident in TOPdesk:\n{response}")
+    incident = response['incident']
+    return incidents_to_command_results(client, [incident])
+
+
+def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """Upload attachment to certain incident in TOPdesk"""
+    file_entry = args.get('file_entry', None)
+    if not file_entry:
+        raise
+
+    file_name = demisto.dt(demisto.context(), "File(val.EntryID=='" + file_entry + "').Name")
+    if not file_name:  # in case of info file
+        file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_entry + "').Name")
+    if not file_name:
+        raise ValueError(f"Could not fine file in entry with entry_id: {file_entry}")
+    file_name = file_name[0] if isinstance(file_name, list) else file_name  # If few files
+
+    response = client.attachment_upload(incident_id=args.get('incident_id', None),
+                                        incident_number=args.get('incident_number', None),
+                                        file_entry=file_entry,
+                                        file_name=file_name,
+                                        invisible_for_caller=args.get('invisibleForCaller', None),
+                                        file_description=args.get('file_description', None))
+
+    if not response.get("attachment", None):
+        raise Exception(f"Failed uploading file: {response}")
+
+    headers = ['id', 'fileName', 'downloadUrl', 'size', 'description',
+               'invisibleForCaller', 'entryDate', 'operator']
+    readable_attachment = [{
+            'id': response["attachment"].get('id', None),
+            'fileName': response["attachment"].get('fileName', None),
+            'downloadUrl': response["attachment"].get('downloadUrl', None),
+            'size': response["attachment"].get('size', None),
+            'description': response["attachment"].get('description', None),
+            'invisibleForCaller': response["attachment"].get('invisibleForCaller', None),
+            'entryDate': response["attachment"].get('entryDate', None),
+            'operator': response["attachment"].get('operator', None),
+    }]
+
+    readable_output = tableToMarkdown(f'{INTEGRATION_NAME} operators', readable_attachment, headers=headers)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_NAME}.incident',
+        outputs_key_field='id', # Not sure this will update the right path. Needs checking.
+        outputs=response["attachment"]
+    )
+
+
+def fetch_incidents(client: Client, args: Dict[str, Any]) -> None:
+    """Fetches incidents from TOPdesk."""
+
+    first_fetch_datetime = arg_to_datetime(
+        arg=demisto.params().get('first_fetch', '3 days'),
+        arg_name='First fetch time',
+        required=True
+    )
+    last_run = demisto.getLastRun()
+    last_fetch = last_run.get('last_fetch', first_fetch_datetime.timestamp())
+    latest_created_time = last_fetch
+    incidents: List[Dict[str, Any]] = []
+    topdesk_incidents = get_incidents_list(client=client, args=args, is_fetch=True)
+
+    for topdesk_incident in topdesk_incidents:
+        incident_created_time = arg_to_datetime(topdesk_incident.get('creationDate', '0')).timestamp()
+        if int(last_fetch) < int(incident_created_time):
+            labels: List[Dict[str, Any]] = []
+            for topdesk_incident_field, topdesk_incident_value in topdesk_incident.items():
+                if isinstance(topdesk_incident_value, str):
+                    labels.append({
+                        'type': topdesk_incident_field,
+                        'value': topdesk_incident_value
+                    })
+                else:
+                    labels.append({
+                        'type': topdesk_incident_field,
+                        'value': json.dumps(topdesk_incident_value)
+                    })
+
+            incidents.append({
+                'name': f"TOPdesk incident {topdesk_incident['number']}",
+                'details': json.dumps(topdesk_incident),
+                'occurred': timestamp_to_datestring(incident_created_time),
+                'rawJSON': json.dumps(topdesk_incident),
+                'labels': labels
+            })
+            if incident_created_time > latest_created_time:
+                latest_created_time = incident_created_time
+    demisto.setLastRun({'last_fetch': latest_created_time})
+    demisto.incidents(incidents)
+
+
 def test_module(client: Client) -> str:
     """Test API connectivity and authentication."""
     try:
-        client.get_users(users_type="persons")
+        if demisto.params().get('isFetch'):
+            get_incidents_list(client, {})
+        else:
+            client.get_list("/incidents/call_types")
     except DemistoException as e:
         if 'Error 401' in str(e):
             return 'Authorization Error: make sure API Key is correctly set'
@@ -442,7 +665,44 @@ def main() -> None:
             return_results(branches_command(client, demisto.args()))
 
         elif demisto.command() == 'topdesk-incidents-list':
-            return_results(incidents_list_command(client, demisto.args()))
+            return_results(incidents_to_command_results(client, get_incidents_list(client, demisto.args())))
+
+        elif demisto.command() == 'topdesk-incident-create':
+            return_results(incident_func_command(client=client,
+                                                 args=demisto.args(),
+                                                 client_func=client.create_incident,
+                                                 action="creating"))
+
+        elif demisto.command() == 'topdesk-incident-update':
+            return_results(incident_func_command(client=client,
+                                                 args=demisto.args(),
+                                                 client_func=client.update_incident,
+                                                 action="updating"))
+        elif demisto.command() == 'topdesk-incident-escalate':
+            return_results(incidents_to_command_results(client.incident_do(action="escalate",
+                                                                           incident_id=demisto.args().get("id", None),
+                                                                           incident_number=demisto.args().get("number",
+                                                                                                              None))))
+        elif demisto.command() == 'topdesk-incident-deescalate':
+            return_results(incidents_to_command_results(client.incident_do(action="deescalate",
+                                                                           incident_id=demisto.args().get("id", None),
+                                                                           incident_number=demisto.args().get("number",
+                                                                                                              None))))
+        elif demisto.command() == 'topdesk-incident-archive':
+            return_results(incidents_to_command_results(client.incident_do(action="archive",
+                                                                           incident_id=demisto.args().get("id", None),
+                                                                           incident_number=demisto.args().get("number",
+                                                                                                              None))))
+        elif demisto.command() == 'topdesk-incident-unarchive':
+            return_results(incidents_to_command_results(client.incident_do(action="unarchive",
+                                                                           incident_id=demisto.args().get("id", None),
+                                                                           incident_number=demisto.args().get("number",
+                                                                                                              None))))
+        elif demisto.command() == 'topdesk-incident-attachment-upload':
+            return_results(attachment_upload_command(client, demisto.args()))
+
+        elif demisto.command() == 'fetch-incidents':
+            fetch_incidents(client, demisto.args())
 
     # Log exceptions and return errors
     except Exception as e:
