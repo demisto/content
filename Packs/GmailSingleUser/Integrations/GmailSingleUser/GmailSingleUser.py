@@ -31,7 +31,7 @@ import hashlib
 ''' GLOBAL VARS '''
 params = demisto.params()
 EMAIL = params.get('email', '')
-PROXY = params.get('proxy')
+PROXIES = handle_proxy()
 DISABLE_SSL = params.get('insecure', False)
 FETCH_TIME = params.get('fetch_time', '1 days')
 MAX_FETCH = int(params.get('fetch_limit') or 50)
@@ -115,8 +115,7 @@ class Client:
         return parser.get_text()
 
     def get_http_client_with_proxy(self):
-        proxies = handle_proxy()
-        https_proxy = proxies.get('https')
+        https_proxy = PROXIES.get('https')
         proxy_info = None
         if https_proxy:
             if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
@@ -133,7 +132,7 @@ class Client:
     def get_service(self, serviceName, version):
         token = self.get_access_token()
         credentials = AccessTokenCredentials(token, 'Demisto Gmail integration')
-        if PROXY or DISABLE_SSL:
+        if PROXIES or DISABLE_SSL:
             http_client = credentials.authorize(self.get_http_client_with_proxy())
             return discovery.build(serviceName, version, http=http_client, cache=MemoryCache())
         return discovery.build(serviceName, version, credentials=credentials, cache=MemoryCache())
@@ -918,7 +917,7 @@ def fetch_incidents(client: Client):
     next_last_fetch = last_run.get('next_gmt_time')
     page_token = last_run.get('page_token') or None
     ignore_ids: List[str] = last_run.get('ignore_ids') or []
-    ignore_list_used = False  # indicates if we can reset the ignore list if we haven't used it
+    ignore_list_used = last_run.get('ignore_list_used') or False  # can we reset the ignore list if we haven't used it
     # handle first time fetch - gets current GMT time -1 day
     if not last_fetch:
         last_fetch, _ = parse_date_range(date_range=FETCH_TIME, utc=True, to_timestamp=False)
@@ -963,7 +962,7 @@ def fetch_incidents(client: Client):
             next_last_fetch = occurred + timedelta(seconds=1)
 
         # avoid duplication due to weak time query
-        if occurred >= last_fetch:
+        if (not is_valid_date) or (occurred >= last_fetch):
             incidents.append(incident)
         else:
             demisto.info(f'skipped incident with lower date: {occurred} than fetch: {last_fetch} name: {incident.get("name")}')
@@ -986,6 +985,7 @@ def fetch_incidents(client: Client):
         'next_gmt_time': client.get_date_isoformat_server(next_last_fetch),
         'page_token': next_page_token,
         'ignore_ids': ignore_ids,
+        'ignore_list_used': ignore_list_used,
     })
     return incidents
 
