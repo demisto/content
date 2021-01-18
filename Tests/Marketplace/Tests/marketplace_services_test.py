@@ -7,10 +7,19 @@ from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
+from freezegun import freeze_time
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
     get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts
+
+CHANGELOG_DATA = {
+    "1.0.0": {
+        "releaseNotes": "Sample description",
+        "displayName": "1.0.0 - 62492",
+        "released": "2020-12-21T12:10:55Z"
+    }
+}
 
 
 @pytest.fixture(scope="module")
@@ -29,15 +38,21 @@ class TestMetadataParsing:
     """ Class for validating parsing of pack_metadata.json (metadata.json will be created from parsed result).
     """
 
-    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack_metadata):
-        """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
-
+    @pytest.fixture(scope="class", autouse=True)
+    def dummy_pack(self):
+        """ dummy pack fixture
         """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
-                                                    downloads_count=10)
+        return Pack(pack_name="Test Pack Name", pack_path="dummy_path")
+
+    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack, dummy_pack_metadata):
+        """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
+        """
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={}, server_min_version="5.5.0",
+                                                          build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                          downloads_count=10)
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -64,15 +79,17 @@ class TestMetadataParsing:
         assert parsed_metadata['downloads'] == 10
         assert 'dependencies' in parsed_metadata
 
-    def test_parsed_metadata_empty_input(self):
+    def test_parsed_metadata_empty_input(self, dummy_pack):
         """ Test for empty pack_metadata.json and validating that support, support details and author are set correctly
             to XSOAR defaults value of Metadata class.
         """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
-                                                    downloads_count=10)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={},
+                                                          server_min_version="dummy_server_version",
+                                                          build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                          downloads_count=10)
 
         assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
@@ -87,20 +104,22 @@ class TestMetadataParsing:
 
     @pytest.mark.parametrize("pack_metadata_input,expected",
                              [({"price": "120"}, 120), ({"price": 120}, 120), ({"price": "FF"}, 0)])
-    def test_parsed_metadata_with_price(self, pack_metadata_input, expected, mocker):
+    def test_parsed_metadata_with_price(self, pack_metadata_input, expected, mocker, dummy_pack):
         """ Price field is not mandatory field and needs to be set to integer value.
 
         """
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
-                                                    pack_id="test_pack_id", integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
-                                                    downloads_count=10)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
+                                                          pack_id="test_pack_id", integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={},
+                                                          server_min_version="dummy_server_version",
+                                                          build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                          downloads_count=10)
 
         assert parsed_metadata['price'] == expected
 
-    def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata):
+    def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata, dummy_pack):
         """
            Given:
                - Pack metadata file with use case.
@@ -110,11 +129,12 @@ class TestMetadataParsing:
                - Ensure the `Use Case` tag was added to tags.
 
        """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
-                                                    downloads_count=10, is_feed_pack=False)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={}, server_min_version="5.5.0",
+                                                          build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                          downloads_count=10, is_feed_pack=False)
 
         assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
 
@@ -122,16 +142,17 @@ class TestMetadataParsing:
                              [(True, ["tag number one", "Tag number two", 'TIM']),
                               (False, ["tag number one", "Tag number two"])
                               ])
-    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, is_feed_pack, tags):
+    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, dummy_pack, is_feed_pack, tags):
         """ Test 'TIM' tag is added if is_feed_pack is True
         """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
-                                                    downloads_count=10, is_feed_pack=True)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={}, server_min_version="5.5.0",
+                                                          build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                          downloads_count=10, is_feed_pack=True)
 
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case', 'TIM']
+        assert sorted(parsed_metadata['tags']) == sorted(["tag number one", "Tag number two", 'Use Case', 'TIM'])
 
 
 class TestParsingInternalFunctions:
@@ -375,7 +396,6 @@ class TestChangelogCreation:
     """ Test class for changelog.json creation step.
 
     """
-
     @pytest.fixture(scope="class")
     def dummy_pack(self):
         """ dummy pack fixture
@@ -571,7 +591,7 @@ This is visible
         clean_rn = Pack._clean_release_notes(original_rn)
         assert expected_rn == clean_rn
 
-    def test_create_changelog_entry_new(self):
+    def test_create_changelog_entry_new(self, dummy_pack):
         """
            Given:
                - release notes, display version and build number
@@ -583,14 +603,14 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.2.3"
         build_number = "5555"
-        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
-                                                         version_display_name=version_display_name,
-                                                         build_number=build_number, new_version=True)
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=True)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
 
-    def test_create_changelog_entry_existing(self):
+    def test_create_changelog_entry_existing(self, dummy_pack):
         """
            Given:
                - release notes, display version and build number
@@ -602,12 +622,78 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.2.3"
         build_number = "5555"
-        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
-                                                         version_display_name=version_display_name,
-                                                         build_number=build_number, new_version=False)
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=False)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
+
+    def test_create_changelog_entry_initial(self, dummy_pack):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - initial changelog entry must created
+           Then:
+               - return changelog entry with release notes and without R letter in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=False,
+                                                               initial_release=True)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
+
+    @staticmethod
+    def dummy_pack_changelog():
+        temp_changelog_file = os.path.join(os.getcwd(), 'dummy_changelog.json')
+        with open(temp_changelog_file, 'w',) as changelog_file:
+            changelog_file.write(json.dumps(CHANGELOG_DATA))
+        return str(temp_changelog_file)
+
+    @staticmethod
+    def mock_os_path_join(path, *paths):
+        if not str(path).startswith('changelog'):
+            if paths:
+                return path + '/' + '/'.join(paths)
+            return path
+
+        path_to_non_existing_changelog = 'dummy_path'
+
+        if path == 'changelog_exist':
+            return TestChangelogCreation.dummy_pack_changelog()
+        if path == 'changelog_not_exist':
+            return path_to_non_existing_changelog
+
+    @freeze_time("2020-11-04T13:34:14.75Z")
+    @pytest.mark.parametrize('is_changelog_exist, expected_date', [
+        ('changelog_exist', '2020-12-21T12:10:55Z'),
+        ('changelog_not_exist', '2020-11-04T13:34:14Z')
+    ])
+    def test_handle_pack_create_date_changelog_exist(self, mocker, dummy_pack, is_changelog_exist, expected_date):
+        """
+           Given:
+               - existing 1.0.0 changelog, pack created_date
+               - not existing 1.0.0 changelog, datetime.utcnow
+           When:
+               - changelog entry already exists
+               - changelog entry not exists
+
+           Then:
+           - return the released field from the changelog file
+           - return datetime.utcnow
+       """
+        from Tests.Marketplace.marketplace_services import os
+        mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
+        pack_created_date = dummy_pack._get_pack_creation_date(is_changelog_exist)
+        if is_changelog_exist == 'changelog_exist':
+            os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
+        assert pack_created_date == expected_date
 
 
 class TestImagesUpload:
