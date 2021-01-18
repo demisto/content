@@ -5,7 +5,7 @@
     "TypeName": "",
     "id": "Nutanix Hypervisor Alert",
     "kind": "details",
-    "modified": "2021-01-17T10:13:36.872165738Z",
+    "modified": "2021-01-18T09:27:07.313293246Z",
     "name": "",
     "system": false,
     "tabs": [
@@ -27,57 +27,64 @@
               {
                 "endCol": 2,
                 "fieldId": "type",
-                "height": 24,
+                "height": 22,
                 "id": "incident-type-field",
                 "index": 0,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "severity",
-                "height": 24,
+                "height": 22,
                 "id": "incident-severity-field",
-                "index": 2,
+                "index": 1,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "owner",
-                "height": 24,
+                "height": 22,
                 "id": "incident-owner-field",
-                "index": 3,
+                "index": 2,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "sourcebrand",
-                "height": 24,
+                "height": 22,
                 "id": "incident-sourceBrand-field",
-                "index": 4,
+                "index": 3,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "sourceinstance",
-                "height": 24,
+                "height": 22,
                 "id": "incident-sourceInstance-field",
-                "index": 5,
+                "index": 4,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "playbookid",
-                "height": 24,
+                "height": 22,
                 "id": "incident-playbookId-field",
-                "index": 6,
+                "index": 5,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "dbotsource",
-                "height": 24,
+                "height": 22,
                 "id": "incident-source-field",
-                "index": 7,
+                "index": 6,
+                "sectionItemType": "field",
                 "startCol": 0
               }
             ],
@@ -323,73 +330,100 @@
               {
                 "endCol": 2,
                 "fieldId": "alerttypeuuid",
-                "height": 24,
+                "height": 22,
                 "id": "7f5ccee0-58ac-11eb-8a3e-f3dc5749d27e",
                 "index": 0,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "clusteruuid",
-                "height": 24,
+                "height": 22,
                 "id": "82332060-58ac-11eb-8a3e-f3dc5749d27e",
                 "index": 1,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "checkid",
-                "height": 24,
+                "height": 22,
                 "id": "853b7e60-58ac-11eb-8a3e-f3dc5749d27e",
-                "index": 3,
+                "index": 2,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "acknowledged",
-                "height": 24,
+                "height": 22,
                 "id": "8830a280-58ac-11eb-8a3e-f3dc5749d27e",
-                "index": 4,
+                "index": 3,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "acknowledgedbyusername",
-                "height": 24,
+                "height": 22,
                 "id": "8a2398e0-58ac-11eb-8a3e-f3dc5749d27e",
-                "index": 5,
+                "index": 4,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 2,
                 "fieldId": "classifications",
-                "height": 24,
+                "height": 22,
                 "id": "8ec1b210-58ac-11eb-8a3e-f3dc5749d27e",
-                "index": 6,
+                "index": 5,
+                "sectionItemType": "field",
                 "startCol": 0
               },
               {
                 "endCol": 4,
                 "fieldId": "resolved",
-                "height": 24,
+                "height": 22,
                 "id": "93cac210-58ac-11eb-8a3e-f3dc5749d27e",
                 "index": 0,
+                "sectionItemType": "field",
                 "startCol": 2
               },
               {
                 "endCol": 4,
                 "fieldId": "operationtype",
-                "height": 24,
+                "height": 22,
                 "id": "9a821e50-58ac-11eb-8a3e-f3dc5749d27e",
                 "index": 1,
+                "sectionItemType": "field",
                 "startCol": 2
               },
               {
                 "endCol": 4,
                 "fieldId": "message",
-                "height": 24,
+                "height": 44,
                 "id": "9e39f630-58ac-11eb-8a3e-f3dc5749d27e",
                 "index": 2,
+                "sectionItemType": "field",
+                "startCol": 2
+              },
+              {
+                "endCol": 4,
+                "fieldId": "alertclosinguser",
+                "height": 22,
+                "id": "4eeba4c0-596f-11eb-b333-47053f5241db",
+                "index": 3,
+                "sectionItemType": "field",
+                "startCol": 2
+              },
+              {
+                "endCol": 4,
+                "fieldId": "lastseen",
+                "height": 22,
+                "id": "52397030-596f-11eb-b333-47053f5241db",
+                "index": 4,
+                "sectionItemType": "field",
                 "startCol": 2
               }
             ],
