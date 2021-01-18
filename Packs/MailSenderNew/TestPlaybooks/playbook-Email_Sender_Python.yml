@@ -285,10 +285,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 9d765ad8-10cf-427d-894d-a9e9eb7f55dd
+    taskid: 012ebacf-1f8f-4222-81a8-a5242b1e8b27
     type: regular
     task:
-      id: 9d765ad8-10cf-427d-894d-a9e9eb7f55dd
+      id: 012ebacf-1f8f-4222-81a8-a5242b1e8b27
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -301,9 +301,7 @@ tasks:
     scriptarguments:
       append: {}
       key:
-        complex:
-          root: Testmail
-          accessor: ID
+        simple: Testmail.ID
       stringify: {}
       value:
         complex:
@@ -992,9 +990,7 @@ tasks:
     scriptarguments:
       append: {}
       key:
-        complex:
-          root: Testmail
-          accessor: ID
+        simple: Testmail.ID
       stringify: {}
       value:
         complex:
