@@ -63,11 +63,19 @@ def test_module(server: Server) -> str:
 
 
 def arduino_set_pin_command(server: Server, args: any) -> str:
-    pin_type: str = args.get('pin_type')
-    prefix: str = "Arduino.DigitalPins" if pin_type == "digital" else "Arduino.AnalogPins"
-    pin_number: int = int(args.get('pin_number'))
-    value: int = int(args.get('value'))
-    result: int = int(server.send_data(f"set:{pin_type}:{pin_number},{value}"))
+    pin_type = args.get('pin_type')
+    prefix = "Arduino.DigitalPins" if pin_type == "digital" else "Arduino.AnalogPins"
+    pin_number = args.get('pin_number')
+    try:
+        pin_number = int(pin_number)
+    except Exception as err:
+        return_error(f"'Pin number' must be a number - {err}")
+    value = args.get('value')
+    try:
+        value = int(value)
+    except Exception as err:
+        return_error(f"'Value' must be a number - {err}")
+    result = int(server.send_data(f"set:{pin_type}:{pin_number},{value}"))
     results = [{
         "PinType": "Digital" if pin_type == "digital" else "Analog",
         "PinNumber": pin_number,
@@ -83,9 +91,13 @@ def arduino_set_pin_command(server: Server, args: any) -> str:
 
 
 def arduino_get_pin_command(server: Server, args: any) -> str:
-    pin_type: str = args.get('pin_type')
+    pin_type = args.get('pin_type')
     prefix = "Arduino.DigitalPins" if pin_type == "digital" else "Arduino.AnalogPins"
-    pin_number: int = int(args.get('pin_number'))
+    pin_number = args.get('pin_number')
+    try:
+        pin_number = int(pin_number)
+    except Exception as err:
+        return_error(f"'Pin number' must be a number - {err}")
     result: int = int(server.send_data(f"get:{pin_type}:{pin_number}"))
     results = [{
         "PinType": "Digital" if pin_type == "digital" else "Analog",
@@ -102,8 +114,8 @@ def arduino_get_pin_command(server: Server, args: any) -> str:
 
 
 def arduino_send_data_command(server: Server, args: any) -> str:
-    data: str = args.get('data')
-    result: str = server.send_data(data)
+    data = args.get('data')
+    result = server.send_data(data)
     results = [{
         "Sent": data,
         "Received": result.decode()
@@ -120,15 +132,19 @@ def arduino_send_data_command(server: Server, args: any) -> str:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main():
 
-    params: any = demisto.params()
-    host: str = params.get('host')
-    port: int = int(params.get('port'))
-    args: any = demisto.args()
+    params = demisto.params()
+    host = params.get('host')
+    port = params.get('port')
+    args = demisto.args()
     if "host" in args and "port" in args:
-        host: str = args.get('host')
-        port: int = int(args.get('port'))
+        host = args.get('host')
+        port = args.get('port')
+    try:
+        port = int(port)
+    except Exception as err:
+        return_error(f"'Port' must be a number - {err}")
     command: str = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
