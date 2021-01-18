@@ -115,7 +115,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of CID images to embed attachments to the
+      description: A comma-separated list of CID images to embed attachments in to the
         email.
       isArray: true
       name: attachCIDs
