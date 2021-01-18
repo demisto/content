@@ -28,7 +28,7 @@ def filter_OOO_users(get_users_response, ooo_list_name):
                 continue
             else:
                 in_office_users.append(user)
-        return tableToMarkdown('On-Call Users', in_office_users, ['username', 'email', 'name', 'phone', 'roles'])
+        return 'On-Call Team members\n' + tableToMarkdown('', in_office_users, ['username', 'email', 'name', 'phone', 'roles'])
     except Exception as e:
         demisto.error(f'Encountered the following exception: {e.args[0]}\n Returning all users without filtering.')
         return get_users_response.get('HumanReadable')
@@ -42,12 +42,12 @@ def main():
         demisto.error(f'Failed to get users on call: {str(get_error(get_users_response))}')
     else:
         if include_out_of_office_users:
-            contents = get_users_response[0]['HumanReadable']
+            contents = get_users_response[0]['HumanReadable'].replace('## On-Call Users', 'On-Call Team members')
         else:
             contents = filter_OOO_users(get_users_response[0], list_name)
 
         if contents == 'No data returned':
-            contents = '### On-Call Users\nNo analysts were found on-call.'
+            contents = 'On-Call Team members\nNo analysts were found on-call.'
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
