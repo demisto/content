@@ -1,6 +1,6 @@
 from requests import Response, Session
-from HelloWorld_IAM import *
-from IAMApiModule import *
+from HelloIAMWorld import Client, get_mapping_fields
+from CommonServerPython import IAMCommand, IAMErrors, IAMUserProfile, IAMActions, IAMUserAppData
 
 APP_USER_OUTPUT = {
     "user_id": "mock_id",
