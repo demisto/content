@@ -40,37 +40,37 @@ class Client:
         self.mqtt_port = mqtt_port
         self.topic = "ubirch/incidents/{}/customer/{}".format(stage, customer_id)
 
-    def connect(self, on_connect_callback: Callable[[mqtt.Client, dict, dict, int], None] = None):
+    def connect(self, on_connect_callback: Callable[[mqtt.Client, dict, dict, int], None] = None) -> None:
         if on_connect_callback is not None:
             self.mqtt_client.on_connect = on_connect_callback
         self.mqtt_client.connect(self.mqtt_host, self.mqtt_port)
 
-    def subscribe(self, on_message_callback: Callable[[mqtt.Client, dict, mqtt.MQTTMessage], None] = None):
+    def subscribe(self, on_message_callback: Callable[[mqtt.Client, dict, mqtt.MQTTMessage], None] = None) -> None:
         if on_message_callback is not None:
             self.mqtt_client.on_message = on_message_callback
         self.mqtt_client.subscribe(self.topic, QOS_AT_LEAST_ONCE)
 
-    def loop_forever(self):
+    def loop_forever(self) -> None:
         self.mqtt_client.loop_forever()
 
-    def loop_stop(self):
+    def loop_stop(self) -> None:
         self.mqtt_client.loop_stop()
 
 
 ''' HELPER FUNCTIONS '''
 
 
-def create_incidents(binary_message: bytes) -> list:
+def create_incidents(error_message: str) -> list:
     """
     Return the incidents
 
     Args:
-        binary_message (bytes): this is the message payload from MQTT server
+        error_message (str): this is the message payload from MQTT server
 
     Return:
         list: list of incidents
     """
-    incident_dict = json.loads(binary_message.decode("utf-8"))
+    incident_dict = json.loads(error_message)
     return [{
         "name": incident_dict.get("error"),
         "labels": [{"type": "requestId", "value": incident_dict.get("requestId")},
@@ -94,16 +94,25 @@ def long_running_execution(client: Client) -> None:
     """
 
     def on_connect(_client: mqtt.Client, _userdata: dict, _flags: dict, rc: int) -> None:
-        # The rc argument is the connection result
+        """
+        Callback function when a MQTT client connects to the server
+
+        Check if the connection is succeeded.
+        The rc argument is a connection result.
+        """
         if rc != mqtt.MQTT_ERR_SUCCESS:
             demisto.info(mqtt.connack_string(rc))
             raise paho.mqtt.MQTTException(mqtt.connack_string(rc))
         else:
             demisto.info("connection was succeeded for a long-running container")
 
-    def on_message(_client: mqtt.Client, _userdata: dict, massage: mqtt.MQTTMessage) -> None:
-        # create incidents, when the client subscribes to an error from the mqtt server.
-        incidents = create_incidents(massage.payload)
+    def on_message(_client: mqtt.Client, _userdata: dict, message: mqtt.MQTTMessage) -> None:
+        """
+        Callback function when a MQTT client subscribes to a message from the server
+
+        Create incidents, when the client subscribes to an error from the mqtt server.
+        """
+        incidents = create_incidents(message.payload.decode("utf-8"))  # the message payload is binary.
         demisto.createIncidents(incidents)
 
     try:
@@ -124,8 +133,13 @@ def test_module(client: Client) -> None:
     """
 
     def on_connect(_client: mqtt.Client, _userdata: dict, _flags: dict, rc: int) -> None:
-        # The rc argument is the connection result
-        # stop the loop, whether the connection is succeeded or failed.
+        """
+        Callback function when a MQTT client connects to the server
+
+        Check if the connection is succeeded.
+        Stop the loop regardless of whether the connection is succeeded or not.
+        The rc argument is a connection result.
+        """
         _client.disconnect()
         _client.loop_stop()
         if rc != mqtt.MQTT_ERR_SUCCESS:
@@ -144,23 +158,25 @@ def test_module(client: Client) -> None:
     demisto.results('ok')
 
 
-def get_sample_events() -> None:
-    """Extracts sample events stored in the integration context and returns them as incidents
+def create_sample_incidents() -> None:
+    """Extract sample events stored in the integration context and create them as incidents
 
     Return:
         None: no data returned
     """
     integration_context = get_integration_context()
-    demisto.info(json.dumps(integration_context))
     sample_events = integration_context.get('sample_events')
     if sample_events:
         try:
-            demisto.results(json.loads(sample_events))
+            incidents = [{'name': "sample_event", 'rawJSON': json.dumps(event)} for event in json.loads(sample_events)]
+            demisto.createIncidents(incidents)
         except json.decoder.JSONDecodeError as e:
             raise ValueError(f'Failed deserializing sample events - {e}')
     else:
-        output = 'No sample events found.'
-        demisto.results(output)
+        incidents = [{
+            'name': 'No sample events found.'
+        }]
+        demisto.createIncidents(incidents)
 
 
 def main() -> None:
@@ -203,7 +219,7 @@ def main() -> None:
             long_running_execution(client)
 
         elif command == 'get-sample-events':
-            get_sample_events()
+            create_sample_incidents()
 
     # Log exceptions and return errors
     except Exception as e:

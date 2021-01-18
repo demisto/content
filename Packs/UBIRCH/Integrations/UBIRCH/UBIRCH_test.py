@@ -1,20 +1,21 @@
+import io
 from UBIRCH import create_incidents
 
 
-def util_load_bin(path: str):
-    with open(path, 'rb') as f:
+def util_load_json(path: str) -> str:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return f.read()
 
 
-def test_create_incidents():
+def test_create_incidents() -> None:
     """Test create_incidents function.
 
     Checks the output of the function with the expected output.
 
     No mock is needed here.
     """
-    RAW_BINARY_MESSAGE = util_load_bin('test_data/raw_subscribe_message.bin')
-    incidents = create_incidents(RAW_BINARY_MESSAGE)
+    ERROR_MESSAGE = util_load_json('test_data/raw_json_error_message.json')
+    incidents = create_incidents(ERROR_MESSAGE)
     assert incidents == INCIDENT_RESPONSE
 
 

@@ -46,7 +46,7 @@ script:
   - deprecated: false
     description: Create a list of sample incidents
     execution: false
-    name: get-sample-events
+    name: create-sample-incidents
   dockerimage: demisto/paho-mqtt:1.0.0.15491
   feed: false
   isfetch: false
