@@ -204,11 +204,17 @@ references:
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -a -q --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --no-xsoar-linter
         else
-          demisto-sdk lint -p 8 -g --prev-ver $FEATURE_BRANCH -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts
+          demisto-sdk lint -p 8 -g --prev-ver $FEATURE_BRANCH -v --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --no-xsoar-linter
         fi
 
+  infrastructure_testing: &infrastructure_testing
+    run:
+      name: Infrastructure testing
+      when: always
+      command: |
+        python3 -m pytest ./Utils/tests/old_content_branch_test.py -v
 
   create_id_set: &create_id_set
     run:
@@ -295,6 +301,7 @@ jobs:
       - checkout
 #      - *restore_cache
       - *prepare_environment
+      - *infrastructure_testing
       - save_cache:
           paths:
             - venv

@@ -1,8 +1,7 @@
 id: TestWordFileToIOC
 version: -1
 name: TestWordFileToIOC
-description: Creates a test docx word file, parses it and runs various IOC extraction
-  tasks.
+description: Creates a test docx word file, parses it and runs various IOC extraction tasks.
 starttaskid: "0"
 tasks:
   "0":
@@ -218,3 +217,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

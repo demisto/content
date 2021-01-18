@@ -37,9 +37,7 @@ tasks:
       id: b139ff93-1628-4c02-86b5-40642c571a3f
       version: -1
       name: Trending Indicators
-      description: Returns the 10 indicators that have recently appeared in the most
-        community reports. This is analogous to the Community Trends section of the
-        dashboard on Station.
+      description: Returns the 10 indicators that have recently appeared in the most community reports. This is analogous to the Community Trends section of the dashboard on Station.
       script: TruSTAR|||trustar-trending-indicators
       type: regular
       iscommand: true
@@ -133,8 +131,7 @@ tasks:
       id: 2d8fb1db-33ac-4d17-89d7-d10aeddd39dc
       version: -1
       name: Get correlated reports of a URL indicator
-      description: Returns a paginated list of all reports that contain any of the
-        provided indicator values.
+      description: Returns a paginated list of all reports that contain any of the provided indicator values.
       script: TruSTAR|||trustar-correlated-reports
       type: regular
       iscommand: true
@@ -501,3 +498,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

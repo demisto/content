@@ -157,8 +157,7 @@ tasks:
       key:
         simple: MD5Hashes
       value:
-        simple: '["0cc175b9c0f1b6a831c399e269772661", "36bd4be7042f6de7e332c05cef287d05",
-          "df9d0ca7409a2967bb338014b043a062", "05ED91DAA77FF31F7F4E61314C2A3122"]'
+        simple: '["0cc175b9c0f1b6a831c399e269772661", "36bd4be7042f6de7e332c05cef287d05", "df9d0ca7409a2967bb338014b043a062", "05ED91DAA77FF31F7F4E61314C2A3122"]'
     separatecontext: false
     view: |-
       {
@@ -181,3 +180,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

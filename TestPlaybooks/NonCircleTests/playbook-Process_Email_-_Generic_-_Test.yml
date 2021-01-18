@@ -324,8 +324,7 @@ tasks:
       id: d33608c4-ead7-4cb3-85c7-d17cc9d6cc80
       version: -1
       name: Verify email is null
-      description: Verifies the email is "null" when we are downloading a DOC file
-        and not an email.
+      description: Verifies the email is "null" when we are downloading a DOC file and not an email.
       type: condition
       iscommand: false
       brand: ""
@@ -555,8 +554,7 @@ tasks:
       id: f0962c3e-bfa0-4f48-809e-ddd14a4b0748
       version: -1
       name: Verify context
-      description: Verifies that the values we expect ParseEmailFiles to put in context
-        are there.
+      description: Verifies that the values we expect ParseEmailFiles to put in context are there.
       type: condition
       iscommand: false
       brand: ""
@@ -708,8 +706,7 @@ tasks:
       id: 33a4b61b-89af-4e7a-89d4-12fd94dc25a3
       version: -1
       name: Process Email - Generic
-      description: Add email details to the relevant context entities and handle the
-        case where original emails are attached.
+      description: Add email details to the relevant context entities and handle the case where original emails are attached.
       playbookName: Process Email - Generic
       type: playbook
       iscommand: false
@@ -736,8 +733,7 @@ tasks:
       id: fdb4ca26-ad61-4cb2-8d23-ae7050763118
       version: -1
       name: Verify context
-      description: Verifies that the values we expect ParseEmailFiles to put in context
-        are there.
+      description: Verifies that the values we expect ParseEmailFiles to put in context are there.
       type: condition
       iscommand: false
       brand: ""
@@ -878,3 +874,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

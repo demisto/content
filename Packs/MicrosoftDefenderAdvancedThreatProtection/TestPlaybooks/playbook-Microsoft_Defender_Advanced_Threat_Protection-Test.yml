@@ -785,10 +785,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 83aeba04-bebf-47dd-8505-535eb143b9ea
+    taskid: 02e4f822-68e9-4775-8cfb-a71f994e95ec
     type: regular
     task:
-      id: 83aeba04-bebf-47dd-8505-535eb143b9ea
+      id: 02e4f822-68e9-4775-8cfb-a71f994e95ec
       version: -1
       name: Add machine tag
       description: Adds or remove tag to a specific Machine.
@@ -803,7 +803,15 @@ tasks:
       action:
         simple: Add
       machine_id:
-        simple: ${MicrosoftATP.MachineAction.[0].MachineID}
+        complex:
+          root: MicrosoftATP.FileMachine.Machines
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
       retry-count:
         simple: "3"
       tag:

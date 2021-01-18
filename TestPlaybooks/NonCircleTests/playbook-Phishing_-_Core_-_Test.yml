@@ -90,8 +90,7 @@ tasks:
       id: 312cbf88-1940-4449-8efa-692adda3c97e
       version: -1
       name: Close manual review
-      description: Closes the manual task to pass the test successfully. The task
-        is tagged with the "manual" tag.
+      description: Closes the manual task to pass the test successfully. The task is tagged with the "manual" tag.
       scriptName: ScheduleCommand
       type: regular
       iscommand: false
@@ -206,8 +205,7 @@ tasks:
       id: 637e30ed-9bbd-4b56-8739-b821f428ca3e
       version: -1
       name: minemeld-add-to-miner
-      description: Adds a malicious indicator to a Minemeld miner so that it is later
-        detected as malicious.
+      description: Adds a malicious indicator to a Minemeld miner so that it is later detected as malicious.
       script: '|||minemeld-add-to-miner'
       type: regular
       iscommand: true
@@ -281,3 +279,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

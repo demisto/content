@@ -37,10 +37,7 @@ tasks:
       id: aa03a1ce-5bb0-4e69-8c6e-5510c6c96285
       version: -1
       name: Calculate Severity - Critical assets
-      description: "Determines if a critical assest is associated with the invesigation.
-        The playbook returns a severity level of \"Critical\" if a critical asset
-        is associated with the investigation.\n\nThis playbook verifies if a user
-        account or an endpoint is part of a critical list or a critical AD group. "
+      description: "Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of \"Critical\" if a critical asset is associated with the investigation.\n\nThis playbook verifies if a user account or an endpoint is part of a critical list or a critical AD group. "
       playbookName: Calculate Severity - Critical assets
       type: playbook
       iscommand: false
@@ -54,8 +51,7 @@ tasks:
           root: Account
       CriticalEndpoints: {}
       CriticalGroups:
-        simple: CN=Discovery Management,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int,
-          CN=Organization Management,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int
+        simple: CN=Discovery Management,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int, CN=Organization Management,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int
       CriticalUsers:
         simple: demistoadmin
       Endpoint:
@@ -253,3 +249,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

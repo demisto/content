@@ -450,8 +450,7 @@ tasks:
     task:
       id: e39c651c-fb7f-4a1f-8f2f-23f654d8e02f
       version: -1
-      name: 'servicenow-update Ticket #0, Summary: "Goodbye Please", Assignee: "New
-        Assignee"'
+      name: 'servicenow-update Ticket #0, Summary: "Goodbye Please", Assignee: "New Assignee"'
       script: ServiceNow|||servicenow-update
       type: regular
       iscommand: true
@@ -1324,3 +1323,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

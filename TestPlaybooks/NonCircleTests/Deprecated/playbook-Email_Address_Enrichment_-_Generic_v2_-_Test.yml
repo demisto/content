@@ -2,9 +2,7 @@ id: Email Address Enrichment - Generic v2 - Test
 version: -1
 fromversion: 4.1.0
 name: Email Address Enrichment - Generic v2 - Test
-description: A test for email address enrichment. Currently, due to issues, the test
-  does not check all domain squatting results or whether the email addresses were
-  detected as internal or external.
+description: A test for email address enrichment. Currently, due to issues, the test does not check all domain squatting results or whether the email addresses were detected as internal or external.
 starttaskid: "0"
 tasks:
   "0":
@@ -130,8 +128,7 @@ tasks:
       key:
         simple: Account.Email.Address
       value:
-        simple: '["geverwithnoname@domainthatdoesntexist.co.uk", "soso@demisto.com",
-          "koko@demisto.com", "user1@domain.com"]'
+        simple: '["geverwithnoname@domainthatdoesntexist.co.uk", "soso@demisto.com", "koko@demisto.com", "user1@domain.com"]'
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -296,3 +293,6 @@ inputs:
   required: false
   description: A comma-separated list of internal domains
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

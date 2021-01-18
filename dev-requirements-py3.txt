@@ -1,14 +1,14 @@
 flake8==3.8.3
 bandit==1.6.2
 demisto-py==2.0.11
-git+git://github.com/demisto/demisto-sdk@adding-option-to-ignore-missing-file
+demisto-sdk==1.2.3
 pytest==5.2.1
 pytest-mock==1.11.1
 requests-mock==1.7.0
 ruamel.yaml==0.16.5
-pipenv==2018.11.26
+pipenv==2020.8.13
 autopep8==1.4.4
-mypy>=0.761
+mypy==0.782
 networkx>=2.4
 gitpython>=3.1.0
 beautifulsoup4==4.8.1

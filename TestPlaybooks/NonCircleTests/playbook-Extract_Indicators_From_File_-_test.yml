@@ -86,8 +86,7 @@ tasks:
       id: 13e44ab8-4d46-4f0e-8c76-8b47e5752849
       version: -1
       name: Were the correct indicators extracted?
-      description: Checks whether specific indicators were extracted from each one
-        of the downloaded files.
+      description: Checks whether specific indicators were extracted from each one of the downloaded files.
       type: condition
       iscommand: false
       brand: ""
@@ -190,8 +189,7 @@ tasks:
       id: 4882e820-141f-4639-8be6-afae7119c1e6
       version: -1
       name: Make test fail
-      description: Causes the test playbook to fail if the correct email addresses
-        were not extracted.
+      description: Causes the test playbook to fail if the correct email addresses were not extracted.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
@@ -624,3 +622,6 @@ view: |-
   }
 inputs: []
 outputs: []
+toversion: 4.5.9
+tests:
+- No test

@@ -34,8 +34,7 @@ tasks:
       id: 6d8fde45-790f-4ae5-8847-87136b36747f
       version: -1
       name: vectra-detections
-      description: Detection objects contain all the information related to security
-        events detected on the network
+      description: Detection objects contain all the information related to security events detected on the network
       script: Vectra|||vectra-detections
       type: regular
       iscommand: true
@@ -89,8 +88,7 @@ tasks:
       id: 092f93b0-a64f-4576-87b1-9ac7a697972c
       version: -1
       name: vectra-hosts
-      description: Host information includes data that correlates the host data to
-        detected security events
+      description: Host information includes data that correlates the host data to detected security events
       script: Vectra|||vectra-hosts
       type: regular
       iscommand: true
@@ -130,8 +128,7 @@ tasks:
       id: 9949a700-5fe6-448d-82e0-4c625a4b47b7
       version: -1
       name: vectra-settings
-      description: he settings information includes S-series sensor and X-series configurations
-        input by the administrator
+      description: he settings information includes S-series sensor and X-series configurations input by the administrator
       script: Vectra|||vectra-settings
       type: regular
       iscommand: true
@@ -151,8 +148,7 @@ tasks:
       id: 8352d36e-cde4-44ab-8267-2a1f0b914154
       version: -1
       name: vectra-triage
-      description: The rules branch can be used to retrieve a listing of configured
-        Triage rules
+      description: The rules branch can be used to retrieve a listing of configured Triage rules
       script: Vectra|||vectra-triage
       type: regular
       iscommand: true
@@ -176,8 +172,7 @@ tasks:
       id: 2ab51de3-07f5-4ef5-8344-d9d759dcdaed
       version: -1
       name: vectra-sensors
-      description: The sensors branch can retrieve a listing of sensors that collect
-        and feed data to the X-series
+      description: The sensors branch can retrieve a listing of sensors that collect and feed data to the X-series
       script: Vectra|||vectra-sensors
       type: regular
       iscommand: true
@@ -295,3 +290,6 @@ view: |-
     }
   }
 inputs: []
+toversion: 4.5.9
+tests:
+- No test
