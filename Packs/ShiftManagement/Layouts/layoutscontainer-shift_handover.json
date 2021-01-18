@@ -588,10 +588,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_dbotprediction",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_destinationhostname",
                         "isVisible": true
                     },
