@@ -1,3 +1,9 @@
+[file:Phishing_-_Core_-_Test_-_Actual_Incident.yml]
+ignore=auto-test
+
+[file:Phishing_v2_-_Test_-_Actual_Incident.yml]
+ignore=auto-test
+
 [file:Get_Original_Email_-_EWS.yml]
 ignore=BA101
 
