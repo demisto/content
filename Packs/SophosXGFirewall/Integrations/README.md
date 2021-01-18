@@ -1,11 +1,10 @@
 On-Premise firewall by Sophos
-This integration was integrated and tested with version xx of sophos_firewall.
 Supported Cortex XSOAR versions: 5.0.0 and later.
 
-## Configure sophos_firewall on Cortex XSOAR
+## Configure v on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for sophos_firewall.
+2. Search for Sophos Firewall.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -2175,7 +2174,7 @@ List all users. IMPORTANT: listing start at 0 (not 1!)
                 "DataTransferPolicy": "100 MB Total Data Transfer policy",
                 "Description": null,
                 "EmailList": {
-                    "EmailID": "shiratg@qmasters.co"
+                    "EmailID": "test@test.test"
                 },
                 "Group": "Open Group",
                 "IsDeleted": false,
@@ -2207,7 +2206,7 @@ List all users. IMPORTANT: listing start at 0 (not 1!)
                 "DataTransferPolicy": "100 MB Total Data Transfer policy",
                 "Description": "new desc",
                 "EmailList": {
-                    "EmailID": "shiratg@qmasters.co"
+                    "EmailID": "user@mail.com"
                 },
                 "Group": "Guest Group",
                 "IsDeleted": false,
@@ -2336,8 +2335,8 @@ List all users. IMPORTANT: listing start at 0 (not 1!)
 >### Showing 0 to 6 User objects out of 8
 >|Username|Name|Description|EmailList|Group|UserType|Status|
 >|---|---|---|---|---|---|---|
->| user new | user_new |  | EmailID: shiratg@qmasters.co | Open Group | User | Active |
->| sg | sg | This is sg desc | EmailID: shiratg@qmasters.co | Guest Group | Administrator | Active |
+>| user new | user_new |  | EmailID: user@mail.com | Open Group | User | Active |
+>| sg | sg | This is sg desc | EmailID: user@mail.com | Guest Group | Administrator | Active |
 >| 1 | 1 | 1 |  | Guest Group | User | Active |
 >| sg1 | sg | new desc |  | Guest Group | User | Active |
 >| unitestuser | unitest2 |  | EmailID: test@test.test | Guest Group | User | Active |

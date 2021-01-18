@@ -10,7 +10,7 @@
     <Description>user1 desc</Description>
     <UserType>User</UserType>
     <EmailList>
-      <EmailID>shiratg@qmasters.co</EmailID>
+      <EmailID>user@mail.com</EmailID>
     </EmailList>
     <Group>Open Group</Group>
     <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
@@ -38,7 +38,7 @@
     <Description/>
     <UserType>User</UserType>
     <EmailList>
-      <EmailID>shiratg@qmasters.co</EmailID>
+      <EmailID>user@mail.com</EmailID>
     </EmailList>
     <Group>Open Group</Group>
     <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
@@ -66,7 +66,7 @@
     <Description/>
     <UserType>User</UserType>
     <EmailList>
-      <EmailID>shiratg@qmasters.co</EmailID>
+      <EmailID>user@mail.com</EmailID>
     </EmailList>
     <Group>Open Group</Group>
     <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
@@ -94,7 +94,7 @@
     <Description/>
     <UserType>User</UserType>
     <EmailList>
-      <EmailID>shiratg@qmasters.co</EmailID>
+      <EmailID>user@mail.com</EmailID>
     </EmailList>
     <Group>Open Group</Group>
     <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
@@ -122,7 +122,7 @@
     <Description/>
     <UserType>User</UserType>
     <EmailList>
-      <EmailID>shiratg@qmasters.co</EmailID>
+      <EmailID>user@mail.com</EmailID>
     </EmailList>
     <Group>Open Group</Group>
     <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
@@ -402,7 +402,7 @@
     <Description>This is sg desc</Description>
     <UserType>Administrator</UserType>
     <EmailList>
-      <EmailID>shiratg@qmasters.co</EmailID>
+      <EmailID>user@mail.com</EmailID>
     </EmailList>
     <Group>Guest Group</Group>
     <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
@@ -431,7 +431,7 @@
     <Description>gfhfgfg</Description>
     <UserType>User</UserType>
     <EmailList>
-      <EmailID>shiratg@qmasters.co</EmailID>
+      <EmailID>user@mail.com</EmailID>
     </EmailList>
     <Group>Guest Group</Group>
     <SurfingQuotaPolicy>Unlimited Internet Access</SurfingQuotaPolicy>
