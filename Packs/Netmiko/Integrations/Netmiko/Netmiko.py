@@ -58,7 +58,6 @@ class Client:
         try:
             output = {"Hostname": self.hostname, "Platform": self.platform, "Commands": []}
             self.connect()
-            sleep(2)
             if enable:
                 self.net_connect.enable()
             if isConfig:
