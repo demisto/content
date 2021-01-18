@@ -61,12 +61,12 @@ class Client:
             if enable:
                 self.net_connect.enable()
             if isConfig:
-                output['Commands'].append({"Hostname": self.hostname, "DateTime(UTC)": datetime.utcnow(
+                output['Commands'].append({"Hostname": self.hostname, "DateTimeUTC": datetime.utcnow(
                 ).isoformat(), "Config": self.net_connect.send_config_set(commands)})
             if not isConfig:
                 for cmd in commands:
                     prompt = self.net_connect.find_prompt()
-                    c = {"Hostname": self.hostname, "DateTime(UTC)": datetime.utcnow().isoformat(
+                    c = {"Hostname": self.hostname, "DateTimeUTC": datetime.utcnow().isoformat(
                     ), "Command": cmd, "Output": f"{prompt} {self.net_connect.send_command_timing(cmd)}"}
                     output['Commands'].append(c)
 
@@ -136,7 +136,7 @@ def cmds_command(client, args):
     outputs = None
     if not disable_context:
         outputs_prefix = "Netmiko"
-        outputs_key_field = 'DateTime(UTC)'
+        outputs_key_field = 'DateTimeUTC'
         outputs = output.get('Commands')
 
     command_results = CommandResults(
