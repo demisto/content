@@ -5,45 +5,40 @@ integrated and tested with version v2 of Nutanix
 ## Configure Nutanix on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Nutanix.
+2. Search for Nutanix Hypervisor.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter** | **Description** | **Required** |
-          | --- | --- | --- |
-   | base_url | Server URL \(e.g. https://example.net\) | True |
-   | isFetch | Fetch incidents | False |
-   | incidentType | Incident type | False |
-   | insecure | Trust any certificate \(not secure\) | False |
-   | proxy | Use system proxy settings | False |
-   | username | Username | True |
-   | password | Password | True |
-   | incidentFetchInterval | Incidents Fetch Interval | False |
-   | max_fetch |  | False |
-   | resolved | Resolved | False |
-   | auto_resolved | Auto Resolved | False |
-   | acknowledged | Acknowledged | False |
-   | alert_type_uuids | Alert Type Uuids | False |
-   | entity_id | Entity Id | False |
-   | impact_types | Impact Types | False |
-   | classifications | Classifications | False |
-   | first_fetch | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | base_url | Server URL \(e.g. https://example.net\) | True |
+    | isFetch | Fetch incidents | False |
+    | incidentType | Incident type | False |
+    | insecure | Trust any certificate \(not secure\) | False |
+    | proxy | Use system proxy settings | False |
+    | username | Username | True |
+    | password | Password | True |
+    | incidentFetchInterval | Incidents Fetch Interval | False |
+    | max_fetch |  | False |
+    | resolved | Resolved | False |
+    | auto_resolved | Auto Resolved | False |
+    | acknowledged | Acknowledged | False |
+    | alert_type_uuids | Alert Type Uuids | False |
+    | impact_types | Impact Types | False |
+    | classifications | Classifications | False |
+    | first_fetch | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
 ## Commands
-
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you
-successfully execute a command, a DBot message appears in the War Room with the command details.
-
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### nutanix-hypervisor-hosts-list
-
 ***
 Get the list of physical hosts configured in the cluster.
+
 
 #### Base Command
 
 `nutanix-hypervisor-hosts-list`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,279 +47,214 @@ Get the list of physical hosts configured in the cluster.
 | page | Page number in the query response, default is 1. When page is specified, limit argument is required. | Optional | 
 | limit | Limit of physical hosts to retrieve. Possible values are 1-1000. | Optional | 
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NutanixHypervisor.Host | string | Host list | 
+| NutanixHypervisor.Host..service_vmid | String | Service virtual machine id. | 
+| NutanixHypervisor.Host..uuid | String | Host uuid. | 
+| NutanixHypervisor.Host..disk_hardware_configs.serial_number | String | Disk serial number. | 
+| NutanixHypervisor.Host..disk_hardware_configs.disk_id | String | Disk id. | 
+| NutanixHypervisor.Host..disk_hardware_configs.disk_uuid | String | Disk uuid. | 
+| NutanixHypervisor.Host..disk_hardware_configs.location | Number | Disk location/index. | 
+| NutanixHypervisor.Host..disk_hardware_configs.bad | Boolean | Is disk bad. | 
+| NutanixHypervisor.Host..disk_hardware_configs.mounted | Boolean | Is disk mounted. | 
+| NutanixHypervisor.Host..disk_hardware_configs.mount_path | String | Mount path. | 
+| NutanixHypervisor.Host..disk_hardware_configs.model | String | Disk model. | 
+| NutanixHypervisor.Host..disk_hardware_configs.vendor | String | Vendor name. | 
+| NutanixHypervisor.Host..disk_hardware_configs.boot_disk | Boolean | TODO. | 
+| NutanixHypervisor.Host..disk_hardware_configs.only_boot_disk | Boolean | TODO. | 
+| NutanixHypervisor.Host..disk_hardware_configs.under_diagnosis | Boolean | Is disk under diagnosis. | 
+| NutanixHypervisor.Host..disk_hardware_configs.background_operation | Unknown | Background operation. | 
+| NutanixHypervisor.Host..disk_hardware_configs.current_firmware_version | String | Disk current firmware version. | 
+| NutanixHypervisor.Host..disk_hardware_configs.target_firmware_version | String | Disk target firmware version. | 
+| NutanixHypervisor.Host..disk_hardware_configs.can_add_as_new_disk | Boolean | Can add this disk as a new disk. | 
+| NutanixHypervisor.Host..disk_hardware_configs.can_add_as_old_disk | Boolean | Can add this disk as an old disk. | 
+| NutanixHypervisor.Host..name | String | Host name. | 
+| NutanixHypervisor.Host..service_vmexternal_ip | String | Service virtual machine external ip. | 
+| NutanixHypervisor.Host..service_vmnat_ip | String | service virtual machine network address translation ip. | 
+| NutanixHypervisor.Host..service_vmnat_port | Number | Service virtual machine network address translation port. | 
+| NutanixHypervisor.Host..oplog_disk_pct | Number | Oplog disk pct. | 
+| NutanixHypervisor.Host..oplog_disk_size | Date | Oplog disk size. | 
+| NutanixHypervisor.Host..hypervisor_key | String | Hypervisor key. | 
+| NutanixHypervisor.Host..hypervisor_address | String | Hypervisor address. | 
+| NutanixHypervisor.Host..hypervisor_username | String | Hypervisor username. | 
+| NutanixHypervisor.Host..hypervisor_password | String | Hypervisor password. | 
+| NutanixHypervisor.Host..backplane_ip | String | Backplane ip. | 
+| NutanixHypervisor.Host..controller_vm_backplane_ip | String | Controller virtual machine backplane ip. | 
+| NutanixHypervisor.Host..rdma_backplane_ips | Array | Remote directory memory access backplane ips. | 
+| NutanixHypervisor.Host..management_server_name | String | Management server name. | 
+| NutanixHypervisor.Host..ipmi_address | String | Ipmi address. | 
+| NutanixHypervisor.Host..ipmi_username | String | Ipmi username. | 
+| NutanixHypervisor.Host..ipmi_password | String | Ipmi password. | 
+| NutanixHypervisor.Host..monitored | Boolean | Is host monitored. | 
+| NutanixHypervisor.Host..position.ordinal | Number | Host ordinal position. | 
+| NutanixHypervisor.Host..position.name | String | Host's position name. | 
+| NutanixHypervisor.Host..position.physical_position | String | Physical position. Allowed values are \[C, L, R, TL, TR, BL, BR\]. Values are abbreviations for \[Center, Left, Right, Top Left, Top Right, Bottom Left, Bottom Right\]. | 
+| NutanixHypervisor.Host..serial | String | Host serial id. | 
+| NutanixHypervisor.Host..block_serial | String | Host block serial id. | 
+| NutanixHypervisor.Host..block_model | String | Host block model. | 
+| NutanixHypervisor.Host..block_model_name | String | Block model name. | 
+| NutanixHypervisor.Host..block_location | String | Block location. | 
+| NutanixHypervisor.Host..host_maintenance_mode_reason | String | Host maintenance reason, in case host is in maintenance. | 
+| NutanixHypervisor.Host..hypervisor_state | String | Host's hypervisor state. | 
+| NutanixHypervisor.Host..acropolis_connection_state | String | Acropolis connection status. | 
+| NutanixHypervisor.Host..metadata_store_status | String | Meta data store status. | 
+| NutanixHypervisor.Host..metadata_store_status_message | String | Meta data store status message. | 
+| NutanixHypervisor.Host..state | String | Host state. | 
+| NutanixHypervisor.Host..removal_status | String | Host removal status. | 
+| NutanixHypervisor.Host..vzone_name | String | Virtual zone name. | 
+| NutanixHypervisor.Host..cpu_model | String | Cpu model. | 
+| NutanixHypervisor.Host..num_cpu_cores | Number | Number of cpu cores. | 
+| NutanixHypervisor.Host..num_cpu_threads | Number | Number of cpu threads. | 
+| NutanixHypervisor.Host..num_cpu_sockets | Number | Number of cpu sockets. | 
+| NutanixHypervisor.Host..cpu_frequency_in_hz | Number | Cpu frequency in hz. | 
+| NutanixHypervisor.Host..cpu_capacity_in_hz | Number | Cpu capacity in hz. | 
+| NutanixHypervisor.Host..memory_capacity_in_bytes | Number | Host memory capacity in bytes. | 
+| NutanixHypervisor.Host..hypervisor_full_name | String | Host's hypervisor full name. | 
+| NutanixHypervisor.Host..hypervisor_type | String | Hypervisor's type. | 
+| NutanixHypervisor.Host..num_vms | Number | Host number of virtual machines. | 
+| NutanixHypervisor.Host..boot_time_in_usecs | Number | Boot time in epoch time. | 
+| NutanixHypervisor.Host..is_degraded | Boolean | Is host degraded. | 
+| NutanixHypervisor.Host..is_secure_booted | Boolean | Is host secure booted. | 
+| NutanixHypervisor.Host..is_hardware_virtualized | Boolean | Is hardware virtualized. | 
+| NutanixHypervisor.Host..failover_cluster_fqdn | String | Failover cluster fully qualified domain name. | 
+| NutanixHypervisor.Host..failover_cluster_node_state | String | Failover cluster node state. | 
+| NutanixHypervisor.Host..reboot_pending | Boolean | Is reboot pending. | 
+| NutanixHypervisor.Host..default_vm_location | String | Default virtual machine location. | 
+| NutanixHypervisor.Host..default_vm_storage_container_id | String | Default virtual machine storage container id. | 
+| NutanixHypervisor.Host..default_vm_storage_container_uuid | String | Default virtual machine storage container uuid. | 
+| NutanixHypervisor.Host..default_vhd_location | String | Default virtual hard disk location. | 
+| NutanixHypervisor.Host..default_vhd_storage_container_id | String | Default virtual hard disk storage container id. | 
+| NutanixHypervisor.Host..default_vhd_storage_container_uuid | String | Default virtual hard disk storage container uuid. | 
+| NutanixHypervisor.Host..bios_version | String | BIOS version. | 
+| NutanixHypervisor.Host..bios_model | String | BIOS model. | 
+| NutanixHypervisor.Host..bmc_version | String | BMC version. | 
+| NutanixHypervisor.Host..bmc_model | String | BMC model. | 
+| NutanixHypervisor.Host..hba_firmwares_list | Array | Host bus adapter firmwares list. | 
+| NutanixHypervisor.Host..cluster_uuid | String | Host's cluster uuid. | 
+| NutanixHypervisor.Host..has_csr | Boolean | Does host have csr. | 
+| NutanixHypervisor.Host..host_gpus | Array | Host's gpus. | 
+| NutanixHypervisor.Host..gpu_driver_version | String | Host gpu driver version. | 
+| NutanixHypervisor.Host..host_type | String | Host type. | 
+| NutanixHypervisor.Host..host_in_maintenance_mode | Boolean | Is host in maintenance mode. | 
+
 
 #### Command Example
-
 ```!nutanix-hypervisor-hosts-list filter="num_vms==2" limit=3 page=1```
 
 #### Context Example
-
 ```json
 {
-  "NutanixHypervisor": {
-    "Host": {
-      "acropolis_connection_state": "kConnected",
-      "backplane_ip": null,
-      "bios_model": null,
-      "bios_version": null,
-      "block_location": null,
-      "block_model": "UseLayout",
-      "block_model_name": "CommunityEdition",
-      "block_serial": "xxxxxxxx",
-      "bmc_model": null,
-      "bmc_version": null,
-      "boot_time_in_usecs": 1606054432399817,
-      "cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "controller_vm_backplane_ip": "xxx.xxx.x.xxx",
-      "cpu_capacity_in_hz": 16760000000,
-      "cpu_frequency_in_hz": 2095000000,
-      "cpu_model": "Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz",
-      "default_vhd_location": null,
-      "default_vhd_storage_container_id": null,
-      "default_vhd_storage_container_uuid": null,
-      "default_vm_location": null,
-      "default_vm_storage_container_id": null,
-      "default_vm_storage_container_uuid": null,
-      "disk_hardware_configs": {
-        "1": {
-          "background_operation": null,
-          "bad": false,
-          "boot_disk": true,
-          "can_add_as_new_disk": false,
-          "can_add_as_old_disk": false,
-          "current_firmware_version": "2.5+",
-          "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xx",
-          "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "location": 1,
-          "model": "Virtual disk",
-          "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-0",
-          "mounted": true,
-          "only_boot_disk": false,
-          "serial_number": "drive-scsi0-0-0-0",
-          "target_firmware_version": "2.5+",
-          "under_diagnosis": false,
-          "vendor": "Not Available"
-        },
-        "10": null,
-        "11": null,
-        "12": null,
-        "13": null,
-        "14": null,
-        "15": null,
-        "16": null,
-        "17": null,
-        "18": null,
-        "19": null,
-        "2": {
-          "background_operation": null,
-          "bad": false,
-          "boot_disk": false,
-          "can_add_as_new_disk": false,
-          "can_add_as_old_disk": false,
-          "current_firmware_version": "2.5+",
-          "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xx",
-          "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "location": 2,
-          "model": "Virtual disk",
-          "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-1",
-          "mounted": true,
-          "only_boot_disk": false,
-          "serial_number": "drive-scsi0-0-0-1",
-          "target_firmware_version": "2.5+",
-          "under_diagnosis": false,
-          "vendor": "Not Available"
-        },
-        "20": null,
-        "21": null,
-        "22": null,
-        "23": null,
-        "24": null,
-        "25": null,
-        "26": null,
-        "3": null,
-        "4": null,
-        "5": null,
-        "6": null,
-        "7": null,
-        "8": null,
-        "9": null
-      },
-      "dynamic_ring_changing_node": null,
-      "failover_cluster_fqdn": null,
-      "failover_cluster_node_state": null,
-      "gpu_driver_version": null,
-      "has_csr": false,
-      "hba_firmwares_list": null,
-      "host_gpus": null,
-      "host_in_maintenance_mode": null,
-      "host_maintenance_mode_reason": null,
-      "host_nic_ids": [],
-      "host_type": "HYPER_CONVERGED",
-      "hypervisor_address": "xxx.xxx.x.xxx",
-      "hypervisor_full_name": "Nutanix xxxxxxxx.xxx",
-      "hypervisor_key": "xxx.xxx.x.xxx",
-      "hypervisor_password": null,
-      "hypervisor_state": "kAcropolisNormal",
-      "hypervisor_type": "kKvm",
-      "hypervisor_username": "root",
-      "ipmi_address": null,
-      "ipmi_password": null,
-      "ipmi_username": null,
-      "is_degraded": false,
-      "is_hardware_virtualized": false,
-      "is_secure_booted": false,
-      "key_management_device_to_certificate_status": {},
-      "management_server_name": "xxx.xxx.x.xxx",
-      "memory_capacity_in_bytes": 33722204160,
-      "metadata_store_status": "kNormalMode",
-      "metadata_store_status_message": "Metadata store enabled on the node",
-      "monitored": true,
-      "name": "NTNX-xxxxxxxx-A",
-      "num_cpu_cores": 8,
-      "num_cpu_sockets": 2,
-      "num_cpu_threads": 8,
-      "num_vms": 2,
-      "oplog_disk_pct": 10.8,
-      "oplog_disk_size": 72426913110,
-      "position": {
-        "name": "",
-        "ordinal": 1,
-        "physical_position": null
-      },
-      "rdma_backplane_ips": null,
-      "reboot_pending": false,
-      "removal_status": [
-        "NA"
-      ],
-      "serial": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "service_vmexternal_ip": "xxx.xxx.x.xxx",
-      "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x",
-      "service_vmnat_ip": null,
-      "service_vmnat_port": null,
-      "state": "NORMAL",
-      "stats": {
-        "avg_io_latency_usecs": "1342",
-        "avg_read_io_latency_usecs": "-1",
-        "avg_write_io_latency_usecs": "-1",
-        "content_cache_hit_ppm": "1000000",
-        "content_cache_logical_memory_usage_bytes": "3096143424",
-        "content_cache_logical_ssd_usage_bytes": "0",
-        "content_cache_num_dedup_ref_count_pph": "100",
-        "content_cache_num_lookups": "9",
-        "content_cache_physical_memory_usage_bytes": "3096143424",
-        "content_cache_physical_ssd_usage_bytes": "0",
-        "content_cache_saved_memory_usage_bytes": "0",
-        "content_cache_saved_ssd_usage_bytes": "0",
-        "controller_avg_io_latency_usecs": "0",
-        "controller_avg_read_io_latency_usecs": "0",
-        "controller_avg_read_io_size_kbytes": "0",
-        "controller_avg_write_io_latency_usecs": "0",
-        "controller_avg_write_io_size_kbytes": "0",
-        "controller_io_bandwidth_kBps": "0",
-        "controller_num_io": "0",
-        "controller_num_iops": "0",
-        "controller_num_random_io": "0",
-        "controller_num_read_io": "0",
-        "controller_num_read_iops": "0",
-        "controller_num_seq_io": "-1",
-        "controller_num_write_io": "0",
-        "controller_num_write_iops": "0",
-        "controller_random_io_ppm": "-1",
-        "controller_read_io_bandwidth_kBps": "0",
-        "controller_read_io_ppm": "0",
-        "controller_seq_io_ppm": "-1",
-        "controller_timespan_usecs": "30000000",
-        "controller_total_io_size_kbytes": "0",
-        "controller_total_io_time_usecs": "0",
-        "controller_total_read_io_size_kbytes": "0",
-        "controller_total_read_io_time_usecs": "0",
-        "controller_total_transformed_usage_bytes": "-1",
-        "controller_write_io_bandwidth_kBps": "0",
-        "controller_write_io_ppm": "0",
-        "hypervisor_avg_io_latency_usecs": "0",
-        "hypervisor_avg_read_io_latency_usecs": "0",
-        "hypervisor_avg_write_io_latency_usecs": "0",
-        "hypervisor_cpu_usage_ppm": "136060",
-        "hypervisor_io_bandwidth_kBps": "0",
-        "hypervisor_memory_usage_ppm": "666265",
-        "hypervisor_num_io": "0",
-        "hypervisor_num_iops": "0",
-        "hypervisor_num_read_io": "0",
-        "hypervisor_num_read_iops": "0",
-        "hypervisor_num_received_bytes": "0",
-        "hypervisor_num_transmitted_bytes": "0",
-        "hypervisor_num_write_io": "0",
-        "hypervisor_num_write_iops": "0",
-        "hypervisor_read_io_bandwidth_kBps": "0",
-        "hypervisor_timespan_usecs": "35676623",
-        "hypervisor_total_io_size_kbytes": "0",
-        "hypervisor_total_io_time_usecs": "0",
-        "hypervisor_total_read_io_size_kbytes": "0",
-        "hypervisor_total_read_io_time_usecs": "0",
-        "hypervisor_write_io_bandwidth_kBps": "0",
-        "io_bandwidth_kBps": "1",
-        "num_io": "6",
-        "num_iops": "0",
-        "num_random_io": "-1",
-        "num_read_io": "3",
-        "num_read_iops": "0",
-        "num_seq_io": "-1",
-        "num_write_io": "3",
-        "num_write_iops": "0",
-        "random_io_ppm": "-1",
-        "read_io_bandwidth_kBps": "0",
-        "read_io_ppm": "500000",
-        "seq_io_ppm": "-1",
-        "timespan_usecs": "30000000",
-        "total_io_size_kbytes": "54",
-        "total_io_time_usecs": "8057",
-        "total_read_io_size_kbytes": "22",
-        "total_read_io_time_usecs": "-1",
-        "total_transformed_usage_bytes": "-1",
-        "total_untransformed_usage_bytes": "-1",
-        "write_io_bandwidth_kBps": "1",
-        "write_io_ppm": "500000"
-      },
-      "usage_stats": {
-        "storage.capacity_bytes": "511803343324",
-        "storage.free_bytes": "508614924622",
-        "storage.logical_usage_bytes": "3775823872",
-        "storage.usage_bytes": "3188418702",
-        "storage_tier.das-sata.capacity_bytes": "0",
-        "storage_tier.das-sata.free_bytes": "0",
-        "storage_tier.das-sata.usage_bytes": "0",
-        "storage_tier.ssd.capacity_bytes": "511803343324",
-        "storage_tier.ssd.free_bytes": "508614924622",
-        "storage_tier.ssd.usage_bytes": "3188418702"
-      },
-      "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "vzone_name": ""
+    "NutanixHypervisor": {
+        "Host": {
+            "acropolis_connection_state": "kConnected",
+            "block_model": "UseLayout",
+            "block_model_name": "CommunityEdition",
+            "block_serial": "xxxxxxxx",
+            "boot_time_in_usecs": 1606054432399817,
+            "cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "controller_vm_backplane_ip": "xxx.xxx.x.xxx",
+            "cpu_capacity_in_hz": 16760000000,
+            "cpu_frequency_in_hz": 2095000000,
+            "cpu_model": "Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz",
+            "disk_hardware_configs": [
+                {
+                    "bad": false,
+                    "boot_disk": true,
+                    "can_add_as_new_disk": false,
+                    "can_add_as_old_disk": false,
+                    "current_firmware_version": "2.5+",
+                    "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::12",
+                    "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "location": 1,
+                    "model": "Virtual disk",
+                    "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-0",
+                    "mounted": true,
+                    "only_boot_disk": false,
+                    "serial_number": "drive-scsi0-0-0-0",
+                    "target_firmware_version": "2.5+",
+                    "under_diagnosis": false,
+                    "vendor": "Not Available"
+                },
+                {
+                    "bad": false,
+                    "boot_disk": false,
+                    "can_add_as_new_disk": false,
+                    "can_add_as_old_disk": false,
+                    "current_firmware_version": "2.5+",
+                    "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::13",
+                    "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "location": 2,
+                    "model": "Virtual disk",
+                    "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-1",
+                    "mounted": true,
+                    "only_boot_disk": false,
+                    "serial_number": "drive-scsi0-0-0-1",
+                    "target_firmware_version": "2.5+",
+                    "under_diagnosis": false,
+                    "vendor": "Not Available"
+                }
+            ],
+            "has_csr": false,
+            "host_type": "HYPER_CONVERGED",
+            "hypervisor_address": "xxx.xxx.x.xxx",
+            "hypervisor_full_name": "Nutanix xxxxxxxx.xxx",
+            "hypervisor_key": "xxx.xxx.x.xxx",
+            "hypervisor_state": "kAcropolisNormal",
+            "hypervisor_type": "kKvm",
+            "hypervisor_username": "root",
+            "is_degraded": false,
+            "is_hardware_virtualized": false,
+            "is_secure_booted": false,
+            "management_server_name": "xxx.xxx.x.xxx",
+            "memory_capacity_in_bytes": 33722204160,
+            "metadata_store_status": "kNormalMode",
+            "metadata_store_status_message": "Metadata store enabled on the node",
+            "monitored": true,
+            "name": "NTNX-xxxxxxxx-A",
+            "num_cpu_cores": 8,
+            "num_cpu_sockets": 2,
+            "num_cpu_threads": 8,
+            "num_vms": 2,
+            "oplog_disk_pct": 10.8,
+            "oplog_disk_size": 72426913110,
+            "position": {
+                "name": "",
+                "ordinal": 1
+            },
+            "reboot_pending": false,
+            "removal_status": [
+                "NA"
+            ],
+            "serial": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "service_vmexternal_ip": "xxx.xxx.x.xxx",
+            "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x",
+            "state": "NORMAL",
+            "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "vzone_name": ""
+        }
     }
-  }
 }
 ```
 
 #### Human Readable Output
 
-> ### Results
->|acropolis_connection_state|backplane_ip|bios_model|bios_version|block_location|block_model|block_model_name|block_serial|bmc_model|bmc_version|boot_time_in_usecs|cluster_uuid|controller_vm_backplane_ip|cpu_capacity_in_hz|cpu_frequency_in_hz|cpu_model|default_vhd_location|default_vhd_storage_container_id|default_vhd_storage_container_uuid|default_vm_location|default_vm_storage_container_id|default_vm_storage_container_uuid|disk_hardware_configs|dynamic_ring_changing_node|failover_cluster_fqdn|failover_cluster_node_state|gpu_driver_version|has_csr|hba_firmwares_list|host_gpus|host_in_maintenance_mode|host_maintenance_mode_reason|host_nic_ids|host_type|hypervisor_address|hypervisor_full_name|hypervisor_key|hypervisor_password|hypervisor_state|hypervisor_type|hypervisor_username|ipmi_address|ipmi_password|ipmi_username|is_degraded|is_hardware_virtualized|is_secure_booted|key_management_device_to_certificate_status|management_server_name|memory_capacity_in_bytes|metadata_store_status|metadata_store_status_message|monitored|name|num_cpu_cores|num_cpu_sockets|num_cpu_threads|num_vms|oplog_disk_pct|oplog_disk_size|position|rdma_backplane_ips|reboot_pending|removal_status|serial|service_vmexternal_ip|service_vmid|service_vmnat_ip|service_vmnat_port|state|stats|usage_stats|uuid|vzone_name|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| kConnected |  |  |  |  | UseLayout | CommunityEdition | xxxxxxxx |  |  | 1606054432399817 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | xxx.xxx.x.xxx | 16760000000 | 2095000000 | Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz |  |  |  |  |  |  | 1: {"serial_number": "drive-scsi0-0-0-0", "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::12", "disk_uuid": "f062895b-8cc9-496a-bfd1-5d7e54cd285c", "location": 1, "bad": false, "mounted": true, "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-0", "model": "Virtual disk", "vendor": "Not Available", "boot_disk": true, "only_boot_disk": false, "under_diagnosis": false, "background_operation": null, "current_firmware_version": "2.5+", "target_firmware_version": "2.5+", "can_add_as_new_disk": false, "can_add_as_old_disk": false}<br/>2: {"serial_number": "drive-scsi0-0-0-1", "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::13", "disk_uuid": "5be00813-22ed-47bd-8ee7-da295196d1a8", "location": 2, "bad": false, "mounted": true, "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-1", "model": "Virtual disk", "vendor": "Not Available", "boot_disk": false, "only_boot_disk": false, "under_diagnosis": false, "background_operation": null, "current_firmware_version": "2.5+", "target_firmware_version": "2.5+", "can_add_as_new_disk": false, "can_add_as_old_disk": false}<br/>3: null<br/>4: null<br/>5: null<br/>6: null<br/>7: null<br/>8: null<br/>9: null<br/>10: null<br/>11: null<br/>12: null<br/>13: null<br/>14: null<br/>15: null<br/>16: null<br/>17: null<br/>18: null<br/>19: null<br/>20: null<br/>21: null<br/>22: null<br/>23: null<br/>24: null<br/>25: null<br/>26: null |  |  |  |  | false |  |  |  |  |  | HYPER_CONVERGED | 192.168.1.120 | Nutanix 20190916.276 | 192.168.1.120 |  | kAcropolisNormal | kKvm | root |  |  |  | false | false | false |  | 192.168.1.120 | 33722204160 | kNormalMode | Metadata store enabled on the node | true | NTNX-xxxxxxxx-A | 8 | 2 | 8 | 2 | 10.8 | 72426913110 | ordinal: 1<br/>name: <br/>physical_position: null |  | false | NA | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | xxx.xxx.x.xxx | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x |  |  | NORMAL | hypervisor_avg_io_latency_usecs: 0<br/>num_read_iops: 0<br/>hypervisor_write_io_bandwidth_kBps: 0<br/>timespan_usecs: 30000000<br/>controller_num_read_iops: 0<br/>read_io_ppm: 500000<br/>controller_num_iops: 0<br/>total_read_io_time_usecs: -1<br/>controller_total_read_io_time_usecs: 0<br/>hypervisor_num_io: 0<br/>controller_total_transformed_usage_bytes: -1<br/>hypervisor_cpu_usage_ppm: 136060<br/>controller_num_write_io: 0<br/>avg_read_io_latency_usecs: -1<br/>content_cache_logical_ssd_usage_bytes: 0<br/>controller_total_io_time_usecs: 0<br/>controller_total_read_io_size_kbytes: 0<br/>controller_num_seq_io: -1<br/>controller_read_io_ppm: 0<br/>content_cache_num_lookups: 9<br/>controller_total_io_size_kbytes: 0<br/>content_cache_hit_ppm: 1000000<br/>controller_num_io: 0<br/>hypervisor_avg_read_io_latency_usecs: 0<br/>content_cache_num_dedup_ref_count_pph: 100<br/>num_write_iops: 0<br/>controller_num_random_io: 0<br/>num_iops: 0<br/>hypervisor_num_read_io: 0<br/>hypervisor_total_read_io_time_usecs: 0<br/>controller_avg_io_latency_usecs: 0<br/>num_io: 6<br/>controller_num_read_io: 0<br/>hypervisor_num_write_io: 0<br/>controller_seq_io_ppm: -1<br/>controller_read_io_bandwidth_kBps: 0<br/>controller_io_bandwidth_kBps: 0<br/>hypervisor_num_received_bytes: 0<br/>hypervisor_timespan_usecs: 35676623<br/>hypervisor_num_write_iops: 0<br/>total_read_io_size_kbytes: 22<br/>hypervisor_total_io_size_kbytes: 0<br/>avg_io_latency_usecs: 1342<br/>hypervisor_num_read_iops: 0<br/>content_cache_saved_ssd_usage_bytes: 0<br/>controller_write_io_bandwidth_kBps: 0<br/>controller_write_io_ppm: 0<br/>hypervisor_avg_write_io_latency_usecs: 0<br/>hypervisor_num_transmitted_bytes: 0<br/>hypervisor_total_read_io_size_kbytes: 0<br/>read_io_bandwidth_kBps: 0<br/>hypervisor_memory_usage_ppm: 666265<br/>hypervisor_num_iops: 0<br/>hypervisor_io_bandwidth_kBps: 0<br/>controller_num_write_iops: 0<br/>total_io_time_usecs: 8057<br/>content_cache_physical_ssd_usage_bytes: 0<br/>controller_random_io_ppm: -1<br/>controller_avg_read_io_size_kbytes: 0<br/>total_transformed_usage_bytes: -1<br/>avg_write_io_latency_usecs: -1<br/>num_read_io: 3<br/>write_io_bandwidth_kBps: 1<br/>hypervisor_read_io_bandwidth_kBps: 0<br/>random_io_ppm: -1<br/>total_untransformed_usage_bytes: -1<br/>hypervisor_total_io_time_usecs: 0<br/>num_random_io: -1<br/>controller_avg_write_io_size_kbytes: 0<br/>controller_avg_read_io_latency_usecs: 0<br/>num_write_io: 3<br/>total_io_size_kbytes: 54<br/>io_bandwidth_kBps: 1<br/>content_cache_physical_memory_usage_bytes: 3096143424<br/>controller_timespan_usecs: 30000000<br/>num_seq_io: -1<br/>content_cache_saved_memory_usage_bytes: 0<br/>seq_io_ppm: -1<br/>write_io_ppm: 500000<br/>controller_avg_write_io_latency_usecs: 0<br/>content_cache_logical_memory_usage_bytes: 3096143424 | storage_tier.das-sata.usage_bytes: 0<br/>storage.capacity_bytes: 511803343324<br/>storage.logical_usage_bytes: 3775823872<br/>storage_tier.das-sata.capacity_bytes: 0<br/>storage.free_bytes: 508614924622<br/>storage_tier.ssd.usage_bytes: 3188418702<br/>storage_tier.ssd.capacity_bytes: 511803343324<br/>storage_tier.das-sata.free_bytes: 0<br/>storage.usage_bytes: 3188418702<br/>storage_tier.ssd.free_bytes: 508614924622 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx |  |
+>### Results
+>|acropolis_connection_state|block_model|block_model_name|block_serial|boot_time_in_usecs|cluster_uuid|controller_vm_backplane_ip|cpu_capacity_in_hz|cpu_frequency_in_hz|cpu_model|disk_hardware_configs|has_csr|host_type|hypervisor_address|hypervisor_full_name|hypervisor_key|hypervisor_state|hypervisor_type|hypervisor_username|is_degraded|is_hardware_virtualized|is_secure_booted|management_server_name|memory_capacity_in_bytes|metadata_store_status|metadata_store_status_message|monitored|name|num_cpu_cores|num_cpu_sockets|num_cpu_threads|num_vms|oplog_disk_pct|oplog_disk_size|position|reboot_pending|removal_status|serial|service_vmexternal_ip|service_vmid|state|uuid|vzone_name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| kConnected | UseLayout | CommunityEdition | xxxxxxxx | 1606054432399817 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | xxx.xxx.x.xxx | 16760000000 | 2095000000 | Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz | {'serial_number': 'drive-scsi0-0-0-0', 'disk_id': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::12', 'disk_uuid': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'location': 1, 'bad': False, 'mounted': True, 'mount_path': '/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-0', 'model': 'Virtual disk', 'vendor': 'Not Available', 'boot_disk': True, 'only_boot_disk': False, 'under_diagnosis': False, 'current_firmware_version': '2.5+', 'target_firmware_version': '2.5+', 'can_add_as_new_disk': False, 'can_add_as_old_disk': False},<br/>{'serial_number': 'drive-scsi0-0-0-1', 'disk_id': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::13', 'disk_uuid': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'location': 2, 'bad': False, 'mounted': True, 'mount_path': '/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-1', 'model': 'Virtual disk', 'vendor': 'Not Available', 'boot_disk': False, 'only_boot_disk': False, 'under_diagnosis': False, 'current_firmware_version': '2.5+', 'target_firmware_version': '2.5+', 'can_add_as_new_disk': False, 'can_add_as_old_disk': False} | false | HYPER_CONVERGED | xxx.xxx.x.xxx | Nutanix xxxxxxxx.xxx | xxx.xxx.x.xxx | kAcropolisNormal | kKvm | root | false | false | false | xxx.xxx.x.xxx | 33722204160 | kNormalMode | Metadata store enabled on the node | true | NTNX-xxxxxxxx-A | 8 | 2 | 8 | 2 | 10.8 | 72426913110 | ordinal: 1<br/>name:  | false | NA | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | xxx.xxx.x.xxx | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x | NORMAL | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx |  |
+
 
 ### nutanix-hypervisor-vms-list
-
 ***
 Get a list of virtual machines.
+
 
 #### Base Command
 
 `nutanix-hypervisor-vms-list`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -333,12 +263,13 @@ Get a list of virtual machines.
 | length | Number of virtual machines to retrieve. | Optional | 
 | offset | The offset to start retrieving virtual machines. | Optional | 
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NutanixHypervisor.VM..affinity.policy | String | Affinity policy. | 
-| NutanixHypervisor.VM..affinity.host_uuids | String | List of host uuids of the affinity.. | 
+| NutanixHypervisor.VM..affinity.host_uuids | String | List of host uuids of the affinity. | 
 | NutanixHypervisor.VM..allow_live_migrate | Boolean | Does virtual machine allow live migrate. | 
 | NutanixHypervisor.VM..gpus_assigned | Boolean | Does virtual machine have gpus assigned. | 
 | NutanixHypervisor.VM..boot.uefi_boot | Boolean | Does UEFI boot. | 
@@ -356,53 +287,53 @@ Get a list of virtual machines.
 | NutanixHypervisor.VM..vm_logical_timestamp | Number | The logical timestamp of the virtual machine. | 
 | NutanixHypervisor.VM..machine_type | String | The machine type of the virtual machine. | 
 
-#### Command Example
 
+#### Command Example
 ```!nutanix-hypervisor-vms-list filter="num_vms==machine_type==pc,power_state!=off" length=3 offset=0```
 
 #### Context Example
-
 ```json
 {
-  "NutanixHypervisor": {
-    "VM": {
-      "affinity": {
-        "host_uuids": [
-          "xxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        ],
-        "policy": "AFFINITY"
-      },
-      "allow_live_migrate": false,
-      "boot": {
-        "uefi_boot": false
-      },
-      "gpus_assigned": false,
-      "ha_priority": 0,
-      "host_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "machine_type": "pc",
-      "memory_mb": 4096,
-      "name": "CentOS7_Test",
-      "num_cores_per_vcpu": 2,
-      "num_vcpus": 2,
-      "power_state": "on",
-      "timezone": "UTC",
-      "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "vm_features": {
-        "AGENT_VM": false,
-        "VGA_CONSOLE": true
-      },
-      "vm_logical_timestamp": 86
+    "NutanixHypervisor": {
+        "VM": {
+            "affinity": {
+                "host_uuids": [
+                    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                ],
+                "policy": "AFFINITY"
+            },
+            "allow_live_migrate": false,
+            "boot": {
+                "uefi_boot": false
+            },
+            "gpus_assigned": false,
+            "ha_priority": 0,
+            "host_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "machine_type": "pc",
+            "memory_mb": 4096,
+            "name": "CentOS7_Test",
+            "num_cores_per_vcpu": 2,
+            "num_vcpus": 2,
+            "power_state": "on",
+            "timezone": "UTC",
+            "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "vm_features": {
+                "AGENT_VM": false,
+                "VGA_CONSOLE": true
+            },
+            "vm_logical_timestamp": 122
+        }
     }
-  }
 }
 ```
 
 #### Human Readable Output
 
-> ### Results
+>### Results
 >|affinity|allow_live_migrate|boot|gpus_assigned|ha_priority|host_uuid|machine_type|memory_mb|name|num_cores_per_vcpu|num_vcpus|power_state|timezone|uuid|vm_features|vm_logical_timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| policy: AFFINITY<br/>host_uuids: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | false | uefi_boot: false | false | 0 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | AGENT_VM: false<br/>VGA_CONSOLE: true | 86 |
+>| policy: AFFINITY<br/>host_uuids: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | false | uefi_boot: false | false | 0 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | AGENT_VM: false<br/>VGA_CONSOLE: true | 122 |
+
 
 ### nutanix-hypervisor-vm-powerstatus-change
 ***
@@ -422,7 +353,6 @@ make sure the usern you are using have at least cluster admin permissions
 #### Base Command
 
 `nutanix-hypervisor-vm-powerstatus-change`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -431,18 +361,18 @@ make sure the usern you are using have at least cluster admin permissions
 | host_uuid | If virtual machine is being transitioned with 'ON' or 'POWERCYCLE', this host will be chosen to run the virtual machine. | Optional | 
 | transition | The new power state to which you want to transfer the virtual machine to. Possible values are: ON, OFF, POWERCYCLE, RESET, PAUSE, SUSPEND, RESUME, SAVE, ACPI_SHUTDOWN, ACPI_REBOOT. | Required | 
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | NutanixHypervisor.VMPowerStatus.task_uuid | String | The task uuid returned by Nutanix service for the power status change request. With this task uuid the task status can be monitored by using the nutanix-hypervisor-task-poll command. | 
 
-#### Command Example
 
+#### Command Example
 ```!nutanix-hypervisor-vm-powerstatus-change vm_uuid=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx transition=ON```
 
 #### Context Example
-
 ```json
 {
   "NutanixHypervisor": {
@@ -455,23 +385,23 @@ make sure the usern you are using have at least cluster admin permissions
 
 #### Human Readable Output
 
-> ### Results
+>### Results
 >|task_uuid|
 >|---|
->| yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy |
+>| xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx |
+
 
 ### nutanix-hypervisor-task-poll
-
 ***
 Poll tasks given by task_ids to check if they are ready. Returns all the tasks from 'task_ids' list that are ready at
 the moment Nutanix service was polled. In case no task is ready, waits until at least one task is ready, unless given
 argument 'timeout_interval' which waits time_interval seconds and in case no task had finished, returns a time out
 response.
 
+
 #### Base Command
 
 `nutanix-hypervisor-task-poll`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -479,10 +409,12 @@ response.
 | task_ids | The IDs of the tasks to poll. | Required | 
 | timeout_interval | An integer number. Waits time_interval seconds and in case no task had finished, returns a time out response. | Optional | 
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| NutanixHypervisor.Task.timed_out | Boolean | Indicates if time out occurred during the task poll request from Nutanix. | 
 | NutanixHypervisor.Task..uuid | String | The task uuid. | 
 | NutanixHypervisor.Task..meta_request.method_name | String | The name of the method performed for this task. | 
 | NutanixHypervisor.Task..meta_response.error_code | Number | The Error code returned for the task. | 
@@ -501,63 +433,61 @@ response.
 | NutanixHypervisor.Task..subtask_uuid_list | String | The list of the uuids of the subtasks for this task. | 
 | NutanixHypervisor.Task..cluster_uuid | String | The uuid of the cluster. | 
 
-#### Command Example
 
-```!nutanix-hypervisor-task-poll task_ids=b111bb11-b1b1-11b1-1bbb-1bb11b11111b```
+#### Command Example
+```!nutanix-hypervisor-task-poll task_ids=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx```
 
 #### Context Example
-
 ```json
 {
-  "NutanixHypervisor": {
-    "Task": {
-      "cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-      "complete_time_usecs": 1610288165197853,
-      "create_time_usecs": 1610288160827398,
-      "entity_list": [
-        {
-          "entity_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "entity_name": null,
-          "entity_type": "VM"
+    "NutanixHypervisor": {
+        "Task": {
+            "cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "complete_time_usecs": 1610288165197853,
+            "create_time_usecs": 1610288160827398,
+            "entity_list": [
+                {
+                    "entity_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "entity_type": "VM"
+                }
+            ],
+            "last_updated_time_usecs": 1610288165197853,
+            "message": "",
+            "meta_request": {
+                "method_name": "VmChangePowerState"
+            },
+            "meta_response": {
+                "error_code": 0
+            },
+            "operation_type": "VmChangePowerState",
+            "percentage_complete": 100,
+            "progress_status": "Succeeded",
+            "start_time_usecs": 1610288160863871,
+            "subtask_uuid_list": [
+                "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            ],
+            "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         }
-      ],
-      "last_updated_time_usecs": 1610288165197853,
-      "message": "",
-      "meta_request": {
-        "method_name": "VmChangePowerState"
-      },
-      "meta_response": {
-        "error_code": 0
-      },
-      "operation_type": "VmChangePowerState",
-      "percentage_complete": 100,
-      "progress_status": "Succeeded",
-      "start_time_usecs": 1610288160863871,
-      "subtask_uuid_list": [
-        "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-      ],
-      "uuid": "b111bb11-b1b1-11b1-1bbb-1bb11b11111b"
     }
-  }
 }
 ```
 
 #### Human Readable Output
 
-> ### Results
+>### Results
 >|cluster_uuid|complete_time_usecs|create_time_usecs|entity_list|last_updated_time_usecs|message|meta_request|meta_response|operation_type|percentage_complete|progress_status|start_time_usecs|subtask_uuid_list|uuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 1610288165197853 | 1610288160827398 | {'entity_id': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'entity_type': 'VM', 'entity_name': None} | 1610288165197853 |  | method_name: VmChangePowerState | error_code: 0 | VmChangePowerState | 100 | Succeeded | 1610288160863871 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | b111bb11-b1b1-11b1-1bbb-1bb11b11111b |
+>| xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 1610288165197853 | 1610288160827398 | {'entity_id': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'entity_type': 'VM'} | 1610288165197853 |  | method_name: VmChangePowerState | error_code: 0 | VmChangePowerState | 100 | Succeeded | 1610288160863871 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx |
+
 
 ### nutanix-alerts-list
-
 ***
 Get the list of Alerts generated in the cluster which matches the filters if given.
+
 
 #### Base Command
 
 `nutanix-alerts-list`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -576,183 +506,207 @@ Get the list of Alerts generated in the cluster which matches the filters if giv
 | page | Page number in the query response, default is 1. When page is specified, limit argument is required. | Optional | 
 | limit | Limit of physical hosts to retrieve. Possible values are 1-1000. | Optional | 
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NutanixHypervisor.Alerts | unknown | ADD DESCRIPTION | 
+| NutanixHypervisor.Alerts..id | String | Id of the alert. | 
+| NutanixHypervisor.Alerts..alert_type_uuid | String | Uuid of the type of the alert. | 
+| NutanixHypervisor.Alerts..check_id | String | The check id of the alert. | 
+| NutanixHypervisor.Alerts..resolved | Boolean | Was alert resolved. | 
+| NutanixHypervisor.Alerts..auto_resolved | Boolean | Was alert auto resolved. | 
+| NutanixHypervisor.Alerts..acknowledged | Boolean | Was alert acknowledged. | 
+| NutanixHypervisor.Alerts..service_vmid | String | Service virtual machine id of the alert. | 
+| NutanixHypervisor.Alerts..node_uuid | String | Node uuid. | 
+| NutanixHypervisor.Alerts..created_time_stamp_in_usecs | Number | The time alert was created in epoch time. | 
+| NutanixHypervisor.Alerts..last_occurrence_time_stamp_in_usecs | Number | The time of the last occurrence of the alert in epoch time. | 
+| NutanixHypervisor.Alerts..cluster_uuid | String | The cluster uuid of the alert. | 
+| NutanixHypervisor.Alerts..originating_cluster_uuid | String | The originating cluster uuid of the alert. | 
+| NutanixHypervisor.Alerts..severity | String | The severity of the alert. | 
+| NutanixHypervisor.Alerts..impact_types | String | The impact types of the alert. | 
+| NutanixHypervisor.Alerts..classifications | String | The classifications of the alert. | 
+| NutanixHypervisor.Alerts..acknowledged_by_username | String | The username of whom acknowledged the alert, if the alert was acknowledged by a user. | 
+| NutanixHypervisor.Alerts..message | String | Alert message. | 
+| NutanixHypervisor.Alerts..detailed_message | String | Alert detailed message. | 
+| NutanixHypervisor.Alerts..alert_title | String | Alert title. | 
+| NutanixHypervisor.Alerts..operation_type | String | Alert operation type. | 
+| NutanixHypervisor.Alerts..acknowledged_time_stamp_in_usecs | Number | The time alert was acknowledged in epoch time. | 
+| NutanixHypervisor.Alerts..resolved_time_stamp_in_usecs | Number | The time alert was resolved in epoch time. | 
+| NutanixHypervisor.Alerts..resolved_by_username | String | The username whom resolved the alert, if the alert was resolved by a user. | 
+| NutanixHypervisor.Alerts..user_defined | Boolean | Is the alert user defined or not. | 
+| NutanixHypervisor.Alerts..affected_entities.entity_type | String | Affected entity type. | 
+| NutanixHypervisor.Alerts..affected_entities.entity_type_display_name | String | The entity type display name of the affected entities. | 
+| NutanixHypervisor.Alerts..affected_entities.entity_name | String | The entity display name of the affected entities. | 
+| NutanixHypervisor.Alerts..affected_entities.uuid | String | The affected entity uuid. | 
+| NutanixHypervisor.Alerts..affected_entities.id | String | The affected entity id. | 
+| NutanixHypervisor.Alerts..context_types | String | Alert context types. | 
+| NutanixHypervisor.Alerts..context_values | String | Alert context values. | 
+| NutanixHypervisor.Alerts..alert_details.metric_details.comparision_operator | String | Comparision operator used in metric. | 
+| NutanixHypervisor.Alerts..alert_details.metric_details.condition_type | String | condition type of the alert by metric. Can be \[STATIC, THRESHOLD, ANOMALY, SAFETY_ZONE\]. | 
+| NutanixHypervisor.Alerts..alert_details.metric_details.data_type | String | Data type used in metric. can be \[LONG, DOUBLE, BOOLEAN, STRING\]. | 
+| NutanixHypervisor.Alerts..alert_details.metric_details.metric_category | String | Metric category. | 
+| NutanixHypervisor.Alerts..alert_details.metric_details.metric_display_name | String | Metric display name. | 
+| NutanixHypervisor.Alerts..alert_details.metric_details.metric_name | String | Metric name. | 
+| NutanixHypervisor.Alerts..alert_details.metric_details.metric_value_details | Array | Metric value details. | 
+
 
 #### Command Example
-
 ```!nutanix-alerts-list acknowledged=true auto_resolved=true start_time=2018-12-31T21:34:54 limit=4```
 
 #### Context Example
-
 ```json
 {
-  "NutanixHypervisor": {
-    "Alerts": [
-      {
-        "acknowledged": true,
-        "acknowledged_by_username": "N/A",
-        "acknowledged_time_stamp_in_usecs": 1606318082804764,
-        "affected_entities": [
-          {
-            "entity_name": null,
-            "entity_type": "host",
-            "entity_type_display_name": null,
-            "id": "2",
-            "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          }
-        ],
-        "alert_details": null,
-        "alert_title": "{vm_type} time not synchronized with any external servers.",
-        "alert_type_uuid": "A3026",
-        "auto_resolved": true,
-        "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxx",
-        "classifications": [
-          "ControllerVM"
-        ],
-        "cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "context_types": [
-          "alert_msg",
-          "vm_type",
-          "arithmos_id",
-          "service_vm_id",
-          "ncc_version",
-          "nos_version",
-          "node_uuid",
-          "node_serial",
-          "block_serial"
-        ],
-        "context_values": [
-          "NTP leader is not synchronizing to an external NTP server",
-          "CVM",
-          "2",
-          "2",
-          "x.xx.x.x-xxxxxxxx",
-          "xxxx.xx.xx",
-          "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "xxxxxxxx"
-        ],
-        "created_time_stamp_in_usecs": 1606055474675609,
-        "detailed_message": "",
-        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "impact_types": [
-          "Configuration"
-        ],
-        "last_occurrence_time_stamp_in_usecs": 1606055474675609,
-        "message": "The {vm_type} is not synchronizing time with any external servers. {alert_msg}",
-        "node_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "operation_type": "kCreate",
-        "originating_cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "possible_causes": [],
-        "resolved": true,
-        "resolved_by_username": "N/A",
-        "resolved_time_stamp_in_usecs": 1606318082804758,
-        "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x",
-        "severity": "kWarning",
-        "user_defined": false
-      },
-      {
-        "acknowledged": true,
-        "acknowledged_by_username": "N/A",
-        "acknowledged_time_stamp_in_usecs": 1606318082851718,
-        "affected_entities": [
-          {
-            "entity_name": null,
-            "entity_type": "host",
-            "entity_type_display_name": null,
-            "id": "2",
-            "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          }
-        ],
-        "alert_details": null,
-        "alert_title": "Incorrect NTP Configuration",
-        "alert_type_uuid": "A103076",
-        "auto_resolved": true,
-        "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
-        "classifications": [
-          "Cluster"
-        ],
-        "cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "context_types": [
-          "alert_msg",
-          "vm_type",
-          "arithmos_id",
-          "cvm_ip",
-          "service_vm_id",
-          "ncc_version",
-          "nos_version",
-          "node_uuid",
-          "node_serial",
-          "block_serial"
-        ],
-        "context_values": [
-          "This CVM is the NTP leader but it is not syncing time with any external NTP server. NTP configuration on CVM is not yet updated with the NTP servers configured in the cluster. The NTP configuration on the CVM will not be updated if the cluster time is in the future relative to the NTP servers.\n",
-          "CVM",
-          "2",
-          "xxx.xxx.x.xxx",
-          "2",
-          "x.xx.x.x-xxxxxxxx",
-          "xxxx.xx.xx",
-          "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "xxxxxxxx"
-        ],
-        "created_time_stamp_in_usecs": 1606055474619018,
-        "detailed_message": "",
-        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "impact_types": [
-          "SystemIndicator"
-        ],
-        "last_occurrence_time_stamp_in_usecs": 1606055474619018,
-        "message": "{alert_msg}",
-        "node_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "operation_type": "kCreate",
-        "originating_cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "possible_causes": [],
-        "resolved": true,
-        "resolved_by_username": "N/A",
-        "resolved_time_stamp_in_usecs": 1606318082851706,
-        "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x",
-        "severity": "kWarning",
-        "user_defined": false
-      }
-    ]
-  }
+    "NutanixHypervisor": {
+        "Alerts": [
+            {
+                "acknowledged": true,
+                "acknowledged_by_username": "N/A",
+                "acknowledged_time_stamp_in_usecs": 1606318082804764,
+                "affected_entities": [
+                    {
+                        "entity_type": "host",
+                        "id": "2",
+                        "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    }
+                ],
+                "alert_title": "{vm_type} time not synchronized with any external servers.",
+                "alert_type_uuid": "A3026",
+                "auto_resolved": true,
+                "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxx",
+                "classifications": [
+                    "ControllerVM"
+                ],
+                "cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                "context_types": [
+                    "alert_msg",
+                    "vm_type",
+                    "arithmos_id",
+                    "service_vm_id",
+                    "ncc_version",
+                    "nos_version",
+                    "node_uuid",
+                    "node_serial",
+                    "block_serial"
+                ],
+                "context_values": [
+                    "NTP leader is not synchronizing to an external NTP server",
+                    "CVM",
+                    "2",
+                    "2",
+                    "x.xx.x.x-xxxxxxxx",
+                    "2020.09.16",
+                    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "xxxxxxxx"
+                ],
+                "created_time_stamp_in_usecs": 1606055474675609,
+                "detailed_message": "",
+                "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                "impact_types": [
+                    "Configuration"
+                ],
+                "last_occurrence_time_stamp_in_usecs": 1606055474675609,
+                "message": "The {vm_type} is not synchronizing time with any external servers. {alert_msg}",
+                "node_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                "operation_type": "kCreate",
+                "originating_cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                "resolved": true,
+                "resolved_by_username": "N/A",
+                "resolved_time_stamp_in_usecs": 1606318082804758,
+                "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x",
+                "severity": "kWarning",
+                "user_defined": false
+            },
+            {
+                "acknowledged": true,
+                "acknowledged_by_username": "N/A",
+                "acknowledged_time_stamp_in_usecs": 1606318082851718,
+                "affected_entities": [
+                    {
+                        "entity_type": "host",
+                        "id": "2",
+                        "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    }
+                ],
+                "alert_title": "Incorrect NTP Configuration",
+                "alert_type_uuid": "A103076",
+                "auto_resolved": true,
+                "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+                "classifications": [
+                    "Cluster"
+                ],
+                "cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                "context_types": [
+                    "alert_msg",
+                    "vm_type",
+                    "arithmos_id",
+                    "cvm_ip",
+                    "service_vm_id",
+                    "ncc_version",
+                    "nos_version",
+                    "node_uuid",
+                    "node_serial",
+                    "block_serial"
+                ],
+                "context_values": [
+                    "This CVM is the NTP leader but it is not syncing time with any external NTP server. NTP configuration on CVM is not yet updated with the NTP servers configured in the cluster. The NTP configuration on the CVM will not be updated if the cluster time is in the future relative to the NTP servers.\n",
+                    "CVM",
+                    "2",
+                    "xxx.xxx.x.xxx",
+                    "2",
+                    "x.xx.x.x-xxxxxxxx",
+                    "2020.09.16",
+                    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "xxxxxxxx"
+                ],
+                "created_time_stamp_in_usecs": 1606055474619018,
+                "detailed_message": "",
+                "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                "impact_types": [
+                    "SystemIndicator"
+                ],
+                "last_occurrence_time_stamp_in_usecs": 1606055474619018,
+                "message": "{alert_msg}",
+                "node_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                "operation_type": "kCreate",
+                "originating_cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                "resolved": true,
+                "resolved_by_username": "N/A",
+                "resolved_time_stamp_in_usecs": 1606318082851706,
+                "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x",
+                "severity": "kWarning",
+                "user_defined": false
+            }
+        ]
+    }
 }
 ```
 
 #### Human Readable Output
 
-> ### Results
->|acknowledged|acknowledged_by_username|acknowledged_time_stamp_in_usecs|affected_entities|alert_details|alert_title|alert_type_uuid|auto_resolved|check_id|classifications|cluster_uuid|context_types|context_values|created_time_stamp_in_usecs|detailed_message|id|impact_types|last_occurrence_time_stamp_in_usecs|message|node_uuid|operation_type|originating_cluster_uuid|possible_causes|resolved|resolved_by_username|resolved_time_stamp_in_usecs|service_vmid|severity|user_defined|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| true | N/A | 1606318082804764 | {'entity_type': 'host', 'entity_type_display_name': None, 'entity_name': None, 'uuid': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'id': '2'} |  | {vm_type} time not synchronized with any external servers. | A3026 | true | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxx | ControllerVM | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | alert_msg,<br/>vm_type,<br/>arithmos_id,<br/>service_vm_id,<br/>ncc_version,<br/>nos_version,<br/>node_uuid,<br/>node_serial,<br/>block_serial | NTP leader is not synchronizing to an external NTP server,<br/>CVM,<br/>2,<br/>2,<br/>x.xx.x.x-xxxxxxxx,<br/>xxxx.xx.xx,<br/>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,<br/>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,<br/>xxxxxxxx | 1606055474675609 |  | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Configuration | 1606055474675609 | The {vm_type} is not synchronizing time with any external servers. {alert_msg} | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | kCreate | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx |  | true | N/A | 1606318082804758 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x | kWarning | false |
->| true | N/A | 1606318082851718 | {'entity_type': 'host', 'entity_type_display_name': None, 'entity_name': None, 'uuid': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'id': '2'} |  | Incorrect NTP Configuration | A103076 | true | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx | Cluster | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | alert_msg,<br/>vm_type,<br/>arithmos_id,<br/>cvm_ip,<br/>service_vm_id,<br/>ncc_version,<br/>nos_version,<br/>node_uuid,<br/>node_serial,<br/>block_serial | This CVM is the NTP leader but it is not syncing time with any external NTP server. NTP configuration on CVM is not yet updated with the NTP servers configured in the cluster. The NTP configuration on the CVM will not be updated if the cluster time is in the future relative to the NTP servers.<br/>,<br/>CVM,<br/>2,<br/>xxx.xxx.x.xxx,<br/>2,<br/>x.xx.x.x-xxxxxxxx,<br/>xxxx.xx.xx,<br/>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,<br/>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,<br/>xxxxxxxx | 1606055474619018 |  | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | SystemIndicator | 1606055474619018 | {alert_msg} | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | kCreate | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx |  | true | N/A | 1606318082851706 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x | kWarning | false |
+>### Results
+>|acknowledged|acknowledged_by_username|acknowledged_time_stamp_in_usecs|affected_entities|alert_title|alert_type_uuid|auto_resolved|check_id|classifications|cluster_uuid|context_types|context_values|created_time_stamp_in_usecs|detailed_message|id|impact_types|last_occurrence_time_stamp_in_usecs|message|node_uuid|operation_type|originating_cluster_uuid|resolved|resolved_by_username|resolved_time_stamp_in_usecs|service_vmid|severity|user_defined|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| true | N/A | 1606318082804764 | {'entity_type': 'host', 'uuid': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'id': '2'} | {vm_type} time not synchronized with any external servers. | A3026 | true | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxx | ControllerVM | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | alert_msg,<br/>vm_type,<br/>arithmos_id,<br/>service_vm_id,<br/>ncc_version,<br/>nos_version,<br/>node_uuid,<br/>node_serial,<br/>block_serial | NTP leader is not synchronizing to an external NTP server,<br/>CVM,<br/>2,<br/>2,<br/>x.xx.x.x-xxxxxxxx,<br/>2020.09.16,<br/>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,<br/>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,<br/>xxxxxxxx | 1606055474675609 |  | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Configuration | 1606055474675609 | The {vm_type} is not synchronizing time with any external servers. {alert_msg} | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | kCreate | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | true | N/A | 1606318082804758 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x | kWarning | false |
+>| true | N/A | 1606318082851718 | {'entity_type': 'host', 'uuid': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx', 'id': '2'} | Incorrect NTP Configuration | A103076 | true | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx | Cluster | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | alert_msg,<br/>vm_type,<br/>arithmos_id,<br/>cvm_ip,<br/>service_vm_id,<br/>ncc_version,<br/>nos_version,<br/>node_uuid,<br/>node_serial,<br/>block_serial | This CVM is the NTP leader but it is not syncing time with any external NTP server. NTP configuration on CVM is not yet updated with the NTP servers configured in the cluster. The NTP configuration on the CVM will not be updated if the cluster time is in the future relative to the NTP servers.<br/>,<br/>CVM,<br/>2,<br/>xxx.xxx.x.xxx,<br/>2,<br/>x.xx.x.x-xxxxxxxx,<br/>2020.09.16,<br/>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,<br/>xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx,<br/>xxxxxxxx | 1606055474619018 |  | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | SystemIndicator | 1606055474619018 | {alert_msg} | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | kCreate | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | true | N/A | 1606318082851706 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x | kWarning | false |
+
 
 ### nutanix-alert-acknowledge
-
 ***
 Acknowledge alert with the specified alert_id.
 
-### Important
-The following command requires cluster admin or higher permissions,
-in case you want to use this command,
-make sure the user you are using have at least cluster admin permissions
-(Permissions are found in Nutanix Settings in "Users And Roles" Category)
 
 #### Base Command
 
 `nutanix-alert-acknowledge`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The id of the alert to acknowledge. | Required | 
+
 
 #### Context Output
 
@@ -762,33 +716,31 @@ make sure the user you are using have at least cluster admin permissions
 | NutanixHypervisor.Alert.successful | Boolean | Was acknowledge successful. | 
 | NutanixHypervisor.Alert.message | String | The message returned by the acknowledge task. | 
 
-#### Command Example
 
-```!nutanix-alert-acknowledge alert_id=a1a1a1a1-1111-1111-1a1a-aa1a11a1a1a1```
+#### Command Example
+```!nutanix-alert-acknowledge alert_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx```
 
 #### Context Example
-
 ```json
 {
-  "NutanixHypervisor": {
-    "Alert": {
-      "id": "a1a1a1a1-1111-1111-1a1a-aa1a11a1a1a1",
-      "message": null,
-      "successful": true
+    "NutanixHypervisor": {
+        "Alert": {
+            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "successful": true
+        }
     }
-  }
 }
 ```
 
 #### Human Readable Output
 
-> ### Results
->|id|message|successful|
->|---|---|---|
->| a1a1a1a1-1111-1111-1a1a-aa1a11a1a1a1 |  | true |
+>### Results
+>|id|successful|
+>|---|---|
+>| xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | true |
+
 
 ### nutanix-alert-resolve
-
 ***
 Resolve alert with the specified alert_id.
 
@@ -801,12 +753,12 @@ make sure the user you are using have at least cluster admin permissions
 #### Base Command
 
 `nutanix-alert-resolve`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The id of the alert to resolve. | Required | 
+
 
 #### Context Output
 
@@ -816,33 +768,31 @@ make sure the user you are using have at least cluster admin permissions
 | NutanixHypervisor.Alert.successful | Boolean | Was resolve successful. | 
 | NutanixHypervisor.Alert.message | String | The message returned by the resolve task. | 
 
-#### Command Example
 
-```!nutanix-alert-resolve alert_id=a1a1a1a1-1111-1111-1a1a-aa1a11a1a1a1```
+#### Command Example
+```!nutanix-alert-resolve alert_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx```
 
 #### Context Example
-
 ```json
 {
-  "NutanixHypervisor": {
-    "Alert": {
-      "id": "a1a1a1a1-1111-1111-1a1a-aa1a11a1a1a1",
-      "message": null,
-      "successful": true
+    "NutanixHypervisor": {
+        "Alert": {
+            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "successful": true
+        }
     }
-  }
 }
 ```
 
 #### Human Readable Output
 
-> ### Results
->|id|message|successful|
->|---|---|---|
->| a1a1a1a1-1111-1111-1a1a-aa1a11a1a1a1 |  | true |
+>### Results
+>|id|successful|
+>|---|---|
+>| xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | true |
+
 
 ### nutanix-alerts-acknowledge-by-filter
-
 ***
 Acknowledge alerts using a filters.
 
@@ -852,11 +802,9 @@ in case you want to use this command,
 make sure the user you are using have at least cluster admin permissions
 (Permissions are found in Nutanix Settings in "Users And Roles" Category)
 
-
 #### Base Command
 
 `nutanix-alerts-acknowledge-by-filter`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -866,8 +814,9 @@ make sure the user you are using have at least cluster admin permissions
 | severity | Comma separated list. Acknowledge alerts that their severity level matches one of the severities in severity list. Possible values are: CRITICAL, WARNING, INFO, AUDIT. | Optional | 
 | impact_types | Comma separated list. Acknowledge alerts that their impact type matches one of the impact types in impact_types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given impact_types = 'SystemIndicator',only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be acknowledged. | Optional | 
 | classifications | Comma separated list. Acknowledge alerts that their classifications matches one of the classification in classifications list given. For example, alert 'Pulse cannot connect to REST server endpoint' has classification of Cluster. Given classifications = 'cluster', only alerts with classification of 'cluster', such as 'Pulse cannot connect to REST server endpoint' will be acknowledged. | Optional | 
-| entity_types | Comma separated list. Acknowledge alerts that their entity_type matches one of the entity_type in entity_types list. Examples for entity types: [VM, Host, Disk, Storage Container, Cluster]. If Nutanix service can't recognize the entity type, it returns 404 response. | Optional |
+| entity_types | Comma separated list. Acknowledge alerts that their entity_type matches one of the entity_type in entity_types list. Examples for entity types: [VM, Host, Disk, Storage Container, Cluster]. If Nutanix service can't recognize the entity type, it returns 404 response. | Optional | 
 | limit | Maximum number of alerts to acknowledge. Nutanix does not have max for limit, but a very high limit value will cause read timeout exception. | Optional | 
+
 
 #### Context Output
 
@@ -879,12 +828,11 @@ make sure the user you are using have at least cluster admin permissions
 | NutanixHypervisor.Alert.alert_status_list.successful | Boolean | Was acknowledge for this task successful. | 
 | NutanixHypervisor.Alert.alert_status_list.message | String | Message returned by acknowledge operation. | 
 
-#### Command Example
 
+#### Command Example
 ```!nutanix-alerts-acknowledge-by-filter end_time=2021-12-22T13:14:15 entity_types=Host classifications=ControllerVM severity=WARNING```
 
 #### Context Example
-
 ```json
 {
   "NutanixHypervisor": {
@@ -910,8 +858,8 @@ make sure the user you are using have at least cluster admin permissions
 >|---|---|---|
 >| {"id": "0:0", "successful": true, "message": null} | 0 | 1 |
 
-### nutanix-alerts-resolve-by-filter
 
+### nutanix-alerts-resolve-by-filter
 ***
 Resolve alerts using a filters.
 
@@ -924,7 +872,6 @@ make sure the user you are using have at least cluster admin permissions
 #### Base Command
 
 `nutanix-alerts-resolve-by-filter`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -937,6 +884,7 @@ make sure the user you are using have at least cluster admin permissions
 | entity_types | Comma separated list. Resolve alerts that their entity_type matches one of the entity_type in entity_types list. Examples for entity types: [VM, Host, Disk, Storage Container, Cluster]. If Nutanix service can't recognize the entity type, it returns 404 response. | Optional |
 | limit | Maximum number of alerts to resolve. Nutanix does not have max for limit, but a very high limit value will cause read timeout exception. | Optional | 
 
+
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -947,12 +895,11 @@ make sure the user you are using have at least cluster admin permissions
 | NutanixHypervisor.Alert.alert_status_list.successful | Boolean | Was resolve for this task successful. | 
 | NutanixHypervisor.Alert.alert_status_list.message | String | Message returned by resolve operation. | 
 
-#### Command Example
 
+#### Command Example
 ```!nutanix-alerts-resolve-by-filter classifications=cluster limit=2 impact_types=SystemIndicator entity_types=VM```
 
 #### Context Example
-
 ```json
 {
   "NutanixHypervisor": {
