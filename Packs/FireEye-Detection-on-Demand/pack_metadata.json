@@ -15,16 +15,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "fireeye",
-        "detection",
-        "demand",
-        "detonate",
-        "malware",
-        "analysis",
-        "lookup",
-        "hash",
-        "file",
-        "url"
+        "Malware"
     ],
     "useCases": [],
     "keywords": [
