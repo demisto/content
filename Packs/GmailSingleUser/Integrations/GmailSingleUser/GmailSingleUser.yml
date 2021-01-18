@@ -208,7 +208,7 @@ script:
     description: Starts the OAuth2 process. Get a link to use to authenticate to Gmail.
   - name: gmail-auth-test
     arguments: []
-    description: Tests that Gmail auth is properly configured. Use this command after
+    description: Tests that Gmail auth is configured properly. Use this command after
       completing the OAuth2 authentication process.
   dockerimage: demisto/google-api-py3:1.0.0.14611
   isfetch: true
