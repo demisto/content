@@ -4,6 +4,7 @@ import subprocess
 import warnings
 from collections import deque
 from multiprocessing import Process
+from typing import Callable
 
 import exchangelib
 from CommonServerPython import *
@@ -1137,8 +1138,11 @@ def parse_incident_from_item(item, is_fetch):
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
                             attached_email = email.message_from_string(attachment.item.mime_content)
                             if attachment.item.headers:
-                                attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
-                                                          attached_email.items()]
+                                attached_email_headers = []
+                                for h, v in attached_email.items():
+                                    if hasattr(v, 'split'):
+                                        v = ' '.join(map(str.strip, v.split('\r\n')))
+                                    attached_email_headers.append((h, v))
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
                                             and header.name != 'Content-Type':
