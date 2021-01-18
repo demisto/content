@@ -38,6 +38,7 @@ This integration was integrated and tested with Splunk v7.2.
 | fetch_time | The first timestamp to fetch in \<number\>\<time unit\> format. For example, "12 hours", "7 days", "3 months", "1 year". | False |
 | use_requests_handler | Use Python requests handler  | False |
 | type_field | Used only for Mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for Notable Events, however you may choose any custom field that suits the need. | False |
+| use_cim | Use this option to get the mapping fields by Splunk CIM. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. | False | 
 
 The (!) `Earliest time to fetch` and `Latest time to fetch` are search parameters options. The search uses `All Time` as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as `earliest_time`, `index_earliest`, or `latest_time`.
 
@@ -76,6 +77,13 @@ When creating a new field Mapping for fetched incidents, the `Pull Instances` op
 The `Select Schema` option retrieves possible objects, even if they are not the next objects to be fetched, or have not been triggered in the past 24 hours. 
 This enables you to map fields for an incident without having to generate a new alert or incident just for the sake of mapping.
 The `get-mapping-fields` command can be executed in the Playground to test and review the list of sample objects that are returned under the current configuration.
+
+### Mapping Splunk CIM fields using Select Schema
+This integration supports the `Select Schema` feature of XSOAR 6.0 by providing the `get-mapping-fields` command. 
+When creating a new field Mapping for fetched incidents, the `Pull Instances` option retrieves current alerts which can be clicked to visually map fields.
+If the user has configured the `Use CIM Schemas for Mapping` parameter then the `Select Schema` option retrieves fields based Splunk CIM.
+For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
+The CIM mapping fields implemented in this integration are of 4.18.0 version.
 
 To use this feature, you must set several integration instance parameters:
  - `Fetch notable events ES query` - The query used for fetching new incidents. `Select Schema` will run a modified version of this query to get the object samples, so it is important to have the correct query here. 

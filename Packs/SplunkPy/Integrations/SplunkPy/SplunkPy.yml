@@ -110,6 +110,12 @@ configuration:
   name: type_field
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: Use CIM Schemas for Mapping
+  name: use_cim
+  required: false
+  type: 8
+  additionalinfo: Use this option to get the mapping fields by Splunk CIM. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. 
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
