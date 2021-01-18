@@ -195,7 +195,7 @@ tasks:
     task:
       id: 23e39110-27fc-462f-8abd-c42c0df89a59
       version: -1
-      name: Assign Active Incidents to Next Shift_V2
+      name: Assign Active Incidents to Next Shift V2
       description: "This playbook reassigns Active Incidents to the current users\
         \ on call. It requires shift management to be setup. This playbook can be run as a job a\
         \ few minutes after the scheduled shift change time.\n\nYou can update the playbook\
@@ -203,7 +203,7 @@ tasks:
         \ are no incidents that match the query or no users on call. \n\nSearch\
         \ results are the default 100 incidents returned by the query.\n\nCases will\
         \ not be assigned to users who are defined as OOO (by the OutOfOffice automation)."
-      playbookName: Assign Active Incidents to Next Shift_V2
+      playbookName: Assign Active Incidents to Next Shift V2
       type: playbook
       iscommand: false
       brand: ""
