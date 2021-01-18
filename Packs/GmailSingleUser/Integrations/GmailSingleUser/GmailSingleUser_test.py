@@ -147,8 +147,8 @@ def test_header_to_date():
 
 def test_no_label_mail_context_creation():
     client = Client()
-    context_gmail, _, _, occured, is_internal = client.get_email_context(MOCK_MAIL_NO_LABELS, "some_mail")
-    assert int(occured.timestamp()) == 1572251535
+    context_gmail, _, _, occurred, is_internal = client.get_email_context(MOCK_MAIL_NO_LABELS, "some_mail")
+    assert int(occurred.timestamp()) == 1572251535
     assert is_internal
     assert context_gmail.get('Labels') == EXPECTED_GMAIL_CONTEXT.get('Labels')
     assert context_gmail.get('To') == EXPECTED_GMAIL_CONTEXT.get('To')
@@ -156,24 +156,24 @@ def test_no_label_mail_context_creation():
     assert context_gmail.get('Subject') == EXPECTED_GMAIL_CONTEXT.get('Subject')
 
 
-def test_extract_occured_no_heaers():
-    occured, is_valid = Client.get_occured_date({
+def test_extract_occurred_no_heaers():
+    occurred, is_valid = Client.get_occurred_date({
         'payload': {
             'headers': [{'name': 'stam', 'value': 'stam'}]
         },
         'internalDate': '1610642469000'
     })
     assert is_valid
-    assert occured.timestamp() == 1610642469
+    assert occurred.timestamp() == 1610642469
 
 
 def test_no_date_mail():
     with open('test_data/email_no_date.json', 'r') as f:
         msg = json.load(f)
     client = Client()
-    context_gmail, _, _, occured, is_valid = client.get_email_context(msg, "some_mail")
+    context_gmail, _, _, occurred, is_valid = client.get_email_context(msg, "some_mail")
     # check that the x-received date was usd
-    assert occured.timestamp() == parsedate_to_datetime('Mon, 21 Dec 2020 12:11:57 -0800').timestamp()
+    assert occurred.timestamp() == parsedate_to_datetime('Mon, 21 Dec 2020 12:11:57 -0800').timestamp()
     assert is_valid
     assert context_gmail.get('Date') == 'Mon, 21 Dec 2020 12:11:57 -0800'
 
