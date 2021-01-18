@@ -1,5 +1,5 @@
 {
-    "name": "Computer Vision Engine",
+    "name": "ComputerVisionEngine",
     "description": "This integration allows the user to recognize objects on pictures using Computer Vision and Machine Learning.",
     "support": "community",
     "currentVersion": "1.0.0",
