@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from typing import Dict, Set
 
 
@@ -99,8 +101,7 @@ def get_mitigations(client: Client) -> CommandResults:
     mitigations_results = client.get_mitigations(timeout=timeout, mitigations_state=state)
 
     mitigations_formatted = []
-    table_headers = ["ID", "Name", "SeverityType", "AttackVectorsUsePercentage", "AttackVectorsCount",
-                     "Procedures", "Techniques", "SubTechniques", "References"]
+    table_headers = ["ID", "Name", "SeverityType", "AttackVectorsUsePercentage", "AttackVectorsCount", "Techniques"]
 
     for mitigation in mitigations_results.get("mitigations", {}):
         extended_info = client.get_mitigation_by_id(mitigation["id"])
@@ -112,10 +113,8 @@ def get_mitigations(client: Client) -> CommandResults:
                                       "SeverityType": severity_type,
                                       "AttackVectorsUsePercentage": severity_percentage,
                                       "AttackVectorsCount": mitigation["vectorCount"],
-                                      "Procedures": mitigation["procedures"],
                                       "Techniques": mitigation["mitigations"],
-                                      "SubTechniques": extended_info["subtechniques"],
-                                      "References": extended_info["references"]})
+                                      })
 
     readable_output = tableToMarkdown('Mitigations', mitigations_formatted, headers=table_headers)
 
@@ -124,6 +123,7 @@ def get_mitigations(client: Client) -> CommandResults:
         outputs_key_field="ID",
         readable_output=readable_output,
         outputs=mitigations_formatted,
+        raw_response=""
     )
     return command_results
 

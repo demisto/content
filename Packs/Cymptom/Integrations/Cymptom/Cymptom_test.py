@@ -399,9 +399,6 @@ def test_get_mitigations(requests_mock):
     create_mitigations_requests_mocks(requests_mock)
     outputs = get_mitigations(client=client).outputs
     assert len(outputs) == 1
-    assert len(outputs[0]["Procedures"]) == 4
-    assert len(outputs[0]["Techniques"]) == 4
-    assert len(outputs[0]["SubTechniques"]) == 4
 
 
 def test_get_users_with_cracked_passwords(requests_mock):

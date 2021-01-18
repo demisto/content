@@ -46,10 +46,7 @@ This command returns mitigations recommended by Cymptom
 | Cymptom.Mitigations.AttackVectorsUsedPercentage | String | The percentage of attack vectors used that can be mitigated | 
 | Cymptom.Mitigations.ID | String | The mitigation's ID | 
 | Cymptom.Mitigations.AttackVectorsCount | number | The attack vectors counts that can be mitigated | 
-| Cymptom.Mitigations.Procedures | unknown | Procedures relevant for this mitigation | 
 | Cymptom.Mitigations.Techniques | unknown | Techniques relevant for this mitigation | 
-| Cymptom.Mitigations.SubTechniques | String | Sub Techniques relevant for this mitigation | 
-| Cymptom.Mitigations.References | String | References relevant for this mitigation | 
 
 
 #### Command Example
@@ -59,9 +56,9 @@ This command returns mitigations recommended by Cymptom
 
 #### Human Readable Output
 ##### Mitigations
-|ID|Name|Severity Type|Attack Vectors Use Percentage|Attack Vectors Count|Procedures|Techniques|Sub Techniques|References|
-|---|---|---|---|---|---|---|---|---|
-| 3936 | Steal or Forge Kerberos Tickets | Critical | 21.16 | 299 | {'name': 'Kerberoasting-44', 'state': 'open'},<br>{'name': 'Kerberoasting-161', 'state': 'open'},<br>{'name': 'Golden Ticket-1957', 'state': 'open'} | Encrypt Sensitive Information,<br>Privileged Account Management,<br>Active Directory Configuration,<br>Password Policies | {'id': 304, 'name': 'Kerberoasting'}|
+|ID|Name|Severity Type|Attack Vectors Use Percentage|Attack Vectors Count|Techniques|
+|---|---|---|---|---|---|
+| 3936 | Steal or Forge Kerberos Tickets | Critical | 21.16 | 299 | Encrypt Sensitive Information,<br>Privileged Account Management,<br>Active Directory Configuration,<br>Password Policies | 
 ### cymptom-get-users-with-cracked-passwords
 ***
 This command returns users with cracked password
