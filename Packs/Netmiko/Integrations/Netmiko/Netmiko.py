@@ -159,7 +159,7 @@ def main():
     port = int(params.get('port'))
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
-    ssh_key = params.get('credentials', {}).get('credentials', {}).get('sshkey')
+    ssh_key = params.get('credentials', {}).get('sshkey')
     keys = None
     if ssh_key:
         if password:
