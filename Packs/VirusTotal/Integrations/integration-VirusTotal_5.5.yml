@@ -531,16 +531,15 @@ script:
                 urls.push(urlList[z]);
             }
         }
-        return [urls, nonUrls];
+        return {'validURLs': urls, 'invalidURLs': nonUrls};
 
     }
     function doURL(url, threshold, longFormat, sampleSize, submitWait, waitForRateLimit, retries) {
         //lowercase the URL protocol
         //Example: https://www.demisto.com --> https://www.demisto.com, Http://www.demisto.com --> http://www.demisto.com, www.demisto.com --> www.demisto.com
         var urls = getURLs(url);
-        var urlList = urls[0];
+        var urlList = urls.validURLs;
         var entryList = [];
-        var md = ''
         for (z = 0; z < urlList.length; z++) {
             url = urlList[z];
             var protocol = url.match(/\b^[^:]+(?=:\/\/)\b/);
@@ -568,7 +567,7 @@ script:
                     HumanReadable: 'VirusTotal does not have details about ' + url + '\n' + res.obj.verbose_msg});
                 continue;
             }
-            md += '## VirusTotal URL Reputation for: ' + url + '\n';
+            var md = '## VirusTotal URL Reputation for: ' + url + '\n';
             if (!o.scans && submitWait>0) {
                 wait(parseInt(submitWait));
                 res = doReq('GET', 'url/report', {resource: url});
@@ -647,6 +646,7 @@ script:
                     }
                 }
             }
+
             entryList.push({
                 Type: entryTypes.note,
                 Contents: res.body,
@@ -656,14 +656,14 @@ script:
             });
         }
 
-        nonUrls = urls[1]
-        if (nonUrls.length !== 0) {
-            md = "### The following indicators were not scanned since they are not valid URLs: \n" + nonUrls
+        invalidURLsList = urls.invalidURLs
+        if (invalidURLsList.length !== 0) {
+            var invalidURLsMd = "### The following indicators were not scanned since they are not valid URLs: \n" + invalidURLsList
             entryList.push({
                 Type: entryTypes.note,
                 Contents: {},
                 ContentsFormat: formats.json,
-                HumanReadable: md,
+                HumanReadable: invalidURLsMd,
                 EntryContext: {}
             });
         }
