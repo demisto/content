@@ -41,7 +41,7 @@ class Server():
         except Exception as err:
             return_error(err)
 
-    def send_data(self, value) -> byte:
+    def send_data(self, value):
         data = None
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
