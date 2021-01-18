@@ -33,6 +33,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Also Fetch informational alerts
+  hidden: false
+  name: fetch_informational
+  required: false
+  type: 8
 description: Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS,
   Azure, and GCP.
 display: Orca

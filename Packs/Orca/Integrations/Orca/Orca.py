@@ -52,11 +52,11 @@ class OrcaClient:
 
         return alerts
 
-    def get_all_alerts(self) -> List[Dict[str, Any]]:
+    def get_all_alerts(self, fetch_informational: bool = False) -> List[Dict[str, Any]]:
         demisto.info("get_all_alerts, enter")
 
         alerts: List[Dict[str, Any]] = []
-        params: Dict[str, Any] = {"show_informational_alerts": True}
+        params: Dict[str, Any] = {"show_informational_alerts": True} if fetch_informational else {}
         next_page_token = None
 
         while True:
@@ -94,9 +94,9 @@ class OrcaClient:
 
 
 def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # pylint: disable=E1136
-    demisto_unknown = 0  # noqa: F841
+    # demisto_unknown = 0  (commented because of linter issues)
     demisto_informational = 0.5
-    demisto_low = 1  # noqa: F841
+    # demisto_low = 1  (commented because of linter issues)
     demisto_medium = 2
     demisto_high = 3
     demisto_critical = 4
@@ -107,7 +107,7 @@ def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # py
     return MAPPING[orca_score]
 
 
-def fetch_incidents(orca_client: OrcaClient, max_fetch: int) -> List[Dict[str, Any]]:
+def fetch_incidents(orca_client: OrcaClient, max_fetch: int, fetch_informational: bool = False) -> List[Dict[str, Any]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
 
     if demisto.getLastRun().get('lastRun'):
@@ -133,7 +133,7 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int) -> List[Dict[str, A
 
     else:
         # this is the first run
-        alerts = orca_client.get_all_alerts()
+        alerts = orca_client.get_all_alerts(fetch_informational=fetch_informational)
         if not alerts:
             demisto.incidents([])
             return []
@@ -169,6 +169,7 @@ def main() -> None:
         command = demisto.command()
         demisto.debug(f'Orca Command being called is {command}')
         api_key = demisto.params().get('apikey')
+        fetch_informational = demisto.params().get('fetch_informational')
 
         client = BaseClient(
             base_url=ORCA_API_DNS_NAME,
@@ -200,7 +201,8 @@ def main() -> None:
             return_results(command_result)
 
         elif command == "fetch-incidents":
-            fetch_incidents(orca_client, max_fetch=int(demisto.params().get('max_fetch')))
+            fetch_incidents(orca_client, max_fetch=int(demisto.params().get('max_fetch')),
+                            fetch_informational=fetch_informational)
 
         elif command == "test-module":
             test_res = orca_client.validate_api_key()
