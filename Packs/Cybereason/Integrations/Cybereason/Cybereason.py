@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import time
 import re
 import sys
-
+# add this note
 # Define utf8 as default encoding
 reload(sys)
 sys.setdefaultencoding('utf8')  # pylint: disable=maybe-no-member
