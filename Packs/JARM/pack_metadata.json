@@ -1,6 +1,6 @@
 {
     "name": "JARM",
-    "description": "Active TLS fingerprinting using JARM",
+    "description": "This pack introduces the the JARM indicator type and commands for generating new JARM fingerprints of servers using TLS.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
