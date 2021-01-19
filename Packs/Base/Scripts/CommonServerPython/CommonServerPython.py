@@ -4170,13 +4170,16 @@ class CommandResults:
     :type ignore_auto_extract: ``bool``
     :param ignore_auto_extract: must be a boolean, default value is False. Used to prevent AutoExtract on output.
 
+    :type mark_as_note: ``bool``
+    :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
+
     :return: None
     :rtype: ``None``
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
                  raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False, mark_as_note=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool) -> None
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool) -> None
         if raw_response is None:
             raw_response = outputs
 
