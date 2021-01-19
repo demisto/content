@@ -183,6 +183,8 @@ def main() -> None:
             return_results(clusters_list(client))
         elif command == 'azure-ks-cluster-addon-update':
             return_results(clusters_addon_update(client, args))
+        else:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}', e)
 
