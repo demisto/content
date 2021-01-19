@@ -3248,7 +3248,6 @@
         "Generic Webhook - Test": "Issue 30797",
         "PhishLabsIOC TestPlaybook": "Issue 30874",
         "Test-VulnDB": "Issue 30875",
-        "Malware Domain List Active IPs Feed Test": "Issue 30878",
         "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
         "Cisco Umbrella Test": "Issue 24338",
