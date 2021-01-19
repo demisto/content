@@ -4400,6 +4400,41 @@ script:
     description: Creates a WildFire analysis best practice profile.
     execution: false
     name: panorama-create-wildfire-best-practice-profile
+  - name: panorama-upload-content-update-file
+    arguments:
+    - name: entryID
+      required: true
+      description: Entry id of the file to upload
+    - name: category
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - wildfire
+        - anti-virus
+        - content
+      description: 'File type '
+    description: Uploads content file to Panorama
+  - name: panorama-install-file-content-update
+    arguments:
+      - name: version_name
+        required: true
+        description: Update name to install on Panorama.
+      - name: category
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - wildfire
+          - anti-virus
+          - content
+        description: File type.
+    outputs:
+      - contextPath: Panorama.Content.Install.JobID
+        description: JobID of the installation.
+        type: string
+      - contextPath: Content.Install.Status
+        description: Installation status.
+        type: string
+    description: Installs specific content update file.
   dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
