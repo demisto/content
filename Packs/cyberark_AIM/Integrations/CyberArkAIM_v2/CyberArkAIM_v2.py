@@ -95,7 +95,13 @@ def fetch_credentials(client):
     :param client: the client object with the given params
     :return: a credentials object
     """
-    creds_list = client.list_credentials()
+    creds_name = demisto.args().get('identifier')
+    demisto.debug('name of cred used: ', creds_name)
+
+    if creds_name:
+        creds_list = [client.get_credentials(creds_name)]
+    else:
+        creds_list = client.list_credentials()
     credentials = []
     for cred in creds_list:
         credentials.append({
@@ -116,7 +122,6 @@ def test_module(client: Client) -> str:
 
 
 def main():
-
     params = demisto.params()
 
     url = params.get('url')
