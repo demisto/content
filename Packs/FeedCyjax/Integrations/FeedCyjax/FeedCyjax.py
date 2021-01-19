@@ -251,8 +251,8 @@ def map_reputation_to_score(reputation: str) -> int:
     return reputation_map.get(reputation.lower(), 0)
 
 
-def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, tlp: Optional[str] = None) \
-        -> Dict[str, Any]:
+def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, tlp: Optional[str] = None,
+                            tags: Optional[list] = None) -> Dict[str, Any]:
     """Convert Cyjax indicator into XSOAR indicator
 
     :type cyjax_indicator: ``dict``
@@ -264,6 +264,9 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, 
     :type tlp: ``Optional[str]``
     :param tlp: The score that should be applied to the XSOAR indicator
 
+    :type tags: ``Optional[list]``
+    :param tags: A list of tags to add to indicators
+
     :return: Indicator dict
     :rtype: ``Dict[str, Any]``
     """
@@ -272,6 +275,9 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, 
 
     if tlp is None and 'handling_condition' in cyjax_indicator:
         tlp = cyjax_indicator.get('handling_condition')
+
+    if tags is None:
+        tags = []
 
     indicator_date = dateparser.parse(cyjax_indicator.get('discovered_at'))
 
@@ -289,6 +295,9 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, 
 
     if tlp is not None:
         fields['trafficlightprotocol'] = tlp
+
+    if tags:
+        fields['tags'] = tags
 
     if 'description' in cyjax_indicator:
         fields['description'] = cyjax_indicator.get('description')
@@ -340,8 +349,8 @@ def test_module(client: Client) -> str:
         return 'Could not connect to Cyjax API ({})'.format(error_msg)
 
 
-def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputation: str, tlp: Optional[str] = None) -> \
-        Tuple[Dict[str, int], List[dict]]:
+def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputation: str, tlp: Optional[str] = None,
+                             tags: Optional[list] = None) -> Tuple[Dict[str, int], List[dict]]:
     """Fetch indicators from Cyjax API.
     This function retrieves new indicators every interval (default is 60 minutes).
 
@@ -356,6 +365,9 @@ def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputati
 
     :type tlp: ``Optional[str]``
     :param tlp: TLP to apply to indicators fetched from the feed. If None, use TLP set by Cyjax.
+
+    :type tags: ``Optional[list]``
+    :param tags: A list of tags to add to indicators
 
     :return: A tuple containing two elements:
             next_run (``Dict[str, int]``): Contains the timestamp that will be
@@ -375,7 +387,7 @@ def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputati
         indicator_date = dateparser.parse(cyjax_indicator.get('discovered_at'))
         indicator_timestamp = int(indicator_date.timestamp())
 
-        indicators.append(convert_cyjax_indicator(cyjax_indicator, indicators_score, tlp))
+        indicators.append(convert_cyjax_indicator(cyjax_indicator, indicators_score, tlp, tags))
 
         # Update last run
         if indicator_timestamp > last_run_timestamp:
@@ -486,6 +498,7 @@ def main() -> None:
     use_cyjax_tlp = params.get('use_cyjax_tlp', False)
     tlp_color = params.get('tlp_color')
     tlp_to_use = tlp_color if use_cyjax_tlp is False else None  # Whether to use Cyjax TLP or TLP set by the user.
+    tags = params.get('feedTags')
 
     demisto.debug(f'Command being called is {demisto.command()}')
     demisto.info(f' --------- !!±!!!!!!!! ----------- CYJAX ----- Command being called is {demisto.command()}')
@@ -507,7 +520,7 @@ def main() -> None:
             demisto.info('-------------- CYJAX fetch-indicators called at {}, use date: {}'.
                          format(datetime.now().isoformat(), last_fetch_date.isoformat()))
 
-            next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation, tlp_to_use)
+            next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation, tlp_to_use, tags)
 
             if indicators:
                 demisto.info('------------------ CYJAX FOUND INDICATORS')
