@@ -110,6 +110,18 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
+    - contextPath: File.FeedRelatedIndicators
+      description: Indicators that are associated with the File
+      type: String
+    - contextPath: File.Tags
+      description: Tags that are associated with the File
+      type: String
+    - contextPath: File.Behavior.Details
+      description: File behavior details
+      type: String
+    - contextPath: File.Behavior.Action
+      description: File behavior action
+      type: String
   - arguments:
     - default: false
       description: ID of the entry containing the file to upload

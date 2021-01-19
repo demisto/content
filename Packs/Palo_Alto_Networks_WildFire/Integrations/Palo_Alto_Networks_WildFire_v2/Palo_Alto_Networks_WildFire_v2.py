@@ -525,9 +525,9 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                     if '-response' in dns_obj:
                         dns_response.append(dns_obj['-response'])
             if 'url' in report["network"]:
-                if '@host' in ["network"]["url"]:
+                if '@host' in report["network"]["url"]:
                     feed_related_indicators.append(report["network"]["url"]["@host"])
-                if '@uri' in ["network"]["url"]:
+                if '@uri' in report["network"]["url"]:
                     feed_related_indicators.append(report["network"]["url"]["@uri"])
 
         if 'evidence' in report and report["evidence"]:
@@ -541,10 +541,10 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
         if 'elf_info' in report and report["elf_info"]:
             if 'Domains' in report["elf_info"]:
                 if isinstance(report["elf_info"]["Domains"], dict) and 'entry' in report["elf_info"]["Domains"]:
-                    feed_related_indicators.append(report["elf_info"]["Domains"]["entry"])
+                    feed_related_indicators + report["elf_info"]["Domains"]["entry"]
             if 'IP_Addresses' in report["elf_info"]:
                 if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in report["elf_info"]["IP_Addresses"]:
-                    feed_related_indicators.append(report["elf_info"]["IP_Addresses"]["entry"])
+                    feed_related_indicators + report["elf_info"]["IP_Addresses"]["entry"]
             if 'suspicious' in report["elf_info"]:
                 if 'entry' in report["elf_info"]['suspicious']:
                     for entry_obj in report["elf_info"]['suspicious']['entry']:
@@ -552,15 +552,15 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                             behavior['Details'].append(entry_obj['#text'])
         if 'elf_api' in report and report["elf_api"]:
             if 'Suspicious_Action_Monitored' in report["elf_api"]:
-                    for suspicious_obj in report["elf_api"]['Suspicious_Action_Monitored']:
-                        if '@Details' in suspicious_obj:
-                            behavior['Details'].append(suspicious_obj['@Details'])
+                for suspicious_obj in report["elf_api"]['Suspicious_Action_Monitored']:
+                    if '@Details' in suspicious_obj:
+                        behavior['Details'].append(suspicious_obj['@Details'])
 
         if 'syscall' in report and report["syscall"]:
             if 'file' in report["syscall"]:
                 for file_obj in report["syscall"]["file"]:
                     if '@path' in file_obj:
-                        feed_related_indicators.append(file_obj["-ip"])
+                        feed_related_indicators.append(file_obj["@path"])
 
         if 'summary' in report and report["summary"]:
             if 'entry' in report["summary"]:
