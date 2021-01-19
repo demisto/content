@@ -56,11 +56,9 @@ def jarm_fingerprint_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 def main() -> None:
 
-    # TODO: proxy is currently not implemented in the JARM library
-    proxy = demisto.params().get('proxy', False)
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
+        handle_proxy()
         client = Client()
 
         if demisto.command() == 'test-module':
