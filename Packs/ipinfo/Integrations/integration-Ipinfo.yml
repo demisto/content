@@ -57,16 +57,26 @@ script:
             return 'not cool';
         case 'ip':
             var o = sendRequest(base + args.ip + jsonSuffix, true);
-
-            var asn = o.asn? o.asn.asn: o.org;
-            var asn_owner = o.asn? o.asn.name: '';
+            var asn = '';
+            var asn_owner = '';
             var organization = o.company? {Name:  o.company.name, Type:  o.company.type}: '';
             var abuse = o.Abuse? {Address: o.abuse.address, Country: o.abuse.country, Name: o.abuse.name, Network: o.abuse.network, Phone: o.abuse.phone, Email: o.abuse.email}: '';
             var feed_related_indicators = [o.hostname];
             if(o.asn){
+                if(o.asn.asn){
+                    asn = o.asn.asn
+                }
+                if(o.asn.name){
+                    asn_owner = o.asn.name
+                }
                 if(o.asn.domain){
                     feed_related_indicators.push('o.asn.domain');
             }}
+            else if(o.org){
+                var index = o.org.indexOf(' ');
+                asn = o.org.slice(0, index);
+                asn_owner = o.org.slice(index + 1);
+            }
             if(o.company){
                 if(o.company.domain){
                     feed_related_indicators.push('o.company.domain');
@@ -129,37 +139,37 @@ script:
       description: The IP location as <City, Region, Postal Code, Country>
       type: string
     - contextPath: IP.ASOwner
-      description: The IP ASN owner
+      description: The IP AS owner
       type: string
     - contextPath: IP.FeedRelatedIndicators
-      description: Related Indicators
+      description: Indicators that are associated with the IP
       type: string
     - contextPath: IP.Tags
-      description: the tags
+      description: Tags that are associated with the IP
       type: string
     - contextPath: IP.Registrar.Abuse.Address
-      description: The Abuse Address
+      description: The abuse address of the IP
       type: string
     - contextPath: IP.Registrar.Abuse.Country
-      description: The Abuse Country
+      description: The abuse country of the IP
       type: string
     - contextPath: IP.Registrar.Abuse.Name
-      description: The Abuse Name
+      description: The abuse name of the IP
       type: string
     - contextPath: IP.Registrar.Abuse.Network
-      description: The Abuse Network
+      description: The abuse network of the IP
       type: string
     - contextPath: IP.Registrar.Abuse.Phone
-      description: The Abuse Phone
+      description: The abuse phone of the IP
       type: string
     - contextPath: IP.Registrar.Abuse.Email
-      description: The Abuse Email
+      description: The abuse email of the IP
       type: string
     - contextPath: IP.Organization.Name
-      description: The Organization Name
+      description: The organization name of the IP
       type: string
     - contextPath: IP.Organization.Type
-      description: The Organization Type
+      description: The organization type of the IP
       type: string
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
