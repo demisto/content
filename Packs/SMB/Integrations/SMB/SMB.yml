@@ -54,7 +54,8 @@ script:
       predefined:
       - "yes"
       - "no"
-      description: 'If "yes", the file is downloaded and attached. If "no", only the output is attached. Default is yes".'
+      description: 'If "yes", the file is downloaded and attached. If "no", only the
+        output is attached. Default is yes".'
       defaultValue: "yes"
     outputs:
     - contextPath: File.Size
@@ -107,12 +108,39 @@ script:
       description: EntryID of the file to send to the share.
     - name: content
       default: false
-      description: File content to send to the share. Ignored if EntryID argument is specified.
+      description: File content to send to the share. Ignored if EntryID argument
+        is specified.
     deprecated: false
     description: Uploads a file to the SMB server.
     execution: false
     name: smb-upload
-  dockerimage: demisto/smb:1.0.0.7685
+  - name: smb-list-shares
+    arguments: []
+    description: Lists the shares on the SMB server.
+  - name: smb-delete-files
+    arguments:
+    - name: file_path
+      description: 'The path including the file, starting from the share, for example:
+        Share/Folder/filename'
+    description: Deleted file from SMB share.
+  - name: smb-list-files
+    arguments:
+    - name: file_path
+      required: true
+      description: 'The path , starting from the share, for example: /Folder'
+    - name: file_share
+      required: true
+      description: 'The share name , for example: Share'
+    outputs:
+    - contextPath: SMB.File.Name
+      description: File name.
+      type: string
+    - contextPath: SMB.File.Path
+      description: File path.
+    - contextPath: SMB.File.Size
+      description: File size.
+    description: Lists the files in specified path on the SMB server.
+  dockerimage: demisto/smb:1.0.0.14270
   isfetch: false
   runonce: false
   script: '-'
