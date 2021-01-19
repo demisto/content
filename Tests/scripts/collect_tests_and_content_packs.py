@@ -18,7 +18,7 @@ from demisto_sdk.commands.common.constants import *  # noqa: E402
 
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 from Tests.scripts.utils import collect_helpers
-from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata
+from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata, is_pack_deprecated
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
 
@@ -1010,12 +1010,13 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
 
 def filter_tests(tests: set, id_set: json) -> set:
     """
-    Filter tests out from the test set if they are a.Ignored b.Non XSOAR or non-supported packs.
+    Filter tests out from the test set if they are a.Ignored b.Non XSOAR or non-supported packs c. tests of
+    deprecated packs.
     Args:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
     Returns:
-        (set): Set of tests without ignored and non supported tests.
+        (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_without_ignored = remove_ignored_tests(tests, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
@@ -1106,7 +1107,8 @@ def get_test_list_and_content_packs_to_install(files_string,
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     # All filtering out of packs should be done here
-    packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
+    packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES
+                        and not is_pack_deprecated(pack_to_install)}
 
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
