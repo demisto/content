@@ -48,7 +48,7 @@ Trace and analyze information about messages after they have been filtered by th
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | action | Final disposition action message. Possible values are: "accept", "continue", "discard", "redirect", "reject", "retry". | Optional | 
-| start_time | Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). Default is "24 hours". | Optional | 
+| start_time | Time from when the search should begin. Can be either free text (\<number\> \<time unit\>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). Default is "24 hours". | Optional | 
 | end_time | Time of when the search should end. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). | Optional | 
 | virus | Comma-separated list of the detected virus names that infected the message. | Optional | 
 | sender | Email address of the sender. | Optional | 
