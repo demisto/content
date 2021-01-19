@@ -41,7 +41,7 @@ script:
       secret: false
     - default: false
       defaultValue: 24 hours
-      description: Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). Default is "24 hours".
+      description: Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z).
       isArray: false
       name: start_time
       required: false
@@ -115,7 +115,7 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: The maximum number of email messages to return. The maximum value is set by the com.proofpoint.pss.query.default-count value in the filter.cfg file. Default is "100".
+      description: The maximum number of email messages to return. The maximum value is set by the com.proofpoint.pss.query.default-count value in the filter.cfg file.
       isArray: false
       name: limit
       required: false
@@ -275,7 +275,7 @@ script:
       secret: false
     - default: false
       defaultValue: 24 hours
-      description: Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z). Default is "24 hours".
+      description: Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z).
       isArray: false
       name: start_time
       required: false
@@ -288,7 +288,7 @@ script:
       secret: false
     - default: false
       defaultValue: Quarantine
-      description: Quarantine folder name. Default is "Quarantine".
+      description: Quarantine folder name.
       isArray: false
       name: folder_name
       required: false
@@ -363,7 +363,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to rescan the message by the DLP and Attachment Defense filtering modules. Possible values are: "true" and "false". Default is "false".'
+      description: 'Whether to rescan the message by the DLP and Attachment Defense filtering modules. Possible values are: "true" and "false".'
       isArray: false
       name: scan
       predefined:
@@ -434,7 +434,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to append the original subject to the string specified in the subject argument. Possible values are: "true" and "false". Default is "false".'
+      description: 'Whether to append the original subject to the string specified in the subject argument. Possible values are: "true" and "false".'
       isArray: false
       name: append_old_subject
       predefined:
