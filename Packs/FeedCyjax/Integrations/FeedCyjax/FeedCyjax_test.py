@@ -368,6 +368,40 @@ def test_fetch_indicators_main_command_call_use_set_tlp(mocker):
     assert 'AMBER' == expected_indicators[0]['fields']['trafficlightprotocol']
 
 
+def test_fetch_indicators_main_command_call_use_tags(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'apikey': 'test-api-key',
+        'url': 'https://cyjax-api-for-testing.com',
+        'use_cyjax_tlp': True,
+        'feedTags': 'TestTag, YellowTag'
+    })
+
+    last_fetch = datetime(2020, 12, 27, 15, 45)
+    last_fetch_timestamp = int(last_fetch.timestamp())
+
+    mocker.patch.object(demisto, 'getLastRun', return_value={
+        INDICATORS_LAST_FETCH_KEY: last_fetch_timestamp
+    })
+
+    cyjax_indicator = mocked_indicators
+    expected_indicators = [
+        convert_cyjax_indicator(cyjax_indicator[1], None, None, 'TestTag, YellowTag')
+    ]
+
+    mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.list', return_value=[cyjax_indicator[1]])
+    mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
+    mocker.patch.object(demisto, 'createIndicators')
+    mocker.patch.object(demisto, 'setLastRun')
+
+    main()
+
+    assert demisto.createIndicators.call_count == 1
+    assert demisto.setLastRun.call_count == 1
+
+    demisto.createIndicators.assert_called_with(expected_indicators)
+    assert 'TestTag, YellowTag' == expected_indicators[0]['fields']['tags']
+
+
 def test_get_indicators_main_command_call_with_one_new_indicator(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'apikey': 'test-api-key',
