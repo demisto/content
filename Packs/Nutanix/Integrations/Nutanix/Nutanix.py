@@ -307,20 +307,6 @@ def convert_epoch_time_to_datetime(epoch_time: int):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module_command(client: Client):
-    """
-    Performs a basic GET request to check if the API is reachable and authentication is successful.
-
-    Args:
-        client (Client): Client object to perform request.
-
-    Returns:
-        CommandResults.
-    """
-    client.get_nutanix_hypervisor_hosts_list(None, None, None)
-    demisto.results('ok')
-
-
 def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
     auto_resolved = get_optional_boolean_param(params, 'auto_resolved')
     resolved = True if auto_resolved else get_optional_boolean_param(params, 'resolved')
@@ -803,7 +789,8 @@ def main() -> None:
             auth=(username, password))
 
         if command == 'test-module':
-            test_module_command(client)
+            fetch_incidents_command(client, params, {})
+            demisto.results('ok')
 
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
