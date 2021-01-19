@@ -522,7 +522,8 @@
         },
         {
             "integrations": "Cloaken",
-            "playbookID": "Cloaken-Test"
+            "playbookID": "Cloaken-Test",
+            "is_mockable": false
         },
         {
             "integrations": "ThreatX",
