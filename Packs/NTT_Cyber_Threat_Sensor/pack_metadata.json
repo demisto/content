@@ -39,6 +39,5 @@
         "PcapAnalysis",
         "CommonTypes",
         "CommonScripts"
-    ],
-    "certification": "certified"
+    ]
 }
