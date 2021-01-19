@@ -1,5 +1,9 @@
 Deploy and manage containerized applications with a fully managed Kubernetes service.
 
+This integration was integrated and tested with API version ***2020-09-01*** of AKS.
+
+Note: The integration is in ***beta*** as it uses a preview version of the AKS API. The stable AKS API version does not contain all required endpoints used in some of the integration commands.
+
 ## Authorization
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
