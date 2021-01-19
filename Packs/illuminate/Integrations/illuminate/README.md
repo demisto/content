@@ -1,9 +1,7 @@
 ## Overview
 ---
 
-Illuminate is an indicator, countermeasure and sensor management tool that enables analysts to collect and analyze evidence of malicious activity. Illuminate’s web based interface provides a single location to collect and analyze evidence of malicious activity and manage indicators then author, test, task and track rules to detect malicious cyber activity. Maintaing traceability between evidence, indicators, rules and sensors, analysts can identify why a rule was created, the type of activity it detects and what sensors are tasked.
-
-This integration utilizes AnalystPlatform's illuminate system to enrich Demisto indicators with data provided by the illuminate REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
+Deprecated. Use Analyst1 integration instead.
 
 This integration was integrated and tested with version 1.8.7 of illuminate
 ## illuminate Playbook
