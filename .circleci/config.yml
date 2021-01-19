@@ -218,9 +218,9 @@ references:
       when: always
       command: |
         demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
-        feature_branch_name = "v4.5.0"
-        successful_feature_branch_build = $(gsutil ls "gs://xsoar-ci-artifacts/content/$feature_branch_name/*" | tail -n 1 | grep -o -E "content/$feature_branch_name/[0-9]*")
-        python3 Utils/merge_content_new_zip.py -f $feature_branch_name -b $successful_feature_branch_build
+        FEATURE_BRANCH_NAME="v4.5.0"
+        successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
+        python3 Utils/merge_content_new_zip.py -f $FEATURE_BRANCH_NAME -b $successful_feature_branch_build
 
   restore_cache: &restore_cache
     restore_cache:
