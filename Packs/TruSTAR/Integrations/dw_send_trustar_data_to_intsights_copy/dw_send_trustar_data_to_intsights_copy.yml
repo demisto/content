@@ -17,12 +17,12 @@ configuration:
   name: trustar
   type: 9
   required: false
-- display: Time between sending documents
+- display: Time between sending documents (in minutes)
   name: sleep_setting
   defaultvalue: "5"
   type: 0
   required: false
-- display: Confidence Level of the documents
+- display: Confidence Level of the documents (3 is the highest confidence level and 0 is the lowest)
   name: ConfidenceLevel
   defaultvalue: "3"
   type: 0
@@ -31,7 +31,7 @@ configuration:
   name: enclave_ids
   type: 0
   required: false
-- display: The email for the user.
+- display: The email address of the user.
   name: client_metatag
   type: 0
   required: false
@@ -73,4 +73,4 @@ script:
   subtype: python3
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- dw_send_data_to_intsights_test
