@@ -455,32 +455,14 @@ references:
   bucket_upload_jobs: &bucket_upload_jobs
     - Setup Environment:
         context: bucket_upload_env
-    - Run Unit Testing And Lint:
-        context: bucket_upload_env
-        requires:
-          - Setup Environment
-    - Run Validations:
-        context: bucket_upload_env
-        requires:
-          - Setup Environment
     - Create Instances:
         context: bucket_upload_env
         requires:
-          - Run Unit Testing And Lint
-          - Run Validations
-    - Install Packs in Server 6_0:
-        context: bucket_upload_env
-        requires:
-          - Create Instances
-    - Install Packs in Server Master:
-        context: bucket_upload_env
-        requires:
-          - Create Instances
+          - Setup Environment
     - Upload Packs To Marketplace:
         context: bucket_upload_env
         requires:
-          - Install Packs in Server 6_0
-          - Install Packs in Server Master
+           - Create Instances
 
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
@@ -1000,7 +982,6 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
-      - *check_user_permissions_to_upload_packs
       - run:
           name: Force Upload Packs To Marketplace Storage
           command: |
@@ -1013,9 +994,10 @@ jobs:
             echo $GCS_MARKET_KEY > $GCS_PATH
 
             GCS_BUILD_BUCKET="marketplace-ci-build"
-            GCS_MARKET_BUCKET="marketplace-dist"
+            GCS_MARKET_BUCKET="marketplace-dist-dev"
+            STORAGE_BATH_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
 
-            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}"
+            python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "${STORAGE_BATH_PATH}"
             rm $GCS_PATH
           when: on_success
       - *store_artifacts
@@ -1028,11 +1010,10 @@ jobs:
       - *attach_workspace
       - *add_ssh_keys
       - *prepare_environment
-      - *check_user_permissions_to_upload_packs
       - when:
           condition:
             equal:
-              - master
+              - packs-new-tag
               - << pipeline.git.branch >>
           steps:
             - run:
@@ -1047,9 +1028,10 @@ jobs:
                   echo $GCS_MARKET_KEY > $GCS_PATH
 
                   GCS_BUILD_BUCKET="marketplace-ci-build"
-                  GCS_MARKET_BUCKET="marketplace-dist"
+                  GCS_MARKET_TESTING_BUCKET="marketplace-dist-dev"
+                  SOURCE_TESTING_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CREATE_INSTANCES_JOB_NUMBER/content/packs"
 
-                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH
+                  python3 ./Tests/Marketplace/copy_and_upload_packs.py -a $PACK_ARTIFACTS -e $EXTRACT_FOLDER -pb "$GCS_MARKET_TESTING_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_PATH -n $CREATE_INSTANCES_JOB_NUMBER -c $CIRCLE_BRANCH -pbp "$SOURCE_TESTING_PATH"
                   rm $GCS_PATH
             - run:
                 name: Validate Premium Packs
@@ -1315,7 +1297,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - packs-new-tag
           requires:
             - Setup Environment
       - Force Upload Packs To Marketplace:
@@ -1323,7 +1305,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - packs-new-tag
           requires:
             - Create Instances
 
