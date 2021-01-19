@@ -1139,9 +1139,14 @@ def parse_incident_from_item(item, is_fetch):
                             if attachment.item.headers:
                                 attached_email_headers = []
                                 for h, v in attached_email.items():
-                                    if isinstance(v, str):
+                                    if hasattr(v, '__str__'):
+                                        if not isinstance(v, str):
+                                            v = str(v)
                                         v = ' '.join(map(str.strip, v.split('\r\n')))
-                                    attached_email_headers.append((h, v))
+                                        attached_email_headers.append((h, v))
+                                    else:
+                                        demisto.log('cannot parse the header {}.'.format(v))
+
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
                                             and header.name != 'Content-Type':
@@ -1989,8 +1994,15 @@ def get_item_as_eml(item_id, target_mailbox=None):
     if item.mime_content:
         email_content = email.message_from_string(item.mime_content)
         if item.headers:
-            attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
-                                      email_content.items()]
+            attached_email_headers = []
+            for h, v in email_content.items():
+                if hasattr(v, '__str__'):
+                    if not isinstance(v, str):
+                        v = str(v)
+                    v = ' '.join(map(str.strip, v.split('\r\n')))
+                    attached_email_headers.append((h, v))
+                else:
+                    demisto.log('cannot parse the header {}.'.format(v))
             for header in item.headers:
                 if (header.name, header.value) not in attached_email_headers \
                         and header.name != 'Content-Type':
