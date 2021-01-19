@@ -4214,6 +4214,7 @@ class CommandResults:
         raw_response = None  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
+        mark_as_note = False  # type: bool
 
         indicators = [self.indicator] if self.indicator else self.indicators
 
@@ -4232,7 +4233,7 @@ class CommandResults:
 
         if self.ignore_auto_extract:
             ignore_auto_extract = True
-        
+
         if self.mark_as_note:
             mark_as_note = True
 

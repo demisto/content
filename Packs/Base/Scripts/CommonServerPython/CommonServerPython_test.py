@@ -1373,7 +1373,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1458,7 +1459,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1488,7 +1490,8 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1521,7 +1524,8 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1666,7 +1670,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_create_certificate(self):
@@ -2068,7 +2073,8 @@ class TestCommandResults:
                 }]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_indicator_timeline_with_list_of_indicators(self):
@@ -2230,6 +2236,28 @@ class TestCommandResults:
         )
 
         assert results.to_context().get('IgnoreAutoExtract') is True
+
+    def test_entry_as_note(self):
+        """
+        Given:
+        - mark_as_note set to True
+
+        When:
+        - creating a CommandResults object
+
+        Then:
+        - the Note field is set to True
+        """
+        from CommonServerPython import CommandResults
+
+        results = CommandResults(
+            outputs_prefix='Test',
+            outputs_key_field='value',
+            outputs=None,
+            mark_as_note=True
+        )
+
+        assert results.to_context().get('Note') is True
 
 
 class TestBaseClient:
