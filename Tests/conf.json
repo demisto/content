@@ -1478,6 +1478,11 @@
             "instance_names": "use_default_handler"
         },
         {
+            "integrations": "AnsibleTower",
+            "playbookID": "AnsibleTower_Test_playbook",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test",
             "memory_threshold": 200,
@@ -3217,7 +3222,6 @@
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
-        "pyEWS_Test": "Issue 28339",
         "GmailTest": "Issue 27057",
         "SMB test": "Issue 26454",
         "TestCofenseFeed": "Issue 29198",
@@ -3250,7 +3254,10 @@
         "Phishing v2 - Test - Incident Starter": "Issue 26783",
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
         "Process Email - Generic - Test - Incident Starter": "Issue 32459",
-        "HelloWorldPremium_Scan-Test": "Issue 32512"
+        "HelloWorldPremium_Scan-Test": "Issue 32512",
+        "RSA NetWitness Test": "Issue 32566",
+        "ThreatMiner-Test": "Issue 32688",
+        "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568"
     },
     "skipped_integrations": {
 
@@ -3262,7 +3269,7 @@
         "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
-        "ArcSight Logger": "Issue 24303",
+        "ArcSight Logger": "Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
@@ -3363,6 +3370,8 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "DShield Feed": "Has a command that downloads a file (!dshield-get-indicators)",
+        "Office 365 Feed": "Client sends a unique uuid as first request of every run",
         "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
         "urlscan.io": "Uses data that comes in the headers",
@@ -3394,6 +3403,7 @@
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
+        "ActiveMQ": "stomp sdk not supporting proxy.",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
