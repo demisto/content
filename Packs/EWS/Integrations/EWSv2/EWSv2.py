@@ -1139,7 +1139,7 @@ def parse_incident_from_item(item, is_fetch):
                             if attachment.item.headers:
                                 attached_email_headers = []
                                 for h, v in attached_email.items():
-                                    if hasattr(v, 'split'):
+                                    if isinstance(v, str):
                                         v = ' '.join(map(str.strip, v.split('\r\n')))
                                     attached_email_headers.append((h, v))
                                 for header in attachment.item.headers:
