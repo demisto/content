@@ -283,6 +283,7 @@ def main() -> None:
     try:
         command = demisto.command()
         params = demisto.params()
+        handle_proxy()
         client = Client(
             base_url=urljoin(params['url'], '/rest/v1'),
             auth=(params['credentials']['identifier'], params['credentials']['password']),
