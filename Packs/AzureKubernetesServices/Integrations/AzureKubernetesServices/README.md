@@ -145,97 +145,69 @@ There are no input arguments for this command.
 {
     "AzureKS": {
         "ManagedCluster": {
-            "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourcegroups/aks-integration/providers/Microsoft.ContainerService/managedClusters/aks-integration",
-            "location": "westus",
-            "name": "aks-integration",
-            "properties": {
-                "addonProfiles": {
-                    "KubeDashboard": {
-                        "config": null,
-                        "enabled": false
-                    },
-                    "azurePolicy": {
-                        "config": null,
-                        "enabled": false
-                    },
-                    "httpApplicationRouting": {
-                        "config": {
-                            "HTTPApplicationRoutingZoneName": "7c66ea1d4aef4799a2ae.westus.aksapp.io"
-                        },
-                        "enabled": true
-                    },
-                    "omsagent": {
-                        "config": {
-                            "logAnalyticsWorkspaceResourceID": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/DefaultResourceGroup-WUS/providers/Microsoft.OperationalInsights/workspaces/aks-integration-ws"
-                        },
-                        "enabled": true
-                    }
-                },
-                "agentPoolProfiles": [
-                    {
-                        "count": 3,
-                        "maxPods": 110,
-                        "mode": "System",
-                        "name": "agentpool",
-                        "nodeImageVersion": "AKSUbuntu-1804-2020.12.01",
-                        "nodeLabels": {},
-                        "orchestratorVersion": "1.18.10",
-                        "osDiskSizeGB": 128,
-                        "osDiskType": "Managed",
-                        "osType": "Linux",
-                        "powerState": {
-                            "code": "Running"
-                        },
-                        "provisioningState": "Succeeded",
-                        "type": "VirtualMachineScaleSets",
-                        "vmSize": "Standard_DS2_v2"
-                    }
-                ],
-                "apiServerAccessProfile": {
-                    "enablePrivateCluster": false
-                },
-                "dnsPrefix": "aks-integration-dns",
-                "enableRBAC": true,
-                "fqdn": "aks-integration-dns-883ed03b.hcp.westus.azmk8s.io",
-                "kubernetesVersion": "1.18.10",
-                "maxAgentPools": 10,
-                "networkProfile": {
-                    "dnsServiceIP": "10.0.0.10",
-                    "dockerBridgeCidr": "172.17.0.1/16",
-                    "loadBalancerProfile": {
-                        "effectiveOutboundIPs": [
-                            {
-                                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/MC_aks-integration_aks-integration_westus/providers/Microsoft.Network/publicIPAddresses/2dfa70a1-ae82-4f8e-a0b5-edd08b5392a4"
-                            }
-                        ],
-                        "managedOutboundIPs": {
-                            "count": 1
-                        }
-                    },
-                    "loadBalancerSku": "Standard",
-                    "networkPlugin": "kubenet",
-                    "outboundType": "loadBalancer",
-                    "podCidr": "10.244.0.0/16",
-                    "serviceCidr": "10.0.0.0/16"
-                },
-                "nodeResourceGroup": "MC_aks-integration_aks-integration_westus",
-                "powerState": {
-                    "code": "Running"
-                },
+          "id": "/subscriptions/subid1/providers/Microsoft.ContainerService/managedClusters",
+          "location": "location1",
+          "name": "clustername1",
+          "tags": {
+            "archv2": "",
+            "tier": "production"
+          },
+          "type": "Microsoft.ContainerService/ManagedClusters",
+          "properties": {
+            "provisioningState": "Succeeded",
+            "kubernetesVersion": "1.9.6",
+            "maxAgentPools": 1,
+            "dnsPrefix": "dnsprefix1",
+            "fqdn": "dnsprefix1-abcd1234.hcp.eastus.azmk8s.io",
+            "agentPoolProfiles": [
+              {
+                "name": "nodepool1",
+                "count": 3,
+                "vmSize": "Standard_DS1_v2",
+                "maxPods": 110,
+                "osType": "Linux",
                 "provisioningState": "Succeeded",
-                "servicePrincipalProfile": {
-                    "clientId": "af94cdad-b871-4d4f-98e3-8c2e99713433"
+                "orchestratorVersion": "1.9.6"
+              }
+            ],
+            "linuxProfile": {
+              "adminUsername": "azureuser",
+              "ssh": {
+                "publicKeys": [
+                  {
+                    "keyData": "keydata"
+                  }
+                ]
+              }
+            },
+            "servicePrincipalProfile": {
+              "clientId": "clientid"
+            },
+            "nodeResourceGroup": "MC_rg1_clustername1_location1",
+            "enableRBAC": false,
+            "diskEncryptionSetID": "/subscriptions/subid1/resourceGroups/rg1/providers/Microsoft.Compute/diskEncryptionSets/des",
+            "networkProfile": {
+              "networkPlugin": "kubenet",
+              "podCidr": "10.244.0.0/16",
+              "serviceCidr": "10.0.0.0/16",
+              "dnsServiceIP": "10.0.0.10",
+              "dockerBridgeCidr": "172.17.0.1/16"
+            },
+            "addonProfiles": {
+              "omsagent": {
+                "enabled": false,
+                "config": {
+                  "logAnalyticsWorkspaceResourceID": "workspace"
                 }
-            },
-            "sku": {
-                "name": "Basic",
-                "tier": "Free"
-            },
-            "tags": {
-                "orchestrator": "Kubernetes:1.18.10",
-                "type": "aks-slb-managed-outbound-ip"
-            },
-            "type": "Microsoft.ContainerService/ManagedClusters"
+              },
+              "httpApplicationRouting": {
+                "enabled": true,
+                "config": {
+                  "HTTPApplicationRoutingZoneName": "zone"
+                }
+              }
+            }
+          }
         }
     }
 }
@@ -246,7 +218,7 @@ There are no input arguments for this command.
 >### AKS Clusters List
 >|Name|Status|Location|Tags|Kubernetes version|API server address|Network type (plugin)|
 >|---|---|---|---|---|---|---|
->| aks-integration | Succeeded | westus | orchestrator: Kubernetes:1.18.10<br/>type: aks-slb-managed-outbound-ip | 1.18.10 | aks-integration-dns-883ed03b.hcp.westus.azmk8s.io | kubenet |
+>| clustername1 | Succeeded | location1 | tier: production | 1.9.6 | dnsprefix1-abcd1234.hcp.eastus.azmk8s.io | kubenet |
 
 
 ### azure-ks-cluster-addon-update
