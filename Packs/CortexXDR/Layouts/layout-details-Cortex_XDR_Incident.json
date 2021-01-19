@@ -475,6 +475,30 @@
                                 "startCol": 2
                             },
                             {
+                                "endCol": 4,
+                                "fieldId": "xdrhighseverityalertcount",
+                                "height": 24,
+                                "id": "407735a0-ac7b-11e9-a30b-53d47e1ea7d7",
+                                "index": 2,
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xdrmediumseverityalertcount",
+                                "height": 24,
+                                "id": "42b2a6b0-ac7b-11e9-a30b-53d47e1ea7d7",
+                                "index": 3,
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "xdrlowseverityalertcount",
+                                "height": 24,
+                                "id": "440ae3b0-ac7b-11e9-a30b-53d47e1ea7d7",
+                                "index": 4,
+                                "startCol": 2
+                            },
+                            {
                                 "dropEffect": "move",
                                 "endCol": 4,
                                 "fieldId": "xdrassigneduserprettyname",
