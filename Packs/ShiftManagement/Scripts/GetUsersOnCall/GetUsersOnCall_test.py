@@ -26,7 +26,7 @@ USERS_ON_CALL_RESULTS = [
                 'username': 'brucewaine'
             },
         ],
-        'HumanReadable': '### On-Call Users\n'
+        'HumanReadable': 'On-Call Team members\n'
                          '|username|email|name|phone|roles|\n'
                          '|---|---|---|---|---|\n'
                          '| batman | batman@demisto.com | Batman | +650-123456 | demisto: AnalystShift |\n'
