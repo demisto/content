@@ -220,7 +220,7 @@ references:
         demisto-sdk create-content-artifacts -a $CIRCLE_ARTIFACTS --cpus 8
 
         GCS_PATH=$(mktemp)
-        echo "$GCS_MARKET_KEY" > "$GCS_PATH"
+        echo "$GCS_ARTIFACTS_KEY" > "$GCS_PATH"
         gcloud auth activate-service-account --key-file="$GCS_PATH" > auth.out 2>&1
         echo "successfully activated google cloud service account"
 
