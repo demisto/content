@@ -13,9 +13,9 @@ if demisto.command() == 'test-module':
 if demisto.command() == 'yolo-coco-process-image':
     args = {}
     args["yolo"] = "/yolo-coco"
-    args["confidence"] = float(demisto.args().get('confidence'))
+    args["confidence"] = demisto.args().get('confidence')
     # https://www.pyimagesearch.com/2014/11/17/non-maximum-suppression-object-detection-python/
-    args["threshold"] = float(demisto.args().get('threshold'))
+    args["threshold"] = demisto.args().get('threshold')
 
     entry_id = demisto.args().get('entryid')
 
@@ -83,7 +83,7 @@ if demisto.command() == 'yolo-coco-process-image':
 
             # filter out weak predictions by ensuring the detected
             # probability is greater than the minimum probability
-            if confidence > args["confidence"]:
+            if confidence > float(args["confidence"]):
                 # scale the bounding box coordinates back relative to the
                 # size of the image, keeping in mind that YOLO actually
                 # returns the center (x, y)-coordinates of the bounding
@@ -104,8 +104,8 @@ if demisto.command() == 'yolo-coco-process-image':
 
     # apply non-maxima suppression to suppress weak, overlapping bounding
     # boxes
-    idxs = cv2.dnn.NMSBoxes(boxes, confidences, args["confidence"],
-                            args["threshold"])
+    idxs = cv2.dnn.NMSBoxes(boxes, confidences, float(args["confidence"]),
+                            float(args["threshold"]))
 
     # ensure at least one detection exists
     if len(idxs) > 0:
@@ -113,22 +113,22 @@ if demisto.command() == 'yolo-coco-process-image':
         for i in idxs.flatten():
             tmp_list = []
             # extract the bounding box coordinates
-            (x, y) = (boxes[i][0], boxes[i][1])
-            (w, h) = (boxes[i][2], boxes[i][3])
+            (x, y) = (boxes[i][0], boxes[i][1])  # type: ignore
+            (w, h) = (boxes[i][2], boxes[i][3])  # type: ignore
 
             # draw a bounding box rectangle and label on the image
-            color = [int(c) for c in COLORS[classIDs[i]]]
+            color = [int(c) for c in COLORS[classIDs[i]]]  # type: ignore
             cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
-            text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])
-            if LABELS[classIDs[i]] in output_keys.keys():
-                if isinstance(output_keys[LABELS[classIDs[i]]], float):
-                    tmp_list = [output_keys[LABELS[classIDs[i]]]]
+            text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])  # type: ignore
+            if LABELS[classIDs[i]] in output_keys.keys():  # type: ignore
+                if isinstance(output_keys[LABELS[classIDs[i]]], float):  # type: ignore
+                    tmp_list = [output_keys[LABELS[classIDs[i]]]]  # type: ignore
                 else:
-                    tmp_list = output_keys[LABELS[classIDs[i]]]
-                tmp_list.append(confidences[i])
-                output_keys[LABELS[classIDs[i]]] = tmp_list
+                    tmp_list = output_keys[LABELS[classIDs[i]]]  # type: ignore
+                tmp_list.append(confidences[i])  # type: ignore
+                output_keys[LABELS[classIDs[i]]] = tmp_list  # type: ignore
             else:
-                output_keys[LABELS[classIDs[i]]] = confidences[i]
+                output_keys[LABELS[classIDs[i]]] = confidences[i]  # type: ignore
             cv2.putText(image, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX,
                         0.5, color, 2)
 
