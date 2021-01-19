@@ -35,10 +35,28 @@ def is_pack_xsoar_supported(pack_path: str) -> bool:
     return pack_metadata.get(PACK_METADATA_SUPPORT, '').lower() == "xsoar"
 
 
+def is_pack_deprecated(pack_path: str) -> bool:
+    """Checks whether the pack is deprecated.
+    Tests are not being collected for deprecated packs and the pack is not installed in the build process.
+
+    Args:
+        pack_path (str): The pack path
+
+    Returns:
+        True if the pack is deprecated, False otherwise
+    """
+    pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
+    if not os.path.isfile(pack_metadata_path):
+        return True  # todo: check what to do if there is no pack_metadata file. 'True' will not install the pack.
+    pack_metadata = get_pack_metadata(pack_metadata_path)
+    return pack_metadata.get('hidden', 'false') == 'true'
+
+
 def should_test_content_pack(pack_name: str) -> bool:
     """Checks if content pack should be tested in the build:
         - Content pack is not in skipped packs
         - Content pack is certified
+        - Content pack is not deprecated
 
     Args:
         pack_name (str): The pack name to check if it should be tested
@@ -49,4 +67,4 @@ def should_test_content_pack(pack_name: str) -> bool:
     if not pack_name:
         return False
     pack_path = os.path.join(PACKS_DIR, pack_name)
-    return pack_name not in SKIPPED_PACKS and is_pack_xsoar_supported(pack_path)
+    return pack_name not in SKIPPED_PACKS and is_pack_xsoar_supported(pack_path) and not is_pack_deprecated(pack_path)
