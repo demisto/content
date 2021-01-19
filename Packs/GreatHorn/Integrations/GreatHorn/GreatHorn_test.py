@@ -48,7 +48,7 @@ def test_gh_search_message_command(requests_mock):
 
     response = gh_search_message_command(client, args)
 
-    assert response.outputs_prefix == 'GreatHorn'
+    assert response.outputs_prefix == 'GreatHorn.Message'
     assert response.outputs_key_field == 'eventId'
 
 
@@ -158,7 +158,7 @@ def test_gh_get_phish_reports_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         })
 
-    response = gh_get_phish_reports_command(client)
+    response = gh_get_phish_reports_command(client, 100)
 
     assert len(response) == 1
 
@@ -177,6 +177,6 @@ def test_gh_get_quarantine_release_command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         })
 
-    response = gh_get_quarantine_release_command(client)
+    response = gh_get_quarantine_release_command(client, 100)
 
     assert len(response) == 1
