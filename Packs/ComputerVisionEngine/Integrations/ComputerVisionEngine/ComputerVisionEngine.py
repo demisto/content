@@ -43,10 +43,10 @@ if demisto.command() == 'yolo-coco-process-image':
     configPath = os.path.sep.join([args["yolo"], "yolov3.cfg"])
 
     # load our YOLO object detector trained on COCO dataset (80 classes)
-    net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)
+    net = cv2.dnn.readNetFromDarknet(configPath, weightsPath)  # pylint: disable=E1101
 
     # load our input image and grab its spatial dimensions
-    image = cv2.imread(args["image"])
+    image = cv2.imread(args["image"])  # pylint: disable=E1101
     (H, W) = image.shape[:2]
 
     # determine only the *output* layer names that we need from YOLO
@@ -56,7 +56,7 @@ if demisto.command() == 'yolo-coco-process-image':
     # construct a blob from the input image and then perform a forward
     # pass of the YOLO object detector, giving us our bounding boxes and
     # associated probabilities
-    blob = cv2.dnn.blobFromImage(image, 1 / 255.0, (416, 416),
+    blob = cv2.dnn.blobFromImage(image, 1 / 255.0, (416, 416),  # pylint: disable=E1101
                                  swapRB=True, crop=False)
     net.setInput(blob)
 
@@ -104,7 +104,7 @@ if demisto.command() == 'yolo-coco-process-image':
 
     # apply non-maxima suppression to suppress weak, overlapping bounding
     # boxes
-    idxs = cv2.dnn.NMSBoxes(boxes, confidences, float(args["confidence"]),
+    idxs = cv2.dnn.NMSBoxes(boxes, confidences, float(args["confidence"]),  # pylint: disable=E1101
                             float(args["threshold"]))
 
     # ensure at least one detection exists
@@ -118,7 +118,7 @@ if demisto.command() == 'yolo-coco-process-image':
 
             # draw a bounding box rectangle and label on the image
             color = [int(c) for c in COLORS[classIDs[i]]]  # type: ignore
-            cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
+            cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)  # pylint: disable=E1101
             text = "{}: {:.4f}".format(LABELS[classIDs[i]], confidences[i])  # type: ignore
             if LABELS[classIDs[i]] in output_keys.keys():  # type: ignore
                 if isinstance(output_keys[LABELS[classIDs[i]]], float):  # type: ignore
@@ -129,11 +129,11 @@ if demisto.command() == 'yolo-coco-process-image':
                 output_keys[LABELS[classIDs[i]]] = tmp_list  # type: ignore
             else:
                 output_keys[LABELS[classIDs[i]]] = confidences[i]  # type: ignore
-            cv2.putText(image, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX,
+            cv2.putText(image, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX,  # pylint: disable=E1101
                         0.5, color, 2)
 
     # save the output image
-    cv2.imwrite("/tmp/snapshot.jpg", image)
+    cv2.imwrite("/tmp/snapshot.jpg", image)  # pylint: disable=E1101
     # cv2.waitKey(0)
     f = open("/tmp/snapshot.jpg", "rb")
     output = f.read()
