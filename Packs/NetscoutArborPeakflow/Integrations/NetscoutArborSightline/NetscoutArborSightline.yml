@@ -37,8 +37,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: Alert class to filter by. Only one class can be configured at
-    a time. If none was chosen, all classes will be fetched.
+- additionalinfo: Alert class to filter by. Only one class can be configured at a
+    time. If none was chosen, all classes will be fetched.
   display: Alert Class
   hidden: false
   name: alert_class
@@ -54,8 +54,8 @@ configuration:
   - traffic
   required: false
   type: 15
-- additionalinfo: Alert type to filter by. Only one type can be configured at
-    a time. If none was chosen, all types will be fetched.
+- additionalinfo: Alert type to filter by. Only one type can be configured at a time.
+    If none was chosen, all types will be fetched.
   display: Alert Type
   hidden: false
   name: alert_type
@@ -97,9 +97,8 @@ configuration:
   - traffic_auto_mitigation
   required: false
   type: 15
-- additionalinfo: Alert importance to filter by. For more complex operations use
-    the 'Importance Operator' parameter. If none was chosen, all importances will
-    be fetched.
+- additionalinfo: Alert importance to filter by. For more complex operations use the
+    'Importance Operator' parameter. If none was chosen, all importances will be fetched.
   display: Importance
   hidden: false
   name: importance
@@ -119,7 +118,7 @@ configuration:
   options:
   - =
   - <
-  - >
+  - ''
   required: false
   type: 15
 - additionalinfo: Alert status to filter by. If none was chosen, all statuses will
@@ -140,22 +139,20 @@ name: NetscoutArborSightline
 script:
   commands:
   - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important
-        information users need to know, for example, default values.]'
+    - default: true
+      description: The alert ID to list the connections.
       isArray: false
-      name: dummy
+      name: alert_id
       required: true
       secret: false
     deprecated: false
-    description: '[Enter a description of the command, including any important information
-      users need to know, for example required permissions.]'
+    description: Lists the collection of annotations for a given alert.
     execution: false
-    name: baseintegration-dummy
+    name: netscout-arbor-sightline-alert-annotations
     outputs:
     - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+      description: NASightline.AlertAnnotations
+      type: Unknown
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false

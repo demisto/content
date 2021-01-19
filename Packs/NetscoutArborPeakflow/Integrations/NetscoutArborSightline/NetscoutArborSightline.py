@@ -42,10 +42,9 @@ class NetscoutClient(BaseClient):
         'stop_time': 'stop_time_operator',
     }
 
-
-
-    def __init__(self, base_url, verify, ok_codes, headers, proxy, alert_class=None, alert_type=None,
+    def __init__(self, base_url, verify, ok_codes, headers, proxy, per_page=None, alert_class=None, alert_type=None,
                  classification=None, importance=None, importance_operator=None, ongoing=None):
+        self.per_page = per_page
         self.alert_class = alert_class
         self.alert_type = alert_type
         self.classification = classification
@@ -55,8 +54,27 @@ class NetscoutClient(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, ok_codes=ok_codes, headers=headers, proxy=proxy)
 
-    @staticmethod
+    def get_annotations(self, alert_id):
+        return self._http_request(
+            method='GET',
+            url=f'alerts/{alert_id}/annotations'
+        )
+
     def build_data_attribute_filter(self, **kwargs):
+        """
+        Builds data attribute filter in the NetscoutArbor form. For example: '/data/attributes/importance>1' where
+        key=importance operator='>' and value=1.
+        The function iterates over all arguments (besides operators listed in the OPERATOR_NAME_DICTIONARY) and chain
+        together the 'key operator val' such that the argument name is 'key', its value is 'val' and operator is '=' if
+        no relevant operator is present. In case of multiple parameters the attributes are separated with 'AND'.
+
+        Params:
+            kwargs (dict): Dict containing all relevant filter parameters {'importance': 1}
+
+        Returns:
+            (str) data attribute filter string. For example: '/data/attributes/importance>1'
+        """
+
         param_list = []
         operator_names = self.OPERATOR_NAME_DICTIONARY.values()
         for key, val in kwargs.items():
@@ -64,21 +82,23 @@ class NetscoutClient(BaseClient):
                 operator = '='
                 if operator_name := self.OPERATOR_NAME_DICTIONARY.get(key):
                     operator = kwargs.get(operator_name, '=')
-                param_list += f'/data/attributes/{key + operator + val}'
+                param_list.append(f'/data/attributes/{key + operator + val}')
 
         return ' AND '.join(param_list)
 
-    mckibbenc: master
     def get_alerts(self, **kwargs):
         filter_value = self.build_data_attribute_filter(kwargs)
 
-        self._http_request(
-            method=
+        return self._http_request(
+            method='GET',
+            url='alerts',
+            params={'filter': filter_value}
         )
 
         # incidents
 
     def fetch_incidents(self):
+        demisto.getLastRun()
         self.get_alerts(
             alert_class=self.alert_class,
             alert_type=self.alert_type,
@@ -88,11 +108,17 @@ class NetscoutClient(BaseClient):
             ongoing=self.ongoing,
         )
 
-    ''' HELPER FUNCTIONS '''
 
-    # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+''' HELPER FUNCTIONS '''
 
-    ''' COMMAND FUNCTIONS '''
+
+def flatten_dict(obj: dict, key: str):
+    if value := obj.get(key):
+        obj = obj.update(value)
+        del obj[key]
+
+
+''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: NetscoutClient) -> str:
@@ -122,6 +148,19 @@ def test_module(client: NetscoutClient) -> str:
     return message
 
 
+def alert_annotations_command(client: NetscoutClient):
+    args = demisto.args()
+    alert_id = args.get('alert_id')
+    raw_result = client.get_annotations(alert_id)
+    data = raw_result.get('data')
+    data['AlertID'] = alert_id
+    CommandResults(outputs_prefix='NASightline.AlertAnnotations',
+                   outputs_key_field='alertID',
+                   outputs=data,
+                   readable_output=tableToMarkdown(f'Alert {alert_id} annotations', data, []),
+                   raw_response=raw_result)
+
+
 # def fetch_incidents_command(client: NetscoutClient):
 #     client.
 
@@ -135,6 +174,7 @@ def main() -> None:
     base_url = urljoin(params['url'], 'api/sp', API_VERSION)
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    max_fetch = max(params.get('max_fetch'), 100)
     alert_class = params.get('alert_class')
     alert_type = params.get('alert_type')
     classification = params.get('classification')
@@ -154,6 +194,7 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy,
+            per_page=max_fetch,
             alert_class=alert_class,
             alert_type=alert_type,
             classification=classification,
@@ -165,6 +206,9 @@ def main() -> None:
         if demisto.command() == 'test-module':
             result = test_module(client)
             return_results(result)
+        elif demisto.command() == 'netscout-arbor-sightline-alert-annotations':
+            alert_annotations_command(client)
+
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
