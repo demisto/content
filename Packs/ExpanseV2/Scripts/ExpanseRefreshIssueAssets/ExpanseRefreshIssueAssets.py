@@ -33,10 +33,16 @@ def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
             new_asset = new_asset[0]
 
         contents = new_asset.get('Contents')
+        if not contents:
+            continue
+
         if isinstance(contents, list):
             if len(contents) == 0:
                 continue
             contents = contents[0]
+
+        if not isinstance(contents, dict):
+            continue
 
         if (annotations := contents.get('annotations', None)) and isinstance(annotations, dict):
             if (tags := annotations.get('tags', None)) and isinstance(tags, list) and len(tags) > 0:
