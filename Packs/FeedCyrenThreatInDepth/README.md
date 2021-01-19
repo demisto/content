@@ -17,7 +17,7 @@ Threat InDepth's correlated and contextualized intelligence helps enterprises im
 
 - First to Detect, First to Protect <br/>Provides **timely** protection against **evolving** email-borne threats
 
-![Cyren GlobalView Cloud](./doc_files/Cyren_GlobalViewCloud_V2.png)
+![Cyren GlobalView Cloud](https://raw.githubusercontent.com/demisto/content/master/Packs/FeedCyrenThreatInDepth/doc_files/Cyren_GlobalViewCloud_V2.png)
 
 
 ## Feeds included in Cyren Threat InDepth content pack
