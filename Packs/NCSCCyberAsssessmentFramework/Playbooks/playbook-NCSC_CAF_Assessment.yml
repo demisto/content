@@ -1,76 +1,23 @@
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 243a1c9d-2ab7-4999-820b-f23d6816c229
-    propagationLabels:
-    - all
-    toServerVersion: ""
 id: NCSC CAF Assessment
-inputs:
-- description: The receiver of the Assessment A questions.
-  key: CAF A Email
-  playbookInputQuery: null
-  required: true
-  value:
-    complex:
-      accessor: cafaemail
-      root: incident
-- description: The receiver of the Assessment B questions.
-  key: CAF B Email
-  playbookInputQuery: null
-  required: true
-  value:
-    complex:
-      accessor: cafbemail
-      root: incident
-- description: The receiver of the Assessment C questions.
-  key: CAF C Email
-  playbookInputQuery: null
-  required: true
-  value:
-    complex:
-      accessor: cafcemail
-      root: incident
-- description: The receiver of the Assessment D questions.
-  key: CAF D Email
-  playbookInputQuery: null
-  required: true
-  value:
-    complex:
-      accessor: cafdemail
-      root: incident
-- description: The e-mail address of the regulator whom will receive the results.
-  key: CAF Regulator Email
-  playbookInputQuery: null
-  required: true
-  value:
-    complex:
-      accessor: cafregulatoremail
-      root: incident
+version: -1
 name: NCSC CAF Assessment
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 1cc8e28f-4f85-4323-812b-689e414d4431
+    type: start
+    task:
+      id: 1cc8e28f-4f85-4323-812b-689e414d4431
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 1cc8e28f-4f85-4323-812b-689e414d4431
-      iscommand: false
-      name: ""
-      version: -1
-    taskid: 1cc8e28f-4f85-4323-812b-689e414d4431
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -78,14 +25,27 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: fb42cba9-d5d0-46eb-8763-13b6a6a4a589
+    type: regular
+    task:
+      id: fb42cba9-d5d0-46eb-8763-13b6a6a4a589
+      version: -1
+      name: Rename the incident
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "13"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -358,18 +318,18 @@ tasks:
       mobiledevicemodel: {}
       name:
         complex:
-          accessor: created
           root: incident
+          accessor: created
           transformers:
-          - args:
+          - operator: toString
+            args:
               format: {}
-            operator: toString
-          - args:
+          - operator: concat
+            args:
               prefix:
                 value:
                   simple: 'NCSC CAF Assessment - '
               suffix: {}
-            operator: concat
       ncscassessmentstatus: {}
       niststage: {}
       numberofports: {}
@@ -613,403 +573,432 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: fb42cba9-d5d0-46eb-8763-13b6a6a4a589
-      iscommand: true
-      name: Rename the incident
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: fb42cba9-d5d0-46eb-8763-13b6a6a4a589
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 545
+          "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
-    ignoreworker: false
+    taskid: d9f6d417-387b-4e65-8abc-00fad910c5c0
+    type: title
+    task:
+      id: d9f6d417-387b-4e65-8abc-00fad910c5c0
+      version: -1
+      name: CAF Assessment A Questions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: d9f6d417-387b-4e65-8abc-00fad910c5c0
-      iscommand: false
-      name: CAF Assessment A Questions
-      type: title
-      version: -1
-    taskid: d9f6d417-387b-4e65-8abc-00fad910c5c0
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 865
+          "y": 1040
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    ignoreworker: false
+    taskid: 30ff5d5f-72d3-4e77-8eb5-76d2ed279aae
+    type: title
+    task:
+      id: 30ff5d5f-72d3-4e77-8eb5-76d2ed279aae
+      version: -1
+      name: CAF Assessment B Questions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 30ff5d5f-72d3-4e77-8eb5-76d2ed279aae
-      iscommand: false
-      name: CAF Assessment B Questions
-      type: title
-      version: -1
-    taskid: 30ff5d5f-72d3-4e77-8eb5-76d2ed279aae
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 865
+          "y": 1040
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "4":
     id: "4"
-    ignoreworker: false
+    taskid: 8742faf2-50e5-418e-8ded-d025ccf1ac64
+    type: title
+    task:
+      id: 8742faf2-50e5-418e-8ded-d025ccf1ac64
+      version: -1
+      name: CAF Assessment C Questions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "20"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 8742faf2-50e5-418e-8ded-d025ccf1ac64
-      iscommand: false
-      name: CAF Assessment C Questions
-      type: title
-      version: -1
-    taskid: 8742faf2-50e5-418e-8ded-d025ccf1ac64
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 865
+          "y": 1040
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    ignoreworker: false
+    taskid: 8655d399-0906-4832-86e7-5d43a7c974d2
+    type: title
+    task:
+      id: 8655d399-0906-4832-86e7-5d43a7c974d2
+      version: -1
+      name: CAF Assessment D Questions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 8655d399-0906-4832-86e7-5d43a7c974d2
-      iscommand: false
-      name: CAF Assessment D Questions
-      type: title
-      version: -1
-    taskid: 8655d399-0906-4832-86e7-5d43a7c974d2
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 865
+          "y": 1040
         }
       }
-  "6":
-    form:
-      description: Please answer all questions - Select ALL that apply
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A1a Board Direction'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A1a Board Direction'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "1"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A1b Roles and Responsibilities'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A1b Roles and Responsibilities'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "2"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A1c Decision-making'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A1c Decision-making'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "3"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A2a Risk Management Process'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A2a Risk Management Process'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "4"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A2b Assurance'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A2b Assurance'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "5"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A3a Asset Management'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A3a Asset Management'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "6"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A4a Supply Chain'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentA[?name=='A4a Supply Chain'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      sender: ""
-      title: CAF A - Managing security risk
-      totalanswers: 0
-    id: "6"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    message:
-      bcc: null
-      body:
-        simple: Please use the link to answer all the questions related to "Managing
-          security risk"
-      cc: null
-      format: ""
-      methods:
-      - email
-      subject:
-        simple: NCSC CAF Objective A - Managing security risk
-      timings:
-        completeafterreplies: 1
-        retriescount: 2
-        retriesinterval: 360
-      to:
-        simple: ${incident.cafaemail}
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 50bd301f-5e7e-486d-850c-1ccf8e26aab9
+    type: collection
+    task:
+      id: 50bd301f-5e7e-486d-850c-1ccf8e26aab9
+      version: -1
+      name: CAF A Assessment Questions
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 50bd301f-5e7e-486d-850c-1ccf8e26aab9
-      iscommand: false
-      name: CAF A Assessment Questions
-      type: collection
-      version: -1
-    taskid: 50bd301f-5e7e-486d-850c-1ccf8e26aab9
-    timertriggers: []
-    type: collection
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1010
+          "y": 1185
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.cafaemail}
+      subject:
+        simple: NCSC CAF Objective A - Managing security risk
+      body:
+        simple: Please use the link to answer all the questions related to "Managing
+          security risk"
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A1a Board Direction'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A1a Board Direction'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A1b Roles and Responsibilities'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A1b Roles and Responsibilities'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A1c Decision-making'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A1c Decision-making'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A2a Risk Management Process'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A2a Risk Management Process'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A2b Assurance'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A2b Assurance'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A3a Asset Management'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A3a Asset Management'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A4a Supply Chain'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentA[?name=='A4a Supply Chain'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      title: CAF A - Managing security risk
+      description: Please answer all questions - Select ALL that apply
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
   "7":
+    id: "7"
+    taskid: 0f138dea-1bd5-4407-892e-089ba2123e84
+    type: regular
+    task:
+      id: 0f138dea-1bd5-4407-892e-089ba2123e84
+      version: -1
+      name: Delete previous answers
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
     fieldMapping:
     - incidentfield: CAF A Email
       output:
@@ -1026,80 +1015,23 @@ tasks:
     - incidentfield: CAF Regulator Email
       output:
         simple: ${inputs.CAF Regulator Email}
-    id: "7"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "25"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
-    separatecontext: false
     skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: 0f138dea-1bd5-4407-892e-089ba2123e84
-      iscommand: false
-      name: Delete previous answers
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 0f138dea-1bd5-4407-892e-089ba2123e84
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 195
-        }
-      }
+    quietmode: 0
   "9":
-    fieldMapping:
-    - incidentfield: CAF A Result Raw
-      output:
-        complex:
-          accessor: AssessmentA
-          root: AssessmentResults
-    - incidentfield: CAF A Result
-      output:
-        complex:
-          accessor: AssessmentA
-          root: AssessmentMarkdown
-    - incidentfield: CAF A Details
-      output:
-        complex:
-          accessor: AssessmentA
-          root: AssessmentResultsDetails
-    - incidentfield: CAF A Achievement
-      output:
-        complex:
-          accessor: Achievement
-          root: AssessmentResultsAchievement.AssessmentA
-    - incidentfield: CAF A Questions
-      output:
-        complex:
-          accessor: Questions
-          root: CAF A - Managing security risk
-    - incidentfield: CAF A Answers
-      output:
-        complex:
-          accessor: Answers
-          root: CAF A - Managing security risk
     id: "9"
-    ignoreworker: false
+    taskid: 2852e650-9b14-4f87-824f-c513e4369267
+    type: regular
+    task:
+      id: 2852e650-9b14-4f87-824f-c513e4369267
+      version: -1
+      name: Assess the results
+      scriptName: NCSCCalculateQuestionsScore
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "27"
-    note: false
-    quietmode: 0
     scriptarguments:
       assessment:
         simple: AssessmentA
@@ -1107,57 +1039,90 @@ tasks:
         complex:
           root: CAF A - Managing security risk
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 2852e650-9b14-4f87-824f-c513e4369267
-      iscommand: false
-      name: Assess the results
-      script: 9efd24ab-fadb-43e8-871e-6693d83af45d
-      type: regular
-      version: -1
-    taskid: 2852e650-9b14-4f87-824f-c513e4369267
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1360
+          "y": 1535
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: CAF A Result Raw
+      output:
+        complex:
+          root: AssessmentResults
+          accessor: AssessmentA
+    - incidentfield: CAF A Result
+      output:
+        complex:
+          root: AssessmentMarkdown
+          accessor: AssessmentA
+    - incidentfield: CAF A Details
+      output:
+        complex:
+          root: AssessmentResultsDetails
+          accessor: AssessmentA
+    - incidentfield: CAF A Achievement
+      output:
+        complex:
+          root: AssessmentResultsAchievement.AssessmentA
+          accessor: Achievement
+    - incidentfield: CAF A Questions
+      output:
+        complex:
+          root: CAF A - Managing security risk
+          accessor: Questions
+    - incidentfield: CAF A Answers
+      output:
+        complex:
+          root: CAF A - Managing security risk
+          accessor: Answers
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 90e14168-9e56-4856-8322-1ca977ce31b7
+    type: title
     task:
-      brand: ""
       id: 90e14168-9e56-4856-8322-1ca977ce31b7
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
-    taskid: 90e14168-9e56-4856-8322-1ca977ce31b7
-    timertriggers: []
-    type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 3370
+          "y": 3545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    ignoreworker: false
+    taskid: 816ad3d3-d6c8-4f9b-8e25-230fe63d25c3
+    type: regular
+    task:
+      id: 816ad3d3-d6c8-4f9b-8e25-230fe63d25c3
+      version: -1
+      name: Set the status - Complete
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "40"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -1673,38 +1638,38 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
     sla:
-      days: 0
       hours: 0
+      days: 0
       weeks: 0
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: 816ad3d3-d6c8-4f9b-8e25-230fe63d25c3
-      iscommand: true
-      name: Set the status - Complete
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 816ad3d3-d6c8-4f9b-8e25-230fe63d25c3
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 1710
+          "y": 1885
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    ignoreworker: false
+    taskid: 7ae81650-6f60-4207-807e-5fbf39c78bb1
+    type: regular
+    task:
+      id: 7ae81650-6f60-4207-807e-5fbf39c78bb1
+      version: -1
+      name: Set the status - Awaiting answers
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "13"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -2228,68 +2193,69 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
     sla:
-      days: 0
       hours: 0
+      days: 0
       weeks: 0
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: 7ae81650-6f60-4207-807e-5fbf39c78bb1
-      iscommand: true
-      name: Set the status - Awaiting answers
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 7ae81650-6f60-4207-807e-5fbf39c78bb1
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 545
+          "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "13":
     id: "13"
-    ignoreworker: false
+    taskid: 5e8224ea-1e4c-43f1-8950-1f4bcbc3fbff
+    type: title
+    task:
+      id: 5e8224ea-1e4c-43f1-8950-1f4bcbc3fbff
+      version: -1
+      name: Start the assessment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
       - "3"
       - "4"
       - "5"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 5e8224ea-1e4c-43f1-8950-1f4bcbc3fbff
-      iscommand: false
-      name: Start the assessment
-      type: title
-      version: -1
-    taskid: 5e8224ea-1e4c-43f1-8950-1f4bcbc3fbff
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 720
+          "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "14":
     id: "14"
-    ignoreworker: false
+    taskid: ae4fa7e0-ee0d-43b8-8784-431d6df93aea
+    type: regular
+    task:
+      id: ae4fa7e0-ee0d-43b8-8784-431d6df93aea
+      version: -1
+      name: Set the status - Complete
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "9"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -2809,38 +2775,38 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
     sla:
-      days: 0
       hours: 0
+      days: 0
       weeks: 0
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: ae4fa7e0-ee0d-43b8-8784-431d6df93aea
-      iscommand: true
-      name: Set the status - Complete
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: ae4fa7e0-ee0d-43b8-8784-431d6df93aea
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1185
+          "y": 1360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "15":
     id: "15"
-    ignoreworker: false
+    taskid: 55ad16be-9c73-411f-887d-5e75aa61327b
+    type: regular
+    task:
+      id: 55ad16be-9c73-411f-887d-5e75aa61327b
+      version: -1
+      name: Set the status - Complete
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "19"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -3360,38 +3326,38 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
     sla:
-      days: 0
       hours: 0
+      days: 0
       weeks: 0
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: 55ad16be-9c73-411f-887d-5e75aa61327b
-      iscommand: true
-      name: Set the status - Complete
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 55ad16be-9c73-411f-887d-5e75aa61327b
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1185
+          "y": 1360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "16":
     id: "16"
-    ignoreworker: false
+    taskid: c46335b3-5003-4264-8d11-2139ee1c3435
+    type: regular
+    task:
+      id: c46335b3-5003-4264-8d11-2139ee1c3435
+      version: -1
+      name: Set the status - Complete
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "22"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -3911,38 +3877,38 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
     sla:
-      days: 0
       hours: 0
+      days: 0
       weeks: 0
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: c46335b3-5003-4264-8d11-2139ee1c3435
-      iscommand: true
-      name: Set the status - Complete
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: c46335b3-5003-4264-8d11-2139ee1c3435
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 1185
+          "y": 1360
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "17":
     id: "17"
-    ignoreworker: false
+    taskid: f57a9b16-8114-4b6a-804e-35104d15b6b2
+    type: regular
+    task:
+      id: f57a9b16-8114-4b6a-804e-35104d15b6b2
+      version: -1
+      name: Set the status - Complete
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "23"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -4462,742 +4428,710 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
     sla:
-      days: 0
       hours: 0
+      days: 0
       weeks: 0
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: f57a9b16-8114-4b6a-804e-35104d15b6b2
-      iscommand: true
-      name: Set the status - Complete
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: f57a9b16-8114-4b6a-804e-35104d15b6b2
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1185
+          "y": 1360
         }
       }
-  "18":
-    form:
-      description: Please answer all questions - Select ALL that apply
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B1a Policy and Process Development'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B1a Policy and Process Development'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "1"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B1b Policy and Process Implementation'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B1b Policy and Process Implementation'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "2"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B2a Identity Verification, Authentication
-                      and Authorisation'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B2a Identity Verification, Authentication
-                      and Authorisation'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "3"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B2b Device Management'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B2b Device Management'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "4"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B2c Privileged User Management'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B2c Privileged User Management'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "5"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B2d Identity and Access Management'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B2d Identity and Access Management'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "6"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B3a Understanding Data'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B3a Understanding Data'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "7"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B3b Data in Transit'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B3b Data in Transit'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "8"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B3c Stored Data'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B3c Stored Data'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "9"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B3d Mobile Data'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B3d Mobile Data'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "10"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B3e Media Equipment Sanitisation'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B3e Media Equipment Sanitisation'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "11"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B4a Secure by Design'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B4a Secure by Design'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "12"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B4b Secure Configuration'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B4b Secure Configuration'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "13"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B4c Secure Management'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B4c Secure Management'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "14"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B4d Vulnerability Management'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B4d Vulnerability Management'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "15"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B5a Resilience Preparation'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B5a Resilience Preparation'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "16"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B5b Design for Resilience'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B5b Design for Resilience'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "17"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B5c Backups'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B5c Backups'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "18"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B6a Cyber Security Culture'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B6a Cyber Security Culture'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "19"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B6b Cyber Security Training'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentB[?name=='B6b Cyber Security Training'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      sender: ""
-      title: CAF B - Protecting against cyber-attack
-      totalanswers: 0
-    id: "18"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    message:
-      bcc: null
-      body:
-        simple: Please use the link to answer all the questions related to "Protecting
-          against cyber-attack"
-      cc: null
-      format: ""
-      methods:
-      - email
-      subject:
-        simple: NCSC CAF Objective B - Protecting against cyber-attack
-      timings:
-        completeafterreplies: 1
-        retriescount: 2
-        retriesinterval: 360
-      to:
-        simple: ${incident.cafbemail}
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: c44f7bf9-0255-44e9-8879-7c497c7c7b45
+    type: collection
+    task:
+      id: c44f7bf9-0255-44e9-8879-7c497c7c7b45
+      version: -1
+      name: CAF B Assessment Questions
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "15"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: c44f7bf9-0255-44e9-8879-7c497c7c7b45
-      iscommand: false
-      name: CAF B Assessment Questions
-      type: collection
-      version: -1
-    taskid: c44f7bf9-0255-44e9-8879-7c497c7c7b45
-    timertriggers: []
-    type: collection
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1010
+          "y": 1185
         }
       }
-  "19":
-    fieldMapping:
-    - incidentfield: CAF B Result Raw
-      output:
-        complex:
-          accessor: AssessmentB
-          root: AssessmentResults
-    - incidentfield: CAF B Result
-      output:
-        complex:
-          accessor: AssessmentB
-          root: AssessmentMarkdown
-    - incidentfield: CAF B Details
-      output:
-        complex:
-          accessor: AssessmentB
-          root: AssessmentResultsDetails
-    - incidentfield: CAF B Achievement
-      output:
-        complex:
-          accessor: Achievement
-          root: AssessmentResultsAchievement.AssessmentB
-    - incidentfield: CAF B Questions
-      output:
-        complex:
-          accessor: Questions
-          root: CAF B - Protecting against cyber-attack
-    - incidentfield: CAF B Answers
-      output:
-        complex:
-          accessor: Answers
-          root: CAF B - Protecting against cyber-attack
-    id: "19"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    message:
+      to:
+        simple: ${incident.cafbemail}
+      subject:
+        simple: NCSC CAF Objective B - Protecting against cyber-attack
+      body:
+        simple: Please use the link to answer all the questions related to "Protecting
+          against cyber-attack"
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B1a Policy and Process Development'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B1a Policy and Process Development'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B1b Policy and Process Implementation'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B1b Policy and Process Implementation'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B2a Identity Verification, Authentication
+                      and Authorisation'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B2a Identity Verification, Authentication
+                      and Authorisation'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B2b Device Management'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B2b Device Management'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B2c Privileged User Management'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B2c Privileged User Management'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B2d Identity and Access Management'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B2d Identity and Access Management'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B3a Understanding Data'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B3a Understanding Data'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "7"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B3b Data in Transit'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B3b Data in Transit'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "8"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B3c Stored Data'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B3c Stored Data'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "9"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B3d Mobile Data'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B3d Mobile Data'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "10"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B3e Media Equipment Sanitisation'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B3e Media Equipment Sanitisation'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "11"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B4a Secure by Design'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B4a Secure by Design'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "12"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B4b Secure Configuration'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B4b Secure Configuration'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "13"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B4c Secure Management'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B4c Secure Management'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "14"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B4d Vulnerability Management'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B4d Vulnerability Management'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "15"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B5a Resilience Preparation'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B5a Resilience Preparation'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "16"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B5b Design for Resilience'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B5b Design for Resilience'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "17"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B5c Backups'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B5c Backups'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "18"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B6a Cyber Security Culture'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B6a Cyber Security Culture'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "19"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B6b Cyber Security Training'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentB[?name=='B6b Cyber Security Training'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      title: CAF B - Protecting against cyber-attack
+      description: Please answer all questions - Select ALL that apply
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 99ae40c8-9955-4e74-8eda-e39599e9748b
+    type: regular
+    task:
+      id: 99ae40c8-9955-4e74-8eda-e39599e9748b
+      version: -1
+      name: Assess the results
+      scriptName: NCSCCalculateQuestionsScore
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "28"
-    note: false
-    quietmode: 0
     scriptarguments:
       assessment:
         simple: AssessmentB
@@ -5205,540 +5139,540 @@ tasks:
         complex:
           root: CAF B - Protecting against cyber-attack
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 99ae40c8-9955-4e74-8eda-e39599e9748b
-      iscommand: false
-      name: Assess the results
-      script: 9efd24ab-fadb-43e8-871e-6693d83af45d
-      type: regular
-      version: -1
-    taskid: 99ae40c8-9955-4e74-8eda-e39599e9748b
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1360
+          "y": 1535
         }
       }
-  "20":
-    form:
-      description: Please answer all questions - Select ALL that apply
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C1a Monitoring Coverage'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C1a Monitoring Coverage'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "1"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C1b Securing Logs'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C1b Securing Logs'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "2"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C1c Generating Alerts'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C1c Generating Alerts'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "3"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C1d Identifying Security Incidents'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C1d Identifying Security Incidents'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "4"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C1e  Monitoring Tools and Skills'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C1e  Monitoring Tools and Skills'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "5"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C2a System Abnormalities for Attack
-                      Detection'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C2a System Abnormalities for Attack
-                      Detection'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "6"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C2b Proactive Attack Discovery'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentC[?name=='C2b Proactive Attack Discovery'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      sender: ""
-      title: CAF C - Detecting cyber security events
-      totalanswers: 0
-    id: "20"
+    note: false
+    timertriggers: []
     ignoreworker: false
-    message:
-      bcc: null
-      body:
-        simple: Please use the link to answer all the questions related to "Detecting
-          cyber security events"
-      cc: null
-      format: ""
-      methods:
-      - email
-      subject:
-        simple: NCSC CAF Objective C - Detecting cyber security events
-      timings:
-        completeafterreplies: 1
-        retriescount: 2
-        retriesinterval: 360
-      to:
-        simple: ${incident.cafcemail}
+    fieldMapping:
+    - incidentfield: CAF B Result Raw
+      output:
+        complex:
+          root: AssessmentResults
+          accessor: AssessmentB
+    - incidentfield: CAF B Result
+      output:
+        complex:
+          root: AssessmentMarkdown
+          accessor: AssessmentB
+    - incidentfield: CAF B Details
+      output:
+        complex:
+          root: AssessmentResultsDetails
+          accessor: AssessmentB
+    - incidentfield: CAF B Achievement
+      output:
+        complex:
+          root: AssessmentResultsAchievement.AssessmentB
+          accessor: Achievement
+    - incidentfield: CAF B Questions
+      output:
+        complex:
+          root: CAF B - Protecting against cyber-attack
+          accessor: Questions
+    - incidentfield: CAF B Answers
+      output:
+        complex:
+          root: CAF B - Protecting against cyber-attack
+          accessor: Answers
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 75f0b0df-a068-4de3-81ff-16d9b354b61a
+    type: collection
+    task:
+      id: 75f0b0df-a068-4de3-81ff-16d9b354b61a
+      version: -1
+      name: CAF C Assessment Questions
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "16"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 75f0b0df-a068-4de3-81ff-16d9b354b61a
-      iscommand: false
-      name: CAF C Assessment Questions
-      type: collection
-      version: -1
-    taskid: 75f0b0df-a068-4de3-81ff-16d9b354b61a
-    timertriggers: []
-    type: collection
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 1010
+          "y": 1185
         }
       }
-  "21":
-    form:
-      description: Please answer all questions - Select ALL that apply
-      expired: false
-      questions:
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "0"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentD[?name=='D1a Response Plan'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentD[?name=='D1a Response Plan'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "1"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentD[?name=='D1 b Response and Recovery Capability'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentD[?name=='D1 b Response and Recovery Capability'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "2"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentD[?name=='D1c Testing and Exercising'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentD[?name=='D1c Testing and Exercising'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "3"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentD[?name=='D2a Incident Root Cause Analysis'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentD[?name=='D2a Incident Root Cause Analysis'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      - defaultrows: []
-        fieldassociated: ""
-        gridcolumns: []
-        id: "4"
-        label: ""
-        labelarg:
-          complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentD[?name=='D2b Using Incidents to Drive Improvements'].question
-              operator: jmespath
-        options: []
-        optionsarg:
-        - complex:
-            accessor: NCSC CAF Assessment
-            root: lists
-            transformers:
-            - args:
-                expression:
-                  value:
-                    simple: AssessmentD[?name=='D2b Using Incidents to Drive Improvements'].answers[].answer
-              operator: jmespath
-        placeholder: ""
-        readonly: false
-        required: true
-        tooltip: Select all that apply
-        type: multiSelect
-      sender: ""
-      title: CAF D - Minimising the impact of cyber security incidents
-      totalanswers: 0
-    id: "21"
+    note: false
+    timertriggers: []
     ignoreworker: false
     message:
-      bcc: null
+      to:
+        simple: ${incident.cafcemail}
+      subject:
+        simple: NCSC CAF Objective C - Detecting cyber security events
       body:
-        simple: Please use the link to answer all the questions related to "Minimising
-          the impact of cyber security incidents"
-      cc: null
-      format: ""
+        simple: Please use the link to answer all the questions related to "Detecting
+          cyber security events"
       methods:
       - email
-      subject:
-        simple: NCSC CAF Objective D - Minimising the impact of cyber security incidents
+      format: ""
+      bcc:
+      cc:
       timings:
-        completeafterreplies: 1
         retriescount: 2
         retriesinterval: 360
-      to:
-        simple: ${incident.cafdemail}
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C1a Monitoring Coverage'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C1a Monitoring Coverage'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C1b Securing Logs'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C1b Securing Logs'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C1c Generating Alerts'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C1c Generating Alerts'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C1d Identifying Security Incidents'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C1d Identifying Security Incidents'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C1e  Monitoring Tools and Skills'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C1e  Monitoring Tools and Skills'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C2a System Abnormalities for Attack
+                      Detection'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C2a System Abnormalities for Attack
+                      Detection'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C2b Proactive Attack Discovery'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentC[?name=='C2b Proactive Attack Discovery'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      title: CAF C - Detecting cyber security events
+      description: Please answer all questions - Select ALL that apply
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 0a2b8d2c-67f6-4106-8ae2-5d88733cbfc3
+    type: collection
+    task:
+      id: 0a2b8d2c-67f6-4106-8ae2-5d88733cbfc3
+      version: -1
+      name: CAF D Assessment Questions
+      type: collection
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "17"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 0a2b8d2c-67f6-4106-8ae2-5d88733cbfc3
-      iscommand: false
-      name: CAF D Assessment Questions
-      type: collection
-      version: -1
-    taskid: 0a2b8d2c-67f6-4106-8ae2-5d88733cbfc3
-    timertriggers: []
-    type: collection
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1010
+          "y": 1185
         }
       }
-  "22":
-    fieldMapping:
-    - incidentfield: CAF C Result Raw
-      output:
-        complex:
-          accessor: AssessmentC
-          root: AssessmentResults
-    - incidentfield: CAF C Result
-      output:
-        complex:
-          accessor: AssessmentC
-          root: AssessmentMarkdown
-    - incidentfield: CAF C Details
-      output:
-        complex:
-          accessor: AssessmentC
-          root: AssessmentResultsDetails
-    - incidentfield: CAF C Achievement
-      output:
-        complex:
-          accessor: Achievement
-          root: AssessmentResultsAchievement.AssessmentC
-    - incidentfield: CAF C Questions
-      output:
-        complex:
-          accessor: Questions
-          root: CAF C - Detecting cyber security events
-    - incidentfield: CAF C Answers
-      output:
-        complex:
-          accessor: Answers
-          root: CAF C - Detecting cyber security events
-    id: "22"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    message:
+      to:
+        simple: ${incident.cafdemail}
+      subject:
+        simple: NCSC CAF Objective D - Minimising the impact of cyber security incidents
+      body:
+        simple: Please use the link to answer all the questions related to "Minimising
+          the impact of cyber security incidents"
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentD[?name=='D1a Response Plan'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentD[?name=='D1a Response Plan'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentD[?name=='D1 b Response and Recovery Capability'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentD[?name=='D1 b Response and Recovery Capability'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentD[?name=='D1c Testing and Exercising'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentD[?name=='D1c Testing and Exercising'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentD[?name=='D2a Incident Root Cause Analysis'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentD[?name=='D2a Incident Root Cause Analysis'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentD[?name=='D2b Using Incidents to Drive Improvements'].question
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: lists
+            accessor: NCSC CAF Assessment
+            transformers:
+            - operator: jmespath
+              args:
+                expression:
+                  value:
+                    simple: AssessmentD[?name=='D2b Using Incidents to Drive Improvements'].answers[].answer
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select all that apply
+        readonly: false
+      title: CAF D - Minimising the impact of cyber security incidents
+      description: Please answer all questions - Select ALL that apply
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 593583d5-f5e3-42e7-8e3a-afc07db830fd
+    type: regular
+    task:
+      id: 593583d5-f5e3-42e7-8e3a-afc07db830fd
+      version: -1
+      name: Assess the results
+      scriptName: NCSCCalculateQuestionsScore
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "29"
-    note: false
-    quietmode: 0
     scriptarguments:
       assessment:
         simple: AssessmentC
@@ -5746,64 +5680,64 @@ tasks:
         complex:
           root: CAF C - Detecting cyber security events
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 593583d5-f5e3-42e7-8e3a-afc07db830fd
-      iscommand: false
-      name: Assess the results
-      script: 9efd24ab-fadb-43e8-871e-6693d83af45d
-      type: regular
-      version: -1
-    taskid: 593583d5-f5e3-42e7-8e3a-afc07db830fd
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 1360
+          "y": 1535
         }
       }
-  "23":
-    fieldMapping:
-    - incidentfield: CAF D Result Raw
-      output:
-        complex:
-          accessor: AssessmentD
-          root: AssessmentResults
-    - incidentfield: CAF D Result
-      output:
-        complex:
-          accessor: AssessmentD
-          root: AssessmentMarkdown
-    - incidentfield: CAF D Details
-      output:
-        complex:
-          accessor: AssessmentD
-          root: AssessmentResultsDetails
-    - incidentfield: CAF D Achievement
-      output:
-        complex:
-          accessor: Achievement
-          root: AssessmentResultsAchievement.AssessmentD
-    - incidentfield: CAF D Questions
-      output:
-        complex:
-          accessor: Questions
-          root: CAF D - Minimising the impact of cyber security incidents
-    - incidentfield: CAF D Answers
-      output:
-        complex:
-          accessor: Answers
-          root: CAF D - Minimising the impact of cyber security incidents
-    id: "23"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    fieldMapping:
+    - incidentfield: CAF C Result Raw
+      output:
+        complex:
+          root: AssessmentResults
+          accessor: AssessmentC
+    - incidentfield: CAF C Result
+      output:
+        complex:
+          root: AssessmentMarkdown
+          accessor: AssessmentC
+    - incidentfield: CAF C Details
+      output:
+        complex:
+          root: AssessmentResultsDetails
+          accessor: AssessmentC
+    - incidentfield: CAF C Achievement
+      output:
+        complex:
+          root: AssessmentResultsAchievement.AssessmentC
+          accessor: Achievement
+    - incidentfield: CAF C Questions
+      output:
+        complex:
+          root: CAF C - Detecting cyber security events
+          accessor: Questions
+    - incidentfield: CAF C Answers
+      output:
+        complex:
+          root: CAF C - Detecting cyber security events
+          accessor: Answers
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: dc0b99e3-6f37-4706-877d-06d13262c7ab
+    type: regular
+    task:
+      id: dc0b99e3-6f37-4706-877d-06d13262c7ab
+      version: -1
+      name: Assess the results
+      scriptName: NCSCCalculateQuestionsScore
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "24"
-    note: false
-    quietmode: 0
     scriptarguments:
       assessment:
         simple: AssessmentD
@@ -5811,33 +5745,65 @@ tasks:
         complex:
           root: CAF D - Minimising the impact of cyber security incidents
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: dc0b99e3-6f37-4706-877d-06d13262c7ab
-      iscommand: false
-      name: Assess the results
-      script: 9efd24ab-fadb-43e8-871e-6693d83af45d
-      type: regular
-      version: -1
-    taskid: dc0b99e3-6f37-4706-877d-06d13262c7ab
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1360
+          "y": 1535
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: CAF D Result Raw
+      output:
+        complex:
+          root: AssessmentResults
+          accessor: AssessmentD
+    - incidentfield: CAF D Result
+      output:
+        complex:
+          root: AssessmentMarkdown
+          accessor: AssessmentD
+    - incidentfield: CAF D Details
+      output:
+        complex:
+          root: AssessmentResultsDetails
+          accessor: AssessmentD
+    - incidentfield: CAF D Achievement
+      output:
+        complex:
+          root: AssessmentResultsAchievement.AssessmentD
+          accessor: Achievement
+    - incidentfield: CAF D Questions
+      output:
+        complex:
+          root: CAF D - Minimising the impact of cyber security incidents
+          accessor: Questions
+    - incidentfield: CAF D Answers
+      output:
+        complex:
+          root: CAF D - Minimising the impact of cyber security incidents
+          accessor: Answers
+    skipunavailable: false
+    quietmode: 0
   "24":
     id: "24"
-    ignoreworker: false
+    taskid: 1bcee1ed-7c56-4fc7-862d-8433349e9b98
+    type: regular
+    task:
+      id: 1bcee1ed-7c56-4fc7-862d-8433349e9b98
+      version: -1
+      name: Send Assessment D results to the user
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
-    note: false
-    quietmode: 0
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -6045,64 +6011,64 @@ tasks:
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Send an email
-      id: 1bcee1ed-7c56-4fc7-862d-8433349e9b98
-      iscommand: true
-      name: Send Assessment D results to the user
-      script: '|||send-mail'
-      type: regular
-      version: -1
-    taskid: 1bcee1ed-7c56-4fc7-862d-8433349e9b98
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1535
+          "y": 1710
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "25":
     id: "25"
-    ignoreworker: false
+    taskid: f88d4e78-2808-49f0-844a-81825691ee43
+    type: regular
+    task:
+      id: f88d4e78-2808-49f0-844a-81825691ee43
+      version: -1
+      name: Get Server URLs
+      description: Get the Server URL.
+      scriptName: GetServerURL
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "1"
       - "12"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Get the Server URL.
-      id: f88d4e78-2808-49f0-844a-81825691ee43
-      iscommand: false
-      name: Get Server URLs
-      script: GetServerURL
-      type: regular
-      version: -1
-    taskid: f88d4e78-2808-49f0-844a-81825691ee43
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 370
+          "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "27":
     id: "27"
-    ignoreworker: false
+    taskid: 951eccb0-b9b2-4f8e-8548-c3b88f6ea254
+    type: regular
+    task:
+      id: 951eccb0-b9b2-4f8e-8548-c3b88f6ea254
+      version: -1
+      name: Send Assessment A results to the user
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
-    note: false
-    quietmode: 0
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -6310,34 +6276,34 @@ tasks:
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Send an email
-      id: 951eccb0-b9b2-4f8e-8548-c3b88f6ea254
-      iscommand: true
-      name: Send Assessment A results to the user
-      script: '|||send-mail'
-      type: regular
-      version: -1
-    taskid: 951eccb0-b9b2-4f8e-8548-c3b88f6ea254
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 1535
+          "y": 1710
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "28":
     id: "28"
-    ignoreworker: false
+    taskid: f0cbb296-5a82-46b4-835c-b61e5a93b6c2
+    type: regular
+    task:
+      id: f0cbb296-5a82-46b4-835c-b61e5a93b6c2
+      version: -1
+      name: Send Assessment B results to the user
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
-    note: false
-    quietmode: 0
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -6545,34 +6511,34 @@ tasks:
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Send an email
-      id: f0cbb296-5a82-46b4-835c-b61e5a93b6c2
-      iscommand: true
-      name: Send Assessment B results to the user
-      script: '|||send-mail'
-      type: regular
-      version: -1
-    taskid: f0cbb296-5a82-46b4-835c-b61e5a93b6c2
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 910,
-          "y": 1535
+          "y": 1710
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "29":
     id: "29"
-    ignoreworker: false
+    taskid: ae7a2fa5-a7b3-4d2a-8c88-c9ad07df593e
+    type: regular
+    task:
+      id: ae7a2fa5-a7b3-4d2a-8c88-c9ad07df593e
+      version: -1
+      name: Send Assessment C results to the user
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
-    note: false
-    quietmode: 0
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -6780,34 +6746,34 @@ tasks:
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Send an email
-      id: ae7a2fa5-a7b3-4d2a-8c88-c9ad07df593e
-      iscommand: true
-      name: Send Assessment C results to the user
-      script: '|||send-mail'
-      type: regular
-      version: -1
-    taskid: ae7a2fa5-a7b3-4d2a-8c88-c9ad07df593e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 1340,
-          "y": 1535
+          "y": 1710
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "30":
     id: "30"
-    ignoreworker: false
+    taskid: 2a68b515-42b4-4ec5-8a4d-5983f32e69d6
+    type: regular
+    task:
+      id: 2a68b515-42b4-4ec5-8a4d-5983f32e69d6
+      version: -1
+      name: Send Overall Assessment results to all the users
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "41"
-    note: false
-    quietmode: 0
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
@@ -7044,98 +7010,29 @@ tasks:
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Send an email
-      id: 2a68b515-42b4-4ec5-8a4d-5983f32e69d6
-      iscommand: true
-      name: Send Overall Assessment results to all the users
-      script: '|||send-mail'
-      type: regular
-      version: -1
-    taskid: 2a68b515-42b4-4ec5-8a4d-5983f32e69d6
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 2700
+          "x": 265,
+          "y": 2875
         }
       }
-  "31":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: AssessmentResultsAchievement.AssessmentD.Acheivement
-          operator: isEqualString
-          right:
-            value:
-              simple: Not Achieved
-        - left:
-            iscontext: true
-            value:
-              simple: AssessmentResultsBchievement.AssessmentD.Acheivement
-          operator: isEqualString
-          right:
-            value:
-              simple: Not Achieved
-        - left:
-            iscontext: true
-            value:
-              simple: AssessmentResultsCchievement.AssessmentD.Acheivement
-          operator: isEqualString
-          right:
-            value:
-              simple: Not Achieved
-        - left:
-            iscontext: true
-            value:
-              simple: AssessmentResultsDchievement.AssessmentD.Acheivement
-          operator: isEqualString
-          right:
-            value:
-              simple: Not Achieved
-      label: Not Achieved
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: AssessmentResultsAchievement.AssessmentD.Acheivement
-          operator: isEqualString
-          right:
-            value:
-              simple: Achieved
-      - - left:
-            iscontext: true
-            value:
-              simple: AssessmentResultsBchievement.AssessmentD.Acheivement
-          operator: isEqualString
-          right:
-            value:
-              simple: Achieved
-      - - left:
-            iscontext: true
-            value:
-              simple: AssessmentResultsCchievement.AssessmentD.Acheivement
-          operator: isEqualString
-          right:
-            value:
-              simple: Achieved
-      - - left:
-            iscontext: true
-            value:
-              simple: AssessmentResultsDchievement.AssessmentD.Acheivement
-          operator: isEqualString
-          right:
-            value:
-              simple: Achieved
-      label: Achieved
-    id: "31"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: fdb482eb-23d9-4a90-81ae-c06bcd2b3d33
+    type: condition
+    task:
+      id: fdb482eb-23d9-4a90-81ae-c06bcd2b3d33
+      version: -1
+      name: Determine the Overall Status
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
       - "34"
@@ -7143,35 +7040,104 @@ tasks:
       - "32"
       Not Achieved:
       - "33"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: fdb482eb-23d9-4a90-81ae-c06bcd2b3d33
-      iscommand: false
-      name: Determine the Overall Status
-      type: condition
-      version: -1
-    taskid: fdb482eb-23d9-4a90-81ae-c06bcd2b3d33
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: Not Achieved
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AssessmentResultsAchievement.AssessmentD.Acheivement
+            iscontext: true
+          right:
+            value:
+              simple: Not Achieved
+        - operator: isEqualString
+          left:
+            value:
+              simple: AssessmentResultsBchievement.AssessmentD.Acheivement
+            iscontext: true
+          right:
+            value:
+              simple: Not Achieved
+        - operator: isEqualString
+          left:
+            value:
+              simple: AssessmentResultsCchievement.AssessmentD.Acheivement
+            iscontext: true
+          right:
+            value:
+              simple: Not Achieved
+        - operator: isEqualString
+          left:
+            value:
+              simple: AssessmentResultsDchievement.AssessmentD.Acheivement
+            iscontext: true
+          right:
+            value:
+              simple: Not Achieved
+    - label: Achieved
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AssessmentResultsAchievement.AssessmentD.Acheivement
+            iscontext: true
+          right:
+            value:
+              simple: Achieved
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AssessmentResultsBchievement.AssessmentD.Acheivement
+            iscontext: true
+          right:
+            value:
+              simple: Achieved
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AssessmentResultsCchievement.AssessmentD.Acheivement
+            iscontext: true
+          right:
+            value:
+              simple: Achieved
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AssessmentResultsDchievement.AssessmentD.Acheivement
+            iscontext: true
+          right:
+            value:
+              simple: Achieved
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 2350
+          "y": 2525
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "32":
     id: "32"
-    ignoreworker: false
+    taskid: d8140e61-42c3-4eeb-8627-b7c54b77c5db
+    type: regular
+    task:
+      id: d8140e61-42c3-4eeb-8627-b7c54b77c5db
+      version: -1
+      name: Determine the Overall Status as achieved
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "30"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -7704,34 +7670,34 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: d8140e61-42c3-4eeb-8627-b7c54b77c5db
-      iscommand: true
-      name: Determine the Overall Status as achieved
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: d8140e61-42c3-4eeb-8627-b7c54b77c5db
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1125,
-          "y": 2525
+          "x": 265,
+          "y": 2700
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "33":
     id: "33"
-    ignoreworker: false
+    taskid: 3c6fd05d-72f3-4242-8410-45235eec1bb2
+    type: regular
+    task:
+      id: 3c6fd05d-72f3-4242-8410-45235eec1bb2
+      version: -1
+      name: Determine the Overall Status as "Not Achieved"
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "35"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -8264,34 +8230,34 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: 3c6fd05d-72f3-4242-8410-45235eec1bb2
-      iscommand: true
-      name: Determine the Overall Status as "Not Achieved"
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 3c6fd05d-72f3-4242-8410-45235eec1bb2
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 2525
+          "x": 695,
+          "y": 2700
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "34":
     id: "34"
-    ignoreworker: false
+    taskid: ea34505e-f52e-4a07-84ad-a8cd526fbfb2
+    type: regular
+    task:
+      id: ea34505e-f52e-4a07-84ad-a8cd526fbfb2
+      version: -1
+      name: Set the Overall Status as "Partially Achieved"
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "35"
-    note: false
-    quietmode: 0
     scriptarguments:
       accountgroups: {}
       accountid: {}
@@ -8824,55 +8790,55 @@ tasks:
       xdrurl: {}
       xdrusercount: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: ea34505e-f52e-4a07-84ad-a8cd526fbfb2
-      iscommand: true
-      name: Set the Overall Status as "Partially Achieved"
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: ea34505e-f52e-4a07-84ad-a8cd526fbfb2
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 2525
+          "x": 1125,
+          "y": 2700
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "35":
     id: "35"
-    ignoreworker: false
+    taskid: ad6b4def-e1d6-4261-8395-07d9432b6a11
+    type: regular
+    task:
+      id: ad6b4def-e1d6-4261-8395-07d9432b6a11
+      version: -1
+      name: Send Overall Assessment results to all the users
+      description: Send an email
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "41"
-    note: false
-    quietmode: 0
     scriptarguments:
       additionalHeader: {}
       attachCIDs: {}
       attachIDs:
         complex:
-          accessor: EntryID
+          root: InfoFile
           filters:
-          - - left:
-                iscontext: true
+          - - operator: isEqualString
+              left:
                 value:
                   simple: InfoFile.Name
-              operator: isEqualString
-              right:
                 iscontext: true
+              right:
                 value:
                   simple: Report.Name
-          root: InfoFile
+                iscontext: true
+          accessor: EntryID
       attachNames:
         complex:
-          accessor: Name
           root: Report
+          accessor: Name
       bcc:
         simple: ${incident.cafaemail};${incident.cafbemail};${incident.cafcemail};${incident.cafdemail}
       body: {}
@@ -9120,63 +9086,63 @@ tasks:
       transientFileCID: {}
       transientFileContent: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Send an email
-      id: ad6b4def-e1d6-4261-8395-07d9432b6a11
-      iscommand: true
-      name: Send Overall Assessment results to all the users
-      script: '|||send-mail'
-      type: regular
-      version: -1
-    taskid: ad6b4def-e1d6-4261-8395-07d9432b6a11
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 2700
+          "x": 910,
+          "y": 2875
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "36":
     id: "36"
-    ignoreworker: false
+    taskid: 63ed1109-5e23-4822-8865-82e24e3a39bc
+    type: condition
+    task:
+      id: 63ed1109-5e23-4822-8865-82e24e3a39bc
+      version: -1
+      name: Is it OK to close the case?
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       "No":
       - "10"
       "Yes":
       - "37"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 63ed1109-5e23-4822-8865-82e24e3a39bc
-      iscommand: false
-      name: Is it OK to close the case?
-      type: condition
-      version: -1
-    taskid: 63ed1109-5e23-4822-8865-82e24e3a39bc
-    timertriggers: []
-    type: condition
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 3020
+          "y": 3195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "37":
     id: "37"
-    ignoreworker: false
+    taskid: 153b0474-4c00-45e2-8dff-17bcc5b350d2
+    type: regular
+    task:
+      id: 153b0474-4c00-45e2-8dff-17bcc5b350d2
+      version: -1
+      name: Close the case
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "10"
-    note: false
-    quietmode: 0
     scriptarguments:
       assetid: {}
       closeNotes:
@@ -9188,84 +9154,40 @@ tasks:
       id: {}
       phishingsubtype: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.close.inv
-      id: 153b0474-4c00-45e2-8dff-17bcc5b350d2
-      iscommand: true
-      name: Close the case
-      script: Builtin|||closeInvestigation
-      type: regular
-      version: -1
-    taskid: 153b0474-4c00-45e2-8dff-17bcc5b350d2
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
           "x": 807.5,
-          "y": 3195
+          "y": 3370
         }
       }
-  "38":
-    evidencedata:
-      customfields: {}
-      description:
-        simple: Output Report
-    id: "38"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 03dca1d2-f149-436b-8541-3049494549a2
+    type: regular
+    task:
+      id: 03dca1d2-f149-436b-8541-3049494549a2
+      version: -1
+      name: Generate Report
+      description: Generate incidents general report from a given report template
+      script: Builtin|||generateGeneralReport
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - "39"
-    note: false
-    quietmode: 0
     scriptarguments:
       name:
         simple: NCSC Assessment
       type:
         simple: pdf
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Generate incidents general report from a given report template
-      id: 03dca1d2-f149-436b-8541-3049494549a2
-      iscommand: true
-      name: Generate Report
-      script: Builtin|||generateGeneralReport
-      type: regular
-      version: -1
-    taskid: 03dca1d2-f149-436b-8541-3049494549a2
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 2030
-        }
-      }
-  "39":
-    id: "39"
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - "31"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: bcd6baf6-51b0-43f6-801a-7e226491dab3
-      iscommand: false
-      name: Calculate the results and send communications
-      type: title
-      version: -1
-    taskid: bcd6baf6-51b0-43f6-801a-7e226491dab3
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
@@ -9273,70 +9195,185 @@ tasks:
           "y": 2205
         }
       }
+    note: false
+    evidencedata:
+      description:
+        simple: Output Report
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: bcd6baf6-51b0-43f6-801a-7e226491dab3
+    type: title
+    task:
+      id: bcd6baf6-51b0-43f6-801a-7e226491dab3
+      version: -1
+      name: Calculate the results and send communications
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "40":
     id: "40"
-    ignoreworker: false
+    taskid: 3ee91056-863f-491b-892b-a8db166bad0b
+    type: title
+    task:
+      id: 3ee91056-863f-491b-892b-a8db166bad0b
+      version: -1
+      name: Generate Reports
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "38"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 3ee91056-863f-491b-892b-a8db166bad0b
-      iscommand: false
-      name: Generate Reports
-      type: title
-      version: -1
-    taskid: 3ee91056-863f-491b-892b-a8db166bad0b
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 1885
+          "y": 2060
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "41":
     id: "41"
-    ignoreworker: false
+    taskid: 0c523b10-4bfb-49fe-8cdb-f06057b54584
+    type: title
+    task:
+      id: 0c523b10-4bfb-49fe-8cdb-f06057b54584
+      version: -1
+      name: Close the case
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "36"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 0c523b10-4bfb-49fe-8cdb-f06057b54584
-      iscommand: false
-      name: Close the case
-      type: title
-      version: -1
-    taskid: 0c523b10-4bfb-49fe-8cdb-f06057b54584
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
           "x": 695,
-          "y": 2875
+          "y": 3050
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 15f23768-e8f3-455c-8881-82bea0b02399
+    type: regular
+    task:
+      id: 15f23768-e8f3-455c-8881-82bea0b02399
+      version: -1
+      name: NCSCQuestionPopulate
+      description: Populate a list named "NCSC CAF Assessment" with a list of the
+        NCSC Questions.
+      scriptName: NCSCQuestionPopulate
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3385,
+        "height": 3560,
         "width": 1670,
         "x": 50,
         "y": 50
       }
     }
   }
+inputs:
+- key: CAF A Email
+  value:
+    complex:
+      root: incident
+      accessor: cafaemail
+  required: true
+  description: The receiver of the Assessment A questions.
+  playbookInputQuery:
+- key: CAF B Email
+  value:
+    complex:
+      root: incident
+      accessor: cafbemail
+  required: true
+  description: The receiver of the Assessment B questions.
+  playbookInputQuery:
+- key: CAF C Email
+  value:
+    complex:
+      root: incident
+      accessor: cafcemail
+  required: true
+  description: The receiver of the Assessment C questions.
+  playbookInputQuery:
+- key: CAF D Email
+  value:
+    complex:
+      root: incident
+      accessor: cafdemail
+  required: true
+  description: The receiver of the Assessment D questions.
+  playbookInputQuery:
+- key: CAF Regulator Email
+  value:
+    complex:
+      root: incident
+      accessor: cafregulatoremail
+  required: true
+  description: The e-mail address of the regulator whom will receive the results.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: 'This playbook executes automatically as part of the NCSC Assessment Incident Type. It will send the
+relevant questions (via e-mail) to each participant and generate the assessment results.'

@@ -1,0 +1,16 @@
+commonfields:
+  id: NCSCQuestionPopulate
+  version: 4
+vcShouldKeepItemLegacyProdMachine: false
+name: NCSCQuestionPopulate
+script: ''
+type: python
+tags: []
+comment: Populate a list named "NCSC CAF Assessment" with a list of the NCSC Questions.
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ""
+runonce: false
+dockerimage: demisto/python3:3.9.1.14969
+runas: DBotWeakRole

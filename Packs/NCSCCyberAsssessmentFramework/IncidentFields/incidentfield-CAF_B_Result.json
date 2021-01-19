@@ -17,7 +17,7 @@
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "required": false,
-    "script": "7b83efbe-5075-4285-8819-d0b0aa3d40c4",
+    "script": "NCSCFieldProtection",
     "sla": 0,
     "system": false,
     "threshold": 72,
