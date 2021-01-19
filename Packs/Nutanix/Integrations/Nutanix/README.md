@@ -63,10 +63,9 @@ Get the list of physical hosts configured in the cluster.
 | NutanixHypervisor.Host..disk_hardware_configs.mount_path | String | Mount path. | 
 | NutanixHypervisor.Host..disk_hardware_configs.model | String | Disk model. | 
 | NutanixHypervisor.Host..disk_hardware_configs.vendor | String | Vendor name. | 
-| NutanixHypervisor.Host..disk_hardware_configs.boot_disk | Boolean | TODO. | 
-| NutanixHypervisor.Host..disk_hardware_configs.only_boot_disk | Boolean | TODO. | 
+| NutanixHypervisor.Host..disk_hardware_configs.boot_disk | Boolean | Indicates if host has dual SSD CVM. | 
+| NutanixHypervisor.Host..disk_hardware_configs.only_boot_disk | Boolean | Indicates if host has single SSD CVM.. | 
 | NutanixHypervisor.Host..disk_hardware_configs.under_diagnosis | Boolean | Is disk under diagnosis. | 
-| NutanixHypervisor.Host..disk_hardware_configs.background_operation | Unknown | Background operation. | 
 | NutanixHypervisor.Host..disk_hardware_configs.current_firmware_version | String | Disk current firmware version. | 
 | NutanixHypervisor.Host..disk_hardware_configs.target_firmware_version | String | Disk target firmware version. | 
 | NutanixHypervisor.Host..disk_hardware_configs.can_add_as_new_disk | Boolean | Can add this disk as a new disk. | 

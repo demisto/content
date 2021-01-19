@@ -156,17 +156,14 @@ script:
         description: Vendor name.
         type: String
       - contextPath: NutanixHypervisor.Host..disk_hardware_configs.boot_disk
-        description: TODO. # TODO TOM
+        description: Indicates if host has dual SSD CVM.
         type: Boolean
       - contextPath: NutanixHypervisor.Host..disk_hardware_configs.only_boot_disk
-        description: TODO. # TODO TOM
+        description: Indicates if host has single SSD CVM.
         type: Boolean
       - contextPath: NutanixHypervisor.Host..disk_hardware_configs.under_diagnosis
         description: Is disk under diagnosis.
         type: Boolean
-      - contextPath: NutanixHypervisor.Host..disk_hardware_configs.background_operation
-        description: Background operation.
-        type: Unknown # TODO TOM
       - contextPath: NutanixHypervisor.Host..disk_hardware_configs.current_firmware_version
         description: Disk current firmware version.
         type: String
