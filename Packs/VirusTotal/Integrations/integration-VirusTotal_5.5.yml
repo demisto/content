@@ -1183,7 +1183,7 @@ script:
     - name: url
       required: true
       default: true
-      description: The URL to check.
+      description: A comma-seperated list of URLs to check. This command will not work properly on URLs containing commas.
       isArray: true
     - name: sampleSize
       description: The number of samples from each type (resolutions, detections,
