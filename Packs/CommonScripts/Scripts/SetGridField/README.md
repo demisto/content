@@ -6,7 +6,7 @@ Update Grid Table from items or key value pairs.
 | --- | --- |
 | Script Type | python3 |
 | Tags |  |
-| XSOAR Version | 5.0.0 |
+| Demisto Version | 5.0.0 |
 
 ## Inputs
 ---
@@ -62,8 +62,7 @@ Assume the following:
 Considering the following cases:
 1. Key value to Grid:
 ```shell script
-!SetGridField columns="columnheader1,columnheader2" context_path=EWS.Items.HeadersMap grid_id=mygrid 
-keys="Received,Thread-Index,X-MS-Exchange-Organization-AuthSource,Accept-Language"
+!SetGridField columns="columnheade1,columnheade2,columnheade3" context_path=EWS.Items.HeadersMap grid_id=mygrid keys="Received,Thread-Index"
 ```
 
 Grid after update: \
@@ -71,8 +70,7 @@ Grid after update: \
  
 2. List of item properties to Grid:
 ```shell script
-!SetGridField columns="columnheader1,columnheader2" context_path=EWS.Items.headers grid_id=mygrid 
-keys="name, value"
+!SetGridField columns="columnheade1,columnheade2,columnheade3" context_path=EWS.Items.headers grid_id=mygrid keys="Received,Thread-Index"
 ```
 
 Grid after update: \

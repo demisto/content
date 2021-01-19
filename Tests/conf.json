@@ -1483,6 +1483,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "AnsibleTower",
+            "playbookID": "Launch Job - Ansible Tower",
+            "fromversion": "5.0.0"
+        },
+        {
             "integrations": "SplunkPy",
             "playbookID": "SplunkPySearch_Test",
             "memory_threshold": 200,
@@ -3222,6 +3227,7 @@
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
+        "pyEWS_Test": "Issue 28339",
         "GmailTest": "Issue 27057",
         "SMB test": "Issue 26454",
         "TestCofenseFeed": "Issue 29198",
@@ -3257,10 +3263,11 @@
         "HelloWorldPremium_Scan-Test": "Issue 32512",
         "RSA NetWitness Test": "Issue 32566",
         "ThreatMiner-Test": "Issue 32688",
-        "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568"
+        "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
+        "Microsoft Graph Groups - Test": "Issue 27890"
     },
     "skipped_integrations": {
-
+        
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
@@ -3269,7 +3276,7 @@
         "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
-        "ArcSight Logger": "Issue 19117",
+        "ArcSight Logger": "Issue 24303",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
@@ -3335,19 +3342,19 @@
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
         "Akamai WAF": "Issue 32318",
-
+        
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "Infoblox": "Unstable instance, issue 25651",
-
+        
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-
+        
         "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
@@ -3403,7 +3410,6 @@
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
-        "ActiveMQ": "stomp sdk not supporting proxy.",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
@@ -3541,7 +3547,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-
+        
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {

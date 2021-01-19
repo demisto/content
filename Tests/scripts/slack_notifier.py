@@ -139,7 +139,7 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
         }] + steps_fields
 
     if job_name and job_name == BucketUploadFlow.UPLOAD_JOB_NAME:
-        successful_packs, failed_packs, successful_private_packs_dict = get_successful_and_failed_packs(
+        successful_packs, failed_packs = get_successful_and_failed_packs(
             packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         )
         if successful_packs:
@@ -153,12 +153,6 @@ def get_attachments_for_bucket_upload_flow(build_url, job_name, packs_results_fi
                 "title": "Failed Packs:",
                 "value": "\n".join([f"{pack_name}: {pack_data.get(BucketUploadFlow.STATUS)}"
                                     for pack_name, pack_data in failed_packs.items()]),
-                "short": False
-            }]
-        if successful_private_packs_dict:
-            steps_fields += [{
-                "title": "Successful Private Packs:",
-                "value": "\n".join([pack_name for pack_name in {*successful_private_packs_dict}]),
                 "short": False
             }]
 
@@ -285,7 +279,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'packs-new-tag':
+    if branch_name == 'master':
         logging.info("Extracting build status")
         if test_type == UNITTESTS_TYPE:
             logging.info("Starting Slack notifications about nightly build - unit tests")
@@ -313,7 +307,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         slack_client = SlackClient(slack_token)
         slack_client.api_call(
             "chat.postMessage",
-            json={'channel': 'dmst-bucket-upload',
+            json={'channel': 'dmst-content-team',
                   'username': 'Content CircleCI',
                   'as_user': 'False',
                   'attachments': content_team_attachments}

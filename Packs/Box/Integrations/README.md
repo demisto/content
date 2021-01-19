@@ -1,5 +1,4 @@
-Deprecated. Use the Box v2 integration instead.
-
+Manage Box users
 ## Configure Box on Cortex XSOAR
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Box.

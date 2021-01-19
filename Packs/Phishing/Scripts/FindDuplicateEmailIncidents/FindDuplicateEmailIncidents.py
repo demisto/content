@@ -24,8 +24,6 @@ EMAIL_SUBJECT_FIELD = 'emailsubject'
 EMAIL_HTML_FIELD = 'emailbodyhtml'
 FROM_FIELD = 'emailfrom'
 FROM_DOMAIN_FIELD = 'fromdomain'
-PREPROCESSED_EMAIL_BODY = 'preprocessedemailbody'
-PREPROCESSED_EMAIL_SUBJECT = 'preprocessedemailsubject'
 MERGED_TEXT_FIELD = 'mereged_text'
 MIN_TEXT_LENGTH = 50
 DEFAULT_ARGS = {
@@ -71,10 +69,6 @@ def get_existing_incidents(input_args, current_incident_type):
         query_components.append(type_query)
     if len(query_components) > 0:
         get_incidents_args['query'] = ' and '.join('({})'.format(c) for c in query_components)
-
-    fields = [EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD, 'created', 'id',
-              'name', 'status']
-    get_incidents_args['populateFields'] = ','.join(fields)
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
@@ -95,7 +89,7 @@ def extract_domain(address):
         return ''
     email_address = parseaddr(address)[1]
     ext = no_fetch_extract(email_address)
-    return '{}.{}'.format(ext.domain, ext.suffix)
+    return ext.domain
 
 
 def get_text_from_html(html):
@@ -123,45 +117,34 @@ def eliminate_urls_extensions(text):
     return text
 
 
-def preprocess_email_body(incident):
-    email_body = email_html = ''
+def preprocess_text_fields(incident):
+    email_body = email_subject = email_html = ''
     if EMAIL_BODY_FIELD in incident:
         email_body = incident[EMAIL_BODY_FIELD]
     if EMAIL_HTML_FIELD in incident:
         email_html = incident[EMAIL_HTML_FIELD]
+    if EMAIL_SUBJECT_FIELD in incident:
+        email_subject = incident[EMAIL_SUBJECT_FIELD]
     if isinstance(email_html, float):
         email_html = ''
     if email_body is None or isinstance(email_body, float) or email_body.strip() == '':
         email_body = get_text_from_html(email_html)
-    return eliminate_urls_extensions(email_body)
-
-
-def preprocess_email_subject(incident):
-    email_subject = ''
-    if EMAIL_SUBJECT_FIELD in incident:
-        email_subject = incident[EMAIL_SUBJECT_FIELD]
     if isinstance(email_subject, float):
         email_subject = ''
-    return eliminate_urls_extensions(email_subject)
-
-
-def concatenate_subject_body(row):
-    return '{}\n{}'.format(row[PREPROCESSED_EMAIL_SUBJECT], row[PREPROCESSED_EMAIL_BODY])
+    text = eliminate_urls_extensions(email_subject + ' ' + email_body)
+    return text
 
 
 def preprocess_incidents_df(existing_incidents):
     global MERGED_TEXT_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD
     incidents_df = pd.DataFrame(existing_incidents)
-    if 'CustomFields' in incidents_df.columns:
-        incidents_df['CustomFields'] = incidents_df['CustomFields'].fillna(value={})
-        custom_fields_df = incidents_df['CustomFields'].apply(pd.Series)
-        unique_keys = [k for k in custom_fields_df if k not in incidents_df]
-        custom_fields_df = custom_fields_df[unique_keys]
-        incidents_df = pd.concat([incidents_df.drop('CustomFields', axis=1),
-                                  custom_fields_df], axis=1).reset_index()
-    incidents_df[PREPROCESSED_EMAIL_SUBJECT] = incidents_df.apply(lambda x: preprocess_email_subject(x), axis=1)
-    incidents_df[PREPROCESSED_EMAIL_BODY] = incidents_df.apply(lambda x: preprocess_email_body(x), axis=1)
-    incidents_df[MERGED_TEXT_FIELD] = incidents_df.apply(concatenate_subject_body, axis=1)
+    incidents_df['CustomFields'] = incidents_df['CustomFields'].fillna(value={})
+    custom_fields_df = incidents_df['CustomFields'].apply(pd.Series)
+    unique_keys = [k for k in custom_fields_df if k not in incidents_df]
+    custom_fields_df = custom_fields_df[unique_keys]
+    incidents_df = pd.concat([incidents_df.drop('CustomFields', axis=1),
+                              custom_fields_df], axis=1).reset_index()
+    incidents_df[MERGED_TEXT_FIELD] = incidents_df.apply(lambda x: preprocess_text_fields(x), axis=1)
     incidents_df = incidents_df[incidents_df[MERGED_TEXT_FIELD].str.len() >= MIN_TEXT_LENGTH]
     incidents_df.reset_index(inplace=True)
     if FROM_FIELD in incidents_df:
@@ -232,25 +215,20 @@ def find_duplicate_incidents(new_incident, existing_incidents_df, max_incidents_
     return existing_incidents_df.head(max_incidents_to_return)
 
 
-def return_entry(message, duplicate_incidents_df=None, new_incident=None):
+def return_entry(message, duplicate_incidents_df=None):
     if duplicate_incidents_df is None:
         duplicate_incident = {}
         all_duplicate_incidents = []
-        full_incidents = []
     else:
         most_similar_incident = duplicate_incidents_df.iloc[0]
         duplicate_incident = format_incident_context(most_similar_incident)
         all_duplicate_incidents = [format_incident_context(row) for _, row in duplicate_incidents_df.iterrows()]
-        new_incident['created'] = new_incident['created'].astype(str)
-        duplicate_incidents_df['created'] = duplicate_incidents_df['created'].astype(str)
-        duplicate_incidents_df.drop('vector', axis=1, inplace=True)
-        full_incidents = new_incident.to_dict(orient='records') + duplicate_incidents_df.to_dict(orient='records')
     outputs = {
         'duplicateIncident': duplicate_incident,
         'isDuplicateIncidentFound': duplicate_incidents_df is not None,
         'allDuplicateIncidents': all_duplicate_incidents
     }
-    return_outputs(message, outputs, raw_response=json.dumps(full_incidents))
+    return_outputs(message, outputs)
 
 
 def format_incident_context(df_row):
@@ -283,9 +261,9 @@ def close_new_incident_and_link_to_existing(new_incident, duplicate_incidents_df
             'duplicateId': most_similar_incident['id']})
         if is_error(res):
             return_error(res)
-        message += 'This incident (#{}) will be closed and linked to #{}.'.format(new_incident.iloc[0]['id'],
+        message += 'This incident (#{}) will be closed and linked to #{}.'.format(new_incident['id'],
                                                                                   most_similar_incident['id'])
-    return_entry(message, duplicate_incidents_df, new_incident)
+    return_entry(message, duplicate_incidents_df)
 
 
 def create_new_incident():
@@ -301,7 +279,7 @@ def format_incident_hr(duplicate_incidents_df):
                            'Name': incident['name'],
                            'Status': status_map[str(incident.get('status'))],
                            'Time': str(incident['created']),
-                           'Email From': incident.get(demisto.args().get(FROM_FIELD)),
+                           'Email From': incident.get(demisto.args().get('emailFrom')),
                            'Text Similarity': "{:.1f}%".format(incident['similarity'] * 100),
                            })
     headers = ['Id', 'Name', 'Status', 'Time', 'Email From', 'Text Similarity']
@@ -349,8 +327,7 @@ def main():
         return_error('Illegal value of arguement "maxIncidentsToReturn": {}. '
                      'Value should be an integer'.format(max_incidents_to_return))
     new_incident = demisto.incidents()[0]
-    type_field = input_args.get('incidentTypeFieldName', 'type')
-    existing_incidents = get_existing_incidents(input_args, new_incident.get(type_field, IGNORE_INCIDENT_TYPE_VALUE))
+    existing_incidents = get_existing_incidents(input_args, new_incident.get('type', IGNORE_INCIDENT_TYPE_VALUE))
     demisto.debug('found {} incidents by query'.format(len(existing_incidents)))
     if len(existing_incidents) == 0:
         create_new_incident()
@@ -377,7 +354,7 @@ def main():
     if duplicate_incidents_df.iloc[0]['similarity'] < SIMILARITY_THRESHOLD:
         create_new_incident_low_similarity(duplicate_incidents_df)
     else:
-        return close_new_incident_and_link_to_existing(new_incident_df, duplicate_incidents_df)
+        return close_new_incident_and_link_to_existing(new_incident_df.iloc[0], duplicate_incidents_df)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

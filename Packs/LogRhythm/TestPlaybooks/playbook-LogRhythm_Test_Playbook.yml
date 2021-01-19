@@ -47,8 +47,7 @@ tasks:
       - "10"
     scriptarguments:
       alarm-id:
-        complex:
-          root: inputs.alarm_id
+        simple: "1969"
     separatecontext: false
     view: |-
       {
@@ -114,8 +113,7 @@ tasks:
       - "11"
     scriptarguments:
       alarm-id:
-        complex:
-          root: inputs.alarm_id
+        simple: "1969"
       comments:
         simple: test
     separatecontext: false
@@ -148,8 +146,7 @@ tasks:
       - "21"
     scriptarguments:
       alarm-id:
-        complex:
-          root: inputs.alarm_id
+        simple: "1969"
       include-raw-log: {}
     separatecontext: false
     view: |-
@@ -220,8 +217,7 @@ tasks:
       - "15"
     scriptarguments:
       alarm-id:
-        complex:
-          root: inputs.alarm_id
+        simple: "1969"
       comments: {}
       status:
         simple: New
@@ -255,8 +251,7 @@ tasks:
       - "16"
     scriptarguments:
       alarm-id:
-        complex:
-          root: inputs.alarm_id
+        simple: "1969"
       comments: {}
       status:
         simple: Closed
@@ -327,7 +322,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: ${inputs.alarm_id}
+              simple: "1969"
     view: |-
       {
         "position": {
@@ -443,7 +438,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: ${inputs.alarm_id}
+              simple: "1969"
     view: |-
       {
         "position": {
@@ -693,12 +688,6 @@ view: |-
       }
     }
   }
-inputs:
-- key: alarm_id
-  value:
-    simple: "2987"
-  required: false
-  description: ""
-  playbookInputQuery: null
+inputs: []
 outputs: []
 fromversion: 5.0.0

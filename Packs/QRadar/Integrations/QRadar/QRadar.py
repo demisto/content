@@ -491,18 +491,10 @@ def get_domains_by_id(domain_id, _fields=''):
 
 
 def test_module():
-    try:
-        get_offenses('0-0')
-    except Exception as err:
-        demisto.log("Failed to perform an API call to the 'api/siem/offenses' endpoint. Reason:\n {}.\n "
-                    "Trying to perform an API call to 'api/ariel/databases' endpoint.".format(str(err)))
-        full_url = '{0}/api/ariel/databases'.format(SERVER)
-        headers = dict(AUTH_HEADERS)
-        send_request('GET', full_url, headers)
-    if demisto.params().get('isFetch'):
-        fetch_incidents()
-
-    # If encountered error, send_request or fetch_incidents will return error
+    full_url = '{0}/api/ariel/databases'.format(SERVER)
+    headers = dict(AUTH_HEADERS)
+    send_request('GET', full_url, headers)
+    # If encountered error, send_request will return_error
     return 'ok'
 
 

@@ -4,7 +4,10 @@ commonfields:
 name: illuminate
 display: illuminate (Deprecated)
 category: Data Enrichment & Threat Intelligence
-description: Deprecated. Use Analyst1 integration instead.
+description: Deprecated. This integration utilizes AnalystPlatform's illuminate system to enrich
+  Demisto indicators with data provided by the illuminate REST API, such as actor
+  and malware information, activity and reported dates, evidence and hit counts, and
+  more.
 deprecated: true
 tests:
   - No Tests - Deprecated

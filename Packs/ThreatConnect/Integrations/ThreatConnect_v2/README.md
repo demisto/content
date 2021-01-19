@@ -1,4 +1,4 @@
-Deprecated. Use the ThreatConnect v2 integration instead.
+Threat intelligence platform.
 
 ## Configure ThreatConnect v2 on Cortex XSOAR
 
