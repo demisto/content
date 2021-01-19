@@ -154,7 +154,7 @@ def gh_search_message_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
     return CommandResults(
         readable_output=events_md,
-        outputs_prefix='GreatHorn',
+        outputs_prefix='GreatHorn.Message',
         outputs_key_field='eventId',
         outputs=result
     )
@@ -184,6 +184,8 @@ def gh_revert_remediate_message_command(client: Client, args: Dict[str, Any]) ->
         action = "quarantine/deny"
 
     results = client.revert_remediate_message(action, args)
+
+    human_readable = ""
     if results.get("success") is True:
         human_readable = "Revert action {} applied successfully to message {}".format(action, args.get("eventId"))
     else:
@@ -223,6 +225,8 @@ def gh_remediate_message_command(client: Client, args: Dict[str, Any]) -> Comman
         args.pop('hasButton', None)
 
     results = client.remediate_message(action, args)
+
+    human_readable = ""
     if results.get("success") is True:
         human_readable = "Remediate action {} applied successfully to message {}".format(action, args.get("eventId"))
     else:
@@ -246,6 +250,7 @@ def gh_set_policy_command(client: Client, args: Dict[str, Any]) -> CommandResult
     if update_method not in ['patch', 'put']:
         raise ValueError("Invalid updatemethod specified, please use either put or patch.")
     results = client.set_policy(policy_id, update_method, policy_json)
+    human_readable = ""
     if results.get("success") is True:
         human_readable = "Update applied successfully to policy {}".format(args.get("policyid"))
     results['id'] = args.get('policyid')
@@ -411,13 +416,13 @@ def gh_get_message_command(client: Client, args: Dict[str, Any]) -> CommandResul
         )
 
 
-def gh_get_phish_reports_command(client: Client):
+def gh_get_phish_reports_command(client: Client, limit: int):
     filter = [
         {
             "workflow": "reported phish"
         }
     ]
-    results = client.search_events({"filters": filter, "limit": 100})
+    results = client.search_events({"filters": filter, "limit": limit})
     incidents = []
     for event in results.get("results", []):
         incident = {}
@@ -429,14 +434,14 @@ def gh_get_phish_reports_command(client: Client):
     return incidents
 
 
-def gh_get_quarantine_release_command(client: Client):
+def gh_get_quarantine_release_command(client: Client, limit: int):
     filter = [
         {
             "quarReleaseRequested": "True",
             "workflow": "unreviewed"
         }
     ]
-    results = client.search_events({"filters": filter, "limit": 100})
+    results = client.search_events({"filters": filter, "limit": limit})
     incidents = []
     for event in results.get("results", []):
         incident = {}
@@ -460,6 +465,7 @@ def main():
 
     api_key = demisto.params().get('apikey')
     fetch_type = demisto.params().get('fetch_type')
+    max_fetch = demisto.params().get('max_fetch')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], demisto.params()['api_version'])
@@ -517,12 +523,12 @@ def main():
                     counter = int(last_run.get("counter"))
                 if counter % 3 == 0:
                     if fetch_type == "phishing":
-                        incidents = gh_get_phish_reports_command(client)
+                        incidents = gh_get_phish_reports_command(client, max_fetch)
                     elif fetch_type == "quarantine":
-                        incidents = gh_get_quarantine_release_command(client)
+                        incidents = gh_get_quarantine_release_command(client, max_fetch)
                     else:
-                        incidents_phish = gh_get_phish_reports_command(client)
-                        incidents_quarantine = gh_get_quarantine_release_command(client)
+                        incidents_phish = gh_get_phish_reports_command(client, max_fetch)
+                        incidents_quarantine = gh_get_quarantine_release_command(client, max_fetch)
                         incidents = incidents_phish
                         incidents.extend(incidents_quarantine)
                     demisto.incidents(incidents)

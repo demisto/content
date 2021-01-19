@@ -22,6 +22,16 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- display: Type of messages to fetch.  Valid entries are phishing and quarantine.
+  name: fetch_type
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Maximum number of incidents to fetch at a time
+  name: max_fetch
+  defaultvalue: 100
+  type: 0
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
@@ -208,7 +218,7 @@ script:
       description: The fields to include in the response. By default, all fields are
         returned.
     - name: filters
-      description: The criteria to use in filtering search results
+      description: The criteria to use in filtering search results.  This should be input as a dictionary.
     - name: limit
       description: The maximum number of entries to return per page of results. Default
         is 10; max is 200.
@@ -485,7 +495,7 @@ script:
       required: true
       description: The ID of the policy.
     - name: policyjson
-      description: Json policy defintion.
+      description: Policy defintion or policy change defintion.  Input as a dictionary.
       required: true
     outputs:
     - contextPath: GreatHorn.Policy.id
