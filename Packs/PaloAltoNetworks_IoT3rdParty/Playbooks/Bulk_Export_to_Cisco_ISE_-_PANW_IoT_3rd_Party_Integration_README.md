@@ -1,4 +1,4 @@
-This playbook gets all available device inventory from PANW IoT Cloud and updates/create endpoints with custom attributes on Cisco ISE.
+Gets the entire available device inventory from PANW IoT Cloud and updates/creates endpoints with custom attributes in Cisco ISE. You should run this playbook as a scheduled job. For example, you might want to schedule the job to run this playbook at the end of each day so that Cisco ISE is updated on a daily basis with the IoT device inventory.
  
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

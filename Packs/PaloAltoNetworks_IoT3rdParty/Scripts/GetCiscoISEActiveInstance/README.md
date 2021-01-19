@@ -1,4 +1,5 @@
-This scripts determines which configured Cisco ISE instance is in active/primary state and returns the name of this instance.
+Determines which configured Cisco ISE instance is in active/primary state and returns the name of the instance.
+
 ## Script Data
 ---
 

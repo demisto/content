@@ -1,7 +1,7 @@
 ## Palo Alto Networks IoT 3rd Party Integrations Content Pack
 ---
 
-This content pack enables Palo Alto Networks IoT solution to integrate with 3rd party products like SIEM, Cisco ISE and Service Now.
+The PANW IoT 3rd Party Integrations pack enables you to automate the management of your IoT Cloud devices, alerts, and vulnerabilities by using Cortex XSOAR playbooks to pull and push data between your PANW IoT Cloud environment and 3rd party services, such as SIEM, ServiceNow, and Cisco ISE.
 
 ### Palo Alto Networks IoT 3rd Party Integration
 ---

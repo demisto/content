@@ -1,4 +1,4 @@
-Playbook to handle incident triggered from PANW Iot (Zingbox) UI to un-quarantine a device in ISE.
+This playbook handles a single incident triggered in the PANW IoT (Zingbox) UI by removing a device from quarantine in Cisco ISE.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

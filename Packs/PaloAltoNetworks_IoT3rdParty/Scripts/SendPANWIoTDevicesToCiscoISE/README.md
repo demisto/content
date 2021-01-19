@@ -1,4 +1,5 @@
-This script takes in PANW IoT cloud devices as input and exports them as Endpoints with custom attributes in Cisco ISE
+This script takes PANW IoT cloud devices as input and exports them as endpoints with custom attributes in Cisco ISE.
+
 ## Script Data
 ---
 

@@ -1,4 +1,4 @@
-This playbook should be used in a recurring Job to get incremental updates for devices to send to ServiceNow server.
+Gets updated devices and sends the updates to ServiceNow. You should run this playbook as a scheduled, recurring job.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

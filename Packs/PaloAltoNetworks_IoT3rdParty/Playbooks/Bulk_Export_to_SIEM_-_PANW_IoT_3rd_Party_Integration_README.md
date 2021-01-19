@@ -1,4 +1,4 @@
-This playbook gets all available assets ( alerts, vulnerabilities and devices) and send then to configured PANW third-party integration SIEM server.
+Gets all available assets (alerts, vulnerabilities, and devices) and sends them to the SIEM server for which you've configured PANW 3rd party integration. Syslog Sender integration is used to send data to the SIEM server in a CEF data format that each SIEM can translate into their own data format.
  
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

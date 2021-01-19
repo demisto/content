@@ -1,4 +1,4 @@
-Playbook to handle incident triggered from PANW Iot (Zingbox) UI to quarantine a device in ISE.
+This playbook handles a single incident triggered in the PANW IoT (Zingbox) UI by creating a corresponding incident in Cortex XSOAR (of type "PANW IoT 3rd Party SIEM Integration - Vulnerability"), and quarantines the device in Cisco ISE.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

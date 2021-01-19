@@ -1,4 +1,4 @@
-Playbook to be run every 15 minutes via a job. Each run will get incremental updates for devices, alerts and vulnerabilities and send syslogs to the configured SIEM server.
+Gets incremental device, alert, and vulnerability updates from PANW IoT Cloud and sends syslogs to the configured SIEM. This playbook should run every 15 minutes as a scheduled job.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

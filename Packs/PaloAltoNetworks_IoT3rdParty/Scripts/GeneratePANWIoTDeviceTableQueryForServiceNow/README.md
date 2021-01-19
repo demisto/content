@@ -1,4 +1,4 @@
-This script is to generate a single query or query list to query for ServiceNow
+Generates a single query or a query list to query in ServiceNow.
 
 ## Script Data
 ---

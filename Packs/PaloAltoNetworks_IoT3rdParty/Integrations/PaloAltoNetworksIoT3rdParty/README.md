@@ -1,4 +1,4 @@
-Use Palo Alto Networks IoT 3rd Party to integrate Palo Alto Networks IoT solution with 3rd party products such as SIEM, Cisco ISE, Service Now etc.
+Use the Palo Alto Networks IoT 3rd Party integration to get devices, alerts, and vulnerabilities from PANW IoT Cloud.
 ## Configure Palo Alto Networks IoT 3rd Party on Cortex XSOAR
 
 1. Navigate to **Settings** &gt; **Integrations** &gt; **Servers & Services**.

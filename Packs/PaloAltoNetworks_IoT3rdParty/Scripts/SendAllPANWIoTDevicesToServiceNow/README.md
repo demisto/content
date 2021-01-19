@@ -1,4 +1,4 @@
-This script is to gets all available devices from the IoT cloud and sends it to the ServiceNow server
+Gets all available devices from PANW IoT Cloud and sends them to ServiceNow.
 
 ## Script Data
 ---

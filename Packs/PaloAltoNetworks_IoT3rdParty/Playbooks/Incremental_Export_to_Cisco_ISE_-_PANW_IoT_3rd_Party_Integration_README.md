@@ -1,4 +1,4 @@
-Playbook to be run every 15 minutes via a job. Each run will get incremental updates for devices from PANW IoT cloud, and will update or create new endpoints in Cisco ISE with PANW IOT discovered attributes (ISE custom attributes)
+Gets incremental device updates from PANW IoT Cloud and either updates existing endpoints or creates new endpoints in Cisco ISE. Endpoints are created or updated with PANW IoT discovered attributes (ISE custom attributes). This playbook should run every 15 minutes as a scheduled job.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
