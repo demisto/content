@@ -47,7 +47,7 @@ def is_pack_deprecated(pack_path: str) -> bool:
     """
     pack_metadata_path = os.path.join(pack_path, PACKS_PACK_META_FILE_NAME)
     if not os.path.isfile(pack_metadata_path):
-        return True  # todo: check what to do if there is no pack_metadata file. 'True' will not install the pack.
+        return True
     pack_metadata = get_pack_metadata(pack_metadata_path)
     return pack_metadata.get('hidden', False)
 
