@@ -939,10 +939,12 @@ def main():
 
         # in case that pack already exist at cloud storage path and in index, skipped further steps
         # always updating the index files
+        """
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
+        """
 
         task_status = pack.prepare_for_index_upload()
         if not task_status:
