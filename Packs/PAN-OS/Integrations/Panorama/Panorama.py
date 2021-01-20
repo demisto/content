@@ -6657,10 +6657,12 @@ def panorama_upload_content_update_file_command(args: dict):
     entry_id = args['entryID']
     file_path = demisto.getFilePath(entry_id)['path']
     file_name = demisto.getFilePath(entry_id)['name']
+
     try:
-        shutil.copy(file_path, file_name)  # todo understand why doing this?
+        shutil.copy(file_path, file_name)
     except Exception:
         raise Exception('Failed to prepare file for upload.')
+
     try:
         with open(file_name, 'rb') as file:
             payload = {}  # type: ignore
@@ -6669,7 +6671,7 @@ def panorama_upload_content_update_file_command(args: dict):
             params = {'type': 'import', 'category': category, 'key': API_KEY}
             response = requests.request("POST", URL, data=payload, headers=headers, params=params, files=files,
                                         verify=False)
-            demisto.debug(response.text.encode('utf8'))  # todo add explanation
+            demisto.debug(response.text.encode('utf8'))
     finally:
         shutil.rmtree(file_name, ignore_errors=True)
 
@@ -6691,8 +6693,6 @@ def panorama_install_file_content_update(version: str, category: str):
 
 
 def panorama_install_file_content_update_command(args: dict):
-    if DEVICE_GROUP:  # todo understand that
-        raise Exception('Content download status is only supported on Firewall (not Panorama).')
     version = args['version_name']
     category = args['category']
     result = panorama_install_file_content_update(version, category)
