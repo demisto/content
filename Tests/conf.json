@@ -1981,7 +1981,7 @@
         },
         {
             "integrations": "Cisco ISE",
-            "playbookID": "cisco-ise-test-playboo"
+            "playbookID": "cisco-ise-test-playbook"
         },
         {
             "integrations": "RSA NetWitness v11.1",
