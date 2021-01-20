@@ -6652,30 +6652,26 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         XPATH_RULEBASE = f"/config/devices/entry[@name=\'localhost.localdomain\']/vsys/entry[@name=\'{VSYS}\']/"
 
 
-def panorama_upload_content_update_file_command():
-    category = demisto.args()['category']
-    upload = demisto.args()['entryID']
+def panorama_upload_content_update_file_command(args: dict):
+    category = args['category']
+    entry_id = args['entryID']
+    file_path = demisto.getFilePath(entry_id)['path']
+    file_name = demisto.getFilePath(entry_id)['name']
     try:
-        filePath = demisto.getFilePath(upload)['path']
-        fileName = demisto.getFilePath(upload)['name']
-    except Exception:
-        return_error("File was not found")
-    try:
-        shutil.copy(filePath, fileName)
+        shutil.copy(file_path, file_name)  # todo understand why doing this?
     except Exception:
         raise Exception('Failed to prepare file for upload.')
     try:
-        with open(fileName, 'rb') as file:
-            url = URL
+        with open(file_name, 'rb') as file:
             payload = {}  # type: ignore
             files = {'file': file}
             headers = {}  # type: ignore
             params = {'type': 'import', 'category': category, 'key': API_KEY}
-            response = requests.request("POST", url, data=payload, headers=headers, params=params, files=files,
+            response = requests.request("POST", URL, data=payload, headers=headers, params=params, files=files,
                                         verify=False)
-            demisto.debug(response.text.encode('utf8'))
+            demisto.debug(response.text.encode('utf8'))  # todo add explanation
     finally:
-        shutil.rmtree(fileName, ignore_errors=True)
+        shutil.rmtree(file_name, ignore_errors=True)
 
 
 @logger
@@ -6683,8 +6679,8 @@ def panorama_install_file_content_update(version: str, category: str):
     params = {
         'type': 'op',
         'cmd': (
-            f'<request><{category}><upgrade><install><file>{version}</file></install></upgrade></{category}></request>'),
-        'key': API_KEY
+            f'<request><{category}><upgrade><install><file>{version}</file></install></upgrade></{category}></request>')
+        , 'key': API_KEY
     }
     result = http_request(
         URL,
@@ -6694,14 +6690,14 @@ def panorama_install_file_content_update(version: str, category: str):
     return result
 
 
-def panorama_install_file_content_update_command():
-    if DEVICE_GROUP:
+def panorama_install_file_content_update_command(args: dict):
+    if DEVICE_GROUP:  # todo understand that
         raise Exception('Content download status is only supported on Firewall (not Panorama).')
-    version = demisto.args()['version_name']
-    category = demisto.args()['category']
+    version = args['version_name']
+    category = args['category']
     result = panorama_install_file_content_update(version, category)
 
-    if 'result' in result['response']:
+    if 'result' in result.get('response'):
         # installation has been given a jobid
         content_install_info = {
             'JobID': result['response']['result']['job'],
@@ -6710,7 +6706,7 @@ def panorama_install_file_content_update_command():
         entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
         human_readable = tableToMarkdown('Result:', content_install_info, ['JobID', 'Status'], removeNull=True)
 
-        demisto.results({
+        return_results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': result,
@@ -6720,7 +6716,7 @@ def panorama_install_file_content_update_command():
         })
     else:
         # no content install took place
-        demisto.results(result['response']['msg'])
+        return_results(result['response']['msg'])
 
 
 def main():
@@ -7075,10 +7071,10 @@ def main():
             create_wildfire_best_practice_profile_command(**args)
 
         elif demisto.command() == 'panorama-upload-content-update-file':
-            panorama_upload_content_update_file_command()
+            panorama_upload_content_update_file_command(args)
 
         elif demisto.command() == 'panorama-install-file-content-update':
-            panorama_install_file_content_update_command()
+            panorama_install_file_content_update_command(args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} was not implemented.')
