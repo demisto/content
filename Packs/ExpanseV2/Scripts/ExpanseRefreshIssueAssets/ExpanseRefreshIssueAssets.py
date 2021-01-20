@@ -28,15 +28,20 @@ def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
             continue
 
         if isinstance(new_asset, list):
-            if len(new_asset) == 0:
-                continue
-            new_asset = new_asset[0]
+            for na in new_asset:
+                if isinstance(na, dict) and 'Contents' in na:
+                    contents = na.get('Contents')
+                    break
+        if not contents:
+            continue
 
-        contents = new_asset.get('Contents')
         if isinstance(contents, list):
             if len(contents) == 0:
                 continue
             contents = contents[0]
+
+        if not isinstance(contents, dict):
+            continue
 
         if (annotations := contents.get('annotations', None)) and isinstance(annotations, dict):
             if (tags := annotations.get('tags', None)) and isinstance(tags, list) and len(tags) > 0:
