@@ -526,3 +526,24 @@ def test_test_module_main_command_call(mocker):
     main()
     assert demisto.results.call_count == 2
     assert demisto.results.call_args[0][0] == 'Could not connect to Cyjax API (Server not responding)'
+
+
+def test_unset_indicators_last_fetch_date_main_command_call(mocker):
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
+        INDICATORS_LAST_FETCH_KEY: 1640988032,
+        'Something': 'Else'
+    })
+
+    assert demisto.getIntegrationContext() == {
+        INDICATORS_LAST_FETCH_KEY: 1640988032,
+        'Something': 'Else'
+    }
+
+    mocker.patch.object(demisto, 'command', return_value='cyjax-unset-indicators-last-fetch-date')
+    mocker.patch.object(demisto, 'results')
+
+    main()
+    assert demisto.results.call_count == 1
+    assert demisto.getIntegrationContext() == {
+        'Something': 'Else'
+    }

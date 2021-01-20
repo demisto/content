@@ -496,6 +496,26 @@ def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional
     }
 
 
+def unset_indicators_last_fetch_date_command() -> Optional[Dict[str, Any]]:
+    """Unset the indicators last fetch date
+
+    :return: A dict with result options that is then passed to ``return_results``,
+    :rtype: ``dict``
+    """
+    integration_context = demisto.getIntegrationContext()
+
+    if INDICATORS_LAST_FETCH_KEY in integration_context:
+        del integration_context[INDICATORS_LAST_FETCH_KEY]
+
+    demisto.setIntegrationContext(integration_context)
+
+    return {
+        'Type': EntryType.NOTE,
+        'ContentsFormat': EntryFormat.TEXT,
+        'Contents': 'Indicators feed last fetch date has been unset. Next feed run will use first_fetch param.',
+    }
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -550,6 +570,9 @@ def main() -> None:
 
         elif demisto.command() == 'cyjax-indicator-sighting':
             return_results(indicator_sighting_command(client, demisto.args()))
+
+        elif demisto.command() == 'cyjax-unset-indicators-last-fetch-date':
+            return_results(unset_indicators_last_fetch_date_command())
 
     # Log exceptions and return errors
     except Exception as e:

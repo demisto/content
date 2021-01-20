@@ -55,3 +55,7 @@ Get Cyjax sighting of a indicator
 | value | The indicator value | Required |
 
 example: `!cyjax-indicator-sighting value=176.117.5.126`
+
+### !cyjax-unset-indicators-last-fetch-date
+***
+Unset the indicators last fetch date
