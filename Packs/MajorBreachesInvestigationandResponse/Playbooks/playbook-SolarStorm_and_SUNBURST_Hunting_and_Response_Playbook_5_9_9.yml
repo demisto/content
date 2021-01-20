@@ -1,7 +1,5 @@
 id: SolarStorm and SUNBURST Hunting and Response Playbook
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: SolarStorm and SUNBURST Hunting and Response Playbook
 description: |-
   This playbook does the following:
@@ -143,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 2660
+          "y": 3680
         }
       }
     note: false
@@ -168,7 +166,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 2850
+          "y": 3860
         }
       }
     note: false
@@ -281,7 +279,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 2475
+          "y": 3480
         }
       }
     note: false
@@ -291,19 +289,21 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: a8e731fe-e467-4857-8505-3b17ac2c8d1c
+    taskid: 895fc4c6-cc09-4e09-8444-5d110361026b
     type: title
     task:
-      id: a8e731fe-e467-4857-8505-3b17ac2c8d1c
+      id: 895fc4c6-cc09-4e09-8444-5d110361026b
       version: -1
-      name: Remediation Complete
+      name: Mitigations
       description: commands.local.cmd.close.inv
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "81"
+      - "82"
+      - "85"
     separatecontext: false
     view: |-
       {
@@ -713,6 +713,7 @@ tasks:
       - "31"
       - "32"
       - "67"
+      - "79"
     separatecontext: false
     view: |-
       {
@@ -2099,6 +2100,384 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "78":
+    id: "78"
+    taskid: 7c577491-79bf-4d47-8e2d-3cf9ebacb065
+    type: playbook
+    task:
+      id: 7c577491-79bf-4d47-8e2d-3cf9ebacb065
+      version: -1
+      name: Azure Hunting playbook
+      playbookName: Azure Hunting playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "79":
+    id: "79"
+    taskid: dd4a6e45-e040-4e2f-85cf-bdc7c0f21bf8
+    type: title
+    task:
+      id: dd4a6e45-e040-4e2f-85cf-bdc7c0f21bf8
+      version: -1
+      name: Azure Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "78"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "80":
+    id: "80"
+    taskid: d5d7c448-9841-4e37-8083-75b0d73cf3b6
+    type: playbook
+    task:
+      id: d5d7c448-9841-4e37-8083-75b0d73cf3b6
+      version: -1
+      name: Azure Configuration Analysis
+      playbookName: Azure Configuration Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: d41f06eb-af66-481e-84cf-6c92ef785697
+    type: title
+    task:
+      id: d41f06eb-af66-481e-84cf-6c92ef785697
+      version: -1
+      name: Azure Mitigaion
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: 1f842cc0-d651-40aa-8363-bc134f1098b9
+    type: title
+    task:
+      id: 1f842cc0-d651-40aa-8363-bc134f1098b9
+      version: -1
+      name: SolarWinds Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "83"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: c25c7dd3-9ed3-40a4-8988-0cf929948c21
+    type: regular
+    task:
+      id: c25c7dd3-9ed3-40a4-8988-0cf929948c21
+      version: -1
+      name: Patch Vulnerable SolarWinds Server
+      description: |-
+        The latest SolarWinds updates designed to protect against SUNBURST and SUPERNOVA are as follows:
+
+        2019.4 HF 6 (released December 14, 2020)
+        2020.2.1 HF 2 (released December 15, 2020)
+        2019.2 SUPERNOVA Patch (released December 23, 2020)
+        2018.4 SUPERNOVA Patch (released December 23, 2020)
+        2018.2 SUPERNOVA Patch (released December 23, 2020)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: 59bb6d04-9d33-4819-8d77-1a23a7928ab6
+    type: regular
+    task:
+      id: 59bb6d04-9d33-4819-8d77-1a23a7928ab6
+      version: -1
+      name: Change the password for SolarWinds user
+      description: |
+        Change the password for SolarWinds user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 0b7061db-265c-4c70-8d1a-239ad796cff5
+    type: title
+    task:
+      id: 0b7061db-265c-4c70-8d1a-239ad796cff5
+      version: -1
+      name: 'Compromised Organization Entities Mitigation '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: 8f7b927d-d43f-47ca-8da2-6a73a1d6f2c3
+    type: regular
+    task:
+      id: 8f7b927d-d43f-47ca-8da2-6a73a1d6f2c3
+      version: -1
+      name: Reset all credentials used by or stored in SolarWinds software
+      description: Reset all credentials used by or stored in SolarWinds software
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 02c0ce62-5f1e-47bf-87ba-aaac8b444bb6
+    type: regular
+    task:
+      id: 02c0ce62-5f1e-47bf-87ba-aaac8b444bb6
+      version: -1
+      name: 'Replace the user account by Group Managed Service Account '
+      description: |
+        Replace the user account by Group Managed Service Account
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: 3cb5939c-6e85-4e51-8119-506dc49efdac
+    type: regular
+    task:
+      id: 3cb5939c-6e85-4e51-8119-506dc49efdac
+      version: -1
+      name: Configure Encryption types allowed for Kerberos
+      description: |
+        Set the allowable encryption types to AES256_HMAC_SHA1 and Future encryption types. https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-configure-encryption-types-allowed-for-kerberos
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: 7e096726-0b98-4b92-83b2-61e8ebba314b
+    type: regular
+    task:
+      id: 7e096726-0b98-4b92-83b2-61e8ebba314b
+      version: -1
+      name: Rebuild hosts monitored by the SolarWinds
+      description: |
+        Treat all hosts monitored by the SolarWinds Orion monitoring software as compromised by threat actors and assume that further persistence mechanisms have been deployed.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 3150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: 90036e40-57bf-4df9-88aa-0e1fae6dba98
+    type: title
+    task:
+      id: 90036e40-57bf-4df9-88aa-0e1fae6dba98
+      version: -1
+      name: 'Mitigation Complete '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 3320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2111,9 +2490,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3445,
-        "width": 2870,
-        "x": 450,
+        "height": 4455,
+        "width": 3340,
+        "x": -20,
         "y": -530
       }
     }
