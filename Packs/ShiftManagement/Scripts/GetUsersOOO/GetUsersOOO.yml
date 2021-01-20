@@ -1,4 +1,4 @@
-comment: Retrieves users that are currently out of office.
+comment: Retrieves users that are currently out of office. The script use OutOfOfficeListCleanup script to remove users that off until day is in the past.
 commonfields:
   id: GetUsersOOO
   version: -1

@@ -3,6 +3,8 @@ from CommonServerPython import *
 
 def main():
     today_week_day = datetime.today().weekday()
+
+    # transform python weekday to demisto shift weekday(monday in python is 0 and in demisto is 1)
     today_week_day = 0 if today_week_day == 6 else today_week_day + 1
     total_seconds = 0
 
@@ -18,7 +20,7 @@ def main():
                 shift_from_day = shift.get('fromDay')
                 shift_to_day = shift.get('toDay')
 
-                if shift_from_day <= today_week_day and shift_to_day >= today_week_day:
+                if shift_from_day <= today_week_day <= shift_to_day:
 
                     # get the time when the shift starts
                     delta = shift_from_day - today_week_day

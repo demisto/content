@@ -18,18 +18,28 @@ def main():
         list_name = f"OOO {list_name}"
 
     # get current user and the current values in the list
-    current_username = demisto.executeCommand("getUsers", {"current": True})[0]["Contents"][0]['username']
+    current_username = demisto.executeCommand("getUsers", {"current": True})
+    if isError(current_username):
+        return_error(f'Failed to get current user: {str(get_error(current_username))}')
+    current_username = current_username[0]["Contents"][0]['username']
+
     if not username:
         username = current_username
     else:
         # check if provided username is a valid xsoar user
-        users = demisto.executeCommand("getUsers", {})[0]['Contents']
+        users = demisto.executeCommand("getUsers", {})
+        if isError(users):
+            return_error(f'Failed to get users: {str(get_error(users))}')
+        users = users[0]['Contents']
+
         users = [x['username'] for x in users]
         if username not in users:
             return_error(message=f"{username} is not a valid user")
 
     # get the out of office list, check if the list exists, if not create it:
     ooo_list = demisto.executeCommand("getList", {"listName": list_name})[0]["Contents"]
+    if isError(ooo_list):
+        return_error(f'Failed to get users out of office: {str(get_error(ooo_list))}')
 
     if "Item not found" in ooo_list:
         demisto.results(demisto.executeCommand("createList", {"listName": list_name, "listData": []}))
@@ -48,7 +58,9 @@ def main():
         # remove the user from the list.
         list_data = [i for i in list_data if not (i['user'] == username)]
 
-    demisto.executeCommand("setList", {"listName": list_name, "listData": json.dumps(list_data)})
+    set_list_res = demisto.executeCommand("setList", {"listName": list_name, "listData": json.dumps(list_data)})
+    if isError(set_list_res):
+        return_error(f'Failed to update the list {list_name}: {str(get_error(set_list_res))}')
 
     # welcome back, or see ya later!
     if option == "add":

@@ -2,19 +2,23 @@ from CommonServerPython import *
 
 
 def main():
-    channel_type = demisto.args().get('type')
-    channel_name = demisto.args().get('name')
-    channel_desc = demisto.args().get('description')
-    channel_team = demisto.args().get('team')
+    args = demisto.args()
+    channel_type = args.get('type')
+    channel_name = args.get('name')
+    channel_desc = args.get('description')
+    channel_team = args.get('team')
 
     errors = []
     integrations_to_create = []
     channels_created = []
 
-    for brand in ['SlackV2', 'Microsoft Teams']:
-        res = demisto.executeCommand('IsIntegrationAvailable', {'brandname': brand})
-        if res[0].get('Contents') == 'yes':
-            integrations_to_create.append(brand)
+    modules = demisto.getModules()
+    for module_name in modules.keys():
+        module = modules.get(module_name)
+        if module.get('brand') == 'Microsoft Teams' and module.get('state') == 'active':
+            integrations_to_create.append('Microsoft Teams')
+        if module.get('brand') == 'SlackV2' and module.get('state') == 'active':
+            integrations_to_create.append('SlackV2')
 
     if not integrations_to_create:
         return_error('Microsoft Teams and Slack are not available, please configure at least one of them.')
@@ -32,7 +36,7 @@ def main():
                 errors.append('Failed to create channel in Microsoft Teams: team argument is missing')
 
         if is_error(res):
-            errors.append(f'Failed to create channel in {integration}: {res[0].get("Contents")}')
+            errors.append(f'Failed to create channel in {integration}: {str(get_error(res))}')
         elif res:
             channels_created.append(integration)
 

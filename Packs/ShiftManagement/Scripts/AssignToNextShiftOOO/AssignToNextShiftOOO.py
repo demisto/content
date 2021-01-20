@@ -3,7 +3,10 @@ from CommonServerPython import *
 
 def main():
     # check if we have any users on call to assign to
-    users_on_call = demisto.executeCommand("getUsers", {"onCall": "true"})[0]['Contents']
+    users_on_call = demisto.executeCommand("getUsers", {"onCall": "true"})
+    if is_error(users_on_call):
+        return_error(f'Failed to get users on call: {str(get_error(users_on_call))}')
+    users_on_call = users_on_call[0]['Contents']
 
     # if we don't have on shift users, return error, else reassign the provided incident id's to the on shift analysts
     if not users_on_call:
@@ -13,9 +16,9 @@ def main():
 
     # get OOO users
     ooo_list = demisto.executeCommand("GetUsersOOO", {"listname": list_name})
-    if isError(ooo_list[0]):
-        return_error(f'Error occurred while trying to get OOO users: {ooo_list[0].get("Contents")}')
-    list_info = ooo_list[0].get('Contents').get('ShiftManagment.OOOUsers')
+    if isError(ooo_list):
+        return_error(f'Failed to get users out of office: {str(get_error(ooo_list))}')
+    list_info = ooo_list[0].get('EntryContext').get('ShiftManagment.OOOUsers')
     list_info = [i['username'] for i in list_info]
 
     # Build list of available users

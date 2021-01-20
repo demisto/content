@@ -14,12 +14,17 @@ def main():
         list_name = f"OOO {list_name}"
 
     # clean the out of office list
-    demisto.executeCommand("OutOfOfficeListCleanup", {"listName": list_name})
+    ooo_cleanup_res = demisto.executeCommand("OutOfOfficeListCleanup", {"listName": list_name})
+    if isError(ooo_cleanup_res):
+        return_error(f'Failed to cleanup OOO list: {str(get_error(ooo_cleanup_res))}')
 
     # get the out of office list, check if the list exists, if not create it:
     ooo_list = demisto.executeCommand("getList", {"listName": list_name})[0]["Contents"]
 
     get_users_response = demisto.executeCommand('getUsers', {})
+    if is_error(get_users_response):
+        return_error(f'Failed to get users: {str(get_error(get_users_response))}')
+
     users_list = get_users_response[0]['EntryContext']['DemistoUsers']
 
     if "Item not found" in ooo_list:

@@ -1,6 +1,6 @@
 {
   "id": "UsersOOO",
-  "name": "Users Out of office",
+  "name": "Out of office users",
   "dataType": "scripts",
   "widgetType": "text",
   "query": "GetUsersOOO",

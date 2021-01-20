@@ -11,14 +11,13 @@ def main():
 
     # get xsoar users
     userinfo = demisto.executeCommand("getUsers", {"roles": roles, "onCall": oncall})
-
-    if isError(userinfo[0]):
-        return_results(userinfo[0])
+    if is_error(userinfo):
+        return_error(f'Failed to get users: {str(get_error(userinfo))}')
 
     # get OOO users
     ooo_list = demisto.executeCommand("GetUsersOOO", {"listname": list_name})
-    if isError(ooo_list[0]):
-        return_error(f'Error occurred while trying to get OOO users: {ooo_list[0].get("Contents")}')
+    if isError(ooo_list):
+        return_error(f'Failed to get users out of office: {str(get_error(ooo_list))}')
     list_info = ooo_list[0].get('EntryContext').get('ShiftManagment.OOOUsers')
     list_info = [i['username'] for i in list_info]
 
@@ -35,11 +34,14 @@ def main():
         # set the first user to be the owner
         owner = non_OOO_list[0]
         non_OOO_list.pop(0)
-        demisto.executeCommand("setOwner", {"owner": owner})
-
+        set_owner_res = demisto.executeCommand("setOwner", {"owner": owner})
+        if isError(set_owner_res):
+            return_error(f'Failed to set {owner} as owner: {str(get_error(set_owner_res))}')
         # set the rest of the users as participans
         for user in non_OOO_list:
-            demisto.executeCommand("AssignAnalystToIncident", {"username": user})
+            assign_res = demisto.executeCommand("AssignAnalystToIncident", {"username": user})
+            if isError(assign_res):
+                return_error(f'Failed to assign {user} to incident: {str(get_error(assign_res))}')
 
         if non_OOO_list:
             return_results(f'Done, assigned {owner} as owner and {", ".join(non_OOO_list)} as prticipans.')
@@ -47,7 +49,9 @@ def main():
             return_results(f'Done, assigned {owner} as owner.')
     else:
         rand_user = random.choice(non_OOO_list)
-        demisto.executeCommand("setOwner", {"owner": rand_user})
+        set_owner_res = demisto.executeCommand("setOwner", {"owner": rand_user})
+        if isError(set_owner_res):
+            return_error(f'Failed to set {rand_user} as owner: {str(get_error(set_owner_res))}')
         return_results(f"Done, assigned {rand_user} as owner")
 
 
