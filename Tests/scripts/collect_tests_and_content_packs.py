@@ -18,7 +18,7 @@ from demisto_sdk.commands.common.constants import *  # noqa: E402
 
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 from Tests.scripts.utils import collect_helpers
-from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata, is_pack_deprecated
+from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
 
@@ -1108,7 +1108,7 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     # All filtering out of packs should be done here
     packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES
-                        and not is_pack_deprecated(pack_to_install)}
+                        and should_test_content_pack(pack_to_install)}
 
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)

@@ -16,7 +16,7 @@ from Tests.scripts.collect_tests_and_content_packs import (
     PACKS_DIR, TestConf, collect_content_packs_to_install,
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
-    remove_ignored_tests, remove_tests_for_non_supported_packs)
+    remove_ignored_tests, remove_tests_for_non_supported_packs, create_test_file)
 from Tests.scripts.utils.get_modified_files_for_testing import \
     get_modified_files_for_testing
 from TestSuite import repo, test_tools
@@ -399,7 +399,9 @@ class TestChangedIntegrationAndPlaybook:
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.py\n" \
                    "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
+                            return_value=True)
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
@@ -930,6 +932,8 @@ def test_modified_integration_content_pack_is_collected(mocker):
     - Ensure the content pack GreatPack is collected.
     - Ensure the collection runs successfully.
     """
+    mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack', return_value=True)
+
     from Tests.scripts import collect_tests_and_content_packs
     collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
