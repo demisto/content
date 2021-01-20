@@ -1139,13 +1139,16 @@ def parse_incident_from_item(item, is_fetch):
                             if attachment.item.headers:
                                 attached_email_headers = []
                                 for h, v in attached_email.items():
-                                    if hasattr(v, '__str__'):
-                                        if not isinstance(v, str):
-                                            v = str(v)
-                                        v = ' '.join(map(str.strip, v.split('\r\n')))
-                                        attached_email_headers.append((h, v))
+                                    if isinstance(v, str):
+                                        pass
+                                    elif hasattr(v, '__str__') and not v.__repr__() == str(v):
+                                        v = str(v)
                                     else:
-                                        demisto.log('cannot parse the header {}.'.format(v))
+                                        demisto.log('cannot parse the header {}.'.format(h))
+                                        continue
+
+                                    v = ' '.join(map(str.strip, v.split('\r\n')))
+                                    attached_email_headers.append((h, v))
 
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
@@ -1996,13 +1999,16 @@ def get_item_as_eml(item_id, target_mailbox=None):
         if item.headers:
             attached_email_headers = []
             for h, v in email_content.items():
-                if hasattr(v, '__str__'):
-                    if not isinstance(v, str):
-                        v = str(v)
-                    v = ' '.join(map(str.strip, v.split('\r\n')))
-                    attached_email_headers.append((h, v))
+                if isinstance(v, str):
+                    pass
+                elif hasattr(v, '__str__') and not v.__repr__() == str(v):
+                    v = str(v)
                 else:
-                    demisto.log('cannot parse the header {}.'.format(v))
+                    demisto.log('cannot parse the header {}.'.format(h))
+                    continue
+
+                v = ' '.join(map(str.strip, v.split('\r\n')))
+                attached_email_headers.append((h, v))
             for header in item.headers:
                 if (header.name, header.value) not in attached_email_headers \
                         and header.name != 'Content-Type':
