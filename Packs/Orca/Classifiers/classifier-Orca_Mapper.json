@@ -6,7 +6,7 @@
         "Orca Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Orca Cloud Acccount": {
+                "Orca Cloud Account": {
                     "complex": null,
                     "simple": "cloud_provider_id"
                 },
