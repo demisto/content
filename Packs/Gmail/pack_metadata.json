@@ -1,6 +1,6 @@
 {
     "name": "Gmail",
-    "description": "Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).",
+    "description": "[test for install]Gmail API and user management (This integration replaces the Gmail functionality in the GoogleApps API and G Suite integration).",
     "support": "xsoar",
     "currentVersion": "1.1.3",
     "author": "Cortex XSOAR",
