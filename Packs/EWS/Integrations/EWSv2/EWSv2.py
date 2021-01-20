@@ -1142,7 +1142,7 @@ def parse_incident_from_item(item, is_fetch):
                                     if not isinstance(v, str):
                                         try:
                                             v = str(v)
-                                        except:
+                                        except:     #: noqa E722
                                             demisto.debug('cannot parse the header "{}"'.format(h))
                                             continue
 
@@ -2001,7 +2001,7 @@ def get_item_as_eml(item_id, target_mailbox=None):
                 if not isinstance(v, str):
                     try:
                         v = str(v)
-                    except:
+                    except:     #: noqa E722
                         demisto.debug('cannot parse the header "{}"'.format(h))
 
                 v = ' '.join(map(str.strip, v.split('\r\n')))
