@@ -40,8 +40,8 @@ def test_is_pack_xsoar_supported(tmp_path, pack_metadata_content, expected):
 
 
 @pytest.mark.parametrize("pack_metadata_content, expected", [
-    ({'hidden': 'false'}, False),
-    ({'hidden': 'true'}, True),
+    ({'hidden': False}, False),
+    ({'hidden': True}, True),
 ])
 def test_is_pack_deprecated(tmp_path, pack_metadata_content, expected):
     """
@@ -78,7 +78,7 @@ def test_is_pack_certified_pack_metadata_does_not_exist(tmp_path):
 @pytest.mark.parametrize("pack_metadata_content, pack_name, expected", [
     ({PACK_METADATA_SUPPORT: 'xsoar'}, 'CortexXDR', True),
     ({PACK_METADATA_SUPPORT: 'xsoar'}, 'NonSupported', False),
-    ({'hidden': 'true', PACK_METADATA_SUPPORT: 'xsoar'}, 'CortexXDR', False)
+    ({'hidden': True, PACK_METADATA_SUPPORT: 'xsoar'}, 'CortexXDR', False)
 ])
 def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_name, expected):
     """
