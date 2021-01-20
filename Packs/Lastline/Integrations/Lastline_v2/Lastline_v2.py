@@ -312,8 +312,8 @@ def main():
         'key': params.get('api_key'),
         'api_token': params.get('api_token')
     }
-    threshold = int(params.get('threshold', 70))
     api_params.update(demisto.args())
+    threshold = int(params.get('threshold', 70))
 
     if not credentials or not credentials.get('identifier') or not credentials.get('password'):
         credentials = {}
