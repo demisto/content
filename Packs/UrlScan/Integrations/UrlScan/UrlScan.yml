@@ -337,6 +337,18 @@ script:
     - contextPath: URLScan.EffectiveURL
       description: Effective URL of the original URL.
       type: string
+    - contextPath: URL.ASN
+      description: The URL ASN
+      type: String
+    - contextPath: URL.FeedRelatedIndicators
+      description: Indicators that are associated with the URL
+      type: String
+    - contextPath: URL.Geo.Country
+      description: The URL country
+      type: String
+    - contextPath: URL.RelatedASNs
+      description: ASNs that are associated with the URL
+      type: String
   - arguments:
     - default: false
       description: The UUID of the URL for which to search the transaction list.

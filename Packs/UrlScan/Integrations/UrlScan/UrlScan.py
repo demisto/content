@@ -198,6 +198,8 @@ def format_results(uuid):
     file_context = makehash()
     url_cont = makehash()
 
+    feed_related_indicators = []
+
     LIMIT = int(demisto.args().get('limit', 20))
     if 'certificates' in scan_lists:
         cert_md = []
@@ -216,6 +218,7 @@ def format_results(uuid):
     # effective url of the submitted url
     human_readable['Effective URL'] = scan_page.get('url')
     cont['EffectiveURL'] = scan_page.get('url')
+    feed_related_indicators.append(scan_page.get('url'))
     if 'uuid' in scan_tasks:
         ec['URLScan']['UUID'] = scan_tasks['uuid']
     if 'ips' in scan_lists:
@@ -240,6 +243,8 @@ def format_results(uuid):
             ip_asn_MD.append(ip_info)
             i = i + 1
         cont['RelatedIPs'] = ip_ec_info
+        url_cont['RelatedASNs'] = asn_list
+        feed_related_indicators += ip_list
         IP_HEADERS = ['Count', 'IP', 'ASN']
     # add redirected URLs
     if 'requests' in scan_data:
@@ -250,20 +255,25 @@ def format_results(uuid):
                     url = o['request']['redirectResponse']['url']
                     redirected_urls.append(url)
         cont['RedirectedURLs'] = redirected_urls
+        feed_related_indicators += redirected_urls
     if 'countries' in scan_lists:
         countries = scan_lists['countries']
         human_readable['Associated Countries'] = countries
         cont['Country'] = countries
+        url_cont['Geo'] = {'Country': ', '.join(countries)}
     if None not in scan_lists.get('hashes', []):
         hashes = scan_lists.get('hashes', [])
         cont['RelatedHash'] = hashes
         human_readable['Related Hashes'] = hashes
+        feed_related_indicators += hashes
     if 'domains' in scan_lists:
         subdomains = scan_lists['domains']
         cont['Subdomains'] = subdomains
         human_readable['Subdomains'] = subdomains
+        feed_related_indicators += subdomains
     if 'asn' in scan_page:
         cont['ASN'] = scan_page['asn']
+        url_cont['ASN'] = scan_page['asn']
     if 'overall' in scan_verdicts:
         human_readable['Malicious URLs Found'] = scan_stats['malicious']
         if scan_verdicts['overall'].get('malicious'):
@@ -304,6 +314,8 @@ def format_results(uuid):
         cont['File']['FileType'] = filetype
         file_context['Type'] = filetype
         file_context['Hostname'] = demisto.args().get('url')
+    if feed_related_indicators:
+        url_cont['FeedRelatedIndicators'] = feed_related_indicators
 
     ec = {
         'URLScan(val.URL && val.URL == obj.URL)': cont,
