@@ -7,10 +7,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: 9194e863-8a0c-4e39-877b-4776a323067f
     type: start
     task:
-      id: '0'
+      id: 9194e863-8a0c-4e39-877b-4776a323067f
       version: -1
       name: ''
       iscommand: false
