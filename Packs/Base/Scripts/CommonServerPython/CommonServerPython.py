@@ -5929,9 +5929,9 @@ class GetMappingFieldsResponse:
         :return: the mapping object for the current field.
         :rtype: ``dict``
         """
-        all_mappings = []
+        all_mappings = {}
         for scheme_types_mapping in self.scheme_types_mappings:
-            all_mappings.append(scheme_types_mapping.extract_mapping())
+            all_mappings.update(scheme_types_mapping.extract_mapping())
 
         return all_mappings
 
