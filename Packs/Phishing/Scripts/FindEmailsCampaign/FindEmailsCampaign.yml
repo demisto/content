@@ -87,7 +87,7 @@ args:
   secret: false
 - default: false
   defaultValue: '0.8'
-  description: Threshold to consider incident as duplication, number between 0-1
+  description: Threshold to consider incident as similar, number between 0-1
   isArray: false
   name: threshold
   required: false

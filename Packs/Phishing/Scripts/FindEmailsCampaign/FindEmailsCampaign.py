@@ -83,7 +83,7 @@ def create_empty_context():
     return context
 
 
-def is_number_of_incidents_is_to_low(res, incidents):
+def is_number_of_incidents_too_low(res, incidents):
     if not res["EntryContext"]['isDuplicateIncidentFound'] or \
             len(incidents) < MIN_CAMPAIGN_SIZE:
         return_outputs('No possible campaign was detected', create_empty_context())
@@ -161,7 +161,7 @@ def calculate_campaign_details_table(incidents_df):
     else:
         domain_header = "Senders domains"
         sender_header = "Senders addresses"
-    top_n = 1
+    top_n = 3
     domain_value = get_str_representation_top_n_values(senders_domain, domains_counter, top_n)
     sender_value = get_str_representation_top_n_values(senders, senders_counter, top_n)
     headers.append(domain_header)
@@ -188,16 +188,9 @@ def summarize_email_body(body, subject, nb_sentences=3):
                            any(cosine_sim(arr, arr2) > DUPLICATE_SENTENCE_THRESHOLD
                                for arr2 in body_arr[:i])]
 
-    """
-    The zip(*iterables) function takes iterables as arguments and returns an iterator. 
-    This iterator generates a series of tuples containing elements from each iterable. 
-    Let's convert these tuples to {word:frequency} dictionary"""
-
     word_frequency = dict(zip(word_list, count_list))
-
     val = sorted(word_frequency.values())
 
-    # gets relative frequencies of words
     max_frequency = val[-1]
     for word in word_frequency.keys():
         word_frequency[word] = (word_frequency[word] / max_frequency)
@@ -205,7 +198,6 @@ def summarize_email_body(body, subject, nb_sentences=3):
         if word in word_frequency:
             word_frequency[word] *= 1.5
 
-    # SENTENCE RANKING: the rank of sentences is based on the word frequencies
     sentence_rank = {}
     for i, sent in enumerate(corpus):
         if i in duplicate_sentences:
@@ -218,10 +210,7 @@ def summarize_email_body(body, subject, nb_sentences=3):
         sentence_rank[i] = sentence_rank[i] / len(word_tokenize(sent))
     sorted_sentence_rank = sorted(sentence_rank.items(), key=lambda item: item[1], reverse=True)
     top_sentences_indices = [sent_i for sent_i, _ in sorted_sentence_rank[:nb_sentences]]
-    # Mount summary
     summary = [corpus[sent_i].strip() for sent_i in sorted(top_sentences_indices)]
-
-    # return orinal text and summary
     return '\n'.join(summary)
 
 
@@ -263,7 +252,7 @@ def return_indicator_entry(incidents_df):
     indicators = res[0]['Contents']
     if len(indicators) == 0:
         return_no_mututal_indicators_found_entry()
-        return
+        return indicators
     indicators_df = pd.DataFrame(data=indicators)
     indicators_df = indicators_df[indicators_df['relatedIncCount'] < 150]
     indicators_df['Involved Incidents Count'] = \
@@ -271,7 +260,7 @@ def return_indicator_entry(incidents_df):
     indicators_df = indicators_df[indicators_df['Involved Incidents Count'] > 1]
     if len(indicators_df) == 0:
         return_no_mututal_indicators_found_entry()
-        return
+        return indicators
     indicators_df['Id'] = indicators_df['id'].apply(lambda x: "[%s](#/indicator/%s)" % (x, x))
     indicators_df = indicators_df.sort_values(['score', 'Involved Incidents Count'], ascending=False)
     indicators_df['Reputation'] = indicators_df['score'].apply(scoreToReputation)
@@ -281,6 +270,7 @@ def return_indicator_entry(incidents_df):
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
     return_outputs(hr, add_context_key(create_context_for_indicators(indicators_df['id'].tolist())))
+    return indicators
 
 
 def return_involved_incdients_entry(incidents_df):
@@ -305,11 +295,16 @@ def return_involved_incdients_entry(incidents_df):
     return_outputs(hr)
 
 
-def analyze_incidents_campaign(incidents_df):
-    return_campaign_details_entry(incidents_df)
-    return_indicator_entry(incidents_df)
-    return_involved_incdients_entry(incidents_df)
+def draw_canvas(incidents, indicators):
+    pass
 
+
+def analyze_incidents_campaign(incidents):
+    incidents_df = pd.DataFrame(incidents)
+    return_campaign_details_entry(incidents_df)
+    indicators = return_indicator_entry(incidents_df)
+    return_involved_incdients_entry(incidents_df)
+    draw_canvas(incidents, indicators)
 
 def main():
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD
@@ -324,12 +319,11 @@ def main():
         return_error(get_error(res))
     res = res[-1]
     incidents = json.loads(res['Contents'])
-    if is_number_of_incidents_is_to_low(res, incidents):
+    if is_number_of_incidents_too_low(res, incidents):
         return
     if is_number_of_unique_recipients_is_too_low(incidents):
         return
-    incidents_df = pd.DataFrame(incidents)
-    analyze_incidents_campaign(incidents_df)
+    analyze_incidents_campaign(incidents)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
