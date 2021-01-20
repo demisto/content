@@ -115,22 +115,49 @@ script:
     execution: false
     name: smb-upload
   - name: smb-list-shares
-    arguments: []
+    arguments:
+    - name: hostname
+      required: false
+      description: Server IP / Hostname (e.g. 1.2.3.4)
+    - name: nbname
+      required: false
+      description: Server NetBIOS (AD) Name
+    - name: domain
+      required: false
+      description: domain
     description: Lists the shares on the SMB server.
   - name: smb-delete-files
     arguments:
     - name: file_path
-      description: 'The path including the file, starting from the share, for example:
-        Share/Folder/filename'
+      description: The file path (including the file), starting from the share. for example - Share/Folder/filename
+      required: true
+    - name: hostname
+      required: false
+      description: Server IP / Hostname (e.g. 1.2.3.4)
+    - name: nbname
+      required: false
+      description: Server NetBIOS (AD) Name
+    - name: domain
+      required: false
+      description: domain
     description: Deleted file from SMB share.
   - name: smb-list-files
     arguments:
     - name: file_path
       required: true
-      description: 'The path , starting from the share, for example: /Folder'
+      description: The path starting from the share, for example -  /Folder
     - name: file_share
       required: true
-      description: 'The share name , for example: Share'
+      description: The share name, for example - Share
+    - name: hostname
+      required: false
+      description: Server IP / Hostname (e.g. 1.2.3.4)
+    - name : nbname
+      required: false
+      description: Server NetBIOS (AD) Name
+    - name : domain
+      required: false
+      description: domain
     outputs:
     - contextPath: SMB.File.Name
       description: File name.
