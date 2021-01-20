@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 
 ''' CONSTANTS '''
 
-
 ''' CLIENT CLASS '''
 
 
@@ -28,7 +27,7 @@ class Server():
             except Exception as err:
                 return_error(f"{self.host} is not a valid IP nor does not resolve to an IP - {err}")
 
-    def test_connect(self) -> str:
+    def test_connect(self):
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.connect((self.host, self.port))
@@ -55,7 +54,6 @@ class Server():
 
 ''' HELPER FUNCTIONS '''
 
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -68,12 +66,12 @@ def arduino_set_pin_command(server: Server, args: dict) -> CommandResults:
     prefix = "Arduino.DigitalPins" if pin_type == "digital" else "Arduino.AnalogPins"
     pin_number = args.get('pin_number')
     try:
-        pin_number = int(pin_number)
+        pin_number = int(pin_number)  # type: ignore
     except Exception as err:
         return_error(f"'Pin number' must be a number - {err}")
     value = args.get('value')
     try:
-        value = int(value)
+        value = int(value)  # type: ignore
     except Exception as err:
         return_error(f"'Value' must be a number - {err}")
     result = int(server.send_data(f"set:{pin_type}:{pin_number},{value}"))
@@ -96,7 +94,7 @@ def arduino_get_pin_command(server: Server, args: dict) -> CommandResults:
     prefix = "Arduino.DigitalPins" if pin_type == "digital" else "Arduino.AnalogPins"
     pin_number = args.get('pin_number')
     try:
-        pin_number = int(pin_number)
+        pin_number = int(pin_number)  # type: ignore
     except Exception as err:
         return_error(f"'Pin number' must be a number - {err}")
     result: int = int(server.send_data(f"get:{pin_type}:{pin_number}"))
@@ -134,7 +132,6 @@ def arduino_send_data_command(server: Server, args: dict) -> CommandResults:
 
 
 def main():
-
     params = demisto.params()
     host = params.get('host')
     port = params.get('port')
