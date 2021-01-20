@@ -7,8 +7,9 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 from FeedCyjax import INDICATORS_LAST_FETCH_KEY, DATE_FORMAT, Client, main, cyjax_sdk, test_module as module_test, \
-     get_indicators_last_fetch_date, map_indicator_type, map_reputation_to_score, convert_cyjax_indicator, \
-     fetch_indicators_command, get_indicators_command, indicator_sighting_command, arg_to_datetime
+     get_indicators_last_fetch_date, set_indicators_last_fetch_date, map_indicator_type, map_reputation_to_score, \
+     convert_cyjax_indicator, fetch_indicators_command, get_indicators_command, indicator_sighting_command, \
+     arg_to_datetime
 from test_data.indicators import mocked_indicators
 
 
@@ -48,7 +49,7 @@ def test_get_incidents_last_fetch_date(mocker):
     date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)
     timestamp = int(date.timestamp())
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
         INDICATORS_LAST_FETCH_KEY: str(timestamp)
     })
 
@@ -62,12 +63,42 @@ def test_get_incidents_last_fetch_timestamp_on_fist_fetch(mocker):
     three_days_ago = datetime.now() - timedelta(days=3)
     three_days_ago_timestamp = int(three_days_ago.timestamp())
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
 
     last_fetch_date = get_indicators_last_fetch_date()
     assert isinstance(last_fetch_date, datetime)
     last_timestamp = int(last_fetch_date.timestamp())
     assert three_days_ago_timestamp <= last_timestamp
+
+
+def test_set_indicators_last_fetch_date(mocker):
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={})
+
+    assert demisto.getIntegrationContext() == {}
+
+    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)
+    timestamp = int(date.timestamp())
+
+    set_indicators_last_fetch_date(timestamp)
+
+    assert demisto.getIntegrationContext() == {INDICATORS_LAST_FETCH_KEY: timestamp}
+
+
+def test_set_indicators_last_fetch_date_does_not_break_existing_context(mocker):
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={'Test': True, 'Value': 12345})
+
+    assert demisto.getIntegrationContext() == {'Test': True, 'Value': 12345}
+
+    date = datetime(2020, 6, 17, 15, 20, 10, tzinfo=timezone.utc)
+    timestamp = int(date.timestamp())
+
+    set_indicators_last_fetch_date(timestamp)
+
+    context = demisto.getIntegrationContext()
+    assert context.get(INDICATORS_LAST_FETCH_KEY) == timestamp
+    assert context.get('Test') is True
+    assert context.get('Value') == 12345
+
 
 def test_convert_cyjax_indicator_with_default_score():
     cyjax_indicator = mocked_indicators[0]
@@ -120,8 +151,9 @@ def test_fetch_indicators_command(mocker):
     result = fetch_indicators_command(client_for_testing, last_fetch, default_reputation)
     assert isinstance(result, tuple)
     next_run, incidents = result
-    assert {'last_fetch': last_fetch_timestamp} != next_run
-    assert {'last_fetch': '1640988032'} != next_run
+    assert last_fetch_timestamp != next_run
+    assert '1640988032' != next_run
+    assert 1640988032 == next_run
 
     expected_indicators = [
         convert_cyjax_indicator(cyjax_indicator[0]),
@@ -143,7 +175,7 @@ def test_fetch_indicators_no_new_indicators(mocker):
     result = fetch_indicators_command(client_for_testing, last_fetch, default_reputation)
     assert isinstance(result, tuple)
     next_run, incidents = result
-    assert {'last_fetch': last_fetch_timestamp} == next_run
+    assert last_fetch_timestamp == next_run
 
     assert isinstance(incidents, list)
     assert [] == incidents
@@ -159,7 +191,7 @@ def test_fetch_indicators_when_skd_throws_error(mocker):
     result = fetch_indicators_command(client_for_testing, last_fetch, default_reputation)
     assert isinstance(result, tuple)
     next_run, incidents = result
-    assert {'last_fetch': last_fetch_timestamp} == next_run
+    assert last_fetch_timestamp == next_run
 
     assert isinstance(incidents, list)
     assert [] == incidents
@@ -247,7 +279,7 @@ def test_fetch_indicators_main_command_call(mocker):
     last_fetch = datetime(2020, 12, 27, 15, 45)
     last_fetch_timestamp = int(last_fetch.timestamp())
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
         INDICATORS_LAST_FETCH_KEY: last_fetch_timestamp
     })
 
@@ -262,15 +294,15 @@ def test_fetch_indicators_main_command_call(mocker):
     mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.list', return_value=cyjax_indicator)
     mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
     mocker.patch.object(demisto, 'createIndicators')
-    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'setIntegrationContext')
 
     main()
 
     assert demisto.createIndicators.call_count == 1
-    assert demisto.setLastRun.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
 
     demisto.createIndicators.assert_called_with(expected_indicators)
-    demisto.setLastRun.assert_called_with({'last_fetch': 1640988032})
+    demisto.setIntegrationContext.assert_called_with({'last_fetch': 1640988032})
 
 
 def test_fetch_indicators_main_command_call_no_new_indicators(mocker):
@@ -282,22 +314,22 @@ def test_fetch_indicators_main_command_call_no_new_indicators(mocker):
     last_fetch = datetime(2020, 12, 27, 15, 45)
     last_fetch_timestamp = int(last_fetch.timestamp())
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
         INDICATORS_LAST_FETCH_KEY: last_fetch_timestamp
     })
 
     mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.list', return_value=[])
     mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
     mocker.patch.object(demisto, 'createIndicators')
-    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'setIntegrationContext')
 
     main()
 
     assert demisto.createIndicators.call_count == 0
-    assert demisto.setLastRun.call_count == 0
+    assert demisto.setIntegrationContext.call_count == 0
 
     demisto.createIndicators.assert_not_called()
-    demisto.setLastRun.assert_not_called()
+    demisto.setIntegrationContext.assert_not_called()
 
 
 def test_fetch_indicators_main_command_call_use_cyjax_tlp(mocker):
@@ -311,7 +343,7 @@ def test_fetch_indicators_main_command_call_use_cyjax_tlp(mocker):
     last_fetch = datetime(2020, 12, 27, 15, 45)
     last_fetch_timestamp = int(last_fetch.timestamp())
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
         INDICATORS_LAST_FETCH_KEY: last_fetch_timestamp
     })
 
@@ -323,12 +355,12 @@ def test_fetch_indicators_main_command_call_use_cyjax_tlp(mocker):
     mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.list', return_value=[cyjax_indicator[1]])
     mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
     mocker.patch.object(demisto, 'createIndicators')
-    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'setIntegrationContext')
 
     main()
 
     assert demisto.createIndicators.call_count == 1
-    assert demisto.setLastRun.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
 
     demisto.createIndicators.assert_called_with(expected_indicators)
     assert 'GREEN' == expected_indicators[0]['fields']['trafficlightprotocol']
@@ -345,7 +377,7 @@ def test_fetch_indicators_main_command_call_use_set_tlp(mocker):
     last_fetch = datetime(2020, 12, 27, 15, 45)
     last_fetch_timestamp = int(last_fetch.timestamp())
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
         INDICATORS_LAST_FETCH_KEY: last_fetch_timestamp
     })
 
@@ -357,12 +389,12 @@ def test_fetch_indicators_main_command_call_use_set_tlp(mocker):
     mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.list', return_value=[cyjax_indicator[1]])
     mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
     mocker.patch.object(demisto, 'createIndicators')
-    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'setIntegrationContext')
 
     main()
 
     assert demisto.createIndicators.call_count == 1
-    assert demisto.setLastRun.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
 
     demisto.createIndicators.assert_called_with(expected_indicators)
     assert 'AMBER' == expected_indicators[0]['fields']['trafficlightprotocol']
@@ -379,7 +411,7 @@ def test_fetch_indicators_main_command_call_use_tags(mocker):
     last_fetch = datetime(2020, 12, 27, 15, 45)
     last_fetch_timestamp = int(last_fetch.timestamp())
 
-    mocker.patch.object(demisto, 'getLastRun', return_value={
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
         INDICATORS_LAST_FETCH_KEY: last_fetch_timestamp
     })
 
@@ -391,12 +423,12 @@ def test_fetch_indicators_main_command_call_use_tags(mocker):
     mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.list', return_value=[cyjax_indicator[1]])
     mocker.patch.object(demisto, 'command', return_value='fetch-indicators')
     mocker.patch.object(demisto, 'createIndicators')
-    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'setIntegrationContext')
 
     main()
 
     assert demisto.createIndicators.call_count == 1
-    assert demisto.setLastRun.call_count == 1
+    assert demisto.setIntegrationContext.call_count == 1
 
     demisto.createIndicators.assert_called_with(expected_indicators)
     assert 'TestTag, YellowTag' == expected_indicators[0]['fields']['tags']

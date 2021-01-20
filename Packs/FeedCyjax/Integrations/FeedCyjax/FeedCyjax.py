@@ -189,7 +189,8 @@ def get_indicators_last_fetch_date() -> datetime:
     :return: Incidents last fetch date
     :rtype: ``datetime``
     """
-    last_fetch_timestamp = demisto.getLastRun().get(INDICATORS_LAST_FETCH_KEY, None)
+    integration_context = demisto.getIntegrationContext()
+    last_fetch_timestamp = integration_context.get(INDICATORS_LAST_FETCH_KEY, None)
 
     # Check if indicators were ever fetched before
     if last_fetch_timestamp is None:
@@ -204,6 +205,23 @@ def get_indicators_last_fetch_date() -> datetime:
     date = datetime.utcfromtimestamp(int(last_fetch_timestamp)).replace(tzinfo=timezone.utc)
 
     return date
+
+
+def set_indicators_last_fetch_date(timestamp: int) -> None:
+    """
+    Set the last indicator fetch date to integration context
+
+    :type timestamp: ``int``
+    :param timestamp: The last fetch timestamp
+
+    :return: None
+    """
+    integration_context = demisto.getIntegrationContext()
+
+    if timestamp:
+        integration_context[INDICATORS_LAST_FETCH_KEY] = int(timestamp)
+
+    demisto.setIntegrationContext(integration_context)
 
 
 def map_indicator_type(cyjax_type: str) -> str:
@@ -350,7 +368,7 @@ def test_module(client: Client) -> str:
 
 
 def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputation: str, tlp: Optional[str] = None,
-                             tags: Optional[list] = None) -> Tuple[Dict[str, int], List[dict]]:
+                             tags: Optional[list] = None) -> Tuple[int, List[dict]]:
     """Fetch indicators from Cyjax API.
     This function retrieves new indicators every interval (default is 60 minutes).
 
@@ -370,10 +388,9 @@ def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputati
     :param tags: A list of tags to add to indicators
 
     :return: A tuple containing two elements:
-            next_run (``Dict[str, int]``): Contains the timestamp that will be
-                    used in ``last_run`` on the next fetch.
+            last_run_timestamp (``int``): The timestamp that will be used in ``last_run`` on the next fetch.
             indicators (``List[dict]``): List of indicators that will be added to XSOAR
-    :rtype: ``Tuple[Dict[str, int], List[dict]]``
+    :rtype: ``Tuple[int, List[dict]]``
     """
     since = last_fetch_date.isoformat()
     last_run_timestamp = int(last_fetch_date.timestamp())
@@ -393,8 +410,7 @@ def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputati
         if indicator_timestamp > last_run_timestamp:
             last_run_timestamp = indicator_timestamp
 
-    next_run = {INDICATORS_LAST_FETCH_KEY: last_run_timestamp}
-    return next_run, indicators
+    return last_run_timestamp, indicators
 
 
 def get_indicators_command(client: Client, args: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -523,11 +539,11 @@ def main() -> None:
             next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation, tlp_to_use, tags)
 
             if indicators:
-                demisto.info('------------------ CYJAX FOUND INDICATORS')
+                demisto.info('------------------ CYJAX FOUND INDICATORS count={}'.format(len(indicators)))
                 for b in batch(indicators, batch_size=2000):
                     demisto.createIndicators(b)
 
-                demisto.setLastRun(next_run)
+                set_indicators_last_fetch_date(next_run)
 
         elif demisto.command() == 'cyjax-get-indicators':
             return_results(get_indicators_command(client, demisto.args()))
