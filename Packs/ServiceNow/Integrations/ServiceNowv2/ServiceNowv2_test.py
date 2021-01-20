@@ -25,7 +25,8 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_UPLOAD_FILE, EXPECTED_GET_TICKET_NOTES, EXPECTED_GET_RECORD, EXPECTED_UPDATE_RECORD, \
     EXPECTED_CREATE_RECORD, EXPECTED_QUERY_TABLE, EXPECTED_LIST_TABLE_FIELDS, EXPECTED_QUERY_COMPUTERS, \
     EXPECTED_GET_TABLE_NAME, EXPECTED_UPDATE_TICKET_ADDITIONAL, EXPECTED_QUERY_TABLE_SYS_PARAMS, EXPECTED_ADD_TAG, \
-    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING
+    EXPECTED_QUERY_ITEMS, EXPECTED_ITEM_DETAILS, EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, \
+    EXPECTED_MAPPING, EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS
 
 import demistomock as demisto
 
@@ -39,6 +40,20 @@ def test_get_ticket_context():
 
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[0] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
     assert EXPECTED_MULTIPLE_TICKET_CONTEXT[1] in get_ticket_context(RESPONSE_MULTIPLE_TICKET)
+
+
+def test_get_ticket_context_additional_fields():
+    """Unit test
+    Given
+        - additional keys of a ticket alongside regular keys.
+    When
+        - getting a ticket context
+    Then
+        - validate that all the details of the ticket were updated, and all the updated keys are shown in
+        the context with do duplicates.
+    """
+    assert EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS == get_ticket_context(RESPONSE_TICKET,
+                                                                                ['Summary', 'sys_created_by'])
 
 
 def test_get_ticket_human_readable():
