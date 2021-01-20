@@ -38,7 +38,6 @@ def test_is_pack_xsoar_supported(tmp_path, pack_metadata_content, expected):
     assert is_pack_xsoar_supported(str(tmp_path)) == expected
 
 
-
 @pytest.mark.parametrize("pack_metadata_content, expected", [
     ({'hidden': False}, False),
     ({'hidden': True}, True),
