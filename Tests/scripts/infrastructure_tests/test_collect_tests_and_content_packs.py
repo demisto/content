@@ -16,7 +16,7 @@ from Tests.scripts.collect_tests_and_content_packs import (
     PACKS_DIR, TestConf, collect_content_packs_to_install,
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
-    remove_ignored_tests, remove_tests_for_non_supported_packs, create_test_file)
+    remove_ignored_tests, remove_tests_for_non_supported_packs)
 from Tests.scripts.utils.get_modified_files_for_testing import \
     get_modified_files_for_testing
 from TestSuite import repo, test_tools
