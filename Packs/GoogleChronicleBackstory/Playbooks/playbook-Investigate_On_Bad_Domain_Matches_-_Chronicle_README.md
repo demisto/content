@@ -1,4 +1,4 @@
-Use this playbook to investigate and remediate Bad IOC domain matches with recent activity found in the enterprise, as well as notify the SOC lead and network team about the matches.
+Use this playbook to investigate and remediate Bad IOC domain matches with recent activity found in the enterprise. With this playbook, you can notify the SOC lead and network team about the same.
 Supported Integrations:
 - Chronicle
 - Whois
@@ -37,8 +37,8 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| networkteam_email | Enter the email address of the network team that needs to be notified.  |  | Optional |
-| stakeholder_email | Enter the email of the stakeholder to whom you want to send the investigation summary report. |  | Optional |
+| networkteam_email | Enter the network team email address who needs to be notified.  |  | Optional |
+| stakeholder_email | Enter the stakeholder email to send an investigation summary report. |  | Optional |
 
 ## Playbook Outputs
 ---

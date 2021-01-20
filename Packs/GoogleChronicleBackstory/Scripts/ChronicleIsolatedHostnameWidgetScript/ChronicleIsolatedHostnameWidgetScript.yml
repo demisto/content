@@ -6,13 +6,12 @@ script: ''
 type: python
 tags:
 - dynamic-indicator-section
-comment: Notifies if the hostname associated with the ChronicleAsset is isolated or
-  not.
+comment: Notifies if the hostname associated with the ChronicleAsset is isolated or not.
 enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.8.6.14516
+dockerimage: demisto/python3:3.9.1.14969
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

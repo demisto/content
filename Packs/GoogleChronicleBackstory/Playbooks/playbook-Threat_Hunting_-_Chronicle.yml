@@ -2,7 +2,7 @@ id: Threat Hunting - Chronicle
 version: -1
 name: Threat Hunting - Chronicle
 description: |-
-  Use this playbook to investigate and remediate suspicious IOC domain matches with recent activity found in the enterprise. This playbook also creates indicators for the entities fetched, as well as investigating and enriching them.
+  Use this playbook to investigate and remediate suspicious IOC domain matches with recent activity found in the enterprise. This playbook also creates indicators for the entities fetched while investigating and enriches them.
   Supported Integrations:
   - Chronicle
   - Whois
@@ -542,7 +542,7 @@ tasks:
       id: 7bfa05f6-ccd4-48f8-87e5-7c91e72b9308
       version: -1
       name: Is the user willing to block the entities?
-      description: Indicates if the user is willing to block the fetched entities.
+      description: Determines if the user is willing to block the fetched entities.
       type: condition
       iscommand: false
       brand: ""

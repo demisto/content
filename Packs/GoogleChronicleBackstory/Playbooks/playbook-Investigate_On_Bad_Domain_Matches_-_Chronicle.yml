@@ -2,7 +2,7 @@ id: Investigate On Bad Domain Matches - Chronicle
 version: -1
 name: Investigate On Bad Domain Matches - Chronicle
 description: |-
-  Use this playbook to investigate and remediate Bad IOC domain matches with recent activity found in the enterprise, as well as notify the SOC lead and network team about the matches.
+  Use this playbook to investigate and remediate Bad IOC domain matches with recent activity found in the enterprise. With this playbook, you can notify the SOC lead and network team about the same.
   Supported Integrations:
   - Chronicle
   - Whois
@@ -47,7 +47,7 @@ tasks:
     task:
       id: 46153c29-6ca3-403b-8a36-fdf0694870be
       version: -1
-      name: Perform domain reputation check using Autofocus
+      name: Perform domain reputation check on Autofocus
       description: Checks the reputation of a domain.
       script: '|||domain'
       type: regular
@@ -152,7 +152,7 @@ tasks:
     task:
       id: 8267a2a2-4985-40ca-8707-dc644805ec0a
       version: -1
-      name: 'Is the domain benign? '
+      name: 'Is the domain Benign? '
       description: Check if a given value exists in the context. Will return 'no'
         for empty arrays. To be used mostly with DQ and selectors.
       type: condition
@@ -202,13 +202,13 @@ tasks:
       name: Assign analyst to incident
       description: |-
         Assign analyst to incident.
-        By default, the analyst is picked randomly from the available users, according to the provided roles (if no roles are provided, all users are fetched).
-        Otherwise, the analyst is picked according to the 'assignBy' arguments.
-        machine-learning: DBot calculates who is the best analyst for the job.
-        top-user: The user that most commonly owns this type of incident
-        less-busy-user: The least busy analyst will be picked to be the incident owner.
-        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, all users are fetched).
-        current: The user that executed the command.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
       scriptName: AssignAnalystToIncident
       type: regular
       iscommand: false
@@ -241,8 +241,7 @@ tasks:
       id: 9dcfa248-f379-4d2e-896f-c90af39f16b7
       version: -1
       name: Notify network team
-      description: Sends an email to the network team that a malicious domain has
-        been detected.
+      description: Send an email
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -323,7 +322,7 @@ tasks:
       version: -1
       name: Generate investigation summary report
       description: |-
-        A script to generate an automated investigation summary report.
+        A script to generate investigation summary report in an automated way
         Can be used in post-processing flow as well.
       scriptName: GenerateInvestigationSummaryReport
       type: regular
@@ -402,7 +401,7 @@ tasks:
       id: ee5dbbee-1621-4508-875e-305a5b4543d2
       version: -1
       name: Email the report to stakeholders
-      description: Emails the report to the relevant stakeholders.
+      description: Send an email
       script: '|||send-mail'
       type: regular
       iscommand: true
@@ -454,7 +453,7 @@ tasks:
     task:
       id: d18a53b7-7781-4b0b-8d1f-52a99fe0cde1
       version: -1
-      name: Perform domain reputation check using Chronicle
+      name: Perform domain reputation check on Chronicle
       description: Returns a complete profile of the domain.
       script: '|||domain'
       type: regular
@@ -505,7 +504,7 @@ tasks:
       version: -1
       name: Get userid and tagname via email
       description: Collect the user id for the employee that is trying to get access
-        to this bad domain, and the corresponding tag name.
+        to this bad domain and the corresponding tag name.
       type: collection
       iscommand: false
       brand: ""
@@ -538,8 +537,8 @@ tasks:
       subject:
         simple: please enter the userid and tagname
       body:
-        simple: 'Hi, Please provide the user id for the employee, and the corresponding
-          tagname, that is trying to access this bad domain? '
+        simple: 'Hi, Can you please provide the user id  for the employee that is
+          trying to get access to this bad domain and the corresponding tagname ? '
       methods:
       - email
       format: ""
@@ -668,7 +667,7 @@ tasks:
       id: e283ce90-2de5-47b8-891c-dbede9b4fb06
       version: -1
       name: Get hostnames
-      description: Prints text to war room (markdown supported)
+      description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
       iscommand: false
@@ -702,7 +701,7 @@ tasks:
       id: e43251ad-8498-4ffd-8372-cc4daaa50c4f
       version: -1
       name: Print category
-      description: Prints text to war room (markdown supported)
+      description: Prints text to war room (Markdown supported)
       scriptName: Print
       type: regular
       iscommand: false
@@ -1125,8 +1124,8 @@ tasks:
       id: 307d253e-5072-438f-8a36-f6e9e39ec58c
       version: -1
       name: Get userid and tagname
-      description: Collect the user id, and the corresponding tag name, for the employee
-        that is trying to get access to this bad domain.
+      description: Collect the user id for the employee that is trying to get access
+        to this bad domain and the corresponding tag name.
       type: collection
       iscommand: false
       brand: ""
@@ -1157,8 +1156,8 @@ tasks:
       subject:
         simple: please enter the userid and tagname
       body:
-        simple: 'Hi, Please provide the user id, and the corresponding tag name, for
-          the employee that is trying to get access to this bad domain. '
+        simple: 'Hi, Can you please provide the user id for the employee that is trying
+          to get access to this bad domain and the corresponding tag name ? '
       methods: []
       format: ""
       bcc:
@@ -1251,8 +1250,8 @@ tasks:
       id: d735d256-8d4d-45f2-83e7-ff215fd39c11
       version: -1
       name: Get stakeholder email address.
-      description: Collect the user id, and the corresponding tag name, for the employee
-        that is trying to get access to this bad domain.
+      description: Collect the user id for the employee that is trying to get access
+        to this bad domain and the corresponding tag name.
       type: collection
       iscommand: false
       brand: ""
@@ -1441,13 +1440,12 @@ inputs:
 - key: networkteam_email
   value: {}
   required: false
-  description: 'Enter the email address of the network team that needs to be notified. '
+  description: 'Enter the network team email address who needs to be notified. '
   playbookInputQuery:
 - key: stakeholder_email
   value: {}
   required: false
-  description: Enter the email of the stakeholder to whom you want to send the investigation
-    summary report.
+  description: Enter the stakeholder email to send an investigation summary report.
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0

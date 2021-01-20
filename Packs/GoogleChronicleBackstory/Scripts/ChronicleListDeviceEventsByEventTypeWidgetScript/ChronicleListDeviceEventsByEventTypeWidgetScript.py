@@ -8,11 +8,12 @@ from typing import Any, Dict
 def extract_list_of_events_from_indicator(indicator_data: Dict[str, Any]) -> Dict[str, Any]:
     list_of_events = indicator_data.get("CustomFields", {}).get('chronicleassetsummary', [])
     number_of_events = {'GENERIC_EVENT': 0, 'NETWORK_HTTP': 0, 'NETWORK_CONNECTION': 0, 'USER_LOGIN': 0, 'OTHERS': 0}
-    for event in list_of_events:
-        if event.get('eventtype') in number_of_events:
-            number_of_events[event.get('eventtype')] += 1
-        else:
-            number_of_events['OTHERS'] += 1
+    if list_of_events:
+        for event in list_of_events:
+            if event.get('eventtype') in number_of_events.keys():
+                number_of_events[event.get('eventtype', 0)] += 1
+            else:
+                number_of_events['OTHERS'] += 1
     return create_pie(number_of_events)
 
 
