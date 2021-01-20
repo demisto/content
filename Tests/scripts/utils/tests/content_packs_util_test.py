@@ -35,7 +35,7 @@ def test_is_pack_xsoar_supported(tmp_path, pack_metadata_content, expected):
     """
     pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
     pack_metadata_file.write_text(json.dumps(pack_metadata_content))
-    assert is_pack_xsoar_supported(str(tmp_path)) == expected\
+    assert is_pack_xsoar_supported(str(tmp_path)) == expected
 
 
 
