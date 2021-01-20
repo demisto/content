@@ -1017,7 +1017,8 @@ def filter_tests(tests: set, id_set: json) -> set:
     Returns:
         (set): Set of tests without ignored and non supported tests.
     """
-    tests_without_ignored = remove_ignored_tests(tests, id_set)
+    tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
+    tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     return tests_without_non_supported
@@ -1267,7 +1268,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
         tests, packs_to_install = get_test_list_and_content_packs_to_install(files_string, branch_name)
 
-    tests_string = '\n'.join(test for test in tests if 'no test' not in test.lower())
+    tests_string = '\n'.join(tests)
     packs_to_install_string = '\n'.join(packs_to_install)
 
     if not skip_save:
