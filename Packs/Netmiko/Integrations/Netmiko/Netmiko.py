@@ -152,7 +152,11 @@ def main():
 
     platform = params.get('platform')
     hostname = params.get('hostname')
-    port = int(params.get('port'))
+    port = params.get('port')
+    try:
+        port = int(port)
+    except Exception as err:
+        return_error(f"Please ensure the port number is a number - {err}")
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     ssh_key = params.get('credentials', {}).get('credentials', {}).get('sshkey')
