@@ -1,0 +1,17 @@
+{
+    "name": "FortiSandbox",
+    "description": "FortiSandbox pack contains FortiSandbox integration, playbooks to upload files for analysis and to fetch reports after detonation.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "vibhuabharadwaj",
+    "url": "",
+    "email": "",
+    "created": "2021-01-20T21:39:45Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "vibhuabharadwaj"
+    ]
+}

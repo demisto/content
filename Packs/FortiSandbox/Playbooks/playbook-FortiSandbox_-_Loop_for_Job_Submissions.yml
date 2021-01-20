@@ -1,0 +1,87 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 06571483-12e4-4765-89ac-558dcb10eca1
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 6d811ef8-bbdf-45c7-8ceb-b21da95a3d36
+inputs:
+- description: ""
+  key: SubmissionIDs
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: FortiSandbox - Loop for Job Submissions
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a5a113d0-787f-4ae6-868a-a0c83de5b729
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: a5a113d0-787f-4ae6-868a-a0c83de5b729
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      submission_id:
+        simple: ${inputs.SubmissionIDs}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: FortiSandbox
+      description: Get Job IDs from an uploaded Submission using the submission ID
+      id: e6735eea-1e8e-4fe0-87f5-48a12e6c0d73
+      iscommand: true
+      name: FortiSandbox multiple query Submission for Job ID
+      script: FortiSandbox|||fortisandbox-jobid-from-submission
+      type: regular
+      version: -1
+    taskid: e6735eea-1e8e-4fe0-87f5-48a12e6c0d73
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 265,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
