@@ -50,7 +50,7 @@
                 },
                 "name": {
                     "complex": null,
-                    "simple": "type_string"
+                    "simple": "state.alert_id"
                 },
                 "severity": {
                     "complex": null,

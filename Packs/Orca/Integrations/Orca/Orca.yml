@@ -38,6 +38,12 @@ configuration:
   name: fetch_informational
   required: false
   type: 8
+- additionalinfo: If this checked, all past alerts will be fetched
+  display: Pull Past Alerts
+  hidden: false
+  name: past_alerts
+  required: false
+  type: 8
 description: Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS,
   Azure, and GCP.
 display: Orca
