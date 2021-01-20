@@ -24,22 +24,20 @@ configuration:
   required: false
   type: 8
 - display: Username
-  name: username
+  name: credentials
   required: true
-  type: 0
-- display: Password
-  name: password
-  required: true
-  type: 4
+  type: 9
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
 - defaultvalue: '50'
+  display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
+  additionalinfo: The maximum number of incidents to fetch each time.
 - additionalinfo: Fetches incidents by resolved value. if resolved is set to true,
     only alerts that were resolved will be fetched, if resolved is set to false, only
     alerts that weren't resolved will be fetched.
@@ -62,12 +60,12 @@ configuration:
   name: acknowledged
   required: false
   type: 8
-- additionalinfo: Comma separated list. Fetches alerts that id of their type matches
-    one alert type uuid in Alert Type Uuids list. For example, alert 'Alert E-mail
-    Failure' has type uuid of A111066. Given Alert Type Uuids = 'A111066', only alerts
+- additionalinfo: Comma separated list. Fetches alerts that the id of their type matches
+    one alert_type_id in alert_type_ids list. For example, alert 'Alert E-mail
+    Failure' has type id of A111066. Given alert_type_ids = 'A111066', only alerts
     of 'Alert E-mail Failure' will be shown.
-  display: Alert Type Uuids
-  name: alert_type_uuids
+  display: alert_type_ids
+  name: alert_type_ids
   required: false
   type: 0
 - additionalinfo: Comma separated list. Fetch alerts that their impact type matches
@@ -390,8 +388,8 @@ script:
         Nutanix the following way: Return all virtual machines s.t (machine type ==
         pc AND power_state != off) OR ha_priority == 0.'
       name: filter
-    - description: Number of virtual machines to retrieve.
-      name: length
+    - description: Maximum number of virtual machines to retrieve.
+      name: limit
     - description: The offset to start retrieving virtual machines.
       name: offset
     description: Get a list of virtual machines.
@@ -567,23 +565,23 @@ script:
         retrieved. Time is expected to be in UTC.
       name: end_time
     - auto: PREDEFINED
-      description: If resolved is True, retrieves alerts that have been resolved.
-        If resolved is False, retrieves alerts that have not been resolved.
+      description: If resolved is true, retrieves alerts that have been resolved.
+        If resolved is false, retrieves alerts that have not been resolved.
       name: resolved
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
-      description: If auto_resolved is True, retrieves alerts that have been resolved,
-        and were auto_resolved. If auto_resolved is False, retrieves alerts that have
+      description: If auto_resolved is true, retrieves alerts that have been resolved,
+        and were auto_resolved. If auto_resolved is false, retrieves alerts that have
         been resolved, and were not auto_resolved.
       name: auto_resolved
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
-      description: If acknowledged is True, retrieves alerts that have been acknowledged.                     If
-        acknowledged is False, retrieves alerts that have been acknowledged.
+      description: If acknowledged is true, retrieves alerts that have been acknowledged.                     If
+        acknowledged is false, retrieves alerts that have been acknowledged.
       name: acknowledged
       predefined:
       - "true"
@@ -598,14 +596,11 @@ script:
       - INFO
       - AUDIT
     - description: Comma separated list. Retrieve alerts that id of their type matches
-        one alert_type_uuid in alert_type_uuids list. For example, alert 'Alert E-mail
-        Failure' has type id of A111066. Given alert_type_uuids= 'A111066', only alerts
+        one alert_type_id in alert_type_ids list. For example, alert 'Alert E-mail
+        Failure' has type id of A111066. Given alert_type_ids= 'A111066', only alerts
         of 'Alert E-mail Failure' will be retrieved.
       isArray: true
-      name: alert_type_uuids
-    - description: ADD DESCRIPTION
-      isArray: true
-      name: entity_ids
+      name: alert_type_ids
     - auto: PREDEFINED
       description: Comma separated list. Retrieve alerts that their impact type matches
         one of the impact types in impact_types list. For example, alert 'Incorrect

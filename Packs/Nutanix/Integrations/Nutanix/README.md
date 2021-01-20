@@ -723,7 +723,7 @@ Acknowledge alert with the specified alert_id.
 ```json
 {
     "NutanixHypervisor": {
-        "Alert": {
+        "AcknowledgeAlerts": {
             "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
             "successful": true
         }
