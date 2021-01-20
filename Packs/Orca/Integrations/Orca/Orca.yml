@@ -38,12 +38,23 @@ configuration:
   name: fetch_informational
   required: false
   type: 8
-- additionalinfo: If this checked, all past alerts will be fetched
-  display: Pull Past Alerts
+- additionalinfo: If this checked, all existing alerts will be fetched
+  display: Pull Existing Alerts
   hidden: false
-  name: past_alerts
+  name: pull_existing_alerts
   required: false
   type: 8
+- additionalinfo: "Orca-Push: Orca will push Alerts on realtime \nXSOAR-Pull: XOSAR\
+    \ will periodically query for Orca Alerts"
+  defaultvalue: XSOAR-Pull
+  display: Fetch Type
+  hidden: false
+  name: fetch_type
+  options:
+  - Orca-Push
+  - XSOAR-Pull
+  required: false
+  type: 15
 description: Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS,
   Azure, and GCP.
 display: Orca

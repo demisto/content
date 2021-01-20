@@ -143,11 +143,11 @@ def get_incidents_from_alerts(alerts: List[Dict[str, Any]]) -> List[Dict[str, An
 
 
 def fetch_incidents(orca_client: OrcaClient, max_fetch: int, fetch_informational: bool = False,
-                    past_alerts: bool = False) -> List[Dict[str, Any]]:
+                    pull_existing_alerts: bool = False, fetch_type="XSOAR-Pull") -> List[Dict[str, Any]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
 
-    if not past_alerts:
-        demisto.info("past_alerts flag is not set, not pulling alerts")
+    if not pull_existing_alerts:
+        demisto.info("pull_existing_alerts flag is not set, not pulling alerts")
         demisto.incidents([])
         return []
 
@@ -159,10 +159,16 @@ def fetch_incidents(orca_client: OrcaClient, max_fetch: int, fetch_informational
 
         if not incidents_to_export:
             # finished exporting from the queue of alerts
+            incidents = []
+            if fetch_type == "XSOAR-Pull":
+                updated_alerts = orca_client.get_updated_alerts()
+                incidents = get_incidents_from_alerts(updated_alerts)
+
+            demisto.incidents(incidents)
             demisto.setLastRun(
                 {'lastRun': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT), "incidents_for_next_run": []})
-            demisto.incidents([])
-            return []
+
+            return incidents
 
         else:
             # still exporting from alerts queue
@@ -199,7 +205,8 @@ def main() -> None:
         api_key = demisto.params().get('apikey')
         fetch_informational = demisto.params().get('fetch_informational')
         max_fetch = int(demisto.params().get('max_fetch'))
-        past_alerts = demisto.params().get('past_alerts')
+        pull_existing_alerts = demisto.params().get('pull_existing_alerts')
+        fetch_type = demisto.params().get('fetch_type')
 
         client = BaseClient(
             base_url=ORCA_API_DNS_NAME,
@@ -232,7 +239,7 @@ def main() -> None:
 
         elif command == "fetch-incidents":
             fetch_incidents(orca_client, max_fetch=max_fetch, fetch_informational=fetch_informational,
-                            past_alerts=past_alerts)
+                            pull_existing_alerts=pull_existing_alerts, fetch_type=fetch_type)
 
         elif command == "test-module":
             test_res = orca_client.validate_api_key()
@@ -246,3 +253,4 @@ def main() -> None:
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+# In commands not fail if no alerts (because command fails it fails the playbook)
