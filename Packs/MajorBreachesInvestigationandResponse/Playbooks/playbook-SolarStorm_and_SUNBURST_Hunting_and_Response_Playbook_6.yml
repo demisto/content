@@ -11,6 +11,11 @@ description: |-
   - Query firewall logs to detect network activity - Search endpoint logs for Sunburst hashes to detect presence on hosts
   If compromised hosts are found then:
   - Notify security team to review and trigger remediation response actions - Fire off sub-playbooks to isolate/quarantine infected hosts/endpoints and await further actions from the security team.
+
+  Sources:
+  https://www.fireeye.com/blog/threat-research/2020/12/evasive-attacker-leverages-solarwinds-supply-chain-compromises-with-sunburst-backdoor.html
+  https://unit42.paloaltonetworks.com/fireeye-solarstorm-sunburst/3/
+  https://www.splunk.com/en_us/blog/security/sunburst-backdoor-detections-in-splunk.html
 starttaskid: "0"
 tasks:
   "0":
@@ -26,13 +31,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "95"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1500,
-          "y": -530
+          "x": 240,
+          "y": -990
         }
       }
     note: false
@@ -42,10 +47,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 82d4e0f5-6e3a-42cb-8887-764cf9e8eb8e
+    taskid: e72a5f88-9b96-410b-83f8-04a61daeb514
     type: title
     task:
-      id: 82d4e0f5-6e3a-42cb-8887-764cf9e8eb8e
+      id: e72a5f88-9b96-410b-83f8-04a61daeb514
       version: -1
       name: Collect  and retrieve indicators to hunt
       type: title
@@ -63,7 +68,7 @@ tasks:
       {
         "position": {
           "x": 1500,
-          "y": -400
+          "y": -465
         }
       }
     note: false
@@ -144,7 +149,7 @@ tasks:
       {
         "position": {
           "x": 1500,
-          "y": 3730
+          "y": 4810
         }
       }
     note: false
@@ -169,7 +174,7 @@ tasks:
       {
         "position": {
           "x": 1500,
-          "y": 3900
+          "y": 4980
         }
       }
     note: false
@@ -284,7 +289,7 @@ tasks:
       {
         "position": {
           "x": 1500,
-          "y": 3550
+          "y": 4640
         }
       }
     note: false
@@ -294,19 +299,21 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 40d9215a-00c5-4ae7-8f3e-4bd3688e5608
+    taskid: f83d2976-e87f-4c01-8165-77423b4ca394
     type: title
     task:
-      id: 40d9215a-00c5-4ae7-8f3e-4bd3688e5608
+      id: f83d2976-e87f-4c01-8165-77423b4ca394
       version: -1
-      name: Remediation Complete
+      name: Mitigation
       description: commands.local.cmd.close.inv
       type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "104"
+      - "105"
+      - "107"
     separatecontext: false
     view: |-
       {
@@ -701,28 +708,26 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 15014fdf-4f81-4f58-8b7b-2c76e10e9c06
+    taskid: b23dbbf1-0265-4224-8745-0ec6fc213257
     type: title
     task:
-      id: 15014fdf-4f81-4f58-8b7b-2c76e10e9c06
+      id: b23dbbf1-0265-4224-8745-0ec6fc213257
       version: -1
-      name: Hunt IOC's
+      name: Hunting
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "31"
-      - "32"
-      - "67"
-      - "81"
+      - "100"
+      - "101"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 1500,
-          "y": 620
+          "y": 450
         }
       }
     note: false
@@ -1642,7 +1647,7 @@ tasks:
       {
         "position": {
           "x": 970,
-          "y": -260
+          "y": -290
         }
       }
     note: false
@@ -1670,7 +1675,7 @@ tasks:
       {
         "position": {
           "x": 2010,
-          "y": -250
+          "y": -290
         }
       }
     note: false
@@ -1698,7 +1703,7 @@ tasks:
       {
         "position": {
           "x": 2530,
-          "y": -250
+          "y": -290
         }
       }
     note: false
@@ -1946,7 +1951,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "91"
+      - "19"
     scriptarguments:
       details: {}
       extend-context:
@@ -2299,7 +2304,8 @@ tasks:
       id: 19541626-dcaf-4f4a-89a2-45d193c85535
       version: -1
       name: Block vulnerable SolarWinds server automatically?
-      description: Checks whether to block the vulnerable SolarWinds server automatically according to the value set for "AutoBlockSolarWindsServer" playbook input.
+      description: Checks whether to block the vulnerable SolarWinds server automatically
+        according to the value set for "AutoBlockSolarWindsServer" playbook input.
       type: condition
       iscommand: false
       brand: ""
@@ -2523,34 +2529,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "91":
-    id: "91"
-    taskid: 4aa272a4-9afc-4db3-875a-ab71f4c102d4
-    type: title
-    task:
-      id: 4aa272a4-9afc-4db3-875a-ab71f4c102d4
-      version: -1
-      name: 'Hunt SolarStorm Behavior '
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "92"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 510,
-          "y": 1100
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "92":
     id: "92"
     taskid: 7ecbe048-d99e-472b-85d6-54cc9382d5e0
@@ -2600,8 +2578,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 1245
+          "x": 130,
+          "y": 755
         }
       }
     note: false
@@ -2629,7 +2607,7 @@ tasks:
       {
         "position": {
           "x": 3120,
-          "y": -250
+          "y": -290
         }
       }
     note: false
@@ -2677,6 +2655,602 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "95":
+    id: "95"
+    taskid: 5d7b85ac-5395-47ca-8c38-9d783985c1c8
+    type: collection
+    task:
+      id: 5d7b85ac-5395-47ca-8c38-9d783985c1c8
+      version: -1
+      name: Is the organization SolarWinds server version vulnerable?
+      description: Data collection task to checks whether there is a SolarWinds server with vulnerable version
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator,Analyst
+      subject:
+        simple: SolarWinds server version check
+      body:
+        simple: Please check your SolarWinds Orion Platform
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: "Is the version of the organization SolarWinds is one of the following?\
+            \ \n- Orion Platform 2019.4 HF5, version 2019.4.5200.9083\n- Orion Platform\
+            \ 2020.2 RC1, version 2020.2.100.12219\n- Orion Platform 2020.2 RC2, version\
+            \ 2020.2.5200.12394\n- Orion Platform 2020.2, 2020.2 HF1, version 2020.2.5300.12432"
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: SolarWinds server version check
+      description: Checks if the SolarWinds server version vulnerable
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "96":
+    id: "96"
+    taskid: 923654a0-7f07-4e46-8380-23ab98694d19
+    type: condition
+    task:
+      id: 923654a0-7f07-4e46-8380-23ab98694d19
+      version: -1
+      name: 'Is SolarWinds found Vulnerable? '
+      description: Checks whether there is a SolarWinds server with vulnerable version
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "97"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: SolarWinds server version check.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "97":
+    id: "97"
+    taskid: f7dc53c2-d3bb-42a8-8e12-3e65a22bc21a
+    type: title
+    task:
+      id: f7dc53c2-d3bb-42a8-8e12-3e65a22bc21a
+      version: -1
+      name: SolarWinds Not Vulnerable
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": -465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "99":
+    id: "99"
+    taskid: 0e599e7e-111d-40ae-8a2b-c4c3dba27831
+    type: playbook
+    task:
+      id: 0e599e7e-111d-40ae-8a2b-c4c3dba27831
+      version: -1
+      name: SolarStorm Activity Behavior Hunting playbook
+      description: |2-
+
+
+
+        Sources:
+        - https://www.fireeye.com/blog/threat-research/2020/12/evasive-attacker-leverages-solarwinds-supply-chain-compromises-with-sunburst-backdoor.html
+        - https://unit42.paloaltonetworks.com/fireeye-solarstorm-sunburst/3/
+        - https://www.splunk.com/en_us/blog/security/sunburst-backdoor-detections-in-splunk.html
+      playbookName: SolarStorm Activity Behavior Hunting playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "100":
+    id: "100"
+    taskid: fba6698e-be59-4a22-87af-0ee37844d94d
+    type: title
+    task:
+      id: fba6698e-be59-4a22-87af-0ee37844d94d
+      version: -1
+      name: Hunt SolarStrom IOC's
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+      - "67"
+      - "31"
+      - "81"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "101":
+    id: "101"
+    taskid: c9c188c4-20b4-490e-8b73-0baef1f24b4b
+    type: title
+    task:
+      id: c9c188c4-20b4-490e-8b73-0baef1f24b4b
+      version: -1
+      name: Hunt SolarStorm Activity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "92"
+      - "99"
+      - "102"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "102":
+    id: "102"
+    taskid: c4833080-27d3-49be-8720-409614f5c265
+    type: playbook
+    task:
+      id: c4833080-27d3-49be-8720-409614f5c265
+      version: -1
+      name: Azure Hunting playbook
+      playbookName: Azure Hunting playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -770,
+          "y": 755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "103":
+    id: "103"
+    taskid: d051ea66-3865-4fa8-8219-ccdc398c7061
+    type: playbook
+    task:
+      id: d051ea66-3865-4fa8-8219-ccdc398c7061
+      version: -1
+      name: Azure Configuration Analysis
+      playbookName: Azure Configuration Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "113"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 3710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "104":
+    id: "104"
+    taskid: 9a2c8087-c99e-4854-8b9b-ef1ff564379d
+    type: title
+    task:
+      id: 9a2c8087-c99e-4854-8b9b-ef1ff564379d
+      version: -1
+      name: SolarWinds Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "106"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "105":
+    id: "105"
+    taskid: 8cd27b2c-e82e-43c4-825a-5b64cace9c3a
+    type: title
+    task:
+      id: 8cd27b2c-e82e-43c4-825a-5b64cace9c3a
+      version: -1
+      name: Azure Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "103"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 3560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "106":
+    id: "106"
+    taskid: e2a29a05-d556-456d-8808-7da11f65d3f1
+    type: regular
+    task:
+      id: e2a29a05-d556-456d-8808-7da11f65d3f1
+      version: -1
+      name: Patch Vulnerable SolarWinds Server
+      description: |-
+        The latest SolarWinds updates designed to protect against SUNBURST and SUPERNOVA are as follows:
+        2019.4 HF 6 (released December 14, 2020)
+
+        2020.2.1 HF 2 (released December 15, 2020)
+
+        2019.2 SUPERNOVA Patch (released December 23, 2020)
+
+        2018.4 SUPERNOVA Patch (released December 23, 2020)
+
+        2018.2 SUPERNOVA Patch (released December 23, 2020)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "108"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "107":
+    id: "107"
+    taskid: 9f4dff31-2428-4dad-811b-5c070e355325
+    type: title
+    task:
+      id: 9f4dff31-2428-4dad-811b-5c070e355325
+      version: -1
+      name: 'Compromised Organization Entities Mitigation '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "109"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 3560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "108":
+    id: "108"
+    taskid: ee17d4d1-16a8-4135-8e82-28ee85d1c97c
+    type: regular
+    task:
+      id: ee17d4d1-16a8-4135-8e82-28ee85d1c97c
+      version: -1
+      name: Change the password for SolarWinds user
+      description: Change the password for SolarWinds user
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "113"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 3890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: fd8a92e6-fd8a-4e88-8d07-4ad9904547f0
+    type: regular
+    task:
+      id: fd8a92e6-fd8a-4e88-8d07-4ad9904547f0
+      version: -1
+      name: Reset all credentials used by or stored in SolarWinds software
+      description: It is recommended to reset all redentials used by or stored in SolarWinds software since the SolarWinds server compromised.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "110"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 3710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "110":
+    id: "110"
+    taskid: b1cc79b7-0379-4bad-870b-0f4424bbb70d
+    type: regular
+    task:
+      id: b1cc79b7-0379-4bad-870b-0f4424bbb70d
+      version: -1
+      name: 'Replace the user account by Group Managed Service Account '
+      description: 'Replace the user account by Group Managed Service Account '
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 3880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "111":
+    id: "111"
+    taskid: ad25d090-f5ce-4d9b-8d72-08b54b94d01d
+    type: regular
+    task:
+      id: ad25d090-f5ce-4d9b-8d72-08b54b94d01d
+      version: -1
+      name: Configure Encryption types allowed for Kerberos
+      description: |+
+        Set the allowable encryption types to AES256_HMAC_SHA1 and Future encryption types. https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/network-security-configure-encryption-types-allowed-for-kerberos
+
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "112"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "112":
+    id: "112"
+    taskid: 2c96a4e2-48e0-4732-8ede-84852f08559c
+    type: regular
+    task:
+      id: 2c96a4e2-48e0-4732-8ede-84852f08559c
+      version: -1
+      name: Rebuild hosts monitored by the SolarWinds
+      description: Treat all hosts monitored by the SolarWinds Orion monitoring software
+        as compromised by threat actors and assume that further persistence mechanisms
+        have been deployed.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "113"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 4260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "113":
+    id: "113"
+    taskid: 2f97a38b-6815-4cc2-8e2d-5a62a5916f40
+    type: title
+    task:
+      id: 2f97a38b-6815-4cc2-8e2d-5a62a5916f40
+      version: -1
+      name: Mitigation Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 4440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 system: true
 view: |-
   {
@@ -2692,14 +3266,16 @@ view: |-
       "84_24_#default#": 0.35,
       "84_85_yes": 0.28,
       "90_19_#default#": 0.22,
-      "90_76_yes": 0.29
+      "90_76_yes": 0.29,
+      "96_4_yes": 0.18,
+      "96_97_#default#": 0.18
     },
     "paper": {
       "dimensions": {
-        "height": 4495,
-        "width": 4240,
-        "x": 280,
-        "y": -530
+        "height": 6035,
+        "width": 5610,
+        "x": -1090,
+        "y": -990
       }
     }
   }

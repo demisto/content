@@ -1,0 +1,403 @@
+id: Azure Configuration Analysis
+version: -1
+name: Azure Configuration Analysis
+description: This playbook helps you collect, review and find misconfigurations with
+  the Azure environment.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e12ceb8c-018b-4a48-806a-4443ee22b71e
+    type: start
+    task:
+      id: e12ceb8c-018b-4a48-806a-4443ee22b71e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: c8d75c55-e9f1-4808-8272-4c027f784e3b
+    type: title
+    task:
+      id: c8d75c55-e9f1-4808-8272-4c027f784e3b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 3680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 665da910-d2b7-4716-8e1d-027ddc6718a6
+    type: regular
+    task:
+      id: 665da910-d2b7-4716-8e1d-027ddc6718a6
+      version: -1
+      name: Review Federation Trust Information
+      description: |-
+        A federation trust establishes a trust relationship between a Microsoft Exchange 2013 organization and the Azure Active Directory authentication system.
+        Review the configured federated sharing.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 880b9305-53a2-48a4-849b-9eb69cd9ee2c
+    type: regular
+    task:
+      id: 880b9305-53a2-48a4-849b-9eb69cd9ee2c
+      version: -1
+      name: Client Access Settings Configured on Mailboxes
+      description: "In Exchange Server, the Client Access services on Mailbox servers\
+        \ provide authentication and proxy services for internal and external client\
+        \ connections. \nReview changes in the Client Access Settings for misconfigurations. "
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: cef0d9ef-44e2-431a-8de5-8cfe2899490e
+    type: regular
+    task:
+      id: cef0d9ef-44e2-431a-8de5-8cfe2899490e
+      version: -1
+      name: Mail Forwarding Rules for Remote Domains
+      description: |
+        Email forwarding can be a useful feature, but can also pose a security risk due to the potential disclosure of information. Attackers might use this information to attack your organization or partners.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: eee510de-02d7-4886-8c5f-8786647a864f
+    type: regular
+    task:
+      id: eee510de-02d7-4886-8c5f-8786647a864f
+      version: -1
+      name: Mailbox SMTP forwarding for All Mailboxes
+      description: Email forwarding lets you to set up a mailbox to forward email
+        messages sent to a user's mailbox to another user's mailbox in or outside
+        of your organization.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 48f9b392-4146-4a7d-809a-dabee87ce8a8
+    type: regular
+    task:
+      id: 48f9b392-4146-4a7d-809a-dabee87ce8a8
+      version: -1
+      name: Delegation on MailBoxes
+      description: |-
+        Attackers may be exploit the following mailboxes delegations.
+        Search for mailboxes that delegated:
+        -  'Full Access' Permission Granted
+        -  'Any' Permissions Granted
+        - 'Send As' or 'SendOnBehalf' Permissions
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: a67280e5-1b30-40f4-8065-68f8e1c6339f
+    type: regular
+    task:
+      id: a67280e5-1b30-40f4-8065-68f8e1c6339f
+      version: -1
+      name: Enabled Users with Exchange Online PowerShell
+      description: Review all users who have the permissions to manage your Exchange
+        Online organization from the command line.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 7a7cf0a9-8de9-4284-81c6-967d640d8c2c
+    type: title
+    task:
+      id: 7a7cf0a9-8de9-4284-81c6-967d640d8c2c
+      version: -1
+      name: Exchange Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 855828c2-d90b-4b45-895b-4e2ed776be0b
+    type: title
+    task:
+      id: 855828c2-d90b-4b45-895b-4e2ed776be0b
+      version: -1
+      name: Azure AD Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 2260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 08998b66-2607-4cea-8113-afdbb171b42b
+    type: regular
+    task:
+      id: 08998b66-2607-4cea-8113-afdbb171b42b
+      version: -1
+      name: Users with 'Audit Bypass' Enabled
+      description: Review all the accounts (user or computer) that their  account
+        is set to bypass mailbox audit logging,
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 3510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 65e1ef4a-91c8-4ce3-8603-26edad6ebc40
+    type: regular
+    task:
+      id: 65e1ef4a-91c8-4ce3-8603-26edad6ebc40
+      version: -1
+      name: O365 admin roles
+      description: |-
+        Review the members for each O365 admin roles.
+
+        Can use Microsoft script:
+        https://gallery.technet.microsoft.com/office/Office-365-Role-Groups-b1eb6c6a
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: f16ccf85-a8d5-4f81-8ebd-3aac81499980
+    type: regular
+    task:
+      id: f16ccf85-a8d5-4f81-8ebd-3aac81499980
+      version: -1
+      name: Service Principal Objects with KeyCredentials
+      description: Get and review key credentials for all  service principal.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 2570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1625,
+        "width": 1030,
+        "x": 590,
+        "y": 2120
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

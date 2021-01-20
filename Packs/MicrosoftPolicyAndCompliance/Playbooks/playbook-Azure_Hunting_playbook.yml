@@ -1,0 +1,286 @@
+id: Azure Hunting playbook
+version: -1
+name: Azure Hunting playbook
+description: 'This playbook helps you collect and investigate suspicious security
+  events from Azure AD environment. '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e12ceb8c-018b-4a48-806a-4443ee22b71e
+    type: start
+    task:
+      id: e12ceb8c-018b-4a48-806a-4443ee22b71e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: c8d75c55-e9f1-4808-8272-4c027f784e3b
+    type: title
+    task:
+      id: c8d75c55-e9f1-4808-8272-4c027f784e3b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 872843b4-b59f-4ee2-8b58-d390dfce6111
+    type: regular
+    task:
+      id: 872843b4-b59f-4ee2-8b58-d390dfce6111
+      version: -1
+      name: Search for Azure AD service account created or modified
+      description: "Hunt for Azure AD service account created or modified.\nXDR example\
+        \ query:\npreset = msft_azure_ad_audit // go over azure ad audit logs\n| filter\
+        \ activityDisplayName IN (\"Add service principal credentials\", \"Add service\
+        \ principal\")\nAND result = \"success\" // find cases where someone adds\
+        \ SPNs to an account\n\nSplunk example queries:\nsourcetype=\"azure:aad:audit\"\
+        \ activityDisplayName=\"Add service principal\" \n| stats values(activityDisplayName)\
+        \ AS Action, values(initiatedBy.user.userPrincipalName) \nAS UPN, values(targetResources{}.displayName)\
+        \ AS Target,\nvalues(targetResources{}.modifiedProperties{}.displayName) AS\
+        \ \"Modified Resources\",\nvalues(targetResources{}.modifiedProperties{}.oldValue)\
+        \ AS \"Old Values\",\nvalues(targetResources{}.modifiedProperties{}.newValue)\
+        \ AS \"New Values\" by correlationId \n| fields - correlationId\n---------\n\
+        sourcetype=\"azure:aad:audit\" activityDisplayName=\"Add service principal\
+        \ credentials\"\n"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 7e773b22-8136-451f-8272-080872b78d9e
+    type: regular
+    task:
+      id: 7e773b22-8136-451f-8272-080872b78d9e
+      version: -1
+      name: Search for Azure AD application sharing with additional tenants
+      description: "Hunt for Azure AD application sharing with additional tenants.\n\
+        **XDR example query:**\npreset = msft_azure_ad_audit  // go over azure ad\
+        \ audit logs\n| filter activityDisplayName = \"Update application\"\nAND operationType=\"\
+        Update\"\nand result=\"success\"\nand modifiedDisplayName = \"AvailableToOtherTenants\"\
+          // find cases where someone grants permission to access an app from another\
+        \ azure ad tenant\n\n**Splunk example query:**\nsourcetype=\"azure:aad:audit\"\
+        \ activityDisplayName=\"Update application\" operationType=Update \nresult=success\
+        \ targetResources{}.modifiedProperties{}.displayName=AvailableToOtherTenants\
+        \ \n| table activityDateTime initiatedBy.user.userPrincipalName, \ntargetResources{}.displayName\
+        \ additionalDetails{}.value"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: dd13bebb-ebc9-4d62-85ef-38574f7aaac7
+    type: regular
+    task:
+      id: dd13bebb-ebc9-4d62-85ef-38574f7aaac7
+      version: -1
+      name: Search for Azure AD custom unverified domain was added
+      description: |-
+        Hunt for Azure AD custom unverified domain was added.
+        XDR example query:
+        preset = msft_azure_ad_audit // go over azure ad audit logs
+        | filter activityDisplayName = "Add unverified domain" AND result = "success"  // find cases where someone added a custom domain to the azure ad env
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 11ce5bed-ede5-4263-8bfe-5b46d0a44463
+    type: regular
+    task:
+      id: 11ce5bed-ede5-4263-8bfe-5b46d0a44463
+      version: -1
+      name: Search for SSO being disabled for a domain
+      description: |-
+        Hunt for SSO being disabled for a domain.
+        XDR example query:
+        preset = msft_azure_ad_audit // go over azure ad audit logs
+        | filter activityDisplayName = "Disable Desktop Sso for a specific domain" AND result =
+        "success" // remove need for SSO on desktop devices
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: f43f3472-e999-4839-8c7d-b55bdc08f0f7
+    type: regular
+    task:
+      id: f43f3472-e999-4839-8c7d-b55bdc08f0f7
+      version: -1
+      name: Search for domain federation settings modified
+      description: |-
+        Hunt for domain federation settings modified.
+        XDR example query:
+        preset = msft_azure_ad_audit // go over azure ad audit logs
+        | filter activityDisplayName = "Set federation settings on domain"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 965706c7-890f-41fa-82e2-a9f1dae53244
+    type: regular
+    task:
+      id: 965706c7-890f-41fa-82e2-a9f1dae53244
+      version: -1
+      name: Search mail permissions were added to a service principal
+      description: |-
+        Hunt for cases where mail permissions were added to a service principal.
+        XDR example query:
+        preset = msft_azure_ad_audit // go over azure ad audit logs
+        | filter activityDisplayName IN ("Add app role assignment to service
+        principal", "Add delegated permission grant", "Add application" ) and
+                modifiedPropertyNewValue ~= "(Mail.Read|Mail.ReadWrite)" and
+                modifiedPropertyOldValue not contains "Mail.Read" // find
+        cases where mail read was added as a permission to another account
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 3260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 380,
+        "x": 890,
+        "y": 2120
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
