@@ -19,8 +19,8 @@ configuration:
   name: Key ID
   required: true
   type: 4
-description: Base Integration for Palo Alto IOT third party integrations. This integrations
-  communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities,  device inventory.
+description: Base Integration for Palo Alto IoT third party integrations. This integration
+  communicates with Palo Alto IoT Cloud to get alerts, vulnerabilities and devices.
 display: Palo Alto Networks IoT 3rd Party
 name: Palo Alto Networks IoT 3rd Party
 script:
