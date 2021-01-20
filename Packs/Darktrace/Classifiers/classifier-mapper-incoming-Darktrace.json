@@ -34,10 +34,6 @@
      "complex": null,
      "simple": "device.vendor"
     },
-    "Darktrace Model Breach": {
-     "complex": null,
-     "simple": "model.description"
-    },
     "Darktrace Model Breach Description": {
      "complex": null,
      "simple": "model.description"
@@ -69,10 +65,6 @@
       ]
      },
      "simple": ""
-    },
-    "Darktrace Model Description": {
-     "complex": null,
-     "simple": "model.description"
     },
     "Darktrace Model ID": {
      "complex": null,

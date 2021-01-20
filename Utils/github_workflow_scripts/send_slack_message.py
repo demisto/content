@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from typing import List
 
 from slack_sdk import WebClient
@@ -138,7 +140,7 @@ def create_pull_request_segment(pr: PullRequest) -> List[dict]:
         ('Changed Files', number_of_changed_changed_files),
         ('Labels', labels),
     ])
-    return [pr_info_segment]
+    return [pr_info_segment, {'text': create_slack_markdown(f'*URL:* `{pr.html_url}`'), 'type': 'section'}]
 
 
 def create_pr_title(pr: PullRequest) -> List[dict]:
@@ -161,13 +163,12 @@ def create_pr_title(pr: PullRequest) -> List[dict]:
     return header
 
 
-def slack_post_message(client: WebClient, message_blocks: List, pr: PullRequest):
+def slack_post_message(client: WebClient, message_blocks: List):
     """Post a message to a slack channel
 
         Args:
             client (WebClient): Slack web-client object.
             message_blocks (List): List of blocks representing the message blocks.
-            pr (PullRequest): object that represents the pull request.
 
         Returns:
             (List): List containing a dictionary which represents the message title
@@ -178,8 +179,7 @@ def slack_post_message(client: WebClient, message_blocks: List, pr: PullRequest)
             {
                 "color": GREEN_COLOR,
                 "blocks": message_blocks
-            }],
-        text=f"<{pr.html_url}|*New Contribution:* {pr.title}>")
+            }])
 
 
 def main():
@@ -208,7 +208,7 @@ def main():
     # Send message
     slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
     client = WebClient(token=slack_token)
-    slack_post_message(client, blocks, pr)
+    slack_post_message(client, blocks)
     print(f'{t.cyan}Slack message sent successfully{t.normal}')
 
 

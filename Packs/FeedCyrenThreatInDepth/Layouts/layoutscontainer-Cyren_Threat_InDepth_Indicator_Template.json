@@ -1,0 +1,958 @@
+{
+    "group": "indicator",
+    "id": "Cyren Threat InDepth Indicator Template",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "iufi8jtdew",
+                "name": "Cyren IP Information",
+                "sections": [
+                    {
+                        "description": "",
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "cyrensourcetags",
+                                "height": 53,
+                                "id": "100af8e0-50fb-11eb-a4a4-8bf565f09c0e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "firstseenbysource",
+                                "height": 53,
+                                "id": "bbaa45a0-4f6d-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "cyrendetectiondate",
+                                "height": 53,
+                                "id": "dd04a1f0-4f6d-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "lastseenbysource",
+                                "height": 53,
+                                "id": "a4e9afe0-4f6d-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectionmethods",
+                                "height": 53,
+                                "id": "e1dae220-4f6d-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "updateddate",
+                                "height": 53,
+                                "id": "d768a0c0-4f6d-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "cyrendetectioncategories",
+                                "height": 53,
+                                "id": "e5d5dd80-4f6d-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren General Information",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "iufi8jtdew-41025c50-4f6f-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "cyrenobjecttype",
+                                "height": 53,
+                                "id": "e3128250-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "cyreniprisk",
+                                "height": 53,
+                                "id": "13bb2c90-4f6f-11eb-9734-39b78acb9fd7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrenipclass",
+                                "height": 53,
+                                "id": "ed8b5360-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyrenipintensity",
+                                "height": 53,
+                                "id": "1053e5b0-4f6f-11eb-9734-39b78acb9fd7",
+                                "index": 1,
+                                "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "cyrenprotocol",
+                                "height": 53,
+                                "id": "23eb27f0-4f6f-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "cyrencountrycode",
+                                "height": 53,
+                                "id": "fd2cca60-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 1,
+                                "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "cyrenport",
+                                "height": 53,
+                                "id": "f1eb5220-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren IP Information",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "iufi8jtdew-cb8a4270-5000-11eb-9897-fde053a565ea",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren Indicator Relationships",
+                        "query": "CyrenThreatInDepthRelatedWidget",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "rxxvfrdvor",
+                "name": "Cyren URL Information",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "rxxvfrdvor-05d5b2e0-4f6e-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "cyrensourcetags",
+                                "height": 53,
+                                "id": "1b0f4110-50fb-11eb-a4a4-8bf565f09c0e",
+                                "index": 0,
+                                "listId": "rxxvfrdvor-05d5b2e0-4f6e-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "firstseenbysource",
+                                "height": 53,
+                                "id": "120f1fb0-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "cyrendetectiondate",
+                                "height": 53,
+                                "id": "2671c840-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "lastseenbysource",
+                                "height": 53,
+                                "id": "179b9080-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "listId": "rxxvfrdvor-05d5b2e0-4f6e-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyrendetectionmethods",
+                                "height": 53,
+                                "id": "27e75140-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "listId": "rxxvfrdvor-05d5b2e0-4f6e-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "updateddate",
+                                "height": 53,
+                                "id": "1c2e8620-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 1,
+                                "listId": "rxxvfrdvor-05d5b2e0-4f6e-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "cyrendetectioncategories",
+                                "height": 53,
+                                "id": "2bc72380-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "listId": "rxxvfrdvor-05d5b2e0-4f6e-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren General Information",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "rxxvfrdvor-d449cd30-4f70-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "cyrenindustries",
+                                "height": 53,
+                                "id": "ecbfdb20-4f70-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "cyrenphishingbrands",
+                                "height": 53,
+                                "id": "919fbb90-4f73-11eb-9734-39b78acb9fd7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyrenprotocol",
+                                "height": 53,
+                                "id": "f9d06e10-4f70-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "listId": "rxxvfrdvor-d449cd30-4f70-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "cyrenport",
+                                "height": 53,
+                                "id": "f67e5ce0-4f70-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "listId": "rxxvfrdvor-d449cd30-4f70-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren URL Information",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "rxxvfrdvor-e0938b40-5000-11eb-9897-fde053a565ea",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren Indicator Relationships",
+                        "query": "CyrenThreatInDepthRelatedWidget",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "wj1prey47c",
+                "name": "Cyren File Information",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "wj1prey47c-035d25c0-4e92-11eb-9382-833b29d83734",
+                        "items": [
+                            {
+                                "endCol": 3,
+                                "fieldId": "cyrensourcetags",
+                                "height": 53,
+                                "id": "242af320-50fb-11eb-a4a4-8bf565f09c0e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "firstseenbysource",
+                                "height": 53,
+                                "id": "8f5066a0-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "cyrendetectiondate",
+                                "height": 53,
+                                "id": "9e5e7740-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "lastseenbysource",
+                                "height": 53,
+                                "id": "8916c5e0-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "listId": "wj1prey47c-035d25c0-4e92-11eb-9382-833b29d83734",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectionmethods",
+                                "height": 53,
+                                "id": "a192a030-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "updateddate",
+                                "height": 53,
+                                "id": "98d6e870-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 1,
+                                "listId": "wj1prey47c-035d25c0-4e92-11eb-9382-833b29d83734",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 3,
+                                "fieldId": "cyrendetectioncategories",
+                                "height": 53,
+                                "id": "a85aec60-4f6e-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "listId": "wj1prey47c-035d25c0-4e92-11eb-9382-833b29d83734",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren General Information",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "wj1prey47c-0ca2b2a0-4f71-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "malwarefamily",
+                                "height": 22,
+                                "id": "55ea76a0-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren File Information",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "wj1prey47c-ec219ce0-5000-11eb-9897-fde053a565ea",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren Indicator Relationships",
+                        "query": "CyrenThreatInDepthRelatedWidget",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 3,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "i9sfyzkmx9",
+                "name": "Cyren IP Information",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "i9sfyzkmx9-86650c00-4f71-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrensourcetags",
+                                "height": 22,
+                                "id": "2ecef2e0-50fb-11eb-a4a4-8bf565f09c0e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseenbysource",
+                                "height": 22,
+                                "id": "9792c850-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseenbysource",
+                                "height": 22,
+                                "id": "9ae304c0-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectiondate",
+                                "height": 22,
+                                "id": "a3ea9290-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectionmethods",
+                                "height": 22,
+                                "id": "a5e30730-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectioncategories",
+                                "height": 22,
+                                "id": "ab22dea0-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "updateddate",
+                                "height": 22,
+                                "id": "a0c62110-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren General Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyreniprisk",
+                                "height": 22,
+                                "id": "394c4d60-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrenobjecttype",
+                                "height": 22,
+                                "id": "301b65a0-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrenprotocol",
+                                "height": 22,
+                                "id": "350a0fd0-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrenport",
+                                "height": 22,
+                                "id": "36882450-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrenipclass",
+                                "height": 22,
+                                "id": "3330bbf0-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrenipintensity",
+                                "height": 22,
+                                "id": "3d653100-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyrencountrycode",
+                                "height": 22,
+                                "id": "4225ed60-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 7,
+                                "listId": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren IP Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "mnedsjopmn",
+                "name": "Cyren URL Information",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "mnedsjopmn-dae5bcc0-4f71-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrensourcetags",
+                                "height": 22,
+                                "id": "31554fa0-50fb-11eb-a4a4-8bf565f09c0e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseenbysource",
+                                "height": 22,
+                                "id": "fa549cc0-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseenbysource",
+                                "height": 22,
+                                "id": "fedd5930-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "updateddate",
+                                "height": 22,
+                                "id": "0821f000-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectiondate",
+                                "height": 22,
+                                "id": "151f4910-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectionmethods",
+                                "height": 22,
+                                "id": "16228840-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectioncategories",
+                                "height": 22,
+                                "id": "173027b0-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren General Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "mnedsjopmn-e272df90-4f71-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrenindustries",
+                                "height": 22,
+                                "id": "5fe8a400-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrenprotocol",
+                                "height": 22,
+                                "id": "62627da0-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrenport",
+                                "height": 22,
+                                "id": "641e3760-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrenphishingbrands",
+                                "height": 22,
+                                "id": "60da5700-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren URL Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "4hotcwypyz",
+                "name": "Cyren File Information",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "4hotcwypyz-e868c090-4f71-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrensourcetags",
+                                "height": 22,
+                                "id": "342ba120-50fb-11eb-a4a4-8bf565f09c0e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseenbysource",
+                                "height": 22,
+                                "id": "fb4e3f00-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseenbysource",
+                                "height": 22,
+                                "id": "ffdc0480-4f71-11eb-9734-39b78acb9fd7",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "updateddate",
+                                "height": 22,
+                                "id": "08fdf820-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectiondate",
+                                "height": 22,
+                                "id": "18a5d7c0-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectionmethods",
+                                "height": 22,
+                                "id": "198e3bf0-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cyrendetectioncategories",
+                                "height": 22,
+                                "id": "1a54c040-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren General Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "4hotcwypyz-efed30d0-4f71-11eb-9734-39b78acb9fd7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "malwarefamily",
+                                "height": 22,
+                                "id": "6b138700-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren File Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "Cyren Threat InDepth Indicator Template",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": ""
+}

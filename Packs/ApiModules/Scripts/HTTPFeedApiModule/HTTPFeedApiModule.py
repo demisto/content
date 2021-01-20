@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 import urllib3
 import requests
-import traceback
 from dateutil.parser import parse
 from typing import Optional, Pattern, List
 
@@ -221,8 +220,27 @@ class Client(BaseClient):
                         f' {r.status_code!r} {r.content!r}')
                     raise
                 url_to_response_list.append({url: r})
-        except requests.ConnectionError:
-            raise requests.ConnectionError('Failed to establish a new connection. Please make sure your URL is valid.')
+        except requests.exceptions.ConnectTimeout as exception:
+            err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
+                      ' is incorrect or that the Server is not accessible from your host.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.SSLError as exception:
+            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                      ' the integration configuration.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ProxyError as exception:
+            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                      ' selected, try clearing the checkbox.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ConnectionError as exception:
+            # Get originating Exception in Exception chain
+            error_class = str(exception.__class__)
+            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_msg = 'Verify that the server URL parameter' \
+                      ' is correct and that you have access to the server from your host.' \
+                      '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
+                .format(err_type, exception.errno, exception.strerror)
+            raise DemistoException(err_msg, exception)
 
         results = []
         for url_to_response in url_to_response_list:
@@ -445,5 +463,5 @@ def feed_main(feed_name, params=None, prefix=''):
             readable_output, outputs, raw_response = commands[command](client, args)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        err_msg = f'Error in {feed_name} integration [{e}]\nTrace\n:{traceback.format_exc()}'
-        return_error(err_msg)
+        err_msg = f'Error in {feed_name} integration [{e}]'
+        return_error(err_msg, error=e)
