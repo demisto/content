@@ -82,4 +82,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Handle Expanse Incident](https://github.com/demisto/content/raw/master/Packs/ExpanseV2/doc_files/Handle_Expanse_Incident.png)
+![Handle Expanse Incident](https://raw.githubusercontent.com/demisto/content/master/Packs/ExpanseV2/doc_files/Handle_Expanse_Incident.png)

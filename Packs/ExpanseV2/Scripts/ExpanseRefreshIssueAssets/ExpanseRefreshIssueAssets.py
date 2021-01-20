@@ -28,11 +28,10 @@ def refresh_issue_assets_command(args: Dict[str, Any]) -> CommandResults:
             continue
 
         if isinstance(new_asset, list):
-            if len(new_asset) == 0:
-                continue
-            new_asset = new_asset[0]
-
-        contents = new_asset.get('Contents')
+            for na in new_asset:
+                if isinstance(na, dict) and 'Contents' in na:
+                    contents = na.get('Contents')
+                    break
         if not contents:
             continue
 
