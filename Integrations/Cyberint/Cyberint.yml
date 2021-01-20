@@ -109,7 +109,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Intelligence-Driven Digital Risk Protection
+description: Cyberint provides intelligence-driven digital risk protection. This integration
+  will help your enterprise effectively consume actionable cyber alerts to increase
+  your security posture.
 display: Cyberint
 name: cyberint
 script:
@@ -367,6 +369,21 @@ script:
       type: String
     - contextPath: Cyberint.Alert.alert_data.blacklist_repository
       description: Blacklist repository name related to an event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.spf_records
+      description: SPF records if applicable to the event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.dmarc_record
+      description: DMARC records if applicable to the event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.storage_link
+      description: Storage link if applicable to the event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.interface_type
+      description: Interface type if applicable to the event.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.vulnerable_cname_record
+      description: Vulnerable CName record if applicable to the event.
       type: String
     - contextPath: Cyberint.Alert.ioc.type
       description: Type of IOC related to the alert.
