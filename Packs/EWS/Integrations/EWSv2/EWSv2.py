@@ -1139,13 +1139,12 @@ def parse_incident_from_item(item, is_fetch):
                             if attachment.item.headers:
                                 attached_email_headers = []
                                 for h, v in attached_email.items():
-                                    if isinstance(v, str):
-                                        pass
-                                    elif hasattr(v, '__str__') and not v.__repr__() == str(v):
-                                        v = str(v)
-                                    else:
-                                        demisto.log('cannot parse the header {}.'.format(h))
-                                        continue
+                                    if not isinstance(v, str):
+                                        try:
+                                            v = str(v)
+                                        except:
+                                            demisto.debug('cannot parse the header "{}"'.format(h))
+                                            continue
 
                                     v = ' '.join(map(str.strip, v.split('\r\n')))
                                     attached_email_headers.append((h, v))
@@ -1999,13 +1998,11 @@ def get_item_as_eml(item_id, target_mailbox=None):
         if item.headers:
             attached_email_headers = []
             for h, v in email_content.items():
-                if isinstance(v, str):
-                    pass
-                elif hasattr(v, '__str__') and not v.__repr__() == str(v):
-                    v = str(v)
-                else:
-                    demisto.log('cannot parse the header {}.'.format(h))
-                    continue
+                if not isinstance(v, str):
+                    try:
+                        v = str(v)
+                    except:
+                        demisto.debug('cannot parse the header "{}"'.format(h))
 
                 v = ' '.join(map(str.strip, v.split('\r\n')))
                 attached_email_headers.append((h, v))
