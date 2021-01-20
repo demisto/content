@@ -1154,8 +1154,7 @@
             "integrations": "VirusTotal",
             "instance_names": "virus_total_general",
             "playbookID": "virusTotal-test-playbook",
-            "timeout": 1400,
-            "nightly": true
+            "timeout": 1400
         },
         {
             "integrations": "VirusTotal",

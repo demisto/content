@@ -2770,9 +2770,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-    nexttasks:
-      "yes":
-      - "94"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2798,121 +2795,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 10400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "90":
-    id: "90"
-    taskid: 03784f54-fb50-48b0-8f65-adc35ca53fa0
-    type: regular
-    task:
-      id: 03784f54-fb50-48b0-8f65-adc35ca53fa0
-      version: -1
-      name: domain_with_csv
-      description: Checks the reputation of a domain.
-      script: VirusTotal|||domain
-      type: regular
-      iscommand: true
-      brand: VirusTotal
-    nexttasks:
-      '#none#':
-      - "91"
-    scriptarguments:
-      domain:
-        simple: demisto.com,google.com
-      fullResponse: {}
-      long: {}
-      retries: {}
-      sampleSize: {}
-      threshold: {}
-      wait: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 10700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "91":
-    id: "91"
-    taskid: 4145c462-6494-4d53-81d2-e8782c0fd62f
-    type: condition
-    task:
-      id: 4145c462-6494-4d53-81d2-e8782c0fd62f
-      version: -1
-      name: verify_domain_csv
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "92"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Domain.Name
-            iscontext: true
-          right:
-            value:
-              simple: demisto.com
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Domain.Name
-            iscontext: true
-          right:
-            value:
-              simple: google.com
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 10880
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "92":
-    id: "92"
-    taskid: cc352495-53bc-41ca-84b3-01eb1da84753
-    type: regular
-    task:
-      id: cc352495-53bc-41ca-84b3-01eb1da84753
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      all:
-        simple: "yes"
-      key: {}
-      keysToKeep: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 11065
         }
       }
     note: false
@@ -2952,44 +2834,12 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "94":
-    id: "94"
-    taskid: 4952ffbe-a97e-4d57-8c4d-44abdc1b45f1
-    type: regular
-    task:
-      id: 4952ffbe-a97e-4d57-8c4d-44abdc1b45f1
-      version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "90"
-    scriptarguments:
-      seconds:
-        simple: "61"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 10550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 11110,
+        "height": 10445,
         "width": 810,
         "x": 50,
         "y": 50
