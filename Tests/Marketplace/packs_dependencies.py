@@ -114,7 +114,7 @@ def get_all_packs_dependency_graph(id_set: dict, packs: list) -> Iterable:
     """
     logging.info("Calculating pack dependencies.")
     try:
-        dependency_graph = PackDependencies.build_all_dependencies_graph(packs, id_set=id_set)
+        dependency_graph = PackDependencies.build_all_dependencies_graph(packs, id_set=id_set, verbose_file=False)
         return dependency_graph
     except Exception:
         logging.exception("Failed calculating dependencies graph")
