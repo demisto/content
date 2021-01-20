@@ -1,17 +1,17 @@
-import os
-import json
 import argparse
+import json
 import logging
+import os
 from concurrent.futures import as_completed
 from contextlib import contextmanager
 from pprint import pformat
-
-from pebble import ProcessPool, ProcessFuture
-from Tests.Marketplace.upload_packs import PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER
-from Tests.Marketplace.marketplace_services import GCPConfig
-from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, parse_for_pack_metadata
 from typing import Tuple, Iterable, List, Callable
+
+from Tests.Marketplace.marketplace_services import GCPConfig
+from Tests.Marketplace.upload_packs import PACKS_FULL_PATH, IGNORED_FILES, PACKS_FOLDER
 from Tests.scripts.utils.log_util import install_logging
+from demisto_sdk.commands.find_dependencies.find_dependencies import PackDependencies, parse_for_pack_metadata
+from pebble import ProcessPool, ProcessFuture
 
 PROCESS_FAILURE = False
 
@@ -162,6 +162,7 @@ def calculate_all_packs_dependencies(pack_dependencies_result: dict, id_set: dic
         id_set: The id_set content
         packs: The packs that should be part of the dependencies calculation
     """
+
     def add_pack_metadata_results(results: Tuple) -> None:
         """
         This is a callback that should be called once the result of the future is ready.
