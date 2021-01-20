@@ -376,12 +376,12 @@ def search_pack_and_its_dependencies(client: demisto_client,
         if dependencies:
             # Check that the dependencies don't include a deprecated pack:
             for dependency in dependencies:
-                pack_path = os.path.join(PACKS_DIR, dependency)
+                pack_path = os.path.join(PACKS_DIR, dependency.get('id'))
                 if is_pack_deprecated(pack_path):
-                    logging.exception(f'Pack {pack_id} has dependency {dependency} which is a deprecated pack.')
+                    logging.exception(f'Pack {pack_id} has dependency {dependency.get("id")} which is a deprecated pack.')
                     sys.exit(1)
                 else:
-                    current_packs_to_install.append(dependencies)
+                    current_packs_to_install.extend(dependencies)
 
         lock.acquire()
         for pack in current_packs_to_install:
