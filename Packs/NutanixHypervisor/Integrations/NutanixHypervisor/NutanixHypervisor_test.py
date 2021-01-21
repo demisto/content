@@ -7,10 +7,10 @@ from typing import *
 import pytest
 
 from CommonServerPython import DemistoException, CommandResults
-from Nutanix import Client
-from Nutanix import MINIMUM_LIMIT_VALUE
-from Nutanix import MINIMUM_PAGE_VALUE
-from Nutanix import nutanix_hypervisor_hosts_list_command, \
+from NutanixHypervisor import Client
+from NutanixHypervisor import MINIMUM_LIMIT_VALUE
+from NutanixHypervisor import MINIMUM_PAGE_VALUE
+from NutanixHypervisor import nutanix_hypervisor_hosts_list_command, \
     nutanix_hypervisor_vms_list_command, nutanix_hypervisor_vm_power_status_change_command, \
     nutanix_hypervisor_task_poll_command, nutanix_alerts_list_command, nutanix_alert_acknowledge_command, \
     nutanix_alert_resolve_command, nutanix_alerts_acknowledge_by_filter_command, \
