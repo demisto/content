@@ -14,10 +14,8 @@ def main():
     })
 
     fields = json.dumps({
-        "numberofattacks": {
-            "regex": "^.*\\t.*\\t[0-9]+\\t([0-9]+)",
-            "transform": "\\1"
-        },
+        "numberofattacks": {"regex": "^.*\\t.*\\t[0-9]+\\t([0-9]+)",
+                            "transform": "\\1"},
         "networkname": {
             "regex": "^.*\\t.*\\t[0-9]+\\t[0-9]+\\t([^\\t]+)",
             "transform": "\\1"
