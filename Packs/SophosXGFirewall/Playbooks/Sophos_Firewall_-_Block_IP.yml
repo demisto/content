@@ -2,10 +2,10 @@ id: Sophos Firewall - Block IP
 version: -1
 name: Sophos Firewall - Block IP
 description: |-
-  this playbook adds the IP to a pre-configured Firewall Rule (the target firewall rule can be changed as requested).
+  This playbook adds the IP address to a pre-configured firewall rule. (The target firewall rule can be changed as requested.)
   Pre-Requisite :
-  1) Create an IP Host Group.
-  2) Create a firewall rule which refers to the IP Host Group created on the previous step.
+  1) Create an IP host group.
+  2) Create a firewall rule which refers to the IP host group created in the previous step.
 starttaskid: "0"
 tasks:
   "0":
@@ -125,7 +125,7 @@ tasks:
       id: 78f190df-9dfa-4f5f-80ee-2ce403816c42
       version: -1
       name: Print Alert to Analyst
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       tags:
       - Sophos-Firewall
       scriptName: Print
@@ -160,7 +160,7 @@ tasks:
       id: a3f2a4b7-a1e7-4c9e-8278-6adb6eef1c86
       version: -1
       name: Ask for Analyst Action
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       tags:
       - SophosErrors
       type: collection
@@ -216,7 +216,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: URL blocking failed
-      description: Sophos firewall instance may be disabled - please check configuration
+      description: Sophos firewall instance may be disabled - check the configuration.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -231,7 +231,7 @@ tasks:
       id: f376b4a5-b30a-4cd8-8c6f-6997b945aa32
       version: -1
       name: Analyst Alert
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       tags:
       - SophosErrors
       type: condition
@@ -276,7 +276,7 @@ tasks:
       id: e1d5038f-dcd1-4eac-855a-84719edf3bcc
       version: -1
       description: ""
-      name: Is there any IP recieved?
+      name: Was an IP recieved?
       type: condition
       iscommand: false
       brand: ""
@@ -375,8 +375,8 @@ tasks:
       id: e4e146e3-6cff-4796-8740-20bdcc5c8bba
       version: -1
       name: Is Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       scriptName: isError
       type: condition
@@ -411,7 +411,7 @@ tasks:
       id: 36704868-b64a-4131-8169-026e3255d09c
       version: -1
       name: Print "IP successfully Added"
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       tags:
       - Sophos-Firewall
       scriptName: Print
@@ -524,8 +524,8 @@ tasks:
       id: 14550d6b-210f-48de-818b-ff2673b3ba69
       version: -1
       name: Is Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       scriptName: isError
       type: condition
@@ -560,7 +560,7 @@ tasks:
       id: 78857fa1-957d-4653-8aaf-d5c232e269a2
       version: -1
       name: Analyst Alert
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       tags:
       - SophosErrors
       type: collection
@@ -612,7 +612,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Sophos-Error
-      description: 'Please Check Error Code '
+      description: 'Check the error code '
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -708,7 +708,7 @@ tasks:
       id: 784c1b14-c779-4a4a-8b62-0c4a6eab88a4
       version: -1
       name: Print Alert to Analyst
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported),
       tags:
       - Sophos-Firewall
       scriptName: Print
@@ -742,7 +742,7 @@ tasks:
     task:
       id: 35a9cc20-0f7b-4a71-8164-26ec8a06c04a
       version: -1
-      name: Check if IP policy Exists
+      name: Check if IP policy exists
       description: Get a single IP host by name.
       script: '|||sophos-firewall-ip-host-get'
       type: regular
@@ -784,14 +784,14 @@ inputs:
 - key: IP
   value: {}
   required: true
-  description: Array of IP required to blocked
+  description: Array of IP addresses required to block.
   playbookInputQuery: null
 - key: IPHostGroup
   value:
     simple: Blocked by Playbook
   required: false
   description: IP Host Group which was pre-configured for the purpose of using this
-    playbook in order to block one or more IP addressed.
+    playbook in order to block one or more IP addresses.
   playbookInputQuery: null
 outputs: []
 sourceplaybookid: 8463857c-c101-4aba-8f5a-27e133494ed9
