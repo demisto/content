@@ -209,7 +209,7 @@
                         "y": 4
                     },
                     {
-                        "description": "Online meeting section - if this section is empty please configurate according to the documentation",
+                        "description": "Quick start or join meetings (configure relevant integrations first)",
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": true,
@@ -290,7 +290,7 @@
                         "y": 0
                     },
                     {
-                        "description": "Messaging apps section - if the section is empty please configurate according to the documentation ",
+                        "description": "Messaging (configure relevant integrations first)",
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": true,
@@ -340,7 +340,7 @@
                                 "height": 44,
                                 "id": "a82168a0-540a-11eb-909c-adb41ecf4fde",
                                 "index": 1,
-                                "name": "Notify the team about the meeting ",
+                                "name": "Notify about shift handover meeting",
                                 "scriptId": "SlackV2|||send-notification",
                                 "sectionItemType": "button",
                                 "startCol": 0
