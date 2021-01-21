@@ -144,7 +144,7 @@ script:
     name: cyjax-indicator-sighting
     description: Get sighting of a indicator
   - name: cyjax-unset-indicators-last-fetch-date
-    description: Unset the indicators last fetch date
+    description: Unset the indicators last fetch date. Next feed will use date set in first_fetch.
   isfetch: false
   feed: true
   runonce: false
