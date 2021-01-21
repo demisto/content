@@ -11,7 +11,7 @@ tags:
 enabled: true
 args:
 - name: listname
-  description: Optionally pass in a different XSOAR list to run this automation against. (The default is OOO List.)
+  description: Optionally pass in a different XSOAR list to run this automation against. (The default is OOO List.). Note that if the list name does not start with OOO the script will add it automatically.
   defaultValue: OOO List
 scripttarget: 0
 subtype: python3
