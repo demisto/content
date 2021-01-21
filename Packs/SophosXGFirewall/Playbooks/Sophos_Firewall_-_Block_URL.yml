@@ -1,11 +1,12 @@
 id: Sophos Firewall - Block URL
 version: -1
 name: Sophos Firewall - Block URL
-description: "this playbook add the URL to the Default Block URL Policy (the target
-  policy can be changed as requested).\n\nPre-Requisite : \n\n1)Create a web policy
-  rule which refers to the URL group you specified on the inputs of the playbook.\n2)Create
-  a new firewall rule and assign the web policy to the one created on the previous
-  step.\n "
+description: |-
+  This playbook adds the URL to the Default Block URL Policy. (The target
+  policy can be changed as requested).
+  Pre-Requisite: 
+  1) Create a web policy rule that refers to the URL group you specified on the inputs of the playbook.
+  2) Create a new firewall rule and assign the web policy to the one created in the previous step.
 starttaskid: "0"
 tasks:
   "0":
@@ -43,7 +44,7 @@ tasks:
       description: ""
       id: 3616e83d-3e81-477d-8c6f-236df5edbf21
       version: -1
-      name: Check if Sophos Firewall Enabled
+      name: Check if Sophos Firewall is Enabled
       type: condition
       iscommand: false
       brand: ""
@@ -125,7 +126,7 @@ tasks:
       id: 78f190df-9dfa-4f5f-80ee-2ce403816c42
       version: -1
       name: Print Alert to Analyst
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported),
       tags:
       - Sophos-Firewall
       scriptName: Print
@@ -160,7 +161,7 @@ tasks:
       id: a3f2a4b7-a1e7-4c9e-8278-6adb6eef1c86
       version: -1
       name: Ask for Analyst Action
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       tags:
       - SophosErrors
       type: collection
@@ -216,7 +217,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: URL blocking failed
-      description: Sophos firewall instance may be disabled - please check configuration
+      description: Sophos firewall instance may be disabled - check the configuration.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -230,7 +231,7 @@ tasks:
       id: 38ce7a43-f6b5-4a3d-8ae3-bf4eb0612ad1
       version: -1
       name: Analyst Alert
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       tags:
       - SophosErrors
       type: condition
@@ -277,7 +278,7 @@ tasks:
       description: ""
       id: 86fb35d9-e23c-4266-8d27-dc0cde782294
       version: -1
-      name: Is there any URL recieved?
+      name: Was a URL recieved?
       type: condition
       iscommand: false
       brand: ""
@@ -315,7 +316,7 @@ tasks:
       id: 2dc6c2d1-71f6-4478-897e-a6c7cc8905bd
       version: -1
       name: Analyst Alert
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       tags:
       - SophosErrors
       type: collection
@@ -354,7 +355,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: Please provide the URL required to be blocked?
+          simple: Please provide the URL required to be blocked.
         required: false
         gridcolumns: []
         defaultrows: []
@@ -381,7 +382,7 @@ tasks:
     task:
       id: ee6fc40a-8d09-4969-8734-91cf504289f2
       version: -1
-      name: Check if URL policy Exists
+      name: Check if URL policy exists
       description: Get a single URL group by name.
       script: '|||sophos-firewall-url-group-get'
       type: regular
@@ -415,8 +416,8 @@ tasks:
       id: e4e146e3-6cff-4796-8740-20bdcc5c8bba
       version: -1
       name: Is Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       scriptName: isError
       type: condition
@@ -451,7 +452,7 @@ tasks:
       id: 69c0c167-f3a3-45e1-8830-94be651ad149
       version: -1
       name: Print "URL successfully Added"
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       tags:
       - Sophos-Firewall
       scriptName: Print
@@ -549,8 +550,8 @@ tasks:
       id: 14550d6b-210f-48de-818b-ff2673b3ba69
       version: -1
       name: Is Error?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Check whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       scriptName: isError
       type: condition
@@ -585,7 +586,7 @@ tasks:
       id: 0212c02e-397c-4200-8f4f-8ed20fd4ad09
       version: -1
       name: Ask for Analyst Action
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to the War Room (Markdown supported).
       tags:
       - SophosErrors
       type: collection
@@ -637,7 +638,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: Sophos Firewall Error
-      description: Please Review the Error Received ${Response.message}
+      description: Please review the error received ${Response.message}
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -651,7 +652,7 @@ tasks:
       description: ""
       id: b5f34eac-647b-4e59-8d02-a0dc6b65579a
       version: -1
-      name: Check if Sophos Firewall Enabled
+      name: Check if Sophos Firewall is Enabled
       type: condition
       iscommand: false
       brand: ""
@@ -707,7 +708,7 @@ tasks:
     task:
       id: 615151b9-58ee-41d9-8e9f-3a8b584992a6
       version: -1
-      name: Check if URL policy Exists
+      name: Check if URL policy exists
       description: Add a new URL group.
       script: '|||sophos-firewall-url-group-add'
       type: regular
@@ -754,13 +755,13 @@ inputs:
 - key: url
   value: {}
   required: true
-  description: Array of URL required to blocked
+  description: Array of URL required to be blocked.
   playbookInputQuery: null
 - key: URLBlockList
   value:
     simple: Blocked URLs for Default Policy
   required: false
-  description: "the given URL will  be added to the following URL Group. \nthis parameter
+  description: "The given URL will  be added to the following URL Group. \nThis parameter
     can be changed as required."
   playbookInputQuery: null
 outputs: []
