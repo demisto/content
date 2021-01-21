@@ -119,7 +119,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of dataBases returned to the War Room. Default is "50".
+      description: The maximum number of databases returned to the War Room. Default is "50".
       isArray: false
       name: limit
       required: false
@@ -132,7 +132,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List of all databases for the server.
+    description: Lists all of the databases for the server.
     execution: false
     name: azure-sql-db-list
     outputs:
@@ -188,7 +188,7 @@ script:
       description: The number of read-only secondary replicas of the database.
       type: Number
     - contextPath: AzureSQL.DB.readScale
-      description: The read-only routing state.  
+      description: The read-only routing state. "Enabled" or "Disabled". 
       type: String
     - contextPath: AzureSQL.DB.requestedServiceObjectiveName
       description: The requested service objective name of the database.
@@ -236,7 +236,7 @@ script:
     name: azure-sql-db-audit-policy-list
     outputs:
     - contextPath: AzureSQL.DBAuditPolicy
-      description: List of all DB audit settings.
+      description: List of all database audit settings.
       type: Unknown
     - contextPath: AzureSQL.DBAuditPolicy.kind
       description: Kind of audit policy.
@@ -308,7 +308,7 @@ script:
       description: Threat policy state.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.creationTime
-      description: PThreat policy creation time.
+      description: Threat policy creation time.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.retentionDays
       description: Number of days to keep in the Threat Detection audit logs.
@@ -380,7 +380,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the storage Account Access Key value is the storage's secondary
+      description: 'Whether the storage Account Access Key value is the storage''s secondary
         key. Possible values: "true" and "false".'
       isArray: false
       name: is_storage_secondary_key_in_use
@@ -409,7 +409,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Storage subscription ID
+      description: Storage subscription ID.
       isArray: false
       name: storage_account_subscription_id
       required: false
@@ -515,14 +515,13 @@ script:
     - default: false
       description: 'Comma-separated list of alerts that are disabled. Possible values:
         "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration",
-        "Unsafe_Action."'
+        "Unsafe_Action".'
       isArray: true
       name: disabled_alerts
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of email addresses to which the alert is
-        sent.
+      description: Comma-separated list of email addresses to which the alert is sent.
       isArray: true
       name: email_addresses
       required: false
@@ -548,7 +547,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create or update the database's threat detection policy.
+    description: Creates or updates the database's threat detection policy.
     execution: false
     name: azure-sql-db-threat-policy-create-update
     outputs:
@@ -571,7 +570,7 @@ script:
       description: Threat policy state.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.creationTime
-      description: Threat policy creation Time
+      description: Threat policy creation time.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.retentionDays
       description: Number of days to keep in the Threat Detection audit logs.
