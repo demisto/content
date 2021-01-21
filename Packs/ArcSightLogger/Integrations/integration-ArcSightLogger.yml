@@ -31,6 +31,23 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
+- display: Fields
+  name: fields
+  defaultvalue: ""
+  type: 0
+  required: false
+  additionalinfo: Fields to be fetched
+- display: Aggregate events into one incident
+  name: aggregate
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Fetch limit
+  name: fetchlimit
+  defaultvalue: "100"
+  type: 0
+  required: false
+  additionalinfo: maximum number of events to fetch
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: ""
@@ -468,15 +485,32 @@ script:
         if (params.eventsQuery){
             query = params.eventsQuery;
         }
-        var fields = null;
+        if (params.fields){
+            var fields = params.fields
+            var discover_fields = true;
+        } else {
+            var fields = null;
+            var discover_fields = false
+        }
+        if (params.fetchlimit){
+            var fetchlimit = params.fetchlimit
+        } else {
+            var fetchlimit = 100
+        }
         var events = getSearchEventsRequest(userSessionId, query, 120000, startTime,
-            endTime, null, null, null, false, null,
-            null, null, 100, fields);
+            endTime, discover_fields, null, null, false, null,
+            null, null, fetchlimit, fields);
 
         var incidents = [];
-        for (var i = 0; i < events.length; i++) {
-            var incident = incidentFromEvent(events[i]);
+        if(params.aggregate){
+            var events_aggregate = { "Events" : events }
+            var incident = incidentFromEvent(events_aggregate);
             incidents.push(incident);
+        } else {
+            for (var i = 0; i < events.length; i++) {
+                var incident = incidentFromEvent(events[i]);
+                incidents.push(incident);
+            }
         }
 
         setLastRun({ time: endTime });
