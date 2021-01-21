@@ -29,3 +29,7 @@ and their ID, Impact Type and Entity Type.
 
 #### Some Entity Types are not supported. See the [Nutanix Hypervisor Documentation](https://github.com/demisto/content/blob/master/Packs/Nutanix/Integrations/Nutanix/README.md)
 
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/nutanix-hypervisor)

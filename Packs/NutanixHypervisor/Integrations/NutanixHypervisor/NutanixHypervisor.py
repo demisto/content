@@ -633,7 +633,8 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     classification = args.get('classifications')
     entity_types = args.get('entity_types')
     page = get_page_argument(args)
-    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE, default_value=50)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE,
+                                          maximum=MAXIMUM_LIMIT_VALUE, default_value=50)
 
     raw_response = client.get_nutanix_alerts_list(start_time, end_time, resolved, auto_resolved, acknowledged, severity,
                                                   alert_type_ids, impact_types, classification, entity_types,
