@@ -442,6 +442,11 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> Optional[Dic
     if source_id is not None:
         source_id = int(source_id)
 
+    # Check if any filter is set, if not set since to 30 days ago to prevent to many indicators load
+    if not any([since, until, indicator_type, source_type, source_id]):
+        month_ago = datetime.now() - timedelta(30)
+        since = month_ago.strftime(DATE_FORMAT)
+
     cyjax_indicators = client.fetch_indicators(since=since,
                                                until=until,
                                                indicator_type=indicator_type,

@@ -231,10 +231,12 @@ def test_get_indicators_command_without_arguments_specified(mocker):
     list_mock = mocker.MagicMock()
     list_mock.list.return_value = cyjax_indicator
 
+    month_ago = datetime.now() - timedelta(30)
+
     mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise', return_value=list_mock)
 
     result = get_indicators_command(client_for_testing, demisto.args())
-    list_call_spy.assert_called_with(since=None,
+    list_call_spy.assert_called_with(since=month_ago.strftime(DATE_FORMAT),
                                      until=None,
                                      indicator_type=None,
                                      source_type=None,
