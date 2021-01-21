@@ -33,7 +33,7 @@ SERVER_URL = {
     'Australia': 'https://servicedeskplus.net.au',
 }
 
-# comment to test
+
 class Client(BaseClient):
     """
     Client will implement the service API, and should not contain any Demisto logic.
