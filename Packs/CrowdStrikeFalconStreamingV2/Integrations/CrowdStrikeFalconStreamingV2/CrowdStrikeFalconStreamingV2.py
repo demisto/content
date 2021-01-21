@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 import requests
 import traceback
-from asyncio import Event, create_task, sleep, run, wait_for, TimeoutError
+from asyncio import create_task, sleep, run
 from contextlib import asynccontextmanager
 from aiohttp import ClientSession, TCPConnector, ClientTimeout
 from typing import Dict, AsyncGenerator, AsyncIterator
@@ -167,14 +167,11 @@ class EventStream:
         Raises:
             RuntimeError: In case stream discovery failed.
         """
-        # We have no event stream, need to discover
         await self.client.set_access_token(self.refresh_token)
         demisto.debug(f'Starting stream discovery. Container ID: {CONTAINER_ID}')
         discover_stream_response = await self.client.discover_stream(self.refresh_token)
         resources = discover_stream_response.get('resources', [])
         if not resources:
-            # If we got here we will either timeout on the event 10 seconds timeout (from fetch_event)
-            # or we are discovering a stream after we failed to refresh a stream cause we got 404
             demisto.updateModuleHealth(
                 'Did not discover event stream resources, verify the App ID is not used'
                 ' in another integration instance')
