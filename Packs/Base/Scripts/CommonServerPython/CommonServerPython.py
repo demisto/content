@@ -247,6 +247,42 @@ class DBotScoreType(object):
         )
 
 
+class DBotScoreReliability(object):
+    """
+    Enum: Source reliability levels
+    Values are case sensitive
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    A_PLUS = 'A+ - 3rd party enrichment'
+    A = 'A - Completely reliable'
+    B = 'B - Usually reliable'
+    C = 'C - Fairly reliable'
+    D = 'D - Not usually reliable'
+    E = 'E - Unreliable'
+    F = 'F - Reliability cannot be judged'
+
+    def __init__(self):
+        # required to create __init__ for create_server_docs.py purpose
+        pass
+
+    @staticmethod
+    def is_valid_type(_type):
+        # type: (str) -> bool
+
+        return _type in (
+            DBotScoreReliability.A_PLUS,
+            DBotScoreReliability.A,
+            DBotScoreReliability.B,
+            DBotScoreReliability.C,
+            DBotScoreReliability.D,
+            DBotScoreReliability.E,
+            DBotScoreReliability.F,
+        )
+
+
 INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ip': 'Address',
     'email': 'Address',
@@ -2122,6 +2158,9 @@ class Common(object):
         :type malicious_description: ``str``
         :param malicious_description: if the indicator is malicious and have explanation for it then set it to this field
 
+        :type reliability: ``DBotScoreReliability``
+        :param reliability: use DBotScoreReliability class
+
         :return: None
         :rtype: ``None``
         """
@@ -2135,7 +2174,8 @@ class Common(object):
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
-        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None):
+        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None,
+                     reliability=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
@@ -2143,11 +2183,15 @@ class Common(object):
             if not Common.DBotScore.is_valid_score(score):
                 raise TypeError('indicator_type must be of type DBotScore enum')
 
+            if reliability and not DBotScoreReliability.is_valid_type(reliability):
+                raise TypeError('reliability must be of type DBotScoreReliability enum')
+
             self.indicator = indicator
             self.indicator_type = indicator_type
             self.integration_name = integration_name or get_integration_name()
             self.score = score
             self.malicious_description = malicious_description
+            self.reliability = reliability
 
         @staticmethod
         def is_valid_score(score):
@@ -2166,14 +2210,20 @@ class Common(object):
                 return Common.DBotScore.CONTEXT_PATH_PRIOR_V5_5
 
         def to_context(self):
-            return {
-                Common.DBotScore.get_context_path(): {
-                    'Indicator': self.indicator,
-                    'Type': self.indicator_type,
-                    'Vendor': self.integration_name,
-                    'Score': self.score
-                }
+            dbot_context = {
+                'Indicator': self.indicator,
+                'Type': self.indicator_type,
+                'Vendor': self.integration_name,
+                'Score': self.score
             }
+
+            if self.reliability:
+                dbot_context['Reliability'] = self.reliability
+
+            ret_value = {
+                Common.DBotScore.get_context_path(): dbot_context
+            }
+            return ret_value
 
     class IP(Indicator):
         """
