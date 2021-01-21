@@ -1,4 +1,4 @@
-comment: Retrieves roles per shift.
+comment: Retrieves the roles per shift.
 commonfields:
   id: GetRolesPerShift
   version: -1
