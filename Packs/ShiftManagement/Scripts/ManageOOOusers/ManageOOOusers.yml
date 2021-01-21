@@ -17,7 +17,7 @@ args:
   predefined:
   - add
   - remove
-  description: Add or remove yourself from the Out of Office list. Possible values: "Add" and "Remove".
+  description: Add or remove yourself from the Out of Office list. Possible values are "Add" and "Remove".
 - name: daysoff
   description: Number of days you will be off. Default is 7.
   defaultValue: "7"
