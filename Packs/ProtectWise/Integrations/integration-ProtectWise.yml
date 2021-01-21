@@ -74,18 +74,12 @@ configuration:
 script:
   script: >-
     var DEFAULT_EVENT_HEADERS = ['message','id','type','sensorId','threatScore','killChainStage','confidence','startedAt','observedAt','endedAt','observationCount','netflowCount','observedStage'];
-
     var DEFAULT_NETFLOW_HEADERS = ['key', 'id.srcIp', 'id.dstIp', 'id.srcPort', 'id.dstPort', 'id.layer4Proto'];
-
     var DEFAULT_OBSERVATION_HEADERS = ['id','killChainStage','source','sensorId','threatScore','severity','confidence','occurredAt','observedAt','endedAt','netflowId','observedStage'];
-
     var DEFAULT_SENSOR_HEADERS = ['id', 'friendly_name', 'ip_address', 'last_seen', 'customer_id', 'enabled'];
-
     var TIME_FIELDS = ['startedAt', 'occurredAt', 'endedAt', 'observedAt'];
 
-
     var serverUrl = params.url.replace(/[\/]+$/, '') + '/';
-
 
     var getToken = function() {
         var token = '';
@@ -121,13 +115,10 @@ script:
         return token;
     };
 
-
     // If value for any argument is empty remove it
-
     var cleanArgs = function(args) {
         return Object.keys(args).filter(function(k) {return args[k];}).reduce(function(clean, k) {clean[k] = args[k]; return clean;}, {});
     };
-
 
     var doReq = function(url, token, raw, args, saveToFile) {
         if (args) {
@@ -153,7 +144,6 @@ script:
         }
     };
 
-
     var filterClone = function(src, filter) {
         if (src && Array.isArray(src) && filter && Array.isArray(filter)) {
             var items = [];
@@ -168,7 +158,6 @@ script:
         } else return undefined;
     };
 
-
     var parseTime = function(time) {
         if ((typeof time === 'string' || time instanceof String) && (time.indexOf("-") >= 0 || time.indexOf("/") >= 0 )){
             var d = new Date(time);
@@ -177,20 +166,17 @@ script:
         return time;
     };
 
-
     var eventsSearch = function(start, end, eventType, killChainStage, threatLevel, threatCategory, observationStage, ip, expandDetails, minLimit, maxLimit, reverseOrder, nextPage, token) {
         return doReq(serverUrl + 'events', token, true, {start: parseTime(start), end: parseTime(end),
             eventType: eventType, killChainStage: killChainStage, threatLevel: threatLevel, threatCategory: threatCategory, observationStage: observationStage,
             ip: ip, expandDetails: expandDetails, minLimit: minLimit, maxLimit: maxLimit, reverseOrder: reverseOrder, nextPage: nextPage});
     };
 
-
     var observationSearch = function(sensorId,start,end,type,killChainStage,threatLevel,threatCategory,hasKillChain,ip,expandDetails,minLimit,maxLimit,reverseOrder,nextPage,signatureId,token) {
         return doReq(serverUrl + 'observations', token, true, {sensorId: sensorId, start: parseTime(start), end: parseTime(end), type: type, killChainStage: killChainStage,
             threatLevel: threatLevel, threatCategory: threatCategory, hasKillChain: hasKillChain, ip: ip, expandDetails: expandDetails, minLimit: minLimit, maxLimit: maxLimit,
             reverseOrder: reverseOrder, nextPage: nextPage, signatureId: signatureId});
     };
-
 
     var createIncidentFromEvent = function(event) {
         var keys = Object.keys(event);
@@ -210,9 +196,7 @@ script:
         };
     };
 
-
     var token = getToken();
-
     switch (command) {
         case 'test-module':
             if (token && token.length > 0) {
@@ -221,12 +205,16 @@ script:
             return false;
         case 'fetch-incidents':
             var lastRun = getLastRun();
+            // retrieve events from the last 10 min
+            var timeRange = 10 * 60 * 1000;
             var now = (new Date()).getTime();
             if (!lastRun || !lastRun.time) {
-                // First time, retrieve events from the last 10 min
-                lastRun = {time: now - 10 * 60 * 1000};
+                lastRun = {time: now};
             }
-            var data = eventsSearch(lastRun.time , now , params.eventType, params.killChainStage, params.threatLevel,
+            if (!lastRun.oldIdList) {
+                lastRun.oldIdList = [];
+            }
+            var data = eventsSearch(lastRun.time - timeRange, now , params.eventType, params.killChainStage, params.threatLevel,
                 params.threatCategory, null, null, null, null, null, null, null, token);
             try {
                 var res = JSON.parse(data).events;
@@ -235,27 +223,35 @@ script:
                 throw 'Error parsing event fetch - ' + data + ' - ' + ex;
             }
             var incidents = [];
+            var maxFetch = Math.min(parseInt(params.maxFetch), 50);
+            var newIdList = []
             for (var i = 0; i < res.length; i++) {
-                if (incidents.length >= Math.min(parseInt(params.maxFetch), 50)) {
+                if (incidents.length >= maxFetch) {
                     break;
                 }
-                var skip = true;
-                if (params.messageFilter && res[i].message) {
-                    filters = params.messageFilter.split(',');
-                    for (var j = 0; j < filters.length; j++) {
-                        if (filters[j] && filters[j].length > 0 && res[i].message.toLowerCase().indexOf(filters[j].toLowerCase()) > -1) {
-                            skip = false;
-                            break;
+                var id = res[i].id
+                lastRun.time = res[i].startedAt + 1;
+                newIdList.push(id);
+                if (lastRun.oldIdList.indexOf(id) < 0) {
+                    var skip = true;
+                    if (params.messageFilter && res[i].message) {
+                        filters = params.messageFilter.split(',');
+                        for (var j = 0; j < filters.length; j++) {
+                            if (filters[j] && filters[j].length > 0 && res[i].message.toLowerCase().indexOf(filters[j].toLowerCase()) > -1) {
+                                skip = false;
+                                break;
+                            }
                         }
+                    } else {
+                        skip = false;
                     }
-                } else {
-                    skip = false;
-                }
-                if(!skip) {
-                    incidents.push(createIncidentFromEvent(res[i]));
-                    lastRun.time = Math.max(lastRun.time, res[i].startedAt)+1;
+                    if(!skip) {
+                        incidents.push(createIncidentFromEvent(res[i]));
+                    }
                 }
             }
+            lastRun.oldIdList = newIdList;
+            logError(JSON.stringify(newIdList));
             setLastRun(lastRun);
             return JSON.stringify(incidents);
         case 'sensors':
