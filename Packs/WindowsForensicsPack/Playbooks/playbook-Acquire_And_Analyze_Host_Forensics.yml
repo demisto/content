@@ -39,26 +39,40 @@ tasks:
       }
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: e31fb2e3-3dc8-4099-8e7e-2bf07e1f3e52
+    type: playbook
+    task:
+      id: e31fb2e3-3dc8-4099-8e7e-2bf07e1f3e52
+      version: -1
+      name: PS-Remote  Acquire Host Forensics
+      description: This playbook allows the user to gather multiple forensic data
+        from a windows endpoint. Including network traffic, MFT (Master File Table)
+        or registry export by using the PS remote automation which enables to connect
+        to a windows host without the need to install any 3rd party tools using just
+        native Windows management tools.
+      playbookName: PS-Remote  Acquire Host Forensics
+      playbookId: PS-Remote  Acquire Host Forensics
+      type: playbook
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
+    scriptarguments:
+      GetMft:
+        simple: "true"
+      GetNetworkTraffic:
+        simple: "true"
+      GetRegistry:
+        simple: "true"
+      Host:
+        simple: ${inputs.Host}
     separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 1a6c5170-6559-4882-8004-0738f01ccd2c
+    loop:
       iscommand: false
-      name: PS-Remote Acquire Host Forensics
-      playbookId: PS-Remote Acquire Host Forensics
-      type: playbook
-      version: -1
-      description: ''
-    taskid: 1a6c5170-6559-4882-8004-0738f01ccd2c
-    timertriggers: []
-    type: playbook
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -66,6 +80,11 @@ tasks:
           "y": 230
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "2":
     id: "2"
     ignoreworker: false
@@ -144,6 +163,13 @@ view: |-
       }
     }
   }
+inputs:
+- key: Host
+  value: {}
+  required: false
+  description: The host name for which to export the registry file. For example testpc01
+  playbookInputQuery: null
+outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

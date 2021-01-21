@@ -29,11 +29,11 @@ args:
 comment: "This command uses the regipy tool to extract critical forensics data from\
   \ a registry file. The essential values are specified by the argument. \n"
 commonfields:
-  id: RegipyParseForensicData
+  id: RegistryParse
   version: -1
 dockerimage: demisto/python3:3.9.1.14969
 enabled: true
-name: RegipyParseForensicData
+name: RegistryParse
 outputs:
 - contextPath: RegistryForensicDataRaw.Type
   description: The registry data type. "Custom" for custom registry path
