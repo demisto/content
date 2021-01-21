@@ -205,12 +205,14 @@ script:
       type: string
   - arguments:
     - default: false
-      description: "The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m."
+      description: "The date the device was most recently observed by GreyNoise. Example:\
+        \ 1d, 2d, 12h, or 1m."
       name: last_seen
       required: false
       secret: false
     - default: false
-      description: "The organization that owns the network that the IP address belongs to."
+      description: "The organization that owns the network that the IP address belongs\
+        \ to."
       name: organization
       required: false
       secret: false
@@ -220,9 +222,9 @@ script:
       isArray: false
       name: classification
       predefined:
-        - unknown
-        - benign
-        - malicious
+      - unknown
+      - benign
+      - malicious
       required: false
       secret: false
     - auto: PREDEFINED
@@ -232,8 +234,8 @@ script:
       isArray: false
       name: spoofable
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
       required: false
       secret: false
     - default: false
@@ -250,12 +252,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: "GNQL query to filter records.\n
-        Note: It merges other arguments and takes higher precedence over the same argument if supplied.\n
-        Example:\n
-        malicious,\n
-        spoofable:false SSH Scanner,\n
-        spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103"
+      description: "GNQL query to filter records.\n Note: It merges other arguments\
+        \ and takes higher precedence over the same argument if supplied.\n Example:\n\
+        \ malicious,\n spoofable:false SSH Scanner,\n spoofable:false classification:benign\
+        \ tags:POP3 Scanner cve:CVE-2010-0103"
       isArray: false
       name: advanced_query
       required: false
@@ -383,12 +383,14 @@ script:
       type: string
   - arguments:
     - default: false
-      description: "The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m."
+      description: "The date the device was most recently observed by GreyNoise. Example:\
+        \ 1d, 2d, 12h, or 1m."
       name: last_seen
       required: false
       secret: false
     - default: false
-      description: "The organization that owns the network that the IP address belongs to."
+      description: "The organization that owns the network that the IP address belongs\
+        \ to."
       name: organization
       required: false
       secret: false
@@ -398,9 +400,9 @@ script:
       isArray: false
       name: classification
       predefined:
-        - unknown
-        - benign
-        - malicious
+      - unknown
+      - benign
+      - malicious
       required: false
       secret: false
     - auto: PREDEFINED
@@ -410,8 +412,8 @@ script:
       isArray: false
       name: spoofable
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
       required: false
       secret: false
     - default: false
@@ -428,12 +430,10 @@ script:
       required: false
       secret: false
     - default: false
-      description: "GNQL query to filter records.\n
-        Note: It merges other arguments and takes higher precedence over the same argument if supplied.\n
-        Example:\n
-        malicious,\n
-        spoofable:false SSH Scanner,\n
-        spoofable:false classification:benign tags:POP3 Scanner cve:CVE-2010-0103"
+      description: "GNQL query to filter records.\n Note: It merges other arguments\
+        \ and takes higher precedence over the same argument if supplied.\n Example:\n\
+        \ malicious,\n spoofable:false SSH Scanner,\n spoofable:false classification:benign\
+        \ tags:POP3 Scanner cve:CVE-2010-0103"
       isArray: false
       name: advanced_query
       required: false

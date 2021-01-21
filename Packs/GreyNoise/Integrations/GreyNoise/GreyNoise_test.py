@@ -19,6 +19,7 @@ class DummyResponse:
     """
     Dummy Response object of requests.response for unit testing.
     """
+
     def __init__(self, headers, text, status_code):
         self.headers = headers
         self.text = text

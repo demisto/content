@@ -1,6 +1,5 @@
 id: GreyNoise-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: GreyNoise-Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -758,6 +758,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -825,3 +826,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+description: A test playbook for GreyNoise integration commands

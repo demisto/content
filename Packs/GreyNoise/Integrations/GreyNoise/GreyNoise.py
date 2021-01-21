@@ -104,6 +104,7 @@ EXCEPTION_MESSAGES = {
 class Client(GreyNoise):
     """Client class to interact with the service API
     """
+
     def authenticate(self):
         """
         Used to authenticate GreyNoise credentials.
