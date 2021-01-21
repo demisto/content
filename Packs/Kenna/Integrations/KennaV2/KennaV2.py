@@ -3,7 +3,6 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-from CommonServerPython import BaseClient
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -50,7 +49,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=header)
 
     def http_request(self, message: str, suffix: str, params: Optional[dict] = None,
-                     data: Optional[dict] = None): -> Dict[str, Any]
+                     data: Optional[dict] = None):
         """Connects to api and Returns response.
            Args:
                message: The HTTP message, for example: GET, POST, and so on
@@ -108,7 +107,7 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
     """Search vulnerability command.
     Args:
         client: Client which connects to api
-        args: arguments for the requesthttps://www.youtube.com/watch?v=3RWAVmrIZCs
+        args: arguments for the request
     Returns:
         Human Readable
         Entry Context
@@ -213,7 +212,7 @@ def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any],
     context: Dict[str, Any] = {}
     connectors: List[Dict[str, Any]] = client.http_request(message='GET', suffix=url_suffix)
     if connectors:
-        keys = [
+        actual_keys = [
             "id", "start_time",
             "end_time", "success",
             "total_payload_count",
@@ -222,6 +221,7 @@ def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any],
             "processed_assets_count",
             "assets_with_tags_reset_count",
             "processed_scanner_vuln_count",
+            "updated_scanner_vuln_count",
             "created_scanner_vuln_count",
             "closed_scanner_vuln_count",
             "autoclosed_scanner_vuln_count",
@@ -230,29 +230,47 @@ def get_connector_runs(client: Client, args: dict) -> Tuple[str, Dict[str, Any],
             "autoclosed_vuln_count",
             "reopened_vuln_count"
         ]
+        wanted_keys = [
+            "ID", "StartTime",
+            "EndTime", "Success",
+            "TotalPayload",
+            "ProcessedPayload",
+            "FailedPayload",
+            "ProcessedAssets",
+            "AssetsWithTagsReset",
+            "ProcessedScannerVulnerabilities",
+            "UpdatedScannerVulnerabilities",
+            "CreatedScannerVulnerabilities",
+            "ClosedScannerVulnerabilities",
+            "AutoclosedScannerVulnerabilities",
+            "ReopenedScannerVulnerabilities",
+            "ClosedVulnerabilities",
+            "AutoclosedVulnerabilities",
+            "ReopenedVulnerabilities"
+        ]
 
-        context_list = parse_response(connectors, keys, keys)
+        context_list = parse_response(connectors, wanted_keys, actual_keys)
 
         for connector in connectors:
             curr_dict = {
-                "id": connector.get("id"),
-                "start_time": connector.get("start_time"),
-                "end_time": connector.get("end_time"),
-                "success": connector.get("success"),
-                "total_payload_count": connector.get("total_payload_count"),
-                "processed_payload_count": connector.get("total_payload_count"),
-                "failed_payload_count": connector.get("failed_payload_count"),
-                "processed_assets_count": connector.get("processed_assets_count"),
-                "assets_with_tags_reset_count": connector.get("assets_with_tags_reset_count"),
-                "processed_scanner_vuln_count": connector.get("processed_scanner_vuln_count"),
-                "updated_scanner_vuln_count": connector.get("updated_scanner_vuln_count"),
-                "created_scanner_vuln_count": connector.get("created_scanner_vuln_count"),
-                "closed_scanner_vuln_count": connector.get("closed_scanner_vuln_count"),
-                "autoclosed_scanner_vuln_count": connector.get("autoclosed_scanner_vuln_count"),
-                "reopened_scanner_vuln_count": connector.get("reopened_scanner_vuln_count"),
-                "closed_vuln_count": connector.get("closed_vuln_count"),
-                "autoclosed_vuln_count": connector.get("closed_vuln_count"),
-                "reopened_vuln_count": connector.get("reopened_vuln_count")
+                "ID": connector.get("id"),
+                "StartTime": connector.get("start_time"),
+                "EndTime": connector.get("end_time"),
+                "Success": connector.get("success"),
+                "TotalPayload": connector.get("total_payload_count"),
+                "ProcessedPayload": connector.get("total_payload_count"),
+                "FailedPayload": connector.get("failed_payload_count"),
+                "ProcessedAssets": connector.get("processed_assets_count"),
+                "AssetsWithTagsReset": connector.get("assets_with_tags_reset_count"),
+                "ProcessedScannerVulnerabilities": connector.get("processed_scanner_vuln_count"),
+                "UpdatedScannerVulnerabilities": connector.get("updated_scanner_vuln_count"),
+                "CreatedScannerVulnerabilities": connector.get("created_scanner_vuln_count"),
+                "ClosedScannerVulnerabilities": connector.get("closed_scanner_vuln_count"),
+                "AutoclosedScannerVulnerabilities": connector.get("autoclosed_scanner_vuln_count"),
+                "ReopenedScannerVulnerabilities": connector.get("reopened_scanner_vuln_count"),
+                "ClosedVulnerabilities": connector.get("closed_vuln_count"),
+                "AutoclosedVulnerabilities": connector.get("closed_vuln_count"),
+                "ReopenedVulnerabilities": connector.get("reopened_vuln_count")
             }
             human_readable.append(curr_dict)
         context = {
