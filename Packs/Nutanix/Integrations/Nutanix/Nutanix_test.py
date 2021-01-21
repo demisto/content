@@ -14,7 +14,8 @@ from Nutanix import nutanix_hypervisor_hosts_list_command, \
     nutanix_hypervisor_vms_list_command, nutanix_hypervisor_vm_power_status_change_command, \
     nutanix_hypervisor_task_poll_command, nutanix_alerts_list_command, nutanix_alert_acknowledge_command, \
     nutanix_alert_resolve_command, nutanix_alerts_acknowledge_by_filter_command, \
-    nutanix_alerts_resolve_by_filter_command, fetch_incidents_command
+    nutanix_alerts_resolve_by_filter_command, fetch_incidents_command, get_alert_status_filter, \
+    get_optional_boolean_param, get_and_validate_int_argument, get_page_argument, get_optional_time_parameter_as_epoch
 
 MOCKED_BASE_URL = 'https://prefix:11111/PrismGateway/services/rest/v2.0'
 client = Client(base_url=MOCKED_BASE_URL, verify=False, proxy=False, auth=('fake_username', 'fake_password'))
@@ -28,57 +29,61 @@ def util_load_json(path):
 command_tests_data = util_load_json('test_data/test_command_data.json')
 
 
-@pytest.mark.parametrize('args, argument_name, minimum, maximum, expected',
-                         [({'limit': 5}, 'limit', None, None, 5),
-                          ({}, 'limit', None, None, None),
-                          ({'limit': 1000}, 'limit', 1000, 1000, 1000)
+@pytest.mark.parametrize('args, argument_name, minimum, maximum, default_value, expected',
+                         [({'limit': 5}, 'limit', None, None, None, 5),
+                          ({}, 'limit', None, None, None, None),
+                          ({'limit': 1000}, 'limit', 1000, 1000, None, 1000),
+                          ({}, 'limit', 1, 3, 2, 2)
                           ])
-def test_get_and_validate_int_argument_valid_arguments(args, argument_name, minimum, maximum, expected):
+def test_get_and_validate_int_argument_valid_arguments(args, argument_name, minimum, maximum, default_value, expected):
     """
     Given:
      - Demisto arguments.
      - Argument name to extract from Demisto arguments as number.
      - Minimum possible value for argument.
      - Maximum possible value for argument.
+     - Default value in case argument does not exist.
 
     When:
      - Case a: Argument exists, no minimum and maximum specified.
-     - Case b: Argument does not exist, no minimum and maximum specified.
+     - Case b: Argument does not exist, no minimum and maximum specified, and no default value given.
      - Case c: Argument exist, minimum and maximum specified.
+     - Case d: Argument does not exist, default value given and is between maximum and minimum
 
     Then:
      - Case a: Ensure that limit is returned (5).
      - Case b: Ensure that None is returned (limit argument does not exist).
      - Case c: Ensure that limit is returned.
+     - Case d: Ensure that default value is returned.
     """
-    from Nutanix import get_and_validate_int_argument
-
-    assert (get_and_validate_int_argument(args, argument_name, minimum, maximum)) == expected
+    assert (get_and_validate_int_argument(args, argument_name, minimum, maximum, default_value)) == expected
 
 
-@pytest.mark.parametrize('args, argument_name, minimum, maximum, expected_error_message',
-                         [({'limit': 5}, 'limit', 6, None, 'limit should be equal or higher than 6'),
-                          ({'limit': 5}, 'limit', None, 4, 'limit should be equal or less than 4'),
+@pytest.mark.parametrize('args, argument_name, minimum, maximum, default_value, expected_error_message',
+                         [({'limit': 5}, 'limit', 6, None, None, 'limit should be equal or higher than 6'),
+                          ({'limit': 5}, 'limit', None, 4, None, 'limit should be equal or less than 4'),
+                          ({}, 'limit', 3, 4, 5, 'limit should be equal or less than 4')
                           ])
-def test_get_and_validate_int_argument_invalid_arguments(args, argument_name, minimum, maximum, expected_error_message):
+def test_get_and_validate_int_argument_invalid_arguments(args, argument_name, minimum, maximum, default_value,
+                                                         expected_error_message):
     """
     Given:
      - Demisto arguments.
      - Argument name to extract from Demisto arguments as number.
      - Minimum possible value for argument.
      - Maximum possible value for argument.
+     - Default value in case argument does not exist.
 
     When:
      - Case a: Argument exists, minimum is higher than argument value.
      - Case b: Argument exists, maximum is lower than argument value.
+     - Case c: Argument does not exist, maximum is lower than argument default value.
 
     Then:
      - Case a: Ensure that DemistoException is thrown with error message which indicates that value is below minimum.
      - Case b: Ensure that DemistoException is thrown with error message which indicates that value is higher
        than maximum.
     """
-    from Nutanix import get_and_validate_int_argument
-
     with pytest.raises(DemistoException, match=expected_error_message):
         get_and_validate_int_argument(args, argument_name, minimum, maximum)
 
@@ -101,8 +106,6 @@ def test_get_page_argument_valid_arguments_success(args, expected):
      - Case a: Ensure that page value is returned.
      - Case b: Ensure that None is returned.
     """
-    from Nutanix import get_page_argument
-
     assert (get_page_argument(args)) == expected
 
 
@@ -117,8 +120,6 @@ def test_get_page_argument_page_exists_limit_does_not():
     Then:
      - Ensure that DemistoException is thrown with error message which indicates that limit argument is missing.
     """
-    from Nutanix import get_page_argument
-
     with pytest.raises(DemistoException, match='Page argument cannot be specified without limit argument'):
         get_page_argument({'page': MINIMUM_PAGE_VALUE})
 
@@ -144,7 +145,6 @@ def test_get_optional_boolean_param_valid(args, argument_name, expected):
      - Case b: Ensure that False is returned.
      - Case c: Ensure that None is returned.
     """
-    from Nutanix import get_optional_boolean_param
     assert (get_optional_boolean_param(args, argument_name)) == expected
 
 
@@ -170,7 +170,6 @@ def test_get_optional_boolean_param_invalid_argument(args, argument_name, expect
      - Case b: Ensure that DemistoException is thrown with error message which indicates that type of the argument
        is not bool or string that can be parsed.
     """
-    from Nutanix import get_optional_boolean_param
     with pytest.raises(ValueError, match=expected_error_message):
         get_optional_boolean_param(args, argument_name)
 
@@ -193,7 +192,6 @@ def test_get_optional_time_parameter_valid_time_argument(args, time_parameter, e
      - Case a: Ensure that the corresponding epoch time is returned.
      - Case b: Ensure that None is returned.
     """
-    from Nutanix import get_optional_time_parameter_as_epoch
     assert (get_optional_time_parameter_as_epoch(args, time_parameter)) == expected
 
 
@@ -210,7 +208,6 @@ def test_get_optional_time_parameter_invalid_time_argument():
      - Ensure that DemistoException is thrown with error message which indicates that time string does not match the
        expected time format.
     """
-    from Nutanix import get_optional_time_parameter_as_epoch
     invalid_date_msg = '''date format of 'start_time' is not valid. Please enter a date format of YYYY-MM-DDTHH:MM:SS'''
     with pytest.raises(DemistoException,
                        match=invalid_date_msg):
@@ -376,3 +373,56 @@ def test_fetch_incidents(requests_mock, params, last_run, expected_incidents_raw
     incidents_raw_json = [json.loads(incident['rawJSON']) for incident in incidents]
     assert next_run.get('last_fetch_epoch_time') == 1610718924821136
     assert incidents_raw_json == expected_incidents_raw_json
+
+
+@pytest.mark.parametrize('true_value, false_value, alert_status_filters, expected',
+                         [('Resolved', 'Unresolved', ['Resolved', 'Acknowledged'], True),
+                          ('Resolved', 'Unresolved', ['Unresolved', 'Acknowledged'], False),
+                          ('Resolved', 'Unresolved', ['Acknowledged'], None),
+                          ])
+def test_get_alert_status_filter_valid_cases(true_value, false_value, alert_status_filters, expected):
+    """
+    Given:
+     - The argument name which corresponds for True value inside 'alert_status_filters' list.
+     - The argument name which corresponds for False value inside 'alert_status_filters' list.
+     - Alert status filters, contains all the selects for filters done by user.
+
+    When:
+     - Case a: User selected argument that corresponds for True value.
+     - Case b: User selected argument that corresponds for False value.
+     - Case c: User did not select argument that corresponds to true or false value.
+
+    Then:
+     - Case a: Ensure True is returned.
+     - Case b: Ensure False is returned.
+     - Case c: Ensure None is returned.
+    """
+    assert get_alert_status_filter(true_value, false_value, alert_status_filters) == expected
+
+
+@pytest.mark.parametrize('true_value, false_value, alert_status_filters',
+                         [('Resolved', 'Unresolved', ['Resolved', 'Unresolved']),
+                          ('Acknowledged', 'Unacknowledged', ['Acknowledged', 'Unacknowledged']),
+                          ('Auto Resolved', 'Not Auto Resolved', ['Auto Resolved', 'Not Auto Resolved'])
+                          ])
+def test_get_alert_status_filter_invalid_case(true_value, false_value, alert_status_filters):
+    """
+    Given:
+     - The argument name which corresponds for True value inside 'alert_status_filters' list.
+     - The argument name which corresponds for False value inside 'alert_status_filters' list.
+     - Alert status filters, contains all the selects for filters done by user.
+
+    When:
+     - Case a: User selected argument that corresponds for both True and False values.
+     - Case b: User selected argument that corresponds for both True and False values.
+     - Case c: User selected argument that corresponds for both True and False values.
+
+    Then:
+     - Case a: Ensure DemistoException is thrown with the expected message error.
+     - Case b: Ensure DemistoException is thrown with the expected message error.
+     - Case c: Ensure DemistoException is thrown with the expected message error.
+    """
+    with pytest.raises(DemistoException,
+                       match=f'Invalid alert status filters configurations, only one of {true_value},{false_value} '
+                             'can be chosen.'):
+        get_alert_status_filter(true_value, false_value, alert_status_filters)

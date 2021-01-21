@@ -216,7 +216,7 @@ def get_optional_time_parameter_as_epoch(args: Dict, argument_name: str) -> Opti
 
 
 def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optional[int] = None,
-                                  maximum: Optional[int] = None) -> Optional[int]:
+                                  maximum: Optional[int] = None, default_value: Optional[int] = None) -> Optional[int]:
     """
     Extracts int argument from Demisto arguments, and in case argument exists,
     validates that:
@@ -226,16 +226,17 @@ def get_and_validate_int_argument(args: Dict, argument_name: str, minimum: Optio
     Args:
         args (Dict): Demisto arguments.
         argument_name (str): The name of the argument to extract.
-        minimum (int): If specified, the minimum value the argument can have.
-        maximum (int): If specified, the maximum value the argument can have.
+        minimum (Optional[int]): If specified, the minimum value the argument can have.
+        maximum (Optional[int]): If specified, the maximum value the argument can have.
+        default_value (Optional[int]): If specified, the default value to be returned if argument does not exist.
 
     Returns:
-        - If argument is does not exist, returns None.
+        - If argument is does not exist, returns 'default_value'. If 'default_value' is not specified returns None.
         - If argument is exists and is between min to max, returns argument.
         - If argument is exists and is not between min to max, raises DemistoException.
 
     """
-    argument_value = arg_to_number(args.get(argument_name), arg_name=argument_name)
+    argument_value = arg_to_number(args.get(argument_name, default_value), arg_name=argument_name)
 
     if argument_value is None:
         return None
@@ -301,13 +302,36 @@ def convert_epoch_time_to_datetime(epoch_time: int):
     return datetime.utcfromtimestamp(epoch_time / 1000000.0).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
 
+def get_alert_status_filter(true_value: str, false_value: str, alert_status_filters: list[str]) -> Optional[bool]:
+    """
+    Args:
+        true_value (str): The name of the argument that expresses true value.
+        false_value (str): The name of the argument that expresses false value.
+        alert_status_filters (str):
+
+    Returns:
+        - Throws DemistoException if 'false_value' and 'true_value' are found in 'alert_status_filters' list.
+        - False if 'false_value' was found in 'alert_status_filters' list.
+        - True if 'true_value' was found in 'alert_status_filters' list.
+        - None if both 'true_value' and 'false_value' were not found in 'alert_status_filters' list.
+    """
+    if true_value in alert_status_filters and false_value in alert_status_filters:
+        raise DemistoException(
+            f'Invalid alert status filters configurations, only one of {true_value},{false_value} can be chosen.')
+    return True if true_value in alert_status_filters else False if false_value in alert_status_filters else None
+
+
 ''' COMMAND FUNCTIONS '''
 
 
 def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
-    auto_resolved = get_optional_boolean_param(params, 'auto_resolved')
-    resolved = True if auto_resolved else get_optional_boolean_param(params, 'resolved')
-    acknowledged = get_optional_boolean_param(params, 'acknowledged')
+    alert_status_filters = params.get('alert_status_filters')
+    auto_resolved = get_alert_status_filter('Auto Resolved', 'Not Auto Resolved', alert_status_filters)
+    resolved = get_alert_status_filter('Resolved', 'Unresolved', alert_status_filters)
+    acknowledged = get_alert_status_filter('Acknowledged', 'Unacknowledged', alert_status_filters)
+    if auto_resolved and not resolved:
+        raise DemistoException(''''Resolved' must be set to true when 'Auto Resolved' is set to true.''')
+
     severity = params.get('severity')
     alert_type_ids = params.get('alert_type_ids')
     impact_types = params.get('impact_types')
@@ -358,7 +382,9 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     Gets a list all physical hosts configured in the cluster by Nutanix service.
     Possible filters:
     - page: The offset page to start retrieving hosts.
-    - limit: The number of hosts to retrieve.
+            When page is specified, limit argument is required, else Nutanix service returns an error
+            "Page number cannot be specified without count".
+    - limit: The number of hosts to retrieve, has to be positive.
     - filter: Retrieve hosts that matches the filters given.
               - Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value.
               - Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for Example:
@@ -375,7 +401,7 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
         CommandResults.
     """
     filter_ = args.get('filter')
-    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, default_value=50)
     page = get_page_argument(args)
 
     raw_response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
@@ -430,7 +456,7 @@ def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
     """
     filter_ = args.get('filter')
     offset = get_and_validate_int_argument(args, 'offset', minimum=MINIMUM_OFFSET_VALUE)
-    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LENGTH_VALUE)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LENGTH_VALUE, default_value=50)
 
     raw_response = client.get_nutanix_hypervisor_vms_list(filter_, offset, limit)
 
@@ -514,15 +540,33 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     if raw_response.get('completed_tasks_info') is not None:
         outputs_key_field: Optional[str] = 'uuid'
         outputs = raw_response['completed_tasks_info']
+
+        completed_tasks_dict = {completed_task.get('uuid'): completed_task.get('progress_status')
+                                for completed_task in outputs
+                                if completed_task.get('uuid') and completed_task.get('progress_status')}
+
+        tasks_in_progress_dict = {task_id: 'In Progress'
+                                  for task_id in task_ids
+                                  if task_id not in completed_tasks_dict}
+
+        tasks_status_dict = completed_tasks_dict | tasks_in_progress_dict
+        tasks_status_list = [{'Task ID': task_id, 'Progress Status': progress_status}
+                             for task_id, progress_status in tasks_status_dict.items()]
+
+        readable_output = tableToMarkdown(f'Nutanix Hypervisor Tasks Status', tasks_status_list,
+                                          headers=['Task ID', 'Progress Status'])
+
     elif maybe_time_out and argToBoolean(maybe_time_out):
         outputs_key_field = None
         outputs = raw_response
+        readable_output = '### All given tasks are in progress'
     else:
         raise DemistoException('Unexpected response returned by Nutanix for nutanix-hypervisor-task-poll command')
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Task',
         outputs_key_field=outputs_key_field,
+        readable_output=readable_output,
         outputs=outputs,
         raw_response=raw_response
     )
@@ -559,7 +603,10 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
                    Examples for entity types: [VM, Host, Disk, Storage Container, Cluster].
                    If Nutanix service can't recognize the entity type, it returns 404 response.
     - page: The offset of page number in the query response to start retrieving alerts.
-    - limit: Maximum number of alerts to retrieve.
+            When page is specified, 'limit' argument is required, else Nutanix service returns an error
+            "Page number cannot be specified without count".
+    - limit: Maximum number of alerts to retrieve. Must be between 1-1000 else Nutanix service returns an error
+             "Number of alerts/events to retrieve cannot be greater than 1,000".
 
     In case response was successful, response will be a dict containing key 'entities' with value of list of alerts.
     Each element in the list contains data about the alert.
@@ -573,8 +620,12 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     """
     start_time = get_optional_time_parameter_as_epoch(args, 'start_time')
     end_time = get_optional_time_parameter_as_epoch(args, 'end_time')
+
     auto_resolved = get_optional_boolean_param(args, 'auto_resolved')
-    resolved = True if auto_resolved else get_optional_boolean_param(args, 'resolved')
+    resolved = get_optional_boolean_param(args, 'resolved')
+    if auto_resolved and not resolved:
+        raise DemistoException(''''Resolved' must be set to true when 'Auto Resolved' is set to true.''')
+
     acknowledged = get_optional_boolean_param(args, 'acknowledged')
     severity = args.get('severity')
     alert_type_ids = args.get('alert_type_ids')
@@ -582,7 +633,7 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     classification = args.get('classifications')
     entity_types = args.get('entity_types')
     page = get_page_argument(args)
-    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, maximum=MAXIMUM_LIMIT_VALUE, default_value=50)
 
     raw_response = client.get_nutanix_alerts_list(start_time, end_time, resolved, auto_resolved, acknowledged, severity,
                                                   alert_type_ids, impact_types, classification, entity_types,
@@ -622,7 +673,7 @@ def nutanix_alert_acknowledge_command(client: Client, args: Dict):
     raw_response = client.post_nutanix_alert_acknowledge(alert_id)
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.Alert',
+        outputs_prefix='NutanixHypervisor.AcknowledgeAlerts',
         outputs_key_field='id',
         outputs=raw_response,
         raw_response=raw_response
@@ -650,7 +701,7 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
     raw_response = client.post_nutanix_alert_resolve(alert_id)
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.Alert',
+        outputs_prefix='NutanixHypervisor.ResolveAlerts',
         outputs_key_field='id',
         outputs=raw_response,
         raw_response=raw_response
@@ -697,7 +748,7 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     impact_types = args.get('impact_types')
     classification = args.get('classifications')
     entity_types = args.get('entity_types')
-    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, default_value=50)
 
     raw_response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
                                                                     classification, entity_types,
@@ -750,7 +801,7 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
     impact_types = args.get('impact_types')
     classification = args.get('classifications')
     entity_types = args.get('entity_types')
-    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE)
+    limit = get_and_validate_int_argument(args, 'limit', minimum=MINIMUM_LIMIT_VALUE, default_value=50)
 
     raw_response = client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity, impact_types,
                                                                 classification, entity_types, limit)
@@ -800,7 +851,7 @@ def main() -> None:
 
         if command == 'test-module':
             fetch_incidents_command(client, params, {})
-            demisto.results('ok')
+            return_results('ok')
 
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()

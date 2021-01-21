@@ -38,28 +38,20 @@ configuration:
   required: false
   type: 0
   additionalinfo: The maximum number of incidents to fetch each time.
-- additionalinfo: Fetches incidents by resolved value. if resolved is set to true,
-    only alerts that were resolved will be fetched, if resolved is set to false, only
-    alerts that weren't resolved will be fetched.
-  display: Resolved
-  name: resolved
+- display: Alert Status Filters
+  name: alert_status_filters
+  type: 16
   required: false
-  type: 8
-- additionalinfo: Fetches incidents by auto resolved value. if auto resolved is set
-    to true, only alerts that were resolved and were auto resolved will be fetched,
-    if auto resolved is set to false, only alerts that were resolved and weren't auto
-    resolved will be fetched.
-  display: Auto Resolved
-  name: auto_resolved
-  required: false
-  type: 8
-- additionalinfo: Fetches incidents by acknowledged value. if acknowledged is set
-    to true, only alerts that were acknowledged will be fetched, if √ is set to false,
-    only alerts that weren't acknowledged will be fetched.
-  display: Acknowledged
-  name: acknowledged
-  required: false
-  type: 8
+  options:
+  - Resolved
+  - Unresolved
+  - Acknowledged
+  - Unacknowledged
+  - Auto Resolved
+  - Not Auto Resolved
+  additionalinfo: Fetches incidents by the status filters given. For example, if acknowledged
+    is true, then only alerts that have been acknowledged will be fetched. In case
+    'Auto Resolved=true', then 'Resolved=True' is required.
 - additionalinfo: Comma separated list. Fetches alerts that the id of their type matches
     one alert_type_id in alert_type_ids list. For example, alert 'Alert E-mail
     Failure' has type id of A111066. Given alert_type_ids = 'A111066', only alerts
@@ -105,12 +97,7 @@ name: Nutanix Hypervisor
 script:
   commands:
   - arguments:
-    - description: 'Retrieve hosts that matches the filters given. Each filter is
-        written in the following way: filter_name==filter_value or filter_name!=filter_value.
-        Possible combinations of OR (using comma '','') and AND (using semicolon '';''),
-        for Example: storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x is parsed
-        by Nutanix the following way: Return all hosts s.t (storage.capacity_bytes
-        == 2 AND host_nic_ids != 35) OR host_gpus == x.'
+    - description: Retrieve hosts that matches the filters given. For further explanation about possible filters, see Nutanix README.
       name: filter
     - description: Page number in the query response, default is 1. When page is specified,
         limit argument is required.
@@ -381,12 +368,7 @@ script:
         description: Is host in maintenance mode.
         type: Boolean
   - arguments:
-    - description: 'Retrieve virtual machines that matches the filters given. Each
-        filter is written in the following way: filter_name==filter_value or filter_name!=filter_value.
-        Possible combinations of OR (using comma '','') and AND (using semicolon '';''),
-        for Example: machine_type==pc;power_state!=off,ha_priority==0 is parsed by
-        Nutanix the following way: Return all virtual machines s.t (machine type ==
-        pc AND power_state != off) OR ha_priority == 0.'
+    - description: Retrieve hosts that matches the filters given. For further explanation about possible filters, see Nutanix README.
       name: filter
     - description: Maximum number of virtual machines to retrieve.
       name: limit
@@ -623,10 +605,9 @@ script:
         be retrieved.
       isArray: true
       name: classifications
-    - description: 'Comma separated list. Retrieve alerts that their entity_type matches
-        one of the entity_type in entity_types list. Examples for entity types: [VM,
-        Host, Disk, Storage Container, Cluster]. If Nutanix service can''t recognize
-        the entity type, it returns 404 response.'
+    - description: Comma separated list. Retrieve alerts that their entity_type matches
+        one of the entity_type in entity_types list. For more details see Nutanix README. If Nutanix service can't recognize
+        the entity type, it returns 404 response.
       isArray: true
       name: entity_types
     - description: Page number in the query response, default is 1. When page is specified,
@@ -819,10 +800,9 @@ script:
         be acknowledged.
       isArray: true
       name: classifications
-    - description: 'Comma separated list. Acknowledge alerts that their entity_type
-        matches one of the entity_type in entity_types list. Examples for entity types:
-        [VM, Host, Disk, Storage Container, Cluster]. If Nutanix service can''t recognize
-        the entity type, it returns 404 response.'
+    - description: Comma separated list. Retrieve alerts that their entity_type matches
+        one of the entity_type in entity_types list. For more details see Nutanix README. If Nutanix service can't recognize
+        the entity type, it returns 404 response.
       isArray: true
       name: entity_types
     - description: Maximum number of alerts to acknowledge. Nutanix does not have
@@ -879,10 +859,9 @@ script:
         be resolved.
       isArray: true
       name: classifications
-    - description: 'Comma separated list. Resolve alerts that their entity_type matches
-        one of the entity_type in entity_types list. Examples for entity types: [VM,
-        Host, Disk, Storage Container, Cluster]. If Nutanix service can''t recognize
-        the entity type, it returns 404 response.'
+    - description: Comma separated list. Retrieve alerts that their entity_type matches
+        one of the entity_type in entity_types list. For more details see Nutanix README. If Nutanix service can't recognize
+        the entity type, it returns 404 response.
       name: entity_types
     - description: Maximum number of alerts to resolve. Nutanix does not have max
         for limit, but a very high limit value will cause read timeout exception.
