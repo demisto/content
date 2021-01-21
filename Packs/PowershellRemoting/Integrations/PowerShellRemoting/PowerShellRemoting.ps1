@@ -461,13 +461,13 @@ function TestModuleCommand {
     param([RemotingClient]$client)
 
     if ($client.ssl) {
-        $res = Test-Connection -TcpPort 5986 -TargetName $client.fqdn_list
+        $res = Test-Connection -TcpPort 5986 -TargetName $client.fqdn_list -ErrorAction Stop
         if (-not $res) {
             throw 'Could not create connection for host ' + $client.fqdn_list + ' via port 5986.'
         }
     }
     else {
-        $res = Test-Connection -TcpPort 5985 -TargetName $client.fqdn_list
+        $res = Test-Connection -TcpPort 5985 -TargetName $client.fqdn_list -ErrorAction Stop
         if (-not $res) {
             throw 'Could not create connection for host ' + $client.fqdn_list + ' via port 5985.'
         }
