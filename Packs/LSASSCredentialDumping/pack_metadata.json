@@ -1,0 +1,14 @@
+{
+    "name": "LSASS Credential Dumping",
+    "description": "Credential dumping is an attack technique where attackers extract user authentication credentials such as usernames and passwords. When users log on to a system, the credentials get stored in the memory process Local Security Authority Subsystem Service (LSASS). Both administrative users and SYSTEM can harvest these credentials. This attack is only possible because operating systems store credentials in memory to save users from having to enter credentials whenever they want to use a service.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Accenture",
+    "url": "",
+    "email": "",
+    "created": "2020-12-18T18:06:49Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
