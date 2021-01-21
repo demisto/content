@@ -1,7 +1,6 @@
 commonfields:
   id: NCSCQuestionPopulate
-  version: 4
-vcShouldKeepItemLegacyProdMachine: false
+  version: -1
 name: NCSCQuestionPopulate
 script: ''
 type: python
@@ -10,7 +9,10 @@ comment: Populate a list named "NCSC CAF Assessment" with a list of the NCSC Que
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
 dockerimage: demisto/python3:3.9.1.14969
 runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
+description: 'This script is used to populate the custom list with the NCSC questions and answers.'
