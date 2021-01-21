@@ -76,9 +76,9 @@ CONTEXT_FUNCTIONS = [create_context_for_campaign_details, create_context_for_ind
 
 
 def create_empty_context():
-    context = {}
+    context = {}   # type: ignore
     for f in CONTEXT_FUNCTIONS:
-        context = {**context, **f()}
+        context = {**context, **f()}  # type: ignore
     context = add_context_key(context)
     return context
 
@@ -138,7 +138,7 @@ def calculate_campaign_details_table(incidents_df):
     else:
         headers.append('Similarity')
         contents.append("{:.1f}%".format(max_similarity * 100))
-    incidents_df['created_dt'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))
+    incidents_df['created_dt'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
     datetimes = incidents_df['created_dt'].dropna()  # type: ignore
     min_datetime, max_datetime = min(datetimes), max(datetimes)
     if (max_datetime - min_datetime).days == 0:
@@ -148,9 +148,9 @@ def calculate_campaign_details_table(incidents_df):
         headers.append('Date range')
         contents.append('{} - {}'.format(min_datetime.strftime("%B %d, %Y"), max_datetime.strftime("%B %d, %Y")))
     senders = incidents_df[FROM_FIELD].dropna().replace('', np.nan).tolist()
-    senders_counter = Counter(senders).most_common()
+    senders_counter = Counter(senders).most_common()  # type: ignore
     senders_domain = incidents_df[FROM_DOMAIN_FIELD].replace('', np.nan).dropna().tolist()
-    domains_counter = Counter(senders_domain).most_common()
+    domains_counter = Counter(senders_domain).most_common()  # type: ignore
     if len(senders_counter) == 1:
         domain_header = "Sender domain"
         sender_header = "Sender address"
@@ -207,7 +207,7 @@ def summarize_email_body(body, subject, nb_sentences=3):
             if word.lower() in word_frequency.keys():
                 if i in sentence_rank.keys():
                     sentence_rank[i] += word_frequency[word.lower()]
-        sentence_rank[i] = sentence_rank[i] / len(word_tokenize(sent))
+        sentence_rank[i] = sentence_rank[i] / len(word_tokenize(sent))  # type: ignore
     sorted_sentence_rank = sorted(sentence_rank.items(), key=lambda item: item[1], reverse=True)
     top_sentences_indices = [sent_i for sent_i, _ in sorted_sentence_rank[:nb_sentences]]
     summary = [corpus[sent_i].strip() for sent_i in sorted(top_sentences_indices)]
@@ -276,7 +276,7 @@ def return_indicator_entry(incidents_df):
 def return_involved_incdients_entry(incidents_df):
     incidents_df['Id'] = incidents_df['id'].apply(lambda x: "[%s](#/Details/%s)" % (x, x))
     incidents_df = incidents_df.sort_values('created', ascending=False).reset_index(drop=True)
-    incidents_df['created_dt'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))
+    incidents_df['created_dt'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
     incidents_df['Created'] = incidents_df['created_dt'].apply(lambda x: x.strftime("%B %d, %Y"))
     incidents_df['similarity'] = incidents_df['similarity'].fillna(1)
     incidents_df['similarity'] = incidents_df['similarity'].apply(lambda x: '{:.2f}%'.format(x * 100))
@@ -305,6 +305,7 @@ def analyze_incidents_campaign(incidents):
     indicators = return_indicator_entry(incidents_df)
     return_involved_incdients_entry(incidents_df)
     draw_canvas(incidents, indicators)
+
 
 def main():
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD

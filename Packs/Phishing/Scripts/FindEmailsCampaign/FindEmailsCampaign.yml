@@ -116,6 +116,7 @@ args:
   name: minUniqueRecipients
   required: false
   secret: false
+comment: Find a campaing of emails based on their textual similarity.
 commonfields:
   id: FindEmailsCampaign
   version: -1
