@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: WildFire-v2 copy
+  id: WildFire-v2
   version: -1
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
@@ -25,8 +25,8 @@ configuration:
   required: false
   type: 8
 description: Perform malware dynamic analysis
-display: Palo Alto Networks WildFire v2 copy
-name: WildFire-v2 copy
+display: Palo Alto Networks WildFire v2
+name: WildFire-v2
 script:
   commands:
   - arguments:

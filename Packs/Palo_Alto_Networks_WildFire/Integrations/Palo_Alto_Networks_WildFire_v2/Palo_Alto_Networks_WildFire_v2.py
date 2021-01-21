@@ -496,7 +496,7 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
     evidence_md5 = []
     evidence_text = []
     feed_related_indicators = []
-    behavior = {'Details': [], 'Action': []}
+    behavior = []
 
     # When only one report is in response, it's returned as a single json object and not a list.
     if not isinstance(reports, list):
@@ -526,9 +526,10 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                         dns_response.append(dns_obj['-response'])
             if 'url' in report["network"]:
                 if '@host' in report["network"]["url"]:
-                    feed_related_indicators.append(report["network"]["url"]["@host"])
+                    url = report["network"]["url"]["@host"]
                 if '@uri' in report["network"]["url"]:
-                    feed_related_indicators.append(report["network"]["url"]["@uri"])
+                    url += report["network"]["url"]["@uri"]
+                feed_related_indicators.append(url)
 
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
@@ -541,32 +542,18 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
         if 'elf_info' in report and report["elf_info"]:
             if 'Domains' in report["elf_info"]:
                 if isinstance(report["elf_info"]["Domains"], dict) and 'entry' in report["elf_info"]["Domains"]:
-                    feed_related_indicators + report["elf_info"]["Domains"]["entry"]
+                    feed_related_indicators += report["elf_info"]["Domains"]["entry"]
             if 'IP_Addresses' in report["elf_info"]:
                 if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in report["elf_info"]["IP_Addresses"]:
-                    feed_related_indicators + report["elf_info"]["IP_Addresses"]["entry"]
+                    feed_related_indicators += report["elf_info"]["IP_Addresses"]["entry"]
             if 'suspicious' in report["elf_info"]:
                 if 'entry' in report["elf_info"]['suspicious']:
                     for entry_obj in report["elf_info"]['suspicious']['entry']:
-                        if '#text' in entry_obj:
-                            behavior['Details'].append(entry_obj['#text'])
-        if 'elf_api' in report and report["elf_api"]:
-            if 'Suspicious_Action_Monitored' in report["elf_api"]:
-                for suspicious_obj in report["elf_api"]['Suspicious_Action_Monitored']:
-                    if '@Details' in suspicious_obj:
-                        behavior['Details'].append(suspicious_obj['@Details'])
-
-        if 'syscall' in report and report["syscall"]:
-            if 'file' in report["syscall"]:
-                for file_obj in report["syscall"]["file"]:
-                    if '@path' in file_obj:
-                        feed_related_indicators.append(file_obj["@path"])
-
-        if 'summary' in report and report["summary"]:
-            if 'entry' in report["summary"]:
-                for entry_obj in report["summary"]["entry"]:
-                    if '@details' in entry_obj:
-                        behavior['Action'].append(entry_obj["@details"])
+                        if '#text' in entry_obj and '@description' in entry_obj:
+                            behavior.append({'Details': entry_obj['#text'], 'Action': entry_obj['@description']})
+            if 'URLs' in report["elf_info"]:
+                if 'entry' in report["elf_info"]['URLs']:
+                    feed_related_indicators += report["elf_info"]['URLs']['entry']
 
     outputs = {
         'Status': 'Success',
