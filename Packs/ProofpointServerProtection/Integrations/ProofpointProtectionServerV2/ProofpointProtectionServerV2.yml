@@ -27,7 +27,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: 'Final disposition action message. Possible values are: "accept", "continue", "discard", "redirect", "reject", "retry".'
+      description: 'Final disposition action message. Possible values are: "accept",
+        "continue", "discard", "redirect", "reject", "retry".'
       isArray: false
       name: action
       predefined:
@@ -41,19 +42,24 @@ script:
       secret: false
     - default: false
       defaultValue: 24 hours
-      description: Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z).
+      description: Time from when the search should begin. Can be either free text
+        (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ,
+        e.g., 2020-01-25T10:00:00Z).
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: Time of when the search should end. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z).
+      description: Time of when the search should end. Can be either free text (<number>
+        <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g.,
+        2020-01-25T10:00:00Z).
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of the detected virus names that infected the message.
+      description: Comma-separated list of the detected virus names that infected
+        the message.
       isArray: false
       name: virus
       required: false
@@ -107,21 +113,24 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        The ID of the header message. This corresponds to the Message ID field in the UI.
+      description: The ID of the header message. This corresponds to the Message ID
+        field in the UI.
       isArray: false
       name: message_id
       required: false
       secret: false
     - default: false
       defaultValue: '100'
-      description: The maximum number of email messages to return. The maximum value is set by the com.proofpoint.pss.query.default-count value in the filter.cfg file.
+      description: The maximum number of email messages to return. The maximum value
+        is set by the com.proofpoint.pss.query.default-count value in the filter.cfg
+        file.
       isArray: false
       name: limit
       required: false
       secret: false
     deprecated: false
-    description: Trace and analyze information about messages after they have been filtered by the Proofpoint Protection Server.
+    description: Trace and analyze information about messages after they have been
+      filtered by the Proofpoint Protection Server.
     execution: false
     name: proofpoint-pps-smart-search
     outputs:
@@ -256,32 +265,41 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Envelope message sender equals, starts with, ends with, or is in a domain such as "bar.com". At least one of the following arguments must be specified: sender, recipient, subject.'
+      description: 'Envelope message sender equals, starts with, ends with, or is
+        in a domain such as "bar.com". At least one of the following arguments must
+        be specified: sender, recipient, subject.'
       isArray: false
       name: sender
       required: false
       secret: false
     - default: false
-      description: 'Envelope message recipient equals, starts with, ends with, or is in a domain such as "bar.com". At least one of the following arguments must be specified: sender, recipient, subject.'
+      description: 'Envelope message recipient equals, starts with, ends with, or
+        is in a domain such as "bar.com". At least one of the following arguments
+        must be specified: sender, recipient, subject.'
       isArray: false
       name: recipient
       required: false
       secret: false
     - default: false
-      description: 'Message subject starts with, ends with, or contains. At least one of the following arguments must be specified: sender, recipient, subject.'
+      description: 'Message subject starts with, ends with, or contains. At least
+        one of the following arguments must be specified: sender, recipient, subject.'
       isArray: false
       name: subject
       required: false
       secret: false
     - default: false
       defaultValue: 24 hours
-      description: Time from when the search should begin. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z).
+      description: Time from when the search should begin. Can be either free text
+        (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ,
+        e.g., 2020-01-25T10:00:00Z).
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: Time of when the search should end. Can be either free text (<number> <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g., 2020-01-25T10:00:00Z).
+      description: Time of when the search should end. Can be either free text (<number>
+        <time unit>, e.g., 12 hours, 7 days) or ISO-8601 (YYYY-MM-DDThh:mm:ssZ, e.g.,
+        2020-01-25T10:00:00Z).
       isArray: false
       name: end_time
       required: false
@@ -294,7 +312,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: Message Global Unique Identifier (generated by PPS) to retrieve raw data for a message. If it is specified and a message is found, the message’s raw data is returned.
+      description: Message Global Unique Identifier (generated by PPS) to retrieve
+        raw data for a message. If it is specified and a message is found, the message’s
+        raw data is returned.
       isArray: false
       name: guid
       required: false
@@ -348,14 +368,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
+      description: Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id
+        (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ
+        wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list
+        command.
       isArray: false
       name: local_guid
       required: true
       secret: false
     - default: false
-      description: Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP incidents, and vice versa.
+      description: Name of the folder to move the message to. The folder must be for
+        quarantined messages from the same type of module. For example, you cannot
+        send deleted spam messages to a folder for deleted DLP incidents, and vice
+        versa.
       isArray: false
       name: deleted_folder
       required: false
@@ -363,7 +388,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to rescan the message by the DLP and Attachment Defense filtering modules. Possible values are: "true" and "false".'
+      description: 'Whether to rescan the message by the DLP and Attachment Defense
+        filtering modules. Possible values are: "true" and "false".'
       isArray: false
       name: scan
       predefined:
@@ -372,19 +398,27 @@ script:
       required: false
       secret: false
     - default: false
-      description: When encryption is licensed, the Branding Template to use when an encrypted message is released. The Branding Templates are listed on the System > End User Services > Branding Templates page in the management interface (admin GUI).
+      description: When encryption is licensed, the Branding Template to use when
+        an encrypted message is released. The Branding Templates are listed on the
+        System > End User Services > Branding Templates page in the management interface
+        (admin GUI).
       isArray: false
       name: brand_template
       required: false
       secret: false
     - default: false
-      description: The Secure Reader response profile to use when a release is used for an encrypted message.The Response Profiles are listed on the Information Protection > Encryption > Response Profiles page in the management interface (admin UI).
+      description: The Secure Reader response profile to use when a release is used
+        for an encrypted message.The Response Profiles are listed on the Information
+        Protection > Encryption > Response Profiles page in the management interface
+        (admin UI).
       isArray: false
       name: security_policy
       required: false
       secret: false
     deprecated: false
-    description: Releases the message to the email infrastructure without further scanning. The message remains in the folder and will be moved to the `deleted_folder` if specified.
+    description: Releases the message to the email infrastructure without further
+      scanning. The message remains in the folder and will be moved to the `deleted_folder`
+      if specified.
     execution: false
     name: proofpoint-pps-quarantine-message-release
   - arguments:
@@ -395,14 +429,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-        Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7).
+      description: Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id
+        (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ
+        wmmxwP6lQkr5k7).
       isArray: false
       name: local_guid
       required: true
       secret: false
     deprecated: false
-    description: Resubmits the message to the filtering modules. The message is removed from the folder and will not be moved to any folder.
+    description: Resubmits the message to the filtering modules. The message is removed
+      from the folder and will not be moved to any folder.
     execution: false
     name: proofpoint-pps-quarantine-message-resubmit
   - arguments:
@@ -413,20 +449,26 @@ script:
       required: true
       secret: false
     - default: false
-      description: |-
-         Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
+      description: Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id
+        (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ
+        wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list
+        command.
       isArray: false
       name: local_guid
       required: true
       secret: false
     - default: false
-      description: Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP Incidents, and vice versa.
+      description: Name of the folder to move the message to. The folder must be for
+        quarantined messages from the same type of module. For example, you cannot
+        send deleted spam messages to a folder for deleted DLP Incidents, and vice
+        versa.
       isArray: false
       name: deleted_folder
       required: false
       secret: false
     - default: false
-      description: The new subject with which to overwrite the original subject for the message.
+      description: The new subject with which to overwrite the original subject for
+        the message.
       isArray: false
       name: subject
       required: false
@@ -434,7 +476,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to append the original subject to the string specified in the subject argument. Possible values are: "true" and "false".'
+      description: 'Whether to append the original subject to the string specified
+        in the subject argument. Possible values are: "true" and "false".'
       isArray: false
       name: append_old_subject
       predefined:
@@ -469,7 +512,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Forwards the message to another recipient. The message remains in the folder and will be moved to the deleted_folder if specified.
+    description: Forwards the message to another recipient. The message remains in
+      the folder and will be moved to the deleted_folder if specified.
     execution: false
     name: proofpoint-pps-quarantine-message-forward
   - arguments:
@@ -488,7 +532,10 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the folder to move the email message to (e.g., PCI).The folder for moved messages must be for quarantined messages from the same type of module. For example, you cannot move spam messages to a folder for DLP incidents, and vice versa.
+      description: Name of the folder to move the email message to (e.g., PCI).The
+        folder for moved messages must be for quarantined messages from the same type
+        of module. For example, you cannot move spam messages to a folder for DLP
+        incidents, and vice versa.
       isArray: false
       name: target_folder
       required: true
@@ -513,18 +560,23 @@ script:
       required: true
       secret: false
     - default: false
-      description: Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP Incidents, and vice versa.
+      description: Name of the folder to move the message to. The folder must be for
+        quarantined messages from the same type of module. For example, you cannot
+        send deleted spam messages to a folder for deleted DLP Incidents, and vice
+        versa.
       isArray: false
       name: deleted_folder
       required: false
       secret: false
     deprecated: false
-    description: Deletes the message from the quarantine folder. The message is removed from its folder and moved to the deleted_folder if specified.
+    description: Deletes the message from the quarantine folder. The message is removed
+      from its folder and moved to the deleted_folder if specified.
     execution: false
     name: proofpoint-pps-quarantine-message-delete
   - arguments:
     - default: false
-      description: Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
+      description: Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7).
+        Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
       isArray: false
       name: guid
       required: true
