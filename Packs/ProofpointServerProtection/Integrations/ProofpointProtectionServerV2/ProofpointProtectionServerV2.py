@@ -140,7 +140,7 @@ def test_module(client: Client) -> str:
 def smart_search(client: Client, args: Dict[str, Any]) -> CommandResults:
     assert (start_time := parse(args.get('start_time', '24 hours'))), \
         f"Failed parsing start time: {args.get('start_time')}"
-    assert (end_time := parse(args.get('end_time', 'now'))), f"Failed parsing endd time: {args.get('end_time')}"
+    assert (end_time := parse(args.get('end_time', 'now'))), f"Failed parsing end time: {args.get('end_time')}"
     result = client.smart_search_request(
         action=args.get('action'),
         from_=start_time.isoformat(),
