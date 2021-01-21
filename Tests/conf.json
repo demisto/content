@@ -910,7 +910,7 @@
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "nightly": true,
-            "timeout": 900
+            "timeout": 1400
         },
         {
             "integrations": "Tenable.sc",
@@ -3159,7 +3159,8 @@
         },
         {
             "integrations": "Cryptocurrency",
-            "playbookID": "Cryptocurrency-Test"
+            "playbookID": "Cryptocurrency-Test",
+            "is_mockable": false
         },
         {
             "integrations": "Public DNS Feed",
@@ -3497,6 +3498,7 @@
         "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [
+        "Cryptocurrency",
         "SNDBOX",
         "Whois",
         "Rasterize",
