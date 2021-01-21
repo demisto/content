@@ -44,8 +44,7 @@ script:
     execution: false
     name: azure-sql-auth-complete
   - deprecated: false
-    description: Run this command if for some reason you need to rerun the authentication
-      process.
+    description: Run this command if you need to rerun the authentication process.
     execution: false
     name: azure-sql-auth-reset
   - deprecated: false
@@ -55,25 +54,25 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: (Int) The maximum number of servers returned to the War Room.
+      description: (Int) The maximum number of servers returned to the War Room. Default is "50".
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: '(Int) Offset in the data set. '
+      description: Offset in the data set. Default is "0".
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: List of all servers.
+    description: Lists all the servers.
     execution: false
     name: azure-sql-servers-list
     outputs:
     - contextPath: AzureSQL.Server
-      description: Servers list
+      description: Server list.
       type: Unknown
     - contextPath: AzureSQL.Server.kind
       description: Kind of server.
@@ -82,10 +81,10 @@ script:
       description: Server location.
       type: String
     - contextPath: AzureSQL.Server.tags
-      description: Server Tags.
+      description: Server tags.
       type: Unknown
     - contextPath: AzureSQL.Server.id
-      description: Server id.
+      description: Server ID.
       type: String
     - contextPath: AzureSQL.Server.name
       description: Server name.
@@ -94,7 +93,7 @@ script:
       description: Server type.
       type: String
     - contextPath: AzureSQL.Server.administratorLogin
-      description: Username of server administrator.
+      description: Username of the server administrator.
       type: String
     - contextPath: AzureSQL.Server.version
       description: Server version.
@@ -103,14 +102,14 @@ script:
       description: Server state.
       type: String
     - contextPath: AzureSQL.Server.fullyQualifiedDomainName
-      description: Servers fully qualified domain name.
+      description: Fully qualified domain name of the server.
       type: Unknown
     - contextPath: AzureSQL.Server.privateEndpointConnections
-      description: List of servers private endpoint connections.
+      description: List of private endpoint connections of the server.
       type: Unknown
     - contextPath: AzureSQL.Server.publicNetworkAccess
-      description: Servers public endpoint access. The value is 'Enabled' or 'Disabled'.
-      type: String
+      description: Whether the public endpoint access of the server is enabled.
+      type: Boolean
   - arguments:
     - default: false
       description: Server name.
@@ -120,25 +119,25 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: (Int) The maximum number of DataBases returned to the War Room.
+      description: The maximum number of dataBases returned to the War Room. Default is "50".
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: '(Int) Offset in the data set. '
+      description: Offset in the data set. Default is "0'.
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: List of all DataBases for server.
+    description: List of all databases for the server.
     execution: false
     name: azure-sql-db-list
     outputs:
     - contextPath: AzureSQL.DB
-      description: All DB related to the server.
+      description: All databases related to the server.
       type: Unknown
     - contextPath: AzureSQL.DB.kind
       description: Kind of database.
@@ -147,7 +146,7 @@ script:
       description: Database location.
       type: String
     - contextPath: AzureSQL.DB.id
-      description: Database id.
+      description: Database ID.
       type: String
     - contextPath: AzureSQL.DB.name
       description: Database name.
@@ -156,43 +155,43 @@ script:
       description: Database type.
       type: String
     - contextPath: AzureSQL.DB.managedBy
-      description: Recource that manages database.
+      description: Resource that manages the database.
       type: String
     - contextPath: AzureSQL.DB.sku
       description: Database SKU.
       type: Unknown
     - contextPath: AzureSQL.DB.catalogCollation
-      description: Collation of catalog.
+      description: Collation of the catalog for the database.
       type: String
     - contextPath: AzureSQL.DB.collation
       description: Database collation.
       type: String
     - contextPath: AzureSQL.DB.creationDate
-      description: Creation date of the database, in ISO format.
+      description: Creation date of the database in ISO format.
       type: String
     - contextPath: AzureSQL.DB.currentServiceObjectiveName
-      description: Database's current service level objective name.
+      description: Current service level objective name of the database.
       type: String
     - contextPath: AzureSQL.DB.currentSku
-      description: Name, Tier and capacity of the SKU.
+      description: Name, tier, and capacity of the SKU.
       type: Unknown
     - contextPath: AzureSQL.DB.databaseID
       description: Database ID.
       type: String
     - contextPath: AzureSQL.DB.defaultSecondaryLocation
-      description: Default secondarylocation of the database.
+      description: Default secondary location of the database.
       type: String
     - contextPath: AzureSQL.DB.maxSizeBytes
-      description: The max size of the database in bytes.
+      description: The maximum size of the database in bytes.
       type: Number
     - contextPath: AzureSQL.DB.readReplicaCount
-      description: The number of readonly secondary replicas of the database.
+      description: The number of read-only secondary replicas of the database.
       type: Number
     - contextPath: AzureSQL.DB.readScale
-      description: The state of read-only routing.  "Enabled" or "Disabled".
+      description: The read-only routing state.  
       type: String
     - contextPath: AzureSQL.DB.requestedServiceObjectiveName
-      description: 'Database''s requested service objective name. '
+      description: The requested service objective name of the database.
       type: String
     - contextPath: AzureSQL.DB.status
       description: Database status.
@@ -201,7 +200,7 @@ script:
       description: Database storage account type.
       type: String
     - contextPath: AzureSQL.DB.zoneRedundant
-      description: Is the database zone redundan.
+      description: Whether the database zone is redundant.
       type: Boolean
   - arguments:
     - default: false
@@ -218,42 +217,41 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: (Int) The maximum number of DataBases audit policies returned to
-        the War Room.
+      description: The maximum number of database audit policies returned to
+        the War Room. Default is "50".
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
       defaultValue: '0'
-      description: (Int) Offset in the data set.
+      description: Offset in the data set. Default is "0".
       isArray: false
       name: offset
       required: false
       secret: false
     deprecated: false
-    description: Auditing settings of a database.
+    description: Gets the audit settings of the specified database.
     execution: false
     name: azure-sql-db-audit-policy-list
     outputs:
     - contextPath: AzureSQL.DBAuditPolicy
-      description: All DB related to the server.
+      description: List of all DB audit settings.
       type: Unknown
     - contextPath: AzureSQL.DBAuditPolicy.kind
       description: Kind of audit policy.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.id
-      description: Audit policy id.
+      description: Audit policy ID.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.name
       description: Audit policy name.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.type
-      description: Database type.
+      description: Resource type.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled
-      description: Whether audit events are sent to Azure Monitor. the value is "
-        Enabled" or "Disabled".
+      description: 'Whether audit events are sent to Azure Monitor. Possible values: "True" (Enabled) or "False" (Disabled).'
       type: Boolean
     - contextPath: AzureSQL.DBAuditPolicy.retentionDays
       description: Number of days to keep in the audit logs in the storage account.
@@ -262,13 +260,13 @@ script:
       description: Policy state.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.storageAccountSubscriptionId
-      description: storage subscription Id.
+      description: Storage subscription ID.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.databaseName
-      description: The name of database, that audit policy related to.
+      description: The name of the database that the audit policy is related to.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.serverName
-      description: The name of server, that audit policy related to.
+      description: The name of the server that the audit policy is related to.
       type: String
   - arguments:
     - default: false
@@ -284,62 +282,61 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Threat detection policy of a database.
+    description: Gets the threat detection policy of the specified database.
     execution: false
     name: azure-sql-db-threat-policy-get
     outputs:
     - contextPath: AzureSQL.DBThreatPolicy
-      description: All Threat Policy related to the database.
+      description: All threat policies related to the database.
       type: Unknown
     - contextPath: AzureSQL.DBThreatPolicy.kind
-      description: Kind of Threat Policy.
+      description: Kind of threat policy.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.location
-      description: Threat Policy location.
+      description: Threat policy location.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.id
-      description: Threat Policy id.
+      description: Threat policy ID.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.name
-      description: Threat Policy name.
+      description: Threat policy name.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.type
-      description: Threat Policy type.
+      description: Threat policy type.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.state
-      description: Policy state.
+      description: Threat policy state.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.creationTime
-      description: Policy creation Time.
+      description: PThreat policy creation time.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.retentionDays
       description: Number of days to keep in the Threat Detection audit logs.
       type: Number
     - contextPath: AzureSQL.DBThreatPolicy.storageAccountAccessKey
-      description: Specifies the identifier key of the Threat Detection audit storage
+      description: The identifier key of the Threat Detection audit storage.
         account.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.storageEndpoint
       description: Threat Detection audit storage account.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.emailAccountAdmins
-      description: Email account administrators that alert is sent to.
+      description: Email account administrators who the alert is sent to.
       type: Boolean
     - contextPath: AzureSQL.DBThreatPolicy.emailAddresses
-      description: list of e-mail addresses to which the alert is sent.
+      description: List of email addresses to which the alert is sent.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.disabledAlerts
-      description: list of alerts that are disabled, or empty string to disable no
-        alerts.
+      description: List of alerts that are disabled, or an empty string if no alerts are disabled.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.useServerDefault
-      description: whether to use the default server policy.
+      description: Whether to use the default server policy.
       type: Unknown
     - contextPath: AzureSQL.DBThreatPolicy.databaseName
-      description: The name of database, that threat policy related to.
+      description: The name of the database that the threat policy is related to.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.serverName
-      description: The name of server, that threat policy related to.
+      description: The name of server that the threat policy is related to.
       type: String
   - arguments:
     - default: false
@@ -356,8 +353,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set state 'Enable' or 'Disable'. When state is Enabled, storage_endpoint
-        or is_azure_monitor_target_enabled are required.
+      description: 'Set the state of the policy. Possible values: "Enable" or "Disable". When state is enabled, storage_endpoint or is_azure_monitor_target_enabled are required.'
       isArray: false
       name: state
       predefined:
@@ -366,15 +362,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma-separated Actions-Groups and Actions to audit. For all Possible
-        values visit integration documentation at https://xsoar.pan.dev/.
+      description: Comma-separated list of actions groups and actions to audit. For all possible
+        values, see the integration documentation at https://xsoar.pan.dev/reference/integrations/Azure-SQL-Management.
       isArray: true
       name: audit_actions_groups
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is audit events are sent to Azure Monitor.
+      description: 'Whether audit events are sent to the Azure Monitor. Possible values: "true" and "false".'
       isArray: false
       name: is_azure_monitor_target_enabled
       predefined:
@@ -384,8 +380,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Is storage Account Access Key value is the storage's secondary
-        key.
+      description: 'Whether the storage Account Access Key value is the storage's secondary
+        key. Possible values: "true" and "false".'
       isArray: false
       name: is_storage_secondary_key_in_use
       predefined:
@@ -413,20 +409,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: storage subscription Id
+      description: Storage subscription ID
       isArray: false
       name: storage_account_subscription_id
       required: false
       secret: false
     - default: false
-      description: Storage endpoint. If state is Enabled, storageEndpoint or isAzureMonitorTargetEnabled
-        is required.
+      description: Storage endpoint. If the value for the state argument is Enabled, the value for the storage_endpoint or is_azure_monitor_target_enabled argument is required.
       isArray: false
       name: storage_endpoint
       required: false
       secret: false
     deprecated: false
-    description: Create or update database's auditing policy.
+    description: Creates or updates the database's auditing policy.
     execution: false
     name: azure-sql-db-audit-policy-create-update
     outputs:
@@ -434,48 +429,47 @@ script:
       description: Kind of audit policy.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.id
-      description: Audit policy id.
+      description: Audit policy ID.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.name
       description: Audit policy name.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.type
-      description: Database type.
+      description: Resource type.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled
-      description: Whether audit events are sent to Azure Monitor. the value is "
-        Enabled" or "Disabled".
+      description: Whether audit events are sent to Azure Monitor. The value is "True" (Enabled) or "False" (Disabled).
       type: Boolean
     - contextPath: AzureSQL.DBAuditPolicy.retentionDays
       description: Number of days to keep in the audit logs in the storage account.
       type: Number
     - contextPath: AzureSQL.DBAuditPolicy.state
-      description: Policy state
+      description: Policy state.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.storageAccountSubscriptionId
-      description: storage subscription Id.
+      description: Storage subscription ID.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.auditActionsAndGroups
-      description: audit Actions And Groups to audit.
+      description: Audit actions and groups to audit.
       type: Unknown
     - contextPath: AzureSQL.DBAuditPolicy.isStorageSecondaryKeyInUse
-      description: Is storageAccountAccessKey value is the storage's secondary key.
-      type: String
+      description: Whether the storage_account_access_key value is the storage's secondary key.
+      type: Boolean
     - contextPath: AzureSQL.DBAuditPolicy.queueDelayMs
       description: Time in milliseconds that can elapse before audit actions are forced
         to be processed.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.storageAccountAccessKey
-      description: identifier key of the auditing storage account.
+      description: Identifier key of the auditing storage account.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.storageEndpoint
       description: Storage endpoint.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.databaseName
-      description: The name of database, that audit policy related to.
+      description: The name of the database that the audit policy is related to.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.serverName
-      description: The name of server, that audit policy related to.
+      description: The name of server that the audit policy is related to.
       type: String
   - arguments:
     - default: false
@@ -492,7 +486,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: set state 'Enable' or 'Disable'
+      description: 'The state of the policy. Possible values: "Enabled" and "Disabled".'
       isArray: false
       name: state
       predefined:
@@ -507,28 +501,27 @@ script:
       required: false
       secret: false
     - default: false
-      description: The identifier key of the Threat Detection audit storage account.
+      description: The identifier key of the threat detection audit storage account.
       isArray: false
       name: storage_account_access_key
       required: false
       secret: false
     - default: false
-      description: Storage endpoint. If state is Enabled, storageEndpoint or isAzureMonitorTargetEnabled
-        is required.
+      description: The blob storage endpoint. This blob storage will hold all Threat Detection audit logs.
       isArray: false
       name: storage_endpoint
       required: false
       secret: false
     - default: false
       description: 'Comma-separated list of alerts that are disabled. Possible values:
-        None, Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration,
-        Unsafe_Action'
+        "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration",
+        "Unsafe_Action."'
       isArray: true
       name: disabled_alerts
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of e-mail addresses to which the alert is
+      description: Comma-separated list of email addresses to which the alert is
         sent.
       isArray: true
       name: email_addresses
@@ -536,7 +529,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The alert is sent to the account administrators.
+      description: 'Whether the alert is sent to the account administrators. Possible values: "true" and "false".'
       isArray: false
       name: email_account_admins
       predefined:
@@ -546,7 +539,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to use the default server policy or not.
+      description: 'Whether to use the default server policy. Possible values: "Enabled" and "Disabled".'
       isArray: false
       name: use_server_default
       predefined:
@@ -555,30 +548,30 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Create or update database's threat detection policy.
+    description: Create or update the database's threat detection policy.
     execution: false
     name: azure-sql-db-threat-policy-create-update
     outputs:
     - contextPath: AzureSQL.DBThreatPolicy.kind
-      description: Kind of Threat Policy.
+      description: Kind of threat policy.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.location
-      description: Threat Policy location.
+      description: Threat policy location.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.id
-      description: Threat Policy id
+      description: Threat policy ID
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.name
-      description: Threat Policy name
+      description: Threat policy name.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.type
-      description: Threat Policy type.
+      description: Threat policy type.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.state
-      description: Policy state
+      description: Threat policy state.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.creationTime
-      description: Policy creation Time
+      description: Threat policy creation Time
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.retentionDays
       description: Number of days to keep in the Threat Detection audit logs.
@@ -590,23 +583,22 @@ script:
       description: Threat Detection audit storage account.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.emailAccountAdmins
-      description: Email account administrators that alert is sent to.
+      description: Email accounts of the administrators who the alert is sent to.
       type: Boolean
     - contextPath: AzureSQL.DBThreatPolicy.emailAddresses
-      description: list of e-mail addresses to which the alert is sent.
+      description: List of email addresses to which the alert is sent.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.disabledAlerts
-      description: list of alerts that are disabled, or empty string to disable no
-        alerts.
+      description: List of alerts that are disabled, or an empty string if no alerts are disabled.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.useServerDefault
-      description: whether to use the default server policy.
+      description: Whether to use the default server policy.
       type: Unknown
     - contextPath: AzureSQL.DBThreatPolicy.databaseName
-      description: The name of database, that threat policy related to.
+      description: The name of the database that the threat policy is related to.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.serverName
-      description: The name of server, that threat policy related to.
+      description: The name of server that the threat policy is related to.
       type: String
   dockerimage: demisto/crypto:1.0.0.14297
   feed: false
