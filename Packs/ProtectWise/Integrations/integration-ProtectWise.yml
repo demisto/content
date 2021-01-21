@@ -250,6 +250,7 @@ script:
                     }
                 }
             }
+            lastRun.time = Math.max(now, lastRun.time);
             lastRun.oldIdList = newIdList;
             logError(JSON.stringify(newIdList));
             setLastRun(lastRun);
