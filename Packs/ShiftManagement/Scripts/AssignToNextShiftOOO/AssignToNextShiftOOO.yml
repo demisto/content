@@ -1,19 +1,19 @@
 args:
 - default: false
-  description: The Incident IDs to reassign, can be a comma separated list (1,2,3,4)
+  description: A comma-separated list of incident IDs to reassign, for example, 1,2,3,4.
   isArray: false
   name: incidentIds
   required: true
   secret: false
 - default: false
   defaultValue: OOO List
-  description: Optionally pass in a different XSOAR list to run this automation against (defaults to OOO List)
+  description: Optionally pass a different XSOAR list to run this automation against. (The default to OOO List.)
   isArray: false
   name: listname
   required: false
   secret: false
 comment: |-
-  Randomly assigns the incidents to users on call (requires shift management) and users on call. This automation used for reassigning a large number of Incidents to the next shift, it works with the other Out of Office automations to ensure only available users get assigned. Incident Ids should be passed in as a comma separated list.
+  Randomly assigns the incidents to users on call (requires shift management). This automation reassigns a large number of incidents to the next shift. It works with the other Out of Office automations to ensure only available users get assigned. Incident IDs should be passed as a comma-separated list.
 commonfields:
   id: AssignToNextShiftOOO
   version: -1
