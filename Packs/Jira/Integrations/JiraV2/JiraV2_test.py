@@ -62,8 +62,6 @@ def test_create_issue_command_before_fix_mandatory_args_summary_missing(mocker, 
         # when there are missing arguments, an Exception is raised to the user
         create_issue_command()
     assert e
-    assert demisto.results.call_args[0][0]['Contents'] == \
-           'You must provide at least one of the following: project_key or project_name'
 
 
 def test_issue_query_command_no_issues(mocker):
@@ -168,10 +166,10 @@ def test_get_remote_data(mocker):
         - Verify the `updated` field is set as expected
     """
     from JiraV2 import get_remote_data_command
-    updated_date = '2020-11-25T16:29:37.277764067Z'
+    updated_date = '2020-11-25T16:29:37'  # .277764067Z'
     mocker.patch(
         'JiraV2.get_issue',
         return_value=('', '', {'fields': {'updated': updated_date}})
     )
-    res = get_remote_data_command('id', '0')
+    res = get_remote_data_command('id', '2020-10-25T16:29:37')
     assert res.mirrored_object['updated'] == updated_date

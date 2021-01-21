@@ -13,6 +13,7 @@ pytest-xdist = "*"
 pytest-datadir-ng = "*"
 freezegun = "*"
 pytest-json = "*"
+flake8 = "*"
 
 [packages]
 certifi = "==2020.6.20"
@@ -41,4 +42,4 @@ PySocks = "==1.7.1"
 PyYAML = "==5.3.1"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"

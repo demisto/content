@@ -1,0 +1,1139 @@
+commonfields:
+  id: jira-v2_sm
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: jira-v2_sm
+display: jira-v2_sm
+category: Case Management
+image: data:image/png;base64,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
+description: |-
+  **Patched so assignee is set correctly when using !jira-create-issue and !jira-edit-issue.**
+
+  Use the Jira integration to manage issues and create Demisto incidents from projects, From version XSOAR 6.0 and above mirror issues to existing issue incidents in demisto.
+detaileddescription: |-
+  For fetching incidents, please update the query param according to [JQL documentation](https://confluence.atlassian.com/jiracoreserver073/advanced-searching-861257209.html)
+  Update the project you want to fetch from, using:  `project = soc AND status = open`.
+  This will fetch all tickets in your system (including past tickets) that are in Open status and in project soc. After the first run, it will create incidents only for new tickets.
+
+  If you wish the first run to start from a specific time, use "Issue index to start fetching incidents from" param.
+
+  Fetching incidents by creation time (using the Created field), instead of using IDs, is done by checking the "Use created field to fetch incidents" checkbox.
+  To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access Token. Authorizing using OAuth1.0, requires Access Token, Private Key and Consumer Key.
+
+  As of June 2019, Basic authentication with passwords for Jira is no longer supported, please use an API Token or OAuth 1.0
+  ---
+  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/jira-v2)
+configuration:
+- display: 'Jira URL, for example: https://demisto.atlassian.net/'
+  name: url
+  type: 0
+  required: true
+- display: |-
+    _____________ Basic Authentication ____________
+
+    Username
+  name: username
+  type: 0
+  required: false
+- display: Password (Deprecated - Use API token)
+  name: password
+  type: 4
+  required: false
+- display: API token
+  name: APItoken
+  type: 4
+  required: false
+- display: |-
+    __________________ OAuth 1.0 __________________
+
+    ConsumerKey
+  name: consumerKey
+  defaultvalue: OauthKey
+  type: 0
+  required: false
+- display: AccessToken
+  name: accessToken
+  type: 0
+  required: false
+- display: PrivateKey
+  name: privateKey
+  type: 14
+  required: false
+- display: Query (in JQL) for fetching incidents
+  name: query
+  defaultvalue: status!=done
+  type: 0
+  required: false
+- display: Issue index to start fetching incidents from
+  name: idOffset
+  type: 0
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Mirror incoming incidents
+  name: incoming_mirror
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use created field to fetch incidents
+  name: fetchByCreated
+  type: 8
+  required: false
+script:
+  script: |
+    from requests_oauthlib import OAuth1
+
+
+
+    # Disable insecure warnings
+    requests.packages.urllib3.disable_warnings()
+
+    ''' GLOBALS/PARAMS '''
+    BASE_URL = demisto.getParam('url').rstrip('/') + '/'
+    API_TOKEN = demisto.getParam('APItoken')
+    USERNAME = demisto.getParam('username')
+    PASSWORD = demisto.getParam('password')
+
+    HEADERS = {
+        'Content-Type': 'application/json',
+    }
+
+    BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication with passwords for Jira is no" \
+                           " longer supported, please use an API Token or OAuth 1.0"
+    USE_SSL = not demisto.params().get('insecure', False)
+
+
+    def jira_req(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text'):
+        url = resource_url if link else (BASE_URL + resource_url)
+        try:
+            body
+            result = requests.request(
+                method=method,
+                url=url,
+                data=body,
+                headers=HEADERS,
+                verify=USE_SSL,
+                auth=get_auth(),
+            )
+        except ValueError:
+            raise ValueError("Could not deserialize privateKey")
+
+        if not result.ok:
+            demisto.debug(result.text)
+            try:
+                rj = result.json()
+                if rj.get('errorMessages'):
+                    return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
+                elif rj.get('errors'):
+                    return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
+                else:
+                    return_error(f'Status code: {result.status_code}\nError text: {result.text}')
+            except ValueError as ve:
+                demisto.debug(str(ve))
+                if result.status_code == 401:
+                    return_error('Unauthorized request, please check authentication related parameters.'
+                                 f'{BASIC_AUTH_ERROR_MSG}')
+                elif result.status_code == 404:
+                    return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
+                else:
+                    return_error(
+                        f"Failed reaching the server. status code: {result.status_code}")
+
+        if resp_type == 'json':
+            return result.json()
+        return result
+
+
+    def generate_oauth1():
+        oauth = OAuth1(
+            client_key=demisto.getParam('consumerKey'),
+            rsa_key=demisto.getParam('privateKey'),
+            signature_method='RSA-SHA1',
+            resource_owner_key=demisto.getParam('accessToken'),
+        )
+        return oauth
+
+
+    def generate_basic_oauth():
+        return USERNAME, (API_TOKEN or PASSWORD)
+
+
+    def get_auth():
+        is_basic = USERNAME and (PASSWORD or API_TOKEN)
+        is_oauth1 = demisto.getParam('consumerKey') and demisto.getParam('accessToken') and demisto.getParam('privateKey')
+
+        if is_basic:
+            return generate_basic_oauth()
+
+        elif is_oauth1:
+            HEADERS.update({'X-Atlassian-Token': 'nocheck'})
+            return generate_oauth1()
+
+        return_error(
+            'Please provide the required Authorization information:'
+            '- Basic Authentication requires user name and password or API token'
+            '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
+        )
+
+
+    def run_query(query, start_at='', max_results=None):
+        # EXAMPLE
+        """
+        request = {
+            "jql": "project = HSP",
+            "startAt": 0,
+            "maxResults": 15,
+            "fields": [    <-- not supported yet, but easily attainable
+                "summary",
+                "status",
+                "assignee"
+            ]
+        }
+        """
+        demisto.debug(f'querying with: {query}')
+        url = BASE_URL + 'rest/api/latest/search/'
+        query_params = {
+            'jql': query,
+            "startAt": start_at,
+            "maxResults": max_results,
+        }
+
+        try:
+            result = requests.get(
+                url=url,
+                headers=HEADERS,
+                verify=USE_SSL,
+                params=query_params,
+                auth=get_auth(),
+            )
+        except ValueError:
+            raise ValueError("Could not deserialize privateKey")
+
+        try:
+            rj = result.json()
+            if rj.get('issues'):
+                return rj
+
+            errors = ",".join(rj.get("errorMessages", ['could not fetch any issues, please check your query']))
+            if 'could not fetch any issues, please check your query' in errors:
+                return {}
+            raise Exception(f'No issues were found, error message from Jira: {errors}')
+
+        except ValueError as ve:
+            demisto.debug(str(ve))
+            raise Exception(f'Failed to send request, reason: {result.reason}')
+
+
+    def get_id_offset():
+        """
+        gets the ID Offset, i.e., the first issue id. used to fetch correctly all issues
+        """
+        query = "ORDER BY created ASC"
+        j_res = run_query(query=query, max_results=1)
+        first_issue_id = j_res.get('issues')[0].get('id')
+        return_outputs(
+            readable_output=f"ID Offset: {first_issue_id}",
+            outputs={'Ticket.idOffSet': first_issue_id},
+        )
+
+
+    def expand_urls(data, depth=0):
+        if isinstance(data, dict) and depth < 10:
+            for key, value in data.items():
+                if key in ['_links', 'watchers', 'sla', 'request participants']:
+                    # dictionary of links
+                    if isinstance(value, dict):
+                        for link_key, link_url in value.items():
+                            value[link_key + '_expended'] = json.dumps(
+                                jira_req(method='GET', resource_url=link_url, link=True, resp_type='json'))
+                    # link
+                    else:
+                        data[key + '_expended'] = json.dumps(jira_req(method='GET', resource_url=value,
+                                                                      link=True, resp_type='json'))
+                # search deeper
+                else:
+                    if isinstance(value, dict):
+                        return expand_urls(value, depth + 1)
+
+
+    def generate_md_context_get_issue(data):
+        get_issue_obj: dict = {"md": [], "context": []}
+        if not isinstance(data, list):
+            data = [data]
+
+        for element in data:
+            md_obj, context_obj = {}, {}
+
+            context_obj['Id'] = md_obj['id'] = demisto.get(element, 'id')
+            context_obj['Key'] = md_obj['key'] = demisto.get(element, 'key')
+            context_obj['Summary'] = md_obj['summary'] = demisto.get(element, 'fields.summary')
+            context_obj['Status'] = md_obj['status'] = demisto.get(element, 'fields.status.name')
+
+            assignee = demisto.get(element, 'fields.assignee')
+            context_obj['Assignee'] = md_obj['assignee'] = "{name}({email})".format(
+                name=assignee.get('displayName', 'null'),
+                email=assignee.get('emailAddress', 'null')
+            ) if assignee else 'null(null)'
+
+            creator = demisto.get(element, 'fields.creator')
+            context_obj['Creator'] = md_obj['creator'] = "{name}({email})".format(
+                name=creator.get('displayName', 'null'),
+                email=creator.get('emailAddress', 'null')
+            ) if creator else 'null(null)'
+
+            reporter = demisto.get(element, 'fields.reporter')
+            md_obj['reporter'] = "{name}({email})".format(
+                name=reporter.get('displayName', 'null'),
+                email=reporter.get('emailAddress', 'null')
+            ) if reporter else 'null(null)'
+
+            md_obj.update({
+                'issueType': demisto.get(element, 'fields.issuetype.description'),
+                'priority': demisto.get(element, 'fields.priority.name'),
+                'project': demisto.get(element, 'fields.project.name'),
+                'labels': demisto.get(element, 'fields.labels'),
+                'description': demisto.get(element, 'fields.description'),
+                'duedate': demisto.get(element, 'fields.duedate'),
+                'ticket_link': demisto.get(element, 'self'),
+                'created': demisto.get(element, 'fields.created'),
+            })
+            attachments = demisto.get(element, 'fields.attachment')
+            if isinstance(attachments, list):
+                md_obj['attachment'] = ','.join(attach.get('filename') for attach in attachments)
+                context_obj['attachment'] = ','.join(attach.get('filename') for attach in attachments)
+
+            get_issue_obj['md'].append(md_obj)
+            get_issue_obj['context'].append(context_obj)
+
+        return get_issue_obj
+
+
+    def generate_md_context_create_issue(data, project_name=None, project_key=None):
+        create_issue_obj = {"md": [], "context": {"Ticket": []}}  # type: ignore
+        if project_name:
+            data["projectName"] = project_name
+
+        if project_key:
+            data["projectKey"] = project_key
+
+        elif demisto.getParam('projectKey'):
+            data["projectKey"] = demisto.getParam('projectKey')
+
+        create_issue_obj['md'].append(data)  # type: ignore
+        create_issue_obj['context']['Ticket'].append(  # type: ignore
+            {"Id": demisto.get(data, 'id'), "Key": demisto.get(data, 'key')})  # type: ignore
+        return create_issue_obj
+
+
+    def generate_md_upload_issue(data, issue_id):
+        upload_md = []
+        if not isinstance(data, list):
+            data = [data]
+
+        for element in data:
+            md_obj = {
+                'id': demisto.get(element, 'id'),
+                'issueId': issue_id,
+                'attachment_name': demisto.get(element, 'filename'),
+                'attachment_link': demisto.get(element, 'self')
+            }
+            upload_md.append(md_obj)
+
+        return upload_md
+
+
+    def create_incident_from_ticket(issue):
+        labels = [
+            {'type': 'issue', 'value': json.dumps(issue)}, {'type': 'id', 'value': str(issue.get('id'))},
+            {'type': 'lastViewed', 'value': str(demisto.get(issue, 'fields.lastViewed'))},
+            {'type': 'priority', 'value': str(demisto.get(issue, 'fields.priority.name'))},
+            {'type': 'status', 'value': str(demisto.get(issue, 'fields.status.name'))},
+            {'type': 'project', 'value': str(demisto.get(issue, 'fields.project.name'))},
+            {'type': 'updated', 'value': str(demisto.get(issue, 'fields.updated'))},
+            {'type': 'reportername', 'value': str(demisto.get(issue, 'fields.reporter.displayName'))},
+            {'type': 'reporteremail', 'value': str(demisto.get(issue, 'fields.reporter.emailAddress'))},
+            {'type': 'created', 'value': str(demisto.get(issue, 'fields.created'))},
+            {'type': 'summary', 'value': str(demisto.get(issue, 'fields.summary'))},
+            {'type': 'description', 'value': str(demisto.get(issue, 'fields.description'))}
+        ]
+
+        name = demisto.get(issue, 'fields.summary')
+        if name:
+            name = f"Jira issue: {issue.get('id')}"
+
+        severity = 0
+        if demisto.get(issue, 'fields.priority') and demisto.get(issue, 'fields.priority.name'):
+            if demisto.get(issue, 'fields.priority.name') == 'Highest':
+                severity = 4
+            elif demisto.get(issue, 'fields.priority.name') == 'High':
+                severity = 3
+            elif demisto.get(issue, 'fields.priority.name') == 'Medium':
+                severity = 2
+            elif demisto.get(issue, 'fields.priority.name') == 'Low':
+                severity = 1
+
+        # Adding mirroring details
+        issue['mirror_direction'] = 'In' if demisto.params().get("incoming_mirror") else None
+        issue['mirror_instance'] = demisto.integrationInstance()
+
+        return {
+            "name": name,
+            "labels": labels,
+            "details": demisto.get(issue, "fields.description"),
+            "severity": severity,
+            "rawJSON": json.dumps(issue)
+        }
+
+
+    def create_update_incident_from_ticket(issue: dict) -> dict:
+        """ Create incident update.
+
+        Args:
+            issue: Dict representing the Jira issue (Raw).
+
+        Returns:
+            dict: Labels to update in incident.
+        """
+        labels = create_incident_from_ticket(issue)['labels']
+        update_labels = {}
+
+        for label in labels:
+            update_labels[label['type']] = label['value']
+
+        return update_labels
+
+
+    def get_project_id(project_key='', project_name=''):
+        result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
+
+        for project in result.get('projects'):
+            if project_key.lower() == project.get('key').lower() or project_name.lower() == project.get('name').lower():
+                return project.get('id')
+        return_error('Project not found')
+
+
+    def get_issue_fields(issue_creating=False, **issue_args):
+        """
+        refactor issues's argument as received from demisto into jira acceptable format, and back.
+        :param issue_creating: flag that indicates this function is called when creating an issue
+        :param issue_args: issue argument
+        """
+        issue = {}  # type: dict
+        if 'issueJson' in issue_args:
+            try:
+                issue = json.loads(issue_args['issueJson'])
+            except TypeError as te:
+                demisto.debug(str(te))
+                return_error("issueJson must be in a valid json format")
+
+        if not issue.get('fields'):
+            issue['fields'] = {}
+
+        if not issue['fields'].get('issuetype') and issue_creating:
+            issue['fields']['issuetype'] = {}
+
+        if issue_args.get('summary'):
+            issue['fields']['summary'] = issue_args['summary']
+
+        if not issue['fields'].get('project') and (issue_args.get('projectKey') or issue_args.get('projectName')):
+            issue['fields']['project'] = {}
+
+        if issue_args.get('projectKey'):
+            issue['fields']['project']['key'] = issue_args.get('projectKey', '')
+        if issue_args.get('projectName'):
+            issue['fields']['project']['name'] = issue_args.get('projectName', '')
+
+        if issue_creating:
+            # make sure the key & name are right, and get the corresponding project id & key
+            project_id = get_project_id(issue['fields']['project'].get('key', ''),
+                                        issue['fields']['project'].get('name', ''))
+            issue['fields']['project']['id'] = project_id
+
+        if issue_args.get('issueTypeName'):
+            issue['fields']['issuetype']['name'] = issue_args['issueTypeName']
+
+        if issue_args.get('issueTypeId'):
+            issue['fields']['issuetype']['id'] = issue_args['issueTypeId']
+
+        if issue_args.get('parentIssueId'):
+            if not issue['fields'].get('parent'):
+                issue['fields']['parent'] = {}
+            issue['fields']['parent']['id'] = issue_args['parentIssueId']
+
+        if issue_args.get('parentIssueKey'):
+            if not issue['fields'].get('parent'):
+                issue['fields']['parent'] = {}
+            issue['fields']['parent']['key'] = issue_args['parentIssueKey']
+
+        if issue_args.get('description'):
+            issue['fields']['description'] = issue_args['description']
+
+        if issue_args.get('labels'):
+            issue['fields']['labels'] = issue_args['labels'].split(",")
+
+        if issue_args.get('priority'):
+            if not issue['fields'].get('priority'):
+                issue['fields']['priority'] = {}
+            issue['fields']['priority']['name'] = issue_args['priority']
+
+        duedate = issue_args.get('duedate') or issue_args.get('dueDate')
+        if duedate:
+            issue['fields']['duedate'] = duedate
+
+        if issue_args.get('assignee'):
+            # this does not work
+            # LOG.print_log(f"issue_args.get('assignee'): {issue_args.get('assignee')}")
+            # if not issue['fields'].get('assignee'):
+            #     issue['fields']['assignee'] = {}
+            # issue['fields']['assignee']['name'] = issue_args['assignee']
+
+            # this does
+            assignee = issue_args.get("assignee")
+            issue["fields"]["assignee"] = {"accountId": get_user_id(assignee)}
+
+        if issue_args.get('reporter'):
+            if not issue['fields'].get('reporter'):
+                issue['fields']['reporter'] = {}
+            issue['fields']['reporter']['accountId'] = issue_args['reporter']
+
+        return issue
+
+
+    def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_attachments=False):
+        j_res = jira_req('GET', f'rest/api/latest/issue/{issue_id}', resp_type='json')
+        if expand_links == "true":
+            expand_urls(j_res)
+
+        attachments = demisto.get(j_res, 'fields.attachment')  # list of all attachments
+        # handle issues were we allowed incorrect values of true
+        if get_attachments == "true" or get_attachments == "\"true\"":
+            get_attachments = True
+        if get_attachments and attachments:
+            attachment_urls = [attachment['content'] for attachment in attachments]
+            for attachment_url in attachment_urls:
+                attachment = f"secure{attachment_url.split('/secure')[-1]}"
+                filename = attachment.split("/")[-1]
+                attachments_zip = jira_req(method='GET', resource_url=attachment).content
+                demisto.results(fileResult(filename=filename, data=attachments_zip))
+
+        md_and_context = generate_md_context_get_issue(j_res)
+        human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
+        if is_update:
+            human_readable += f'Issue #{issue_id} was updated successfully'
+
+        contents = j_res
+        outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
+
+        return human_readable, outputs, contents
+
+
+    def issue_query_command(query, start_at='', max_results=None, headers=''):
+        j_res = run_query(query, start_at, max_results)
+        if not j_res:
+            outputs = contents = {}
+            human_readable = 'No issues matched the query.'
+        else:
+            issues = demisto.get(j_res, 'issues')
+            md_and_context = generate_md_context_get_issue(issues)
+            human_readable = tableToMarkdown(demisto.command(), t=md_and_context['md'], headers=argToList(headers))
+            contents = j_res
+            outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
+
+        return human_readable, outputs, contents
+
+
+    def create_issue_command():
+        url = 'rest/api/latest/issue'
+        issue = get_issue_fields(issue_creating=True, **demisto.args())
+        j_res = jira_req('POST', url, json.dumps(issue), resp_type='json')
+
+        md_and_context = generate_md_context_create_issue(j_res, project_key=demisto.getArg('projectKey'),
+                                                          project_name=demisto.getArg('issueTypeName'))
+        human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], "")
+        contents = j_res
+        outputs = md_and_context['context']
+        return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+
+
+    def edit_issue_command(issue_id, headers=None, status=None, **_):
+        url = f'rest/api/latest/issue/{issue_id}/'
+        issue = get_issue_fields(**demisto.args())
+        jira_req('PUT', url, json.dumps(issue))
+        if status:
+            edit_status(issue_id, status)
+
+        return get_issue(issue_id, headers, is_update=True)
+
+
+    def edit_status(issue_id, status):
+        # check for all authorized transitions available for this user
+        # if the requested transition is available, execute it.
+        url = f'rest/api/2/issue/{issue_id}/transitions'
+        j_res = jira_req('GET', url, resp_type='json')
+        transitions = [transition.get('name') for transition in j_res.get('transitions')]
+        for i, transition in enumerate(transitions):
+            if transition.lower() == status.lower():
+                url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
+                json_body = {"transition": {"id": str(j_res.get('transitions')[i].get('id'))}}
+                return jira_req('POST', url, json.dumps(json_body))
+
+        return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
+
+
+    def get_comments_command(issue_id):
+        url = f'rest/api/latest/issue/{issue_id}/comment'
+        body = jira_req('GET', url, resp_type='json')
+        comments = []
+        if body.get("comments"):
+            for comment in body.get("comments"):
+                comments.append({
+                    'Comment': comment.get("body"),
+                    'User': demisto.get(comment, 'updateAuthor.name'),
+                    'Created': comment.get("created")
+                })
+
+            human_readable = tableToMarkdown("Comments", comments)
+            contents = body
+            outputs = {'Ticket(val.Id == obj.Id)': {'Id': issue_id, "Comment": comments}}
+            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
+
+        else:
+            demisto.results('No comments were found in the ticket')
+
+
+    def add_comment_command(issue_id, comment, visibility=''):
+        url = f'rest/api/latest/issue/{issue_id}/comment'
+        comment = {
+            "body": comment
+        }
+        if visibility:
+            comment["visibility"] = {
+                "type": "role",
+                "value": visibility
+            }
+        data = jira_req('POST', url, json.dumps(comment), resp_type='json')
+        md_list = []
+        if not isinstance(data, list):
+            data = [data]
+        for element in data:
+            md_obj = {
+                'id': demisto.get(element, 'id'),
+                'key': demisto.get(element, 'updateAuthor.key'),
+                'comment': demisto.get(element, 'body'),
+                'ticket_link': demisto.get(element, 'self')
+            }
+            md_list.append(md_obj)
+
+        human_readable = tableToMarkdown(demisto.command(), md_list, "")
+        contents = data
+        return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
+
+
+    def issue_upload_command(issue_id, upload, attachment_name=None):
+        j_res = upload_file(upload, issue_id, attachment_name)
+        md = generate_md_upload_issue(j_res, issue_id)
+        human_readable = tableToMarkdown(demisto.command(), md, "")
+        contents = j_res
+        return_outputs(readable_output=human_readable, outputs={}, raw_response=contents)
+
+
+    def upload_file(entry_id, issue_id, attachment_name=None):
+        headers = {
+            'X-Atlassian-Token': 'no-check'
+        }
+        file_name, file_bytes = get_file(entry_id)
+        res = requests.post(
+            url=BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
+            headers=headers,
+            files={'file': (attachment_name or file_name, file_bytes)},
+            auth=(USERNAME, API_TOKEN or PASSWORD),
+            verify=USE_SSL
+        )
+
+        if not res.ok:
+            return_error(f'Failed to execute request, status code:{res.status_code}\nBody: {res.text}'
+                         + "\nMake sure file name doesn't contain any special characters" if res.status_code == 500 else "")
+
+        return res.json()
+
+
+    def get_file(entry_id):
+        get_file_path_res = demisto.getFilePath(entry_id)
+        file_path = get_file_path_res["path"]
+        file_name = get_file_path_res["name"]
+        with open(file_path, 'rb') as f:
+            file_bytes = f.read()
+        return file_name, file_bytes
+
+
+    def add_link_command(issue_id, title, url, summary=None, global_id=None, relationship=None,
+                         application_type=None, application_name=None):
+        req_url = f'rest/api/latest/issue/{issue_id}/remotelink'
+        link = {
+            "object": {
+                "url": url,
+                "title": title
+            }
+        }
+
+        if summary:
+            link['summary'] = summary
+        if global_id:
+            link['globalId'] = global_id
+        if relationship:
+            link['relationship'] = relationship
+        if application_type or application_name:
+            link['application'] = {}
+        if application_type:
+            link['application']['type'] = application_type
+        if application_type:
+            link['application']['name'] = application_name
+
+        data = jira_req('POST', req_url, json.dumps(link), resp_type='json')
+        md_list = []
+        if not isinstance(data, list):
+            data = [data]
+        for element in data:
+            md_obj = {
+                'id': demisto.get(element, 'id'),
+                'key': demisto.get(element, 'updateAuthor.key'),
+                'comment': demisto.get(element, 'body'),
+                'ticket_link': demisto.get(element, 'self')
+            }
+            md_list.append(md_obj)
+        human_readable = tableToMarkdown(demisto.command(), md_list, "", removeNull=True)
+
+        return_outputs(readable_output=human_readable, outputs={}, raw_response=data)
+
+
+    def delete_issue_command(issue_id_or_key):
+        url = f'rest/api/latest/issue/{issue_id_or_key}'
+        issue = get_issue_fields(**demisto.args())
+        result = jira_req('DELETE', url, json.dumps(issue))
+        if result.status_code == 204:
+            demisto.results('Issue deleted successfully.')
+        else:
+            demisto.results('Failed to delete issue.')
+
+
+    def test_module() -> str:
+        """
+        Performs basic get request to get item samples
+        """
+        user_data = jira_req('GET', 'rest/api/latest/myself', resp_type='json')
+        if demisto.params().get('isFetch'):
+            run_query(demisto.getParam('query'), '', max_results=1)
+
+        if not user_data.get('active'):
+            raise Exception(f'Test module for Jira failed for the configured parameters.'
+                            f'please Validate that the user is active. Response: {str(user_data)}')
+
+        return 'ok'
+
+
+    def fetch_incidents(query, id_offset, fetch_by_created=None, **_):
+        last_run = demisto.getLastRun()
+        demisto.debug(f"last_run: {last_run}" if last_run else 'last_run is empty')
+        if last_run and last_run.get("idOffset"):
+            id_offset = last_run.get("idOffset")
+        if not id_offset:
+            id_offset = 0
+
+        incidents, max_results = [], 50
+        if id_offset:
+            query = f'{query} AND id >= {id_offset}'
+        if fetch_by_created:
+            query = f'{query} AND created>-1m'
+
+        res = run_query(query, '', max_results)
+        if res:
+            curr_id = id_offset
+            for ticket in res.get('issues'):
+                ticket_id = int(ticket.get("id"))
+                if ticket_id == curr_id:
+                    continue
+                id_offset = max(int(id_offset), ticket_id)
+                incidents.append(create_incident_from_ticket(ticket))
+
+        demisto.setLastRun({"idOffset": id_offset})
+        return incidents
+
+
+    def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
+        """ Mirror-in data to incident from Jira into demisto 'jira issue' incident.
+
+        Notes:
+            1. Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
+
+        Args:
+            id: Remote incident id.
+            lastUpdate: Server last sync time with remote server.
+
+        Returns:
+            GetRemoteDataResponse: Structured incident response.
+        """
+        incident_update = {}
+
+        # Get raw response on issue ID
+        _, _, issue_raw_response = get_issue(issue_id=id)
+
+        # Timestamp - Issue last modified in jira server side
+        jira_modified_date: datetime = parse_date_string(dict_safe_get(issue_raw_response,
+                                                                       ['fields', 'updated'], "", str))
+        # Timestamp - Issue last sync in demisto server side
+        incident_modified_date: datetime = parse_date_string(lastUpdate)
+
+        # Update incident only if issue modified in Jira server-side after the last sync
+        if jira_modified_date > incident_modified_date:
+            incident_update = create_update_incident_from_ticket(issue_raw_response)    # Getting labels to be updated in incident
+
+            demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
+                          f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
+                          f"\n\tRemote last updated time: {jira_modified_date}\n")
+
+        return GetRemoteDataResponse(incident_update, [])
+
+    def search_user(query_string="", max_results=50, start_at=0):
+        """Search for users matching query_string
+        """
+        url = f"rest/api/latest/user/search?query={query_string}&maxResults={max_results}&startAt={start_at}"
+
+        return jira_req('GET', url, resp_type='json')
+
+    def get_user_id(name_or_email: str = "") -> str:
+        """Get Jira accountId from displayName or emailAddress
+        """
+        jira_account_id = ""
+
+        if not name_or_email:
+            return jira_account_id
+
+        name_or_email = name_or_email.lower()
+        chunk_size = 100
+        start_at = 0
+        while jira_account_id == "":
+            user_chunk = search_user(name_or_email, max_results=chunk_size, start_at=start_at)
+            for user in user_chunk:
+                jira_display_name = user.get("displayName", "").lower()
+                jira_email_address = user.get("emailAddress", "").lower()
+                if name_or_email == jira_display_name or name_or_email == jira_email_address:
+                    jira_account_id = user.get("accountId")
+                    break
+
+            if len(user_chunk) < chunk_size:
+                break
+
+            start_at += chunk_size
+
+        return jira_account_id
+
+    def main():
+        demisto.debug(f'Command being called is {demisto.command()}')
+        try:
+            # Remove proxy if not set to true in params
+            handle_proxy()
+
+            if demisto.command() == 'test-module':
+                # This is the call made when pressing the integration test button.
+                demisto.results(test_module())
+
+            elif demisto.command() == 'fetch-incidents':
+                # Set and define the fetch incidents command to run after activated via integration settings.
+                incidents = fetch_incidents(**snakify(demisto.params()))
+                demisto.incidents(incidents)
+            elif demisto.command() == 'jira-get-issue':
+                human_readable, outputs, raw_response = get_issue(**snakify(demisto.args()))
+                return_outputs(human_readable, outputs, raw_response)
+
+            elif demisto.command() == 'jira-issue-query':
+                human_readable, outputs, raw_response = issue_query_command(**snakify(demisto.args()))
+                return_outputs(human_readable, outputs, raw_response)
+
+            elif demisto.command() == 'jira-create-issue':
+                create_issue_command()
+
+            elif demisto.command() == 'jira-edit-issue':
+                human_readable, outputs, raw_response = edit_issue_command(**snakify(demisto.args()))
+                return_outputs(human_readable, outputs, raw_response)
+
+            elif demisto.command() == 'jira-get-comments':
+                get_comments_command(**snakify(demisto.args()))
+
+            elif demisto.command() == 'jira-issue-add-comment':
+                add_comment_command(**snakify(demisto.args()))
+
+            elif demisto.command() == 'jira-issue-upload-file':
+                issue_upload_command(**snakify(demisto.args()))
+
+            elif demisto.command() == 'jira-issue-add-link':
+                add_link_command(**snakify(demisto.args()))
+
+            elif demisto.command() == 'jira-delete-issue':
+                delete_issue_command(**snakify(demisto.args()))
+
+            elif demisto.command() == 'jira-get-id-offset':
+                get_id_offset()
+
+            elif demisto.command() == 'get-remote-data':
+                return_results(get_remote_data_command(**demisto.args()))
+
+        except Exception as err:
+            return_error(str(err))
+
+        finally:
+            LOG.print_log()
+
+
+    if __name__ in ["__builtin__", "builtins", '__main__']:
+        main()
+  type: python
+  commands:
+  - name: jira-issue-query
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: The JQL query string.
+    - name: startAt
+      description: The index (integer) of the first issue to return (0-based).
+    - name: maxResults
+      description: The maximum number of issues to return (default is 50). The maximum
+        allowed value is dictated by the JIRA property 'jira.search.views.default.max'.
+        If you specify a value that is higher than this number, your search results
+        will be truncated.
+    - name: headers
+      description: The headers to display in human readable format.
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+    - contextPath: Ticket.Key
+      description: The key of the ticket.
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+    - contextPath: Ticket.Summary
+      description: The summary of the ticket.
+    - contextPath: Ticket.Status
+      description: The status of the ticket.
+    description: Queries Jira issues.
+  - name: jira-get-issue
+    arguments:
+    - name: issueId
+      required: true
+      default: true
+      description: The ID of the issue.
+    - name: headers
+      description: Headers to display in human readable format.
+    - name: getAttachments
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If "true", retrives the issue's attachments.
+      defaultValue: "false"
+    - name: expandLinks
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: If "true", expands the issue's links.
+      defaultValue: "false"
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+    - contextPath: Ticket.Key
+      description: The key of ticket.
+    - contextPath: Ticket.Assignee
+      description: The user assigned to the ticket.
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+    - contextPath: Ticket.Summary
+      description: The summary of the ticket.
+    - contextPath: Ticket.Status
+      description: The status of the ticket.
+    - contextPath: File.Size
+      description: The size of the file.
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+    - contextPath: File.Name
+      description: The name of the file.
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+    description: Fetches an issue from Jira.
+  - name: jira-create-issue
+    arguments:
+    - name: issueJson
+      description: The issue object (in JSON format).
+    - name: summary
+      required: true
+      description: The summary of the issue.
+    - name: projectKey
+      required: true
+      description: The project key with which to associate the issue.
+    - name: issueTypeName
+      description: 'Select an issue type by name, for example: "Problem".'
+    - name: issueTypeId
+      required: true
+      description: Select an issue type by its numeric ID.
+    - name: projectName
+      description: The project name with which to associate the issue.
+    - name: description
+      description: A description of the issue.
+    - name: labels
+      description: A CSV list of labels.
+    - name: priority
+      description: 'The priority name, for example: "High" or "Medium".'
+    - name: dueDate
+      description: 'The due date for the issue (in the format: 2018-03-11).'
+    - name: assignee
+      description: The email address or name of the user assigned to the ticket.
+    - name: reporter
+      description: The account ID of the reporter.
+    - name: parentIssueKey
+      description: The parent issue key (if you create a sub-task).
+    - name: parentIssueId
+      description: The parent issue ID (if you create a sub-task).
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+    - contextPath: Ticket.Key
+      description: The key of the ticket.
+    description: Creates a new issue in Jira.
+  - name: jira-issue-upload-file
+    arguments:
+    - name: issueId
+      required: true
+      description: The ID of the issue.
+    - name: upload
+      description: The entry ID to upload.
+    - name: attachmentName
+      description: The attachment name to be displayed in Jira (overrides original
+        file name)
+    description: Uploads a file attachment to an issue.
+  - name: jira-issue-add-comment
+    arguments:
+    - name: issueId
+      required: true
+      default: true
+      description: The ID of the issue.
+    - name: comment
+      required: true
+      description: The comment body.
+    - name: visibility
+      description: 'The roles that can view the comment, for example: "Administrators".'
+    description: Adds a new comment to an existing Jira issue.
+  - name: jira-issue-add-link
+    arguments:
+    - name: globalId
+      description: If a globalId is provided, and a remote issue link exists with
+        that globalId, the remote issue link is updated.
+    - name: relationship
+      description: 'The object relationship to issue, for example: "causes".'
+    - name: url
+      required: true
+      description: The URL link.
+    - name: title
+      required: true
+      description: The title of the link.
+    - name: summary
+      description: The summary of the link.
+    - name: issueId
+      required: true
+      description: The ID of the issue.
+    - name: applicationType
+      description: The application type of the linked remote application. E.g "com.atlassian.confluence".
+    - name: applicationName
+      description: The application name of the linked remote application. E.g "My
+        Confluence Instance".
+    description: Creates (or updates) an issue link.
+  - name: jira-edit-issue
+    arguments:
+    - name: issueId
+      required: true
+      description: The ID of the issue to edit.
+    - name: issueJson
+      description: 'The issue object (in JSON format). e.g, {"fields":{"customfield_10037":
+        "field_value"}}'
+    - name: summary
+      description: The summary of the issue.
+    - name: description
+      description: The description of the issue.
+    - name: labels
+      description: A CSV list of labels.
+    - name: priority
+      description: A priority name, for example "High" or "Medium".
+    - name: dueDate
+      description: The due date for the issue (in the format 2018-03-11).
+    - name: assignee
+      description: The email address or name of the user assigned to the ticket.
+    - name: status
+      description: The name of the status.
+    outputs:
+    - contextPath: Ticket.Id
+      description: The ID of the ticket.
+      type: unknown
+    - contextPath: Ticket.Key
+      description: The key of the ticket.
+    - contextPath: Ticket.Assignee
+      description: The email address or name of the user assigned to the ticket.
+      type: string
+    - contextPath: Ticket.Creator
+      description: The user who created the ticket.
+    - contextPath: Ticket.Summary
+      description: The summary of the ticket.
+    - contextPath: Ticket.Status
+      description: The status of the ticket.
+    - {}
+    description: Modifies an issue in JIRA.
+  - name: jira-get-comments
+    arguments:
+    - name: issueId
+      required: true
+      description: The ID of the issue from which to get the comments.
+    outputs:
+    - contextPath: Ticket.Comment.Comment
+      description: The text of the comment.
+      type: string
+    - contextPath: Ticket.Comment.Created
+      description: The issue creation date.
+      type: string
+    - contextPath: Ticket.Comment.User
+      description: The user that created the comment.
+      type: string
+    description: Returns the comments added to a ticket.
+  - name: jira-delete-issue
+    arguments:
+    - name: issueIdOrKey
+      required: true
+      description: The ID or key of the issue.
+    description: Deletes an issue in Jira.
+  - name: jira-get-id-offset
+    arguments: []
+    outputs:
+    - contextPath: Ticket.idOffSet
+      description: The ID offset.
+      type: string
+    description: Returns the ID offset, for example, the first issue ID.
+  - name: get-remote-data
+    arguments:
+    - name: id
+      required: true
+      description: The remote incident id - Issue id.
+    - name: lastUpdate
+      description: UTC timestamp in seconds. The incident is only updated if it was
+        modified after the last update time.
+      defaultValue: "0"
+    description: Get remote data from a remote incident. Please note that this method
+      will not update the current incident, it's here for debugging purposes.
+  dockerimage: demisto/oauthlib:1.0.0.13073
+  runonce: false
+  subtype: python3
+sourcemoduleid: jira-v2

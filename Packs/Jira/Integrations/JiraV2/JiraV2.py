@@ -1,8 +1,6 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from requests_oauthlib import OAuth1
-from dateparser import parse
-import pytz
-
-from CommonServerPython import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -12,7 +10,6 @@ BASE_URL = demisto.getParam('url').rstrip('/') + '/'
 API_TOKEN = demisto.getParam('APItoken')
 USERNAME = demisto.getParam('username')
 PASSWORD = demisto.getParam('password')
-COMMAND_NOT_IMPELEMENTED_MSG = 'Command not implemented'
 
 HEADERS = {
     'Content-Type': 'application/json',
@@ -23,25 +20,17 @@ BASIC_AUTH_ERROR_MSG = "For cloud users: As of June 2019, Basic authentication w
 USE_SSL = not demisto.params().get('insecure', False)
 
 
-def jira_req(
-        method: str,
-        resource_url: str,
-        body: str = '',
-        link: bool = False,
-        resp_type: str = 'text',
-        headers: Optional[dict] = None,
-        files: Optional[dict] = None
-):
+def jira_req(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text'):
     url = resource_url if link else (BASE_URL + resource_url)
     try:
+        body
         result = requests.request(
             method=method,
             url=url,
             data=body,
-            headers=headers or HEADERS,
+            headers=HEADERS,
             verify=USE_SSL,
             auth=get_auth(),
-            files=files
         )
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
@@ -63,9 +52,6 @@ def jira_req(
                              f'{BASIC_AUTH_ERROR_MSG}')
             elif result.status_code == 404:
                 return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
-            elif result.status_code == 500 and files:
-                return_error(f"Failed to execute request, status code: 500\nBody: {result.text}"
-                             f"\nMake sure file name doesn't contain any special characters")
             else:
                 return_error(
                     f"Failed reaching the server. status code: {result.status_code}")
@@ -335,9 +321,6 @@ def create_update_incident_from_ticket(issue: dict) -> dict:
 
 
 def get_project_id(project_key='', project_name=''):
-    if not project_key and not project_name:
-        return_error('You must provide at least one of the following: project_key or project_name')
-
     result = jira_req('GET', 'rest/api/latest/issue/createmeta', resp_type='json')
 
     for project in result.get('projects'):
@@ -379,9 +362,13 @@ def get_issue_fields(issue_creating=False, **issue_args):
 
     if issue_creating:
         # make sure the key & name are right, and get the corresponding project id & key
-        project_id = get_project_id(issue['fields'].get('project', {}).get('key', ''),
-                                    issue['fields'].get('project', {}).get('name', ''))
-        issue['fields']['project']['id'] = project_id
+        try:
+            project_id = get_project_id(issue['fields']['project'].get('key', ''),
+                                        issue['fields']['project'].get('name', ''))
+            issue['fields']['project']['id'] = project_id
+        except KeyError:
+            demisto.results('You must provide at least one of the following: project_key or project_name')
+            raise SystemExit
 
     if issue_args.get('issueTypeName'):
         issue['fields']['issuetype']['name'] = issue_args['issueTypeName']
@@ -415,9 +402,15 @@ def get_issue_fields(issue_creating=False, **issue_args):
         issue['fields']['duedate'] = duedate
 
     if issue_args.get('assignee'):
-        if not issue['fields'].get('assignee'):
-            issue['fields']['assignee'] = {}
-        issue['fields']['assignee']['name'] = issue_args['assignee']
+        # this does not work
+        # LOG.print_log(f"issue_args.get('assignee'): {issue_args.get('assignee')}")
+        # if not issue['fields'].get('assignee'):
+        #     issue['fields']['assignee'] = {}
+        # issue['fields']['assignee']['name'] = issue_args['assignee']
+
+        # this does
+        assignee = str(issue_args.get('assignee'))
+        issue['fields']['assignee'] = {"accountId": get_user_id(assignee)}
 
     if issue_args.get('reporter'):
         if not issue['fields'].get('reporter'):
@@ -566,16 +559,23 @@ def issue_upload_command(issue_id, upload, attachment_name=None):
 
 
 def upload_file(entry_id, issue_id, attachment_name=None):
+    headers = {
+        'X-Atlassian-Token': 'no-check'
+    }
     file_name, file_bytes = get_file(entry_id)
-    return jira_req(
-        method='POST',
-        resource_url=f'rest/api/latest/issue/{issue_id}/attachments',
-        headers={
-            'X-Atlassian-Token': 'no-check'
-        },
+    res = requests.post(
+        url=BASE_URL + f'rest/api/latest/issue/{issue_id}/attachments',
+        headers=headers,
         files={'file': (attachment_name or file_name, file_bytes)},
-        resp_type='json'
+        auth=(USERNAME, API_TOKEN or PASSWORD),
+        verify=USE_SSL
     )
+
+    if not res.ok:
+        return_error(f'Failed to execute request, status code:{res.status_code}\nBody: {res.text}'
+                     + "\nMake sure file name doesn't contain any special characters" if res.status_code == 500 else "")
+
+    return res.json()
 
 
 def get_file(entry_id):
@@ -699,22 +699,56 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
     _, _, issue_raw_response = get_issue(issue_id=id)
 
     # Timestamp - Issue last modified in jira server side
-    jira_modified_date: datetime = parse(
-        str(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
-    ).replace(tzinfo=pytz.UTC)
+    jira_modified_date: datetime = parse_date_string(dict_safe_get(issue_raw_response,
+                                                                   ['fields', 'updated'], "", str))
     # Timestamp - Issue last sync in demisto server side
-    incident_modified_date: datetime = parse(lastUpdate).replace(tzinfo=pytz.UTC)
+    incident_modified_date: datetime = parse_date_string(lastUpdate)
 
     # Update incident only if issue modified in Jira server-side after the last sync
     if jira_modified_date > incident_modified_date:
-        incident_update = create_update_incident_from_ticket(
-            issue_raw_response)  # Getting labels to be updated in incident
+        incident_update = create_update_incident_from_ticket(issue_raw_response)    # Getting labels to be updated in incident
 
         demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
                       f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
                       f"\n\tRemote last updated time: {jira_modified_date}\n")
 
     return GetRemoteDataResponse(incident_update, [])
+
+
+def search_user(query_string="", max_results=50, start_at=0):
+    """Search for users matching query_string
+    """
+    url = f"rest/api/latest/user/search?query={query_string}&maxResults={max_results}&startAt={start_at}"
+
+    return jira_req('GET', url, resp_type='json')
+
+
+def get_user_id(name_or_email: str = "") -> str:
+    """Get Jira accountId from displayName or emailAddress
+    """
+    jira_account_id = ""
+
+    if not name_or_email:
+        return jira_account_id
+
+    name_or_email = name_or_email.lower()
+    chunk_size = 100
+    start_at = 0
+    while jira_account_id == "":
+        user_chunk = search_user(name_or_email, max_results=chunk_size, start_at=start_at)
+        for user in user_chunk:
+            jira_display_name = user.get("displayName", "").lower()
+            jira_email_address = user.get("emailAddress", "").lower()
+            if name_or_email == jira_display_name or name_or_email == jira_email_address:
+                jira_account_id = user.get("accountId")
+                break
+
+        if len(user_chunk) < chunk_size:
+            break
+
+        start_at += chunk_size
+
+    return jira_account_id
 
 
 def main():
@@ -767,12 +801,12 @@ def main():
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(**demisto.args()))
 
-        else:
-            raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
+        elif demisto.command() == 'get-modified-remote-data':
+            raise NotImplementedError
 
+    except NotImplementedError:
+        raise NotImplementedError
     except Exception as err:
-        if isinstance(err, NotImplementedError) and COMMAND_NOT_IMPELEMENTED_MSG in str(err):
-            raise
         return_error(str(err))
 
     finally:
