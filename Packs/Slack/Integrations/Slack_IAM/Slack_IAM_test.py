@@ -19,7 +19,7 @@ APP_USER_OUTPUT = {
         "familyName": "mock_last_name"
      },
      "displayName": "mock_user_name",
-     "profileUrl": "https://panw-grid-sandbox.enterprise.slack.com/team/mock_user_name",
+     "profileUrl": "https://panwtest.enterprise.slack.com/team/mock_user_name",
      "title": "",
      "timezone": "America/Los_Angeles",
      "active": True,
@@ -58,7 +58,7 @@ APP_DISABLED_USER_OUTPUT = {
         "familyName": "mock_last_name"
     },
     "displayName": "mock_user_name",
-    "profileUrl": "https://panw-grid-sandbox.enterprise.slack.com/team/mock_user_name",
+    "profileUrl": "https://panwtest.enterprise.slack.com/team/mock_user_name",
     "title": "",
     "timezone": "America/Los_Angeles",
     "active": False,

@@ -101,7 +101,7 @@ Creates a user.
                         "value": "https://secure.gravatar.com/avatar/17de069a77ac9bf8c47f0c9a4893f598.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0005-192.png"
                     }
                 ],
-                "profileUrl": "https://panw-grid-sandbox.enterprise.slack.com/team/testuser15",
+                "profileUrl": "https://panwtest.enterprise.slack.com/team/testuser15",
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
                 ],
@@ -128,7 +128,7 @@ Creates a user.
 >### Create User Results (Slack IAM)
 >|brand|instanceName|success|active|id|username|details|
 >|---|---|---|---|---|---|---|
->| Slack IAM | Slack IAM_instance_1 | true | true | U01KGD53152 | testuser15 | schemas: urn:scim:schemas:core:1.0<br/>id: U01KGD53152<br/>externalId: <br/>meta: {"created": "2021-01-20T08:15:37-08:00", "location": "https://api.slack.com/scim/v1/Users/U01KGD53152"}<br/>userName: testuser15<br/>nickName: testuser15<br/>name: {"givenName": "testuser15", "familyName": ""}<br/>displayName: testuser15<br/>profileUrl: https://panw-grid-sandbox.enterprise.slack.com/team/testuser15<br/>title: <br/>timezone: America/Los_Angeles<br/>active: true<br/>emails: {'value': 'testdemistomock15@paloaltonetworks.com', 'primary': True}<br/>photos: {'value': 'https://secure.gravatar.com/avatar/17de069a77ac9bf8c47f0c9a4893f598.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0005-192.png', 'type': 'photo'}<br/>groups:  |
+>| Slack IAM | Slack IAM_instance_1 | true | true | U01KGD53152 | testuser15 | schemas: urn:scim:schemas:core:1.0<br/>id: U01KGD53152<br/>externalId: <br/>meta: {"created": "2021-01-20T08:15:37-08:00", "location": "https://api.slack.com/scim/v1/Users/U01KGD53152"}<br/>userName: testuser15<br/>nickName: testuser15<br/>name: {"givenName": "testuser15", "familyName": ""}<br/>displayName: testuser15<br/>profileUrl: https://panwtest.enterprise.slack.com/team/testuser15<br/>title: <br/>timezone: America/Los_Angeles<br/>active: true<br/>emails: {'value': 'testdemistomock15@paloaltonetworks.com', 'primary': True}<br/>photos: {'value': 'https://secure.gravatar.com/avatar/17de069a77ac9bf8c47f0c9a4893f598.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0005-192.png', 'type': 'photo'}<br/>groups:  |
 
 
 ### iam-update-user
@@ -205,7 +205,7 @@ Updates an existing user with the data passed in the user-profile argument.
                         "value": "https://secure.gravatar.com/avatar/5f359e3923fc928897380e3e90cb980e.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0007-192.png"
                     }
                 ],
-                "profileUrl": "https://panw-grid-sandbox.enterprise.slack.com/team/powershelly12",
+                "profileUrl": "https://panwtest.enterprise.slack.com/team/powershelly12",
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
                 ],
@@ -232,7 +232,7 @@ Updates an existing user with the data passed in the user-profile argument.
 >### Update User Results (Slack IAM)
 >|brand|instanceName|success|active|id|username|email|details|
 >|---|---|---|---|---|---|---|---|
->| Slack IAM | Slack IAM_instance_1 | true | true | U01JYDGBC3Y | powershelly12 | testtesting@paloaltonetworks.com | schemas: urn:scim:schemas:core:1.0<br/>id: U01JYDGBC3Y<br/>externalId: <br/>meta: {"created": "2021-01-19T07:41:11-08:00", "location": "https://api.slack.com/scim/v1/Users/U01JYDGBC3Y"}<br/>userName: powershelly12<br/>nickName: powershelly12<br/>name: {"givenName": "powershelly12", "familyName": ""}<br/>displayName: powershelly12<br/>profileUrl: https://panw-grid-sandbox.enterprise.slack.com/team/powershelly12<br/>title: <br/>timezone: America/Los_Angeles<br/>active: true<br/>emails: {'value': 'testtesting@paloaltonetworks.com', 'primary': True}<br/>photos: {'value': 'https://secure.gravatar.com/avatar/5f359e3923fc928897380e3e90cb980e.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0007-192.png', 'type': 'photo'}<br/>groups:  |
+>| Slack IAM | Slack IAM_instance_1 | true | true | U01JYDGBC3Y | powershelly12 | testtesting@paloaltonetworks.com | schemas: urn:scim:schemas:core:1.0<br/>id: U01JYDGBC3Y<br/>externalId: <br/>meta: {"created": "2021-01-19T07:41:11-08:00", "location": "https://api.slack.com/scim/v1/Users/U01JYDGBC3Y"}<br/>userName: powershelly12<br/>nickName: powershelly12<br/>name: {"givenName": "powershelly12", "familyName": ""}<br/>displayName: powershelly12<br/>profileUrl: https://panwtest.enterprise.slack.com/team/powershelly12<br/>title: <br/>timezone: America/Los_Angeles<br/>active: true<br/>emails: {'value': 'testtesting@paloaltonetworks.com', 'primary': True}<br/>photos: {'value': 'https://secure.gravatar.com/avatar/5f359e3923fc928897380e3e90cb980e.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0007-192.png', 'type': 'photo'}<br/>groups:  |
 
 
 ### iam-get-user
@@ -300,7 +300,7 @@ Retrieves a single user resource.
                     "value": "https://secure.gravatar.com/avatar/e14bda84be03871922c78d0d03caa901.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0006-192.png"
                 }
             ],
-            "profileUrl": "https://panw-grid-sandbox.enterprise.slack.com/team/powershelly10",
+            "profileUrl": "https://panwtest.enterprise.slack.com/team/powershelly10",
             "schemas": [
                 "urn:scim:schemas:core:1.0"
             ],
@@ -339,7 +339,7 @@ Retrieves a single user resource.
                         "value": "https://secure.gravatar.com/avatar/e14bda84be03871922c78d0d03caa901.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0006-192.png"
                     }
                 ],
-                "profileUrl": "https://panw-grid-sandbox.enterprise.slack.com/team/powershelly10",
+                "profileUrl": "https://panwtest.enterprise.slack.com/team/powershelly10",
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
                 ],
@@ -366,7 +366,7 @@ Retrieves a single user resource.
 >### Get User Results (Slack IAM)
 >|brand|instanceName|success|active|id|username|email|details|
 >|---|---|---|---|---|---|---|---|
->| Slack IAM | Slack IAM_instance_1 | true | false | U01KHS7J7U1 | powershelly10 | testdemistomock@paloaltonetworks.com | schemas: urn:scim:schemas:core:1.0<br/>id: U01KHS7J7U1<br/>externalId: <br/>meta: {"created": "2021-01-19T07:46:20-08:00", "location": "https://api.slack.com/scim/v1/Users/U01KHS7J7U1"}<br/>userName: powershelly10<br/>nickName: powershelly10<br/>name: {"givenName": "powershelly10", "familyName": ""}<br/>displayName: powershelly10<br/>profileUrl: https://panw-grid-sandbox.enterprise.slack.com/team/powershelly10<br/>title: <br/>timezone: America/Los_Angeles<br/>active: false<br/>emails: {'value': 'testdemistomock@paloaltonetworks.com', 'primary': True}<br/>photos: {'value': 'https://secure.gravatar.com/avatar/e14bda84be03871922c78d0d03caa901.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0006-192.png', 'type': 'photo'}<br/>groups:  |
+>| Slack IAM | Slack IAM_instance_1 | true | false | U01KHS7J7U1 | powershelly10 | testdemistomock@paloaltonetworks.com | schemas: urn:scim:schemas:core:1.0<br/>id: U01KHS7J7U1<br/>externalId: <br/>meta: {"created": "2021-01-19T07:46:20-08:00", "location": "https://api.slack.com/scim/v1/Users/U01KHS7J7U1"}<br/>userName: powershelly10<br/>nickName: powershelly10<br/>name: {"givenName": "powershelly10", "familyName": ""}<br/>displayName: powershelly10<br/>profileUrl: https://panwtest.enterprise.slack.com/team/powershelly10<br/>title: <br/>timezone: America/Los_Angeles<br/>active: false<br/>emails: {'value': 'testdemistomock@paloaltonetworks.com', 'primary': True}<br/>photos: {'value': 'https://secure.gravatar.com/avatar/e14bda84be03871922c78d0d03caa901.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0006-192.png', 'type': 'photo'}<br/>groups:  |
 
 
 ### iam-disable-user
@@ -442,7 +442,7 @@ Disable an active user.
                         "value": "https://secure.gravatar.com/avatar/e14bda84be03871922c78d0d03caa901.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0006-192.png"
                     }
                 ],
-                "profileUrl": "https://panw-grid-sandbox.enterprise.slack.com/team/powershelly10",
+                "profileUrl": "https://panwtest.enterprise.slack.com/team/powershelly10",
                 "schemas": [
                     "urn:scim:schemas:core:1.0"
                 ],
@@ -469,7 +469,7 @@ Disable an active user.
 ### Disable User Results (Slack IAM)
 |brand|instanceName|success|active|id|username|email|details|
 |---|---|---|---|---|---|---|---|
-| Slack IAM | Slack IAM_instance_1 | true | false | U01KHS7J7U1 | powershelly10 | testdemistomock@paloaltonetworks.com | schemas: urn:scim:schemas:core:1.0<br/>id: U01KHS7J7U1<br/>externalId: <br/>meta: {"created": "2021-01-19T07:46:20-08:00", "location": "https://api.slack.com/scim/v1/Users/U01KHS7J7U1"}<br/>userName: powershelly10<br/>nickName: powershelly10<br/>name: {"givenName": "powershelly10", "familyName": ""}<br/>displayName: powershelly10<br/>profileUrl: https://panw-grid-sandbox.enterprise.slack.com/team/powershelly10<br/>title: <br/>timezone: America/Los_Angeles<br/>active: false<br/>emails: {'value': 'testdemistomock@paloaltonetworks.com', 'primary': True}<br/>photos: {'value': 'https://secure.gravatar.com/avatar/e14bda84be03871922c78d0d03caa901.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0006-192.png', 'type': 'photo'}<br/>groups:  |
+| Slack IAM | Slack IAM_instance_1 | true | false | U01KHS7J7U1 | powershelly10 | testdemistomock@paloaltonetworks.com | schemas: urn:scim:schemas:core:1.0<br/>id: U01KHS7J7U1<br/>externalId: <br/>meta: {"created": "2021-01-19T07:46:20-08:00", "location": "https://api.slack.com/scim/v1/Users/U01KHS7J7U1"}<br/>userName: powershelly10<br/>nickName: powershelly10<br/>name: {"givenName": "powershelly10", "familyName": ""}<br/>displayName: powershelly10<br/>profileUrl: https://panwtest.enterprise.slack.com/team/powershelly10<br/>title: <br/>timezone: America/Los_Angeles<br/>active: false<br/>emails: {'value': 'testdemistomock@paloaltonetworks.com', 'primary': True}<br/>photos: {'value': 'https://secure.gravatar.com/avatar/e14bda84be03871922c78d0d03caa901.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0006-192.png', 'type': 'photo'}<br/>groups:  |
 
 
 
