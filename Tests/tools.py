@@ -12,7 +12,7 @@ def run_with_proxy_configured(function: Callable) -> Callable:
 
     @wraps(function)
     def decorated(build, *args, **kwargs):
-        build.proxy.configure_proxy_in_demisto(proxy=build.proxy.ami.docker_ip + ':' + build.proxy.PROXY_PORT,
+        build.proxy.configure_proxy_in_demisto(proxy=build.proxy.ami.internal_ip + ':' + build.proxy.PROXY_PORT,
                                                username=build.username, password=build.password,
                                                server=build.servers[0].host)
         result = function(build, *args, **kwargs)

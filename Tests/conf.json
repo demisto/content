@@ -2142,7 +2142,8 @@
         },
         {
             "playbookID": "Docker Hardening Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "runnable_on_docker_only": true
         },
         {
             "integrations": "Active Directory Query v2",
