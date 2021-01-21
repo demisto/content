@@ -39,17 +39,27 @@ configuration:
   - Canceled
   required: false
   type: 16
-- additionalinfo: 'Input format: <number> <time unit>, e.g., 1 hour, 30 minutes'
-  defaultvalue: 7 days
-  display: First fetch time
-  name: fetch_time
+# - additionalinfo: 'Input format: <number> <time unit>, e.g., 1 hour, 30 minutes'
+#   defaultvalue: 7 days
+#   display: First fetch time
+#   name: fetch_time
+#   required: false
+#   type: 0
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
   required: false
   type: 0
 - defaultvalue: '50'
   display: Fetch limit - maximum number of incidents per fetch
-  name: fetch_limit
+  name: max_fetch
   required: false
   type: 0
+# - defaultvalue: '50'
+#   display: Fetch limit - maximum number of incidents per fetch
+#   name: fetch_limit
+#   required: false
+#   type: 0
 - display: Fetch query -  see (?). Overrides the status filter, if given.
   name: fetch_filter
   required: false
@@ -750,7 +760,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The closure code to add to the request. Can be "Canceled", "Failed", "Moved", "Postponed", "Success" or "Unable to Reproduce". Additional codes can be added. 
+      description: The closure code to add to the request. Can be "Canceled", "Failed", "Moved", "Postponed", "Success" or "Unable to Reproduce". Additional codes can be added.
       isArray: false
       name: closure_code
       predefined:
@@ -788,7 +798,7 @@ script:
     description: Closes the specified request.
     execution: false
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false

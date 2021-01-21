@@ -1,13 +1,13 @@
 import pytest
 from ServiceDeskPlus_On_Premise import Client, create_request_command, update_request_command, list_requests_command, \
     linked_request_command, get_resolutions_list_command, delete_request_command, assign_request_command, \
-    pickup_request_command, modify_linked_request_command, add_resolution_command, generate_refresh_token, \
+    pickup_request_command, modify_linked_request_command, add_resolution_command, \
     create_output, args_to_query, create_modify_linked_input_data, create_human_readable, resolution_human_readable, \
     create_requests_list_info, create_fetch_list_info, fetch_incidents, close_request_command, create_udf_field
 from test_data.response_constants import RESPONSE_CREATE_REQUEST, RESPONSE_UPDATE_REQUEST, \
     RESPONSE_LIST_SINGLE_REQUEST, RESPONSE_LIST_MULTIPLE_REQUESTS, RESPONSE_LINKED_REQUEST_LIST, \
     RESPONSE_RESOLUTION_LIST, RESPONSE_NO_RESOLUTION_LIST, RESPONSE_LINK_REQUEST, RESPONSE_UNLINK_REQUEST, \
-    RESPONSE_GENERATE_REFRESH_TOKEN, RESPONSE_FETCH_INCIDENTS
+    RESPONSE_FETCH_INCIDENTS
 from test_data.result_constants import EXPECTED_CREATE_REQUEST, EXPECTED_UPDATE_REQUEST, EXPECTED_LIST_SINGLE_REQUEST, \
     EXPECTED_LIST_MULTIPLE_REQUESTS, EXPECTED_LINKED_REQUEST_LIST, EXPECTED_RESOLUTION_LIST, EXPECTED_NO_RESOLUTION_LIST
 
@@ -46,8 +46,7 @@ from test_data.result_constants import EXPECTED_CREATE_REQUEST, EXPECTED_UPDATE_
      EXPECTED_NO_RESOLUTION_LIST)
 ])
 def test_commands(command, args, response, expected_result, mocker):
-    mocker.patch('ServiceDeskPlus.Client.get_access_token')
-    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy')
     mocker.patch.object(client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]
@@ -82,20 +81,10 @@ def test_commands(command, args, response, expected_result, mocker):
     # and the add_to_linked_requests flag set to true, validate the human readable output
     (add_resolution_command, {'request_id': '1234', 'resolution_content': 'resolution message',
                               'add_to_linked_requests': 'false'}, RESPONSE_UNLINK_REQUEST,
-     '### Resolution was successfully added to 1234'),
-    # Given the generate refresh token command, a valid code that should be used and the response for this command,
-    # validate the human readable output
-    (generate_refresh_token, {'code': '147852369'}, RESPONSE_GENERATE_REFRESH_TOKEN, '### Refresh Token: 987654321\n '
-                                                                                     'Please paste the Refresh Token in'
-                                                                                     ' the instance configuration and '
-                                                                                     'save it for future use.'),
-    # Given the generate refresh token command, a code and an error message as the response, validate that the human
-    # readable is indicating an error.
-    (generate_refresh_token, {'code': '147852369'}, {'error': 'invalid_code'}, '### Error: invalid_code')
+     '### Resolution was successfully added to 1234')
 ])
 def test_command_hr(command, args, response, expected_result, mocker):
-    mocker.patch('ServiceDeskPlus.Client.get_access_token')
-    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy')
     mocker.patch.object(client, 'http_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[0]
@@ -249,31 +238,30 @@ def test_fetch_incidents(mocker):
     - run the fetch incidents command using the Client.
     Validate the length of the results and the different fields of the fetched incidents.
     """
-    mocker.patch('ServiceDeskPlus.Client.get_access_token')
-    mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
-    mocker.patch('ServiceDeskPlus.date_to_timestamp', return_value='1592918317168')
-    mocker.patch('ServiceDeskPlus.create_fetch_list_info', return_value={})
+    mocker.patch('ServiceDeskPlus_On_Premise.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
+    mocker.patch('ServiceDeskPlus_On_Premise.date_to_timestamp', return_value='1592918317168')
+    mocker.patch('ServiceDeskPlus_On_Premise.create_fetch_list_info', return_value={})
 
-    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token',
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy',
                     fetch_time='1 hour', fetch_limit=3, fetch_status=['Open'])
     mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
     incidents = fetch_incidents(client)
     assert len(incidents) == 3
 
-    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token',
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy',
                     fetch_time='1 hour', fetch_limit=2, fetch_status=['Open'])
     mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
 
-    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token',
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy',
                     fetch_time='1 hour', fetch_limit=1, fetch_status=['Open'])
     mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
     incidents = fetch_incidents(client)
     assert len(incidents) == 1
     assert incidents[0].get('name') == 'Test fetch incidents - 1234'
 
-    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token',
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy',
                     fetch_time='1 hour', fetch_limit=0, fetch_status=['Open'])
     mocker.patch.object(client, 'get_requests', return_value=RESPONSE_FETCH_INCIDENTS)
     incidents = fetch_incidents(client)
@@ -293,11 +281,10 @@ def test_test_module(mocker):
     - run the test module command using the Client
     Validate the content of the HumanReadable.
     """
-    from ServiceDeskPlus import test_module as module
-    mocker.patch('ServiceDeskPlus.Client.get_access_token')
-    client = Client('server_url', 'use_ssl', 'use_proxy', 'client_id', 'client_secret', 'refresh_token')
+    from ServiceDeskPlus_On_Premise import test_module as module
+    client = Client('server_url', 'technician_key', 'use_ssl', 'use_proxy')
 
-    mocker.patch('ServiceDeskPlus.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
+    mocker.patch('ServiceDeskPlus_On_Premise.parse_date_range', return_value=('2020-06-23 04:18:00', 'never mind'))
     mocker.patch.object(client, 'http_request', return_value=RESPONSE_FETCH_INCIDENTS)
     result = module(client)
     assert result == 'ok'

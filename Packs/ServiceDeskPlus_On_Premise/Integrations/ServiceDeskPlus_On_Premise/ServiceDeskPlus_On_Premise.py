@@ -735,6 +735,7 @@ def test_module(client: Client):
     except Exception as e:
         raise e
 
+
 def main():
     params = demisto.params()
 
@@ -742,9 +743,9 @@ def main():
                     use_ssl=not params.get('insecure', False),
                     use_proxy=params.get('proxy', False),
                     technician_key=params.get('technician_key'),
-                    fetch_time=params.get('fetch_time') if params.get('fetch_time') else '7 days',
+                    fetch_time=params.get('first_fetch') if params.get('first_fetch') else '7 days',
                     fetch_status=params.get('fetch_status'),
-                    fetch_limit=int(params.get('fetch_limit')) if params.get('fetch_limit') else 50,
+                    fetch_limit=int(params.get('max_fetch')) if params.get('max_fetch') else 50,
                     fetch_filter=params.get('fetch_filter') if params.get('fetch_filter') else '')
 
     commands = {

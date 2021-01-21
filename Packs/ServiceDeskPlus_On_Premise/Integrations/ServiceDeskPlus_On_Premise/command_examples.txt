@@ -8,5 +8,4 @@
 !service-desk-plus-request-resolution-add request_id=123640000000284007 resolution_content="Resolution Content"
 !service-desk-plus-request-resolutions-list request_id=123640000000284007
 !service-desk-plus-request-close request_id=123640000000288001
-!service-desk-plus-generate-refresh-token code=1000.ceb0e1b783c1e9647171e46a92bb444c.61adef3ee9d50c4a83e505ceee06d5b4
 !service-desk-plus-request-delete request_id=123640000000279019
