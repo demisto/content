@@ -12,6 +12,11 @@ import re
 ''' CONSTANTS '''
 
 QOS_AT_LEAST_ONCE = 1
+CRITICAL_SEVERITY = 4
+HIGH_SEVERITY = 3
+MEDIUM_SEVERITY = 2
+LOW_SEVERITY = 1
+UNKNOWN_SEVERITY = 0
 
 ''' CLIENT CLASS '''
 
@@ -27,18 +32,18 @@ class Client:
         username(str): MQTT server's user name
         password(str): MQTT server's password
         stage(str): MQTT server's environment
-        customer_id(str): customer id related with errors subscribed
+        tenant_id(str): tenant id related with errors subscribed
 
     Return:
         None
     """
 
-    def __init__(self, mqtt_host: str, mqtt_port: int, username: str, password: str, stage: str, customer_id: str):
+    def __init__(self, mqtt_host: str, mqtt_port: int, username: str, password: str, stage: str, tenant_id: str):
         self.mqtt_client = mqtt.Client()
         self.mqtt_client.username_pw_set(username, password)
         self.mqtt_host = mqtt_host
         self.mqtt_port = mqtt_port
-        self.topic = "ubirch/incidents/{}/customer/{}".format(stage, customer_id)
+        self.topic = "com/ubirch/{}/incident/tenant/{}".format(stage, tenant_id)
 
     def connect(self, on_connect_callback: Callable[[mqtt.Client, dict, dict, int], None] = None) -> None:
         if on_connect_callback is not None:
@@ -72,11 +77,13 @@ def create_incidents(error_message: str) -> list:
     """
     incident_dict = json.loads(error_message)
     return [{
-        "name": incident_dict.get("error"),
-        "labels": [{"type": "requestId", "value": incident_dict.get("requestId")},
-                   {"type": "hwDeviceId", "value": incident_dict.get("hwDeviceId")}],
-        "rawJSON": json.dumps(incident_dict),
-        "details": json.dumps(incident_dict)
+        'name': incident_dict.get("error"),
+        'type': incident_dict.get("errorCode", "other error"),
+        'labels': [{'type': "requestId", 'value': incident_dict.get("requestId")},
+                   {'type': "hwDeviceId", 'value': incident_dict.get("hwDeviceId")}],
+        'rawJSON': json.dumps(incident_dict),
+        'details': json.dumps(incident_dict),
+        'severity': CRITICAL_SEVERITY,
     }]
 
 
@@ -113,6 +120,7 @@ def long_running_execution(client: Client) -> None:
         Create incidents, when the client subscribes to an error from the mqtt server.
         """
         incidents = create_incidents(message.payload.decode("utf-8"))  # the message payload is binary.
+        demisto.info(f"catch an incident. {incidents}")
         demisto.createIncidents(incidents)
 
     try:
@@ -185,7 +193,7 @@ def main() -> None:
     params = demisto.params()
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
-    customer_id = params.get('customerId')
+    tenant_id = params.get('tenant_id')
     mqtt_host = params.get('url')
     mqtt_port = params.get('port')
     stage = params.get('stage', 'prod')
@@ -194,8 +202,8 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        if not re.match(r'^[a-z0-9]{0,64}$', customer_id):
-            raise ValueError('Customer id is invalid: Must be a max. of 64 alphanumeric characters (a-z, 0-9).')
+        if not re.match(r'^[a-z0-9]{0,64}$', tenant_id):
+            raise ValueError('Tenant id is invalid: Must be a max. of 64 alphanumeric characters (a-z, 0-9).')
 
         try:
             mqtt_port = int(mqtt_port)
@@ -208,7 +216,7 @@ def main() -> None:
             username=username,
             password=password,
             stage=stage,
-            customer_id=customer_id
+            tenant_id=tenant_id
         )
 
         if command == 'test-module':
@@ -218,7 +226,7 @@ def main() -> None:
         elif command == 'long-running-execution':
             long_running_execution(client)
 
-        elif command == 'get-sample-events':
+        elif command == 'create-sample-incidents':
             create_sample_incidents()
 
     # Log exceptions and return errors

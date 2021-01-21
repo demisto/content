@@ -22,8 +22,8 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Customer id
-  name: customerId
+- display: Tenant Id
+  name: tenant_id
   required: true
   type: 0
 - defaultvalue: prod
