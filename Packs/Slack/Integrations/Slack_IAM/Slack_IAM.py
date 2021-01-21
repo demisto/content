@@ -176,7 +176,6 @@ def main():
 
     if command == 'iam-get-user':
         user_profile = iam_command.get_user(client, args)
-        print(user_profile.to_entry())
 
     elif command == 'iam-create-user':
         user_profile = iam_command.create_user(client, args)
