@@ -3,7 +3,7 @@ version: -1
 name: Sophos Firewall - Block IP
 description: |-
   This playbook adds the IP address to a pre-configured firewall rule. (The target firewall rule can be changed as requested.)
-  Pre-Requisite :
+  Pre-Requisite:
   1) Create an IP host group.
   2) Create a firewall rule which refers to the IP host group created in the previous step.
 starttaskid: "0"
@@ -43,7 +43,7 @@ tasks:
       description: ""
       id: 51f18e52-b8fd-4523-850e-ccec64f70d71
       version: -1
-      name: Check if Sophos Firewall Enabled
+      name: Check if Sophos Firewall is Enabled
       type: condition
       iscommand: false
       brand: ""
