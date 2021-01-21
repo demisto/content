@@ -2,6 +2,11 @@
     "testTimeout": 160,
     "testInterval": 20,
     "tests": [
+	{
+            "integrations": Cyberint
+            "playbookID": "playbook-Cyberint_Test",
+            "fromversion": "5.0.0"
+        },
         {
             "integrations": "GSuiteAdmin",
             "playbookID": "GSuiteAdmin-Test",
