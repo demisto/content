@@ -44,6 +44,5 @@ def main():
     return_results(f'The following Users were removed from the Out of Office List {list_name}:\n{remove}')
 
 
-
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
