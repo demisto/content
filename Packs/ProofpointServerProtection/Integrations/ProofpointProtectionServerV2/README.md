@@ -223,14 +223,14 @@ Here is a list of stop words:
 
 Example: "I'm going to a party" becomes "I go party"
 
-### proofpoint-pps-list-quarantined-messages
+### proofpoint-pps-quarantine-messages-list
 ***
 Search for quarantined messages.
 
 
 #### Base Command
 
-`proofpoint-pps-list-quarantined-messages`
+`proofpoint-pps-quarantine-messages-list`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -263,7 +263,7 @@ Search for quarantined messages.
 
 
 #### Command Example
-```!proofpoint-pps-list-quarantined-messages subject=Loan* sender=john@doe.com```
+```!proofpoint-pps-quarantine-messages-list subject=Loan* sender=john@doe.com```
 
 #### Context Example
 ```json
@@ -316,20 +316,20 @@ Search for quarantined messages.
 >| 6:6:4 | Quarantine | 100 | john@doe.com | user@test.com | Loan | 2020-01-22 10:00:18 | 6143 | [10.12.40.4] [10.12.40.4] |
 
 
-### proofpoint-pps-release-message
+### proofpoint-pps-quarantine-message-release
 ***
 Releases the message to the email infrastructure without further scanning. The message remains in the folder and is moved to the deleted_folder if specified.
 
 
 #### Base Command
 
-`proofpoint-pps-release-message`
+`proofpoint-pps-quarantine-message-release`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
-| local_guid | Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). | Required | 
+| local_guid | Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command. | Required | 
 | deleted_folder | Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP incidents, and vice versa. | Optional | 
 | scan | Whether to rescan the message by the DLP and Attachment Defense filtering modules. Possible values are: "true" and "false". Default is "false". | Optional | 
 | brand_template | When encryption is licensed, the Branding Template to use when an encrypted message is released. The Branding Templates are listed on the System > End User Services > Branding Templates page in the management interface (admin GUI). | Optional | 
@@ -341,26 +341,26 @@ Releases the message to the email infrastructure without further scanning. The m
 There is no context output for this command.
 
 #### Command Example
-```!proofpoint-pps-release-message folder_name=HIPAA local_guid=4:2:6```
+```!proofpoint-pps-quarantine-message-release folder_name=HIPAA local_guid=4:2:6```
 
 #### Human Readable Output
 
 >Request sent. Message 4:2:6 will be released momentarily'
 
-### proofpoint-pps-resubmit-message
+### proofpoint-pps-quarantine-message-resubmit
 ***
 Resubmits the message to the filtering modules. The message is removed from the folder and is moved to any folder.
 
 
 #### Base Command
 
-`proofpoint-pps-resubmit-message`
+`proofpoint-pps-quarantine-message-resubmit`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
-| local_guid | Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). | Required | 
+| local_guid | Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command. | Required | 
 
 
 #### Context Output
@@ -368,26 +368,26 @@ Resubmits the message to the filtering modules. The message is removed from the 
 There is no context output for this command.
 
 #### Command Example
-```!proofpoint-pps-resubmit-message folder_name=HIPAA local_guid=4:2:6```
+```!proofpoint-pps-quarantine-message-resubmit folder_name=HIPAA local_guid=4:2:6```
 
 #### Human Readable Output
 
 >Request sent. Message 4:2:6 will be resubmitted momentarily
 
-### proofpoint-pps-forward-message
+### proofpoint-pps-quarantine-message-forward
 ***
 Forwards the message to another recipient. The message remains in the folder and will be moved to the deleted_folder if specified.
 
 
 #### Base Command
 
-`proofpoint-pps-forward-message`
+`proofpoint-pps-quarantine-message-forward`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
-| local_guid | Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). | Required | 
+| local_guid | Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command. | Required | 
 | deleted_folder | Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP Incidents, and vice versa. | Optional | 
 | subject | The new subject with which to overwrite the original subject for the message. | Optional | 
 | append_old_subject | Whether to append the original subject to the string specified in the subject argument. Possible values are: "true" and "false". Default is "false". | Optional | 
@@ -402,26 +402,26 @@ Forwards the message to another recipient. The message remains in the folder and
 There is no context output for this command.
 
 #### Command Example
-```!proofpoint-pps-forward-message folder_name=HIPAA local_guid=4:2:6```
+```!proofpoint-pps-quarantine-message-forward folder_name=HIPAA local_guid=4:2:6```
 
 #### Human Readable Output
 
 >Request sent. Message 4:2:6 will be forwarded momentarily
 
-### proofpoint-pps-move-message
+### proofpoint-pps-quarantine-message-move
 ***
 Moves the message to the specified target folder.
 
 
 #### Base Command
 
-`proofpoint-pps-move-message`
+`proofpoint-pps-quarantine-message-move`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
-| local_guid | Comma-separate list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). | Required | 
+| local_guid | Comma-separate list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command. | Required | 
 | target_folder | Name of the folder to move the email message to (e.g., PCI).The folder for moved messages must be for quarantined messages from the same type of module. For example, you cannot move spam messages to a folder for DLP Incidents, and vice versa. | Required | 
 
 
@@ -430,26 +430,26 @@ Moves the message to the specified target folder.
 There is no context output for this command.
 
 #### Command Example
-```!proofpoint-pps-move-message folder_name=HIPAA local_guid=4:2:6 target_folder=PCI```
+```!proofpoint-pps-quarantine-message-move folder_name=HIPAA local_guid=4:2:6 target_folder=PCI```
 
 #### Human Readable Output
 
 >Successfully moved message 4:2:6
 
-### proofpoint-pps-delete-message
+### proofpoint-pps-quarantine-message-delete
 ***
 Deletes the message from the quarantine folder. The message is removed from its folder and is moved to the deleted_folder if specified.
 
 
 #### Base Command
 
-`proofpoint-pps-delete-message`
+`proofpoint-pps-quarantine-message-delete`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | folder_name | Name of the folder where the message is stored (e.g., HIPAA). | Required | 
-| local_guid | Comma-separate list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). | Required | 
+| local_guid | Comma-separate list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command. | Required | 
 | deleted_folder | Name of the folder to move the message to. The folder must be for quarantined messages from the same type of module. For example, you cannot send deleted spam messages to a folder for deleted DLP Incidents, and vice versa. | Optional | 
 
 
@@ -458,24 +458,24 @@ Deletes the message from the quarantine folder. The message is removed from its 
 There is no context output for this command.
 
 #### Command Example
-```!proofpoint-pps-delete-message folder_name=HIPAA local_guid=4:2:6```
+```!proofpoint-pps-quarantine-message-delete folder_name=HIPAA local_guid=4:2:6```
 
 #### Human Readable Output
 
 >Successfully deleted message 4:2:6
 
-### proofpoint-pps-download-message
+### proofpoint-pps-quarantine-message-download
 ***
 Downloads an email message's raw data.
 
 #### Base Command
 
-`proofpoint-pps-download-message`
+`proofpoint-pps-quarantine-message-download`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder_name | Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-smart-search command or the proofpoint-pps-list-quarantined-messages command. | Required | 
+| folder_name | Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command. | Required | 
 
 
 #### Context Output
@@ -483,7 +483,7 @@ Downloads an email message's raw data.
 There is no context output for this command.
 
 #### Command Example
-```!proofpoint-pps-download-message guid=g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7```
+```!proofpoint-pps-quarantine-message-download guid=g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7```
 
 
 

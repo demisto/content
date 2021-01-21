@@ -294,19 +294,19 @@ def main() -> None:
             return_results(test_module(client))
         elif command == 'proofpoint-pps-smart-search':
             return_results(smart_search(client, demisto.args()))
-        elif command == 'proofpoint-pps-list-quarantined-messages':
+        elif command == 'proofpoint-pps-quarantine-messages-list':
             return_results(list_quarantined_messages(client, demisto.args()))
-        elif command == 'proofpoint-pps-release-message':
+        elif command == 'proofpoint-pps-quarantine-message-release':
             return_results(release_message(client, demisto.args()))
-        elif command == 'proofpoint-pps-resubmit-message':
+        elif command == 'proofpoint-pps-quarantine-message-resubmit':
             return_results(resubmit_message(client, demisto.args()))
-        elif command == 'proofpoint-pps-forward-message':
+        elif command == 'proofpoint-pps-quarantine-message-forward':
             return_results(forward_message(client, demisto.args()))
-        elif command == 'proofpoint-pps-move-message':
+        elif command == 'proofpoint-pps-quarantine-message-move':
             return_results(move_message(client, demisto.args()))
-        elif command == 'proofpoint-pps-delete-message':
+        elif command == 'proofpoint-pps-quarantine-message-delete':
             return_results(delete_message(client, demisto.args()))
-        elif command == 'proofpoint-pps-download-message':
+        elif command == 'proofpoint-pps-quarantine-message-download':
             return_results(download_message(client, demisto.args()))
 
     except Exception as e:

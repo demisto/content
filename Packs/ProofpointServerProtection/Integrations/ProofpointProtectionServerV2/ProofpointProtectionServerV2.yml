@@ -302,7 +302,7 @@ script:
     deprecated: false
     description: Search for quarantined messages.
     execution: false
-    name: proofpoint-pps-list-quarantined-messages
+    name: proofpoint-pps-quarantine-messages-list
     outputs:
     - contextPath: Proofpoint.QuarantinedMessage.processingserver
       description: The processing server of the quarantined message.
@@ -349,7 +349,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7).
+        Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
       isArray: false
       name: local_guid
       required: true
@@ -386,7 +386,7 @@ script:
     deprecated: false
     description: Releases the message to the email infrastructure without further scanning. The message remains in the folder and will be moved to the `deleted_folder` if specified.
     execution: false
-    name: proofpoint-pps-release-message
+    name: proofpoint-pps-quarantine-message-release
   - arguments:
     - default: false
       description: Name of the folder where the message is stored (e.g., HIPAA).
@@ -404,7 +404,7 @@ script:
     deprecated: false
     description: Resubmits the message to the filtering modules. The message is removed from the folder and will not be moved to any folder.
     execution: false
-    name: proofpoint-pps-resubmit-message
+    name: proofpoint-pps-quarantine-message-resubmit
   - arguments:
     - default: false
       description: Name of the folder where the message is stored (e.g., HIPAA).
@@ -414,7 +414,7 @@ script:
       secret: false
     - default: false
       description: |-
-         Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7).
+         Comma-separated list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
       isArray: false
       name: local_guid
       required: true
@@ -471,7 +471,7 @@ script:
     deprecated: false
     description: Forwards the message to another recipient. The message remains in the folder and will be moved to the deleted_folder if specified.
     execution: false
-    name: proofpoint-pps-forward-message
+    name: proofpoint-pps-quarantine-message-forward
   - arguments:
     - default: false
       description: Name of the folder where the message is stored (e.g., HIPAA).
@@ -482,7 +482,7 @@ script:
     - default: false
       description: |-
         Comma-separate list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ
-        wmmxwP6lQkr5k7).
+        wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
       isArray: false
       name: local_guid
       required: true
@@ -496,7 +496,7 @@ script:
     deprecated: false
     description: Moves the message to the specified target folder.
     execution: false
-    name: proofpoint-pps-move-message
+    name: proofpoint-pps-quarantine-message-move
   - arguments:
     - default: false
       description: Name of the folder where the message is stored (e.g., HIPAA).
@@ -507,7 +507,7 @@ script:
     - default: false
       description: |-
         Comma-separate list of message GUIDs. Format is folder_id:table_id:dbase_id (e.g., 4:2:6), or in Cloud Quarantine format is GUID (e.g., g4fsnj_sTLMk9hECaJ
-        wmmxwP6lQkr5k7).
+        wmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
       isArray: false
       name: local_guid
       required: true
@@ -521,18 +521,18 @@ script:
     deprecated: false
     description: Deletes the message from the quarantine folder. The message is removed from its folder and moved to the deleted_folder if specified.
     execution: false
-    name: proofpoint-pps-delete-message
+    name: proofpoint-pps-quarantine-message-delete
   - arguments:
     - default: false
-      description: Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-smart-search command or the proofpoint-pps-list-quarantined-messages.
+      description: Global unique ID of the email message (e.g., g4fsnj_sTLMk9hECaJwmmxwP6lQkr5k7). Can be retrieved using the proofpoint-pps-quarantine-messages-list command.
       isArray: false
       name: guid
       required: true
       secret: false
     deprecated: false
-    description: Downloads an email message's raw data.
+    description: Downloads a quarantine email message's raw data.
     execution: false
-    name: proofpoint-pps-download-message
+    name: proofpoint-pps-quarantine-message-download
   dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
@@ -542,7 +542,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-
 tests:
 - No test
 fromversion: 5.0.0
