@@ -1121,12 +1121,21 @@ def search_sessions_command():
     domain = argToList(args.get('domain'))
     ip = argToList(args.get('ip'))
     url = argToList(args.get('url'))
-    from_time = args.get('from_time')
-    to_time = args.get('to_time')
+    from_time = args.get('time_after')
+    to_time = args.get('time_before')
+    time_range = args.get('time_range')
     query = args.get('query')
     max_results = args.get('max_results')
     sort = args.get('sort')
     order = args.get('order')
+
+    if time_range:
+        if from_time or to_time:
+            return_error("The 'time_range' argument cannot be specified with neither 'time_after' nor 'time_before' "
+                         "arguments.")
+        else:
+            from_time, to_time = time_range.split(',')
+
     info = search_sessions(query=query, size=max_results, sort=sort, order=order, file_hash=file_hash, domain=domain,
                            ip=ip, url=url, from_time=from_time, to_time=to_time)
     md = tableToMarkdown('Search Sessions Info:', info)
