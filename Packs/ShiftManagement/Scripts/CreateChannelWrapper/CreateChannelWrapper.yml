@@ -7,7 +7,7 @@ type: python
 tags:
 - Shift Management
 - ooo
-comment: Creates a channel in Slack v2 or in Microsoft Teams, if both of them are available it creates the channel in Slack v2 and Microsoft Teams.
+comment: Creates a channel in Slack v2 or in Microsoft Teams. If both of them are available, it creates the channel in both Slack v2 and Microsoft Teams.
 enabled: true
 args:
 - name: name
@@ -19,13 +19,13 @@ args:
   - public
   - private
   description: The channel type. Can be "private" or "public".  Relevant only for
-    Slack
+    Slack.
   defaultValue: private
 - name: team
   description: The team in which to create the channel. Relevant only for Microsoft
-    Team.
+    Teams.
 - name: description
-  description: The description of the channel. Relevant only for Microsoft Team.
+  description: The description of the channel. Relevant only for Microsoft Teams.
 scripttarget: 0
 subtype: python3
 runonce: false
