@@ -15,4 +15,3 @@ runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-description: 'This script is used to populate the custom list with the NCSC questions and answers.'

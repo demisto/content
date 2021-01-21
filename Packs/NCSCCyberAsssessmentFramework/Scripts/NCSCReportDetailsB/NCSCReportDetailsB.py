@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 
 def calculate_overall(data: dict = None) -> str:
     if not data:
-        return None
+        return ""
     results = [x['Result'] for x in data]
     if "Not Achieved" in results:
         return "Not Achieved"
@@ -18,7 +18,6 @@ def calculate_overall(data: dict = None) -> str:
 
 def main():
 
-    args = demisto.args()
     query = "-status:closed -category:job type:\"NCSC CAF Assessment\""
 
     result_field = "cafbresultraw"
@@ -31,7 +30,8 @@ def main():
         return ""
     incidents = sorted(incidents, key=lambda x: x['id'])
     incident = incidents[0]
-    original_question_data = json.loads(demisto.executeCommand("getList", {"listName": "NCSC CAF Assessment"})[0]['Contents'])
+    original_question_data = json.loads(demisto.executeCommand("getList", {"listName": "NCSC CAF "
+                                                                                       "Assessment"})[0]['Contents'])
     original_question_data = original_question_data[assessment_field]
     if incident:
         md: str = ""
@@ -59,10 +59,13 @@ def main():
                 answers_markdown = tableToMarkdown(assessment_questions.get(str(x)), table, ['Answer', 'Result'])
             answered_questions += f"{answers_markdown}\n\n"
 
-        md += f"### Provided answers\n\nBelow are the individual questions and responses provided for this objective:\n\n{answered_questions}\n\n"
+        md += f"### Provided answers\n\nBelow are the individual questions and responses provided for this " \
+              f"objective:\n\n{answered_questions}\n\n"
 
         if assessment_result in ['Not Achieved', 'Partially Achieved']:
-            md += "### Recommendations\n\nPlease review the following questions and their responses that result in an 'Achieved' outcome for this objective (the list only includes questions which have not resulted in 'Achieved'):\n\n"
+            md += "### Recommendations\n\nPlease review the following questions and their responses that result in " \
+                  "an 'Achieved' outcome for this objective (the list only includes questions which have not " \
+                  "resulted in 'Achieved'):\n\n"
             failed_questions = [x['Question'] for x in assessment_details if x['Result'] != "Achieved"]
             for question in original_question_data:
                 if question.get('question') in failed_questions:
@@ -72,7 +75,8 @@ def main():
                     md += "\n"
 
         else:
-            md += "### Recommendations\n\nThere are no further recommendations to improve your result for this objectve. Good work!"
+            md += "### Recommendations\n\nThere are no further recommendations to improve your result for this " \
+                  "objectve. Good work!"
 
     else:
         md = ""

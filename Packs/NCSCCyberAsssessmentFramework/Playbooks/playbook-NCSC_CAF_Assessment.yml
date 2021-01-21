@@ -705,6 +705,7 @@ tasks:
       id: 50bd301f-5e7e-486d-850c-1ccf8e26aab9
       version: -1
       name: CAF A Assessment Questions
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -1025,6 +1026,7 @@ tasks:
       id: 2852e650-9b14-4f87-824f-c513e4369267
       version: -1
       name: Assess the results
+      description: ""
       scriptName: NCSCCalculateQuestionsScore
       type: regular
       iscommand: false
@@ -4452,6 +4454,7 @@ tasks:
       id: c44f7bf9-0255-44e9-8879-7c497c7c7b45
       version: -1
       name: CAF B Assessment Questions
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -5125,6 +5128,7 @@ tasks:
       id: 99ae40c8-9955-4e74-8eda-e39599e9748b
       version: -1
       name: Assess the results
+      description: ""
       scriptName: NCSCCalculateQuestionsScore
       type: regular
       iscommand: false
@@ -5190,6 +5194,7 @@ tasks:
       id: 75f0b0df-a068-4de3-81ff-16d9b354b61a
       version: -1
       name: CAF C Assessment Questions
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -5460,6 +5465,7 @@ tasks:
       id: 0a2b8d2c-67f6-4106-8ae2-5d88733cbfc3
       version: -1
       name: CAF D Assessment Questions
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -5666,6 +5672,7 @@ tasks:
       id: 593583d5-f5e3-42e7-8e3a-afc07db830fd
       version: -1
       name: Assess the results
+      description: ""
       scriptName: NCSCCalculateQuestionsScore
       type: regular
       iscommand: false
@@ -5731,6 +5738,7 @@ tasks:
       id: dc0b99e3-6f37-4706-877d-06d13262c7ab
       version: -1
       name: Assess the results
+      description: ""
       scriptName: NCSCCalculateQuestionsScore
       type: regular
       iscommand: false
@@ -7030,6 +7038,7 @@ tasks:
       id: fdb482eb-23d9-4a90-81ae-c06bcd2b3d33
       version: -1
       name: Determine the Overall Status
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -9106,6 +9115,7 @@ tasks:
       id: 63ed1109-5e23-4822-8865-82e24e3a39bc
       version: -1
       name: Is it OK to close the case?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -9375,5 +9385,6 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: 'This playbook executes automatically as part of the NCSC Assessment Incident Type. It will send the
-relevant questions (via e-mail) to each participant and generate the assessment results.'
+description: 'This playbook executes automatically as part of the NCSC Assessment
+  Incident Type. It will send the relevant questions (via e-mail) to each participant
+  and generate the assessment results.'
