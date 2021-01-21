@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: The optional list of roles we want to assign users from. Can accept arrays or comma separated list. Leave empty to fetch all users.
+  description: The optional list of roles from which to assign users. Can accept arrays or a comma-separated list. Leave empty to fetch all users.
   isArray: true
   name: roles
   required: false
@@ -8,7 +8,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Set to true to assign only user that is currently on shift. Requires Cortex XSOAR v5.5 or later.
+  description: Set to true to assign only users who are currently on shift. Requires Cortex XSOAR v5.5 or later.
   isArray: false
   name: oncall
   predefined:
@@ -18,7 +18,7 @@ args:
   secret: false
 - default: false
   defaultValue: OOO List
-  description: Optionally specify the XSOAR list name to verify against (default is OOO List)
+  description: Optionally, specify the XSOAR list name to verify out of office users against. (Default name is OOO List.)
   isArray: false
   name: listname
   required: false
@@ -26,7 +26,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Set to true to assign all the users to the incident.
+  description: Set to true to assign all users to the incidents.
   isArray: false
   name: assignAll
   predefined:
@@ -35,7 +35,7 @@ args:
   required: false
   secret: false
 comment: |-
-  Assign analyst to incident with consideration of PTO, OOO, or Disabled Users. Users can use the ManageOOOusers automation to add or remove themselves from the list.
+  Assign an analyst to an incident with consideration of PTO, OOO, or unavailibility. Users can use the ManageOOOusers automation to add or remove themselves from the list.
 commonfields:
   id: AssignAnalystToIncidentOOO
   version: -1
