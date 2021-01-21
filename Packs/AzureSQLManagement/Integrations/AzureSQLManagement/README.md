@@ -10,20 +10,20 @@ In order to connect to the Azure SQL Management using either Cortex XSOAR Azure 
 3. Follow the instructions that appear.
 4. Run the ***!azure-sql-auth-complete*** command.
 
-At end of the process you'll see a message that you've logged in successfully. 
+At the end of the process you'll see a message that you've logged in successfully. 
 
 #### Cortex XSOAR Azure App
 
 In order to use the Cortex XSOAR Azure application, use the default application ID (8f9010bb-4efe-4cfa-a197-98a2694b7e0c).
 
 You only need to fill in your subscription ID and resource group name. You can find your resource group and 
-subscription ID at Azure Portal. For more detailed explanation, please visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
+subscription ID in the Azure Portal. For a more detailed explanation, visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
 
 #### Self-Deployed Azure App
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
 
-The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
+The application must have *user_impersonation* permission and must allow public client flows (found under the **Authentication** section of the app).
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -52,11 +52,11 @@ There is no context output for this command.
 >### Authorization instructions
 >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 > and enter the code **CODECODE** to authenticate.
->2. Run the **!azure-sql-auth-complete** command in the War Room.
+>2. Run the ***!azure-sql-auth-complete*** command in the War Room.
 
 ### azure-sql-auth-complete
 ***
-Run this command to complete the authorization process. Should be used after running the azure-sql-auth-start command.
+Run this command to complete the authorization process. Should be used after running the ***azure-sql-auth-start*** command.
 
 
 #### Base Command
@@ -79,7 +79,7 @@ There is no context output for this command.
 
 ### azure-sql-auth-reset
 ***
-Run this command if for some reason you need to rerun the authentication process.
+Run this command if you need to rerun the authentication process.
 
 
 #### Base Command
@@ -125,7 +125,7 @@ There is no context output for this command.
 
 ### azure-sql-servers-list
 ***
-List of all servers.
+Lists all the servers.
 
 
 #### Base Command
@@ -143,19 +143,19 @@ List of all servers.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSQL.Server | Unknown | Servers list | 
+| AzureSQL.Server | Unknown | Server list. | 
 | AzureSQL.Server.kind | String | Kind of server. | 
 | AzureSQL.Server.location | String | Server location. | 
-| AzureSQL.Server.tags | Unknown | Server Tags | 
-| AzureSQL.Server.id | String | Server id | 
-| AzureSQL.Server.name | String | Server name | 
+| AzureSQL.Server.tags | Unknown | Server Tags. | 
+| AzureSQL.Server.id | String | Server ID. | 
+| AzureSQL.Server.name | String | Server name. | 
 | AzureSQL.Server.type | String | Server type. | 
-| AzureSQL.Server.administratorLogin | String | username of server administrator | 
-| AzureSQL.Server.version | String | Server version | 
-| AzureSQL.Server.state | String | Server state | 
-| AzureSQL.Server.fullyQualifiedDomainName | Unknown | servers fully qualified domain name | 
-| AzureSQL.Server.privateEndpointConnections | Unknown | List of servers private endpoint connections | 
-| AzureSQL.Server.publicNetworkAccess | String | servers public endpoint access. The value is 'Enabled' or 'Disabled'. | 
+| AzureSQL.Server.administratorLogin | String | Username of the server administrator. | 
+| AzureSQL.Server.version | String | Server version. | 
+| AzureSQL.Server.state | String | Server state. | 
+| AzureSQL.Server.fullyQualifiedDomainName | Unknown | Fully qualified domain name of the server. | 
+| AzureSQL.Server.privateEndpointConnections | Unknown | List of private endpoint connections of the server. | 
+| AzureSQL.Server.publicNetworkAccess | String | Whether the public endpoint access of the server is enabled. The value is 'Enabled' or 'Disabled'. | 
 
 
 #### Command Example
@@ -193,7 +193,7 @@ List of all servers.
 
 ### azure-sql-db-list
 ***
-List of all DataBases for server.
+Lists all of the databases for the server.
 
 
 #### Base Command
@@ -204,36 +204,36 @@ List of all DataBases for server.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | server_name | Server name. | Required | 
-| limit | (Int) The maximum number of DataBases returned to the War Room. Default is 50. | Optional | 
-| offset | (Int) Offset in the data set. Default is 0. | Optional | 
+| limit | The maximum number of databases returned to the War Room. Default is 50. | Optional | 
+| offset | Offset in the data set. Default is 0. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSQL.DB | Unknown | All DB related to the server. | 
+| AzureSQL.DB | Unknown | All databases related to the server. | 
 | AzureSQL.DB.kind | String | Kind of database. | 
 | AzureSQL.DB.location | String | Database location. | 
-| AzureSQL.DB.id | String | Database id. | 
+| AzureSQL.DB.id | String | Database ID. | 
 | AzureSQL.DB.name | String | Database name. | 
 | AzureSQL.DB.type | String | Database type. | 
-| AzureSQL.DB.managedBy | String | Recource that manages database. | 
+| AzureSQL.DB.managedBy | String | Resource that manages the database. | 
 | AzureSQL.DB.sku | Unknown | Database SKU. | 
-| AzureSQL.DB.catalogCollation | String | Collation of catalog. | 
+| AzureSQL.DB.catalogCollation | String | Collation of the catalog for the database. | 
 | AzureSQL.DB.collation | String | Database collation. | 
-| AzureSQL.DB.creationDate | String | Creation date of the database, in ISO format. | 
-| AzureSQL.DB.currentServiceObjectiveName | String | Database's current service level objective name. | 
-| AzureSQL.DB.currentSku | Unknown | Name, Tier and capacity of the SKU. | 
+| AzureSQL.DB.creationDate | String | Creation date of the database in ISO format. | 
+| AzureSQL.DB.currentServiceObjectiveName | String | Current service level objective name of the database. | 
+| AzureSQL.DB.currentSku | Unknown | Name, tier, and capacity of the SKU. | 
 | AzureSQL.DB.databaseID | String | Database ID. | 
-| AzureSQL.DB.defaultSecondaryLocation | String | Default secondarylocation of the database. | 
-| AzureSQL.DB.maxSizeBytes | Number | The max size of the database in bytes. | 
-| AzureSQL.DB.readReplicaCount | Number | The number of readonly secondary replicas of the database. | 
-| AzureSQL.DB.readScale | String | The state of read-only routing.  "Enabled" or "Disabled". | 
-| AzureSQL.DB.requestedServiceObjectiveName | String | Database's requested service objective name.  | 
+| AzureSQL.DB.defaultSecondaryLocation | String | Default secondary location of the database. | 
+| AzureSQL.DB.maxSizeBytes | Number | The maximum size of the database in bytes. | 
+| AzureSQL.DB.readReplicaCount | Number | The number of read-only secondary replicas of the database. | 
+| AzureSQL.DB.readScale | String | The read-only routing state.  "Enabled" or "Disabled". | 
+| AzureSQL.DB.requestedServiceObjectiveName | String | The requested service objective name of the database.  | 
 | AzureSQL.DB.status | String | Database status. | 
 | AzureSQL.DB.storageAccountType | String | Database storage account type. | 
-| AzureSQL.DB.zoneRedundant | Boolean | Is the database zone redundan. | 
+| AzureSQL.DB.zoneRedundant | Boolean | Whether the database zone is redundant. | 
 
 
 #### Command Example
@@ -323,7 +323,7 @@ List of all DataBases for server.
 
 ### azure-sql-db-audit-policy-list
 ***
-Auditing settings of a database.
+Gets the audit settings of the specified database.
 
 
 #### Base Command
@@ -335,25 +335,25 @@ Auditing settings of a database.
 | --- | --- | --- |
 | server_name | Server name. | Required | 
 | db_name | Database name. | Required | 
-| limit | (Int) The maximum number of DataBases audit policies returned to the War Room. Default is 50. | Optional | 
-| offset | (Int) Offset in the data set. Default is 0. | Optional | 
+| limit | The maximum number of DataBases audit policies returned to the War Room. Default is 50. | Optional | 
+| offset | Offset in the data set. Default is 0. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSQL.DBAuditPolicy | Unknown | All DB related to the server. | 
+| AzureSQL.DBAuditPolicy | Unknown | List of all database audit settings. | 
 | AzureSQL.DBAuditPolicy.kind | String | Kind of audit policy. | 
-| AzureSQL.DBAuditPolicy.id | String | Audit policy id. | 
+| AzureSQL.DBAuditPolicy.id | String | Audit policy ID. | 
 | AzureSQL.DBAuditPolicy.name | String | Audit policy name. | 
-| AzureSQL.DBAuditPolicy.type | String | Database type. | 
-| AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. the value is " Enabled" or "Disabled". | 
+| AzureSQL.DBAuditPolicy.type | String | Resource type. | 
+| AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. Possible values: "True" (Enabled) or "False" (Disabled). | 
 | AzureSQL.DBAuditPolicy.retentionDays | Number | Number of days to keep in the audit logs in the storage account. | 
 | AzureSQL.DBAuditPolicy.state | String | Policy state. | 
-| AzureSQL.DBAuditPolicy.storageAccountSubscriptionId | String | storage subscription Id. | 
-| AzureSQL.DBAuditPolicy.databaseName | String | The name of database, that audit policy related to. | 
-| AzureSQL.DBAuditPolicy.serverName | String | The name of server, that audit policy related to. | 
+| AzureSQL.DBAuditPolicy.storageAccountSubscriptionId | String | Storage subscription ID. | 
+| AzureSQL.DBAuditPolicy.databaseName | String | The name of database that the audit policy is related to. | 
+| AzureSQL.DBAuditPolicy.serverName | String | The name of server that the audit policy is related to. | 
 
 
 #### Command Example
@@ -395,7 +395,7 @@ Auditing settings of a database.
 
 ### azure-sql-db-threat-policy-get
 ***
-Threat detection policy of a database.
+Gets the threat detection policy of the specified database.
 
 
 #### Base Command
@@ -413,23 +413,23 @@ Threat detection policy of a database.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSQL.DBThreatPolicy | Unknown | All Threat Policy related to the database. | 
-| AzureSQL.DBThreatPolicy.kind | String | Kind of Threat Policy. | 
-| AzureSQL.DBThreatPolicy.location | String | Threat Policy location. | 
-| AzureSQL.DBThreatPolicy.id | String | Threat Policy id. | 
-| AzureSQL.DBThreatPolicy.name | String | Threat Policy name. | 
-| AzureSQL.DBThreatPolicy.type | String | Threat Policy type. | 
-| AzureSQL.DBThreatPolicy.state | String | Policy state. | 
+| AzureSQL.DBThreatPolicy | Unknown | All threat policies related to the database. | 
+| AzureSQL.DBThreatPolicy.kind | String | Kind of threat policy. | 
+| AzureSQL.DBThreatPolicy.location | String | Threat policy location. | 
+| AzureSQL.DBThreatPolicy.id | String | Threat policy ID. | 
+| AzureSQL.DBThreatPolicy.name | String | Threat policy name. | 
+| AzureSQL.DBThreatPolicy.type | String | Threat policy type. | 
+| AzureSQL.DBThreatPolicy.state | String | Threat policy state. | 
 | AzureSQL.DBThreatPolicy.creationTime | String | Policy creation Time. | 
 | AzureSQL.DBThreatPolicy.retentionDays | Number | Number of days to keep in the Threat Detection audit logs. | 
-| AzureSQL.DBThreatPolicy.storageAccountAccessKey | String | Specifies the identifier key of the Threat Detection audit storage account. | 
+| AzureSQL.DBThreatPolicy.storageAccountAccessKey | String | The identifier key of the Threat Detection audit storage account. | 
 | AzureSQL.DBThreatPolicy.storageEndpoint | String | Threat Detection audit storage account. | 
-| AzureSQL.DBThreatPolicy.emailAccountAdmins | Boolean | Email account administrators that alert is sent to. | 
-| AzureSQL.DBThreatPolicy.emailAddresses | String | list of e-mail addresses to which the alert is sent. | 
-| AzureSQL.DBThreatPolicy.disabledAlerts | String | list of alerts that are disabled, or empty string to disable no alerts. | 
-| AzureSQL.DBThreatPolicy.useServerDefault | Unknown | whether to use the default server policy. | 
-| AzureSQL.DBThreatPolicy.databaseName | String | The name of database, that threat policy related to. | 
-| AzureSQL.DBThreatPolicy.serverName | String | The name of server, that threat policy related to. | 
+| AzureSQL.DBThreatPolicy.emailAccountAdmins | Boolean | Email account administrators who alert is sent to. | 
+| AzureSQL.DBThreatPolicy.emailAddresses | String | List of email addresses to which the alert is sent. | 
+| AzureSQL.DBThreatPolicy.disabledAlerts | String |  List of alerts that are disabled, or an empty string if no alerts are disabled. | 
+| AzureSQL.DBThreatPolicy.useServerDefault | Unknown | Whether to use the default server policy. | 
+| AzureSQL.DBThreatPolicy.databaseName | String | The name of the database that the threat policy is related to. | 
+| AzureSQL.DBThreatPolicy.serverName | String | The name of the server that the threat policy is related to. | 
 
 
 #### Command Example
@@ -473,7 +473,7 @@ Threat detection policy of a database.
 
 ### azure-sql-db-audit-policy-create-update
 ***
-Create or update database's auditing policy.
+Creates or updates the database's auditing policy.
 
 
 #### Base Command
@@ -485,15 +485,15 @@ Create or update database's auditing policy.
 | --- | --- | --- |
 | server_name | Server name. | Required | 
 | db_name | Database name. | Required | 
-| state | Set state 'Enable' or 'Disable'. When state is Enabled, storage_endpoint or is_azure_monitor_target_enabled are required. Possible values are: Enabled, Disabled. | Required | 
-| audit_actions_groups | Comma-separated Actions-Groups and Actions to audit. For all Possible values visit integration documentation at https://xsoar.pan.dev/. | Optional | 
-| is_azure_monitor_target_enabled | Is audit events are sent to Azure Monitor. Possible values are: true, false. | Optional | 
-| is_storage_secondary_key_in_use | Is storage Account Access Key value is the storage's secondary key. Possible values are: true, false. | Optional | 
+| state | Set the state of the policy. Possible values: "Enable" or "Disable". When state is enabled, storage_endpoint or is_azure_monitor_target_enabled are required. | Required | 
+| audit_actions_groups | Comma-separated list of actions groups and actions to audit. For all possible values, see the integration documentation at https://xsoar.pan.dev/reference/integrations/Azure-SQL-Management. | Optional | 
+| is_azure_monitor_target_enabled | Whether audit events are sent to the Azure Monitor. Possible values: "true" and "false". | Optional | 
+| is_storage_secondary_key_in_use | Whether the storage Account Access Key value is the storage's secondary key. Possible values: "true" and "false". | Optional | 
 | queue_delay_ms | Time in milliseconds that can elapse before audit actions are forced to be processed. The default minimum value is 1000 (1 second). | Optional | 
 | retention_days | Number of days to keep the policy in the audit logs. | Optional | 
 | storage_account_access_key | Identifier key of the auditing storage account. | Optional | 
-| storage_account_subscription_id | storage subscription Id. | Optional | 
-| storage_endpoint | Storage endpoint. If state is Enabled, storageEndpoint or isAzureMonitorTargetEnabled is required. | Optional | 
+| storage_account_subscription_id | Storage subscription ID. | Optional | 
+| storage_endpoint | Storage endpoint. If the value for the state argument is Enabled, the value for the storage_endpoint or is_azure_monitor_target_enabled argument is required. | Optional | 
 
 
 #### Context Output
@@ -503,18 +503,18 @@ Create or update database's auditing policy.
 | AzureSQL.DBAuditPolicy.kind | String | Kind of audit policy. | 
 | AzureSQL.DBAuditPolicy.id | String | Audit policy id. | 
 | AzureSQL.DBAuditPolicy.name | String | Audit policy name. | 
-| AzureSQL.DBAuditPolicy.type | String | Database type. | 
-| AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. the value is " Enabled" or "Disabled". | 
+| AzureSQL.DBAuditPolicy.type | String | Resource type. | 
+| AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. The value is "True" (Enabled) or "False" (Disabled). | 
 | AzureSQL.DBAuditPolicy.retentionDays | Number | Number of days to keep in the audit logs in the storage account. | 
-| AzureSQL.DBAuditPolicy.state | String | Policy state | 
-| AzureSQL.DBAuditPolicy.storageAccountSubscriptionId | String | storage subscription Id. | 
-| AzureSQL.DBAuditPolicy.auditActionsAndGroups | Unknown | audit Actions And Groups to audit. | 
-| AzureSQL.DBAuditPolicy.isStorageSecondaryKeyInUse | String | Is storageAccountAccessKey value is the storage's secondary key. | 
+| AzureSQL.DBAuditPolicy.state | String | Policy state. | 
+| AzureSQL.DBAuditPolicy.storageAccountSubscriptionId | String | Storage subscription ID. | 
+| AzureSQL.DBAuditPolicy.auditActionsAndGroups | Unknown | Audit actions and groups to audit. | 
+| AzureSQL.DBAuditPolicy.isStorageSecondaryKeyInUse | String | Whether the storage_account_access_key value is the storage's secondary key. | 
 | AzureSQL.DBAuditPolicy.queueDelayMs | String | Time in milliseconds that can elapse before audit actions are forced to be processed. | 
-| AzureSQL.DBAuditPolicy.storageAccountAccessKey | String | identifier key of the auditing storage account. | 
+| AzureSQL.DBAuditPolicy.storageAccountAccessKey | String | Identifier key of the auditing storage account. | 
 | AzureSQL.DBAuditPolicy.storageEndpoint | String | Storage endpoint. | 
-| AzureSQL.DBAuditPolicy.databaseName | String | The name of database, that audit policy related to. | 
-| AzureSQL.DBAuditPolicy.serverName | String | The name of server, that audit policy related to. | 
+| AzureSQL.DBAuditPolicy.databaseName | String | The name of the database that the audit policy is related to. | 
+| AzureSQL.DBAuditPolicy.serverName | String | The name of the server that the audit policy is related to. | 
 
 
 #### Command Example
@@ -555,7 +555,7 @@ Create or update database's auditing policy.
 
 ### azure-sql-db-threat-policy-create-update
 ***
-Create or update database's threat detection policy.
+Creates or updates the  database's threat detection policy.
 
 
 #### Base Command
@@ -567,36 +567,36 @@ Create or update database's threat detection policy.
 | --- | --- | --- |
 | server_name | Server name. | Required | 
 | db_name | Database name. | Required | 
-| state | set state 'Enable' or 'Disable'. Possible values are: Enabled, Disabled. | Required | 
+| state | The state of the policy. Possible values: "Enabled" and "Disabled". | Required | 
 | retention_days | Number of days to keep the policy in the audit logs. | Optional | 
-| storage_account_access_key | The identifier key of the Threat Detection audit storage account. | Optional | 
-| storage_endpoint | Storage endpoint. If state is Enabled, storageEndpoint or isAzureMonitorTargetEnabled is required. | Optional | 
-| disabled_alerts | Comma-separated list of alerts that are disabled. Possible values: None, Sql_Injection, Sql_Injection_Vulnerability, Access_Anomaly, Data_Exfiltration, Unsafe_Action. | Optional | 
-| email_addresses | Comma-separated list of e-mail addresses to which the alert is sent. | Optional | 
-| email_account_admins | The alert is sent to the account administrators. Possible values are: true, false. | Optional | 
-| use_server_default | Whether to use the default server policy or not. Possible values are: Enabled, Disabled. | Optional | 
+| storage_account_access_key | The identifier key of the threat detection audit storage account | Optional | 
+| storage_endpoint | The blob storage endpoint. This blob storage will hold all Threat Detection audit logs. | Optional | 
+| disabled_alerts | Comma-separated list of alerts that are disabled. Possible values:        "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration", "Unsafe_Action". | Optional | 
+| email_addresses | Comma-separated list of email addresses to which the alert is sent. | Optional | 
+| email_account_admins | Whether the alert is sent to the account administrators. Possible values: "true" and "false". | Optional | 
+| use_server_default | Whether to use the default server policy. Possible values: "Enabled" and "Disabled". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureSQL.DBThreatPolicy.kind | String | Kind of Threat Policy. | 
-| AzureSQL.DBThreatPolicy.location | String | Threat Policy location. | 
-| AzureSQL.DBThreatPolicy.id | String | Threat Policy id | 
-| AzureSQL.DBThreatPolicy.name | String | Threat Policy name | 
-| AzureSQL.DBThreatPolicy.type | String | Threat Policy type. | 
-| AzureSQL.DBThreatPolicy.state | String | Policy state | 
-| AzureSQL.DBThreatPolicy.creationTime | String | Policy creation Time | 
+| AzureSQL.DBThreatPolicy.kind | String | Kind of threat policy. | 
+| AzureSQL.DBThreatPolicy.location | String | Threat policy location. | 
+| AzureSQL.DBThreatPolicy.id | String | Threat policy ID. | 
+| AzureSQL.DBThreatPolicy.name | String | Threat policy name. | 
+| AzureSQL.DBThreatPolicy.type | String | Threat policy type. | 
+| AzureSQL.DBThreatPolicy.state | String | Policy state. | 
+| AzureSQL.DBThreatPolicy.creationTime | String | Policy creation time. | 
 | AzureSQL.DBThreatPolicy.retentionDays | Number | Number of days to keep in the Threat Detection audit logs. | 
 | AzureSQL.DBThreatPolicy.storageAccountAccessKey | String | The identifier key of the Threat Detection audit storage account. | 
 | AzureSQL.DBThreatPolicy.storageEndpoint | String | Threat Detection audit storage account. | 
-| AzureSQL.DBThreatPolicy.emailAccountAdmins | Boolean | Email account administrators that alert is sent to. | 
-| AzureSQL.DBThreatPolicy.emailAddresses | String | list of e-mail addresses to which the alert is sent. | 
-| AzureSQL.DBThreatPolicy.disabledAlerts | String | list of alerts that are disabled, or empty string to disable no alerts. | 
-| AzureSQL.DBThreatPolicy.useServerDefault | Unknown | whether to use the default server policy. | 
-| AzureSQL.DBThreatPolicy.databaseName | String | The name of database, that threat policy related to. | 
-| AzureSQL.DBThreatPolicy.serverName | String | The name of server, that threat policy related to. | 
+| AzureSQL.DBThreatPolicy.emailAccountAdmins | Boolean | Email account administrators who the alert is sent to. | 
+| AzureSQL.DBThreatPolicy.emailAddresses | String | List of email addresses to which the alert is sent. | 
+| AzureSQL.DBThreatPolicy.disabledAlerts | String | List of alerts that are disabled, or an empty string if no alerts are disabled. | 
+| AzureSQL.DBThreatPolicy.useServerDefault | Unknown | Whether to use the default server policy. | 
+| AzureSQL.DBThreatPolicy.databaseName | String | The name of the database that the threat policy is related to. | 
+| AzureSQL.DBThreatPolicy.serverName | String | The name of the server that the threat policy is related to. | 
 
 
 #### Command Example
