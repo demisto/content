@@ -15,7 +15,7 @@ from netmiko import Netmiko
 
 
 def return_file(keys):
-    return_file.readlines = lambda: keys.split("\n")
+    return_file.readlines = lambda: keys.split("\n")  # type: ignore
     return return_file
 
 
@@ -50,20 +50,20 @@ class Client:
         except Exception as err:
             return_error(err)
 
-    def cmds(self, exitRequired, exit_argument, commands, enable, isConfig):
+    def cmds(self, exit_argument, commands, enable, isConfig):
         try:
             output = {"Hostname": self.hostname, "Platform": self.platform, "Commands": []}
             self.connect()
             if enable:
-                self.net_connect.enable()
+                self.net_connect.enable()  # type: ignore
             if isConfig:
                 output['Commands'].append({"Hostname": self.hostname, "DateTimeUTC": datetime.utcnow(
-                ).isoformat(), "Config": self.net_connect.send_config_set(commands)})
+                ).isoformat(), "Config": self.net_connect.send_config_set(commands)})  # type: ignore
             if not isConfig:
                 for cmd in commands:
-                    prompt = self.net_connect.find_prompt()
-                    c = {"Hostname": self.hostname, "DateTimeUTC": datetime.utcnow().isoformat(
-                    ), "Command": cmd, "Output": f"{prompt} {self.net_connect.send_command_timing(cmd)}"}
+                    prompt = self.net_connect.find_prompt()  # type: ignore
+                    c = {"Hostname": self.hostname, "DateTimeUTC": datetime.utcnow().isoformat(), "Command": cmd,
+                         "Output": f"{prompt} {self.net_connect.send_command_timing(cmd)}"}  # type: ignore
                     output['Commands'].append(c)
 
         except Exception as err:
