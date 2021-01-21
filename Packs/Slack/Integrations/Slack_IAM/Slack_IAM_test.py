@@ -1,43 +1,42 @@
-from requests import Response, Session
 from Slack_IAM import Client, get_mapping_fields
 from CommonServerPython import IAMCommand, IAMErrors, IAMUserProfile, IAMActions, IAMUserAppData
 
 APP_USER_OUTPUT = {
-     "schemas": [
+    "schemas": [
         "urn:scim:schemas:core:1.0"
-     ],
-     "id": "U01KHS7J7U1",
-     "externalId": "",
-     "meta": {
+    ],
+    "id": "U01KHS7J7U1",
+    "externalId": "",
+    "meta": {
         "created": "2021-01-19T07:46:20-08:00",
         "location": "https://api.slack.com/scim/v1/Users/U01KHS7J7U1"
-     },
-     "userName": "mock_user_name",
-     "nickName": "mock_user_name",
-     "name": {
+    },
+    "userName": "mock_user_name",
+    "nickName": "mock_user_name",
+    "name": {
         "givenName": "mock_first_name",
         "familyName": "mock_last_name"
-     },
-     "displayName": "mock_user_name",
-     "profileUrl": "https://panwtest.enterprise.slack.com/team/mock_user_name",
-     "title": "",
-     "timezone": "America/Los_Angeles",
-     "active": True,
-     "emails": [
+    },
+    "displayName": "mock_user_name",
+    "profileUrl": "https://panwtest.enterprise.slack.com/team/mock_user_name",
+    "title": "",
+    "timezone": "America/Los_Angeles",
+    "active": True,
+    "emails": [
         {
-           "value": "testdemistomock@paloaltonetworks.com",
-           "primary": True
+            "value": "testdemistomock@paloaltonetworks.com",
+            "primary": True
         }
-     ],
-     "photos": [
+    ],
+    "photos": [
         {
-           "value": "https://secure.gravatar.com/avatar/e14bda84be03871922c78d0d03caa901.jpg?"
-                    "s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0006-192.png",
-           "type": "photo"
+            "value": "https://secure.gravatar.com/avatar/e14bda84be03871922c78d0d03caa901.jpg?"
+                     "s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0006-192.png",
+            "type": "photo"
         }
-     ],
-     "groups": []
-  }
+    ],
+    "groups": []
+}
 
 USER_APP_DATA = IAMUserAppData("mock_id", "mock_user_name", is_active=True, app_data=APP_USER_OUTPUT)
 
@@ -89,7 +88,6 @@ def mock_client():
 def get_outputs_from_user_profile(user_profile):
     entry_context = user_profile.to_entry()
     outputs = entry_context.get('Contents')
-    print(outputs)
     return outputs
 
 
