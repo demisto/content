@@ -138,10 +138,13 @@ def test_module(client: Client) -> str:
 
 
 def smart_search(client: Client, args: Dict[str, Any]) -> CommandResults:
+    assert (start_time := parse(args.get('start_time', '24 hours'))), \
+        f"Failed parsing start time: {args.get('start_time')}"
+    assert (end_time := parse(args.get('end_time', 'now'))), f"Failed parsing endd time: {args.get('end_time')}"
     result = client.smart_search_request(
         action=args.get('action'),
-        from_=parse(args.get('start_time', '24 hours ago')).isoformat(),  # type: ignore[union-attr]
-        to=parse(args.get('end_time', 'now')).isoformat(),  # type: ignore[union-attr]
+        from_=start_time.isoformat(),
+        to=end_time.isoformat(),
         virus=args.get('virus'),
         env_from=args.get('sender'),
         env_rcpt=args.get('recipient'),
@@ -178,11 +181,14 @@ def list_quarantined_messages(client: Client, args: Dict[str, Any]) -> CommandRe
     subject = args.get('subject')
     if not any([sender, recipient, subject]):
         raise ValueError('At least one of the following arguments must be specified: sender, recipient, subject.')
+    assert (start_time := parse(args.get('start_time', '24 hours'))), \
+        f"Failed parsing start time: {args.get('start_time')}"
+    assert (end_time := parse(args.get('end_time', 'now'))), f"Failed parsing end time: {args.get('end_time')}"
     result = client.list_quarantined_messages_request(
         from_=sender,
         rcpt=recipient,
-        startdate=parse(args.get('start_time', '24 hours')).strftime('%Y-%m-%d %H:%M:%S'),  # type: ignore[union-attr]
-        enddate=parse(args.get('end_time', 'now')).strftime('%Y-%m-%d %H:%M:%S'),  # type: ignore[union-attr]
+        startdate=start_time.strftime('%Y-%m-%d %H:%M:%S'),
+        enddate=end_time.strftime('%Y-%m-%d %H:%M:%S'),
         subject=subject,
         folder=args.get('folder_name'),
     )
