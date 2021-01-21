@@ -35,7 +35,7 @@ class Client(BaseClient):
         self._cookies = {'access_token': access_token}
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy, headers=headers)
 
-    def list_alerts(self, page: Optional[str], page_size: Optional[str],
+    def list_alerts(self, page: Optional[str], page_size: Optional[int],
                     created_date_from: Optional[str], created_date_to: Optional[str],
                     modification_date_from: Optional[str], modification_date_to: Optional[str],
                     environments: Optional[List[str]], statuses: Optional[List[str]],
@@ -45,7 +45,7 @@ class Client(BaseClient):
 
         Args:
             page (str): Index of page to return.
-            page_size (str): Size of the page to return.
+            page_size (int): Size of the page to return.
             created_date_from (str): Minimal ISO-Formatted creation date.
             created_date_to (str): Maximal ISO-Formatted creation date.
             modification_date_from (str): Minimal ISO-Formatted modification date.
@@ -69,7 +69,8 @@ class Client(BaseClient):
                                       url_suffix='api/v1/alerts')
         return response
 
-    def update_alerts(self, alerts: List[str], status: str, closure_reason: Optional[str]) -> Dict:
+    def update_alerts(self, alerts: List[str], status: Optional[str],
+                      closure_reason: Optional[str]) -> Dict:
         """
         Update the status of one or more alerts
 
@@ -114,7 +115,7 @@ def test_module(client):
         return return_value
 
 
-def verify_input_date_format(date: str) -> str:
+def verify_input_date_format(date: Optional[str]) -> str:
     """
     Make sure a date entered by the user is in the correct string format (with a Z at the end).
 
@@ -268,7 +269,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     if incidents:
         #  Update the time for the next fetch so that there won't be duplicates.
         last_incident_time = incidents[0].get('occurred', '')
-        next_run = datetime.strptime(last_incident_time, DATE_FORMAT)
+        next_run = datetime.strptime(str(last_incident_time), DATE_FORMAT)
     next_run += timedelta(seconds=1)
     next_run_timestamp = int(datetime.timestamp(next_run) * 1000)
     return {'last_fetch': next_run_timestamp}, incidents

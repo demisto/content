@@ -55,12 +55,12 @@ def test_cyberint_alerts_status_update_command(requests_mock):
     requests_mock.put(f'{BASE_URL}/api/v1/alerts/status', json=mock_response)
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
     result = cyberint_alerts_status_update(client, {'alert_ref_ids': 'alert1',
-                                                     'status': 'acknowledged'})
+                                                    'status': 'acknowledged'})
     assert len(result.outputs) == 1
     assert result.outputs_prefix == 'Cyberint.Alert'
     assert result.outputs[0].get('ref_id') == 'alert1'
     result = cyberint_alerts_status_update(client, {'alert_ref_ids': 'alert1,alert2',
-                                                     'status': 'acknowledged'})
+                                                    'status': 'acknowledged'})
     assert len(result.outputs) == 2
     assert result.outputs_prefix == 'Cyberint.Alert'
     assert result.outputs[1].get('ref_id') == 'alert2'
@@ -152,12 +152,12 @@ def test_set_date_pair():
     start_time = '2020-12-01T00:00:00Z'
     end_time = '2020-12-05T00:00:00Z'
     assert set_date_pair(start_time, end_time, None) == (start_time, end_time)
-    range = '3 Days'
-    assert set_date_pair(start_time, end_time, range) == (datetime.strftime(datetime.now() -
-                                                                            timedelta(days=3),
-                                                                            DATE_FORMAT),
-                                                          datetime.strftime(datetime.now(),
-                                                                            DATE_FORMAT))
+    new_range = '3 Days'
+    assert set_date_pair(start_time, end_time, new_range) == (datetime.strftime(datetime.now() -
+                                                                                timedelta(days=3),
+                                                                                DATE_FORMAT),
+                                                              datetime.strftime(datetime.now(),
+                                                                                DATE_FORMAT))
     assert set_date_pair(start_time, None, None) == (start_time, datetime.strftime(datetime.now(),
                                                                                    DATE_FORMAT))
     assert set_date_pair(None, end_time, None) == (datetime.strftime(datetime.
