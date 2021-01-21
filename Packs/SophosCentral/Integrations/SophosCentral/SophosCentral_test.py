@@ -988,3 +988,18 @@ def test_validate_item_fields() -> None:
     args = {'item_type': 'certificateSigner', 'path': 'xxx'}
     with raises(DemistoException):
         validate_item_fields(args)
+
+@pytest.mark.parametrize(
+    'input_id, expected',
+    [
+        ('', ''),
+        ('ba', 'ab'),
+        ('aabb', 'aabb'),
+        ('badcxwzy', 'abcdwxyz'),
+        ('badc-fehgji-xwzy', 'abcd-efghij-wxyz'),
+    ]
+)
+def test_flip_chars(input_id, expected) -> None:
+    from SophosCentral import flip_chars
+    assert flip_chars(input_id) == expected
+

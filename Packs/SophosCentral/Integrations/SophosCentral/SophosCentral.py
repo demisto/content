@@ -625,6 +625,24 @@ class Client(BaseClient):
         return response
 
 
+def flip_chars(id_to_flip: str) -> str:
+    """
+    Reverse every couple of adjacent digits in the ID.
+    can be used to construct Sophos URLs.
+    For example:
+        badc-fehgji-xwzy -> abcd-efghij-wxyz
+
+    Args:
+        id_to_flip (str): A UID
+
+    Returns:
+        id (str): A UID with the every two digits flipped.
+    """
+    return '-'.join(''.join(pair[::-1]
+                            for pair in re.split(r'(.{2})', s))
+                    for s in id_to_flip.split('-'))
+
+
 def create_alert_output(item: Dict, table_headers: List[str]) -> Dict[str, Optional[Any]]:
     """
     Create the complete output dictionary for an alert.
@@ -640,14 +658,17 @@ def create_alert_output(item: Dict, table_headers: List[str]) -> Dict[str, Optio
     managed_agent = item.get('managedAgent')
     if managed_agent:
         alert_data['managedAgentId'] = managed_agent.get('id')
+        alert_data['managedAgentIdMorphed'] = flip_chars(managed_agent.get('id', ''))
         alert_data['managedAgentType'] = managed_agent.get('type')
     tenant = item.get('tenant')
     if tenant:
         alert_data['tenantId'] = tenant.get('id')
+        alert_data['tenantIdMorphed'] = flip_chars(tenant.get('id', ''))
         alert_data['tenantName'] = tenant.get('name')
     person = item.get('person')
     if person:
         alert_data['person'] = person.get('id')
+        alert_data['personMorphed'] = flip_chars(person.get('id', ''))
 
     return alert_data
 
