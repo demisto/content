@@ -3154,6 +3154,12 @@ def panorama_get_pcap_command(args: dict):
     session_id = args.get('sessionID')
     device_name = args.get('deviceName')
 
+    serial_number = args.get('serialNumber')
+    if VSYS and target:
+        raise Exception('The serial_number argument can only be used in a Panorama instance configuration')
+    else:
+        params['target'] = serial_number
+
     file_name = None
     if pcap_id:
         params['pcap-id'] = pcap_id

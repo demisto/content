@@ -2458,8 +2458,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The file name for the PCAP type ('dlp-pcap', 'filters-pcap', or
-        'application-pcap').
+      description: The serial number of the firewall to download the PCAP from.
+      isArray: false
+      name: serialNumber
+      required: false
+      secret: false
+    - default: false
+      description: The
       isArray: false
       name: from
       required: false
