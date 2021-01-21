@@ -1,4 +1,4 @@
-comment: Retrieves users that are currently out of office. The script use OutOfOfficeListCleanup script to remove users that off until day is in the past.
+comment: Retrieves users who are currently out of office. The script use the OutOfOfficeListCleanup script to remove users whose off until day is in the past.
 commonfields:
   id: GetUsersOOO
   version: -1
@@ -11,7 +11,7 @@ tags:
 enabled: true
 args:
 - name: listname
-  description: Optionally pass in a different XSOAR list to run this automation against (defaults to OOO List)
+  description: Optionally pass in a different XSOAR list to run this automation against. (The default is OOO List.)
   defaultValue: OOO List
 scripttarget: 0
 subtype: python3
