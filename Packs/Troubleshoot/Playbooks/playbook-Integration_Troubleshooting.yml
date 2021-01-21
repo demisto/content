@@ -1374,7 +1374,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
