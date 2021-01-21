@@ -228,7 +228,8 @@ script:
     name: cisco-ise-get-policy
     outputs:
     - contextPath: CiscoISE.Policy.Action
-      description: The action of the policy. Can be "QUARANTINE", "PORTBOUNCE", or "SHUTDOWN".
+      description: The action of the policy. Can be "QUARANTINE", "PORTBOUNCE", or
+        "SHUTDOWN".
       type: String
     - contextPath: CiscoISE.Policy.ID
       description: The ID of the ANC policy.
@@ -242,7 +243,8 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The actions of the policy. Can be "QUARANTINE", "PORTBOUNCE", or "SHUTDOWN".
+      description: The actions of the policy. Can be "QUARANTINE", "PORTBOUNCE", or
+        "SHUTDOWN".
       isArray: false
       name: policy_actions
       predefined:
@@ -310,6 +312,54 @@ script:
       description: The link for the endpoint.
       type: String
   - arguments:
+    - default: false
+      description: 'MAC address of the endpoint (format: 11:22:33:44:55:66).'
+      isArray: false
+      name: mac_address
+      required: true
+      secret: false
+    - default: false
+      description: 'A list of custom attributes'
+      isArray: false
+      name: attributes_map
+      required: false
+    deprecated: false
+    description: Given a mac address and custom attribute list, a new Endpoint is
+      created on Cisco ISE.
+    execution: false
+    name: cisco-ise-create-endpoint
+    outputs:
+    - contextPath: CiscoISE.Endpoint.MACAddress
+      description: Mac address of the newly created Endpoint.
+      type: string
+  - deprecated: false
+    description: Returns data for all Cisco ISE nodes in the deployment.
+    execution: false
+    name: cisco-ise-get-nodes
+    outputs:
+    - contextPath: CiscoISE.NodesData
+      description: Details of all deployment ISE nodes.
+      type: unknown
+  - arguments:
+    - default: false
+      description: 'MAC address of the endpoint (format: 11:22:33:44:55:66).'
+      isArray: false
+      name: mac_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns an EndpointID using its name (Available on ISE 2.3 and later
+      versions).
+    execution: false
+    name: cisco-ise-get-endpoint-id-by-name
+    outputs:
+    - contextPath: Endpoint.ID
+      description: Endpoint ID.
+      type: string
+    - contextPath: Endpoint.MACAddress
+      description: Endpoint MAC address.
+      type: string
+  - arguments:
     - description: The MAC address from which to remove the policy.
       name: mac_address
       required: true
@@ -329,9 +379,10 @@ script:
     - description: IP address to query in ISE platform.
       name: ip_address
       required: true
-    description: Queries an IP address and returns its session data from an active endpoint.
+    description: Queries an IP address and returns its session data from an active
+      endpoint.
     name: cisco-ise-get-session-data-by-ip
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: false
   runonce: false
   script: '-'
