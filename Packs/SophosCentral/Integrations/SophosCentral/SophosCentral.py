@@ -639,8 +639,8 @@ def flip_chars(id_to_flip: str) -> str:
         id (str): A UID with the every two digits flipped.
     """
     return '-'.join(''.join(pair[::-1]
-                            for pair in re.split(r'(.{2})', s))
-                    for s in id_to_flip.split('-'))
+                            for pair in re.split(r'(.{2})', uid_part))
+                    for uid_part in id_to_flip.split('-'))
 
 
 def create_alert_output(item: Dict, table_headers: List[str]) -> Dict[str, Optional[Any]]:
