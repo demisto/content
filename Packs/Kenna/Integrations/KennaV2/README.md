@@ -835,5 +835,23 @@ Returns JSON data on all the runs of a given connector
 ```!kenna-get-connector-runs connector_id=123```
 
 #### Human Readable Output
-
+{
+"assets_with_tags_reset_count": 0,
+"autoclosed_scanner_vuln_count": 0,
+"autoclosed_vuln_count": 0,
+"closed_scanner_vuln_count": 0,
+"closed_vuln_count": 0,
+"created_scanner_vuln_count": 0,
+"end_time": "2020-12-28T07:47:55.000Z",
+"failed_payload_count": 0,
+"id": 1472970,
+"processed_assets_count": 6433,
+"processed_palyoad_count": null,
+"processed_scanner_vuln_count": 639145,
+"reopened_scanner_vuln_count": 0,
+"reopened_vuln_count": 0,
+"start_time": "2020-12-28T06:32:01.000Z",
+"success": true,
+"total_payload_count": 6793
+}
 
