@@ -1,15 +1,16 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 from typing import Optional
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
-import re
-import os
 import json
-import requests
+import os
+import re
 from base64 import b64encode
+
+import requests
 
 ''' GLOBAL VARS / INSTANCE CONFIGURATION '''
 
@@ -22,7 +23,7 @@ BASIC_AUTH = 'Basic ' + b64encode(AUTH).decode()
 SERVER = PARAMS.get('url', '')
 SERVER = SERVER[:-1] if (SERVER and SERVER.endswith('/')) else SERVER
 # Service base URL
-BASE_URL = SERVER + '/v1/'
+BASE_URL = SERVER + '/'
 # Should we use SSL
 USE_SSL = not PARAMS.get('insecure', False)
 PROXY = PARAMS.get('proxy', False)
@@ -779,7 +780,7 @@ def get_report(task_id):
         Response JSON from ANYRUN API call.
     """
 
-    url_suffix = 'analysis/' + task_id
+    url_suffix = 'report/' + task_id + '/ioc/json/'
     response = http_request('GET', url_suffix=url_suffix)
     return response
 
@@ -790,29 +791,36 @@ def get_report_command():
     task_id = args.get('task')
     response = get_report(task_id)
 
-    images = images_from_report(response)
-    contents = contents_from_report(response)
-    formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
-    formatted_contents = travel_object(contents, key_functions=formatting_funcs)
+    #images = images_from_report(response)
+    #contents = contents_from_report(response)
+    #formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
+    #formatted_contents = travel_object(contents, key_functions=formatting_funcs)
 
-    dbot_score = generate_dbotscore(response)
-    entity = ec_entity(response)
+    #dbot_score = generate_dbotscore(response)
+    #entity = ec_entity(response)
 
-    entry_context = {
-        'ANYRUN.Task(val.ID && val.ID === obj.ID)': {
-            'ID': task_id,
-            **formatted_contents
-        },
-        **dbot_score,
-        **entity
-    }
+    # entry_context = {
+    #    'ANYRUN.Task(val.ID && val.ID === obj.ID)': {
+    #        'ID': task_id,
+    #        **response
+    #    },
+    #   **dbot_score,
+    #   **entity
+    # }
 
-    title = 'Report for Task {}'.format(task_id)
-    human_readable_content = humanreadable_from_report_contents(formatted_contents)
-    human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
-    return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
-    if images:
-        demisto.results(images)
+    #title = 'IoCs for Task {}'.format(task_id)
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('ANY.RUN IoCs', response, removeNull=True),
+        'EntryContext': {"ANYRUN.category": response[0]["category"]}
+    })
+
+    # if images:
+    #    demisto.results(images)
 
 
 def run_analysis(args):
@@ -884,9 +892,9 @@ def run_analysis_command():
 
 COMMANDS = {
     'test-module': test_module,
-    'anyrun-get-history': get_history_command,
-    'anyrun-get-report': get_report_command,
-    'anyrun-run-analysis': run_analysis_command
+    # 'anyrun-get-history': get_history_command,
+    'investec-anyrun-get-report-ioc': get_report_command,
+    # 'anyrun-run-analysis': run_analysis_command
 }
 
 ''' EXECUTION '''
