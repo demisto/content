@@ -112,7 +112,8 @@
         },
         {
             "integrations": "OpenCTI Feed",
-            "playbookID": "OpenCTI Feed Test"
+            "playbookID": "OpenCTI Feed Test",
+            "fromversion": "5.5s.0"
         },
         {
             "integrations": "AWS - Security Hub",
@@ -2093,7 +2094,7 @@
             "playbookID": "Phishing v2 - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1200,
-            "nightly": true,
+            "nightly": false,
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
@@ -2106,7 +2107,7 @@
             "playbookID": "Phishing - Core - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1700,
-            "nightly": true,
+            "nightly": false,
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
@@ -3216,6 +3217,7 @@
         "C2sec-Test": "Issue #21633",
         "palo_alto_panorama_test_pb": "Issue #22835",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
+        "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
         "HybridAnalysis-Test": "Issue 26599",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
@@ -3244,6 +3246,7 @@
         "PhishLabsIOC TestPlaybook": "Issue 30874",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
+        "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
@@ -3251,6 +3254,7 @@
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
+        "HelloWorldPremium_Scan-Test": "Issue 32512",
         "ThreatMiner-Test": "Issue 32688",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650"
