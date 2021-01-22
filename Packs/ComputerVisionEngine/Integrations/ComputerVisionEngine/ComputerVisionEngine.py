@@ -4,7 +4,6 @@ import cv2
 import demistomock as demisto
 import numpy as np
 from CommonServerPython import *  # noqa: F401
-from collections.abc import Iterable
 
 # The command demisto.command() holds the command sent from the user.
 if demisto.command() == 'test-module':
@@ -147,7 +146,7 @@ if demisto.command() == 'yolo-coco-process-image':
         CommandResults(
             outputs_prefix='ComputerVision.Images',
             readable_output=tableToMarkdown("Detected Objects", output_keys),
-            outputs_key_field=['EntryID','Method'],
+            outputs_key_field=['EntryID', 'Method'],
             outputs=output_keys
         )]
     return_results(results)
