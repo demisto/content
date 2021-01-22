@@ -42,7 +42,7 @@
         },
         {
             "integrations": "EmailRepIO",
-            "playbookID": "TestEmailRepPlaybook",
+            "playbookID": "TestEmailRepIOPlaybook",
             "fromversion": "5.0.0"
         },
         {
@@ -3218,7 +3218,6 @@
         "palo_alto_panorama_test_pb": "Issue #22835",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
-        "HybridAnalysis-Test": "Issue 26599",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
@@ -3228,7 +3227,6 @@
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
         "SMB test": "Issue 26454",
-        "TestCofenseFeed": "Issue 29198",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "TCPUtils-Test": "Issue 29677",
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
@@ -3237,7 +3235,6 @@
         "AWS-securityhub Test": "Issue 29796",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
         "Azure Compute - Test": "Issue 28056",
-        "TestEmailRepPlaybook": "Issue 30070",
         "forcepoint test": "Issue 28043",
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
@@ -3253,7 +3250,6 @@
         "FeedThreatConnect-Test": "Issue 32317",
         "HelloWorldPremium_Scan-Test": "Issue 32512",
         "ThreatMiner-Test": "Issue 32688",
-        "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649"
     },
