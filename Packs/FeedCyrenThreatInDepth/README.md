@@ -13,16 +13,16 @@ Threat InDepth's timely, correlated, and contextualized intelligence helps enter
 
 ## What makes Threat InDepth unique
 
-- Global and Expanded Focus
+- Global and Expanded Focus  
   Provides **unique** threat **visibility** into the evolving email-borne threats
 
-- Synchronized Intelligence
+- Synchronized Intelligence  
   **Correlated, contextualized** insights **speed** up threat detection and response
 
-- Machine Generated, Human Curated
+- Machine Generated, Human Curated  
   Industry **trusted** intelligence with **low** false positives **improves** detection efficacy of your security investments
 
-- First to Detect, First to Protect
+- First to Detect, First to Protect  
   Provides **timely** protection against **evolving** email-borne threats
 
 ![Cyren GlobalView Cloud](https://raw.githubusercontent.com/demisto/content/master/Packs/FeedCyrenThreatInDepth/doc_files/Cyren_GlobalViewCloud_V2.png)
