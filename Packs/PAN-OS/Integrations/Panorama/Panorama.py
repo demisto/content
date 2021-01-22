@@ -736,7 +736,7 @@ def prettify_addresses_arr(addresses_arr: list) -> List:
 
 
 @logger
-def panorama_list_addresses(args: dict):
+def panorama_list_addresses(tag: Optional[str] = None):
     params = {
         'action': 'get',
         'type': 'config',
@@ -745,7 +745,7 @@ def panorama_list_addresses(args: dict):
     }
 
     if tag:
-        params['xpath'] = f'{params["xpath"]}[( tag/member = \'{args.get("tag")}\')]'
+        params['xpath'] = f'{params["xpath"]}[( tag/member = \'{tag}\')]'
 
     result = http_request(
         URL,
