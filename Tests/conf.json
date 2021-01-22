@@ -3383,7 +3383,7 @@
         "WildFire-v2": "has a command that uploads a file (!wildfire-upload)",
         "carbonblackliveresponse": "has a command that uploads a file (!cb-push-file-to-endpoint)",
         "ServiceNow v2": "has a command that uploads a file (!servicenow-upload-file)",
-        "HybridAnalysis": "has a command that uploads a file (!hybrid-analysis-submit-sample)",
+        "Hybrid Analysis": "has a command that uploads a file (!hybrid-analysis-submit-sample)",
         "AlienVault OTX TAXII Feed": "Client from 'cabby' package generates uuid4 in the request",
         "Generic Webhook": "Does not send HTTP traffic",
         "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
