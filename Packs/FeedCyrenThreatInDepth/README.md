@@ -29,7 +29,7 @@ Threat InDepth's timely, correlated, and contextualized intelligence helps enter
 
 ## Feeds included in Cyren Threat InDepth content pack
 
-The Cyren Threat InDepth content pack includes access to these streams of indicators:
+The [Cyren Threat InDepth content pack](#/market/browse/FeedCyrenThreatInDepth) includes access to these streams of indicators:
 
 - IP Reputation Intelligence
 - Phishing & Fraud URL Intelligence
