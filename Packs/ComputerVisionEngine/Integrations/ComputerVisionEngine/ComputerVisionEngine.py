@@ -4,6 +4,7 @@ import cv2
 import demistomock as demisto
 import numpy as np
 from CommonServerPython import *  # noqa: F401
+from collections.abc import Iterable
 
 # The command demisto.command() holds the command sent from the user.
 if demisto.command() == 'test-module':
@@ -69,6 +70,7 @@ if demisto.command() == 'yolo-coco-process-image':
     classIDs = []
     output_keys = {}
     output_keys['EntryID'] = entry_id
+    output_keys['Method'] = "yolo-coco"
     for i in coco_objects:
         globals()[i] = []
     # loop over each of the layer outputs
@@ -141,15 +143,12 @@ if demisto.command() == 'yolo-coco-process-image':
     file = fileResult(filename=filename, data=output)
     file['Type'] = entryTypes['image']
     demisto.results(file)
-    demisto_entry = {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': output_keys,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("Detected Objects", output_keys),
-        'EntryContext': {
-            'ComputerVision': output_keys,
-        }
-    }
-    demisto.results(demisto_entry)
+    results = [
+        CommandResults(
+            outputs_prefix='ComputerVision.Images',
+            readable_output=tableToMarkdown("Detected Objects", output_keys),
+            outputs_key_field=['EntryID','Method'],
+            outputs=output_keys
+        )]
+    return_results(results)
     sys.exit(0)
