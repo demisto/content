@@ -803,7 +803,7 @@ def panorama_get_address(address_name: str) -> Dict:
     params = {
         'action': 'show',
         'type': 'config',
-        'xpath': f"{XPATH_OBJECTS}address/entry[@name='{args.get('address_name')}']",
+        'xpath': f'{XPATH_OBJECTS}address/entry[@name=\'{address_name}\']',
         'key': API_KEY
     }
     result = http_request(
