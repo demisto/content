@@ -113,7 +113,7 @@
         {
             "integrations": "OpenCTI Feed",
             "playbookID": "OpenCTI Feed Test",
-            "fromversion": "5.5s.0"
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AWS - Security Hub",
