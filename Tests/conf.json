@@ -522,7 +522,8 @@
         },
         {
             "integrations": "Cloaken",
-            "playbookID": "Cloaken-Test"
+            "playbookID": "Cloaken-Test",
+            "is_mockable": false
         },
         {
             "integrations": "ThreatX",
@@ -909,7 +910,7 @@
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "nightly": true,
-            "timeout": 900
+            "timeout": 1400
         },
         {
             "integrations": "Tenable.sc",
@@ -1808,7 +1809,8 @@
         {
             "integrations": "VxStream",
             "playbookID": "VxStream Test",
-            "nightly": true
+            "nightly": true,
+            "is_mockable": false
         },
         {
             "integrations": "Cylance Protect",
@@ -2140,7 +2142,8 @@
         },
         {
             "playbookID": "Docker Hardening Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "runnable_on_docker_only": true
         },
         {
             "integrations": "Active Directory Query v2",
@@ -3157,7 +3160,8 @@
         },
         {
             "integrations": "Cryptocurrency",
-            "playbookID": "Cryptocurrency-Test"
+            "playbookID": "Cryptocurrency-Test",
+            "is_mockable": false
         },
         {
             "integrations": "Public DNS Feed",
@@ -3222,7 +3226,6 @@
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
-        "pyEWS_Test": "Issue 28339",
         "GmailTest": "Issue 27057",
         "SMB test": "Issue 26454",
         "TestCofenseFeed": "Issue 29198",
@@ -3256,10 +3259,9 @@
         "Phishing - Core - Test - Incident Starter": "Issue 26784",
         "Process Email - Generic - Test - Incident Starter": "Issue 32459",
         "HelloWorldPremium_Scan-Test": "Issue 32512",
-        "RSA NetWitness Test": "Issue 32566",
         "ThreatMiner-Test": "Issue 32688",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
-        "Microsoft Graph Groups - Test": "Issue 27890"
+        "JoeSecurityTestDetonation": "Issue 25650"
     },
     "skipped_integrations": {
         
@@ -3271,7 +3273,7 @@
         "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
-        "ArcSight Logger": "Issue 24303",
+        "ArcSight Logger": "Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
@@ -3405,6 +3407,7 @@
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
+        "ActiveMQ": "stomp sdk not supporting proxy.",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
@@ -3496,6 +3499,7 @@
         "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [
+        "Cryptocurrency",
         "SNDBOX",
         "Whois",
         "Rasterize",
