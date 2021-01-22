@@ -112,7 +112,8 @@
         },
         {
             "integrations": "OpenCTI Feed",
-            "playbookID": "OpenCTI Feed Test"
+            "playbookID": "OpenCTI Feed Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AWS - Security Hub",
@@ -2093,7 +2094,7 @@
             "playbookID": "Phishing v2 - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1200,
-            "nightly": true,
+            "nightly": false,
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
@@ -2106,7 +2107,7 @@
             "playbookID": "Phishing - Core - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1700,
-            "nightly": true,
+            "nightly": false,
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
@@ -3230,13 +3231,11 @@
         "TestCofenseFeed": "Issue 29198",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "TCPUtils-Test": "Issue 29677",
-        "OpenCTI Feed Test": "Issue 29592",
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
         "Polygon-Test": "Issue 29060",
         "AttackIQ - Test": "Issue 29774",
         "AWS-securityhub Test": "Issue 29796",
         "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
-        "Trend Micro Apex - Test": "Issue 27280",
         "Azure Compute - Test": "Issue 28056",
         "TestEmailRepPlaybook": "Issue 30070",
         "forcepoint test": "Issue 28043",
@@ -3252,9 +3251,6 @@
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
-        "Phishing v2 - Test - Incident Starter": "Issue 26783",
-        "Phishing - Core - Test - Incident Starter": "Issue 26784",
-        "Process Email - Generic - Test - Incident Starter": "Issue 32459",
         "HelloWorldPremium_Scan-Test": "Issue 32512",
         "ThreatMiner-Test": "Issue 32688",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
