@@ -9,19 +9,19 @@ from typing import Any, Dict
 def get_entry_context(domains, isSingle) -> Dict[str, Any]:
     urls_to_return = []
     if isSingle:
-        if domains.startswith('http://') or domains.startswith('https://'):  # NOSONAR
+        if domains.startswith('http://') or domains.startswith('https://'):
             urls_to_return.append(domains)
         else:
-            urls_to_return.append("http://{}".format(domains))  # NOSONAR
-            urls_to_return.append("https://{}".format(domains))  # NOSONAR
+            urls_to_return.append("http://{}".format(domains))
+            urls_to_return.append("https://{}".format(domains))
     else:
         for domain in domains:
-            if domain.startswith('http://') or domain.startswith('https://'):  # NOSONAR
+            if domain.startswith('http://') or domain.startswith('https://'):
                 urls_to_return.append(domain)
                 continue
             else:
-                urls_to_return.append("http://{}".format(domain))  # NOSONAR
-                urls_to_return.append("https://{}".format(domain))  # NOSONAR
+                urls_to_return.append("http://{}".format(domain))
+                urls_to_return.append("https://{}".format(domain))
     ec = {"DomainToURL": urls_to_return}
     return ec
 

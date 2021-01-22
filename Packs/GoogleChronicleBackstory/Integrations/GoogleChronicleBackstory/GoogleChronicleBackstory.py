@@ -1526,7 +1526,7 @@ def deduplicate_events_and_create_incidents(contexts: List, event_identifiers: L
     new_event_hashes = []
     for event in contexts:
         try:
-            event_hash = sha256(str(event).encode()).hexdigest()  # NOSONAR
+            event_hash = sha256(str(event).encode()).hexdigest()
             new_event_hashes.append(event_hash)
         except Exception as e:
             demisto.error("[CHRONICLE] Skipping insertion of current event since error occurred while calculating"
