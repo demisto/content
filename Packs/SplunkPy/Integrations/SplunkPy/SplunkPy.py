@@ -490,14 +490,15 @@ def get_next_start_time(last_run, fetches_with_same_start_time_count, were_new_i
     if were_new_incidents_found:
         # Decreasing one minute to avoid missing incidents that were indexed late
         last_run_datetime = last_run_datetime - timedelta(minutes=1)
-    last_run_milliseconds_and_tz = last_run.split('.')[1] if '.' in last_run else ''
+    # last_run_milliseconds_and_tz = last_run.split('.')[1] if '.' in last_run else ''
 
     # keep last time max 20 mins before current time, to avoid timeout
     if fetches_with_same_start_time_count >= 20:
         last_run_datetime = last_run_datetime + timedelta(minutes=1)
 
     next_run_without_miliseconds_and_tz = last_run_datetime.strftime(SPLUNK_TIME_FORMAT)
-    next_run = next_run_without_miliseconds_and_tz + '.' + last_run_milliseconds_and_tz
+    # next_run = next_run_without_miliseconds_and_tz + '.' + last_run_milliseconds_and_tz
+    next_run = next_run_without_miliseconds_and_tz
     return next_run
 
 
