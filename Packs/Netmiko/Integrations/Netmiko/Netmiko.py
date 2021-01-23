@@ -50,7 +50,7 @@ class Client:
         except Exception as err:
             return_error(err)
 
-    def cmds(self, exit_argument, commands, enable, isConfig):
+    def cmds(self, require_exit, exit_argument, commands, enable, isConfig):
         try:
             output = {"Hostname": self.hostname, "Platform": self.platform, "Commands": []}
             self.connect()
