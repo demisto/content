@@ -54,7 +54,7 @@ class Client(BaseClient):
             kf.flush()
             return (cf.name, kf.name), cf, kf
 
-    def get_credentials(self, creds_object):
+    def get_credentials(self, creds_object: str):
         url_suffix = '/AIMWebService/api/Accounts'
         params = {
             "AppID": self._app_id,
@@ -90,18 +90,19 @@ def list_credentials_command(client):
     return results
 
 
-def fetch_credentials(client):
+def fetch_credentials(client, args: dict):
     """Fetches the available credentials.
     :param client: the client object with the given params
     :return: a credentials object
     """
-    creds_name = demisto.args().get('identifier')
+    creds_name = args.get('identifier')
     demisto.debug('name of cred used: ', creds_name)
 
-    if creds_name:
-        creds_list = [client.get_credentials(creds_name)]
-    else:
-        creds_list = client.list_credentials()
+    # if creds_name:
+    #     creds_list = [client.get_credentials(creds_name)]
+    # else:
+    #     creds_list = client.list_credentials()
+    creds_list = client.list_credentials()
     credentials = []
     for cred in creds_list:
         credentials.append({
@@ -157,7 +158,7 @@ def main():
             'fetch-credentials': fetch_credentials
         }
         if command in commands:
-            return_results(commands[command](client))  # type: ignore[operator]
+            return_results(commands[command](client, demisto.args()))  # type: ignore[operator]
         else:
             raise NotImplementedError(f'{command} is not an existing CyberArk AIM command')
     except Exception as err:
