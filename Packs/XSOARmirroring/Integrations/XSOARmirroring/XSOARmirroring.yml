@@ -108,6 +108,13 @@ script:
     - name: max_results
       description: How many incidents to retrieve.
       defaultValue: "10"
+    - default: false
+      defaultValue: id,name,type,status,severity,owner,occured
+      description: Which columns to display. To display all columns, insert 'all',
+      isArray: true
+      name: columns
+      required: false
+      secret: false
     description: Search remote XSOAR for incidents
   - name: xsoar-get-incident
     arguments:
