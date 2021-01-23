@@ -3,7 +3,6 @@ from typing import Dict, Tuple
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
@@ -14,6 +13,126 @@ DEFAULT_EXPIRATION = 180
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
 
 ''' CLIENT CLASS '''
+
+
+class RSTIP(Common.IP):
+    CONTEXT_PATH = 'IP(val.Address && val.Address == obj.Address)'
+
+    def __init__(self, ip, dbot_score, asn=None, hostname=None, geo_latitude=None, geo_longitude=None,
+                 geo_country=None, geo_description=None, detection_engines=None, positive_engines=None,
+                 rstscore=None, tags=None, malwarefamily=None, firstseenbysource=None, lastseenbysource=None):
+        super().__init__(ip, dbot_score, asn, hostname, geo_latitude, geo_longitude,
+                         geo_country, geo_description, detection_engines, positive_engines)
+        self.rstscore = rstscore
+        self.tags = tags
+        self.malwarefamily = malwarefamily
+        self.firstseenbysource = firstseenbysource
+        self.lastseenbysource = lastseenbysource
+
+    def to_context(self):
+        ret_value = super().to_context()
+        ip_context = {
+            'Address': self.ip
+        }
+        if self.rstscore:
+            ip_context['RST Score'] = self.rstscore
+        if self.tags:
+            ip_context['Tags'] = self.tags
+
+        if self.malwarefamily:
+            ip_context['MalwareFamily'] = self.malwarefamily
+
+        if self.lastseenbysource:
+            ip_context['FirstSeenBySource'] = self.firstseenbysource
+
+        if self.lastseenbysource:
+            ip_context['LastSeenBySource'] = self.lastseenbysource
+
+        ret_value[Common.IP.CONTEXT_PATH].update(ip_context)
+        return ret_value
+
+
+class RSTDomain(Common.Domain):
+    CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
+
+    def __init__(self, domain, dbot_score, dns=None, detection_engines=None, positive_detections=None,
+                 organization=None, sub_domains=None, creation_date=None, updated_date=None, expiration_date=None,
+                 domain_status=None, name_servers=None,
+                 registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
+                 registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
+                 admin_name=None, admin_email=None, admin_phone=None, admin_country=None,
+                 rstscore=None, tags=None, malwarefamily=None, firstseenbysource=None, lastseenbysource=None):
+        super().__init__(domain, dbot_score, dns, detection_engines, positive_detections,
+                         organization, sub_domains, creation_date, updated_date, expiration_date,
+                         domain_status, name_servers,
+                         registrar_name, registrar_abuse_email, registrar_abuse_phone,
+                         registrant_name, registrant_email, registrant_phone, registrant_country,
+                         admin_name, admin_email, admin_phone, admin_country)
+        self.rstscore = rstscore
+        self.tags = tags
+        self.malwarefamily = malwarefamily
+        self.firstseenbysource = firstseenbysource
+        self.lastseenbysource = lastseenbysource
+
+    def to_context(self):
+        ret_value = super().to_context()
+        domain_context = {
+            'Name': self.domain
+        }
+        if self.rstscore:
+            domain_context['RST Score'] = self.rstscore
+        if self.tags:
+            domain_context['Tags'] = self.tags
+
+        if self.malwarefamily:
+            domain_context['MalwareFamily'] = self.malwarefamily
+
+        if self.lastseenbysource:
+            domain_context['FirstSeenBySource'] = self.firstseenbysource
+
+        if self.lastseenbysource:
+            domain_context['LastSeenBySource'] = self.lastseenbysource
+
+        ret_value[Common.Domain.CONTEXT_PATH].update(domain_context)
+
+        return ret_value
+
+
+class RSTUrl(Common.URL):
+    CONTEXT_PATH = 'URL(val.Data && val.Data == obj.Data)'
+
+    def __init__(self, url, dbot_score, detection_engines=None, positive_detections=None, category=None,
+                 rstscore=None, tags=None, malwarefamily=None, firstseenbysource=None, lastseenbysource=None):
+        super().__init__(url, dbot_score, detection_engines, positive_detections, category)
+        self.rstscore = rstscore
+        self.tags = tags
+        self.malwarefamily = malwarefamily
+        self.firstseenbysource = firstseenbysource
+        self.lastseenbysource = lastseenbysource
+
+    def to_context(self):
+        ret_value = super().to_context()
+        url_context = {
+            'Data': self.url
+        }
+        if self.rstscore:
+            url_context['RST Score'] = self.rstscore
+
+        if self.tags:
+            url_context['Tags'] = self.tags
+
+        if self.malwarefamily:
+            url_context['MalwareFamily'] = self.malwarefamily
+
+        if self.lastseenbysource:
+            url_context['FirstSeenBySource'] = self.firstseenbysource
+
+        if self.lastseenbysource:
+            url_context['LastSeenBySource'] = self.lastseenbysource
+
+        ret_value[Common.URL.CONTEXT_PATH].update(url_context)
+
+        return ret_value
 
 
 class Client(BaseClient):
@@ -96,6 +215,50 @@ def calculate_score(score: int, threshold: int, itype: str, lseen: int) -> int:
         return Common.DBotScore.SUSPICIOUS
 
 
+def parse_indicator_response(res, indicator_type):
+    indicator = {}
+    indicator['IndicatorValue'] = res.get('ioc_value', '')
+    indicator['IndicatorType'] = indicator_type
+    if not 'error' in res:
+        first_seen = str(int(res.get('fseen', '')) * 1000)
+        last_seen = str(int(res.get('lseen', '')) * 1000)
+
+        if first_seen:
+            indicator['FirstSeen'] = timestamp_to_datestring(first_seen)
+        if last_seen:
+            indicator['LastSeen'] = timestamp_to_datestring(last_seen)
+
+        if 'tags' in res:
+            indicator['Tags'] = res.get('tags').get('str', '')
+        if 'fp' in res:
+            indicator['FalsePositive'] = res.get('fp', '')
+        if 'id' in res:
+            indicator['UUID'] = res.get('id', '')
+            indicator['RSTReference'] = "https://rstcloud.net/uuid?id=" + res.get('id', '')
+        if indicator_type == 'Domain':
+            indicator['WhoisDomainCreationDate'] = res.get('whois', {}).get('created', '')
+            indicator['WhoisDomainExpireDate'] = res.get('whois', {}).get('expires', '')
+            indicator['WhoisDomainUpdateDate'] = res.get('whois', {}).get('updated', '')
+            indicator['WhoisRegistrar'] = res.get('whois', {}).get('registrar', '')
+            indicator['WhoisRegistrant'] = res.get('whois', {}).get('registrant', '')
+            indicator['WhoisAge'] = res.get('whois', {}).get('age', '')
+            indicator['Related'] = res.get('resolved').get('ip', '')
+        if indicator_type == 'IP':
+            indicator['CloudHosting'] = res.get('asn', {}).get('cloud', '')
+            indicator['NumberOfDomainInASN'] = res.get('asn', {}).get('domains', '')
+            indicator['Organization'] = res.get('asn', {}).get('org', '')
+            indicator['ISP'] = res.get('asn', {}).get('isp', '')
+            indicator['Geo'] = res.get('geo')
+            indicator['Related'] = res.get('related').get('domains', '')
+        if indicator_type == 'URL':
+            indicator['Parsed'] = res.get('parsed', '')
+            indicator['Status'] = res.get('resolved').get('status', '')
+            indicator['CVE'] = res.get('cve', '')
+    else:
+        indicator['error'] = res.get('error', '')
+    return indicator
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -142,8 +305,8 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
                     score=Common.DBotScore.NONE
                 )
                 markdown_item += f'IP: {ip} not found\n'
-                raw_results.append(indicator)
-                indicators.append(Common.IP(ip=indicator['ioc_value'], dbot_score=score))
+                raw_results.append(parse_indicator_response(indicator, 'IP'))
+                indicators.append(RSTIP(ip=indicator['ioc_value'], dbot_score=score))
                 markdown.append(markdown_item)
                 continue
             else:
@@ -164,11 +327,16 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
                 human_readable_score = 'Malicious'
             if calc_score == 2:
                 human_readable_score = 'Suspicious'
-            result = Common.IP(
+            result = RSTIP(
                 ip=indicator['ioc_value'],
                 asn=indicator.get('asn', {}).get('num', ''),
                 geo_country=indicator.get('geo', {}).get('country', ''),
-                dbot_score=dbot_score
+                dbot_score=dbot_score,
+                rstscore=total_score,
+                tags=indicator.get('tags', '').get('str', ''),
+                malwarefamily=indicator.get('threat', ''),
+                firstseenbysource=timestamp_to_datestring(str(int(indicator.get('fseen', '')) * 1000)),
+                lastseenbysource=timestamp_to_datestring(str(int(indicator.get('lseen', '')) * 1000))
             )
             table = {'Score': total_score,
                      'Relevance': human_readable_score,
@@ -179,7 +347,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
             markdown_item += tableToMarkdown(f'RST Threat Feed IP Reputation for: {indicator["ioc_value"]}\n'
                                              f'{RST_URL}uuid?id={indicator["id"]}', table, removeNull=True)
             markdown.append(markdown_item)
-            raw_results.append(indicator)
+            raw_results.append(parse_indicator_response(indicator, 'IP'))
             indicators.append(result)
 
     return markdown, raw_results, indicators
@@ -216,8 +384,8 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, li
                     score=Common.DBotScore.NONE
                 )
                 markdown_item += f'Domain: {domain} not found\n'
-                raw_results.append(indicator)
-                indicators.append(Common.Domain(domain=indicator['ioc_value'], dbot_score=score))
+                raw_results.append(parse_indicator_response(indicator, 'Domain'))
+                indicators.append(RSTDomain(domain=indicator['ioc_value'], dbot_score=score))
                 markdown.append(markdown_item)
                 continue
             else:
@@ -237,14 +405,20 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, li
                 human_readable_score = 'Malicious'
             if calc_score == 2:
                 human_readable_score = 'Suspicious'
-            result = Common.Domain(
+            result = RSTDomain(
                 domain=indicator['ioc_value'],
+                dns=indicator.get('resolved', {}).get('ip', '').get('a', ''),
                 creation_date=indicator.get('whois', {}).get('created', ''),
                 updated_date=indicator.get('whois', {}).get('updated', ''),
                 expiration_date=indicator.get('whois', {}).get('expires', ''),
                 registrar_name=indicator.get('whois', {}).get('registrar', ''),
                 registrant_name=indicator.get('whois', {}).get('registrant', ''),
-                dbot_score=dbot_score
+                dbot_score=dbot_score,
+                rstscore=total_score,
+                tags=indicator.get('tags', '').get('str', ''),
+                malwarefamily=indicator.get('threat', ''),
+                firstseenbysource=timestamp_to_datestring(str(int(indicator.get('fseen', '')) * 1000)),
+                lastseenbysource=timestamp_to_datestring(str(int(indicator.get('lseen', '')) * 1000))
             )
             table = {'Score': total_score,
                      'Relevance:': human_readable_score,
@@ -255,7 +429,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, li
             markdown_item += tableToMarkdown(f'RST Threat Feed Domain Reputation for: {indicator["ioc_value"]}\n'
                                              f'{RST_URL}uuid?id={indicator["id"]}', table, removeNull=True)
             markdown.append(markdown_item)
-            raw_results.append(indicator)
+            raw_results.append(parse_indicator_response(indicator, 'Domain'))
             indicators.append(result)
 
     return markdown, raw_results, indicators
@@ -292,8 +466,8 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
                     score=Common.DBotScore.NONE
                 )
                 markdown_item += f'URL: {url} not found\n'
-                raw_results.append(indicator)
-                indicators.append(Common.URL(url=indicator['ioc_value'], dbot_score=score))
+                raw_results.append(parse_indicator_response(indicator, 'URL'))
+                indicators.append(RSTUrl(url=indicator['ioc_value'], dbot_score=score))
                 markdown.append(markdown_item)
                 continue
             else:
@@ -308,9 +482,14 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
                 integration_name='RST Cloud',
                 score=calc_score
             )
-            result = Common.URL(
+            result = RSTUrl(
                 url=indicator['ioc_value'],
-                dbot_score=dbot_score
+                dbot_score=dbot_score,
+                rstscore=total_score,
+                tags=indicator.get('tags', '').get('str', ''),
+                malwarefamily=indicator.get('threat', ''),
+                firstseenbysource=timestamp_to_datestring(str(int(indicator.get('fseen', '')) * 1000)),
+                lastseenbysource=timestamp_to_datestring(str(int(indicator.get('lseen', '')) * 1000))
             )
             human_readable_score = ''
             if calc_score == 3:
@@ -327,7 +506,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
             markdown_item += tableToMarkdown(f'RST Threat Feed URL Reputation for: {url}\n'
                                              f'{RST_URL}uuid?id={indicator["id"]}', table, removeNull=True)
             markdown.append(markdown_item)
-            raw_results.append(indicator)
+            raw_results.append(parse_indicator_response(indicator, 'URL'))
             indicators.append(result)
 
     return markdown, raw_results, indicators
@@ -379,9 +558,9 @@ def main():
             for i in range(0, len(raw_results)):
                 output = CommandResults(
                     readable_output=markdown[i],
-                    outputs_prefix='RST.IP',
-                    outputs_key_field='indicator',
-                    outputs=raw_results[i],
+                    outputs_prefix='IP',
+                    outputs_key_field='Address',
+                    outputs={'Address': raw_results[i]['IndicatorValue'], 'RST': raw_results[i]},
                     indicator=indicators[i]
                 )
                 return_results(output)
@@ -390,9 +569,9 @@ def main():
             for i in range(0, len(raw_results)):
                 output = CommandResults(
                     readable_output=markdown[i],
-                    outputs_prefix='RST.Domain',
-                    outputs_key_field='indicator',
-                    outputs=raw_results[i],
+                    outputs_prefix='Domain',
+                    outputs_key_field='Name',
+                    outputs={'Name': raw_results[i]['IndicatorValue'], 'RST': raw_results[i]},
                     indicator=indicators[i]
                 )
                 return_results(output)
@@ -401,9 +580,9 @@ def main():
             for i in range(0, len(raw_results)):
                 output = CommandResults(
                     readable_output=markdown[i],
-                    outputs_prefix='RST.URL',
-                    outputs_key_field='indicator',
-                    outputs=raw_results[i],
+                    outputs_prefix='URL',
+                    outputs_key_field='Data',
+                    outputs={'Data': raw_results[i]['IndicatorValue'], 'RST': raw_results[i]},
                     indicator=indicators[i]
                 )
                 return_results(output)

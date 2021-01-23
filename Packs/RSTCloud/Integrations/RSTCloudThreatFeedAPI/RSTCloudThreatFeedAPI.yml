@@ -21,14 +21,14 @@ configuration:
   type: 0
 - additionalinfo: Set this to determine the RST Threat Feed score that will determine
     if a domain is malicious (0-100)
-  defaultvalue: '55'
+  defaultvalue: '45'
   display: Score threshold for domain reputation command
   name: threshold_domain
   required: false
   type: 0
 - additionalinfo: Set this to determine the RST Threat Feed score that will determine
     if a url is malicious (0-100)
-  defaultvalue: '55'
+  defaultvalue: '35'
   display: Score threshold for url reputation command
   name: threshold_url
   required: false
@@ -186,6 +186,9 @@ script:
     - contextPath: RST.IP.Score
       description: The total score
       type: Number
+    - contextPath: RST.IP.UUID
+      description: The unique ID for the indicator
+      type: String
     - contextPath: RST.IP.Description
       description: The associated Description provided by the vendor
       type: String
@@ -297,6 +300,9 @@ script:
     - contextPath: RST.Domain.Score
       description: The total score
       type: Number
+    - contextPath: RST.Domain.UUID
+      description: The unique ID for the indicator
+      type: String
     - contextPath: RST.Domain.Description
       description: The associated Description provided by the vendor
       type: String
@@ -393,6 +399,9 @@ script:
     - contextPath: RST.URL.Score
       description: The total score
       type: Number
+    - contextPath: RST.URL.UUID
+      description: The unique ID for the indicator
+      type: String
     - contextPath: RST.URL.Description
       description: The associated Description provided by the vendor
       type: String
