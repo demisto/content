@@ -13,12 +13,10 @@ def main():
     channels_created = []
 
     modules = demisto.getModules()
-    for module_name in modules.keys():
-        module = modules.get(module_name)
-        if module.get('brand') == 'Microsoft Teams' and module.get('state') == 'active':
-            integrations_to_create.append('Microsoft Teams')
-        if module.get('brand') == 'SlackV2' and module.get('state') == 'active':
-            integrations_to_create.append('SlackV2')
+    for module_name, module in modules.items():
+        brand = module.get('brand')
+        if module.get('state') == 'active' and brand in {'Microsoft Teams', 'SlackV2'}:
+            integrations_to_create.append(brand)
 
     if not integrations_to_create:
         return_error('Microsoft Teams and Slack are not available, please configure at least one of them.')
@@ -36,7 +34,7 @@ def main():
                 errors.append('Failed to create channel in Microsoft Teams: team argument is missing')
 
         if is_error(res):
-            errors.append(f'Failed to create channel in {integration}: {str(get_error(res))}')
+            errors.append(f'Failed to create channel in {integration}: {get_error(res)}')
         elif res:
             channels_created.append(integration)
 

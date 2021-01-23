@@ -46,7 +46,7 @@ def main():
         ooo_list = demisto.executeCommand("getList", {"listName": list_name})[0]["Contents"]
 
     # check status of the list, and add/remove the user from it.
-    if not ooo_list or ooo_list == [] or ooo_list == "":
+    if not ooo_list:
         list_data = []
     else:
         list_data = json.loads(ooo_list)

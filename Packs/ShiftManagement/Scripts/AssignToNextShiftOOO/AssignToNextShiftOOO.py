@@ -16,7 +16,7 @@ def main():
 
     # get OOO users
     ooo_list = demisto.executeCommand("GetUsersOOO", {"listname": list_name})
-    if isError(ooo_list):
+    if is_error(ooo_list):
         return_error(f'Failed to get users out of office: {str(get_error(ooo_list))}')
     list_info = ooo_list[0].get('EntryContext').get('ShiftManagment.OOOUsers')
     list_info = [i['username'] for i in list_info]
