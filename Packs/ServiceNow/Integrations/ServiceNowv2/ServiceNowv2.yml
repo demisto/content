@@ -761,6 +761,14 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use to separate any fields list argument
+        in this command.
+      isArray: false
+      name: fields_delimiter
+      required: false
+      secret: false
     deprecated: false
     description: Creates new ServiceNow ticket.
     execution: false
@@ -1301,6 +1309,14 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use to separate any fields list argument
+        in this command.
+      isArray: false
+      name: fields_delimiter
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified ticket.
     execution: false
@@ -1703,6 +1719,14 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use to separate any fields list argument
+        in this command.
+      isArray: false
+      name: fields_delimiter
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new record in the specified ServiceNow table.
     execution: false
@@ -1763,6 +1787,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use to separate any fields list argument
+        in this command.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -2336,9 +2368,6 @@ script:
   isfetch: true
   longRunning: false
   longRunningPort: false
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
   runonce: false
   script: '-'
   subtype: python3
