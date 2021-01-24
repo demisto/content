@@ -1,0 +1,149 @@
+Domain,Matched Twist (Origin),Activity Detection Date,Activity Detected,Domain Reputation,IP Reputation,WHOIS Created Date,WHOIS Updated Date,Registrar,Admin Email,Registrant Name,Registrant Organization,Registrant Country,Registrant Email,WHOIS Expiration Date,A Record,Name Servers,Site URL,Site Status,WHOIS Record,CNAME Record,SOA Contact,MX Records,Has DMARC,Has SSL Certificate
+domain.com,domain (domai.com),7/6/2020,"MX record detected, A record detected, Domain's reputation malicious, IP's reputation malicious",Malicious,Malicious,7/6/2020,7/6/2020,registrar_name,admin@example.com,registrant_name,registrant_organization,registrant_country,registrant@example.com,7/6/2020,1.1.1.1,"NS63.EXAMPLE.COM, NS64.EXAMPLE.COM",HTTPS://example.com,Active,"Domain Name: example.com
+Registry Domain ID: 2544124169_DOMAIN_COM-VRSN
+Registrar WHOIS Server: whois.dynadot1414
+Registrar URL: http://www.dynadot1414
+http://www.dynadot14.com
+Updated Date: 2020-07-06T20:08:21+00:00
+2020-07-06
+Creation Date: 2020-07-06T18:03:58+00:00
+2020-07-06
+Registrar Registration Expiration Date: 2021-07-06T18:03:58+00:00
+2021-07-06
+Registrar: DYNADOT14 LLC
+Dynadot14 LLC
+Sponsoring Registrar IANA ID: 2283
+Registrar Abuse Contact Email: abuse@dynadot1414
+Registrar Abuse Contact Phone: 16502620100
+Status:
+clientTransferProhibited
+Registry Registrant ID:
+Registrant Name: REDACTED FOR PRIVACY (DT)
+Registrant Organization:
+Registrant Street: REDACTED FOR PRIVACY (DT)
+Registrant City: REDACTED FOR PRIVACY (DT)
+Registrant State/Province: California
+Registrant Postal Code: REDACTED FOR PRIVACY (DT)
+Registrant Country: us
+Registrant Phone: REDACTED FOR PRIVACY (DT)
+Registrant Phone Ext:
+Registrant Fax:
+Registrant Fax Ext:
+Registrant Email: REDACTED FOR PRIVACY (DT)
+Registry Admin ID:
+Admin Name: REDACTED FOR PRIVACY (DT)
+Admin Organization:
+Admin Street: REDACTED FOR PRIVACY (DT)
+Admin City: REDACTED FOR PRIVACY (DT)
+Admin State/Province: California
+Admin Postal Code: REDACTED FOR PRIVACY (DT)
+Admin Country: us
+Admin Phone: REDACTED FOR PRIVACY (DT)
+Admin Phone Ext:
+Admin Fax:
+Admin Fax Ext:
+Admin Email: REDACTED FOR PRIVACY (DT)
+Registry Tech ID:
+Tech Name: REDACTED FOR PRIVACY (DT)
+Tech Organization:
+Tech Street: REDACTED FOR PRIVACY (DT)
+Tech City: REDACTED FOR PRIVACY (DT)
+Tech State/Province: California
+Tech Postal Code: REDACTED FOR PRIVACY (DT)
+Tech Country: us
+Tech Phone: REDACTED FOR PRIVACY (DT)
+Tech Phone Ext:
+Tech Fax:
+Tech Fax Ext:
+Tech Email: REDACTED FOR PRIVACY (DT)
+Registry Billing ID:
+Billing Name:
+Billing Organization:
+Billing Street:
+Billing City:
+Billing State/Province:
+Billing Postal Code:
+Billing Country:
+Billing Phone:
+Billing Phone Ext:
+Billing Fax:
+Billing Fax Ext:
+Billing Email:
+Nameservers:
+ns15.above.com
+ns16.above.com
+DNSSEC: unsigned",urlforward.example.com,technical@example.com,"aspmx.l.example.com,alt3.aspmx.l.example.com, alt4.aspmx.l.example.com",Yes,Yes
+domain2.com,domain2 (domai.com),7/6/2020,"MX record detected, A record detected, Domain's reputation malicious, IP's reputation malicious",Unknown,Unknown,7/6/2020,7/6/2020,registrar_name,admin@example.com,registrant_name,registrant_organization,registrant_country,registrant@example.com,7/6/2020,1.1.1.1,"NS63.EXAMPLE.COM, NS64.EXAMPLE.COM",HTTPS://example.com,Not Active,"Domain Name: example.com
+Registry Domain ID: 2544124169_DOMAIN_COM-VRSN
+Registrar WHOIS Server: whois.dynadot1414
+Registrar URL: http://www.dynadot1414
+http://www.dynadot14.com
+Updated Date: 2020-07-06T20:08:21+00:00
+2020-07-06
+Creation Date: 2020-07-06T18:03:58+00:00
+2020-07-06
+Registrar Registration Expiration Date: 2021-07-06T18:03:58+00:00
+2021-07-06
+Registrar: DYNADOT14 LLC
+Dynadot14 LLC
+Sponsoring Registrar IANA ID: 2283
+Registrar Abuse Contact Email: abuse@dynadot1414
+Registrar Abuse Contact Phone: 16502620100
+Status:
+clientTransferProhibited
+Registry Registrant ID:
+Registrant Name: REDACTED FOR PRIVACY (DT)
+Registrant Organization:
+Registrant Street: REDACTED FOR PRIVACY (DT)
+Registrant City: REDACTED FOR PRIVACY (DT)
+Registrant State/Province: California
+Registrant Postal Code: REDACTED FOR PRIVACY (DT)
+Registrant Country: us
+Registrant Phone: REDACTED FOR PRIVACY (DT)
+Registrant Phone Ext:
+Registrant Fax:
+Registrant Fax Ext:
+Registrant Email: REDACTED FOR PRIVACY (DT)
+Registry Admin ID:
+Admin Name: REDACTED FOR PRIVACY (DT)
+Admin Organization:
+Admin Street: REDACTED FOR PRIVACY (DT)
+Admin City: REDACTED FOR PRIVACY (DT)
+Admin State/Province: California
+Admin Postal Code: REDACTED FOR PRIVACY (DT)
+Admin Country: us
+Admin Phone: REDACTED FOR PRIVACY (DT)
+Admin Phone Ext:
+Admin Fax:
+Admin Fax Ext:
+Admin Email: REDACTED FOR PRIVACY (DT)
+Registry Tech ID:
+Tech Name: REDACTED FOR PRIVACY (DT)
+Tech Organization:
+Tech Street: REDACTED FOR PRIVACY (DT)
+Tech City: REDACTED FOR PRIVACY (DT)
+Tech State/Province: California
+Tech Postal Code: REDACTED FOR PRIVACY (DT)
+Tech Country: us
+Tech Phone: REDACTED FOR PRIVACY (DT)
+Tech Phone Ext:
+Tech Fax:
+Tech Fax Ext:
+Tech Email: REDACTED FOR PRIVACY (DT)
+Registry Billing ID:
+Billing Name:
+Billing Organization:
+Billing Street:
+Billing City:
+Billing State/Province:
+Billing Postal Code:
+Billing Country:
+Billing Phone:
+Billing Phone Ext:
+Billing Fax:
+Billing Fax Ext:
+Billing Email:
+Nameservers:
+ns15.above.com
+ns16.above.com
+DNSSEC: unsigned",urlforward.example.com,technical@example.com,"aspmx.l.example.com,alt3.aspmx.l.example.com, alt4.aspmx.l.example.com",Yes,Yes

@@ -355,6 +355,12 @@ script:
     - contextPath: Cyberint.Alert.alert_data.username
       description: Username of an account related to an event.
       type: String
+    - contextPath: Cyberint.Alert.alert_data.csv.username
+      description: Username of an account found in a report CSV.
+      type: String
+    - contextPath: Cyberint.Alert.alert_data.csv.password
+      description: Password of an account found in a report CSV.
+      type: String
     - contextPath: Cyberint.Alert.alert_data.email
       description: Email of an account related to an event.
       type: String

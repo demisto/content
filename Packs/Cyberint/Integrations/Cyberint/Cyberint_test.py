@@ -5,14 +5,14 @@ BASE_URL = 'https://test.cyberint.io/alert'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
-def load_mock_response(file_name: str) -> dict:
+def load_mock_response(file_name: str) -> str:
     """
     Load one of the mock responses to be used for assertion.
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as json_file:
-        return json.loads(json_file.read())
+    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as mock_file:
+        return mock_file.read()
 
 
 def test_cyberint_alerts_fetch_command(requests_mock):
@@ -28,7 +28,9 @@ def test_cyberint_alerts_fetch_command(requests_mock):
      - Ensure a sample value from the API matches what is generated in the context.
     """
     from Cyberint import Client, cyberint_alerts_fetch_command
-    mock_response = load_mock_response('list_alerts.json')
+    mock_response = load_mock_response('csv_example.csv')
+    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/123', json=mock_response)
+    mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
     result = cyberint_alerts_fetch_command(client, {})
@@ -79,7 +81,9 @@ def test_fetch_incidents(requests_mock) -> None:
      - Ensure last_fetch is correctly configured according to mock response.
     """
     from Cyberint import Client, fetch_incidents
-    mock_response = load_mock_response('list_alerts.json')
+    mock_response = load_mock_response('csv_example.csv')
+    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/123', json=mock_response)
+    mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
     last_fetch, incidents = fetch_incidents(client, {'last_fetch': 100000000}, '3 days', [], [],
@@ -104,7 +108,9 @@ def test_fetch_incidents_no_last_fetch(requests_mock):
      - Ensure last_fetch is correctly configured according to mock response.
     """
     from Cyberint import Client, fetch_incidents
-    mock_response = load_mock_response('list_alerts.json')
+    mock_response = load_mock_response('csv_example.csv')
+    requests_mock.get(f'{BASE_URL}/api/v1/alerts/ARG-3/attachments/123', json=mock_response)
+    mock_response = json.loads(load_mock_response('list_alerts.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
     last_fetch, incidents = fetch_incidents(client, {'last_fetch': 100000000}, '3 days', [], [],
@@ -129,7 +135,7 @@ def test_fetch_incidents_empty_response(requests_mock):
          - Ensure last_fetch is correctly configured according to mock response.
         """
     from Cyberint import Client, fetch_incidents
-    mock_response = load_mock_response('empty.json')
+    mock_response = json.loads(load_mock_response('empty.json'))
     requests_mock.post(f'{BASE_URL}/api/v1/alerts', json=mock_response)
     client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
     last_fetch, incidents = fetch_incidents(client, {'last_fetch': 100000000}, '3 days', [], [],
@@ -163,3 +169,30 @@ def test_set_date_pair():
     assert set_date_pair(None, end_time, None) == (datetime.strftime(datetime.
                                                                      fromisocalendar(2020, 2, 1),
                                                                      DATE_FORMAT), end_time)
+
+
+def test_extract_data_from_csv_stream(requests_mock):
+    """
+        Scenario: Extract data out of a downloaded csv file.
+        Given:
+         - User has provided valid credentials.
+        When:
+         - A fetch command is called and there is a CSV file reference in the response.
+        Then:
+         - Ensure all fields in the CSV are returned.
+         - Ensure the wanted fields are found when downloaded.
+         - Ensure a sample value matches what is in the sample CSV.
+    """
+    from Cyberint import Client, extract_data_from_csv_stream, CSV_FIELDS_TO_EXTRACT
+    client = Client(base_url=BASE_URL, verify_ssl=False, access_token='xxx', proxy=False)
+    mock_response = load_mock_response('csv_no_username.csv')
+    requests_mock.get(f'{BASE_URL}/api/v1/alerts/alert_id/attachments/123', json=mock_response)
+    result = extract_data_from_csv_stream(client, 'alert_id', '123')
+    assert len(result) == 0
+    mock_response = load_mock_response('csv_example.csv')
+    requests_mock.get(f'{BASE_URL}/api/v1/alerts/alert_id/attachments/123', json=mock_response)
+    result = extract_data_from_csv_stream(client, 'alert_id', '123')
+    assert len(result) == 6
+    assert list(result[0].keys()) == [value.lower() for value in CSV_FIELDS_TO_EXTRACT]
+    assert result[0]['username'] == 'lulu'
+

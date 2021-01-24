@@ -3,17 +3,18 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 ''' IMPORTS '''
-
+from contextlib import closing
 import json
 import requests
 import dateparser
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Iterable
 
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 SEVERITIES = {'low': 1, 'medium': 2, 'high': 3, 'very_high': 4}
+CSV_FIELDS_TO_EXTRACT = ['Username', 'Password']
 
 
 class Client(BaseClient):
@@ -31,9 +32,8 @@ class Client(BaseClient):
             verify_ssl (bool): specifies whether to verify the SSL certificate or not.
             proxy (bool): specifies if to use XSOAR proxy settings.
         """
-        headers = {'Content-Type': 'application/json'}
         self._cookies = {'access_token': access_token}
-        super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy, headers=headers)
+        super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
 
     def list_alerts(self, page: Optional[str], page_size: Optional[int],
                     created_date_from: Optional[str], created_date_to: Optional[str],
@@ -89,6 +89,24 @@ class Client(BaseClient):
                                       url_suffix='api/v1/alerts/status')
         return response
 
+    def get_csv_file(self, alert_id: str, attachment_id: str) -> Iterable[str]:
+        """
+        Stream a CSV file attachment in order to extract data out of it.
+
+        Args:
+            alert_id (str): ID of the alert the CSV belongs to.
+            attachment_id (str): ID of the specific CSV file.
+
+        Returns:
+            row (generator(str)): Generator containing each line of the CSV.
+        """
+        url_suffix = f'api/v1/alerts/{alert_id}/attachments/{attachment_id}'
+        with closing(self._http_request(method='GET', url_suffix=url_suffix,
+                                        cookies=self._cookies, resp_type='all',
+                                        stream=True)) as r:
+            for line in r.iter_lines(delimiter=b'\\n'):
+                yield line.decode('utf-8').strip('"')
+
 
 def test_module(client):
     """
@@ -115,7 +133,7 @@ def test_module(client):
         return return_value
 
 
-def verify_input_date_format(date: Optional[str]) -> str:
+def verify_input_date_format(date: Optional[str]) -> Optional[str]:
     """
     Make sure a date entered by the user is in the correct string format (with a Z at the end).
 
@@ -158,6 +176,42 @@ def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
     return start_date_arg, end_date_arg
 
 
+def extract_data_from_csv_stream(client: Client, alert_id: str,
+                                 attachment_id: str) -> List[dict]:
+    """
+    Call the attachment download API and parse required fields.
+
+    Args:
+        client (Client): Cyberint API client.
+        alert_id (str): ID of the alert the attachment belongs to.
+        attachment_id (str): ID of the attachment itself.
+
+    Returns:
+        list(dict): List of all the data found using the wanted fields.
+    """
+    first_line = True
+    field_indexes = {}  # {wanted_field_name: wanted_field_index...}
+    information_found = []
+    for csv_line in client.get_csv_file(alert_id, attachment_id):
+        csv_line = csv_line.split(',')
+        if first_line:
+            for field in CSV_FIELDS_TO_EXTRACT:
+                try:
+                    field_indexes[field] = csv_line.index(field)
+                except ValueError:
+                    pass
+            first_line = False
+        else:
+            try:
+                extracted_field_data = {field_name.lower(): csv_line[field_index]
+                                        for field_name, field_index in field_indexes.items()}
+                if extracted_field_data:
+                    information_found.append(extracted_field_data)
+            except IndexError:
+                pass
+    return information_found
+
+
 def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
     """
     List alerts on cyberint according to parameters.
@@ -180,16 +234,24 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
                                 argToList(args.get('environments')),
                                 argToList(args.get('statuses')),
                                 argToList(args.get('severities')), argToList(args.get('types')))
-    alerts = result.get('alerts')
+    alerts = result.get('alerts', [])
+    outputs = []
+    for alert in alerts:
+        alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
+        if alert_csv_id:
+            extracted_csv_data = extract_data_from_csv_stream(client, alert.get('ref_id', ''),
+                                                              alert_csv_id)
+            alert['alert_data']['csv'] = extracted_csv_data
+        outputs.append(alert)
     total_alerts = result.get('total')
     table_headers = ['ref_id', 'title', 'status', 'severity', 'created_date', 'type',
                      'environment']
     readable_output = f'Total alerts: {total_alerts}\nCurrent page: {args.get("page", 1)}\n'
-    readable_output += tableToMarkdown(name='CyberInt alerts:', t=alerts, headers=table_headers,
+    readable_output += tableToMarkdown(name='CyberInt alerts:', t=outputs, headers=table_headers,
                                        removeNull=True)
     return CommandResults(outputs_key_field='ref_id', outputs_prefix='Cyberint.Alert',
                           readable_output=readable_output, raw_response=result,
-                          outputs=alerts)
+                          outputs=outputs)
 
 
 def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
@@ -259,6 +321,11 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
         alert_created_time = datetime.strptime(alert.get('created_date'), '%Y-%m-%dT%H:%M:%S')
         alert_id = alert.get('ref_id')
         alert_title = alert.get('title')
+        alert_csv_id = alert.get('alert_data', {}).get('csv', {}).get('id', '')
+        if alert_csv_id:
+            extracted_csv_data = extract_data_from_csv_stream(client, alert_id,
+                                                              alert_csv_id)
+            alert['alert_data']['csv'] = extracted_csv_data
         incident = {
             'name': f'Cyberint alert {alert_id}: {alert_title}',
             'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
