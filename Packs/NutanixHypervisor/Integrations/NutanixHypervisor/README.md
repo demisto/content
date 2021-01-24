@@ -2,7 +2,7 @@ Nutanix Hypervisor abstracts and isolates the VMs and their programs from the un
 more efficient use of physical resources, simpler maintenance and operations, and reduced costs. This integration was
 integrated and tested with version v2 of Nutanix
 
-## Configure Nutanix Hypervisor on Cortex XSOAR
+## Configure Nutanix on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Nutanix Hypervisor.
@@ -128,10 +128,10 @@ Get the list of physical hosts configured in the cluster.
             "acropolis_connection_state": "kConnected",
             "block_model": "UseLayout",
             "block_model_name": "CommunityEdition",
-            "block_serial": "xxxxxxxx",
+            "block_serial": "386a5fb4",
             "boot_time": "2020-11-22T14:13:52.399817Z",
-            "cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            "controller_vm_backplane_ip": "xxx.xxx.x.xxx",
+            "cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00505689cc8b",
+            "controller_vm_backplane_ip": "192.168.1.121",
             "cpu_capacity_in_hz": 16760000000,
             "cpu_frequency_in_hz": 2095000000,
             "cpu_model": "Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz",
@@ -142,8 +142,8 @@ Get the list of physical hosts configured in the cluster.
                     "can_add_as_new_disk": false,
                     "can_add_as_old_disk": false,
                     "current_firmware_version": "2.5+",
-                    "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::12",
-                    "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "disk_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::12",
+                    "disk_uuid": "f062895b-8cc9-496a-bfd1-5d7e54cd285c",
                     "location": 1,
                     "model": "Virtual disk",
                     "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-0",
@@ -160,8 +160,8 @@ Get the list of physical hosts configured in the cluster.
                     "can_add_as_new_disk": false,
                     "can_add_as_old_disk": false,
                     "current_firmware_version": "2.5+",
-                    "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::13",
-                    "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                    "disk_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::13",
+                    "disk_uuid": "5be00813-22ed-47bd-8ee7-da295196d1a8",
                     "location": 2,
                     "model": "Virtual disk",
                     "mount_path": "/home/nutanix/data/stargate-storage/disks/drive-scsi0-0-0-1",
@@ -175,21 +175,21 @@ Get the list of physical hosts configured in the cluster.
             ],
             "has_csr": false,
             "host_type": "HYPER_CONVERGED",
-            "hypervisor_address": "xxx.xxx.x.xxx",
-            "hypervisor_full_name": "Nutanix xxxxxxxx.xxx",
-            "hypervisor_key": "xxx.xxx.x.xxx",
+            "hypervisor_address": "192.168.1.120",
+            "hypervisor_full_name": "Nutanix 20190916.276",
+            "hypervisor_key": "192.168.1.120",
             "hypervisor_state": "kAcropolisNormal",
             "hypervisor_type": "kKvm",
             "hypervisor_username": "root",
             "is_degraded": false,
             "is_hardware_virtualized": false,
             "is_secure_booted": false,
-            "management_server_name": "xxx.xxx.x.xxx",
+            "management_server_name": "192.168.1.120",
             "memory_capacity_in_bytes": 33722204160,
             "metadata_store_status": "kNormalMode",
             "metadata_store_status_message": "Metadata store enabled on the node",
             "monitored": true,
-            "name": "NTNX-xxxxxxxx-A",
+            "name": "NTNX-386a5fb4-A",
             "num_cpu_cores": 8,
             "num_cpu_sockets": 2,
             "num_cpu_threads": 8,
@@ -204,11 +204,11 @@ Get the list of physical hosts configured in the cluster.
             "removal_status": [
                 "NA"
             ],
-            "serial": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            "service_vmexternal_ip": "xxx.xxx.x.xxx",
-            "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x",
+            "serial": "59bc015e-a22d-41ab-9ce2-a96164955e8d",
+            "service_vmexternal_ip": "192.168.1.121",
+            "service_vmid": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::2",
             "state": "NORMAL",
-            "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "uuid": "59bc015e-a22d-41ab-9ce2-a96164955e8d",
             "vzone_name": ""
         }
     }
@@ -220,7 +220,7 @@ Get the list of physical hosts configured in the cluster.
 >### Nutanix Hosts List
 >|acropolis_connection_state|block_model|block_model_name|block_serial|boot_time|cluster_uuid|controller_vm_backplane_ip|cpu_capacity_in_hz|cpu_frequency_in_hz|cpu_model|has_csr|host_type|hypervisor_address|hypervisor_full_name|hypervisor_key|hypervisor_state|hypervisor_type|hypervisor_username|is_degraded|is_hardware_virtualized|is_secure_booted|management_server_name|memory_capacity_in_bytes|metadata_store_status|metadata_store_status_message|monitored|name|num_cpu_cores|num_cpu_sockets|num_cpu_threads|num_vms|oplog_disk_pct|oplog_disk_size|reboot_pending|removal_status|serial|service_vmexternal_ip|service_vmid|state|uuid|vzone_name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| kConnected | UseLayout | CommunityEdition | xxxxxxxx | 2020-11-22T14:13:52.399817Z | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | xxx.xxx.x.xxx | 16760000000 | 2095000000 | Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz | false | HYPER_CONVERGED | xxx.xxx.x.xxx | Nutanix xxxxxxxx.xxx | xxx.xxx.x.xxx | kAcropolisNormal | kKvm | root | false | false | false | xxx.xxx.x.xxx | 33722204160 | kNormalMode | Metadata store enabled on the node | true | NTNX-xxxxxxxx-A | 8 | 2 | 8 | 2 | 10.8 | 72426913110 | false | NA | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | xxx.xxx.x.xxx | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::x | NORMAL | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx |  |
+>| kConnected | UseLayout | CommunityEdition | 386a5fb4 | 2020-11-22T14:13:52.399817Z | 0005b4b2-c8d0-bad4-34c3-00505689cc8b | 192.168.1.121 | 16760000000 | 2095000000 | Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz | false | HYPER_CONVERGED | 192.168.1.120 | Nutanix 20190916.276 | 192.168.1.120 | kAcropolisNormal | kKvm | root | false | false | false | 192.168.1.120 | 33722204160 | kNormalMode | Metadata store enabled on the node | true | NTNX-386a5fb4-A | 8 | 2 | 8 | 2 | 10.8 | 72426913110 | false | NA | 59bc015e-a22d-41ab-9ce2-a96164955e8d | 192.168.1.121 | 0005b4b2-c8d0-bad4-34c3-00505689cc8b::2 | NORMAL | 59bc015e-a22d-41ab-9ce2-a96164955e8d |  |
 
 
 ### nutanix-hypervisor-vms-list
@@ -265,10 +265,50 @@ Get a list of virtual machines.
 
 
 #### Command Example
-``` ```
+```!nutanix-hypervisor-vms-list filter="machine_type==pc,power_state!=off" length=3 offset=0```
+
+#### Context Example
+```json
+{
+    "NutanixHypervisor": {
+        "VM": {
+            "affinity": {
+                "host_uuids": [
+                    "59bc015e-a22d-41ab-9ce2-a96164955e8d"
+                ],
+                "policy": "AFFINITY"
+            },
+            "allow_live_migrate": false,
+            "boot": {
+                "uefi_boot": false
+            },
+            "gpus_assigned": false,
+            "ha_priority": 0,
+            "host_uuid": "59bc015e-a22d-41ab-9ce2-a96164955e8d",
+            "machine_type": "pc",
+            "memory_mb": 4096,
+            "name": "CentOS7_Test",
+            "num_cores_per_vcpu": 2,
+            "num_vcpus": 2,
+            "power_state": "on",
+            "timezone": "UTC",
+            "uuid": "16c3d845-dc54-4fb1-bfc8-7671dd230967",
+            "vm_features": {
+                "AGENT_VM": false,
+                "VGA_CONSOLE": true
+            },
+            "vm_logical_timestamp": 158
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Nutanix Virtual Machines List
+>|allow_live_migrate|gpus_assigned|ha_priority|host_uuid|machine_type|memory_mb|name|num_cores_per_vcpu|num_vcpus|power_state|timezone|uuid|vm_logical_timestamp|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| false | false | 0 | 59bc015e-a22d-41ab-9ce2-a96164955e8d | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | 16c3d845-dc54-4fb1-bfc8-7671dd230967 | 158 |
 
 
 ### nutanix-hypervisor-vm-powerstatus-change
@@ -303,7 +343,7 @@ Set power state of a virtual machine.  If the virtual machine is being powered o
 {
     "NutanixHypervisor": {
         "VMPowerStatus": {
-            "task_uuid": "c048887f-978c-4a31-b547-0b0716a7e9c7"
+            "task_uuid": "67239e2d-3a11-44b1-8843-bf5636d9c660"
         }
     }
 }
@@ -314,7 +354,7 @@ Set power state of a virtual machine.  If the virtual machine is being powered o
 >### Results
 >|task_uuid|
 >|---|
->| c048887f-978c-4a31-b547-0b0716a7e9c7 |
+>| 67239e2d-3a11-44b1-8843-bf5636d9c660 |
 
 
 ### nutanix-hypervisor-task-poll
@@ -364,7 +404,7 @@ Poll tasks given by task_ids to check if they are ready. Returns all the tasks f
 {
     "NutanixHypervisor": {
         "Task": {
-            "cluster_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00505689cc8b",
             "complete_time": "2021-01-10T14:16:05.197853Z",
             "create_time": "2021-01-10T14:16:00.827398Z",
             "entity_list": [
@@ -472,10 +512,145 @@ Get the list of Alerts generated in the cluster which matches the filters if giv
 
 
 #### Command Example
-``` ```
+```!nutanix-alerts-list acknowledged=true auto_resolved=true resolved=true start_time=2018-12-31T21:34:54 limit=4```
+
+#### Context Example
+```json
+{
+    "NutanixHypervisor": {
+        "Alerts": [
+            {
+                "acknowledged": true,
+                "acknowledged_by_username": "N/A",
+                "acknowledged_time": "2020-11-25T15:28:02.804764Z",
+                "affected_entities": [
+                    {
+                        "entity_type": "host",
+                        "id": "2",
+                        "uuid": "59bc015e-a22d-41ab-9ce2-a96164955e8d"
+                    }
+                ],
+                "alert_title": "{vm_type} time not synchronized with any external servers.",
+                "alert_type_uuid": "A3026",
+                "auto_resolved": true,
+                "check_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::3026",
+                "classifications": [
+                    "ControllerVM"
+                ],
+                "cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00505689cc8b",
+                "context_types": [
+                    "alert_msg",
+                    "vm_type",
+                    "arithmos_id",
+                    "service_vm_id",
+                    "ncc_version",
+                    "nos_version",
+                    "node_uuid",
+                    "node_serial",
+                    "block_serial"
+                ],
+                "context_values": [
+                    "NTP leader is not synchronizing to an external NTP server",
+                    "CVM",
+                    "2",
+                    "2",
+                    "3.10.0.6-afc30b9b",
+                    "2020.09.16",
+                    "59bc015e-a22d-41ab-9ce2-a96164955e8d",
+                    "59bc015e-a22d-41ab-9ce2-a96164955e8d",
+                    "386a5fb4"
+                ],
+                "created_time": "2020-11-22T14:31:14.675609Z",
+                "detailed_message": "",
+                "id": "4b12dc84-2a77-4b3a-a40a-2dc47c919caa",
+                "impact_types": [
+                    "Configuration"
+                ],
+                "last_occurrence": "2020-11-22T14:31:14.675609Z",
+                "message": "The {vm_type} is not synchronizing time with any external servers. {alert_msg}",
+                "node_uuid": "59bc015e-a22d-41ab-9ce2-a96164955e8d",
+                "operation_type": "kCreate",
+                "originating_cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00505689cc8b",
+                "resolved": true,
+                "resolved_by_username": "N/A",
+                "resolved_time": "2020-11-25T15:28:02.804758Z",
+                "service_vmid": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::2",
+                "severity": "kWarning",
+                "user_defined": false
+            },
+            {
+                "acknowledged": true,
+                "acknowledged_by_username": "N/A",
+                "acknowledged_time": "2020-11-25T15:28:02.851718Z",
+                "affected_entities": [
+                    {
+                        "entity_type": "host",
+                        "id": "2",
+                        "uuid": "59bc015e-a22d-41ab-9ce2-a96164955e8d"
+                    }
+                ],
+                "alert_title": "Incorrect NTP Configuration",
+                "alert_type_uuid": "A103076",
+                "auto_resolved": true,
+                "check_id": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::103076",
+                "classifications": [
+                    "Cluster"
+                ],
+                "cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00505689cc8b",
+                "context_types": [
+                    "alert_msg",
+                    "vm_type",
+                    "arithmos_id",
+                    "cvm_ip",
+                    "service_vm_id",
+                    "ncc_version",
+                    "nos_version",
+                    "node_uuid",
+                    "node_serial",
+                    "block_serial"
+                ],
+                "context_values": [
+                    "This CVM is the NTP leader but it is not syncing time with any external NTP server. NTP configuration on CVM is not yet updated with the NTP servers configured in the cluster. The NTP configuration on the CVM will not be updated if the cluster time is in the future relative to the NTP servers.\n",
+                    "CVM",
+                    "2",
+                    "192.168.1.121",
+                    "2",
+                    "3.10.0.6-afc30b9b",
+                    "2020.09.16",
+                    "59bc015e-a22d-41ab-9ce2-a96164955e8d",
+                    "59bc015e-a22d-41ab-9ce2-a96164955e8d",
+                    "386a5fb4"
+                ],
+                "created_time": "2020-11-22T14:31:14.619018Z",
+                "detailed_message": "",
+                "id": "1c63dcd9-3b36-45a6-8991-d28cc661c861",
+                "impact_types": [
+                    "SystemIndicator"
+                ],
+                "last_occurrence": "2020-11-22T14:31:14.619018Z",
+                "message": "{alert_msg}",
+                "node_uuid": "59bc015e-a22d-41ab-9ce2-a96164955e8d",
+                "operation_type": "kCreate",
+                "originating_cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00505689cc8b",
+                "resolved": true,
+                "resolved_by_username": "N/A",
+                "resolved_time": "2020-11-25T15:28:02.851706Z",
+                "service_vmid": "0005b4b2-c8d0-bad4-34c3-00505689cc8b::2",
+                "severity": "kWarning",
+                "user_defined": false
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
+>### Nutanix Alert List
+>|acknowledged|acknowledged_by_username|acknowledged_time|alert_title|alert_type_uuid|auto_resolved|check_id|classifications|cluster_uuid|context_types|context_values|created_time|detailed_message|id|impact_types|last_occurrence|message|node_uuid|operation_type|originating_cluster_uuid|resolved|resolved_by_username|resolved_time|service_vmid|severity|user_defined|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| true | N/A | 2020-11-25T15:28:02.804764Z | {vm_type} time not synchronized with any external servers. | A3026 | true | 0005b4b2-c8d0-bad4-34c3-00505689cc8b::3026 | ControllerVM | 0005b4b2-c8d0-bad4-34c3-00505689cc8b | alert_msg,<br/>vm_type,<br/>arithmos_id,<br/>service_vm_id,<br/>ncc_version,<br/>nos_version,<br/>node_uuid,<br/>node_serial,<br/>block_serial | NTP leader is not synchronizing to an external NTP server,<br/>CVM,<br/>2,<br/>2,<br/>3.10.0.6-afc30b9b,<br/>2020.09.16,<br/>59bc015e-a22d-41ab-9ce2-a96164955e8d,<br/>59bc015e-a22d-41ab-9ce2-a96164955e8d,<br/>386a5fb4 | 2020-11-22T14:31:14.675609Z |  | 4b12dc84-2a77-4b3a-a40a-2dc47c919caa | Configuration | 2020-11-22T14:31:14.675609Z | The {vm_type} is not synchronizing time with any external servers. {alert_msg} | 59bc015e-a22d-41ab-9ce2-a96164955e8d | kCreate | 0005b4b2-c8d0-bad4-34c3-00505689cc8b | true | N/A | 2020-11-25T15:28:02.804758Z | 0005b4b2-c8d0-bad4-34c3-00505689cc8b::2 | kWarning | false |
+>| true | N/A | 2020-11-25T15:28:02.851718Z | Incorrect NTP Configuration | A103076 | true | 0005b4b2-c8d0-bad4-34c3-00505689cc8b::103076 | Cluster | 0005b4b2-c8d0-bad4-34c3-00505689cc8b | alert_msg,<br/>vm_type,<br/>arithmos_id,<br/>cvm_ip,<br/>service_vm_id,<br/>ncc_version,<br/>nos_version,<br/>node_uuid,<br/>node_serial,<br/>block_serial | This CVM is the NTP leader but it is not syncing time with any external NTP server. NTP configuration on CVM is not yet updated with the NTP servers configured in the cluster. The NTP configuration on the CVM will not be updated if the cluster time is in the future relative to the NTP servers.<br/>,<br/>CVM,<br/>2,<br/>192.168.1.121,<br/>2,<br/>3.10.0.6-afc30b9b,<br/>2020.09.16,<br/>59bc015e-a22d-41ab-9ce2-a96164955e8d,<br/>59bc015e-a22d-41ab-9ce2-a96164955e8d,<br/>386a5fb4 | 2020-11-22T14:31:14.619018Z |  | 1c63dcd9-3b36-45a6-8991-d28cc661c861 | SystemIndicator | 2020-11-22T14:31:14.619018Z | {alert_msg} | 59bc015e-a22d-41ab-9ce2-a96164955e8d | kCreate | 0005b4b2-c8d0-bad4-34c3-00505689cc8b | true | N/A | 2020-11-25T15:28:02.851706Z | 0005b4b2-c8d0-bad4-34c3-00505689cc8b::2 | kWarning | false |
 
 
 ### nutanix-alert-acknowledge
