@@ -5,5 +5,5 @@
 !nutanix-alerts-list acknowledged=true auto_resolved=true resolved=true start_time=2018-12-31T21:34:54 limit=4
 !nutanix-alert-acknowledge alert_id=b8a8b8c8-3548-4056-8a7d-dd2c43d1c2d0
 !nutanix-alert-resolve alert_id=b8a8b8c8-3548-4056-8a7d-dd2c43d1c2d0
-!nutanix-alerts-resolve-by-filter classifications=cluster limit=2 impact_types=SystemIndicator entity_types=VM
-!nutanix-alerts-acknowledge-by-filter end_time=2021-12-22T13:14:15 entity_types=Host classifications=ControllerVM severity=WARNING
+!nutanix-alerts-resolve-by-filter limit=2 impact_types=SystemIndicator entity_types=VM
+!nutanix-alerts-acknowledge-by-filter end_time=2021-12-22T13:14:15 entity_types=Host severity=WARNING
