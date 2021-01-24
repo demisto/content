@@ -335,6 +335,6 @@
 	"group": "incident",
 	"id": "5b4d0e12-2017-4047-8d68-210ba638bfc1",
 	"name": "Cyberint Incident Layout",
-	"fromVersion": "5.0.0",
+	"fromVersion": "6.0.0",
 	"version": -1
 }
