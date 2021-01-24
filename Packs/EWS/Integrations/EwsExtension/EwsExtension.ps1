@@ -873,13 +873,13 @@ class ExchangeOnlineClient {
 
         .PARAMETER domain_controller
         This parameter is available only in on-premises Exchange.
-        The DomainController parameter specifies the domain controller that's used by this 
-        cmdlet to read data from or write data to Active Directory. You identify the domain 
-        controller by its fully qualified domain name (FQDN). 
+        The DomainController parameter specifies the domain controller that's used by this
+        cmdlet to read data from or write data to Active Directory. You identify the domain
+        controller by its fully qualified domain name (FQDN).
         For example, dc01.contoso.com.
 
         .PARAMETER identity
-        The Identity parameter specifies a federation trust ID. If not specified, the cmdlet returns 
+        The Identity parameter specifies a federation trust ID. If not specified, the cmdlet returns
         all federation trusts configured for the Exchange organization.
 
         .EXAMPLE
@@ -895,8 +895,8 @@ class ExchangeOnlineClient {
 
 
     [PSObject]GetFederationConfiguration(
-        [string]$domain_controller, 
-        [string]$identity, 
+        [string]$domain_controller,
+        [string]$identity,
         [bool]$include_extended_domain_info
     ) {
         try {
@@ -921,22 +921,22 @@ class ExchangeOnlineClient {
         }
         <#
         .DESCRIPTION
-        Use the Get-FederatedOrganizationIdentifier cmdlet to retrieve the Exchange organization's federated 
+        Use the Get-FederatedOrganizationIdentifier cmdlet to retrieve the Exchange organization's federated
         organization identifier and related details, such as federated domains, organization contact and status.
 
         .PARAMETER domain_controller
         This parameter is available only in on-premises Exchange.
-        The DomainController parameter specifies the domain controller that's used by this 
-        cmdlet to read data from or write data to Active Directory. You identify the domain 
-        controller by its fully qualified domain name (FQDN). 
+        The DomainController parameter specifies the domain controller that's used by this
+        cmdlet to read data from or write data to Active Directory. You identify the domain
+        controller by its fully qualified domain name (FQDN).
         For example, dc01.contoso.com.
 
         .PARAMETER identity
-        The Identity parameter specifies a federation trust ID. If not specified, the cmdlet returns 
+        The Identity parameter specifies a federation trust ID. If not specified, the cmdlet returns
         all federation trusts configured for the Exchange organization.
 
         .PARAMETER include_extended_domain_info
-        The IncludeExtendedDomainInfo switch specifies that the command query Microsoft Federation Gateway for the status of each 
+        The IncludeExtendedDomainInfo switch specifies that the command query Microsoft Federation Gateway for the status of each
         accepted domain that's federated. The status is returned with each domain in the Domains property.
 
         .EXAMPLE
@@ -1023,28 +1023,28 @@ class ExchangeOnlineClient {
         }
         <#
         .DESCRIPTION
-        Retrieve information about the AuditBypassEnabled property value for user accounts 
+        Retrieve information about the AuditBypassEnabled property value for user accounts
         (on-premises Exchange and the cloud) and computer accounts (on-premises Exchange only).
 
         .PARAMETER identity
         The Identity parameter the user that you want to view. You can use any value that uniquely identifies the user
 
         .PARAMETER domain_controller
-        The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from 
+        The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from
         or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN).
-        
+
         .EXAMPLE
 
         .OUTPUTS
         PSObject - Raw response
 
         .LINK
-        https://docs.microsoft.com/en-us/powershell/module/exchange/get-mailboxauditbypassassociation?view=exchange-ps        
+        https://docs.microsoft.com/en-us/powershell/module/exchange/get-mailboxauditbypassassociation?view=exchange-ps
         #>
     }
 
     [PSCustomObject]GetRemoteDomain(
-        [string]$domain_controller, 
+        [string]$domain_controller,
         [string]$identity
     ) {
         try {
@@ -1060,25 +1060,25 @@ class ExchangeOnlineClient {
             if ($domain_controller) {
                 $cmd_params.DomainController = $domain_controller
             }
-            return Get-RemoteDomain @cmd_params 
+            return Get-RemoteDomain @cmd_params
         }
         finally {
             $this.CloseSession()
         }
         <#
         .DESCRIPTION
-        Use the Get-RemoteDomain cmdlet to view the configuration information for the remote domains configured in 
+        Use the Get-RemoteDomain cmdlet to view the configuration information for the remote domains configured in
         your organization.
 
         .PARAMETER domain_controller
         This parameter is available only in on-premises Exchange.
-        The DomainController parameter specifies the domain controller that's used by this 
-        cmdlet to read data from or write data to Active Directory. You identify the domain 
-        controller by its fully qualified domain name (FQDN). 
+        The DomainController parameter specifies the domain controller that's used by this
+        cmdlet to read data from or write data to Active Directory. You identify the domain
+        controller by its fully qualified domain name (FQDN).
         For example, dc01.contoso.com.
 
         .PARAMETER identity
-        The Identity parameter specifies a federation trust ID. If not specified, the cmdlet returns 
+        The Identity parameter specifies a federation trust ID. If not specified, the cmdlet returns
         all federation trusts configured for the Exchange organization.
 
         .EXAMPLE
@@ -1238,18 +1238,18 @@ function GetFederationTrustCommand([ExchangeOnlineClient]$client, [hashtable]$kw
     $raw_response = $client.GetFederationTrust(
         $domain_controller, $identity
     )
-    $human_readable = TableToMarkdown $raw_response "Results of $command" 
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{
         "$script:INTEGRATION_ENTRY_CONTEXT.FederationTrust(obj.ApplicationIdentifier === val.ApplicationIdentifier)" = $raw_response
     }
-    return $human_readable, $entry_context, $raw_response
+    return Write-Output -NoEnumerate $human_readable, $entry_context, $raw_response
 }
 function GetFederationConfigurationCommand {
     param (
         [Parameter(Mandatory)]
-        [ExchangeOnlineClient]$client, 
+        [ExchangeOnlineClient]$client,
         [hashtable]$kwargs
-    ) 
+    )
     # parse arguments
     $domain_controller = $kwargs.domain_controller
     $identity = $kwargs.identity
@@ -1259,11 +1259,11 @@ function GetFederationConfigurationCommand {
         $identity,
         $include_extended_domain_info
     )
-    $human_readable = TableToMarkdown $raw_response "Results of $command" 
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{
         "$script:INTEGRATION_ENTRY_CONTEXT.FederationConfiguration(obj.Guid === val.Guid)" = $raw_response
     }
-    return $human_readable, $entry_context, $raw_response
+    return Write-Output -NoEnumerate $human_readable, $entry_context, $raw_response
 }
 function GetRemoteDomainCommand {
     [CmdletBinding()]
@@ -1273,10 +1273,10 @@ function GetRemoteDomainCommand {
     )
     $identity = $kwargs.identity
     $domain_controller = $kwargs.domain_controller
-    $raw_response = $client.GetRemoteDomain($domain_controller, $identity)
+    $raw_response = $client. ($domain_controller, $identity)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.RemoteDomain(obj.Guid === val.Guid)" = $raw_response }
-    return $human_readable, $entry_context, $raw_response
+    return Write-Output -NoEnumerate $human_readable, $entry_context, $raw_response
 }
 function GetUserCommand {
     [CmdletBinding()]
@@ -1290,7 +1290,7 @@ function GetUserCommand {
     $raw_response = $client.GetUser($identity, $organizational_unit, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.User(obj.Guid === val.Guid)" = $raw_response}
-    return $human_readable, $entry_context, $raw_response
+    return Write-Output -NoEnumerate $human_readable, $entry_context, $raw_response
 }
 function GetMailboxAuditBypassAssociationCommand {
     [CmdletBinding()]
@@ -1304,20 +1304,7 @@ function GetMailboxAuditBypassAssociationCommand {
     $raw_response = $client.GetMailboxAuditBypassAssociation($identity, $domain_controller, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailboxAuditBypassAssociation(obj.Guid === val.Guid)" = $raw_response }
-    return $human_readable, $entry_context, $raw_response
-}
-function GetEXORecipientCommand {
-    [CmdletBinding()]
-    param (
-        [Parameter(Mandatory)][ExchangeOnlineClient]$client,
-        [hashtable]$kwargs
-    )
-    $identity = $kwargs.identity
-    $limit = $kwargs.limit -as [int]
-    $raw_response = $client.GetEXORecipient($identity, $limit)
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.EXORecipient(obj.Guid === val.Guid)" = $raw_response }
-    return $human_readable, $entry_context, $raw_response
+    return Write-Output -NoEnumerate $human_readable, $entry_context, $raw_response
 }
 
 #### INTEGRATION COMMANDS MANAGER ####
