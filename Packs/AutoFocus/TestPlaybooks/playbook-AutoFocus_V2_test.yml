@@ -37,7 +37,7 @@ tasks:
       id: 7915f300-1caf-4e89-8524-0a90823080e4
       version: -1
       name: autofocus-search-samples
-      description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
+      description: Zearches for samples in AutoFocus. To view results, run the autofocus-samples-search-results
         command with the returned AF Cookie. The AF Cookie expires 120 seconds after
         the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook
         is recommended for querying and polling.
