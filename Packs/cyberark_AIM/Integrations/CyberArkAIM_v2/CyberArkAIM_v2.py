@@ -93,6 +93,7 @@ def list_credentials_command(client):
 def fetch_credentials(client, args: dict):
     """Fetches the available credentials.
     :param client: the client object with the given params
+    :param args: demisto args dict
     :return: a credentials object
     """
     creds_name = args.get('identifier')
@@ -151,13 +152,13 @@ def main():
         command = demisto.command()
         demisto.debug(f'Command being called in CyberArk AIM is: {command}')
 
-        commands = {
-            'test-module': test_module,
-            'cyberark-aim-list-credentials': list_credentials_command,
-            'fetch-credentials': fetch_credentials
-        }
-        if command in commands:
-            return_results(commands[command](client, demisto.args()))  # type: ignore[operator]
+        if command == 'test-module':
+            test_module(client)
+        elif command == 'cyberark-aim-list-credentials':
+            list_credentials_command(client)
+        elif command == 'fetch-credentials':
+            fetch_credentials(client, demisto.args())
+
         else:
             raise NotImplementedError(f'{command} is not an existing CyberArk AIM command')
     except Exception as err:
