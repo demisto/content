@@ -792,6 +792,7 @@ There is no context output for this command.
 ##### Human Readable Output
 Tag My test tag was deleted to asset {asset_id}
 
+
 ### kenna-get-connector-runs
 ***
 Returns JSON data on all the runs of a given connector
@@ -832,26 +833,40 @@ Returns JSON data on all the runs of a given connector
 
 
 #### Command Example
-```!kenna-get-connector-runs connector_id=123```
+```!kenna-get-connector-runs connector_id={connector_id}```
+
+#### Context Example
+```
+{
+    "Kenna": {
+        "ConnectorRunsList": {
+            "AssetsWithTagsReset": 0,
+            "AutoclosedScannerVulnerabilities": 0,
+            "AutoclosedVulnerabilities": 0,
+            "ClosedScannerVulnerabilities": 0,
+            "ClosedVulnerabilities": 0,
+            "CreatedScannerVulnerabilities": 0,
+            "EndTime": "2019-10-24T19:13:36.000Z",
+            "FailedPayload": 0,
+            "ID": 111111,
+            "ProcessedAssets": 10,
+            "ProcessedPayload": null,
+            "ProcessedScannerVulnerabilities": 10,
+            "ReopenedScannerVulnerabilities": 0,
+            "StartTime": "2019-10-24T19:02:02.000Z",
+            "Success": true,
+            "TotalPayload": 10,
+            "UpdatedScannerVulnerabilities": 10
+        }
+    }
+}
+```
 
 #### Human Readable Output
-{
-"assets_with_tags_reset_count": 0,
-"autoclosed_scanner_vuln_count": 0,
-"autoclosed_vuln_count": 0,
-"closed_scanner_vuln_count": 0,
-"closed_vuln_count": 0,
-"created_scanner_vuln_count": 0,
-"end_time": "2020-12-28T07:47:55.000Z",
-"failed_payload_count": 0,
-"id": 1472970,
-"processed_assets_count": 6433,
-"processed_palyoad_count": null,
-"processed_scanner_vuln_count": 639145,
-"reopened_scanner_vuln_count": 0,
-"reopened_vuln_count": 0,
-"start_time": "2020-12-28T06:32:01.000Z",
-"success": true,
-"total_payload_count": 6793
-}
+
+>### Kenna Connector Runs
+>|AssetsWithTagsReset|AutoclosedScannerVulnerabilities|AutoclosedVulnerabilities|ClosedScannerVulnerabilities|ClosedVulnerabilities|CreatedScannerVulnerabilities|EndTime|FailedPayload|ID|ProcessedAssets|ProcessedPayload|ProcessedScannerVulnerabilities|ReopenedScannerVulnerabilities|ReopenedVulnerabilities|StartTime|Success|TotalPayload|UpdatedScannerVulnerabilities|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 0 | 0 | 0 | 0 | 0 | 10 | 2019-10-24T19:13:36.000Z | 0 | 111111 | 10 | 10 | 10 | 0 | 0 | 2019-10-24T19:02:02.000Z | true | 10 | 0 |
+
 
