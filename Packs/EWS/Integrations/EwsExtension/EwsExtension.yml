@@ -1320,7 +1320,7 @@ script:
       description: Maximum number of users to get. 0 is all.
       isArray: false
       name: limit
-      defaultvalue: 10
+      defaultValue: 10
       required: false
       secret: false
     outputs:
@@ -1664,21 +1664,84 @@ script:
       name: domain_controller
       required: false
       secret: false
+    - default: false
+      description: Maximum number of users to get. 0 is all.
+      isArray: false
+      name: limit
+      defaultValue: 10
+      required: false
+      secret: false
+    outputs:
+      - contextPath: EWS.MailboxAuditBypassAssociation.AuditBypassEnabled
+        description: ''
+        type: Boolean
+      - contextPath: EWS.MailboxAuditBypassAssociation.DistinguishedName
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.ExchangeObjectId
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.ExchangeVersion
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.Guid
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.Id
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.Identity
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.IsValid
+        description: ''
+        type: Boolean
+      - contextPath: EWS.MailboxAuditBypassAssociation.Name
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.ObjectCategory
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.ObjectClass
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.ObjectId
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.ObjectState
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.OrganizationId
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.OriginatingServer
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.PSComputerName
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.PSShowComputerName
+        description: ''
+        type: Boolean
+      - contextPath: EWS.MailboxAuditBypassAssociation.RunspaceId
+        description: ''
+        type: String
+      - contextPath: EWS.MailboxAuditBypassAssociation.WhenChanged
+        description: ''
+        type: Date
+      - contextPath: EWS.MailboxAuditBypassAssociation.WhenChangedUTC
+        description: ''
+        type: Date
+      - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreated
+        description: ''
+        type: Date
+      - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreatedUTC
+        description: ''
+        type: Date
     deprecated: false
     description: Use the Get-User command to view existing user objects in your organization.
     execution: false
-    name: ews-get-mailbox-audit-byoass-association
-  - arguments:
-    - default: false
-      description: The Identity parameter specifies the mailbox you want to view.
-      isArray: false
-      name: identity
-      required: false
-      secret: false
-    deprecated: false
-    description: view existing recipient objects in your organization.
-    execution: false
-    name: ews-get-recipient
+    name: ews-get-mailbox-audit-bypass-association
   dockerimage: demisto/powershell-ubuntu:7.0.3.12001
   feed: false
   isfetch: false

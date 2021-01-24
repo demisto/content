@@ -845,7 +845,11 @@ class ExchangeOnlineClient {
         #>
     }
 
-    [PSObject]GetFederationTrust([string]$domain_controller, [string]$identity) {
+    [PSObject]GetFederationTrust(
+            [string]$domain_controller,
+            [string]$identity
+    )
+    {
         try {
             # Establish session to remote
             $this.CreateSession()
@@ -947,20 +951,32 @@ class ExchangeOnlineClient {
     }
     [PSObject]GetUser(
         [string]$identity,
-        [string]$organizational_unit
+        [string]$organizational_unit,
+        [int]$limit
     ) {
-        # Establish session to remote
-        $this.CreateSession()
-        # Import and Execute command
-        Import-PSSession -Session $this.session -CommandName Get-User -AllowClobber
-        $cmd_params = @{}
-        if ($identity) {
-            $cmd_params.Identity = $identity
+        try
+        {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            Import-PSSession -Session $this.session -CommandName Get-User -AllowClobber
+            $cmd_params = @{ }
+            if ($identity)
+            {
+                $cmd_params.Identity = $identity
+            }
+            if ($organizational_unit)
+            {
+                $cmd_params.OrganizationalUnit = $organizational_unit
+            }
+            if ($limit -gt 0)
+            {
+                $cmd_params.ResultSize = $limit
+            }
+            return Get-User @cmd_params
+        } finally {
+            $this.CloseSession()
         }
-        if ($organizational_unit) {
-            $cmd_params.OrganizationalUnit = $organizational_unit
-        }
-        return Get-User @cmd_params
         <#
         .DESCRIPTION
         Use the Get-User command to view existing user objects in your organization.
@@ -982,20 +998,29 @@ class ExchangeOnlineClient {
     }
     [PSObject]GetMailboxAuditBypassAssociation(
         [string]$identity,
-        [string]$domain_controller
-    ) {
-        # Establish session to remote
-        $this.CreateSession()
-        # Import and Execute command
-        Import-PSSession -Session $this.session -CommandName Get-MailboxAuditBypassAssociation -AllowClobber
-        $cmd_params = @{}
-        if ($identity) {
-            $cmd_params.Identity = $identity
+        [string]$domain_controller,
+        [int]$limit
+    )
+    {
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            Import-PSSession -Session $this.session -CommandName Get-MailboxAuditBypassAssociation -AllowClobber
+            $cmd_params = @{ }
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            if ($domain_controller) {
+                $cmd_params.DomainController = $domain_controller
+            }
+            if ($limit -gt 0){
+                $cmd_params.ResultSize = $limit
+            }
+            return Get-MailboxAuditBypassAssociation @cmd_params
+        } finally {
+            $this.CloseSession()
         }
-        if ($domain_controller){
-            $cmd_params.DomainController = $domain_controller
-        }
-        return Get-MailboxAuditBypassAssociation @cmd_params
         <#
         .DESCRIPTION
         Retrieve information about the AuditBypassEnabled property value for user accounts 
@@ -1015,39 +1040,6 @@ class ExchangeOnlineClient {
 
         .LINK
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-mailboxauditbypassassociation?view=exchange-ps        
-        #>
-    }
-    [PSObject]GetEXORecipient(
-        [string]$identity
-        ) {
-        # Establish session to remote
-        $this.CreateSession()
-        # Import and Execute command
-        Import-PSSession -Session $this.session -CommandName Get-EXORecipient -AllowClobber
-        $cmd_params = @{}
-        if ($identity) {
-            $cmd_params.Identity = $identity
-        }
-        return Get-EXORecipient @cmd_params
-        <#
-        .DESCRIPTION
-        Retrieve information about the AuditBypassEnabled property value for user accounts 
-        (on-premises Exchange and the cloud) and computer accounts (on-premises Exchange only).
-
-        .PARAMETER identity
-        The Identity parameter the user that you want to view. You can use any value that uniquely identifies the user
-
-        .PARAMETER domain_controller
-        The DomainController parameter specifies the domain controller that's used by this cmdlet to read data from 
-        or write data to Active Directory. You identify the domain controller by its fully qualified domain name (FQDN).
-        
-        .EXAMPLE
-        GetEXORecipient()
-        .OUTPUTS
-        PSObject - Raw response
-
-        .LINK
-        https://docs.microsoft.com/en-us/powershell/module/exchange/get-exorecipient?view=exchange-ps
         #>
     }
 
@@ -1294,9 +1286,8 @@ function GetUserCommand {
     )
     $identity = $kwargs.identity
     $organizational_unit = $kwargs.organizational_unit
-    $limit = ($kwargs.limit -as [int]) - 1
-    $raw_response = $client.GetUser($identity, $organizational_unit)
-    $raw_response = $raw_response[0..$limit]
+    $limit = ($kwargs.limit -as [int])
+    $raw_response = $client.GetUser($identity, $organizational_unit, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.User(obj.Guid === val.Guid)" = $raw_response}
     return $human_readable, $entry_context, $raw_response
@@ -1309,7 +1300,8 @@ function GetMailboxAuditBypassAssociationCommand {
     )
     $identity = $kwargs.identity
     $domain_controller = $kwargs.domain_controller
-    $raw_response = $client.GetMailboxAuditBypassAssociation($identity, $domain_controller)
+    $limit = ($kwargs.limit -as [int])
+    $raw_response = $client.GetMailboxAuditBypassAssociation($identity, $domain_controller, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailboxAuditBypassAssociation(obj.Guid === val.Guid)" = $raw_response }
     return $human_readable, $entry_context, $raw_response
@@ -1321,10 +1313,10 @@ function GetEXORecipientCommand {
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
-    $domain_controller = $kwargs.domain_controller
-    $raw_response = $client.GetEXORecipient($identity, $domain_controller)
+    $limit = $kwargs.limit -as [int]
+    $raw_response = $client.GetEXORecipient($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXORecipient(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.EXORecipient(obj.Guid === val.Guid)" = $raw_response }
     return $human_readable, $entry_context, $raw_response
 }
 
@@ -1394,11 +1386,8 @@ function Main {
             "$script:COMMAND_PREFIX-get-user" {
                 ($human_readable, $entry_context, $raw_response) = GetUserCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-mailbox-audit-byoass-association" {
+            "$script:COMMAND_PREFIX-get-mailbox-audit-bypass-association" {
                 ($human_readable, $entry_context, $raw_response) = GetMailboxAuditBypassAssociationCommand $exo_client $command_arguments
-            }
-            "$script:COMMAND_PREFIX-get-recipient" {
-                ($human_readable, $entry_context, $raw_response) = GetEXORecipientCommand $exo_client $command_arguments
             }
             default {
                 ReturnError "Could not recognize $command"
@@ -1416,10 +1405,10 @@ Arguments: $($command_arguments | ConvertTo-Json)
 Error: $($_.Exception.Message)")
         if ($command -ne "test-module") {
             ReturnError "Error:
-            Integration: $script:INTEGRATION_NAME
-            Command: $command
-            Arguments: $($command_arguments | ConvertTo-Json)
-            Error: $($_.Exception)" | Out-Null
+Integration: $script:INTEGRATION_NAME
+Command: $command
+Arguments: $($command_arguments | ConvertTo-Json)
+Error: $($_.Exception)" | Out-Null
         }
         else {
             ReturnError $_.Exception.Message
