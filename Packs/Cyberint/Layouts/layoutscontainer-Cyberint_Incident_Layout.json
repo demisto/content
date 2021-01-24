@@ -1,6 +1,6 @@
 {
 	"close": null,
-	"description": "",
+	"description": "Cyberint incident layout",
 	"details": null,
 	"detailsV2": {
 		"TypeName": "",
@@ -353,6 +353,6 @@
 	"sortValues": null,
 	"system": false,
 	"toServerVersion": "",
-	"fromversion": "5.0.0",
+	"fromVersion": "5.0.0",
 	"version": -1
 }

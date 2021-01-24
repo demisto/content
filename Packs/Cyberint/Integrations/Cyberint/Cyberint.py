@@ -354,7 +354,7 @@ def main():
     environment = params.get('environment')
 
     verify_certificate = not params.get('insecure', False)
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
+    first_fetch_time = params.get('first_fetch', '3 days').strip()
     proxy = params.get('proxy', False)
     base_url = f'https://{environment}.cyberint.io/alert/'
     demisto.info(f'Command being called is {demisto.command()}')

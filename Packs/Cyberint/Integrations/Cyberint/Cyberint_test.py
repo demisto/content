@@ -160,7 +160,7 @@ def test_set_date_pair():
     assert set_date_pair(start_time, end_time, None) == (start_time, end_time)
     new_range = '3 Days'
     three_days_ago = datetime.strftime(datetime.now() - timedelta(days=3), DATE_FORMAT)
-    current_time = datetime.strftime(datetime.now(),  DATE_FORMAT)
+    current_time = datetime.strftime(datetime.now(), DATE_FORMAT)
     assert set_date_pair(start_time, end_time, new_range) == (three_days_ago, current_time)
 
     assert set_date_pair(start_time, None, None) == (start_time, datetime.strftime(datetime.now(),

@@ -3,6 +3,10 @@ commonfields:
   id: cyberint
   version: -1
 configuration:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 - additionalinfo: Cyberint API access token.
   display: Cyberint Access Token
   name: access_token
@@ -99,10 +103,9 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days.
-  defaultvalue: 7 days
-  display: First Fetch Time
-  name: fetch_time
+- defaultvalue: 7 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -472,12 +475,13 @@ script:
     - contextPath: Cyberint.Alert.closure_reason
       description: Reason for updating the alert to closed if closed.
       type: String
-  dockerimage: demisto/python3:3.8.3.8715
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
+  fromversion: 5.0.0
   subtype: python3
   type: python

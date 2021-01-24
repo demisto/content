@@ -2,6 +2,7 @@
     "description": "Cyberint Classifier",
     "fromVersion": "6.0.0",
     "id": "Cyberint - Classifier",
+    "name": "Cyberint - Classifier",
     "keyTypeMap": {
         "acknowledged": "Cyberint Incident",
         "closed": "Cyberint Incident",
