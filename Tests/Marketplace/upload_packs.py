@@ -956,7 +956,6 @@ def main():
             pack.cleanup()
             continue
 
-
         pack.status = PackStatus.SUCCESS.name
 
     # upload core packs json to bucket
