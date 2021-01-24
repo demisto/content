@@ -157,7 +157,7 @@ def main():
         elif command == 'cyberark-aim-list-credentials':
             return_results(list_credentials_command(client))
         elif command == 'fetch-credentials':
-            return_results(fetch_credentials(client, demisto.args()))
+            fetch_credentials(client, demisto.args())
 
         else:
             raise NotImplementedError(f'{command} is not an existing CyberArk AIM command')
