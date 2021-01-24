@@ -661,7 +661,7 @@ script:
   type: javascript
   commands:
   - name: hpsm-update-incident
-    description: 'Update existing incident.'
+    description: 'Update existing incident(beta).'
     arguments:
     - name: incidentId
       description: The id of incident (example IM10013)
@@ -1024,7 +1024,7 @@ script:
       description: Resource update time
     - contextPath: HPSM.Resources.Urgency
       description: Resource urgency
-    description: Creates a new resource.
+    description: Update existing resource(beta).
   - name: hpsm-update-resource
     arguments:
     - name: title
@@ -1137,7 +1137,7 @@ script:
     outputs:
     - contextPath: HPSM.ResourceIDs
       description: Result of resource query. Contains array of resource ids
-    description: Returns all resources
+    description: Returns all resources(beta).
   - name: hpsm-get-resource-by-id
     arguments:
     - name: resourceId
@@ -1205,7 +1205,7 @@ script:
     - contextPath: HPSM.Resources.Urgency
       description: Resource urgency
     description: Returns single resource by id. If resource not exists with such id,
-      then error will returned
+      then error will returned(beta)
   - name: hpsm-list-devices
     description: 'Returns a list of devices, filtered according to query.'
     arguments:
