@@ -355,6 +355,8 @@ script:
                 rawJSON: JSON.stringify(r)
             };
         });
+        // Adding a millisecond to the timestamp to avoid conflicts when fetching.
+        max_timestamp = new Date(Date.parse(max_timestamp) + 1).toISOString()
         return [max_timestamp, incidents]
 
     };
