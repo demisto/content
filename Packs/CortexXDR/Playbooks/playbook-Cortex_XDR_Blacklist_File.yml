@@ -155,3 +155,5 @@ outputs: []
 fromversion: 5.0.0
 description: Use this playbook to blacklist files with a given file SHA256 playbook
   input.
+  tests:
+ -  No tests
