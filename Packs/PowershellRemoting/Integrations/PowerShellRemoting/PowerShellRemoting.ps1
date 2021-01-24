@@ -630,6 +630,7 @@ function ExportRegistryCommand([RemotingClient]$client, [string]$reg_key_hive, [
 {
     $command = if ($reg_key_hive -eq 'all') {"regedit /e $output_file_path"} else {"reg export $reg_key_hive $output_file_path"}
     $raw_results = $client.InvokeCommandInSession($command)
+    Start-Sleep -Seconds 30
     $client.CloseSession()
     $title = "Ran Export Registry. `n"
     $entry_context = @{
