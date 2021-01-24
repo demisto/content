@@ -20,10 +20,6 @@
                     "complex": null,
                     "simple": "caller_id"
                 },
-                "Child Incidents Count": {
-                    "complex": null,
-                    "simple": "child_incidents"
-                },
                 "Escalation": {
                     "complex": null,
                     "simple": "escalation"

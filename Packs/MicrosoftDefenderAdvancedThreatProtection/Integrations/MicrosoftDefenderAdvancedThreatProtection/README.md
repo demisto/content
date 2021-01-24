@@ -30,6 +30,7 @@ For more details about the authentication used in this integration, see [Microso
 * Machine.RestrictExecution - Application
 * Machine.Scan - Application
 * Machine.StopAndQuarantine - Application
+* ThreatIndicators.ReadWrite.OwnedBy - Application
 * Url.Read.All - Application
 * User.Read.All - Application
 
