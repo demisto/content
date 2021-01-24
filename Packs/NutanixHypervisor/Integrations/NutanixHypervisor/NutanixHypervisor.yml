@@ -106,54 +106,6 @@ script:
     - contextPath: NutanixHypervisor.Host.uuid
       description: Host uuid.
       type: String
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.serial_number
-      description: Disk serial number.
-      type: String
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.disk_id
-      description: Disk id.
-      type: String
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.disk_uuid
-      description: Disk uuid.
-      type: String
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.location
-      description: Disk location/index.
-      type: Number
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.bad
-      description: Is disk bad.
-      type: Boolean
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.mounted
-      description: Is disk mounted.
-      type: Boolean
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.mount_path
-      description: Mount path.
-      type: String
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.model
-      description: Disk model.
-      type: String
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.vendor
-      description: Vendor name.
-      type: String
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.boot_disk
-      description: Indicates if host has dual SSD CVM.
-      type: Boolean
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.only_boot_disk
-      description: Indicates if host has single SSD CVM.
-      type: Boolean
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.under_diagnosis
-      description: Is disk under diagnosis.
-      type: Boolean
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.current_firmware_version
-      description: Disk current firmware version.
-      type: String
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.target_firmware_version
-      description: Disk target firmware version.
-      type: String
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.can_add_as_new_disk
-      description: Can add this disk as a new disk.
-      type: Boolean
-    - contextPath: NutanixHypervisor.Host.disk_hardware_configs.can_add_as_old_disk
-      description: Can add this disk as an old disk.
-      type: Boolean
     - contextPath: NutanixHypervisor.Host.name
       description: Host name.
       type: String
@@ -269,15 +221,6 @@ script:
       type: Number
     - contextPath: NutanixHypervisor.Host.num_cpu_sockets
       description: Number of cpu sockets.
-      type: Number
-    - contextPath: NutanixHypervisor.Host.cpu_frequency_in_hz
-      description: Cpu frequency in hz.
-      type: Number
-    - contextPath: NutanixHypervisor.Host.cpu_capacity_in_hz
-      description: Cpu capacity in hz.
-      type: Number
-    - contextPath: NutanixHypervisor.Host.memory_capacity_in_bytes
-      description: Host memory capacity in bytes.
       type: Number
     - contextPath: NutanixHypervisor.Host.hypervisor_full_name
       description: Host's hypervisor full name.
@@ -468,7 +411,9 @@ script:
     - description: The IDs of the tasks to poll
       name: task_ids
       required: true
-    description: Poll tasks given by task_ids to check if they are ready. Returns all the tasks from 'task_ids' list that are ready at the moment Nutanix service was polled. In case no task is ready, returns a time out response.
+    description: Poll tasks given by task_ids to check if they are ready. Returns
+      all the tasks from 'task_ids' list that are ready at the moment Nutanix service
+      was polled. In case no task is ready, returns a time out response.
     name: nutanix-hypervisor-task-poll
     outputs:
     - contextPath: NutanixHypervisor.Task.timed_out

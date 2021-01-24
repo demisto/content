@@ -323,7 +323,8 @@ def convert_epoch_time_to_datetime(epoch_time: Optional[int]) -> Optional[str]:
         raise DemistoException(f'Unexpected epoch time received from Nutanix service response: {epoch_time}.')
 
 
-def get_alert_status_filter(true_value: str, false_value: str, alert_status_filters: List[str]) -> Optional[bool]:
+def get_alert_status_filter(true_value: str, false_value: str, alert_status_filters: Optional[List[str]]) -> \
+        Optional[bool]:
     """
     Args:
         true_value (str): The name of the argument that expresses true value.
@@ -335,7 +336,10 @@ def get_alert_status_filter(true_value: str, false_value: str, alert_status_filt
         - False if 'false_value' was found in 'alert_status_filters' list.
         - True if 'true_value' was found in 'alert_status_filters' list.
         - None if both 'true_value' and 'false_value' were not found in 'alert_status_filters' list.
+        - None if alert_status_filters is None.
     """
+    if not alert_status_filters:
+        return None
     if true_value in alert_status_filters and false_value in alert_status_filters:
         raise DemistoException(
             f'Invalid alert status filters configurations, only one of {true_value},{false_value} can be chosen.')
@@ -400,7 +404,7 @@ def task_id_is_found(client: Client, task_id: str):
 
 
 def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
-    alert_status_filters = params.get('alert_status_filters', [])
+    alert_status_filters = params.get('alert_status_filters')
     auto_resolved = get_alert_status_filter('Auto Resolved', 'Not Auto Resolved', alert_status_filters)
     resolved = get_alert_status_filter('Resolved', 'Unresolved', alert_status_filters)
     acknowledged = get_alert_status_filter('Acknowledged', 'Unacknowledged', alert_status_filters)
@@ -419,31 +423,6 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
     response = client.fetch_incidents(auto_resolved, resolved, acknowledged, severity, alert_type_ids, impact_types)
 
     alerts = response.get('entities')
-
-    alerts = [
-        {
-            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            "alert_type_uuid": "A140001",
-            "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
-            "resolved": True,
-            "auto_resolved": False,
-            "acknowledged": True,
-            "details": "many details about the alert",
-            "last_occurrence_time_stamp_in_usecs": 1610718924821136,
-            "created_time_stamp_in_usecs": 1610718924821136
-        },
-        {
-            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-            "alert_type_uuid": "A140002",
-            "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
-            "resolved": True,
-            "auto_resolved": False,
-            "acknowledged": True,
-            "details": "many details about the alert",
-            "last_occurrence_time_stamp_in_usecs": 1610460118147914,
-            "created_time_stamp_in_usecs": 1610460118147914
-        }
-    ]
 
     if alerts is None:
         raise DemistoException('Unexpected returned results from Nutanix service.')
@@ -511,20 +490,6 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
         raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
 
     update_dict_time_in_usecs_to_iso_entries(outputs)
-
-    for output in outputs:
-        try:
-            unordered_disk_configs = output['disk_hardware_configs']
-            ordered_disk_configs = dict(sorted(unordered_disk_configs.items()))
-            ordered_disk_list = [disk_config for disk_config in ordered_disk_configs.values()
-                                 if disk_config is not None]
-            output['disk_hardware_configs'] = ordered_disk_list
-
-            del (output['stats'])
-            del (output['usage_stats'])
-
-        except KeyError:
-            demisto.debug(f'The following host was found invalid and was skipped: {output}')
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Host',

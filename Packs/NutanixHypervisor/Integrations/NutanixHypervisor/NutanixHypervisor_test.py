@@ -382,6 +382,7 @@ def test_fetch_incidents(requests_mock, params, last_run, expected_incidents_raw
                          [('Resolved', 'Unresolved', ['Resolved', 'Acknowledged'], True),
                           ('Resolved', 'Unresolved', ['Unresolved', 'Acknowledged'], False),
                           ('Resolved', 'Unresolved', ['Acknowledged'], None),
+                          ('Resolved', 'Unresolved', None, None)
                           ])
 def test_get_alert_status_filter_valid_cases(true_value, false_value, alert_status_filters, expected):
     """
@@ -453,29 +454,6 @@ def test_convert_epoch_time_to_datetime_valid_cases(epoch_time, expected):
     """
     assert convert_epoch_time_to_datetime(epoch_time) == expected
 
-
-# @pytest.mark.parametrize('epoch_time, expected',
-#                          [(0, None),
-#                           (None, None),
-#                           (1600000000000000, '2020-09-13T12:26:40.000000Z')
-#                           ])
-# def test_convert_epoch_time_to_datetime_valid_cases(epoch_time, expected):
-#     """
-#     Given:
-#      - Epoch time to be converted to date time string in UTC timezone.
-#
-#     When:
-#      - Case a: Epoch time is 0.
-#      - Case b: Epoch time is not given.
-#      - Case c: Valid epoch time is given.
-#
-#     Then:
-#      - Case a: Ensure None is returned.
-#      - Case b: Ensure None is returned.
-#      - Case c: Ensure the corresponding date time string is returned.
-#     """
-#     assert convert_epoch_time_to_datetime(epoch_time) == expected
-#
 
 def test_update_dict_time_in_usecs_to_iso_entries():
     """
