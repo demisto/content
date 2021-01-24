@@ -89,13 +89,15 @@ class Client(BaseClient):
                                       url_suffix='api/v1/alerts/status')
         return response
 
-    def get_csv_file(self, alert_id: str, attachment_id: str) -> Iterable[str]:
+    def get_csv_file(self, alert_id: str, attachment_id: str,
+                     delimiter: bytes = b'\r\n') -> Iterable[str]:
         """
         Stream a CSV file attachment in order to extract data out of it.
 
         Args:
             alert_id (str): ID of the alert the CSV belongs to.
             attachment_id (str): ID of the specific CSV file.
+            delimiter (str): Delimiter for the CSV file.
 
         Returns:
             row (generator(str)): Generator containing each line of the CSV.
@@ -104,16 +106,16 @@ class Client(BaseClient):
         with closing(self._http_request(method='GET', url_suffix=url_suffix,
                                         cookies=self._cookies, resp_type='all',
                                         stream=True)) as r:
-            for line in r.iter_lines(delimiter=b'\\n'):
+            for line in r.iter_lines(delimiter=delimiter):
                 yield line.decode('utf-8').strip('"')
 
 
-def test_module(client):
+def test_module(client: Client):
     """
     Test the connection to the API by sending a normal request.
 
     Args:
-        client: Cyberint API  client
+        client (Client): Cyberint API  client
 
     Returns:
         'ok' if test passed, anything else will fail the test.
@@ -149,7 +151,7 @@ def verify_input_date_format(date: Optional[str]) -> Optional[str]:
 
 
 def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
-                  date_range_arg: Optional[str]) -> Tuple[str, str]:
+                  date_range_arg: Optional[str]) -> Tuple[Optional[str], Optional[str]]:
     """
     Calculate the date range to send to the API based on the arguments from the user.
 
@@ -177,7 +179,7 @@ def set_date_pair(start_date_arg: Optional[str], end_date_arg: Optional[str],
 
 
 def extract_data_from_csv_stream(client: Client, alert_id: str,
-                                 attachment_id: str) -> List[dict]:
+                                 attachment_id: str, delimiter: bytes = b'\r\n') -> List[dict]:
     """
     Call the attachment download API and parse required fields.
 
@@ -185,6 +187,7 @@ def extract_data_from_csv_stream(client: Client, alert_id: str,
         client (Client): Cyberint API client.
         alert_id (str): ID of the alert the attachment belongs to.
         attachment_id (str): ID of the attachment itself.
+        delimiter (bytes): Delimeter for the CSV file.
 
     Returns:
         list(dict): List of all the data found using the wanted fields.
@@ -192,18 +195,18 @@ def extract_data_from_csv_stream(client: Client, alert_id: str,
     first_line = True
     field_indexes = {}  # {wanted_field_name: wanted_field_index...}
     information_found = []
-    for csv_line in client.get_csv_file(alert_id, attachment_id):
-        csv_line = csv_line.split(',')
+    for csv_line in client.get_csv_file(alert_id, attachment_id, delimiter):
+        csv_line_separated = csv_line.split(',')
         if first_line:
             for field in CSV_FIELDS_TO_EXTRACT:
                 try:
-                    field_indexes[field] = csv_line.index(field)
+                    field_indexes[field] = csv_line_separated.index(field)
                 except ValueError:
                     pass
             first_line = False
         else:
             try:
-                extracted_field_data = {field_name.lower(): csv_line[field_index]
+                extracted_field_data = {field_name.lower(): csv_line_separated[field_index]
                                         for field_name, field_index in field_indexes.items()}
                 if extracted_field_data:
                     information_found.append(extracted_field_data)
@@ -384,12 +387,16 @@ def main():
         elif demisto.command() == 'cyberint-alerts-status-update':
             return_results(cyberint_alerts_status_update(client, demisto.args()))
     except Exception as e:
+
         if 'Invalid token or token expired' in str(e):
-            return_error('Error verifying access token and / or environment, make sure the '
-                         'configuration parameters are correct.')
-        if 'datetime' in str(e).lower():
-            return_error('Invalid time specified, make sure the arguments are correctly formatted.')
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+            error_message = 'Error verifying access token and / or environment, make sure the ' \
+                            'configuration parameters are correct.'
+        elif 'datetime' in str(e).lower():
+            error_message = 'Invalid time specified, ' \
+                            'make sure the arguments are correctly formatted.'
+        else:
+            error_message = f'Failed to execute {demisto.command()} command. Error: {str(e)}'
+        return_error(error_message)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

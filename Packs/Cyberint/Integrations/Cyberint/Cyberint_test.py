@@ -159,11 +159,10 @@ def test_set_date_pair():
     end_time = '2020-12-05T00:00:00Z'
     assert set_date_pair(start_time, end_time, None) == (start_time, end_time)
     new_range = '3 Days'
-    assert set_date_pair(start_time, end_time, new_range) == (datetime.strftime(datetime.now() -
-                                                                                timedelta(days=3),
-                                                                                DATE_FORMAT),
-                                                              datetime.strftime(datetime.now(),
-                                                                                DATE_FORMAT))
+    three_days_ago = datetime.strftime(datetime.now() - timedelta(days=3), DATE_FORMAT)
+    current_time = datetime.strftime(datetime.now(),  DATE_FORMAT)
+    assert set_date_pair(start_time, end_time, new_range) == (three_days_ago, current_time)
+
     assert set_date_pair(start_time, None, None) == (start_time, datetime.strftime(datetime.now(),
                                                                                    DATE_FORMAT))
     assert set_date_pair(None, end_time, None) == (datetime.strftime(datetime.
@@ -191,7 +190,7 @@ def test_extract_data_from_csv_stream(requests_mock):
     assert len(result) == 0
     mock_response = load_mock_response('csv_example.csv')
     requests_mock.get(f'{BASE_URL}/api/v1/alerts/alert_id/attachments/123', json=mock_response)
-    result = extract_data_from_csv_stream(client, 'alert_id', '123')
+    result = extract_data_from_csv_stream(client, 'alert_id', '123', delimiter=b'\\n')
     assert len(result) == 6
     assert list(result[0].keys()) == [value.lower() for value in CSV_FIELDS_TO_EXTRACT]
-    assert result[0]['username'] == 'lulu'
+    assert result[0]['username'] == 'l1'
