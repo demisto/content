@@ -1581,13 +1581,6 @@ tasks:
                 root: File
                 accessor: Type
             iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: File
-                accessor: Tags
-            iscontext: true
     view: |-
       {
         "position": {
