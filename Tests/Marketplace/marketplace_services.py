@@ -949,7 +949,7 @@ class Pack(object):
             if existing_files and not override_pack:
                 logging.warning(f"The following packs already exist at storage: {', '.join(existing_files)}")
                 logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-                return task_status, True, None
+                return task_status, None
 
             pack_full_path = os.path.join(version_pack_path, f"{self._pack_name}.zip")
             blob = storage_bucket.blob(pack_full_path)
@@ -969,11 +969,11 @@ class Pack(object):
             self.public_storage_path = blob.public_url
             logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
 
-            return task_status, False, pack_full_path
+            return task_status, pack_full_path
         except Exception:
             task_status = False
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
-            return task_status, True, None
+            return task_status, None
 
     def copy_and_upload_to_storage(self, production_bucket, build_bucket, latest_version, successful_packs_dict):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.

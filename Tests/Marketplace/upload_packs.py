@@ -921,7 +921,7 @@ def main():
             pack.cleanup()
             continue
 
-        (task_status, skipped_pack_uploading, full_pack_path) = \
+        (task_status, full_pack_path) = \
             pack.upload_to_storage(zip_pack_path, pack.latest_version,
                                    storage_bucket, override_all_packs
                                    or pack_was_modified)
@@ -939,12 +939,10 @@ def main():
 
         # in case that pack already exist at cloud storage path and in index, skipped further steps
         # always updating the index files
-        """
-        if skipped_pack_uploading and exists_in_index:
+        if exists_in_index:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
-        """
 
         task_status = pack.prepare_for_index_upload()
         if not task_status:
