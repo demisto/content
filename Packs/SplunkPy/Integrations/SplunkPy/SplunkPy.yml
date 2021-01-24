@@ -126,7 +126,7 @@ script:
       defaultValue: '100'
       description: The maximum number of returned results per search. To retrieve all results, enter "0" (Not recommended).
       isArray: false
-      name: count
+      name: limit
       required: false
       secret: false
     deprecated: false
