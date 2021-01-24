@@ -505,4 +505,4 @@ outputs:
   description: Last block sensor ID
 fromversion: 5.0.0
 tests:
-- block_indicators_-_generic_-_test
+- No tests
