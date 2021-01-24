@@ -10,12 +10,15 @@ from CommonServerPython import DemistoException, CommandResults
 from NutanixHypervisor import Client
 from NutanixHypervisor import MINIMUM_LIMIT_VALUE
 from NutanixHypervisor import MINIMUM_PAGE_VALUE
+from NutanixHypervisor import USECS_ENTRIES_MAPPING
 from NutanixHypervisor import nutanix_hypervisor_hosts_list_command, \
     nutanix_hypervisor_vms_list_command, nutanix_hypervisor_vm_power_status_change_command, \
     nutanix_hypervisor_task_poll_command, nutanix_alerts_list_command, nutanix_alert_acknowledge_command, \
     nutanix_alert_resolve_command, nutanix_alerts_acknowledge_by_filter_command, \
     nutanix_alerts_resolve_by_filter_command, fetch_incidents_command, get_alert_status_filter, \
-    get_optional_boolean_param, get_and_validate_int_argument, get_page_argument, get_optional_time_parameter_as_epoch
+    get_optional_boolean_param, get_and_validate_int_argument, get_page_argument, \
+    get_optional_time_parameter_as_epoch, update_dict_time_in_usecs_to_iso_entries, convert_epoch_time_to_datetime, \
+    create_readable_output
 
 MOCKED_BASE_URL = 'https://prefix:11111/PrismGateway/services/rest/v2.0'
 client = Client(base_url=MOCKED_BASE_URL, verify=False, proxy=False, auth=('fake_username', 'fake_password'))
@@ -426,3 +429,92 @@ def test_get_alert_status_filter_invalid_case(true_value, false_value, alert_sta
                        match=f'Invalid alert status filters configurations, only one of {true_value},{false_value} '
                              'can be chosen.'):
         get_alert_status_filter(true_value, false_value, alert_status_filters)
+
+
+@pytest.mark.parametrize('epoch_time, expected',
+                         [(0, None),
+                          (None, None),
+                          (1600000000000000, '2020-09-13T12:26:40.000000Z')
+                          ])
+def test_convert_epoch_time_to_datetime_valid_cases(epoch_time, expected):
+    """
+    Given:
+     - Epoch time to be converted to date time string in UTC timezone.
+
+    When:
+     - Case a: Epoch time is 0.
+     - Case b: Epoch time is not given.
+     - Case c: Valid epoch time is given.
+
+    Then:
+     - Case a: Ensure None is returned.
+     - Case b: Ensure None is returned.
+     - Case c: Ensure the corresponding date time string is returned.
+    """
+    assert convert_epoch_time_to_datetime(epoch_time) == expected
+
+
+@pytest.mark.parametrize('epoch_time, expected',
+                         [(0, None),
+                          (None, None),
+                          (1600000000000000, '2020-09-13T12:26:40.000000Z')
+                          ])
+def test_convert_epoch_time_to_datetime_valid_cases(epoch_time, expected):
+    """
+    Given:
+     - Epoch time to be converted to date time string in UTC timezone.
+
+    When:
+     - Case a: Epoch time is 0.
+     - Case b: Epoch time is not given.
+     - Case c: Valid epoch time is given.
+
+    Then:
+     - Case a: Ensure None is returned.
+     - Case b: Ensure None is returned.
+     - Case c: Ensure the corresponding date time string is returned.
+    """
+    assert convert_epoch_time_to_datetime(epoch_time) == expected
+
+
+def test_update_dict_time_in_usecs_to_iso_entries():
+    """
+    Given:
+     - Dict containing entries with epoch time.
+
+    When:
+     - Transforming entries with epoch time to entries with iso time for human readable.
+
+    Then:
+     - All 'usecs' keys in the dict are replaced with 'iso time' entries with correct iso values.
+    """
+    tested_dict = {usec_entry: 1600000000000000 for usec_entry in USECS_ENTRIES_MAPPING.keys()}
+    tested_dict['host_name'] = 'Nutanix Host'
+    update_dict_time_in_usecs_to_iso_entries(tested_dict)
+    assert tested_dict['host_name'] == 'Nutanix Host'
+    assert all(
+        tested_dict.get(iso_entry) == '2020-09-13T12:26:40.000000Z' for iso_entry in USECS_ENTRIES_MAPPING.values())
+    assert len(tested_dict) == (1 + len(USECS_ENTRIES_MAPPING))
+
+
+@pytest.mark.parametrize('outputs, expected_outputs',
+                         [([{1: 2, 3: 4, 'a': 'b'}], [{1: 2, 3: 4, 'a': 'b'}]),
+                          ([{'a': {2: 3}}], []),
+                          ([{1: 2, 3: 4, 'a': {1: 2}}, {'abc': 'def', 'lst': [1, {2: 3}, 3, [4, 5, 6]]}],
+                           [[{1: 2, 3: 4}, {'abc': 'def', 'lst': [1, 3, [4, 5, 6]]}]]),
+                          ([{'a': [[[[[[{1: 2}]]]]]]}], []),
+                          ([{[[[[[[[5]]]]]]]}], [[[[[[[5]]]]]]])
+                          ])
+def test_create_readable_output(outputs, expected_outputs):
+    """
+    Given:
+     - List of outputs.
+
+    When:
+     - Creating readable output by given outputs
+
+    Then:
+     - All entries with inner dicts and empty values after inner dicts removal are being deleted,
+       and every other value is remained as is.
+    """
+    assert create_readable_output(outputs) == expected_outputs

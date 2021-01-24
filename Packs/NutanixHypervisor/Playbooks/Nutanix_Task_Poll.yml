@@ -1,22 +1,22 @@
-id: b4a95203-a1ff-49b6-8f1a-11832c724984
-version: 10
-vcShouldKeepItemLegacyProdMachine: false
+id: Nutanix Task Poll
+version: -1
 name: Nutanix Task Poll
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0a72c1d2-819c-4839-81fd-facb5161d194
+    taskid: e0877759-2b1a-4017-838a-682ae625c22b
     type: start
     task:
-      id: 0a72c1d2-819c-4839-81fd-facb5161d194
+      id: e0877759-2b1a-4017-838a-682ae625c22b
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "7"
     separatecontext: false
     view: |-
       {
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 3a3fedc2-7d77-4267-8948-36a87ed1d757
+    taskid: 1faa3562-0e85-4f60-89b7-7a4b3c4d0ad9
     type: playbook
     task:
-      id: 3a3fedc2-7d77-4267-8948-36a87ed1d757
+      id: 1faa3562-0e85-4f60-89b7-7a4b3c4d0ad9
       version: -1
       name: GenericPolling
       description: |-
@@ -57,7 +57,7 @@ tasks:
       AdditionalPollingCommandArgNames: {}
       AdditionalPollingCommandArgValues: {}
       Ids:
-        simple: ${inputs.task_id}
+        simple: ${NutanixHypervisor.VMPowerStatus.task_uuid}
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -67,7 +67,8 @@ tasks:
       Timeout:
         simple: "10"
       dt:
-        simple: NutanixHypervisor.Task(val.uuid!=${inputs.task_id} || val.timed_out==true)
+        simple: NutanixHypervisor.Task(val.uuid!=${NutanixHypervisor.VMPowerStatus.task_uuid}
+          || val.timed_out==true)
     separatecontext: true
     loop:
       iscommand: false
@@ -78,7 +79,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -88,21 +89,22 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 25e6418f-0c63-4b73-8b4e-a30a34f5b5f2
+    taskid: 8707085d-6320-4e9c-8f85-a6f8a1b56bbd
     type: title
     task:
-      id: 25e6418f-0c63-4b73-8b4e-a30a34f5b5f2
+      id: 8707085d-6320-4e9c-8f85-a6f8a1b56bbd
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 735
+          "x": 480,
+          "y": 910
         }
       }
     note: false
@@ -112,10 +114,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 0d37f840-91f4-4ddf-81f6-3991fbabdb87
+    taskid: e7a96984-095a-44f7-8af4-53bb394d9f9b
     type: regular
     task:
-      id: 0d37f840-91f4-4ddf-81f6-3991fbabdb87
+      id: e7a96984-095a-44f7-8af4-53bb394d9f9b
       version: -1
       name: Nutanix Get Completed Task Info
       description: Poll tasks given by task_ids to check if they are ready. Returns
@@ -139,7 +141,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 545
         }
       }
     note: false
@@ -149,10 +151,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: bc334fd2-fb5a-400d-818e-6946bffbae15
+    taskid: e553e1eb-e8cd-4923-81d1-09f464a87326
     type: condition
     task:
-      id: bc334fd2-fb5a-400d-818e-6946bffbae15
+      id: e553e1eb-e8cd-4923-81d1-09f464a87326
       version: -1
       name: Check If Task Was Returned
       type: condition
@@ -182,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -192,10 +194,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: d4f75064-b617-4232-8fca-53f0372009e0
+    taskid: 74cf718c-c55d-4761-87a0-6e7ad42c0e9a
     type: regular
     task:
-      id: d4f75064-b617-4232-8fca-53f0372009e0
+      id: 74cf718c-c55d-4761-87a0-6e7ad42c0e9a
       version: -1
       name: Print Error Message
       description: Prints an error entry with a given message
@@ -210,8 +212,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 06564bca-e761-41c9-89f0-cea20d01e4a6
+    type: regular
+    task:
+      id: 06564bca-e761-41c9-89f0-cea20d01e4a6
+      version: -1
+      name: Nutanix Virtual Machine Power Status Change
+      description: Set power state of a virtual machine.  If the virtual machine is
+        being powered on and no host is specified, the scheduler will pick the one
+        with the most available CPU and memory that can support the Virtual Machine.
+        Note that no such host may not be available. If the virtual machine is being
+        power cycled, a different host can be specified to start it on. This is also
+        an asynchronous operation that results in the creation of a task object. The
+        UUID of this task object is returned as the response of this operation. With
+        this task uuid, this task status can be monitored by using the nutanix-hypervisor-task-poll
+        command.
+      script: '|||nutanix-hypervisor-vm-powerstatus-change'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      host_uuid:
+        simple: ${inputs.host_uuid}
+      transition:
+        simple: ${inputs.transition}
+      vm_uuid:
+        simple: ${inputs.vm_uuid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -224,7 +270,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 765,
+        "height": 940,
         "width": 810,
         "x": 50,
         "y": 50
@@ -232,10 +278,29 @@ view: |-
     }
   }
 inputs:
-- key: task_id
+- key: vm_uuid
+  value: {}
+  required: true
+  description: Id of the virtual machine to change its power status.
+  playbookInputQuery:
+- key: transition
+  value: {}
+  required: true
+  description: |-
+    The new power state to which you want to transfer the virtual machine to.
+    Possible values are:
+    ON, OFF, POWERCYCLE, RESET, PAUSE, SUSPEND, RESUME, SAVE, ACPI_SHUTDOWN, ACPI_REBOOT
+  playbookInputQuery:
+- key: host_uuid
   value: {}
   required: false
-  description: The task id of the task to be polled.
-  playbookInputQuery: null
+  description: If virtual machine is being transitioned with 'ON' or 'POWERCYCLE',
+    this host will be chosen to run the virtual machine, if host_uuid is not given,
+    then Nutanix will chose the host with the most available CPU.
+  playbookInputQuery:
 outputs:
 - type: unknown
+fromversion: 5.0.0
+description: TODO ADD DESCRIPTION
+tests:
+- No test
