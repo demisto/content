@@ -98,11 +98,10 @@ def fetch_credentials(client, args: dict):
     creds_name = args.get('identifier')
     demisto.debug('name of cred used: ', creds_name)
 
-    # if creds_name:
-    #     creds_list = [client.get_credentials(creds_name)]
-    # else:
-    #     creds_list = client.list_credentials()
-    creds_list = client.list_credentials()
+    if creds_name:
+        creds_list = [client.get_credentials(creds_name)]
+    else:
+        creds_list = client.list_credentials()
     credentials = []
     for cred in creds_list:
         credentials.append({

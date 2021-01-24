@@ -41,12 +41,11 @@ def test_cyberark_aim_commands(command, get_credentials_res, context, mocker):
         "user": 'username1',
         "password": 'password1',
         "name": 'name1',
-    },
-        {
-            "user": 'username2',
-            "password": 'password2',
-            "name": 'name2',
-        }
+    }, {
+        "user": 'username2',
+        "password": 'password2',
+        "name": 'name2',
+    }
     ])
 ])
 def test_cyberark_fetch_credentials(creds_name_to_fetch, expected_res, mocker):
@@ -63,7 +62,6 @@ def test_cyberark_fetch_credentials(creds_name_to_fetch, expected_res, mocker):
     client = Client(server_url="https://api.cyberark.com/", use_ssl=False, proxy=False, app_id="app", folder="Root",
                     safe="safe1", credentials_object="name1,name2", username="", password="", cert_text="", key_text="")
     mocker.patch.object(Client, 'get_credentials', side_effect=lambda name: LIST_CREDENTIALS_RAW[name])
-    # mocker.patch.object(demisto, 'args', return_value={'identifier': creds_name_to_fetch})
     mocker.patch.object(demisto, 'credentials')
     fetch_credentials(client, {'identifier': creds_name_to_fetch})
     demisto.credentials.assert_called_with(expected_res)
