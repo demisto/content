@@ -1,9 +1,6 @@
 {
-	"close": null,
 	"description": "Cyberint incident layout",
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -335,24 +332,9 @@
 			}
 		]
 	},
-	"edit": null,
-	"fromServerVersion": "",
 	"group": "incident",
 	"id": "5b4d0e12-2017-4047-8d68-210ba638bfc1",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
 	"name": "Cyberint Incident Layout",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"quickView": null,
-	"sortValues": null,
-	"system": false,
-	"toServerVersion": "",
 	"fromVersion": "5.0.0",
 	"version": -1
 }
