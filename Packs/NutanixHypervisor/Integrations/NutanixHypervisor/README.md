@@ -682,9 +682,9 @@ Acknowledge alert with the specified alert_id.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NutanixHypervisor.Alert.id | String | Id of the alert to be acknowledged. | 
-| NutanixHypervisor.Alert.successful | Boolean | Was acknowledge successful. | 
-| NutanixHypervisor.Alert.message | String | The message returned by the acknowledge task. | 
+| NutanixHypervisor.AcknowledgedAlerts.id | String | Id of the alert to be acknowledged. | 
+| NutanixHypervisor.AcknowledgedAlerts.successful | Boolean | Was acknowledge successful. | 
+| NutanixHypervisor.AcknowledgedAlerts.message | String | The message returned by the acknowledge task. | 
 
 
 #### Command Example
@@ -734,9 +734,9 @@ make sure the user you are using have at least cluster admin permissions
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NutanixHypervisor.Alert.id | String | Id of the alert to be resolved. | 
-| NutanixHypervisor.Alert.successful | Boolean | Was resolve successful. | 
-| NutanixHypervisor.Alert.message | String | The message returned by the resolve task. | 
+| NutanixHypervisor.ResolvedAlerts.id | String | Id of the alert to be resolved. | 
+| NutanixHypervisor.ResolvedAlerts.successful | Boolean | Was resolve successful. | 
+| NutanixHypervisor.ResolvedAlerts.message | String | The message returned by the resolve task. | 
 
 
 #### Command Example
@@ -746,7 +746,7 @@ make sure the user you are using have at least cluster admin permissions
 ```json
 {
     "NutanixHypervisor": {
-        "ResolveAlerts": {
+        "ResolvedAlerts": {
             "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
             "successful": true
         }
@@ -791,11 +791,11 @@ make sure the user you are using have at least cluster admin permissions
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NutanixHypervisor.Alert.num_successful_updates | Number | The number of the successful alerts acknowledges. | 
-| NutanixHypervisor.Alert.num_failed_updates | Number | The number of the failed alerts to acknowledge. | 
-| NutanixHypervisor.Alert.alert_status_list.id | String | Id of the status of the alert. | 
-| NutanixHypervisor.Alert.alert_status_list.successful | Boolean | Was acknowledge for this task successful. | 
-| NutanixHypervisor.Alert.alert_status_list.message | String | Message returned by acknowledge operation. | 
+| NutanixHypervisor.AcknowledgedFilterAlerts.num_successful_updates | Number | The number of the successful alerts acknowledges. | 
+| NutanixHypervisor.AcknowledgedFilterAlerts.num_failed_updates | Number | The number of the failed alerts to acknowledge. | 
+| NutanixHypervisor.AcknowledgedFilterAlerts.alert_status_list.id | String | Id of the status of the alert. | 
+| NutanixHypervisor.AcknowledgedFilterAlerts.alert_status_list.successful | Boolean | Was acknowledge for this task successful. | 
+| NutanixHypervisor.AcknowledgedFilterAlerts.alert_status_list.message | String | Message returned by acknowledge operation. | 
 
 
 #### Command Example
@@ -857,11 +857,11 @@ make sure the user you are using have at least cluster admin permissions
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NutanixHypervisor.Alert.num_successful_updates | Number | The number of the successful alert resolves. | 
-| NutanixHypervisor.Alert.num_failed_updates | Number | The number of the failed alerts to resolve. | 
-| NutanixHypervisor.Alert.alert_status_list.id | String | Id of the status of the alert. | 
-| NutanixHypervisor.Alert.alert_status_list.successful | Boolean | Was resolve for this task successful. | 
-| NutanixHypervisor.Alert.alert_status_list.message | String | Message returned by resolve operation. | 
+| NutanixHypervisor.ResolvedFilterAlerts.num_successful_updates | Number | The number of the successful alert resolves. | 
+| NutanixHypervisor.ResolvedFilterAlerts.num_failed_updates | Number | The number of the failed alerts to resolve. | 
+| NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.id | String | Id of the status of the alert. | 
+| NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.successful | Boolean | Was resolve for this task successful. | 
+| NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.message | String | Message returned by resolve operation. | 
 
 
 #### Command Example

@@ -410,7 +410,7 @@
       "message": "message about acknowledge"
     },
     "expected": {
-      "outputs_prefix": "NutanixHypervisor.ResolveAlerts",
+      "outputs_prefix": "NutanixHypervisor.ResolvedAlerts",
       "outputs_key_field": "id",
       "readable_output": null,
       "outputs": {

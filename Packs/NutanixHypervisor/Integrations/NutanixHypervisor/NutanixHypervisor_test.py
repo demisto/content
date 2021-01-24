@@ -495,3 +495,7 @@ def test_create_readable_output(outputs, expected_outputs):
        and every other value is remained as is.
     """
     assert create_readable_output(outputs) == expected_outputs
+
+
+def test_task_id_exists():
+    raise NotImplemented

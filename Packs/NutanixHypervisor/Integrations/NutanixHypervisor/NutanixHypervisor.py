@@ -32,6 +32,8 @@ MINIMUM_OFFSET_VALUE = 0
 
 MINIMUM_LENGTH_VALUE = 1
 
+NUTANIX_HOST_FIELDS_TO_REMOVE = {'disk_hardware_configs', 'cpu_frequency_in_hz', 'cpu_capacity_in_hz',
+                                 'memory_capacity_in_bytes', 'stats', 'usage_stats'}
 ''' CLIENT CLASS '''
 
 
@@ -383,15 +385,19 @@ def create_readable_output(outputs: List[Dict]) -> List[Dict]:
     return readable_outputs
 
 
-def task_id_is_found(client: Client, task_id: str):
+def task_exists(client: Client, task_id: str) -> bool:
     """
-
+    Receives task_id, and checks if task exists.
+    Check is done by performing an API call to Nutanix service to receive task details.
+    If the task is not found by Nutanix, it will return an error indicating the task with
+    the ID of 'task_id' is not found.
     Args:
-        client:
-        task_id:
+        client (Client): The client to perform the API request to Nutanix service.
+        task_id (str): The ID of the task to check if exists.
 
     Returns:
-
+        - True if task exists.
+        - False if task does not exist.
     """
     try:
         client.nutanix_hypervisor_task_details(task_id)
@@ -488,7 +494,8 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     if raw_response.get('entities') is None:
         raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
 
-    outputs = copy.deepcopy(raw_response.get('entities'))
+    outputs = [{k: v for k, v in copy.deepcopy(raw_output).items() if k not in NUTANIX_HOST_FIELDS_TO_REMOVE} for raw_output in
+               raw_response.get('entities')]
 
     update_dict_time_in_usecs_to_iso_entries(outputs)
 
@@ -618,11 +625,8 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
             tasks_id.remove(task_id)
 
         for uncompleted_task_id in tasks_id:
-            if task_id_is_found(client, uncompleted_task_id):
-                progress_status = 'In Progress' if task_id_is_found(client, uncompleted_task_id) \
-                    else 'Task Was Not Found'
-                readable_task_details_output.append(
-                    {'Task ID': uncompleted_task_id, 'Progress Status': progress_status})
+            progress_status = 'In Progress' if task_exists(client, uncompleted_task_id) else 'Task Was Not Found'
+            readable_task_details_output.append({'Task ID': uncompleted_task_id, 'Progress Status': progress_status})
 
         readable_output = tableToMarkdown('Nutanix Hypervisor Tasks Status', readable_task_details_output,
                                           headers=['Task ID', 'Progress Status'])
@@ -772,7 +776,7 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
     raw_response = client.post_nutanix_alert_resolve(alert_id)
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.ResolveAlerts',
+        outputs_prefix='NutanixHypervisor.ResolvedAlerts',
         outputs_key_field='id',
         outputs=raw_response,
         raw_response=raw_response

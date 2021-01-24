@@ -671,13 +671,13 @@ script:
       description: Acknowledge alert with the specified alert_id.
       name: nutanix-alert-acknowledge
       outputs:
-        - contextPath: NutanixHypervisor.Alert.id
+        - contextPath: NutanixHypervisor.AcknowledgedAlerts.id
           description: Id of the alert to be acknowledged.
           type: String
-        - contextPath: NutanixHypervisor.Alert.successful
+        - contextPath: NutanixHypervisor.AcknowledgedAlerts.successful
           description: Was acknowledge successful.
           type: Boolean
-        - contextPath: NutanixHypervisor.Alert.message
+        - contextPath: NutanixHypervisor.AcknowledgedAlerts.message
           description: The message returned by the acknowledge task.
           type: String
     - arguments:
@@ -687,13 +687,13 @@ script:
       description: Resolve alert with the specified alert_id.
       name: nutanix-alert-resolve
       outputs:
-        - contextPath: NutanixHypervisor.Alert.id
+        - contextPath: NutanixHypervisor.ResolvedAlerts.id
           description: Id of the alert to be resolved.
           type: String
-        - contextPath: NutanixHypervisor.Alert.successful
+        - contextPath: NutanixHypervisor.ResolvedAlerts.successful
           description: Was resolve successful.
           type: Boolean
-        - contextPath: NutanixHypervisor.Alert.message
+        - contextPath: NutanixHypervisor.ResolvedAlerts.message
           description: The message returned by the resolve task.
           type: String
     - arguments:
@@ -734,19 +734,19 @@ script:
       description: Acknowledge alerts using a filters.
       name: nutanix-alerts-acknowledge-by-filter
       outputs:
-        - contextPath: NutanixHypervisor.Alert.num_successful_updates
+        - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.num_successful_updates
           description: The number of the successful alerts acknowledges.
           type: Number
-        - contextPath: NutanixHypervisor.Alert.num_failed_updates
+        - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.num_failed_updates
           description: The number of the failed alerts to acknowledge.
           type: Number
-        - contextPath: NutanixHypervisor.Alert.alert_status_list.id
+        - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.alert_status_list.id
           description: Id of the status of the alert.
           type: String
-        - contextPath: NutanixHypervisor.Alert.alert_status_list.successful
+        - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.alert_status_list.successful
           description: Was acknowledge for this task successful.
           type: Boolean
-        - contextPath: NutanixHypervisor.Alert.alert_status_list.message
+        - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.alert_status_list.message
           description: Message returned by acknowledge operation.
           type: String
     - arguments:
@@ -786,19 +786,19 @@ script:
       description: Resolve alerts using a filters.
       name: nutanix-alerts-resolve-by-filter
       outputs:
-        - contextPath: NutanixHypervisor.Alert.num_successful_updates
+        - contextPath: NutanixHypervisor.ResolvedFilterAlerts.num_successful_updates
           description: The number of the successful alert resolves.
           type: Number
-        - contextPath: NutanixHypervisor.Alert.num_failed_updates
+        - contextPath: NutanixHypervisor.ResolvedFilterAlerts.num_failed_updates
           description: The number of the failed alerts to resolve.
           type: Number
-        - contextPath: NutanixHypervisor.Alert.alert_status_list.id
+        - contextPath: NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.id
           description: Id of the status of the alert.
           type: String
-        - contextPath: NutanixHypervisor.Alert.alert_status_list.successful
+        - contextPath: NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.successful
           description: Was resolve for this task successful.
           type: Boolean
-        - contextPath: NutanixHypervisor.Alert.alert_status_list.message
+        - contextPath: NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.message
           description: Message returned by resolve operation.
           type: String
   dockerimage: demisto/python3:3.9.1.14969
