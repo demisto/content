@@ -193,7 +193,7 @@ script:
     - name: dueDate
       description: 'The due date for the issue (in the format: 2018-03-11).'
     - name: assignee
-      description: The name of the assignee.
+      description: The account ID of the assignee.
     - name: reporter
       description: The account ID of the reporter.
     - name: parentIssueKey
@@ -272,7 +272,7 @@ script:
     - name: dueDate
       description: The due date for the issue (in the format 2018-03-11).
     - name: assignee
-      description: The name of the assignee.
+      description: The account ID of the assignee.
     - name: status
       description: The name of the status.
     outputs:
