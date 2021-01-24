@@ -3,6 +3,7 @@ from typing import Dict
 import dateutil.parser as dp
 import pytz
 import urllib3
+import copy
 
 from CommonServerPython import *
 
@@ -484,10 +485,10 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
 
     raw_response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
 
-    outputs = raw_response.get('entities')
-
-    if outputs is None:
+    if raw_response.get('entities') is None:
         raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
+
+    outputs = copy.deepcopy(raw_response.get('entities'))
 
     update_dict_time_in_usecs_to_iso_entries(outputs)
 
@@ -605,7 +606,7 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     if raw_response.get('completed_tasks_info') is not None:
 
         outputs_key_field: Optional[str] = 'uuid'
-        outputs = raw_response['completed_tasks_info']
+        outputs = copy.deepcopy(raw_response['completed_tasks_info'])
 
         readable_task_details_output: List[Dict] = []
         for output in outputs:
@@ -706,10 +707,10 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
                                                   alert_type_ids, impact_types, entity_types,
                                                   page, limit)
 
-    outputs = raw_response.get('entities')
-
-    if outputs is None:
+    if raw_response.get('entities') is None:
         raise DemistoException('No entities were found in response for nutanix-alerts-list command')
+
+    outputs = copy.deepcopy(raw_response.get('entities'))
 
     update_dict_time_in_usecs_to_iso_entries(outputs)
 

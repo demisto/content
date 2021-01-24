@@ -297,7 +297,7 @@ Get a list of virtual machines.
                 "AGENT_VM": false,
                 "VGA_CONSOLE": true
             },
-            "vm_logical_timestamp": 159
+            "vm_logical_timestamp": 163
         }
     }
 }
@@ -308,7 +308,7 @@ Get a list of virtual machines.
 >### Nutanix Virtual Machines List
 >|allow_live_migrate|gpus_assigned|ha_priority|host_uuid|machine_type|memory_mb|name|num_cores_per_vcpu|num_vcpus|power_state|timezone|uuid|vm_logical_timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| false | false | 0 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 159 |
+>| false | false | 0 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 163 |
 
 
 ### nutanix-hypervisor-vm-powerstatus-change
@@ -849,8 +849,8 @@ make sure the user you are using have at least cluster admin permissions
 | end_time | A date in the format YYYY-MM-DDTHH:MM:SS (for example 2020-12-31T23:59:00). Only alerts that were created on or before the specified date/time will be resolved. Time is expected to be in UTC. | Optional | 
 | severity | Comma separated list. Resolve alerts that their severity level matches one of the severities in severity list. Possible values are: CRITICAL, WARNING, INFO, AUDIT. | Optional | 
 | impact_types | Comma separated list. Resolve alerts that their impact type matches one of the impact types in impact_types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given impact_types = 'SystemIndicator',only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be resolved. | Optional | 
-| entity_types | Comma separated list. Retrieve alerts that their entity_type matches one of the entity_type in entity_types list. Nutanix entity types can found in 'Alert Policies' page mentioned in configuring instance description. Known entity types Nutanix service supports are *VM*, *Host*, *Disk*, *Storage Container*, *Cluster*. If Nutanix service can't recognize or does not support the entity type, it returns 404 response. | Optional | 
-| limit | Maximum number of alerts to resolve. Nutanix does not have max for limit, but a very high limit value will cause read timeout exception. | Optional | 
+| entity_types | Comma separated list. Retrieve alerts that their entity_type matches one of the entity_type in entity_types list. For more details see Nutanix README. If Nutanix service can't recognize the entity type, it returns 404 response. | Optional | 
+| limit | Maximum number of alerts to resolve. Nutanix does not have max for limit, but a very high limit value will cause read timeout exception. Default is 50. | Optional | 
 
 
 #### Context Output

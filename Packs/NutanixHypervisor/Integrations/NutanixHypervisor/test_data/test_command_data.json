@@ -247,7 +247,7 @@
     "expected": {
       "outputs_prefix": "NutanixHypervisor.VM",
       "outputs_key_field": "uuid",
-      "readable_output": "### Nutanix Virtual Machines List\n|allow_live_migrate|gpus_assigned|ha_priority|host_uuid|machine_type|memory_mb|name|num_cores_per_vcpu|num_vcpus|power_state|timezone|uuid|vm_logical_timestamp|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| false | false | 0 | 59bc015e-a22d-41ab-9ce2-a96164955e8d | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | 16c3d845-dc54-4fb1-bfc8-7671dd230967 | 156 |\n",
+      "readable_output": "### Nutanix Virtual Machines List\n|allow_live_migrate|gpus_assigned|ha_priority|host_uuid|machine_type|memory_mb|name|num_cores_per_vcpu|num_vcpus|power_state|timezone|uuid|vm_logical_timestamp|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| false | false | 0 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 156 |\n",
       "outputs": [
         {
           "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
