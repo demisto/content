@@ -1373,7 +1373,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1458,7 +1459,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1488,7 +1490,8 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1521,7 +1524,8 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1538,6 +1542,75 @@ class TestCommandResults:
             assert False
         except TypeError:
             assert True
+
+    def test_create_dbot_score_with_invalid_reliability(self):
+        """
+        Given:
+            -  an invalid reliability value.
+        When
+            - creating a DBotScore entry
+        Then
+            - an error should be raised
+        """
+        from CommonServerPython import Common, DBotScoreType
+
+        try:
+            Common.DBotScore(
+                indicator='8.8.8.8',
+                integration_name='Virus Total',
+                score=0,
+                indicator_type=DBotScoreType.IP,
+                reliability='Not a reliability'
+            )
+            assert False
+        except TypeError:
+            assert True
+
+    def test_create_dbot_score_with_valid_reliability(self):
+        """
+        Given:
+            -  a valid reliability value
+        When
+            - creating a DBotScore entry
+        Then
+            - the proper entry is created
+        """
+        from CommonServerPython import Common, DBotScoreType, DBotScoreReliability, CommandResults
+
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            score=Common.DBotScore.GOOD,
+            indicator_type=DBotScoreType.IP,
+            reliability=DBotScoreReliability.B,
+        )
+
+        ip = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score,
+        )
+
+        results = CommandResults(
+            indicator=ip,
+        )
+
+        assert results.to_context()['EntryContext'] == {
+            'IP(val.Address && val.Address == obj.Address)': [
+                {
+                    'Address': '8.8.8.8'
+                }
+            ],
+            'DBotScore(val.Indicator && val.Indicator == '
+            'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                {
+                    'Indicator': '8.8.8.8',
+                    'Type': 'ip',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Reliability': 'B - Usually reliable'
+                }
+            ]
+        }
 
     def test_create_domain(self):
         from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
@@ -1666,7 +1739,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_create_certificate(self):
@@ -2068,7 +2142,8 @@ class TestCommandResults:
                 }]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_indicator_timeline_with_list_of_indicators(self):
@@ -2230,6 +2305,28 @@ class TestCommandResults:
         )
 
         assert results.to_context().get('IgnoreAutoExtract') is True
+
+    def test_entry_as_note(self):
+        """
+        Given:
+        - mark_as_note set to True
+
+        When:
+        - creating a CommandResults object
+
+        Then:
+        - the Note field is set to True
+        """
+        from CommonServerPython import CommandResults
+
+        results = CommandResults(
+            outputs_prefix='Test',
+            outputs_key_field='value',
+            outputs=None,
+            mark_as_note=True
+        )
+
+        assert results.to_context().get('Note') is True
 
 
 class TestBaseClient:
