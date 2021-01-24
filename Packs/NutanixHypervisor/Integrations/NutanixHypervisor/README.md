@@ -454,7 +454,7 @@ Poll tasks given by task_ids to check if they are ready. Returns all the tasks f
 
 ### nutanix-alerts-list
 ***
-Get the list of Alerts generated in the cluster which matches the filters if given.
+Get the list of Alerts generated in the cluster which matches the filters if given. Nutanix brings the latest alerts created in case there are more than 'limit' alerts.
 
 
 #### Base Command
