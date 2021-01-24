@@ -160,6 +160,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -298,8 +299,6 @@ inputs:
     this host will be chosen to run the virtual machine, if host_uuid is not given,
     then Nutanix will chose the host with the most available CPU.
   playbookInputQuery:
-outputs:
-- type: unknown
 fromversion: 5.0.0
 description: TODO ADD DESCRIPTION
 tests:

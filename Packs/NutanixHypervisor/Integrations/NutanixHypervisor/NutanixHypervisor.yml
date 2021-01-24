@@ -468,6 +468,7 @@ script:
     - description: The IDs of the tasks to poll
       name: task_ids
       required: true
+    description: Poll tasks given by task_ids to check if they are ready. Returns all the tasks from 'task_ids' list that are ready at the moment Nutanix service was polled. In case no task is ready, returns a time out response.
     name: nutanix-hypervisor-task-poll
     outputs:
     - contextPath: NutanixHypervisor.Task.timed_out

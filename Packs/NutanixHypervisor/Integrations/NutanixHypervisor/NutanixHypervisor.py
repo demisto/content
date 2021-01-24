@@ -615,8 +615,8 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     Poll tasks given by task_ids to check if they are ready.
     Returns all the tasks from 'task_ids' list that are ready at the moment
     Nutanix service was polled.
-    In case no task is ready, waits until at least one task is ready, or waits time_interval
-    seconds and in case no task had finished, returns a time out response.
+    In case no task is ready, waits 'TIMEOUT_INTERVAL' (1 second) seconds and in case no task had finished,
+    returns a time out response.
 
     In case response was successful, response will be a dict containing key 'completed_tasks_info'
     which holds details about every completed task returned by Nutanix service.
