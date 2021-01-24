@@ -1,0 +1,100 @@
+{
+	"defaultIncidentType": "LogPoint Incident",
+  	"name": "LogPoint SIEM Integration - Incoming Mapper",
+  	"id": "LogPoint SIEM Integration - Incoming Mapper",
+  	"type": "mapping-incoming",
+  	"description": "Maps LogPoint Incident fields",
+	"fromVersion": "6.0.0",
+	"mapping": {
+		"LogPoint Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping":{
+				"LogPoint Object ID": {
+					"complex": null,
+					"simple": "id"
+				},
+				"LogPoint IncidentId": {
+					"complex": null,
+					"simple": "incident_id"
+				},
+				"LogPoint Username": {
+					"complex": null,
+					"simple": "username"
+				},
+				"details": {
+					"complex": null,
+					"simple": "description"
+				},
+				"LogPoint User Id": {
+					"complex": null,
+					"simple": "user_id"
+				},
+				"LogPoint Assigned To": {
+					"complex": null,
+					"simple": "assigned_to"
+				},
+				"LogPoint Visible To": {
+					"complex": null,
+					"simple": "visible_to"
+				},
+				"LogPoint Tid": {
+					"complex": null,
+					"simple": "tid"
+				},
+				"LogPoint Rows Count": {
+					"complex": null,
+					"simple": "rows_count"
+				},
+				"LogPoint Loginspect IP DNS": {
+					"complex": null,
+					"simple": "loginspect_ip_dns"
+				},
+				"LogPoint LogPoint Name": {
+					"complex": null,
+					"simple": "logpoint_name"
+				},
+				"LogPoint Status": {
+					"complex": null,
+					"simple": "status"
+				},
+				"LogPoint Comments": {
+					"complex": null,
+					"simple": "comments"
+				},
+				"LogPoint Comments Count": {
+					"complex": null,
+					"simple": "commentscount"
+				},
+				"LogPoint Detection Timestamp": {
+					"complex": null,
+					"simple": "detection_timestamp"
+				},
+				"LogPoint Query": {
+					"complex": null,
+					"simple": "query"
+				},
+				"LogPoint Repos": {
+					"complex": null,
+					"simple": "repos"
+				},
+				"LogPoint Time Range": {
+					"complex": null,
+					"simple": "time_range"
+				},
+				"LogPoint AlertObjId": {
+					"complex": null,
+					"simple": "alert_obj_id"
+				},
+				"LogPoint Throttle Enabled": {
+					"complex": null,
+					"simple": "throttle_enabled"
+				},
+				"LogPoint Last Action": {
+					"complex": null,
+					"simple": "lastaction"
+				}
+			}
+		}
+	},
+	"version": -1
+}
