@@ -153,11 +153,11 @@ def main():
         demisto.debug(f'Command being called in CyberArk AIM is: {command}')
 
         if command == 'test-module':
-            test_module(client)
+            return_results(test_module(client))
         elif command == 'cyberark-aim-list-credentials':
-            list_credentials_command(client)
+            return_results(list_credentials_command(client))
         elif command == 'fetch-credentials':
-            fetch_credentials(client, demisto.args())
+            return_results(fetch_credentials(client, demisto.args()))
 
         else:
             raise NotImplementedError(f'{command} is not an existing CyberArk AIM command')
