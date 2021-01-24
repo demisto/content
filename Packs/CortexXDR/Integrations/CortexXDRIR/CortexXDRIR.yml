@@ -51,12 +51,6 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: 'true'
-  display: Fetch incident alerts and artifacts
-  hidden: false
-  name: extra_data
-  required: false
-  type: 8
 - additionalinfo: For Cortex XSOAR version 6.0.0 and above. If selected, for every
     incident fetched from Cortex XDR to Cortex XSOAR, the incident owners will be
     synced. Note that once this value is changed and synchronized between the systems,
@@ -2238,7 +2232,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.action_id
       description: The specified action ID.
       type: number
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false

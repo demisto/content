@@ -1017,7 +1017,8 @@ def filter_tests(tests: set, id_set: json) -> set:
     Returns:
         (set): Set of tests without ignored and non supported tests.
     """
-    tests_without_ignored = remove_ignored_tests(tests, id_set)
+    tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
+    tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
     tests_without_non_supported = remove_tests_for_non_supported_packs(tests_without_ignored, id_set)
 
     return tests_without_non_supported

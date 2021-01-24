@@ -1,4 +1,4 @@
-comment: Retrieves number of on-call hours per user.
+comment: Retrieves the number of on call hours per user.
 commonfields:
   id: GetOnCallHoursPerUser
   version: -1

@@ -2,7 +2,7 @@
     "name": "Humio",
     "description": "Instantly search live log data at scale. Create dashboards to visualize and analyze complex systems in real time",
     "support": "partner",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Humio",
     "url": "",
     "email": "integrations@humio.com",

@@ -1,5 +1,6 @@
 import argparse
 import logging
+import sys
 
 from Tests.configure_and_test_integration_instances import set_marketplace_url, MARKET_PLACE_CONFIGURATION, \
     Build, Server
@@ -27,7 +28,7 @@ def main():
     options = options_handler()
 
     # Get the host by the ami env
-    hosts, _ = Build.get_servers(ami_env=options.ami_env)
+    hosts, server_version = Build.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
     secret_conf_file = get_json_file(path=options.secret)
@@ -45,8 +46,13 @@ def main():
         # Acquire the server's host and install all content packs (one threaded execution)
         logging.info(f'Starting to install all content packs in {host}')
         server_host: str = server.client.api_client.configuration.host
-        install_all_content_packs(client=server.client, host=server_host)
-        logging.success(f'Finished installing all content packs in {host}')
+        success_flag = install_all_content_packs(client=server.client, host=server_host, server_version=server_version)
+
+        if success_flag:
+            logging.success(f'Finished installing all content packs in {host}')
+        else:
+            logging.error('Failed to install all packs.')
+            sys.exit(1)
 
 
 if __name__ == '__main__':
