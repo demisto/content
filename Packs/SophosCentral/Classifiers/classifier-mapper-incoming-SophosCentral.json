@@ -194,7 +194,7 @@
                     },
                     "simple": ""
                 },
-                "User ID": {
+                "User Id": {
                     "complex": {
                         "accessor": "",
                         "filters": [

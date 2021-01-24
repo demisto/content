@@ -11,7 +11,7 @@ import urllib3
 import demisto_client.demisto_api
 
 from Tests.scripts.utils.log_util import install_logging
-from Tests.test_integration import Docker, check_integration
+from Tests.test_integration import check_integration
 from demisto_sdk.commands.common.constants import PB_Status
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -19,10 +19,12 @@ from Tests.test_content import SettingsTester, DataKeeperTester, \
     print_test_summary, update_test_msg, turn_off_telemetry, \
     create_result_files, get_all_tests, get_instances_ips_and_names, get_server_numeric_version, \
     initialize_queue_and_executed_tests_set, get_test_records_of_given_test_names, \
-    extract_filtered_tests, load_conf_files, set_integration_params, collect_integrations, notify_failed_test, \
+    extract_filtered_tests, load_conf_files, set_integration_params, collect_integrations, \
     SERVER_URL
 
 # Disable insecure warnings
+from demisto_sdk.commands.test_content.Docker import Docker
+
 urllib3.disable_warnings()
 
 
@@ -95,9 +97,6 @@ def run_test_logic(tests_settings: Any, c: Any, failed_playbooks: list,
         playbook_id_with_mock = playbook_id
         playbook_id_with_mock += " (Mock Disabled)"
         failed_playbooks.append(playbook_id_with_mock)
-        if not tests_settings.is_local_run:
-            notify_failed_test(slack, circle_ci, playbook_id, build_number, inc_id, server_url,
-                               build_name)
 
     succeed = status in (PB_Status.COMPLETED, PB_Status.NOT_SUPPORTED_VERSION)
 
