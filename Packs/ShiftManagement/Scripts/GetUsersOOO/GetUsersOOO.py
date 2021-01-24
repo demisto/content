@@ -42,7 +42,6 @@ def main():
         # keep only ooo users in users_list
         users_list = list(filter(lambda x: x['username'] in ooo_users, users_list))
 
-    entry_context = {"ShiftManagment.OOOUsers": users_list}
     if users_list:
         hr = 'Out of office Team members\n' + tableToMarkdown('', users_list)
     else:

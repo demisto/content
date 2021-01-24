@@ -9,7 +9,6 @@ def main():
     roles = demisto.getArg("roles")
     assign_all = argToBoolean(demisto.getArg("assignAll"))
 
-
     # get xsoar users
     userinfo = demisto.executeCommand("getUsers", {"roles": roles, "onCall": oncall})
     if is_error(userinfo):
