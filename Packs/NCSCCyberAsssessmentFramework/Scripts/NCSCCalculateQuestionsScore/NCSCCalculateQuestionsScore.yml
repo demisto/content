@@ -1,0 +1,36 @@
+args:
+- description: The assessment to assess
+  name: assessment
+  required: true
+- description: The assessment data (questions and answers)
+  name: assessment_results
+  required: true
+commonfields:
+  id: NCSCCalculateQuestionsScore
+  version: -1
+dockerimage: demisto/python3:3.9.1.14969
+enabled: true
+name: NCSCCalculateQuestionsScore
+outputs:
+- contextPath: AssessmentResults
+  description: A list of the assessments and their question results
+  type: unknown
+- contextPath: AssessmentMarkdown
+  description: Markdown in table format of the results
+  type: string
+- contextPath: AssessmentResultsDetails
+  description: Details of which questions fell under which category
+- contextPath: AssessmentResultsAchievement
+  description: The overall ahcievement status
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+comment: 'This script calculates the score based on the question and answer responses.'

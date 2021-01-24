@@ -1112,9 +1112,6 @@ script:
       description: The active DNS indicator (only for hosts).
     - name: whoisActive
       description: The active indicator (only for hosts).
-    - name: updatedValues
-      description: A comma-separated list of field:value pairs to update. For example, "rating=3",
-        "confidence=42", and "description=helloWorld".
     - name: falsePositive
       auto: PREDEFINED
       predefined:
