@@ -937,13 +937,6 @@ def main():
             pack.cleanup()
             continue
 
-        # in case that pack already exist at cloud storage path and in index, skipped further steps
-        # always updating the index files
-        if exists_in_index:
-            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
-            pack.cleanup()
-            continue
-
         task_status = pack.prepare_for_index_upload()
         if not task_status:
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
