@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-"""Tenable.io Demisto integration."""
 import json
 import os
 import sys
@@ -320,8 +319,8 @@ def send_scan_request(scan_id="", endpoint="", method='GET', ignore_license_erro
             if i < 4:
                 time.sleep(60)
             else:
+                err_msg = get_scan_error_message(res, scan_id)
                 if ignore_license_error and res.status_code in (403, 500):
-                    err_msg = get_scan_error_message(res, scan_id)
                     return
                 if demisto.command() != 'test-module':
                     return_error(err_msg)
@@ -460,8 +459,6 @@ def get_report_command():
     scan_id, info, detailed = demisto.getArg('scanId'), demisto.getArg('info'), demisto.getArg('detailed')
     results = []
     scan_details = send_scan_request(scan_id)
-    demisto.results(ACCESS_KEY)
-    demisto.results(SECRET_KEY)
     if info == 'yes':
         scan_details['info']['id'] = scan_id
         scan_details['info'] = replace_keys(scan_details['info'])
@@ -559,35 +556,10 @@ def get_scan_status_command():
     }
     return get_entry_for_object('Scan status for {}'.format(scan_id), 'TenableIO.Scan(val.Id === obj.Id)', scan_status)
 
-# TEST
-
 
 def pause_scan_command():
     """Function for integration command pause_scan_command."""
-    scan_id = demisto.getArg('scanId')
-    scan_details = send_scan_request(scan_id)
-    scan_status = {
-        'Id': scan_id,
-        'Status': scan_details['info']['status']
-    }
-
-    if scan_status["Status"].lower() == "running":
-        send_scan_request(scan_id, "pause", "POST")
-        paused_scan = {
-            "Id": scan_id,
-            "Status": "Pausing"
-        }
-
-        return get_entry_for_object(
-            "The requested scan was paused successfully", "TenableIO.Scan", replace_keys(paused_scan), ["Id", "Status"])
-
-    else:
-        return "Command 'tenable-io-pause-scan' cannot be called while scan status is {}".format(scan_status["Status"])
-
-
-def pause_scans_command():
-    """Function for integration command pause_scans_command."""
-    scan_ids = str(demisto.getArg('scanIds')).split(",")
+    scan_ids = argToList(demisto.getArg('scanIds'))
 
     results = []
 
@@ -596,7 +568,7 @@ def pause_scans_command():
         scan_details = send_scan_request(scan_id)
         scan_status = {
             'Id': scan_id,
-            'Status': scan_details['info']['status']
+            'Status': scan_details.get('info').get('status')
         }
 
         if scan_status["Status"].lower() == "running":
@@ -610,38 +582,15 @@ def pause_scans_command():
 
         else:
             results.append(
-                "Command 'tenable-io-pause-scans' cannot be "
+                "Command 'tenable-io-pause-scan' cannot be "
                 "called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
 
     return results
 
 
-# TEST
 def resume_scan_command():
     """Function for integration command resume_scan_command."""
-    scan_id = demisto.getArg('scanId')
-    scan_details = send_scan_request(scan_id)
-    scan_status = {
-        'Id': scan_id,
-        'Status': scan_details['info']['status']
-    }
-
-    if scan_status["Status"].lower() == "paused":
-        send_scan_request(scan_id, "resume", "POST")
-        resumed_scan = {
-            "Id": scan_id,
-            "Status": "Resuming"
-        }
-        return get_entry_for_object(
-            "The requested scan was resumed successfully", "TenableIO.Scan", replace_keys(resumed_scan), ["Id", "Status"])
-
-    else:
-        return "Command 'tenable-io-resume-scan' cannot be called while scan status is {}".format(scan_status["Status"])
-
-
-def resume_scans_command():
-    """Function for integration command resume_scans_command."""
-    scan_ids = str(demisto.getArg('scanIds')).split(",")
+    scan_ids = argToList(demisto.getArg('scanIds'))
 
     results = []
 
@@ -650,7 +599,7 @@ def resume_scans_command():
         scan_details = send_scan_request(scan_id)
         scan_status = {
             'Id': scan_id,
-            'Status': scan_details['info']['status']
+            'Status': scan_details.get('info').get('status')
         }
 
         if scan_status["Status"].lower() == "paused":
@@ -668,6 +617,7 @@ def resume_scans_command():
                 "called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
 
     return results
+
 
 def get_scan_templates():
     """Function for integration command get_scan_templates."""
@@ -746,9 +696,5 @@ elif demisto.command() == 'tenable-io-resume-scan':
     demisto.results(resume_scan_command())
 elif demisto.command() == 'tenable-io-add-tags':
     demisto.results(add_tags())
-elif demisto.command() == 'tenable-io-resume-scans':
-    demisto.results(resume_scans_command())
-elif demisto.command() == 'tenable-io-pause-scans':
-    demisto.results(pause_scans_command())
 elif demisto.command() == 'tenable-io-check-templates':
     demisto.results(get_scan_templates())
