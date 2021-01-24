@@ -7,11 +7,11 @@ type: python
 tags:
 - ooo
 - Shift Management
-comment: Cleans the OOO List for XSOAR users, removing any user whose 'off until day' is in the past.
+comment: Removes any users from the out-of-office list whose 'off until day' is in the past.
 enabled: true
 args:
 - name: listname
-  description: Optionally pass in a different XSOAR list to run this automation against. (The default is OOO List.). Note that if the list name does not start with OOO the script will add it automatically.
+  description: The name of the out-of-office list. Default is "OOO List".
   defaultValue: OOO List
 scripttarget: 0
 subtype: python3
