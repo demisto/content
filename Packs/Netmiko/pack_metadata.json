@@ -1,0 +1,17 @@
+{
+    "name": "Netmiko",
+    "description": "The Netmiko pack contains the Netmiko integration for executing commands supported by the Netmiko (Paramiko) Python library against hosts.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2021-01-15T16:43:05Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "aburt-demisto"
+    ]
+}

@@ -13,8 +13,9 @@ import urllib3.util
 
 from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import run_command
-
 # Disable insecure warnings
+from demisto_sdk.commands.test_content.tools import is_redhat_instance
+
 urllib3.disable_warnings()
 
 ARTIFACTS_PATH = os.environ.get('CIRCLE_ARTIFACTS')
@@ -67,12 +68,15 @@ def docker_login(ip: str) -> None:
     """
     docker_username = os.environ.get('DOCKERHUB_USER')
     docker_password = os.environ.get('DOCKERHUB_PASSWORD')
+    container_engine_type = 'podman' if is_redhat_instance(ip) else 'docker'
     try:
-        check_output(f'ssh -o StrictHostKeyChecking=no ec2-user@{ip} '
-                     f'sudo -u demisto docker login --username {docker_username} --password-stdin'.split(),
-                     input=docker_password.encode())
+        check_output(
+            f'ssh -o StrictHostKeyChecking=no ec2-user@{ip} '
+            f'cd /home/demisto && '
+            f'sudo -u demisto {container_engine_type} login --username {docker_username} --password-stdin'.split(),
+            input=docker_password.encode())
     except Exception:
-        logging.exception(f'Could not login to docker on server {ip}')
+        logging.exception(f'Could not login to {container_engine_type} on server {ip}')
 
 
 def main():

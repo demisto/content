@@ -96,6 +96,7 @@ class Client(BaseClient):
                 ignore_regex: '^#'
         """
         super().__init__(base_url=url, verify=not insecure, proxy=proxy)
+        handle_proxy()
         try:
             self.polling_timeout = int(polling_timeout)
         except (ValueError, TypeError):
