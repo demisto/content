@@ -2,7 +2,7 @@
     "id": "incident_appmessage",
     "version": -1,
     "modified": "2021-01-13T07:29:27.983819237Z",
-    "name": "App message ",
+    "name": "App message",
     "ownerOnly": false,
     "cliName": "appmessage",
     "type": "longText",

@@ -180,15 +180,6 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "outofoffice",
-                                "height": 22,
-                                "id": "e906c590-45be-11eb-b73e-31f10f68f537",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "outofftheoffice",
                                 "height": 106,
                                 "id": "45200ad0-45bf-11eb-b73e-31f10f68f537",
