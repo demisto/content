@@ -1242,7 +1242,7 @@ function GetFederationTrustCommand([ExchangeOnlineClient]$client, [hashtable]$kw
     $entry_context = @{
         "$script:INTEGRATION_ENTRY_CONTEXT.FederationTrust(obj.ApplicationIdentifier === val.ApplicationIdentifier)" = $raw_response
     }
-    return Write-Output -NoEnumerate $human_readable, $entry_context, $raw_response
+    return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetFederationConfigurationCommand {
     param (
@@ -1263,7 +1263,7 @@ function GetFederationConfigurationCommand {
     $entry_context = @{
         "$script:INTEGRATION_ENTRY_CONTEXT.FederationConfiguration(obj.Guid === val.Guid)" = $raw_response
     }
-    return Write-Output -NoEnumerate $human_readable, $entry_context, $raw_response
+    return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetRemoteDomainCommand {
     [CmdletBinding()]
@@ -1276,7 +1276,7 @@ function GetRemoteDomainCommand {
     $raw_response = $client. ($domain_controller, $identity)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.RemoteDomain(obj.Guid === val.Guid)" = $raw_response }
-    return Write-Output -NoEnumerate $human_readable, $entry_context, $raw_response
+    return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetUserCommand {
     [CmdletBinding()]
@@ -1290,7 +1290,7 @@ function GetUserCommand {
     $raw_response = $client.GetUser($identity, $organizational_unit, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.User(obj.Guid === val.Guid)" = $raw_response}
-    return Write-Output -NoEnumerate $human_readable, $entry_context, $raw_response
+    return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetMailboxAuditBypassAssociationCommand {
     [CmdletBinding()]
@@ -1304,7 +1304,7 @@ function GetMailboxAuditBypassAssociationCommand {
     $raw_response = $client.GetMailboxAuditBypassAssociation($identity, $domain_controller, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailboxAuditBypassAssociation(obj.Guid === val.Guid)" = $raw_response }
-    return Write-Output -NoEnumerate $human_readable, $entry_context, $raw_response
+    return Write-Output $human_readable, $entry_context, $raw_response
 }
 
 #### INTEGRATION COMMANDS MANAGER ####
