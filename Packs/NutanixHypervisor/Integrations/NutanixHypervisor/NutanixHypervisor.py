@@ -401,6 +401,7 @@ def task_exists(client: Client, task_id: str) -> bool:
     """
     try:
         client.nutanix_hypervisor_task_details(task_id)
+        return True
     except DemistoException as e:
         if e.message and f'{task_id} is not found' in e.message:
             return False
@@ -494,7 +495,8 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     if raw_response.get('entities') is None:
         raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
 
-    outputs = [{k: v for k, v in copy.deepcopy(raw_output).items() if k not in NUTANIX_HOST_FIELDS_TO_REMOVE} for raw_output in
+    outputs = [{k: v for k, v in copy.deepcopy(raw_output).items() if k not in NUTANIX_HOST_FIELDS_TO_REMOVE} for
+               raw_output in
                raw_response.get('entities')]
 
     update_dict_time_in_usecs_to_iso_entries(outputs)

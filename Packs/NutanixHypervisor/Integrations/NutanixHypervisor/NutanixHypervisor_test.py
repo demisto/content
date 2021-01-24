@@ -18,7 +18,7 @@ from NutanixHypervisor import nutanix_hypervisor_hosts_list_command, \
     nutanix_alerts_resolve_by_filter_command, fetch_incidents_command, get_alert_status_filter, \
     get_optional_boolean_param, get_and_validate_int_argument, get_page_argument, \
     get_optional_time_parameter_as_epoch, update_dict_time_in_usecs_to_iso_entries, convert_epoch_time_to_datetime, \
-    create_readable_output
+    create_readable_output, task_exists
 
 MOCKED_BASE_URL = 'https://prefix:11111/PrismGateway/services/rest/v2.0'
 client = Client(base_url=MOCKED_BASE_URL, verify=False, proxy=False, auth=('fake_username', 'fake_password'))
@@ -497,5 +497,62 @@ def test_create_readable_output(outputs, expected_outputs):
     assert create_readable_output(outputs) == expected_outputs
 
 
-def test_task_id_exists():
-    raise NotImplemented
+def test_task_id_exists_task_exists(requests_mock):
+    """
+    Given:
+     - Task Id.
+     - Nutanix client.
+
+    When:
+     Task to be polled exists in Nutanix.
+
+    Then:
+     True is returned
+    """
+    task_id = 'abcd1234-ab12-cd34-1a2s3d5f7hh4'
+    requests_mock.get(
+        f'{MOCKED_BASE_URL}/tasks/{task_id}',
+        json={}
+    )
+    assert task_exists(client, task_id)
+
+
+def test_task_id_exists_task_does_not_exist(requests_mock):
+    """
+    Given:
+     - Task Id.
+     - Nutanix client.
+
+    When:
+     Task to be polled does not exist in Nutanix.
+
+    Then:
+     False is returned
+    """
+    task_id = 'abcd1234-ab12-cd34-1a2s3d5f7hh4'
+    requests_mock.get(
+        f'{MOCKED_BASE_URL}/tasks/{task_id}',
+        exc=DemistoException(f'Task with id {task_id} is not found')
+    )
+    assert not task_exists(client, task_id)
+
+
+def test_task_id_exists_unexpected_exception(requests_mock):
+    """
+    Given:
+     - Task Id.
+     - Nutanix client.
+
+    When:
+     Unexpected exception is thrown during call to Nutanix service.
+
+    Then:
+     The unexpected exception is raised and not passed silently
+    """
+    task_id = 'abcd1234-ab12-cd34-1a2s3d5f7hh4'
+    requests_mock.get(
+        f'{MOCKED_BASE_URL}/tasks/{task_id}',
+        exc=DemistoException('Unexpected exception')
+    )
+    with pytest.raises(DemistoException, match='Unexpected exception'):
+        task_exists(client, task_id)
