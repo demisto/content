@@ -88,7 +88,7 @@ def test_get_and_validate_int_argument_invalid_arguments(args, argument_name, mi
        than maximum.
     """
     with pytest.raises(DemistoException, match=expected_error_message):
-        get_and_validate_int_argument(args, argument_name, minimum, maximum)
+        get_and_validate_int_argument(args, argument_name, minimum, maximum, default_value)
 
 
 @pytest.mark.parametrize('args, expected',
@@ -339,10 +339,10 @@ def test_commands_post_methods(requests_mock, command_function: Callable[[Client
 
 @pytest.mark.parametrize('params, last_run, expected_incidents_raw_json',
                          [({}, {'last_fetch_epoch_time': 1610360118147914},
-                           command_tests_data['nutanix-alerts-list']['expected']['outputs']),
+                           command_tests_data['nutanix-fetch-incidents']['expected']['outputs']),
 
                           ({}, {'last_fetch_epoch_time': 1610560118147914},
-                           [command_tests_data['nutanix-alerts-list']['expected']['outputs'][0]])
+                           [command_tests_data['nutanix-fetch-incidents']['expected']['outputs'][0]])
                           ])
 def test_fetch_incidents(requests_mock, params, last_run, expected_incidents_raw_json):
     """
@@ -365,7 +365,7 @@ def test_fetch_incidents(requests_mock, params, last_run, expected_incidents_raw
     """
     requests_mock.get(
         f'{MOCKED_BASE_URL}/alerts',
-        json=command_tests_data['nutanix-alerts-list']['response']
+        json=command_tests_data['nutanix-fetch-incidents']['response']
     )
 
     incidents, next_run = fetch_incidents_command(
@@ -454,28 +454,28 @@ def test_convert_epoch_time_to_datetime_valid_cases(epoch_time, expected):
     assert convert_epoch_time_to_datetime(epoch_time) == expected
 
 
-@pytest.mark.parametrize('epoch_time, expected',
-                         [(0, None),
-                          (None, None),
-                          (1600000000000000, '2020-09-13T12:26:40.000000Z')
-                          ])
-def test_convert_epoch_time_to_datetime_valid_cases(epoch_time, expected):
-    """
-    Given:
-     - Epoch time to be converted to date time string in UTC timezone.
-
-    When:
-     - Case a: Epoch time is 0.
-     - Case b: Epoch time is not given.
-     - Case c: Valid epoch time is given.
-
-    Then:
-     - Case a: Ensure None is returned.
-     - Case b: Ensure None is returned.
-     - Case c: Ensure the corresponding date time string is returned.
-    """
-    assert convert_epoch_time_to_datetime(epoch_time) == expected
-
+# @pytest.mark.parametrize('epoch_time, expected',
+#                          [(0, None),
+#                           (None, None),
+#                           (1600000000000000, '2020-09-13T12:26:40.000000Z')
+#                           ])
+# def test_convert_epoch_time_to_datetime_valid_cases(epoch_time, expected):
+#     """
+#     Given:
+#      - Epoch time to be converted to date time string in UTC timezone.
+#
+#     When:
+#      - Case a: Epoch time is 0.
+#      - Case b: Epoch time is not given.
+#      - Case c: Valid epoch time is given.
+#
+#     Then:
+#      - Case a: Ensure None is returned.
+#      - Case b: Ensure None is returned.
+#      - Case c: Ensure the corresponding date time string is returned.
+#     """
+#     assert convert_epoch_time_to_datetime(epoch_time) == expected
+#
 
 def test_update_dict_time_in_usecs_to_iso_entries():
     """
@@ -490,7 +490,7 @@ def test_update_dict_time_in_usecs_to_iso_entries():
     """
     tested_dict = {usec_entry: 1600000000000000 for usec_entry in USECS_ENTRIES_MAPPING.keys()}
     tested_dict['host_name'] = 'Nutanix Host'
-    update_dict_time_in_usecs_to_iso_entries(tested_dict)
+    update_dict_time_in_usecs_to_iso_entries([tested_dict])
     assert tested_dict['host_name'] == 'Nutanix Host'
     assert all(
         tested_dict.get(iso_entry) == '2020-09-13T12:26:40.000000Z' for iso_entry in USECS_ENTRIES_MAPPING.values())
@@ -501,9 +501,8 @@ def test_update_dict_time_in_usecs_to_iso_entries():
                          [([{1: 2, 3: 4, 'a': 'b'}], [{1: 2, 3: 4, 'a': 'b'}]),
                           ([{'a': {2: 3}}], []),
                           ([{1: 2, 3: 4, 'a': {1: 2}}, {'abc': 'def', 'lst': [1, {2: 3}, 3, [4, 5, 6]]}],
-                           [[{1: 2, 3: 4}, {'abc': 'def', 'lst': [1, 3, [4, 5, 6]]}]]),
-                          ([{'a': [[[[[[{1: 2}]]]]]]}], []),
-                          ([{[[[[[[[5]]]]]]]}], [[[[[[[5]]]]]]])
+                           [{1: 2, 3: 4}, {'abc': 'def', 'lst': [1, 3, [4, 5, 6]]}]),
+                          ([{'a': [[[[[[{1: 2}]]]]]]}], [])
                           ])
 def test_create_readable_output(outputs, expected_outputs):
     """

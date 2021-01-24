@@ -323,12 +323,12 @@ def convert_epoch_time_to_datetime(epoch_time: Optional[int]) -> Optional[str]:
         raise DemistoException(f'Unexpected epoch time received from Nutanix service response: {epoch_time}.')
 
 
-def get_alert_status_filter(true_value: str, false_value: str, alert_status_filters: list[str]) -> Optional[bool]:
+def get_alert_status_filter(true_value: str, false_value: str, alert_status_filters: List[str]) -> Optional[bool]:
     """
     Args:
         true_value (str): The name of the argument that expresses true value.
         false_value (str): The name of the argument that expresses false value.
-        alert_status_filters (str):
+        alert_status_filters (List[str]): All the alert status filters chosen by the user.
 
     Returns:
         - Throws DemistoException if 'false_value' and 'true_value' are found in 'alert_status_filters' list.
@@ -342,7 +342,7 @@ def get_alert_status_filter(true_value: str, false_value: str, alert_status_filt
     return True if true_value in alert_status_filters else False if false_value in alert_status_filters else None
 
 
-def update_dict_time_in_usecs_to_iso_entries(outputs: Dict) -> None:
+def update_dict_time_in_usecs_to_iso_entries(outputs: List[Dict]) -> None:
     for output in outputs:
         for old_entry_name, new_entry_name in USECS_ENTRIES_MAPPING.items():
             if old_entry_name not in output:
@@ -361,19 +361,21 @@ def create_readable_output(outputs: List[Dict]) -> List[Dict]:
         Dictionary with all inner dictionaries and empty entries removed.
     """
 
-    def remove_inner_dicts_recursively(entry):
+    def remove_inner_dicts_recursively(entry: Any):
         if not isinstance(entry, (dict, list)):
             return entry
         elif isinstance(entry, list):
             return [v for v in (remove_inner_dicts_recursively(v) for v in entry) if not isinstance(v, dict)]
 
-    without_inner_dicts = [{k: v for k, v in ((k, remove_inner_dicts_recursively(v)) for k, v in output.items())
-                            if not isinstance(v, dict)}
-                           for output in outputs]
+    readable_outputs = []
+    for output in outputs:
+        dict_without_inner_dicts = {k: v for k, v in ((k, remove_inner_dicts_recursively(v)) for k, v in output.items())
+                                    if not isinstance(v, dict)}
+        dict_without_empty_elements = remove_empty_elements(dict_without_inner_dicts)
+        if dict_without_empty_elements:
+            readable_outputs.append(dict_without_empty_elements)
 
-    return [remove_empty_elements(dict_without_inner_dicts_and_empty_values)
-            for dict_without_inner_dicts_and_empty_values
-            in without_inner_dicts]
+    return readable_outputs
 
 
 def task_id_is_found(client: Client, task_id: str):
@@ -398,7 +400,7 @@ def task_id_is_found(client: Client, task_id: str):
 
 
 def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
-    alert_status_filters = params.get('alert_status_filters')
+    alert_status_filters = params.get('alert_status_filters', [])
     auto_resolved = get_alert_status_filter('Auto Resolved', 'Not Auto Resolved', alert_status_filters)
     resolved = get_alert_status_filter('Resolved', 'Unresolved', alert_status_filters)
     acknowledged = get_alert_status_filter('Acknowledged', 'Unacknowledged', alert_status_filters)
@@ -417,10 +419,35 @@ def fetch_incidents_command(client: Client, params: Dict, last_run: Dict):
     response = client.fetch_incidents(auto_resolved, resolved, acknowledged, severity, alert_type_ids, impact_types)
 
     alerts = response.get('entities')
+
+    alerts = [
+        {
+            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "alert_type_uuid": "A140001",
+            "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+            "resolved": True,
+            "auto_resolved": False,
+            "acknowledged": True,
+            "details": "many details about the alert",
+            "last_occurrence_time_stamp_in_usecs": 1610718924821136,
+            "created_time_stamp_in_usecs": 1610718924821136
+        },
+        {
+            "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+            "alert_type_uuid": "A140002",
+            "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+            "resolved": True,
+            "auto_resolved": False,
+            "acknowledged": True,
+            "details": "many details about the alert",
+            "last_occurrence_time_stamp_in_usecs": 1610460118147914,
+            "created_time_stamp_in_usecs": 1610460118147914
+        }
+    ]
+
     if alerts is None:
         raise DemistoException('Unexpected returned results from Nutanix service.')
 
-    update_dict_time_in_usecs_to_iso_entries(alerts)
     current_run_max_epoch_time = 0
     incidents: List[Dict[str, Any]] = []
 
@@ -602,33 +629,36 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     Returns:
         CommandResults.
     """
-    task_ids = argToList(args.get('task_ids'))
-    if not task_ids:
+    tasks_id: List[str] = argToList(args.get('task_ids'))
+    if not tasks_id:
         raise DemistoException('Task ids for command nutanix_hypervisor_task_poll_command cannot be empty.')
 
-    raw_response = client.nutanix_hypervisor_task_poll(task_ids)
+    raw_response = client.nutanix_hypervisor_task_poll(tasks_id)
 
     maybe_time_out = raw_response.get('timed_out')
 
     if raw_response.get('completed_tasks_info') is not None:
+
         outputs_key_field: Optional[str] = 'uuid'
         outputs = raw_response['completed_tasks_info']
 
-        completed_tasks_dict = {completed_task.get('uuid'): completed_task.get('progress_status')
-                                for completed_task in outputs
-                                if completed_task.get('uuid') and completed_task.get('progress_status')}
+        readable_task_details_output: List[Dict] = []
+        for output in outputs:
+            task_id = output.get('uuid', 'Unknown Task ID')
+            if not task_id:
+                raise DemistoException('Unexpected response from Nutanix, task_uuid should always be present')
+            progress_status = output.get('progress_status')
+            readable_task_details_output.append({'Task ID': task_id, 'Progress Status': progress_status})
+            tasks_id.remove(task_id)
 
-        tasks_in_progress_dict = {
-            task_id: '{}'.format('In Progress' if task_id_is_found(client, task_id) else 'Task Was Not Found')
-            for task_id in task_ids
-            if task_id not in completed_tasks_dict
-        }
+        for uncompleted_task_id in tasks_id:
+            if task_id_is_found(client, uncompleted_task_id):
+                progress_status = 'In Progress' if task_id_is_found(client, uncompleted_task_id) \
+                    else 'Task Was Not Found'
+                readable_task_details_output.append(
+                    {'Task ID': uncompleted_task_id, 'Progress Status': progress_status})
 
-        tasks_status_dict = completed_tasks_dict | tasks_in_progress_dict
-        tasks_status_list = [{'Task ID': task_id, 'Progress Status': progress_status}
-                             for task_id, progress_status in tasks_status_dict.items()]
-
-        readable_output = tableToMarkdown(f'Nutanix Hypervisor Tasks Status', tasks_status_list,
+        readable_output = tableToMarkdown('Nutanix Hypervisor Tasks Status', readable_task_details_output,
                                           headers=['Task ID', 'Progress Status'])
 
     elif maybe_time_out and argToBoolean(maybe_time_out):

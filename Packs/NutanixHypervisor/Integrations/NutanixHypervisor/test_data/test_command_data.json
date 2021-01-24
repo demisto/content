@@ -1,4 +1,63 @@
 {
+  "nutanix-fetch-incidents": {
+    "suffix": "alerts",
+    "response": {
+      "metadata": "a few rows containing meta data about the request",
+      "entities": [
+        {
+          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "alert_type_uuid": "A140001",
+          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136,
+          "created_time_stamp_in_usecs": 1610718924821136
+        },
+        {
+          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "alert_type_uuid": "A140002",
+          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914,
+          "created_time_stamp_in_usecs": 1610460118147914
+        }
+      ]
+    },
+    "expected": {
+      "outputs_prefix": "NutanixHypervisor.Alerts",
+      "outputs_key_field": "id",
+      "outputs": [
+        {
+          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "alert_type_uuid": "A140001",
+          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136,
+          "created_time_stamp_in_usecs": 1610718924821136
+        },
+        {
+          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "alert_type_uuid": "A140002",
+          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "resolved": true,
+          "auto_resolved": false,
+          "acknowledged": true,
+          "details": "many details about the alert",
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914,
+          "created_time_stamp_in_usecs": 1610460118147914
+        }
+      ]
+    },
+    "args": {}
+  },
   "nutanix-hypervisor-hosts-list": {
     "suffix": "hosts",
     "response": {
@@ -86,6 +145,7 @@
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Host",
       "outputs_key_field": "uuid",
+      "readable_output": "### Nutanix Hosts List\n|cpu_capacity_in_hz|cpu_frequency_in_hz|details|memory_capacity_in_bytes|num_cpu_cores|num_cpu_sockets|num_cpu_threads|service_vmid|uuid|\n|---|---|---|---|---|---|---|---|---|\n| 16760000000 | 2095000000 | many details about the host | 33722204160 | 8 | 2 | 8 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy |\n",
       "outputs": [
         {
           "disk_hardware_configs": [
@@ -161,6 +221,7 @@
     "expected": {
       "outputs_prefix": "NutanixHypervisor.VM",
       "outputs_key_field": "uuid",
+      "readable_output": "### Nutanix Virtual Machines List\n|allow_live_migrate|gpus_assigned|ha_priority|host_uuid|machine_type|memory_mb|name|num_cores_per_vcpu|num_vcpus|power_state|timezone|uuid|vm_logical_timestamp|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| false | false | 0 | 59bc015e-a22d-41ab-9ce2-a96164955e8d | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | 16c3d845-dc54-4fb1-bfc8-7671dd230967 | 156 |\n",
       "outputs": [
         {
           "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -184,6 +245,7 @@
     "expected": {
       "outputs_prefix": "NutanixHypervisor.VMPowerStatus",
       "outputs_key_field": "task_uuid",
+      "readable_output": null,
       "outputs": {
         "task_uuid": 123123
       }
@@ -195,19 +257,42 @@
   "nutanix-hypervisor-task-poll": {
     "suffix": "tasks/poll",
     "response": {
-      "completed_tasks_info": {
-        "details": "many details about the tasks"
-      }
+      "completed_tasks_info": [
+        {
+          "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "meta_request": {
+            "method_name": "VmChangePowerState"
+          },
+          "meta_response": {
+            "error_code": 0
+          },
+          "operation_type": "VmChangePowerState",
+          "percentage_complete": 100,
+          "progress_status": "Succeeded"
+        }
+      ]
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Task",
       "outputs_key_field": "uuid",
-      "outputs": {
-        "details": "many details about the tasks"
-      }
+      "readable_output": "### Nutanix Hypervisor Tasks Status\n|Task ID|Progress Status|\n|---|---|\n| xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Succeeded |\n",
+      "outputs": [
+        {
+          "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "meta_request": {
+            "method_name": "VmChangePowerState"
+          },
+          "meta_response": {
+            "error_code": 0
+          },
+          "operation_type": "VmChangePowerState",
+          "percentage_complete": 100,
+          "progress_status": "Succeeded"
+        }
+      ]
     },
     "args": {
-      "task_ids": "123"
+      "task_ids": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
     }
   },
   "nutanix-alerts-list": {
@@ -242,6 +327,7 @@
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Alerts",
       "outputs_key_field": "id",
+      "readable_output": "### Nutanix Alert List\n|acknowledged|alert_type_uuid|auto_resolved|check_id|created_time_stamp_in_usecs|details|id|last_occurrence_time_stamp_in_usecs|resolved|\n|---|---|---|---|---|---|---|---|---|\n| true | A140001 | false | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx | 1610718924821136 | many details about the alert | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 1610718924821136 | true |\n| true | A140002 | false | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx | 1610460118147914 | many details about the alert | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 1610460118147914 | true |\n",
       "outputs": [
         {
           "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -251,8 +337,8 @@
           "auto_resolved": false,
           "acknowledged": true,
           "details": "many details about the alert",
-          "last_occurrence_time_stamp_in_usecs": 1610718924821136,
-          "created_time_stamp_in_usecs": 1610718924821136
+          "last_occurrence": "2021-01-15T13:55:24.821136Z",
+          "created_time": "2021-01-15T13:55:24.821136Z"
         },
         {
           "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
@@ -262,8 +348,8 @@
           "auto_resolved": false,
           "acknowledged": true,
           "details": "many details about the alert",
-          "last_occurrence_time_stamp_in_usecs": 1610460118147914,
-          "created_time_stamp_in_usecs": 1610460118147914
+          "last_occurrence": "2021-01-12T14:01:58.147914Z",
+          "created_time": "2021-01-12T14:01:58.147914Z"
         }
       ]
     },
@@ -277,8 +363,9 @@
       "message": "message about acknowledge"
     },
     "expected": {
-      "outputs_prefix": "NutanixHypervisor.Alert",
+      "outputs_prefix": "NutanixHypervisor.AcknowledgeAlerts",
       "outputs_key_field": "id",
+      "readable_output": null,
       "outputs": {
         "id": 123123,
         "successful": true,
@@ -297,8 +384,9 @@
       "message": "message about acknowledge"
     },
     "expected": {
-      "outputs_prefix": "NutanixHypervisor.Alert",
+      "outputs_prefix": "NutanixHypervisor.ResolveAlerts",
       "outputs_key_field": "id",
+      "readable_output": null,
       "outputs": {
         "id": 123123,
         "successful": true,
@@ -322,6 +410,7 @@
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Alert",
+      "readable_output": null,
       "outputs": {
         "num_successful_updates": 1,
         "num_failed_updates": 0,
@@ -347,6 +436,7 @@
     },
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Alert",
+      "readable_output": null,
       "outputs": {
         "num_successful_updates": 1,
         "num_failed_updates": 0,
