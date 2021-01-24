@@ -1,7 +1,6 @@
 id: playbook-Cyberint_Test
 name: playbook-Cyberint_Test
 version: -1
-fromversion: 4.5.0
 starttaskid: '0'
 tasks:
   '0':
@@ -419,3 +418,4 @@ view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width
   380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
+fromversion: 5.0.0

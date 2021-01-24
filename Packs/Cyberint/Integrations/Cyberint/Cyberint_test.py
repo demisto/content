@@ -195,4 +195,3 @@ def test_extract_data_from_csv_stream(requests_mock):
     assert len(result) == 6
     assert list(result[0].keys()) == [value.lower() for value in CSV_FIELDS_TO_EXTRACT]
     assert result[0]['username'] == 'lulu'
-

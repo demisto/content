@@ -353,5 +353,6 @@
 	"sortValues": null,
 	"system": false,
 	"toServerVersion": "",
+	"fromversion": "5.0.0",
 	"version": -1
 }

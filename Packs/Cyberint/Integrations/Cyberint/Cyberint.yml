@@ -8,10 +8,11 @@ configuration:
   name: access_token
   required: true
   type: 4
-- additionalinfo: "Cyberint environment on which the services run (i.e http://{environment}.cyberint.io/...)"
+- additionalinfo: Cyberint environment on which the services run (i.e http://{environment}.cyberint.io/...)
   display: Cyberint API Environment
   name: environment
   required: true
+  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -42,6 +43,7 @@ configuration:
   display: Fetch Environments
   name: fetch_environment
   required: false
+  type: 0
 - additionalinfo: Choose one or more types to fetch if wanted. If none is chosen,
     all types will be returned.
   display: Fetch Types
@@ -90,17 +92,19 @@ configuration:
   - other
   required: false
   type: 16
-- additionalinfo: "Max number of alerts per fetch. Defaults to  the minimum 10, max\
-    \ is 100."
+- additionalinfo: Max number of alerts per fetch. Defaults to  the minimum 10, max
+    is 100.
   defaultvalue: '10'
   display: Fetch Limit
   name: max_fetch
   required: false
+  type: 0
 - additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days.
   defaultvalue: 7 days
   display: First Fetch Time
   name: fetch_time
   required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
