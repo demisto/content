@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Username
   name: credentials
-  required: false
+  required: true
   type: 9
 - defaultvalue: 'true'
   display: Fetch indicators
@@ -13,7 +13,7 @@ configuration:
   required: false
   type: 8
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
-  defaultvalue: feedInstanceReputationNotSet
+  defaultvalue: Suspicious
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -24,7 +24,7 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: F - Reliability cannot be judged
+  defaultvalue: B - Usually reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -108,7 +108,7 @@ script:
   - arguments:
     - default: false
       defaultValue: '50'
-      description: The maximum number of results to return. The default value is 50.
+      description: The maximum number of results to return.
       isArray: false
       name: limit
       required: false
