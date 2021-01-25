@@ -38,6 +38,7 @@ def get_score(classification):
     return score_dict.get(classification)
 
 
+# pylint: disable=function-redefined
 def return_error(data):  # type: ignore
     """
     Return error as result and exit - filter 404 as non-errors
@@ -97,16 +98,10 @@ def validate_http(r):
             return False, 'HTTP response is not JSON [{error}] - {body}'.format(error=e, body=r.text)
     elif r.status_code in (401, 403):
         return False, 'Credential error - The provided TitaniumCloud credentials are either incorrect or lack ' \
-                      'API roles [{code}] - {body}'.format(
-                          code=r.status_code,
-                          body=r.text
-                      )
+                      'API roles [{code}] - {body}'.format(code=r.status_code, body=r.text)
     elif r.status_code == 404:
         return False, 'No reference found - There were no results found for the provided sample ' \
-                      '[{code}] - {body}'.format(
-                          code=r.status_code,
-                          body=r.text
-                      )
+                      '[{code}] - {body}'.format(code=r.status_code, body=r.text)
     else:
         return False, 'An error has occurred [{code}] - {body}'.format(
             code=r.status_code,
@@ -167,7 +162,8 @@ def rldata(hash_type, hash_value):
             recent_detections = [item for item in scanners if item['result']]
             if recent_detections:
                 md += '***\n'
-                md += '#### Recent Detections ({record_time}):\n'.format(record_time=scan_entries_sorted[0].get('record_time'))
+                md += '#### Recent Detections ({record_time}):\n'.format(
+                    record_time=scan_entries_sorted[0].get('record_time'))
                 md += "\n".join(['{} -- {}'.format(item['name'], item['result']) for item in recent_detections])
     return True, (md, ec, r)
 
@@ -196,7 +192,7 @@ def mwp(hash_type, hash_value):
     md += 'First seen: **' + demisto.gets(contents, 'first_seen') + '**\n'
     md += 'Last seen: **' + demisto.gets(contents, 'last_seen') + '**\n'
     md += 'Positives / Total: **' + demisto.gets(contents, 'scanner_match') + ' / ' + \
-        demisto.gets(contents, 'scanner_count') + '**\n'
+          demisto.gets(contents, 'scanner_count') + '**\n'
     md += 'Trust factor: **' + demisto.gets(contents, 'trust_factor') + '**\n'
     if contents['status'] == 'MALICIOUS':
         md += 'Threat name: **' + demisto.gets(contents, 'threat_name') + '**\n'

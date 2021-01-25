@@ -46,6 +46,7 @@ no_reference_message = "{original_message} - {added_message}".format(
 )
 
 
+# pylint: disable=function-redefined
 def return_error(data):  # type: ignore
     """
     Return error as result and exit - filter 404 as non-errors
@@ -105,16 +106,10 @@ def validate_http(r):
             return False, 'HTTP response is not JSON [{error}] - {body}'.format(error=e, body=r.text)
     elif r.status_code in (401, 403):
         return False, 'Credential error - The provided A1000 credentials/token are either incorrect or lack ' \
-                      'API roles [{code}] - {body}'.format(
-                          code=r.status_code,
-                          body=r.text
-                      )
+                      'API roles [{code}] - {body}'.format(code=r.status_code, body=r.text)
     elif r.status_code == 404:
         return False, 'No reference found - There were no results found for the provided input ' \
-                      '[{code}] - {body}'.format(
-                          code=r.status_code,
-                          body=r.text
-                      )
+                      '[{code}] - {body}'.format(code=r.status_code, body=r.text)
     else:
         return False, 'An error has occurred [{code}] - {body}'.format(
             code=r.status_code,
@@ -308,7 +303,8 @@ def upload():
             md += 'ID: **{}**\n'.format(demisto.get(r, 'detail.id'))
             md += 'SHA1: **{}**\n'.format(demisto.get(r, 'detail.sha1'))
             md += 'Created: **{}**\n'.format(demisto.get(r, 'detail.created'))
-            demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': r, 'HumanReadable': md})
+            demisto.results(
+                {'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': r, 'HumanReadable': md})
     except Exception:
         return_error('Entry ID {} is not a file'.format(demisto.getArg('entryId')))
 
