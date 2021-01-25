@@ -20,19 +20,9 @@
         "PowershellRemoting": {
             "mandatory": true,
             "display_name": "Powershell Remoting"
-        },
-        "PcapAnalysis": {
-            "mandatory": true,
-            "display_name": "PCAP Analysis"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
         }
     },
     "displayedImages": [
-        "PowershellRemoting",
-        "PcapAnalysis",
-        "CommonTypes"
+        "PowershellRemoting"
     ]
 }

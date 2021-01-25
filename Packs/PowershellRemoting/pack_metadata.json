@@ -19,5 +19,7 @@
         "remoting",
         "windows",
         "psremoteing"
-    ]
+    ],
+    "dependencies": {},
+    "displayedImages": []
 }
