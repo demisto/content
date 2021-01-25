@@ -133,7 +133,7 @@ class TestMetadataParsing:
                                                           commit_hash="dummy_commit", downloads_count=10,
                                                           is_feed_pack=False)
 
-        assert parsed_metadata['tags'] == ['tag number one', 'Tag number two', 'New', 'Use Case']
+        assert parsed_metadata['tags'] == ['tag number one', 'Tag number two', 'Use Case', 'New']
 
     def test_new_tag_removed(self, dummy_pack_metadata, dummy_pack):
         """
