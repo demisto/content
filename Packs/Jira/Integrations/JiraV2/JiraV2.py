@@ -417,7 +417,7 @@ def get_issue_fields(issue_creating=False, **issue_args):
     if issue_args.get('assignee'):
         if not issue['fields'].get('assignee'):
             issue['fields']['assignee'] = {}
-        issue['fields']['assignee']['name'] = issue_args['assignee']
+        issue['fields']['assignee']['id'] = issue_args['assignee']
 
     if issue_args.get('reporter'):
         if not issue['fields'].get('reporter'):
