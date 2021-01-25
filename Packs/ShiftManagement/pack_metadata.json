@@ -34,11 +34,21 @@
         "Zoom": {
             "mandatory": false,
             "display_name": "Zoom"
-        }
+        },
+		"Slack": {
+		"mandatory": false,
+            "display_name": "Slack"
+		},
+		"MicrosoftTeams": {
+		"mandatory": false,
+            "display_name": "MicrosoftTeams"
+		}
     },
     "displayedImages": [
         "CommonScripts",
         "CommonTypes",
-        "Zoom"
+        "Zoom",
+		"Slack",
+		"MicrosoftTeams"
     ]
 }
