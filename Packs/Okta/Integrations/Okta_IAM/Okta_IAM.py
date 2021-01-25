@@ -666,7 +666,7 @@ def main():
         user_profile = disable_user_command(client, args, is_disable_enabled)
 
     if user_profile:
-        user_profile.return_outputs()
+        return_results(user_profile.to_entry())
 
     try:
         if command == 'test-module':

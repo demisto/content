@@ -293,7 +293,7 @@ def main():
         user_profile = iam_command.disable_user(client, args)
 
     if user_profile:
-        user_profile.return_outputs()
+        return_results(user_profile.to_entry())
 
     '''non-CRUD commands'''
 

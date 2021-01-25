@@ -1,6 +1,6 @@
 from requests import Response, Session
-from HelloIAMWorld import Client, get_mapping_fields
 from IAMApiModule import *
+from HelloIAMWorld import Client, get_mapping_fields
 
 APP_USER_OUTPUT = {
     "user_id": "mock_id",
