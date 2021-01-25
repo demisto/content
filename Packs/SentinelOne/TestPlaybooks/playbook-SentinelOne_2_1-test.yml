@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f3341938-ab2c-4733-8547-3f053deaa4f9
+    taskid: 4ce6fe9b-4a58-48dc-8e87-b4f19c4b2e68
     type: start
     task:
-      id: f3341938-ab2c-4733-8547-3f053deaa4f9
+      id: 4ce6fe9b-4a58-48dc-8e87-b4f19c4b2e68
       version: -1
       name: ""
       iscommand: false
@@ -20,7 +20,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 50,
           "y": 50
         }
       }
@@ -31,10 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: ea9aa322-be00-4787-81e5-b4dfd61c05d4
+    taskid: afbee47d-9758-4c3b-8253-8172a3403ac4
     type: regular
     task:
-      id: ea9aa322-be00-4787-81e5-b4dfd61c05d4
+      id: afbee47d-9758-4c3b-8253-8172a3403ac4
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -44,10 +44,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
-      - "32"
       - "22"
-      - "46"
     scriptarguments:
       all:
         simple: "yes"
@@ -59,7 +56,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1125,
+          "x": 50,
           "y": 195
         }
       }
@@ -70,10 +67,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: a40aae0e-3569-4547-846c-ce764b8c7933
+    taskid: aeea9334-633c-42d8-8ffc-8b98aca87aa2
     type: regular
     task:
-      id: a40aae0e-3569-4547-846c-ce764b8c7933
+      id: aeea9334-633c-42d8-8ffc-8b98aca87aa2
       version: -1
       name: Get Threats
       description: Get threats using a variety of filters.
@@ -103,7 +100,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 50,
           "y": 720
         }
       }
@@ -114,10 +111,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 2e7af684-8d35-4abd-89a1-8ed0a72d1f81
+    taskid: 180b5b16-cec4-4ff4-8ee6-30f12f2c1f9a
     type: regular
     task:
-      id: 2e7af684-8d35-4abd-89a1-8ed0a72d1f81
+      id: 180b5b16-cec4-4ff4-8ee6-30f12f2c1f9a
       version: -1
       name: Get Activities
       description: Get a list of activities.
@@ -147,8 +144,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 370
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -158,10 +155,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 78a06e6d-acd2-4aac-8128-649b9dae836e
+    taskid: 8a6d5eb0-4e6a-4d66-8ff8-f55d441aeb6c
     type: regular
     task:
-      id: 78a06e6d-acd2-4aac-8128-649b9dae836e
+      id: 8a6d5eb0-4e6a-4d66-8ff8-f55d441aeb6c
       version: -1
       name: Get All agents
       description: List all agents matching the input filter.
@@ -183,7 +180,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 4365
         }
       }
     note: false
@@ -193,10 +190,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: ea3414de-9cbb-47e1-86ee-fcf04437e444
+    taskid: 251fef3a-2199-4a50-8894-53ce42830a29
     type: regular
     task:
-      id: ea3414de-9cbb-47e1-86ee-fcf04437e444
+      id: 251fef3a-2199-4a50-8894-53ce42830a29
       version: -1
       name: Get Agent
       description: Get details of an agent by its ID.
@@ -215,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 4540
         }
       }
     note: false
@@ -225,10 +222,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: ddd92f37-b8ef-4664-80c1-0040b6119bb3
+    taskid: 0f7945c7-9af4-4f4f-8adf-e2aed991160a
     type: regular
     task:
-      id: ddd92f37-b8ef-4664-80c1-0040b6119bb3
+      id: 0f7945c7-9af4-4f4f-8adf-e2aed991160a
       version: -1
       name: Get all groups
       description: Gets the group data.
@@ -252,8 +249,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 545
+          "x": 50,
+          "y": 3345
         }
       }
     note: false
@@ -263,10 +260,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 544db342-69f6-4e3b-8e6a-6028253ee66d
+    taskid: 1a17d3b4-d7fa-49fe-8496-702dab0ce87c
     type: regular
     task:
-      id: 544db342-69f6-4e3b-8e6a-6028253ee66d
+      id: 1a17d3b4-d7fa-49fe-8496-702dab0ce87c
       version: -1
       name: Get threat summary
       description: Get dashboard threat summary.
@@ -284,7 +281,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 50,
           "y": 1070
         }
       }
@@ -295,10 +292,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 88056758-b313-45e8-821f-e6715c88cfb4
+    taskid: c5e155a9-0e02-4cdc-8b67-f88d2866f655
     type: regular
     task:
-      id: 88056758-b313-45e8-821f-e6715c88cfb4
+      id: c5e155a9-0e02-4cdc-8b67-f88d2866f655
       version: -1
       name: Disconnect agent from network
       description: Disconnect agents from network
@@ -317,7 +314,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 4715
         }
       }
     note: false
@@ -327,10 +324,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: d5f1ae70-53d8-4420-81b6-91a849f61951
+    taskid: d232d791-e89d-47e7-84e9-d447c632e5b1
     type: regular
     task:
-      id: d5f1ae70-53d8-4420-81b6-91a849f61951
+      id: d232d791-e89d-47e7-84e9-d447c632e5b1
       version: -1
       name: Broadcast Message
       description: Broadcasts a message to all agents matching the input filter.
@@ -354,7 +351,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 5940
         }
       }
     note: false
@@ -364,10 +361,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 84a30eb9-3e0e-498a-85db-ccdf3e532475
+    taskid: 0a4fdbc8-c732-4277-8d80-fa99e5d79cfc
     type: regular
     task:
-      id: 84a30eb9-3e0e-498a-85db-ccdf3e532475
+      id: 0a4fdbc8-c732-4277-8d80-fa99e5d79cfc
       version: -1
       name: Create Query ID
       description: Start a Deep Visibility Query and get the queryId, use queryId
@@ -398,8 +395,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 720
+          "x": 50,
+          "y": 1595
         }
       }
     note: false
@@ -409,10 +406,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: 7521c70e-f79e-455f-81ce-347301b685d1
+    taskid: a7941630-c284-4b45-896f-8745a038d972
     type: regular
     task:
-      id: 7521c70e-f79e-455f-81ce-347301b685d1
+      id: a7941630-c284-4b45-896f-8745a038d972
       version: -1
       name: Get events
       description: Get all Deep Visibility events from query
@@ -422,7 +419,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+      - "3"
     scriptarguments:
       limit:
         simple: "10"
@@ -432,8 +429,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1245
+          "x": 50,
+          "y": 2120
         }
       }
     note: false
@@ -443,10 +440,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 9446b209-fa74-44ef-8d69-5c3d0507e166
+    taskid: a0bf5813-c3f4-47aa-8110-e2c0961084a4
     type: regular
     task:
-      id: 9446b209-fa74-44ef-8d69-5c3d0507e166
+      id: a0bf5813-c3f4-47aa-8110-e2c0961084a4
       version: -1
       name: Get agent activities
       description: Returns a list of activities.
@@ -483,7 +480,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 6115
         }
       }
     note: false
@@ -493,10 +490,10 @@ tasks:
     quietmode: 0
   "21":
     id: "21"
-    taskid: b8139634-0e30-40dd-8112-8a987a011222
+    taskid: c9a07062-ca35-443e-8f15-184ef9aa506b
     type: condition
     task:
-      id: b8139634-0e30-40dd-8112-8a987a011222
+      id: c9a07062-ca35-443e-8f15-184ef9aa506b
       version: -1
       name: Verify outputs
       type: condition
@@ -522,8 +519,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 545
+          "x": 50,
+          "y": 2470
         }
       }
     note: false
@@ -533,10 +530,10 @@ tasks:
     quietmode: 0
   "22":
     id: "22"
-    taskid: 58da4b46-2d09-4a73-82dd-f62312d940b9
+    taskid: 86e8c673-0f92-4022-848c-9e3b2f16fd45
     type: regular
     task:
-      id: 58da4b46-2d09-4a73-82dd-f62312d940b9
+      id: 86e8c673-0f92-4022-848c-9e3b2f16fd45
       version: -1
       name: Fetch Incidents
       description: Execute FetchIncident for a given instance
@@ -558,7 +555,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 50,
           "y": 370
         }
       }
@@ -569,10 +566,10 @@ tasks:
     quietmode: 0
   "23":
     id: "23"
-    taskid: 2b165f4f-b2a7-45bd-8cbe-57b62d974db6
+    taskid: e2bc9deb-00a1-4b39-8118-cd803e27bfd0
     type: regular
     task:
-      id: 2b165f4f-b2a7-45bd-8cbe-57b62d974db6
+      id: e2bc9deb-00a1-4b39-8118-cd803e27bfd0
       version: -1
       name: Get agent
       description: Returns details of an agent, by agent ID.
@@ -591,7 +588,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 4890
         }
       }
     note: false
@@ -601,10 +598,10 @@ tasks:
     quietmode: 0
   "24":
     id: "24"
-    taskid: 609479ff-85e2-4fcc-8b1c-fbc1b17a6b64
+    taskid: 7dbfef72-1460-439f-8285-87e7a7b54522
     type: condition
     task:
-      id: 609479ff-85e2-4fcc-8b1c-fbc1b17a6b64
+      id: 7dbfef72-1460-439f-8285-87e7a7b54522
       version: -1
       name: 'Is the agent disconnected? '
       type: condition
@@ -637,7 +634,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 5065
         }
       }
     note: false
@@ -647,10 +644,10 @@ tasks:
     quietmode: 0
   "25":
     id: "25"
-    taskid: 379a9f52-8e87-48f4-8e3d-064f324a6419
+    taskid: 0958db10-fb15-4244-8641-aab4a6022559
     type: regular
     task:
-      id: 379a9f52-8e87-48f4-8e3d-064f324a6419
+      id: 0958db10-fb15-4244-8641-aab4a6022559
       version: -1
       name: Connect agent to network
       description: Connects agents to network.
@@ -669,7 +666,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 5240
         }
       }
     note: false
@@ -679,10 +676,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 23914067-9a0f-408f-87ba-c9fb5b3a149a
+    taskid: 596f0f54-1a4b-409b-8a7e-86a77f1751bb
     type: regular
     task:
-      id: 23914067-9a0f-408f-87ba-c9fb5b3a149a
+      id: 596f0f54-1a4b-409b-8a7e-86a77f1751bb
       version: -1
       name: Get agent
       description: Returns details of an agent, by agent ID.
@@ -701,7 +698,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 5590
         }
       }
     note: false
@@ -711,10 +708,10 @@ tasks:
     quietmode: 0
   "27":
     id: "27"
-    taskid: ce93647e-8542-43ce-86ce-16d2e5433aae
+    taskid: 09f0005d-4bf8-42af-8a07-8ee4915b7f12
     type: condition
     task:
-      id: ce93647e-8542-43ce-86ce-16d2e5433aae
+      id: 09f0005d-4bf8-42af-8a07-8ee4915b7f12
       version: -1
       name: 'Is the agent reconnect? '
       type: condition
@@ -739,31 +736,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "28":
-    id: "28"
-    taskid: a7f6650c-a6c9-4902-883d-88d511e8fe29
-    type: title
-    task:
-      id: a7f6650c-a6c9-4902-883d-88d511e8fe29
-      version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 695,
-          "y": 1435
+          "y": 5765
         }
       }
     note: false
@@ -773,10 +746,10 @@ tasks:
     quietmode: 0
   "29":
     id: "29"
-    taskid: eeab73bd-f3a9-446c-8088-296e08f3b396
+    taskid: 0a312e30-8676-4fd6-821f-0ac3a45bf003
     type: condition
     task:
-      id: eeab73bd-f3a9-446c-8088-296e08f3b396
+      id: 0a312e30-8676-4fd6-821f-0ac3a45bf003
       version: -1
       name: Verify Context
       type: condition
@@ -797,8 +770,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 895
+          "x": 50,
+          "y": 1770
         }
       }
     note: false
@@ -808,10 +781,10 @@ tasks:
     quietmode: 0
   "30":
     id: "30"
-    taskid: 2d7bd68e-3fe1-46e8-8e98-69c99823523d
+    taskid: c60eafe7-98cc-4cc1-8b59-e0eb2615520b
     type: regular
     task:
-      id: 2d7bd68e-3fe1-46e8-8e98-69c99823523d
+      id: c60eafe7-98cc-4cc1-8b59-e0eb2615520b
       version: -1
       name: Wait
       description: Sleep for X seconds
@@ -829,8 +802,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 1070
+          "x": 50,
+          "y": 1945
         }
       }
     note: false
@@ -840,10 +813,10 @@ tasks:
     quietmode: 0
   "31":
     id: "31"
-    taskid: 5c8736ee-7587-4075-8fe3-dd67f4e75a5c
+    taskid: 25d72135-95b7-4f36-8d55-8d6d3fac6ce0
     type: regular
     task:
-      id: 5c8736ee-7587-4075-8fe3-dd67f4e75a5c
+      id: 25d72135-95b7-4f36-8d55-8d6d3fac6ce0
       version: -1
       name: Wait
       description: Sleep for X seconds
@@ -862,7 +835,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 5415
         }
       }
     note: false
@@ -872,10 +845,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 164292af-f936-4f2e-8eb6-d2725627d052
+    taskid: aab748c1-da75-43e9-82a9-8961a795539a
     type: regular
     task:
-      id: 164292af-f936-4f2e-8eb6-d2725627d052
+      id: aab748c1-da75-43e9-82a9-8961a795539a
       version: -1
       name: Set Date
       description: |
@@ -901,8 +874,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 545
+          "x": 50,
+          "y": 1420
         }
       }
     note: false
@@ -912,10 +885,10 @@ tasks:
     quietmode: 0
   "33":
     id: "33"
-    taskid: 47cc07d9-fadf-413f-8bd8-5022d99808c5
+    taskid: c5693651-e403-4a45-8e89-b28500e63d12
     type: regular
     task:
-      id: 47cc07d9-fadf-413f-8bd8-5022d99808c5
+      id: c5693651-e403-4a45-8e89-b28500e63d12
       version: -1
       name: Get all sites
       description: Returns all sites that match the specified criteria.
@@ -942,8 +915,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 50,
+          "y": 3695
         }
       }
     note: false
@@ -953,10 +926,10 @@ tasks:
     quietmode: 0
   "34":
     id: "34"
-    taskid: cec84e72-4c48-4574-8969-d949222e1f73
+    taskid: c5a8c226-6df1-4783-8855-5040843f2866
     type: regular
     task:
-      id: cec84e72-4c48-4574-8969-d949222e1f73
+      id: c5a8c226-6df1-4783-8855-5040843f2866
       version: -1
       name: Get Site
       description: Returns a site, by site ID.
@@ -978,8 +951,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 50,
+          "y": 3870
         }
       }
     note: false
@@ -989,10 +962,10 @@ tasks:
     quietmode: 0
   "36":
     id: "36"
-    taskid: ee82ad18-dc37-4d3f-8e4c-f17263cb4c5a
+    taskid: a930b0c0-ea12-41ff-89fe-c80d4ecac568
     type: condition
     task:
-      id: ee82ad18-dc37-4d3f-8e4c-f17263cb4c5a
+      id: a930b0c0-ea12-41ff-89fe-c80d4ecac568
       version: -1
       name: Verify result
       type: condition
@@ -1000,7 +973,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "28"
+      - "46"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1013,8 +986,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1245
+          "x": 50,
+          "y": 4045
         }
       }
     note: false
@@ -1024,10 +997,10 @@ tasks:
     quietmode: 0
   "37":
     id: "37"
-    taskid: 2d0de2af-5227-4ccb-8a76-75abe62e719a
+    taskid: 504dc531-2760-4b2c-8d56-e44c289f07be
     type: condition
     task:
-      id: 2d0de2af-5227-4ccb-8a76-75abe62e719a
+      id: 504dc531-2760-4b2c-8d56-e44c289f07be
       version: -1
       name: Verify Results
       type: condition
@@ -1048,7 +1021,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 50,
           "y": 895
         }
       }
@@ -1059,10 +1032,10 @@ tasks:
     quietmode: 0
   "38":
     id: "38"
-    taskid: 7c7f3f0f-cdb3-4bf5-8a2e-7bffc73a1085
+    taskid: e8b62f74-388c-4139-860f-4065dc004f9d
     type: title
     task:
-      id: 7c7f3f0f-cdb3-4bf5-8a2e-7bffc73a1085
+      id: e8b62f74-388c-4139-860f-4065dc004f9d
       version: -1
       name: Done
       type: title
@@ -1072,8 +1045,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1555,
-          "y": 1435
+          "x": 50,
+          "y": 6435
         }
       }
     note: false
@@ -1083,10 +1056,10 @@ tasks:
     quietmode: 0
   "39":
     id: "39"
-    taskid: 8f43ece6-4b82-4b49-8cb8-d0c885bf844e
+    taskid: 5f2fa3ec-c9b8-4d72-84fc-0b5a993c9960
     type: regular
     task:
-      id: 8f43ece6-4b82-4b49-8cb8-d0c885bf844e
+      id: 5f2fa3ec-c9b8-4d72-84fc-0b5a993c9960
       version: -1
       name: Delete Threat from Context
       description: Delete field from context
@@ -1108,7 +1081,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 50,
           "y": 545
         }
       }
@@ -1119,10 +1092,10 @@ tasks:
     quietmode: 0
   "40":
     id: "40"
-    taskid: 750859ab-b327-45be-8489-416f7e2c4c19
+    taskid: 915f9565-2690-42bf-8ed9-85ab6f70abd7
     type: regular
     task:
-      id: 750859ab-b327-45be-8489-416f7e2c4c19
+      id: 915f9565-2690-42bf-8ed9-85ab6f70abd7
       version: -1
       name: Get Hash
       description: Get file reputation by a SHA1 hash.
@@ -1140,8 +1113,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 720
+          "x": 50,
+          "y": 2645
         }
       }
     note: false
@@ -1151,10 +1124,10 @@ tasks:
     quietmode: 0
   "41":
     id: "41"
-    taskid: eed2b25c-cc23-4d69-85b4-41653c94c10e
+    taskid: ea3b24a0-dd3b-41b0-8f20-e7c52227838d
     type: condition
     task:
-      id: eed2b25c-cc23-4d69-85b4-41653c94c10e
+      id: ea3b24a0-dd3b-41b0-8f20-e7c52227838d
       version: -1
       name: Verify outputs
       type: condition
@@ -1175,8 +1148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 895
+          "x": 50,
+          "y": 2820
         }
       }
     note: false
@@ -1186,10 +1159,10 @@ tasks:
     quietmode: 0
   "42":
     id: "42"
-    taskid: 2d04b57a-3302-4602-8b91-1c23611a0f03
+    taskid: e43c6e26-90e1-42f2-82d4-5652ac28f8bf
     type: regular
     task:
-      id: 2d04b57a-3302-4602-8b91-1c23611a0f03
+      id: e43c6e26-90e1-42f2-82d4-5652ac28f8bf
       version: -1
       name: Get Exclusions
       description: Lists all exclusion items that match the specified input filter.
@@ -1211,8 +1184,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1070
+          "x": 50,
+          "y": 2995
         }
       }
     note: false
@@ -1222,10 +1195,10 @@ tasks:
     quietmode: 0
   "43":
     id: "43"
-    taskid: 257917ea-5b7d-4a3b-8a67-014dbff358f1
+    taskid: 0bcd92ee-8223-49db-8c7d-db09d2f370b1
     type: condition
     task:
-      id: 257917ea-5b7d-4a3b-8a67-014dbff358f1
+      id: 0bcd92ee-8223-49db-8c7d-db09d2f370b1
       version: -1
       name: Verify outputs
       type: condition
@@ -1233,7 +1206,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "28"
+      - "7"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1249,8 +1222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1245
+          "x": 50,
+          "y": 3170
         }
       }
     note: false
@@ -1260,10 +1233,10 @@ tasks:
     quietmode: 0
   "44":
     id: "44"
-    taskid: c2a3ce2d-e0e6-474a-87f4-b6a112db63b7
+    taskid: a2b4aecb-e085-40e5-805e-e3e426e880ce
     type: condition
     task:
-      id: c2a3ce2d-e0e6-474a-87f4-b6a112db63b7
+      id: a2b4aecb-e085-40e5-805e-e3e426e880ce
       version: -1
       name: Verify outputs
       type: condition
@@ -1287,8 +1260,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 50,
+          "y": 3520
         }
       }
     note: false
@@ -1298,21 +1271,24 @@ tasks:
     quietmode: 0
   "45":
     id: "45"
-    taskid: 1ac8324d-9d2b-4fde-8611-07e173cc9587
+    taskid: 36221d62-a56a-42ce-8d27-920384723d2f
     type: title
     task:
-      id: 1ac8324d-9d2b-4fde-8611-07e173cc9587
+      id: 36221d62-a56a-42ce-8d27-920384723d2f
       version: -1
       name: Agents Done
       type: title
       iscommand: false
       brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 6290
         }
       }
     note: false
@@ -1322,10 +1298,10 @@ tasks:
     quietmode: 0
   "46":
     id: "46"
-    taskid: a3298960-e6dd-42ec-8684-effedf84cb91
+    taskid: add305a5-cd34-49a9-818e-556d02c455e0
     type: title
     task:
-      id: a3298960-e6dd-42ec-8684-effedf84cb91
+      id: add305a5-cd34-49a9-818e-556d02c455e0
       version: -1
       name: Agents
       type: title
@@ -1339,7 +1315,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 385
+          "y": 4220
         }
       }
     note: false
@@ -1349,10 +1325,10 @@ tasks:
     quietmode: 0
   "47":
     id: "47"
-    taskid: 1e3d88bc-c9b8-4be0-8c08-730a1e2558cd
+    taskid: 4a1fd1cc-640b-4507-8678-629a0440ad4c
     type: condition
     task:
-      id: 1e3d88bc-c9b8-4be0-8c08-730a1e2558cd
+      id: 4a1fd1cc-640b-4507-8678-629a0440ad4c
       version: -1
       name: Verify Results
       type: condition
@@ -1360,7 +1336,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "38"
+      - "32"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1373,7 +1349,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 50,
           "y": 1245
         }
       }
@@ -1387,8 +1363,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2485,
-        "width": 2100,
+        "height": 6450,
+        "width": 380,
         "x": 50,
         "y": 50
       }
