@@ -597,7 +597,7 @@ class Pack(object):
         pack_metadata['tags'] = input_to_list(input_data=user_metadata.get('tags'))
         if is_feed_pack and 'TIM' not in pack_metadata['tags']:
             pack_metadata['tags'].append('TIM')
-        days_since_creation = (datetime.utcnow() - datetime.strptime(created_time, Metadata.DATE_FORMAT)).days
+        days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
         if days_since_creation < 30 and 'New' not in pack_metadata['tags']:
             pack_metadata['tags'].append('New')
         if 'New' in pack_metadata['tags'] and days_since_creation > 30:
