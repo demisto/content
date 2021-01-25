@@ -318,7 +318,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The content hash of the threat.
+      description: The content hash of the threat. Support a comma-separated list of hashes.
       isArray: true
       name: content_hash
       required: false
@@ -1301,7 +1301,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Query start date, for example, "2019-08-03T04:49:26.257525Z". Limited to 93 ago.
+      description: Query start date, for example, "2019-08-03T04:49:26.257525Z". Limited to 93 days ago.
       isArray: false
       name: from_date
       required: true
