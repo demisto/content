@@ -26,6 +26,7 @@ FLASHPOINT_PATHS = {
     'Site': 'Flashpoint.Forum.Site(val.SiteId == obj.SiteId)'
 }
 
+PAGE_SIZE = 50
 
 class Client:
     """
@@ -53,6 +54,7 @@ class Client:
         self.proxies = proxies
         self.query = query
         self.tags = tags
+
 
     def http_request(self, method, url_suffix, params=None):
         """
@@ -103,12 +105,6 @@ class Client:
 
 ''' HELPER FUNCTIONS '''
 
-
-def get_apikey():
-    """ Get API Key from the command argument"""
-    api_key = demisto.params()["api_key"]
-
-    return api_key
 
 
 def get_url_suffix(query):
@@ -226,6 +222,38 @@ def get_post_context(resp):
 
     return post_ec
 
+def parse_reports(report_objects: list, feed_tags: list = []) -> list:
+    """Parse the objects retrieved from the feed.
+
+    Args:
+      report_objects: a list of objects containing the reports.
+      feed_tags: feed tags.
+
+    Returns:
+        A list of processed reports.
+    """
+    reports = []
+
+    for report_object in report_objects:
+        report_object['body'] = ''
+        report = dict()  # type: Dict[str, Any]
+
+        report['type'] = 'STIX Report'
+        report['value'] = report_object.get('title') # TODO: consider adding the ID to the title to make it distinct
+        report['fields'] = {
+            'stixid': report_object.get('id'),
+            'published': report_object.get('posted_at'),
+            'stixdescription': report_object.get('summary', ''), # TODO: consider adding the link
+                "reportedby": 'flashpont', #TODO: check if it is relevant
+            "tags":  list((set(report_object.get('tags'))).union(set(feed_tags))),
+        }
+        report['rawJSON'] = {
+            'rawReport': report_object, # TODO: consider droppinng the html
+        }
+
+        reports.append(report)
+
+    return reports
 
 def reputation_operation_command(client, indicator, func):
     """
@@ -254,10 +282,24 @@ def replace_key(dictionary, new_key, old_key):
     dictionary[new_key] = dictionary.pop(old_key)
     return dictionary
 
+def get_reports(client: Client, tags: str = '', query: str = '', limit: int = 10, skip: int = 0) -> List[dict]:
+    params = {}
+    if query:
+        params['query'] = urllib.parse.quote(query)
+    if tags:
+        params['tags'] = urllib.parse.quote(tags)
+    if limit > 0:
+        params['limit'] = limit
+    if skip > 0:
+        params['skip'] = skip
+    url_suffix = '/reports/' +  f'?{urllib.parse.urlencode(params)}'
+    return client.http_request("GET", url_suffix=url_suffix)
+
+
 
 ''' FUNCTIONS '''
 
-def fetch_indicators(client: Client, tags: str, query: str) -> List[Dict]:
+def fetch_indicators(client: Client, tags: str = '', query: str = '') -> List[Dict]:
     """Retrieves indicators and reports from the feed
 
     Args:
@@ -269,19 +311,15 @@ def fetch_indicators(client: Client, tags: str, query: str) -> List[Dict]:
     """
     query = query if query else client.query
     tags = tags if tags else client.tags
-
-
-    url_suffix = '/reports/?query=' + urllib.parse.quote(feed_query) + '&limit=5'
-    url_suffix = url_suffix + "&tags=" + feed_tags if feed_tags else url_suffix
-    resp = client.http_request("GET", url_suffix=url_suffix)
+    resp = get_reports(client, tags, query, PAGE_SIZE, 0)
     reports = resp.get("data", [])
+    while resp.get("total", 0) > len(reports) or len(reports) < 200: #TODO: add maximum indicator per fetch
+        resp = get_reports(client, tags, query, PAGE_SIZE, len(reports))
+        reports.extend(resp.get("data", []))
+    #resp = get_reports(client, tags, query, PAGE_SIZE, len(reports))
+    #reports.extend(resp.get("data", []))
 
-
-    for type_, objects in client.objects_data.items():
-        demisto.info(f'Fetched {len(objects)} Unit42 {type_} objects.')
-
-
-    return reports
+    return {'reports': parse_reports(reports, []), 'size': resp.get("total", 0)} # TODO: add tags handling
 
 def get_reports_command(client, report_search):
     """
@@ -339,11 +377,11 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    api_key = get_apikey()
+    api_key = demisto.params().get('api_key')
     url = demisto.params().get('url')
     verify_certificate = not demisto.params().get('insecure', False)
-    query = demisto.parmas().get('query')
-    tags = demisto.parmas().get('tags')
+    query = demisto.params().get('query')
+    tags = demisto.params().get('tags')
 
     proxies = handle_proxy()
     try:
@@ -358,6 +396,8 @@ def main():
             return_outputs(*get_reports_command(client, report_search))
         elif demisto.command() == 'flashpoint-get-indicators':
             return_results(fetch_indicators(client, tags, query))
+        elif demisto.command() == 'fetch-indicators':
+            demisto.createIndicators(fetch_indicators(client, tags))
     except ValueError as v_err:
         return_error(str(v_err))
     except requests.exceptions.ConnectionError as c:

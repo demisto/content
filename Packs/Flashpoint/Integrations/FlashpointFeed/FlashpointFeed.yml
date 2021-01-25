@@ -100,7 +100,7 @@ script:
         - contextPath: Flashpoint.Report
           description: List of reports based on specified search query or keyword
       description: Search for the Intelligence Reports using a keyword
-    - name: flashpoit-get-indicators
+    - name: flashpoint-get-indicators
       arguments:
         - name: limit
           description: The maximum number of indicators to return. The default is 10.
