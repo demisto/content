@@ -1,0 +1,17 @@
+{
+    "name": "NewPack",
+    "description": "This is a new pack to test contribution flow",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Shellyber",
+    "url": "",
+    "email": "",
+    "created": "2021-01-25T16:12:46Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Shellyber"
+    ]
+}
