@@ -1,0 +1,17 @@
+{
+    "name": "NewPackTest",
+    "description": "This is a test pack",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Shelly",
+    "url": "",
+    "email": "",
+    "created": "2021-01-25T10:31:10Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Shellyber"
+    ]
+}

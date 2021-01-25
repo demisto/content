@@ -1,0 +1,145 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 470b9091-474e-48f7-8746-75607717ef0e
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 0203217b-3d08-425d-8eb8-1daaff251e8f
+inputs: []
+name: Test Playbook
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: dddd94f7-6ab7-4dd5-8b45-5bfbcc486074
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: dddd94f7-6ab7-4dd5-8b45-5bfbcc486074
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 0ba142d8-bc15-4fdc-867f-904123db5de2
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 0ba142d8-bc15-4fdc-867f-904123db5de2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Hello World
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: e2d8aaa5-b52b-4bea-82c6-f53e9290dbec
+      iscommand: false
+      name: print
+      scriptName: Print
+      type: regular
+      version: -1
+    taskid: e2d8aaa5-b52b-4bea-82c6-f53e9290dbec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c6674a33-cdb7-40e9-8f56-dd2380c2577a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c6674a33-cdb7-40e9-8f56-dd2380c2577a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 545,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
