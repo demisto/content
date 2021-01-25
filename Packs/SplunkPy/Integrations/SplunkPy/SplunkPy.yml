@@ -459,7 +459,7 @@ script:
       description: List of collections.
       type: String
   - arguments:
-    - default: true
+    - default: false
       defaultValue: search
       description: The name of the Splunk application that contains the KV store collection. The default is "search".
       isArray: false
@@ -472,7 +472,7 @@ script:
       name: kv_store_collection_name
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: Maximum number of records to return. The default is 50.
       isArray: false
