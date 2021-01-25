@@ -13,5 +13,16 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "githubUser": []
+    "githubUser": [
+        "AndyNikolaev"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts"
+    ]
 }
