@@ -152,7 +152,7 @@ if __name__ == "__main__":
     if options.instance_tests:
         with open('./env_results.json', 'r') as json_file:
             env_results = json.load(json_file)
-            server = SERVER_URL.format(env_results[0]["InstanceDNS"])
+            server = f'https://localhost:{env_results[0]["TunnelPort"]}'
 
         slack_notifier(options.slack, options.secret, server, options.user, options.password, options.buildUrl,
                        options.buildNumber)
