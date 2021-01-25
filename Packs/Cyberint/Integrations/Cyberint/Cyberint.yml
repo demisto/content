@@ -22,9 +22,9 @@ configuration:
   name: isFetch
   required: false
   type: 8
-- additionalinfo: Choose the severity(s) (not minimum) to fetch. If none is chosen,
+- additionalinfo: Severities to fetch. If none is chosen,
     all severity levels will be returned.
-  display: Fetch Severities
+  display: Fetch Severity
   name: fetch_severity
   options:
   - low
@@ -33,9 +33,9 @@ configuration:
   - very_high
   required: false
   type: 16
-- additionalinfo: Choose one or more statuses to fetch if wanted. If none is chosen,
-    all categories will be returned.
-  display: Fetch Statuses
+- additionalinfo: Statuses to fetch. If none is chosen,
+    all statuses will be returned.
+  display: Fetch Status
   name: fetch_status
   options:
   - open
@@ -43,13 +43,13 @@ configuration:
   - closed
   required: false
   type: 16
-- additionalinfo: Enter one or more environments to fetch if wanted (comma separated).
+- additionalinfo: Environments to fetch (comma separated).
     If empty, all available environments will be returned.
-  display: Fetch Environments
+  display: Fetch Environment
   name: fetch_environment
   required: false
   type: 0
-- additionalinfo: Choose one or more types to fetch if wanted. If none is chosen,
+- additionalinfo: Types to fetch. If none is chosen,
     all types will be returned.
   display: Fetch Types
   name: fetch_type

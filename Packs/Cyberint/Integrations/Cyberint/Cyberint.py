@@ -121,19 +121,17 @@ def test_module(client: Client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    return_value = None
     try:
         result = client.list_alerts(*([None] * 10))
         if result:
-            return_value = 'ok'
+            return 'ok'
     except DemistoException as exception:
         if 'Invalid token or token expired' in str(exception):
-            return_value = 'Error verifying access token and / or environment, make sure the ' \
-                           'configuration parameters are correct.'
+            error_message = 'Error verifying access token and / or environment, make sure the ' \
+                            'configuration parameters are correct.'
         else:
-            return_value = str(exception)
-    finally:
-        return return_value
+            error_message = str(exception)
+        raise DemistoException(error_message)
 
 
 def verify_input_date_format(date: Optional[str]) -> Optional[str]:
@@ -233,6 +231,8 @@ def cyberint_alerts_fetch_command(client: Client, args: dict) -> CommandResults:
     modify_date_from, modify_date_to = set_date_pair(args.get('modification_date_from', None),
                                                      args.get('modification_date_to', None),
                                                      args.get('modification_date_range', None))
+    if args.get('page_size') and (args.get('page_size') < 10 or args.get('page_size') > 100):
+        raise DemistoException('Page size must be between 10 and 100.')
     result = client.list_alerts(args.get('page'), args.get('page_size'), created_date_from,
                                 created_date_to, modify_date_from, modify_date_to,
                                 argToList(args.get('environments')),
@@ -272,6 +272,8 @@ def cyberint_alerts_status_update(client: Client, args: dict) -> CommandResults:
     alert_ids = argToList(args.get('alert_ref_ids'))
     status = args.get('status')
     closure_reason = args.get('closure_reason')
+    if status == 'closed' and not closure_reason:
+        raise DemistoException('You must supply a closure reason when closing an alert.')
     response = client.update_alerts(alert_ids, status,
                                     closure_reason)
     table_headers = ['ref_id', 'status', 'closure_reason']
@@ -394,7 +396,10 @@ def main():
                             'configuration parameters are correct.'
         elif 'datetime' in str(e).lower():
             error_message = 'Invalid time specified, ' \
-                            'make sure the arguments are correctly formatted.'
+                            'make sure the arguments are correctly formatted and are not ' \
+                            'earlier than 2020 or later than the current time.'
+        elif 'Unauthorized alerts requested' in str(e):
+            error_message = 'Some of the alerts selected to update are either blocked or not found.'
         else:
             error_message = f'Failed to execute {demisto.command()} command. Error: {str(e)}'
         return_error(error_message)
