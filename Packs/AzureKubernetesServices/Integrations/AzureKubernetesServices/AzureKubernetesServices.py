@@ -137,7 +137,7 @@ def start_auth(client: AKSClient) -> CommandResults:
     return CommandResults(readable_output=f"""### Authorization instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
  and enter the code **{user_code}** to authenticate.
-2. Run the **!azure-nsg-auth-complete** command in the War Room.""")
+2. Run the **!azure-ks-auth-complete** command in the War Room.""")
 
 
 def complete_auth(client: AKSClient) -> str:
