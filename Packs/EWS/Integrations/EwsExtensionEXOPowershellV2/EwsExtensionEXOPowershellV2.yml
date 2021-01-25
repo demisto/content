@@ -368,7 +368,7 @@ script:
   runonce: false
   script: '-'
   type: powershell
-  dockerimage: devdemisto/pwsh-exchange:1.0.0.15721
+  dockerimage: demisto/pwsh-exchange:1.0.0.15724
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
