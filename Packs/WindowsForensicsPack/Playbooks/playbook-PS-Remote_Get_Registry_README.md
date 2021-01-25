@@ -7,10 +7,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* PowerShellRemoting
+This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* UnzipFile
+* Sleep
+* Set
 
 ### Commands
 * ps-remote-export-registry
@@ -21,9 +23,9 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Host | The host name for which to export the registry file. For example testpc01 |  | Optional |
+| Host | The host name for which to export the registry file. For example testpc01 | EC2AMAZ-UIPUP0R | Optional |
 | RegistryPath | The registry hive/path to export, if no value is specified the entire registry will be exported. | all | Optional |
-| FilePath | The path on the hostname on which to create the registry file. For example c:\\registry.reg. | c:\full.reg | Optional |
+| FilePath | The path on the hostname on which to create the registry file. The default path will be c:\\&amp;lt;The host name&amp;gt;.reg | inputs.Host.None | Optional |
 | ZipRegistry | Specify true to zip the reg file before sending it to XSOAR. | true | Optional |
 
 ## Playbook Outputs
@@ -35,4 +37,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![PS-Remote Get Registry](https://raw.githubusercontent.com/demisto/content/0b9313b1f786faac00ad2d0e2fbb49e59a37d4b3/Packs/WindowsForensicsPack/doc_files/PS-Remote_Get_Registry.png)
+![PS-Remote Get Registry](Insert the link to your image here)

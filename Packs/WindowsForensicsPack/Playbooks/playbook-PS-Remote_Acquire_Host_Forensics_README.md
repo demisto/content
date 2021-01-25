@@ -4,15 +4,15 @@ This playbook allows the user to gather multiple forensic data from a windows en
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* PS-Remote Get MFT
 * PS-Remote Get Network Traffic
 * PS-Remote Get Registry
+* PS-Remote Get MFT
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* SetAndHandleEmpty
 
 ### Commands
 This playbook does not use any commands.
@@ -25,6 +25,7 @@ This playbook does not use any commands.
 | GetNetworkTraffic | This input specifies whether to capture network traffic on the host. | true | Optional |
 | GetMft | This input specifies whether to acquire the MFT for the host. | true | Optional |
 | GetRegistry | This input specifies whether to export the registry on the host. | true | Optional |
+| Host | The host name for which to export the registry file. For example testpc01 |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -37,4 +38,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![PS-Remote Acquire Host Forensics](https://raw.githubusercontent.com/demisto/content/de089a9171d269062404ac77a7e5988c9127c495/Packs/WindowsForensicsPack/doc_files/PS-Remote__Acquire_Host_Forensics.png)
+![PS-Remote Acquire Host Forensics](Insert the link to your image here)

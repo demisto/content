@@ -1,4 +1,4 @@
-This playbook leverages the Regipy tool to perform registry analysis and extract forensic artifacts.  The Automation includes common registry objects to extract which are useful for analyzing registry or a user provides registry path to parse.
+This playbook leverages the RegistryParse Automation to perform registry analysis and extract forensic artifacts.  The Automation includes common registry objects to extract which are useful for analyzing registry or a user provides registry path to parse.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* RegistryParse
 
 ### Commands
 This playbook does not use any commands.
@@ -33,4 +33,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Regipy Data Analysis](https://raw.githubusercontent.com/demisto/content/de089a9171d269062404ac77a7e5988c9127c495/Packs/WindowsForensicsPack/doc_files/Regipy_Data_Analysis.png)
+![Registry Data Analysis](Insert the link to your image here)

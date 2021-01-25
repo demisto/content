@@ -7,14 +7,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* PowerShellRemoting
+This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* UnzipFile
+* Sleep
+* Set
 
 ### Commands
-* ps-remote-download-file
 * ps-remote-export-mft
+* ps-remote-download-file
 
 ## Playbook Inputs
 ---
@@ -22,7 +24,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Host | The host name for which to export the registry file. For example testpc01 |  | Optional |
-| FilePath | The path on the hostname on which to create the registry file. For example c:\\mft.mft | c:\mft.mft | Optional |
+| FilePath | The path on the hostname on which to create the registry file. The default path will be c:\\&amp;lt;The host name&amp;gt;.mft | inputs.Host.None | Optional |
 | VolumeForMft | Specify the volume for which to create the MFT, The default is c.<br/> | c | Optional |
 | ZipMft | Specify true to zip the MFT file before sending it to XSOAR. | true | Optional |
 
@@ -35,4 +37,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![PS-Remote Get MFT](https://raw.githubusercontent.com/demisto/content/0b9313b1f786faac00ad2d0e2fbb49e59a37d4b3/Packs/WindowsForensicsPack/doc_files/PS-Remote_Get_MFT.png)
+![PS-Remote Get MFT](Insert the link to your image here)

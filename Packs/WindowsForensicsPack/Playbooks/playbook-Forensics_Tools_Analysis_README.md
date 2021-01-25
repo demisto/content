@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Forensics Tools Analysis](https://raw.githubusercontent.com/demisto/content/0b9313b1f786faac00ad2d0e2fbb49e59a37d4b3/Packs/WindowsForensicsPack/doc_files/Forensics_Tools_Analysis.png)
+![Forensics Tools Analysis](Insert the link to your image here)

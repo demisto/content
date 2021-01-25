@@ -7,11 +7,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* PowerShellRemoting
 * PowerShell Remoting
 
 ### Scripts
-This playbook does not use any scripts.
+* Sleep
+* UnzipFile
+* Set
+* Etl2Pcap
 
 ### Commands
 * ps-remote-etl-create-start
@@ -25,8 +27,8 @@ This playbook does not use any scripts.
 | --- | --- | --- | --- |
 | Host | The host name for which to create the ETL file. For example testpc01 |  | Optional |
 | EtlSizeLimit | The maximum file size for the ETL. Once the file has reached this size the capute will stop. For example 10MB. The default size is 10MB | 10 | Optional |
-| EtlPath | The path on the hostname on which to create the ETL file. For example c:\\temp\\myhost.etl. The default value will be C:\\Users\\&amp;lt;usename&amp;gt;\\AppData\\Local\\Temp\\NetTraces\\NetTrace.etl |  | Optional |
-| EtlFilter | The filter to apply when creating the ETL file. For example IPv4.Address=1.1.1.1 to capture traffic just from the 1.1.1.1 IP address. If no filter is specified all traffic will be recorded. |  | Optional |
+| EtlPath | The path on the hostname on which to create the etl file. The default path will be c:\\&amp;lt;The host name&amp;gt;.etl | inputs.Host.None | Optional |
+| EtlFilter | The filter to apply when creating the ETL file. For example IPv4.Address=1.1.1.1 to capture traffic just from the 1.1.1.1 IP address. If no filter is specified all traffic will be recorded. More example can be found here, https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj129382\(v=ws.11\)\#using-filters-to-limit-etl-trace-file-details |  | Optional |
 | ETlTimeToRecord | The time to record in seconds. | 60 | Optional |
 | ZipEtl | Specify true to zip the ETL file before sending it to XSOAR. | true | Optional |
 
@@ -39,4 +41,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![PS-Remote Get Network Traffic](https://raw.githubusercontent.com/demisto/content/0b9313b1f786faac00ad2d0e2fbb49e59a37d4b3/Packs/WindowsForensicsPack/doc_files/PS-Remote_Get_Network_Traffic.png)
+![PS-Remote Get Network Traffic](Insert the link to your image here)

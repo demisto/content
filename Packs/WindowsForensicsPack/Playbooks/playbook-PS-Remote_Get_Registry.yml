@@ -1,65 +1,27 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+id: PS-Remote Get Registry
+version: -1
+name: PS-Remote Get Registry
 description: This playbook leverages the windows builtin Powershell and WinRM capabilities
   to connect to a Windows host to acquire and export the registry as a forensic evidence
   for further analysis. The capture can be for the entire registry or for a specific
   hive or path.
-id: PS-Remote Get Registry
-inputs:
-- description: The host name for which to export the registry file. For example testpc01
-  key: Host
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: The registry hive/path to export, if no value is specified the entire
-    registry will be exported.
-  key: RegistryPath
-  playbookInputQuery:
-  required: false
-  value:
-    simple: all
-- description: The path on the hostname on which to create the registry file. For
-    example c:\registry.reg.
-  key: FilePath
-  playbookInputQuery:
-  required: false
-  value:
-    simple: c:\full.reg
-- description: Specify true to zip the reg file before sending it to XSOAR.
-  key: ZipRegistry
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "true"
-name: PS-Remote Get Registry
-outputs:
-- contextPath: RegistryDetails
-  description: The Registry file details.
-  type: string
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 66e0dc4d-1223-4668-8d35-35f645699e76
+    type: start
+    task:
+      id: 66e0dc4d-1223-4668-8d35-35f645699e76
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 57f0c1b0-1f9e-4c8b-885a-e548a8c67381
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 57f0c1b0-1f9e-4c8b-885a-e548a8c67381
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -67,53 +29,53 @@ tasks:
           "y": 90
         }
       }
-  "2":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: modules.brand
-          operator: isExists
-      - - left:
-            iscontext: true
-            value:
-              simple: modules.brand
-          operator: isEqualString
-          right:
-            value:
-              simple: PowerShell Remoting
-      - - left:
-            iscontext: true
-            value:
-              simple: modules.state
-          operator: isEqualString
-          right:
-            value:
-              simple: active
-      label: "yes"
-    id: "2"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: eee3be21-cdfb-49e3-8a6b-00ad537bada1
+    type: condition
+    task:
+      id: eee3be21-cdfb-49e3-8a6b-00ad537bada1
+      version: -1
+      name: Is PowerShell Remoting enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
       "yes":
       - "4"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: d6775888-9ee4-4d5a-8fb8-7b63fea1d7a3
-      iscommand: false
-      name: Is PowerShell Remoting enabled?
-      type: condition
-      version: -1
-      description: ''
-    taskid: d6775888-9ee4-4d5a-8fb8-7b63fea1d7a3
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.brand
+            iscontext: true
+          right:
+            value:
+              simple: PowerShell Remoting
+      - - operator: isEqualString
+          left:
+            value:
+              simple: modules.state
+            iscontext: true
+          right:
+            value:
+              simple: active
     view: |-
       {
         "position": {
@@ -121,24 +83,24 @@ tasks:
           "y": 230
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 33ae149a-7cfb-4323-8cd8-46ce2ea0a40d
+    type: title
     task:
-      brand: ""
-      id: 08556465-2825-4866-8690-cdf35c5115ab
-      iscommand: false
+      id: 33ae149a-7cfb-4323-8cd8-46ce2ea0a40d
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 08556465-2825-4866-8690-cdf35c5115ab
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -146,37 +108,37 @@ tasks:
           "y": 2030
         }
       }
-  "4":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.Host
-          operator: isNotEmpty
-      label: "yes"
-    id: "4"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ebb866b3-d6a5-41b6-8f84-f45aeeb7f7fe
+    type: condition
+    task:
+      id: ebb866b3-d6a5-41b6-8f84-f45aeeb7f7fe
+      version: -1
+      name: Was a host specified?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
       "yes":
       - "9"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 3b998e71-a03c-4f32-89f3-1707c75c89b6
-      iscommand: false
-      name: Was a host specified?
-      type: condition
-      version: -1
-      description: ''
-    taskid: 3b998e71-a03c-4f32-89f3-1707c75c89b6
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Host
+            iscontext: true
     view: |-
       {
         "position": {
@@ -184,35 +146,36 @@ tasks:
           "y": 430
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    ignoreworker: false
+    taskid: 093c8c39-ca13-4c1a-8c35-24d95aae0eb6
+    type: regular
+    task:
+      id: 093c8c39-ca13-4c1a-8c35-24d95aae0eb6
+      version: -1
+      name: PS-Remote export registry
+      description: This command exports the specified Registry of hive to a file.
+      script: '|||ps-remote-export-registry'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
-    note: false
-    quietmode: 0
     scriptarguments:
       file_path:
         simple: ${inputs.FilePath}
       host:
         simple: ${inputs.Host}
+      ip: {}
       reg_key_hive:
         simple: ${inputs.RegistryPath}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This command exports the specified Registry of hive to a file.
-      id: 3664539d-b683-41e5-8f59-63bf0c98d8ee
-      iscommand: true
-      name: ps-remote-export-registry
-      script: '|||ps-remote-export-registry'
-      type: regular
-      version: -1
-    taskid: 3664539d-b683-41e5-8f59-63bf0c98d8ee
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -220,14 +183,27 @@ tasks:
           "y": 970
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: 95b830c0-15a0-4f95-83f0-ab00f0d0788d
+    type: regular
+    task:
+      id: 95b830c0-15a0-4f95-83f0-ab00f0d0788d
+      version: -1
+      name: PS-Remote download file
+      description: Download a file from the remote endpoint.
+      script: '|||ps-remote-download-file'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
-    note: false
-    quietmode: 0
     scriptarguments:
       check_hash:
         simple: "true"
@@ -239,19 +215,6 @@ tasks:
       zip_file:
         simple: ${inputs.ZipRegistry}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Download a file from the remote endpoint.
-      id: 0a858701-a43d-4a26-82d7-f370604400e5
-      iscommand: true
-      name: ps-remote-download-file
-      script: '|||ps-remote-download-file'
-      type: regular
-      version: -1
-    taskid: 0a858701-a43d-4a26-82d7-f370604400e5
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -259,37 +222,37 @@ tasks:
           "y": 1330
         }
       }
-  "9":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.FilePath
-          operator: isNotEmpty
-      label: "yes"
-    id: "9"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 71b144fb-c439-4e81-85fa-cd0fe8dce5f0
+    type: condition
+    task:
+      id: 71b144fb-c439-4e81-85fa-cd0fe8dce5f0
+      version: -1
+      name: Was a registry file path specified?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "3"
       "yes":
       - "5"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: bc816cf6-6e62-41e9-82aa-1be0f27057c3
-      iscommand: false
-      name: Was a registry file path specified?
-      type: condition
-      version: -1
-      description: ''
-    taskid: bc816cf6-6e62-41e9-82aa-1be0f27057c3
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FilePath
+            iscontext: true
     view: |-
       {
         "position": {
@@ -297,31 +260,31 @@ tasks:
           "y": 680
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "10":
     id: "10"
-    ignoreworker: false
+    taskid: 23d533b8-20a3-4a66-892c-88a0edb7347b
+    type: regular
+    task:
+      id: 23d533b8-20a3-4a66-892c-88a0edb7347b
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     scriptarguments:
       seconds:
         simple: "30"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Sleep for X seconds
-      id: 75e629e9-3d8a-4efe-8c91-cea0828efe3d
-      iscommand: false
-      name: Sleep
-      script: Sleep
-      type: regular
-      version: -1
-    taskid: 75e629e9-3d8a-4efe-8c91-cea0828efe3d
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -329,40 +292,40 @@ tasks:
           "y": 1160
         }
       }
-  "11":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.ZipRegistry
-          operator: isEqualString
-          right:
-            value:
-              simple: "true"
-      label: "yes"
-    id: "11"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 87ae39e1-4d19-4098-8b71-f398af90dbd1
+    type: condition
+    task:
+      id: 87ae39e1-4d19-4098-8b71-f398af90dbd1
+      version: -1
+      name: Was file zipped?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "14"
       "yes":
       - "12"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: adef7f22-7280-4679-8eec-c2444dd323f2
-      iscommand: false
-      name: Was file zipped?
-      type: condition
-      version: -1
-      description: ''
-    taskid: adef7f22-7280-4679-8eec-c2444dd323f2
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ZipRegistry
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     view: |-
       {
         "position": {
@@ -370,46 +333,46 @@ tasks:
           "y": 1500
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    ignoreworker: false
+    taskid: 3180f174-9786-4f3f-89bd-69299956c169
+    type: regular
+    task:
+      id: 3180f174-9786-4f3f-89bd-69299956c169
+      version: -1
+      name: Unzip file and mark as Evidence
+      description: Unzip a file using fileName or entryID to specify a file. Unzipped
+        files will be loaded to the War Room and names will be put into the context.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     scriptarguments:
       entryID:
         complex:
-          accessor: EntryID
+          root: File
           filters:
-          - - left:
-                iscontext: true
+          - - operator: isEqualString
+              left:
                 value:
                   simple: File.Extension
-              operator: isEqualString
+                iscontext: true
               right:
                 value:
                   simple: zip
-          root: File
+          accessor: EntryID
       fileName: {}
       lastZipFileInWarroom: {}
       password: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
-        files will be loaded to the War Room and names will be put into the context.
-      id: 27a447af-898f-47ef-8198-e10652a99691
-      iscommand: false
-      name: Unzip file and mark as Evidence
-      script: UnzipFile
-      type: regular
-      version: -1
-    taskid: 27a447af-898f-47ef-8198-e10652a99691
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -417,20 +380,27 @@ tasks:
           "y": 1690
         }
       }
-  "14":
-    evidencedata:
-      customfields: {}
-      description:
-        simple: A registry file acquired from a host
-      tags:
-        simple: Registry
-    id: "14"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: d4e25d33-b379-435f-8b07-4116be9a39cb
+    type: regular
+    task:
+      id: d4e25d33-b379-435f-8b07-4116be9a39cb
+      version: -1
+      name: Set registry file details
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       append:
         simple: "true"
@@ -439,30 +409,17 @@ tasks:
       stringify: {}
       value:
         complex:
+          root: File
           filters:
-          - - left:
-                iscontext: true
+          - - operator: isEqualString
+              left:
                 value:
                   simple: File.Extension
-              operator: isEqualString
+                iscontext: true
               right:
                 value:
                   simple: reg
-          root: File
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered.
-      id: 8285e1f4-cf5b-4ca7-874f-21d9083b20c4
-      iscommand: false
-      name: Set registry file details
-      script: Set
-      type: regular
-      version: -1
-    taskid: 8285e1f4-cf5b-4ca7-874f-21d9083b20c4
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -470,7 +427,17 @@ tasks:
           "y": 1860
         }
       }
-version: -1
+    note: false
+    evidencedata:
+      description:
+        simple: A registry file acquired from a host
+      tags:
+        simple: Registry
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -483,6 +450,47 @@ view: |-
       }
     }
   }
+inputs:
+- key: Host
+  value:
+    simple: EC2AMAZ-UIPUP0R
+  required: false
+  description: The host name for which to export the registry file. For example testpc01
+  playbookInputQuery:
+- key: RegistryPath
+  value:
+    simple: all
+  required: false
+  description: The registry hive/path to export, if no value is specified the entire
+    registry will be exported.
+  playbookInputQuery:
+- key: FilePath
+  value:
+    complex:
+      root: inputs.Host
+      transformers:
+      - operator: concat
+        args:
+          prefix:
+            value:
+              simple: c:\
+          suffix:
+            value:
+              simple: .reg
+  required: false
+  description: The path on the hostname on which to create the registry file. The
+    default path will be c:\<The host name>.reg
+  playbookInputQuery:
+- key: ZipRegistry
+  value:
+    simple: "true"
+  required: false
+  description: Specify true to zip the reg file before sending it to XSOAR.
+  playbookInputQuery:
+outputs:
+- contextPath: RegistryDetails
+  description: The Registry file details.
+  type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

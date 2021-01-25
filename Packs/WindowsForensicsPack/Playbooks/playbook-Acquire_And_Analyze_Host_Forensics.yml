@@ -1,42 +1,37 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+id: Acquire And Analyze Host Forensics
+version: -1
+name: Acquire And Analyze Host Forensics
 description: This playbook allows both the gathering of forensic data from a host
   and the analysis of the acquired data by using the relevant forensics automations.
-id: Acquire And Analyze Host Forensics
-inputs: []
-name: Acquire And Analyze Host Forensics
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 00a4be27-1ca3-497d-8100-3c001c8fab2c
+    type: start
+    task:
+      id: 00a4be27-1ca3-497d-8100-3c001c8fab2c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
-    note: false
-    quietmode: 0
+      - "4"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: f3d8ffba-8c7a-4ab0-8c2d-c97699634359
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: f3d8ffba-8c7a-4ab0-8c2d-c97699634359
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 270,
+          "y": -170
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "1":
     id: "1"
     taskid: e31fb2e3-3dc8-4099-8e7e-2bf07e1f3e52
@@ -44,14 +39,14 @@ tasks:
     task:
       id: e31fb2e3-3dc8-4099-8e7e-2bf07e1f3e52
       version: -1
-      name: PS-Remote  Acquire Host Forensics
+      name: PS-Remote Acquire Host Forensics
       description: This playbook allows the user to gather multiple forensic data
         from a windows endpoint. Including network traffic, MFT (Master File Table)
         or registry export by using the PS remote automation which enables to connect
         to a windows host without the need to install any 3rd party tools using just
         native Windows management tools.
-      playbookName: PS-Remote  Acquire Host Forensics
-      playbookId: PS-Remote  Acquire Host Forensics
+      playbookName: PS-Remote Acquire Host Forensics
+      playbookId: PS-Remote Acquire Host Forensics
       type: playbook
       iscommand: false
       brand: ""
@@ -76,8 +71,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 500,
+          "y": 150
         }
       }
     note: false
@@ -87,37 +82,43 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 3fc3264f-288c-4360-8972-d5f648ca6a16
+    type: title
     task:
-      brand: ""
-      id: 194aaf0f-782c-41fc-84d8-1f216f9a44cd
-      iscommand: false
+      id: 3fc3264f-288c-4360-8972-d5f648ca6a16
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 194aaf0f-782c-41fc-84d8-1f216f9a44cd
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 680
+          "x": 270,
+          "y": 500
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
-    ignoreworker: false
-    loop:
-      exitCondition: ""
+    taskid: abaccea2-7642-47dc-835d-202c037abb96
+    type: playbook
+    task:
+      id: abaccea2-7642-47dc-835d-202c037abb96
+      version: -1
+      name: Forensics Tools Analysis
+      description: This playbook allows the user to analyze forensic evidence acquired
+        from a host. Such as registry files, memory dump files or PCAP files.
+      playbookName: Forensics Tools Analysis
+      type: playbook
       iscommand: false
-      max: 100
-      wait: 1
+      brand: ""
     nexttasks:
       '#none#':
       - "2"
@@ -129,37 +130,68 @@ tasks:
       RegistryEntryId:
         simple: ${RegistryDetails.EntryID}
     separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      description: This playbook allows the user to analyze forensic evidence acquired
-        from a host. Such as registry files, memory dump files or PCAP files.
-      id: 72dbc757-02eb-4596-867b-7afc22403afa
+    loop:
       iscommand: false
-      name: Forensics Tools Analysis
-      playbookId: Forensics Tools Analysis
-      type: playbook
-      version: -1
-    taskid: 72dbc757-02eb-4596-867b-7afc22403afa
-    timertriggers: []
-    type: playbook
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 460
+          "x": 500,
+          "y": 320
         }
       }
-version: -1
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: 149d44c0-a825-4db0-89ae-57d23251de85
+    type: condition
+    task:
+      id: 149d44c0-a825-4db0-89ae-57d23251de85
+      version: -1
+      name: Was a hostname provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Host
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 695,
-        "width": 380,
-        "x": 450,
-        "y": 50
+        "height": 735,
+        "width": 590,
+        "x": 270,
+        "y": -170
       }
     }
   }
@@ -167,8 +199,9 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: The host name for which to export the registry file. For example testpc01
-  playbookInputQuery: null
+  description: 'The host name from which to acquire the forensic data. For example
+    testpc01. '
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)

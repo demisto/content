@@ -1,73 +1,30 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+id: PS-Remote Acquire Host Forensics
+version: -1
+name: PS-Remote Acquire Host Forensics
 description: This playbook allows the user to gather multiple forensic data from a
   windows endpoint. Including network traffic, MFT (Master File Table) or registry
   export by using the PS remote automation which enables to connect to a windows host
   without the need to install any 3rd party tools using just native Windows management
   tools.
-id: PS-Remote Acquire Host Forensics
-inputs:
-- description: This input specifies whether to capture network traffic on the host.
-  key: GetNetworkTraffic
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "true"
-- description: This input specifies whether to acquire the MFT for the host.
-  key: GetMft
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "true"
-- description: This input specifies whether to export the registry on the host.
-  key: GetRegistry
-  playbookInputQuery:
-  required: false
-  value:
-    simple: "true"
-- key: Host
-  value: {}
-  required: false
-  description: The host name for which to export the registry file. For example testpc01
-  playbookInputQuery: null
-outputs: []
-name: PS-Remote Acquire Host Forensics
-outputs:
-- contextPath: PcapDetails
-  description: Pcap file details.
-  type: string
-- contextPath: RegistryDetails
-  description: Registry file details.
-  type: string
-- contextPath: MftDetails
-  description: MFT file details
-  type: string
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 98d812ea-ec8b-476b-8fc6-766548b81b23
+    type: start
+    task:
+      id: 98d812ea-ec8b-476b-8fc6-766548b81b23
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
       - "6"
       - "7"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 4abf311f-8ffd-49db-8f5a-df3d66bc0991
-      iscommand: false
-      name: ""
-      version: -1
-      description: ''
-    taskid: 4abf311f-8ffd-49db-8f5a-df3d66bc0991
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -75,6 +32,11 @@ tasks:
           "y": -170
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "3":
     id: "3"
     taskid: b420f60c-eb1b-4ac3-8b35-93972d1ec7b7
@@ -96,7 +58,17 @@ tasks:
       - "12"
     scriptarguments:
       FilePath:
-        simple: c:\full.reg
+        complex:
+          root: inputs.Host
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: c:\
+              suffix:
+                value:
+                  simple: .reg
       Host:
         simple: ${inputs.Host}
       RegistryPath:
@@ -119,41 +91,37 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: 
+    skipunavailable: false
+    quietmode: 0
   "4":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.GetNetworkTraffic
-          operator: isEqualString
-          right:
-            value:
-              simple: "true"
-      label: "yes"
     id: "4"
-    ignoreworker: false
+    taskid: c213b294-78c2-4142-863f-52ac5a92aeb0
+    type: condition
+    task:
+      id: c213b294-78c2-4142-863f-52ac5a92aeb0
+      version: -1
+      name: Get network traffic?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
       "yes":
       - "8"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 39431622-68e0-4d27-80a7-4d528ca034b6
-      iscommand: false
-      name: Get network traffic?
-      type: condition
-      version: -1
-      description: ''
-    taskid: 39431622-68e0-4d27-80a7-4d528ca034b6
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GetNetworkTraffic
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     view: |-
       {
         "position": {
@@ -161,24 +129,24 @@ tasks:
           "y": -30
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "5":
     id: "5"
-    ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 71c237ba-e4b9-40be-84b1-cbf2c2a75bd2
+    type: title
     task:
-      brand: ""
-      id: 8377d6f4-96e6-48fb-8afb-46663aad1cf5
-      iscommand: false
+      id: 71c237ba-e4b9-40be-84b1-cbf2c2a75bd2
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ""
       description: ''
-    taskid: 8377d6f4-96e6-48fb-8afb-46663aad1cf5
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -186,40 +154,40 @@ tasks:
           "y": 860
         }
       }
-  "6":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.GetMft
-          operator: isEqualString
-          right:
-            value:
-              simple: "true"
-      label: "yes"
-    id: "6"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b6d8c34c-e60c-4ffd-891d-239a745d2809
+    type: condition
+    task:
+      id: b6d8c34c-e60c-4ffd-891d-239a745d2809
+      version: -1
+      name: Get MFT?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
       "yes":
       - "9"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 08cb5ef3-b602-4fce-8ef9-d925529760c2
-      iscommand: false
-      name: Get MFT?
-      type: condition
-      version: -1
-      description: ''
-    taskid: 08cb5ef3-b602-4fce-8ef9-d925529760c2
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GetMft
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     view: |-
       {
         "position": {
@@ -227,40 +195,40 @@ tasks:
           "y": -20
         }
       }
-  "7":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.GetRegistry
-          operator: isEqualString
-          right:
-            value:
-              simple: "true"
-      label: "yes"
-    id: "7"
+    note: false
+    timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: d2ce1a98-31b0-4613-8505-ffec66b377d6
+    type: condition
+    task:
+      id: d2ce1a98-31b0-4613-8505-ffec66b377d6
+      version: -1
+      name: Get registry?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "5"
       "yes":
       - "3"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 29d038db-aef1-42f9-85ac-3f88d791e19b
-      iscommand: false
-      name: Get registry?
-      type: condition
-      version: -1
-      description: ''
-    taskid: 29d038db-aef1-42f9-85ac-3f88d791e19b
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GetRegistry
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     view: |-
       {
         "position": {
@@ -268,12 +236,17 @@ tasks:
           "y": -30
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "8":
     id: "8"
-    taskid: cfabdd2e-7ba9-4836-875c-223dce15a729
+    taskid: 99ace9d4-ba58-4fb1-81bd-0f5cb3a8369c
     type: playbook
     task:
-      id: cfabdd2e-7ba9-4836-875c-223dce15a729
+      id: 99ace9d4-ba58-4fb1-81bd-0f5cb3a8369c
       version: -1
       name: PS-Remote Get Network Traffic
       description: This playbook leverages the windows builtin Powershell and WinRM
@@ -292,7 +265,18 @@ tasks:
       ETlTimeToRecord:
         simple: "60"
       EtlFilter: {}
-      EtlPath: {}
+      EtlPath:
+        complex:
+          root: inputs.Host
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: c:\
+              suffix:
+                value:
+                  simple: .etl
       EtlSizeLimit: {}
       Host:
         simple: ${inputs.Host}
@@ -318,10 +302,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 1134ecf9-460f-433d-849f-3b363ca7b1ad
+    taskid: 617d2a7e-00a3-419d-85cc-c4b356293c66
     type: playbook
     task:
-      id: 1134ecf9-460f-433d-849f-3b363ca7b1ad
+      id: 617d2a7e-00a3-419d-85cc-c4b356293c66
       version: -1
       name: PS-Remote Get MFT
       description: This playbook leverages the windows builtin Powershell and WinRM
@@ -337,7 +321,17 @@ tasks:
       - "11"
     scriptarguments:
       FilePath:
-        simple: c:\mft.mft
+        complex:
+          root: inputs.Host
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: c:\
+              suffix:
+                value:
+                  simple: .mft
       Host:
         simple: ${inputs.Host}
       VolumeForMft:
@@ -364,12 +358,21 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    ignoreworker: false
+    taskid: fc934299-715b-4167-8f19-9ab015b24659
+    type: regular
+    task:
+      id: fc934299-715b-4167-8f19-9ab015b24659
+      version: -1
+      name: Set PCAP details
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       append:
         simple: "true"
@@ -379,20 +382,6 @@ tasks:
       value:
         simple: ${PcapDetails}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
-      id: ad286bc8-a883-43d2-8629-050330269430
-      iscommand: false
-      name: Set PCAP details
-      script: SetAndHandleEmpty
-      type: regular
-      version: -1
-    taskid: ad286bc8-a883-43d2-8629-050330269430
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -400,14 +389,28 @@ tasks:
           "y": 380
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "11":
     id: "11"
-    ignoreworker: false
+    taskid: 5029298e-3a5c-4fdb-8d43-6f75624a4dc9
+    type: regular
+    task:
+      id: 5029298e-3a5c-4fdb-8d43-6f75624a4dc9
+      version: -1
+      name: Set MFT details
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       append:
         simple: "true"
@@ -418,20 +421,6 @@ tasks:
         complex:
           root: MftDetails
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
-      id: e684fb2b-9419-4a20-85e6-b3b8c9b67baa
-      iscommand: false
-      name: Set MFT details
-      script: SetAndHandleEmpty
-      type: regular
-      version: -1
-    taskid: e684fb2b-9419-4a20-85e6-b3b8c9b67baa
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -439,14 +428,28 @@ tasks:
           "y": 380
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
   "12":
     id: "12"
-    ignoreworker: false
+    taskid: 7c028be0-a979-46e4-8cc5-e2a3ba93528f
+    type: regular
+    task:
+      id: 7c028be0-a979-46e4-8cc5-e2a3ba93528f
+      version: -1
+      name: Set registry file details
+      description: Set a value in context under the key you entered. If no value is
+        entered, the script doesn't do anything.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       append:
         simple: "true"
@@ -456,20 +459,6 @@ tasks:
       value:
         simple: ${RegistryDetails}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
-      id: 6a7db168-6089-4754-8d64-055b1745976e
-      iscommand: false
-      name: Set registry file details
-      script: SetAndHandleEmpty
-      type: regular
-      version: -1
-    taskid: 6a7db168-6089-4754-8d64-055b1745976e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -477,7 +466,11 @@ tasks:
           "y": 380
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
@@ -490,6 +483,40 @@ view: |-
       }
     }
   }
+inputs:
+- key: GetNetworkTraffic
+  value:
+    simple: "true"
+  required: false
+  description: This input specifies whether to capture network traffic on the host.
+  playbookInputQuery:
+- key: GetMft
+  value:
+    simple: "true"
+  required: false
+  description: This input specifies whether to acquire the MFT for the host.
+  playbookInputQuery:
+- key: GetRegistry
+  value:
+    simple: "true"
+  required: false
+  description: This input specifies whether to export the registry on the host.
+  playbookInputQuery:
+- key: Host
+  value: {}
+  required: false
+  description: The host name for which to export the registry file. For example testpc01
+  playbookInputQuery:
+outputs:
+- contextPath: PcapDetails
+  description: Pcap file details.
+  type: string
+- contextPath: RegistryDetails
+  description: Registry file details.
+  type: string
+- contextPath: MftDetails
+  description: MFT file details
+  type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
