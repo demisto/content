@@ -106,7 +106,7 @@ class Client(BaseClient):
                     demisto.updateModuleHealth(
                         f'Rate limit exceeded, going to sleep for {time_to_wait} and then retry.'
                     )
-                    time.sleep(time_to_wait)
+                    await sleep(time_to_wait)
                     demisto.debug('Finished waiting - retrying')
             except Exception as e:
                 demisto.debug(str(e))
