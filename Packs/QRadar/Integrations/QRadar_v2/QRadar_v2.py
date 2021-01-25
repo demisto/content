@@ -21,7 +21,7 @@ urllib3.disable_warnings()
 """ ADVANCED GLOBAL PARAMETERS """
 EVENTS_INTERVAL_SECS = 15           # interval between events polling
 EVENTS_FAILURE_LIMIT = 3            # amount of consecutive failures events fetch will tolerate
-EVENTS_FAILURE_SLEEP = 15           # sleep between consecutive failures events fetch
+FAILURE_SLEEP = 15           # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60                    # sleep between fetches
 BATCH_SIZE = 100                    # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10   # max amount of IPs to enrich per offense
@@ -35,7 +35,7 @@ SLEEP_FETCH_EVENT_RETIRES = 10      # sleep between iteration to try search the 
 ADVANCED_PARAMETER_NAMES = [
     "EVENTS_INTERVAL_SECS",
     "EVENTS_FAILURE_LIMIT",
-    "EVENTS_FAILURE_SLEEP",
+    "FAILURE_SLEEP",
     "FETCH_SLEEP",
     "BATCH_SIZE",
     "OFF_ENRCH_LIMIT",
@@ -811,6 +811,7 @@ def perform_offense_events_enrichment(
     events_query = {"headers": "", "query_expression": query_expression}
     print_debug_msg(f'Starting events fetch for offense {offense["id"]}.', client.lock)
     try:
+        # retry to check if we got all the event (its not an error retry)
         for i in range(MAX_FETCH_EVENT_RETIRES):
             query_status, search_id = try_create_search_with_retry(
                 client, events_query, offense
@@ -881,7 +882,7 @@ def try_poll_offense_events_with_retry(
                             f"Error details: {str(e)}")
             failures += 1
             if failures < max_retries:
-                time.sleep(EVENTS_FAILURE_SLEEP)
+                time.sleep(FAILURE_SLEEP)
     return []
 
 
@@ -907,8 +908,11 @@ def try_create_search_with_retry(client, events_query, offense, max_retries=None
         except Exception as e:
             err = str(e)
             failures += 1
+            if failures < max_retries:
+                time.sleep(FAILURE_SLEEP)
     if failures >= max_retries:
         raise DemistoException(f"Unable to create search for offense: {offense['id']}. Error: {err}")
+
     return query_status, search_id
 
 
