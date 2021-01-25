@@ -598,7 +598,7 @@ List alerts according to parameters
                     "email": "avital@cyberint.com"
                 },
                 "created_date": "2020-12-30T00:00:23",
-                "description": "Cyberint detected payment cards belonging to Wells Fargo customers being offered for sale online for 18$. The cards' information, published by a threat actors named Dolly, includes the BIN number of the card, expiration date and CVV digits as well as some PII of the card owner.\nCompromised payment card details, especially when combined with exposed PII, can be purchased and abused by threat actors for illegitimate and fraudulent activities. Those, in turn, will result in chargeback costs for the bank and potential customer churn.",
+                "description": "Cyberint detected payment cards belonging to Joe customers being offered for sale online for 18$. The cards' information, published by a threat actors named Dolly, includes the BIN number of the card, expiration date and CVV digits as well as some PII of the card owner.\nCompromised payment card details, especially when combined with exposed PII, can be purchased and abused by threat actors for illegitimate and fraudulent activities. Those, in turn, will result in chargeback costs for the bank and potential customer churn.",
                 "environment": "Argos Demo",
                 "impacts": [
                     "revenue_loss",
@@ -609,7 +609,7 @@ List alerts according to parameters
                 "iocs": [],
                 "modification_date": "2020-12-30T00:00:23",
                 "publish_date": "2020-08-17T00:00:00",
-                "recommendation": "Cyberint recommends Wells Fargo purchase one of the payment cards in order to then verify validity. Upon confirmation, Cyberint recommends cancelling the payment cards in order to prevent their abuse, and informing the card holders of the cancellation.\nCyberint can make the test purchase on behalf of the bank.",
+                "recommendation": "Cyberint recommends Joe purchase one of the payment cards in order to then verify validity. Upon confirmation, Cyberint recommends cancelling the payment cards in order to prevent their abuse, and informing the card holders of the cancellation.\nCyberint can make the test purchase on behalf of the bank.",
                 "ref_id": "ARG-1",
                 "related_entities": [],
                 "severity": "medium",
