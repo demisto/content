@@ -1,9 +1,9 @@
+import copy
 from typing import Dict
 
 import dateutil.parser as dp
 import pytz
 import urllib3
-import copy
 
 from CommonServerPython import *
 
@@ -915,7 +915,15 @@ def main() -> None:
             auth=(username, password))
 
         if command == 'test-module':
-            fetch_incidents_command(client, params, {})
+            try:
+                fetch_incidents_command(client, params, {})
+            except DemistoException as e:
+                if e.message and 'Error in API call [401] - UNAUTHORIZED' in e.message:
+                    raise DemistoException('Unauthorized - make sure you have the right credentials')
+                if e.message and 'Error in API call [404] - NOT FOUND' in e.message:
+                    raise DemistoException('''Page not found - make sure 'Server URL' parameter is correct''')
+                raise e
+
             return_results('ok')
 
         elif command == 'fetch-incidents':
