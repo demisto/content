@@ -1,7 +1,6 @@
-from typing import Any, Callable, Dict, List, Optional, Tuple
-
-import demistomock as demisto  # noqa: F401
+from typing import List, Tuple, Dict, Any, Optional, Callable
 import urllib3
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # Disable insecure warnings
@@ -119,8 +118,8 @@ def search_vulnerabilities(client: Client, args: dict) -> Tuple[str, Dict[str, A
     human_readable = []
     context: Dict[str, Any] = {}
     params = {
-        'id': argToList(args.get('id')),
-        'top_priority': argToList(args.get('top-priority')),
+        'id[]': argToList(args.get('id')),
+        'top_priority[]': argToList(args.get('top-priority')),
         'min_risk_meter_score': args.get('min-score'),
         'status[]': argToList(args.get('status')),
     }
@@ -315,14 +314,14 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
     to_context = args.get('to_context')
     context: Dict[str, Any] = {}
     params = {
-        'id': argToList(args.get('id')),
-        'top_priority': argToList(args.get('top-priority')),
+        'id[]': argToList(args.get('id')),
+        'top_priority[]': argToList(args.get('top-priority')),
         'min_risk_meter_score': args.get('min-score'),
         'status[]': argToList(args.get('status')),
+        'per_page': limit
     }
     response = client.http_request(message='GET', suffix=url_suffix, params=params).get('fixes')
     if response:
-        fixes_list = response[:limit]
 
         wanted_keys = ['ID', 'Title', ['Assets', 'ID', 'Locator', 'PrimaryLocator', 'DisplayLocator'],
                        ['Vulnerabilities', 'ID', 'ServiceTicketStatus', 'ScannerIDs'], 'CveID', 'LastUpdatedAt',
@@ -331,10 +330,10 @@ def search_fixes(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List[
                        ['vulnerabilities', 'id', 'service_ticket_status', 'scanner_ids'], 'cves', 'updated_at',
                        'category',
                        'vuln_count', 'max_vuln_score']
-        context_list = parse_response(fixes_list, wanted_keys, actual_keys)
+        context_list = parse_response(response, wanted_keys, actual_keys)
 
         remove_html = re.compile(r'<[^>]+>')
-        for fix in fixes_list:
+        for fix in response:
             if fix:
                 human_readable_markdown += str(fix.get('title')) + '\n'
                 human_readable_markdown += '#### ID: ' + str(fix.get('id')) + '\n'
@@ -424,10 +423,10 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     else:
         tags = args.get('tags')
     params = {
-        'id': argToList(args.get('id')),
-        'hostname': argToList(args.get('hostname')),
+        'id[]': argToList(args.get('id')),
+        'hostname[]': argToList(args.get('hostname')),
         'min_risk_meter_score': args.get('min-score'),
-        'tags': tags
+        'tags[]': tags
     }
     response = client.http_request(message='GET', suffix=url_suffix, params=params).get(
         'assets')
