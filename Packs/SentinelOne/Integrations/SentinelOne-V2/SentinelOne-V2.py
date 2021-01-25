@@ -199,7 +199,7 @@ class Client(BaseClient):
 
     def get_agent_processes_request(self, agents_ids=None):
         """
-        [DEPRECATED BY S1] Returns empty array. To get processes of an Agent, see Applications.
+        [DEPRECATED BY SentinelOne] Returns empty array. To get processes of an Agent, see Applications.
 
         """
         endpoint_url = 'agents/processes'
@@ -389,14 +389,14 @@ class Client(BaseClient):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module(client: Client, args: dict):
+def test_module(client: Client, is_fetch: bool):
     """
-    Performs basic get request to get activities types.
+    Performs basic get request to verify connection and creds.
     """
-    try:
+    if is_fetch:
+        client.get_threats_request(limit=1)
+    else:
         client._http_request(method='GET', url_suffix='activities/types')
-    except Exception as e:
-        raise DemistoException(f"Test failed. Please verify the URL and Token parameters.\nReason:\n{e}")
     return 'ok'
 
 
@@ -408,27 +408,26 @@ def get_activities_command(client: Client, args: dict) -> CommandResults:
     headers = ['ID', 'PrimaryDescription', 'Data', 'UserID', 'CreatedAt', 'ThreatID', 'UpdatedAt']
     activities = client.get_activities_request(**args)
 
-    if activities:
-        for activity in activities:
-            context_entries.append({
-                'Hash': activity.get('hash'),
-                'ActivityType': activity.get('activityType'),
-                'OsFamily': activity.get('osFamily'),
-                'PrimaryDescription': activity.get('primaryDescription'),
-                'Comments': activity.get('comments'),
-                'AgentUpdatedVersion': activity.get('agentUpdatedVersion'),
-                'UserID': activity.get('userId'),
-                'ID': activity.get('id'),
-                'Data': activity.get('data'),
-                'CreatedAt': activity.get('createdAt'),
-                'SecondaryDescription': activity.get('secondaryDescription'),
-                'ThreatID': activity.get('threatId'),
-                'GroupID': activity.get('groupId'),
-                'UpdatedAt': activity.get('updatedAt'),
-                'Description': activity.get('description'),
-                'AgentID': activity.get('agentId'),
-                'SiteID': activity.get('siteId'),
-            })
+    for activity in activities:
+        context_entries.append({
+            'Hash': activity.get('hash'),
+            'ActivityType': activity.get('activityType'),
+            'OsFamily': activity.get('osFamily'),
+            'PrimaryDescription': activity.get('primaryDescription'),
+            'Comments': activity.get('comments'),
+            'AgentUpdatedVersion': activity.get('agentUpdatedVersion'),
+            'UserID': activity.get('userId'),
+            'ID': activity.get('id'),
+            'Data': activity.get('data'),
+            'CreatedAt': activity.get('createdAt'),
+            'SecondaryDescription': activity.get('secondaryDescription'),
+            'ThreatID': activity.get('threatId'),
+            'GroupID': activity.get('groupId'),
+            'UpdatedAt': activity.get('updatedAt'),
+            'Description': activity.get('description'),
+            'AgentID': activity.get('agentId'),
+            'SiteID': activity.get('siteId'),
+        })
 
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One Activities', context_entries, headers=headers, removeNull=True,
@@ -592,7 +591,7 @@ def get_hash_command(client: Client, args: dict) -> CommandResults:
 
 def mark_as_threat_command(client: Client, args: dict) -> CommandResults:
     """
-    Mark suspicious threats as threats
+    Mark suspicious threats as threats.  Relevant for API version 2.0
     """
     context_entries = []
 
@@ -626,7 +625,7 @@ def mark_as_threat_command(client: Client, args: dict) -> CommandResults:
 
 def mitigate_threat_command(client: Client, args: dict) -> CommandResults:
     """
-    Apply a mitigation action to a group of threats
+    Apply a mitigation action to a group of threats. Relevant for API version 2.0
     """
     contents = []
     context_entries = []
@@ -716,20 +715,19 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
     exclusion_items = client.get_exclusions_request(item_ids, os_types, exclusion_type, limit)
 
     # Parse response into context & content entries
-    if exclusion_items:
-        for exclusion_item in exclusion_items:
-            context_entries.append({
-                'ID': exclusion_item.get('id'),
-                'Type': exclusion_item.get('type'),
-                'CreatedAt': exclusion_item.get('createdAt'),
-                'Value': exclusion_item.get('value'),
-                'Source': exclusion_item.get('source'),
-                'UserID': exclusion_item.get('userId'),
-                'UpdatedAt': exclusion_item.get('updatedAt'),
-                'OsType': exclusion_item.get('osType'),
-                'UserName': exclusion_item.get('userName'),
-                'Mode': exclusion_item.get('mode'),
-            })
+    for exclusion_item in exclusion_items:
+        context_entries.append({
+            'ID': exclusion_item.get('id'),
+            'Type': exclusion_item.get('type'),
+            'CreatedAt': exclusion_item.get('createdAt'),
+            'Value': exclusion_item.get('value'),
+            'Source': exclusion_item.get('source'),
+            'UserID': exclusion_item.get('userId'),
+            'UpdatedAt': exclusion_item.get('updatedAt'),
+            'OsType': exclusion_item.get('osType'),
+            'UserName': exclusion_item.get('userName'),
+            'Mode': exclusion_item.get('mode'),
+        })
 
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Listing exclusion items', context_entries, removeNull=True,
@@ -809,23 +807,22 @@ def get_sites_command(client: Client, args: dict) -> CommandResults:
     sites, all_sites = raw_response.get('sites'), raw_response.get('allSites')
 
     # Parse response into context & content entries
-    if sites:
-        for site in sites:
-            context_entries.append({
-                'ID': site.get('id'),
-                'Creator': site.get('creator'),
-                'Name': site.get('name'),
-                'Type': site.get('siteType'),
-                'AccountName': site.get('accountName'),
-                'State': site.get('state'),
-                'HealthStatus': site.get('healthStatus'),
-                'Suite': site.get('suite'),
-                'CreatedAt': site.get('createdAt'),
-                'Expiration': site.get('expiration'),
-                'UnlimitedLicenses': site.get('unlimitedLicenses'),
-                'TotalLicenses': all_sites.get('totalLicenses'),
-                'ActiveLicenses': all_sites.get('activeLicenses'),
-            })
+    for site in sites:
+        context_entries.append({
+            'ID': site.get('id'),
+            'Creator': site.get('creator'),
+            'Name': site.get('name'),
+            'Type': site.get('siteType'),
+            'AccountName': site.get('accountName'),
+            'State': site.get('state'),
+            'HealthStatus': site.get('healthStatus'),
+            'Suite': site.get('suite'),
+            'CreatedAt': site.get('createdAt'),
+            'Expiration': site.get('expiration'),
+            'UnlimitedLicenses': site.get('unlimitedLicenses'),
+            'TotalLicenses': all_sites.get('totalLicenses'),
+            'ActiveLicenses': all_sites.get('activeLicenses'),
+        })
 
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Getting List of Sites', context_entries, removeNull=True,
@@ -1145,38 +1142,35 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
     limit = int(args.get('limit', 50))
 
     events = client.get_events_request(query_id, limit)
-    if events:
-        for event in events:
-            contents.append({
-                'EventType': event.get('eventType'),
-                'Endpoint': event.get('agentName'),
-                'SiteName': event.get('siteName'),
-                'User': event.get('user'),
-                'Time': event.get('processStartTime'),
-                'AgentOS': event.get('agentOs'),
-                'ProcessID': event.get('pid'),
-                'ProcessUID': event.get('srcProcUid') if IS_VERSION_2_1 else event.get('processUniqueKey'),
-                'ProcessName': event.get('processName'),
-                'MD5': event.get('md5'),
-                'SHA256': event.get('sha256'),
-            })
+    for event in events:
+        contents.append({
+            'EventType': event.get('eventType'),
+            'Endpoint': event.get('agentName'),
+            'SiteName': event.get('siteName'),
+            'User': event.get('user'),
+            'Time': event.get('processStartTime'),
+            'AgentOS': event.get('agentOs'),
+            'ProcessID': event.get('pid'),
+            'ProcessUID': event.get('srcProcUid') if IS_VERSION_2_1 else event.get('processUniqueKey'),
+            'ProcessName': event.get('processName'),
+            'MD5': event.get('md5'),
+            'SHA256': event.get('sha256'),
+        })
 
-            event_standards.append({
-                'Type': event.get('eventType'),
-                'Name': event.get('processName'),
-                'ID': event.get('pid'),
-            })
+        event_standards.append({
+            'Type': event.get('eventType'),
+            'Name': event.get('processName'),
+            'ID': event.get('pid'),
+        })
 
-        context = {
-            'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents,
-            'Event(val.ID && val.ID === obj.ID)': event_standards
-        }
-        return CommandResults(
-            readable_output=tableToMarkdown('SentinelOne Events', contents, removeNull=True),
-            outputs=context,
-            raw_response=events)
-
-    return 'No events were found.'
+    context = {
+        'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents,
+        'Event(val.ID && val.ID === obj.ID)': event_standards
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown('SentinelOne Events', contents, removeNull=True),
+        outputs=context,
+        raw_response=events)
 
 
 def get_processes(client: Client, args: dict) -> CommandResults:
@@ -1189,27 +1183,26 @@ def get_processes(client: Client, args: dict) -> CommandResults:
     limit = int(args.get('limit', 50))
 
     processes = client.get_processes_request(query_id, limit)
-    if processes:
-        for process in processes:
-            contents.append({
-                'EventType': process.get('eventType'),
-                'Endpoint': process.get('agentName'),
-                'SiteName': process.get('siteName'),
-                'User': process.get('user'),
-                'Time': process.get('processStartTime'),
-                'ParentProcessID': process.get('parentPid'),
-                'ParentProcessUID': process.get('parentProcessUniqueKey'),
-                'ParentProcessName': process.get('parentProcessName'),
-                'ProcessID': process.get('pid'),
-                'ProcessUID': process.get('srcProcUid') if IS_VERSION_2_1 else process.get('processUniqueKey'),
-                'ProcessName': process.get('processName'),
-                'ProcessDisplayName': process.get('processDisplayName'),
-                'SHA1': process.get('processImageSha1Hash'),
-                'CMD': process.get('"processCmd'),
-                'SubsystemType': process.get('processSubSystem'),
-                'IntegrityLevel': process.get('processIntegrityLevel'),
-                'ParentProcessStartTime': process.get('parentProcessStartTime'),
-            })
+    for process in processes:
+        contents.append({
+            'EventType': process.get('eventType'),
+            'Endpoint': process.get('agentName'),
+            'SiteName': process.get('siteName'),
+            'User': process.get('user'),
+            'Time': process.get('processStartTime'),
+            'ParentProcessID': process.get('parentPid'),
+            'ParentProcessUID': process.get('parentProcessUniqueKey'),
+            'ParentProcessName': process.get('parentProcessName'),
+            'ProcessID': process.get('pid'),
+            'ProcessUID': process.get('srcProcUid') if IS_VERSION_2_1 else process.get('processUniqueKey'),
+            'ProcessName': process.get('processName'),
+            'ProcessDisplayName': process.get('processDisplayName'),
+            'SHA1': process.get('processImageSha1Hash'),
+            'CMD': process.get('"processCmd'),
+            'SubsystemType': process.get('processSubSystem'),
+            'IntegrityLevel': process.get('processIntegrityLevel'),
+            'ParentProcessStartTime': process.get('parentProcessStartTime'),
+        })
 
     return CommandResults(
         readable_output=tableToMarkdown('SentinelOne Processes', contents, removeNull=True),
@@ -1225,7 +1218,7 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
 
     # handle first time fetch
     if last_fetch is None:
-        last_fetch, _ = parse_date_range(first_fetch, to_timestamp=True)
+        last_fetch = date_to_timestamp(dateparser.parse(first_fetch, settings={'TIMEZONE': 'UTC'}))
 
     current_fetch = last_fetch
     incidents = []
@@ -1239,7 +1232,7 @@ def fetch_incidents(client: Client, fetch_limit: int, first_fetch: str, fetch_th
         except TypeError:
             rank = 0
         # If no fetch threat rank is provided, bring everything, else only fetch above the threshold
-        if rank >= fetch_threat_rank or IS_VERSION_2_1:
+        if IS_VERSION_2_1 or rank >= fetch_threat_rank:
             incident = threat_to_incident(threat)
             date_occurred_dt = parse(incident['occurred'])
             incident_date = date_to_timestamp(date_occurred_dt, '%Y-%m-%dT%H:%M:%S.%fZ')
@@ -1289,7 +1282,6 @@ def main():
 
     commands: Dict[str, Dict[str, Callable]] = {
         'common': {
-            'test-module': test_module,
             'sentinelone-get-activities': get_activities_command,
             'sentinelone-get-threats': get_threats_command,
             'sentinelone-mitigate-threat': mitigate_threat_command,
@@ -1335,6 +1327,8 @@ def main():
             proxy=proxy,
         )
 
+        if command == 'test-module':
+            return_results(test_module(client, params.get('isFetch')))
         if command == 'fetch-incidents':
             fetch_incidents(client, fetch_limit, first_fetch_time, fetch_threat_rank)
 

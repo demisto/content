@@ -543,7 +543,7 @@ script:
       name: threat_ids
       required: true
       secret: false
-    deprecated: true
+    deprecated: false
     description: Applies a mitigation action to a group of threats that match the specified input filter.
     execution: false
     name: sentinelone-mitigate-threat
