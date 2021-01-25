@@ -8,10 +8,6 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
 - display: Incident type
   name: incidentType
   required: false
@@ -93,7 +89,23 @@ script:
     description: create a Mantis issue
     execution: false
     name: mantis-create-issue
-  - deprecated: false
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The number of issues to return per page. Default is 50 but overridable
+        by configuration.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
     description: get a list of mantis issues
     execution: false
     name: mantis-get-issues
@@ -138,7 +150,7 @@ script:
     name: mantis-close-issue
   dockerimage: demisto/python3:3.9.1.14969
   feed: false
-  isfetch: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false

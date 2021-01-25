@@ -132,14 +132,11 @@ def mantis_close_issue_command(client, args):
 
 def mantis_get_issue_by_id_command(client, args):
     """
-    Returns Hello {somename}
+    Returns a mantis issue
 
     Args:
         client (Client): Mantis client.
         args (dict): all command arguments.
-
-    Returns:
-        Mantis
     """
     _id = args.get('id')
     resp_issues = client.get_issue(_id).get('issues')
@@ -204,23 +201,6 @@ def matis_create_note_command(client, args):
         return_error(str(resp))
 
 
-def fetch_incidents(client, last_run, first_fetch_time):
-    """
-    This function will execute each interval (default is 1 minute).
-
-    Args:
-        client (Client): HelloWorld client
-        last_run (dateparser.time): The greatest incident created_time we fetched from last fetch
-        first_fetch_time (dateparser.time): If last_run is None then fetch all incidents since first_fetch_time
-
-    Returns:
-        next_run: This will be last_run in the next fetch-incidents
-        incidents: Incidents that will be created in Demisto
-    """
-    incidents = [1, 2, 3]
-    return last_run, incidents
-
-
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -231,9 +211,6 @@ def main():
     base_url = urljoin(demisto.params()['url'], '/api/rest')
 
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # How much time before the first fetch to retrieve incidents
-    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
 
     proxy = demisto.params().get('proxy', False)
     headers = {
@@ -251,19 +228,7 @@ def main():
         args = demisto.args()
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
-
-        elif demisto.command() == 'fetch-incidents':
-            # Set and define the fetch incidents command to run after activated via integration settings.
-            next_run, incidents = fetch_incidents(
-                client=client,
-                last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time)
-
-            demisto.setLastRun(next_run)
-            demisto.incidents(incidents)
-
         elif demisto.command() == 'mantis-get-issue-by-id':
             return_results(mantis_get_issue_by_id_command(client, args))
         elif demisto.command() == 'mantis-get-issues':
