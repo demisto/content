@@ -1,8 +1,16 @@
 ## BaseIntegration Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+### App authentication
+To use this integration you should connect an application with a certificate.
+In order to create the app and certificate, you should use the [following guide](https://docs.microsoft.com/en-us/powershell/exchange/app-only-auth-powershell-v2?view=exchange-ps).
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
+After acquiring the .pfx certificate, you should encode it to base64 to use in the integration.
+you can use this command:
+```powershell
+$pfx_path = "<path-to-file>.pfx"
+$b65_path  "<output-path>.txt"
+$bytes = [System.IO.File]::ReadAllBytes($pfx_path)
+$base_64_encoded = [System.Convert]::ToBase64String($bytes);
+[System.IO.File]::WriteAllText($b64_path, $base_64_encoded)
+```
+Take the .txt contents and paste it to the to Credential parameter.

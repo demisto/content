@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: EwsExtensionEXOPowershellV2
+  id: Ews Extension Online Powershell v2
   version: -1
 configuration:
 - defaultvalue: https://outlook.office365.com
@@ -23,10 +23,9 @@ configuration:
   name: app_id
   required: false
   type: 0
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
-display: EwsExtensionEXOPowershellV2
-name: EwsExtensionEXOPowershellV2
+description: Use the Ews Extension Online Powershell v2 integration to get information about mail boxes and users in your organization.
+display: Ews Extension Online Powershell v2
+name: Ews Extension Online Powershell v2
 script:
   commands:
   - arguments:
@@ -137,6 +136,94 @@ script:
     execution: false
     name: ews-get-mailbox
   - arguments:
+      - default: false
+        isArray: false
+        name: identity
+        description: The Identity parameter specifies the mailbox you want to view.
+        required: false
+        secret: false
+      - default: false
+        description: The OrganizationalUnit parameter filters the results based on the object's location in Active Directory.
+        isArray: false
+        name: organizational_unit
+        required: false
+        secret: false
+      - default: false
+        description: The PrimarySmtpAddress identifies the mailbox that you want to view by primary SMTP email address. Can't be used with user_principal_name.
+        isArray: false
+        name: primary_smtp_address
+        required: false
+        secret: false
+      - default: false
+        description: The UserPrincipalName parameter identifies the mailbox that you want to view by UPN. Can't be used with primary_smtp_address.
+        isArray: false
+        name: user_principal_name
+        required: false
+        secret: false
+      - default: false
+        description: The maximum number of results to get.
+        isArray: false
+        name: limit
+        defaultValue: 10
+        required: false
+        secret: false
+    outputs:
+      - contextPath: EWS.EXOCASMailbox.ActiveSyncEnabled
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOCASMailbox.DisplayName
+        description: ''
+        type: String
+      - contextPath: EWS.EXOCASMailbox.ECPEnabled
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOCASMailbox.EmailAddresses
+        description: ''
+        type: String
+      - contextPath: EWS.EXOCASMailbox.EwsEnabled
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOCASMailbox.ExchangeVersion
+        description: ''
+        type: String
+      - contextPath: EWS.EXOCASMailbox.ExternalDirectoryObjectId
+        description: ''
+        type: String
+      - contextPath: EWS.EXOCASMailbox.Guid
+        description: ''
+        type: String
+      - contextPath: EWS.EXOCASMailbox.Identity
+        description: ''
+        type: String
+      - contextPath: EWS.EXOCASMailbox.ImapEnabled
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOCASMailbox.MAPIEnabled
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOCASMailbox.Name
+        description: ''
+        type: String
+      - contextPath: EWS.EXOCASMailbox.OWAEnabled
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOCASMailbox.OrganizationId
+        description: ''
+        type: String
+      - contextPath: EWS.EXOCASMailbox.PopEnabled
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOCASMailbox.PrimarySmtpAddress
+        description: ''
+        type: String
+      - contextPath: EWS.EXOCASMailbox.ServerLegacyDN
+        description: ''
+        type: String
+    deprecated: false
+    description: Use the ews-get-cas-mailbox command to view Client Access settings that are configured on mailboxes.
+    execution: false
+    name: ews-get-cas-mailbox
+  - arguments:
     - default: false
       description: |-
         This argument is available only in on-premises Exchange.
@@ -192,15 +279,96 @@ script:
       name: identity
       required: false
       secret: false
+    - default: false
+      description: The maximum number of results to get.
+      isArray: false
+      name: limit
+      defaultValue: 10
+      required: false
+      secret: false
+    outputs:
+      - contextPath: EWS.EXORecipientPermission.AccessControlType
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipientPermission.AccessRights
+        description: ''
+        type: Number
+      - contextPath: EWS.EXORecipientPermission.Identity
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipientPermission.InheritanceType
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipientPermission.IsInherited
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXORecipientPermission.Trustee
+        description: ''
+        type: String
     deprecated: false
     description: View information about SendAs permissions that are configured for users This command is available only in the Exchange Online PowerShell V2 module.
     execution: false
-    name: ews-get-mailbox-recipient-permission
+    name: ews-get-recipient-permission
+  - arguments:
+      - default: false
+        description: The Identity parameter specifies the mailbox you want to view.
+        isArray: false
+        name: identity
+        required: false
+        secret: false
+      - default: false
+        description: The maximum number of results to get.
+        isArray: false
+        name: limit
+        defaultValue: 10
+        required: false
+        secret: false
+    outputs:
+      - contextPath: EWS.EXORecipient.Alias
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.DisplayName
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.DistinguishedName
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.EmailAddresses
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.ExchangeVersion
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.ExternalDirectoryObjectId
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.Identity
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.Name
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.OrganizationId
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.PrimarySmtpAddress
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.RecipientType
+        description: ''
+        type: String
+      - contextPath: EWS.EXORecipient.RecipientTypeDetails
+        description: ''
+        type: String
+    deprecated: false
+    description: View existing recipient objects in your organization. This cmdlet returns all mail-enabled objects (for example, mailboxes, mail users, mail contacts, and distribution groups).
+    execution: false
+    name: ews-get-recipient
   isfetch: false
   runonce: false
   script: '-'
   type: powershell
-  dockerimage: devtesting/pwsh-exchange:1.0.0.1611566655
+  dockerimage: devdemisto/pwsh-exchange:1.0.0.15721
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

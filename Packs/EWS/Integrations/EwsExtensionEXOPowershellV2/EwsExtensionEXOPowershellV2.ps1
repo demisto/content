@@ -38,7 +38,8 @@ class ExchangeOnlinePowershellV2Client {
         [string]$identity, 
         [string]$organizational_unit, 
         [string]$primary_smtp_address,
-        [string]$user_principal_name
+        [string]$user_principal_name,
+        [int]$limit
     ) {
         $cmd_params = @{}
         if ($identity) {
@@ -52,6 +53,12 @@ class ExchangeOnlinePowershellV2Client {
         }
         if ($user_principal_name) {
             $cmd_params.UserPrincipalName = $user_principal_name
+        }
+        if ($limit -ge 0){
+            $cmd_params.ResultSize = $limit
+        } else
+        {
+            $cmd_params.ResultSize = Unlimited
         }
         return Get-EXOCASMailbox @cmd_params
         <#
@@ -107,6 +114,9 @@ class ExchangeOnlinePowershellV2Client {
         }
         if ($limit -ge 0){
             $cmd_params.ResultSize = $limit
+        } else
+        {
+            $cmd_params.ResultSize = Unlimited
         }
         return Get-EXOMailbox @cmd_params
         <#
@@ -169,13 +179,21 @@ class ExchangeOnlinePowershellV2Client {
         #>
     }
     [PSObject]GetEXORecipientPermission(
-        [string]$identity
+        [string]$identity,
+        [int]$limit
     ) {
         $cmd_params = @{}
         if ($identity) {
             $cmd_params.Identity = $identity
         }
-        return Get-EXORecipientPermission @$cmd_params
+        if ($limit -ge 0){
+            $cmd_params.ResultSize = $limit
+        }
+        else
+        {
+            $cmd_params.ResultSize = Unlimited
+        }
+        return Get-EXORecipientPermission @cmd_params
         <#
         .DESCRIPTION
         Use the Get-EXORecipientPermission cmdlet to view information about SendAs permissions that are
@@ -198,6 +216,47 @@ class ExchangeOnlinePowershellV2Client {
             * SamAccountName
         #>
     }
+        [PSObject]GetEXORecipient(
+        [string]$identity,
+        [int]$limit
+    )
+        {
+            $cmd_params = @{ }
+            if ($identity)
+            {
+                $cmd_params.Identity = $identity
+            }
+            if ($limit -ge 0)
+            {
+                $cmd_params.ResultSize = $limit
+            }
+            else
+            {
+                $cmd_params.ResultSize = Unlimited
+            }
+            return Get-EXORecipient @cmd_params
+            <#
+            .DESCRIPTION
+            Use the Get-ExORecipient cmdlet to view existing recipient objects in your organization.
+            This cmdlet returns all mail-enabled objects (for example,
+            mailboxes, mail users, mail contacts, and distribution groups).
+
+            #>
+        }
+}
+
+function GetEXORecipientCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
+        [hashtable]$kwargs
+    )
+    $identity = $kwargs.identity
+    $limit = $kwargs.limit -as [int]
+    $raw_response = $client.GetEXORecipient($identity, $limit)
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXORecipient(obj.Guid === val.Guid)" = $raw_response }
+    return $human_readable, $entry_context, $raw_response
 }
 
 function GetEXORecipientPermissionCommand {
@@ -207,9 +266,10 @@ function GetEXORecipientPermissionCommand {
         [hashtable]$kwargs
     )
     $identity = $kwargs.identity
-    $raw_response = $client.GetEXORecipientPermission($identity)
+    $limit = $kwargs.limit -as [int]
+    $raw_response = $client.GetEXORecipientPermission($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.etEXORecipientPermission(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXORecipientPermission(obj.Guid === val.Guid)" = $raw_response }
     return $human_readable, $entry_context, $raw_response
 }
 function GetEXOMailBoxPermissionCommand {
@@ -247,9 +307,12 @@ function GetEXOCASMailboxCommand {
     $organizational_unit = $kwargs.organizational_unit
     $primary_smtp_address = $kwargs.primary_smtp_address
     $user_principal_name = $kwargs.user_principal_name
-    $raw_response = $client.GetEXOCASMailbox($identity, $organizational_unit, $primary_smtp_address, $user_principal_name)
+    $limit = $kwargs.limit -as [int]
+    $raw_response = $client.GetEXOCASMailbox(
+            $identity, $organizational_unit, $primary_smtp_address, $user_principal_name, $limit
+    )
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOCasMailBox(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOCASMailBox(obj.Guid === val.Guid)" = $raw_response }
     return $human_readable, $entry_context, $raw_response
 }
 function TestModuleCommand(){
@@ -284,7 +347,7 @@ function Main {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand
             }
-            "$script:COMMAND_PREFIX-get-access-settings-configured-on-mailbox" {
+            "$script:COMMAND_PREFIX-get-cas-mailbox" {
                 ($human_readable, $entry_context, $raw_response) = GetEXOCASMailboxCommand $exo_client $command_arguments
             }
             "$script:COMMAND_PREFIX-get-mailbox" {
@@ -293,8 +356,11 @@ function Main {
             "$script:COMMAND_PREFIX-get-mailbox-permission" {
                 ($human_readable, $entry_context, $raw_response) = GetEXOMailBoxPermissionCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-mailbox-recipient-permission" {
+            "$script:COMMAND_PREFIX-get-recipient-permission" {
                 ($human_readable, $entry_context, $raw_response) = GetEXORecipientPermissionCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-get-recipient" {
+                ($human_readable, $entry_context, $raw_response) = GetEXORecipientCommand $exo_client $command_arguments
             }
             default {
                 ReturnError "Could not recognize $command"
