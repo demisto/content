@@ -11,7 +11,7 @@ if __name__ in ["builtins", "__main__"]:
     main()
 ```
 
-Then, the `IAMApiModule` will be available for usage. For examples, see the `Workday` or `Okta` integrations.
+Then, the `IAMApiModule` will be available for usage. For examples, see the [Workday IAM](https://github.com/demisto/content/blob/master/Packs/Workday/Integrations/Workday_IAM/Workday_IAM.py) or [Okta IAM](https://github.com/demisto/content/blob/master/Packs/Okta/Integrations/Okta_IAM/Okta_IAM.py) integrations.
 
 The IAMApiModule contains the following classes:
 1. IAMErrors - to manually handle errors in IAM integrations.
