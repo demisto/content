@@ -3,7 +3,6 @@
     "custom": true,
     "defaultIncidentType": "ServiceNow Ticket",
     "id": "ServiceNow Classifier",
-    "incidentSamples": [],
     "isDefault": false,
     "keyTypeMap": {
         "incident": "ServiceNow Ticket"
@@ -43,7 +42,9 @@
                 "ServiceNow Impact": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "impact",
                         "transformers": [
                             {
@@ -122,7 +123,9 @@
                 "ServiceNow Notify": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "notify",
                         "transformers": [
                             {
@@ -201,7 +204,9 @@
                 "ServiceNow Priority": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "priority",
                         "transformers": [
                             {
@@ -326,7 +331,9 @@
                 "ServiceNow State": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "state",
                         "transformers": [
                             {
@@ -474,7 +481,9 @@
                 "ServiceNow Urgency": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "urgency",
                         "transformers": [
                             {
@@ -569,7 +578,9 @@
                 "Ticket Opened Date": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "opened_at",
                         "transformers": [
                             {
@@ -590,7 +601,9 @@
                                 "operator": "DateStringToISOFormat"
                             },
                             {
-                                "args": {},
+                                "args": {
+
+                                },
                                 "operator": "TimeStampToDate"
                             }
                         ]
@@ -624,7 +637,9 @@
                 "severity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "severity",
                         "transformers": [
                             {
@@ -685,7 +700,9 @@
                 "severity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "severity",
                         "transformers": [
                             {
@@ -741,12 +758,10 @@
             }
         }
     },
-    "sortValues": null,
     "transformer": {
         "complex": null,
         "simple": "sys_class_name"
     },
-    "unclassifiedCases": {},
     "version": -1,
     "fromVersion": "5.0.0",
     "toVersion": "5.9.9"

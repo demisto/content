@@ -86,7 +86,7 @@ RESPONSE_TICKET_MIRROR = {'result': [{
     'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '', 'due_date': '',
     'sys_mod_count': '8', 'reopen_count': '', 'sys_tags': '', 'escalation': '0', 'upon_approval': '',
     'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
-    }]
+}]
 }
 
 
@@ -115,7 +115,7 @@ RESPONSE_CLOSING_TICKET_MIRROR = {'result': [{
     'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '', 'due_date': '',
     'sys_mod_count': '8', 'reopen_count': '', 'sys_tags': '', 'escalation': '0', 'upon_approval': '',
     'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
-    }]
+}]
 }
 
 RESPONSE_GET_ATTACHMENT = {'result': [{
@@ -3060,14 +3060,14 @@ RESPONSE_MIRROR_FILE_ENTRY = [
      'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'}]
 
 RESPONSE_ASSIGNMENT_GROUP = {'result': {'parent': '', 'manager':
-    {'link': 'https://dev59633.service-now.com/api/now/table/sys_user/b6b364e253131300e321ddeeff7b121b',
-     'value': 'b6b364e253131300e321ddeeff7b121b'}, 'roles': '', 'sys_mod_count': '0', 'active': 'true',
-                                       'description': '', 'source': '', 'sys_updated_on': '2020-07-11 09:50:32',
-                                       'sys_tags': '', 'type': '', 'sys_id': '679434f053231300e321ddeeff7b12d8',
-                                       'sys_updated_by': 'admin', 'cost_center': '', 'default_assignee': '',
-                                       'sys_created_on': '2020-07-11 09:50:32', 'name': 'Help Desk',
-                                       'exclude_manager': 'false', 'email': '', 'include_members': 'false',
-                                       'sys_created_by': 'admin'}}
+                                        {'link': 'https://dev59633.service-now.com/api/now/table/sys_user/b6b364e253131300e321ddeeff7b121b',
+                                         'value': 'b6b364e253131300e321ddeeff7b121b'}, 'roles': '', 'sys_mod_count': '0', 'active': 'true',
+                                        'description': '', 'source': '', 'sys_updated_on': '2020-07-11 09:50:32',
+                                        'sys_tags': '', 'type': '', 'sys_id': '679434f053231300e321ddeeff7b12d8',
+                                        'sys_updated_by': 'admin', 'cost_center': '', 'default_assignee': '',
+                                        'sys_created_on': '2020-07-11 09:50:32', 'name': 'Help Desk',
+                                        'exclude_manager': 'false', 'email': '', 'include_members': 'false',
+                                        'sys_created_by': 'admin'}}
 
 
 RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR = [{'Contents': '', 'ContentsFormat': 'text', 'Type': 3,

@@ -35,7 +35,9 @@
                 "ServiceNow Due Date": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "opened_at",
                         "transformers": [
                             {
@@ -65,7 +67,9 @@
                                 "operator": "FormattedDateToEpoch"
                             },
                             {
-                                "args": {},
+                                "args": {
+
+                                },
                                 "operator": "TimeStampToDate"
                             }
                         ]
@@ -75,7 +79,9 @@
                 "ServiceNow Impact": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "impact",
                         "transformers": [
                             {
@@ -154,7 +160,9 @@
                 "ServiceNow Notify": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "notify",
                         "transformers": [
                             {
@@ -233,7 +241,9 @@
                 "ServiceNow Priority": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "priority",
                         "transformers": [
                             {
@@ -358,7 +368,9 @@
                 "ServiceNow State": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "state",
                         "transformers": [
                             {
@@ -506,7 +518,9 @@
                 "ServiceNow Urgency": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "urgency",
                         "transformers": [
                             {
@@ -593,7 +607,9 @@
                 "Ticket Closed Date": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "closed_at",
                         "transformers": [
                             {
@@ -623,7 +639,9 @@
                                 "operator": "FormattedDateToEpoch"
                             },
                             {
-                                "args": {},
+                                "args": {
+
+                                },
                                 "operator": "TimeStampToDate"
                             }
                         ]
@@ -637,7 +655,9 @@
                 "Ticket Opened Date": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "opened_at",
                         "transformers": [
                             {
@@ -667,7 +687,9 @@
                                 "operator": "FormattedDateToEpoch"
                             },
                             {
-                                "args": {},
+                                "args": {
+
+                                },
                                 "operator": "TimeStampToDate"
                             }
                         ]
@@ -701,7 +723,9 @@
                 "severity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "severity",
                         "transformers": [
                             {
@@ -762,7 +786,9 @@
                 "severity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [],
+                        "filters": [
+
+                        ],
                         "root": "severity",
                         "transformers": [
                             {

@@ -7,7 +7,8 @@ configuration:
   name: url
   required: true
   type: 0
-- display: ServiceNow API Version (e.g. 'v1'). Specify this value to use an endpoint version other than the latest.
+- display: ServiceNow API Version (e.g. 'v1'). Specify this value to use an endpoint
+    version other than the latest.
   name: api_version
   required: false
   type: 0
@@ -53,7 +54,8 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-description: Integrate with ServiceNow's services to execute CRUD operations for employee lifecycle processes.
+description: Integrate with ServiceNow's services to execute CRUD operations for employee
+  lifecycle processes.
 display: ServiceNow IAM
 name: ServiceNow IAM
 script:
@@ -68,8 +70,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the user in the 3rd-party
-        integration will be active.
+      description: When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -83,7 +85,8 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the 3rd-party integration.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -122,8 +125,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the user in the 3rd-party
-        integration will be active.
+      description: When set to true, after the command execution the status of the
+        user in the 3rd-party integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -138,7 +141,8 @@ script:
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the 3rd-party integration.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -180,7 +184,8 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the 3rd-party integration.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -222,7 +227,8 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the 3rd-party integration.
+      description: When true, indicates that the employee's status is active in the
+        3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -252,8 +258,8 @@ script:
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema, which holds all of the user fields within the application.
-      Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema, which holds all of the user fields
+      within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
   dockerimage: demisto/python3:3.9.1.14969
