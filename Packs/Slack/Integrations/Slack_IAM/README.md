@@ -1,4 +1,4 @@
-Note: This integration should be used as part of our IAM premium pack. For further details, visit our IAM pack documentation.
+Note: This integration should be used as part of our **Identity Lifecycle Management** premium pack. For further details, visit our IAM pack documentation.
 
 Integrate with Slack's services to execute CRUD operations for employee lifecycle processes.
 For more information, please refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
@@ -14,10 +14,10 @@ For more information, please refer to the [Identity Lifecycle Management article
     | access_token | Access Token | True |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
-    | create_user_enabled | iam-create-user Command Enabled | False |
-    | update_user_enabled | iam-update-user Command Enabled | False |
-    | disable_user_enabled | iam-disable-user Command Enabled | False |
-    | create_if_not_exists | Automatically create user if not found in update command | False |
+    | create_user_enabled | iam-create-user Command Enabled | True | If set to false, iam-create-user command will be skipped, and user will not be created.
+    | update_user_enabled | iam-update-user Command Enabled | True |
+    | disable_user_enabled | iam-disable-user Command Enabled | True |
+    | create_if_not_exists | Automatically create user if not found in update command | True |
     | mapper_in | Incoming Mapper | True |
     | mapper_out | Outgoing Mapper | True |
 

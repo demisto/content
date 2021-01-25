@@ -15,8 +15,10 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: 'true'
-  display: iam-create-user Command Enabled
+- additionalinfo: If set to false, iam-create-user command will be skipped, and user
+    will not be created.
+  defaultvalue: 'true'
+  display: iam-create-user Command Enabled.
   name: create_user_enabled
   required: false
   type: 8
