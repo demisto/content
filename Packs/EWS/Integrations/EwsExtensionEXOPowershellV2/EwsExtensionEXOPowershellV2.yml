@@ -1,0 +1,206 @@
+category: Utilities
+commonfields:
+  id: EwsExtensionEXOPowershellV2
+  version: -1
+configuration:
+- defaultvalue: https://outlook.office365.com
+  display: Exchange Online URL
+  name: url
+  required: true
+  type: 0
+- display: Certificate
+  name: certificate
+  type: 9
+  required: true
+  additionalinfo: A pfx certificate encoded in Base64.
+- defaultvalue: ""
+  display: The Organization parameter specifies the organization that's used in app-only authentication
+  name: organization
+  required: false
+  type: 0
+- defaultvalue: ""
+  display: The app_id from the Azure portal
+  name: app_id
+  required: false
+  type: 0
+description: '[Enter a comprehensive, yet concise, description of what the integration
+  does, what use cases it is designed for, etc.]'
+display: EwsExtensionEXOPowershellV2
+name: EwsExtensionEXOPowershellV2
+script:
+  commands:
+  - arguments:
+    - default: false
+      isArray: false
+      name: identity
+      description: The Identity parameter specifies the mailbox you want to view.
+      required: false
+      secret: false
+    - default: false
+      description: The OrganizationalUnit parameter filters the results based on the object's location in Active Directory.
+      isArray: false
+      name: organizational_unit
+      required: false
+      secret: false
+    - default: false
+      description: The PrimarySmtpAddress identifies the mailbox that you want to view by primary SMTP email address. Can't be used with user_principal_name.
+      isArray: false
+      name: primary_smtp_address
+      required: false
+      secret: false
+    - default: false
+      description: The UserPrincipalName parameter identifies the mailbox that you want to view by UPN. Can't be used with primary_smtp_address.
+      isArray: false
+      name: user_principal_name
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to get.
+      isArray: false
+      name: limit
+      defaultValue: 10
+      required: false
+      secret: false
+    deprecated: false
+    outputs:
+      - contextPath: EWS.EXOMailBox.EmailAddresses
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.AuditBypassEnabled
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOMailBox.DistinguishedName
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.ExchangeObjectId
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.ExchangeVersion
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.Guid
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.Id
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.Identity
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.IsValid
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOMailBox.Name
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.ObjectCategory
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.ObjectClass
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.ObjectId
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.ObjectState
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.OrganizationId
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.OriginatingServer
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.PSComputerName
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.PSShowComputerName
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOMailBox.RunspaceId
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBox.WhenChanged
+        description: ''
+        type: Date
+      - contextPath: EWS.EXOMailBox.WhenChangedUTC
+        description: ''
+        type: Date
+      - contextPath: EWS.EXOMailBox.WhenCreated
+        description: ''
+        type: Date
+      - contextPath: EWS.EXOMailBox.WhenCreatedUTC
+        description: ''
+        type: Date
+    description: Use the ews-get-federation-trust command to view the federation trust
+      configured for the Exchange organization.
+    execution: false
+    name: ews-get-mailbox
+  - arguments:
+    - default: false
+      description: |-
+        This argument is available only in on-premises Exchange.
+        You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.
+      isArray: false
+      name: domain_controller
+      required: false
+      secret: false
+    - default: false
+      description: The Identity parameter specifies the remote domain that you want to view.
+      isArray: false
+      name: identity
+      required: false
+      secret: false
+    deprecated: false
+    description: View the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V2 module.
+    execution: false
+    name: ews-get-remote-domain
+  - arguments:
+    - default: false
+      description: The Identity parameter specifies the mailbox you want to view.
+      isArray: false
+      name: identity
+      required: true
+      secret: false
+    outputs:
+      - contextPath: EWS.EXOMailBoxPermission.AccessRights
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBoxPermission.Deny.IsPresent
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOMailBoxPermission.Identity
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBoxPermission.InheritanceType
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailBoxPermission.IsInherited
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOMailBoxPermission.User
+        description: ''
+        type: String
+    deprecated: false
+    description: Retrieve permissions on a mailbox. This command is available only in the Exchange Online PowerShell V2 module.
+    execution: false
+    name: ews-get-mailbox-permission
+  - arguments:
+    - default: false
+      description: The Identity parameter specifies the mailbox you want to view.
+      isArray: false
+      name: identity
+      required: false
+      secret: false
+    deprecated: false
+    description: View information about SendAs permissions that are configured for users This command is available only in the Exchange Online PowerShell V2 module.
+    execution: false
+    name: ews-get-mailbox-recipient-permission
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: powershell
+  dockerimage: devtesting/pwsh-exchange:1.0.0.1611566655
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
