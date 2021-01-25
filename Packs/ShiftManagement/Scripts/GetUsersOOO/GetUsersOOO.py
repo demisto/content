@@ -49,8 +49,7 @@ def main():
 
     return_results(CommandResults(
         readable_output=hr,
-        outputs=users_list,
-        outputs_prefix="ShiftManagment.OOOUsers",
+        outputs={'ShiftManagment.OOOUsers': users_list},
         raw_response={},
     ))
 
