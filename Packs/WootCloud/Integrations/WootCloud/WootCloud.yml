@@ -999,6 +999,8 @@ script:
       - contextPath: WootCloud.AnomalyAlert.connections.connection_count
         description: 'connections connection count'
         type: Number
+  feed: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
