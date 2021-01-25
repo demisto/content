@@ -1,39 +1,38 @@
 from __future__ import print_function
 
 import argparse
-import os
-import uuid
-import json
 import ast
+import json
+import logging
+import os
 import subprocess
 import sys
+import uuid
 import zipfile
 from datetime import datetime
+from distutils.version import LooseVersion
 from enum import IntEnum
 from pprint import pformat
-from time import sleep
 from threading import Thread
-from distutils.version import LooseVersion
-import logging
+from time import sleep
 from typing import List, Tuple
 
-from Tests.scripts.utils.log_util import install_logging
-
-from paramiko.client import SSHClient, AutoAddPolicy
 import demisto_client
+from paramiko.client import SSHClient, AutoAddPolicy
 from ruamel import yaml
-from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml,\
-    str2bool, format_version, find_type
-from demisto_sdk.commands.common.constants import FileType
-from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
-from Tests.test_content import extract_filtered_tests, get_server_numeric_version
-from Tests.update_content_data import update_content
+
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     install_all_content_packs, upload_zipped_packs, install_all_content_packs_for_nightly
+from Tests.scripts.utils.log_util import install_logging
+from Tests.test_content import extract_filtered_tests, get_server_numeric_version
+from Tests.test_integration import __get_integration_config, __test_integration_instance, disable_all_integrations
 from Tests.tools import run_with_proxy_configured
+from Tests.update_content_data import update_content
+from demisto_sdk.commands.common.constants import FileType
+from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
+    str2bool, format_version, find_type
 from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
-from demisto_sdk.commands.test_content.tools import update_server_configuration
-
+from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
 from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 MARKET_PLACE_MACHINES = ('master',)
@@ -43,6 +42,9 @@ DOCKER_HARDENING_CONFIGURATION = {
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
     'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
+}
+DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
+    'docker.run.internal.asuser': 'true'
 }
 MARKET_PLACE_CONFIGURATION = {
     'content.pack.verify': 'false',
@@ -892,23 +894,26 @@ def get_json_file(path):
 
 
 def configure_servers_and_restart(build):
-    if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
-        configurations = DOCKER_HARDENING_CONFIGURATION
-        configure_types = ['docker hardening']
-        if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
-            configure_types.append('marketplace')
-            configurations.update(MARKET_PLACE_CONFIGURATION)
+    manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
+    for server in build.servers:
+        if LooseVersion(build.server_numeric_version) >= LooseVersion('5.5.0'):
+            if is_redhat_instance(server.host.replace('https://', '')):
+                configurations = DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN
+            else:
+                configurations = DOCKER_HARDENING_CONFIGURATION
+            configure_types = ['docker hardening']
+            if LooseVersion(build.server_numeric_version) >= LooseVersion('6.0.0'):
+                configure_types.append('marketplace')
+                configurations.update(MARKET_PLACE_CONFIGURATION)
 
-        error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
-        manual_restart = Build.run_environment == Running.WITH_LOCAL_SERVER
-        for server in build.servers:
+            error_msg = 'failed to set {} configurations'.format(' and '.join(configure_types))
             server.add_server_configuration(configurations, error_msg=error_msg, restart=not manual_restart)
 
-        if manual_restart:
-            input('restart your server and then press enter.')
-        else:
-            logging.info('Done restarting servers. Sleeping for 1 minute')
-            sleep(60)
+    if manual_restart:
+        input('restart your server and then press enter.')
+    else:
+        logging.info('Done restarting servers. Sleeping for 1 minute')
+        sleep(60)
 
 
 def restart_server(server):
