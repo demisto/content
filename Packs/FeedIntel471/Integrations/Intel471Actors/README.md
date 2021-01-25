@@ -1,7 +1,6 @@
 "Intel 471's Actors feed is an actor-centric intelligence feature.
 It combines both a field-based intelligence collection and a headquartered-based intelligence analysis component.
 This feed allows getting data out of closed sources (typically referred to as the deep and dark web) where threat actors collaborate, communicate, and plan cyber attacks."
-This integration was integrated and tested with version xx of Intel471 Actors Feed
 ## Configure Intel471 Actors Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
