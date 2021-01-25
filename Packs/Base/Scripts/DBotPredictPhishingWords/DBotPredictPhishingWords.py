@@ -2,6 +2,7 @@
 from string import punctuation
 
 import demisto_ml
+from sortedcollections import OrderedSet
 
 from CommonServerPython import *
 
@@ -69,15 +70,15 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
         words_to_token_maps = tokenized_text_result['wordsToHashedTokens']
     else:
         words_to_token_maps = tokenized_text_result['originalWordsToTokens']
-    positive_tokens = set(explain_result['PositiveWords'])
-    negative_tokens = set(explain_result['NegativeWords'])
+    positive_tokens = OrderedSet(explain_result['PositiveWords'])
+    negative_tokens = OrderedSet(explain_result['NegativeWords'])
     positive_words = find_words_contain_tokens(positive_tokens, words_to_token_maps)
     negative_words = find_words_contain_tokens(negative_tokens, words_to_token_maps)
-    positive_words = list(set([s.strip(punctuation) for s in positive_words]))
-    negative_words = list(set([s.strip(punctuation) for s in negative_words]))
+    positive_words = list(OrderedSet([s.strip(punctuation) for s in positive_words]))
+    negative_words = list(OrderedSet([s.strip(punctuation) for s in negative_words]))
 
-    positive_words = [w for w in positive_words if w.isalpha()]
-    negative_words = [w for w in negative_words if w.isalpha()]
+    positive_words = [w for w in positive_words if w.isalnum()]
+    negative_words = [w for w in negative_words if w.isalnum()]
     highlighted_text_markdown = tokenized_text_result['originalText'].strip()
     for word in positive_words:
         highlighted_text_markdown = re.sub(r'(?<!\w)({})(?!\w)'.format(word), '**{}**'.format(word),
