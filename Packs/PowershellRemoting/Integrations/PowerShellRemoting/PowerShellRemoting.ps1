@@ -790,7 +790,7 @@ function Main
             $err_msg = $_.Exception.Message
             if ($err_msg -match 'Authorization failed') {
                 $err_msg = 'The integration was able to resolve and perform a connectivity test to the specified host. There seems to be an issue with the credentials or host settings.
-                For further troubleshooting please review the following article.'
+                For further troubleshooting please refer to the Powershell Remoting article in https://xsoar.pan.dev/docs/reference/index.'
         }
             ReturnError $err_msg
         }
