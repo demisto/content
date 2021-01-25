@@ -1,14 +1,15 @@
 import pytest
-
-from CyberArkAIM_v2 import Client, list_credentials_command
+import copy
+import demistomock as demisto
+from CyberArkAIM_v2 import Client, list_credentials_command, fetch_credentials
 from test_data.context import LIST_CREDENTIALS_CONTEXT
-from test_data.http_resonses import LIST_CREDENTIALS_RAW
+from test_data.get_credentials_res import LIST_CREDENTIALS_RAW
 
 
-@pytest.mark.parametrize('command, http_response, context', [
-    (list_credentials_command, LIST_CREDENTIALS_RAW, LIST_CREDENTIALS_CONTEXT)
+@pytest.mark.parametrize('command, get_credentials_res, context', [
+    (list_credentials_command, copy.deepcopy(LIST_CREDENTIALS_RAW), LIST_CREDENTIALS_CONTEXT)
 ])
-def test_cyberark_aim_commands(command, http_response, context, mocker):
+def test_cyberark_aim_commands(command, get_credentials_res, context, mocker):
     """Unit test
     Given
     - raw response of the http request
@@ -20,12 +21,47 @@ def test_cyberark_aim_commands(command, http_response, context, mocker):
     - make sure the key "Content" that contains the password doesn't appear in content or raw_response
     """
     client = Client(server_url="https://api.cyberark.com/", use_ssl=False, proxy=False, app_id="app", folder="Root",
-                    safe="safe1", credentials_object="object1", username="", password="", cert_text="", key_text="")
-
-    mocker.patch.object(Client, '_http_request', return_value=http_response)
+                    safe="safe1", credentials_object="name1,name2", username="", password="", cert_text="", key_text="")
+    mocker.patch.object(Client, 'get_credentials', side_effect=lambda name: get_credentials_res[name])
 
     outputs = command(client)
     results = outputs.to_context()
     assert results.get("EntryContext") == context
     assert not results.get("EntryContext")['CyberArkAIM(val.Name == obj.Name)'][0].get("Content")
     assert not results.get("Contents")[0].get("Content")
+
+
+@pytest.mark.parametrize('creds_name_to_fetch, expected_res', [
+    ('name1', [{
+        "user": 'username1',
+        "password": 'password1',
+        "name": 'name1',
+    }]),
+    (None, [{
+        "user": 'username1',
+        "password": 'password1',
+        "name": 'name1',
+    }, {
+        "user": 'username2',
+        "password": 'password2',
+        "name": 'name2',
+    }
+    ])
+])
+def test_cyberark_fetch_credentials(creds_name_to_fetch, expected_res, mocker):
+    """
+    Given
+    - Case A: Creds name to fetch credentials is 'name1'
+    - Case B: No specific creds were asked in fetch credentials
+    When
+    - Running fetch-credentials process
+    Then
+    - Ensure that the credentials returned to demisto are: [(username1,password1,name1)]
+    - Ensure that all credentials were returned to demisto: [(username1,password1,name1),(username2,password2,name2)]
+    """
+    client = Client(server_url="https://api.cyberark.com/", use_ssl=False, proxy=False, app_id="app", folder="Root",
+                    safe="safe1", credentials_object="name1,name2", username="", password="", cert_text="", key_text="")
+    mocker.patch.object(Client, 'get_credentials', side_effect=lambda name: LIST_CREDENTIALS_RAW[name])
+    mocker.patch.object(demisto, 'credentials')
+    fetch_credentials(client, {'identifier': creds_name_to_fetch})
+    demisto.credentials.assert_called_with(expected_res)
