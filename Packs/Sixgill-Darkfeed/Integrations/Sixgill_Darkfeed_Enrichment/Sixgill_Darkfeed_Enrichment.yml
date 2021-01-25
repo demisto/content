@@ -50,10 +50,10 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The score of the indicator.
+          description: The actual score.
           type: Number
         - contextPath: DBotScore.Type
-          description: Indicator type.
+          description: The indicator type.
           type: String
         - contextPath: DBotScore.Vendor
           description: The vendor used to calculate the indicator score.
@@ -142,7 +142,7 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The score of the indicator.
+          description: The actual score.
           type: Number
         - contextPath: DBotScore.Type
           description: The indicator type.
@@ -234,10 +234,10 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The score of the indicator.
+          description: The actual score.
           type: Number
         - contextPath: DBotScore.Type
-          description: Indicator type.
+          description: The indicator type.
           type: String
         - contextPath: DBotScore.Vendor
           description: The vendor used to calculate the indicator score.
@@ -326,10 +326,10 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The score of the indicator.
+          description: The actual score.
           type: Number
         - contextPath: DBotScore.Type
-          description: Indicator type.
+          description: The indicator type.
           type: String
         - contextPath: DBotScore.Vendor
           description: The vendor used to calculate the indicator score.
