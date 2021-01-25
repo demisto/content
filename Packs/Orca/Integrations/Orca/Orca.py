@@ -219,12 +219,13 @@ def main() -> None:
         orca_client = OrcaClient(client=client)
         if command == "orca-get-alerts":
             demisto_args = demisto.args()
-            alerts = orca_client.get_alerts_by_filter(alert_type=demisto_args.get('alert_type'),
-                                                      asset_unique_id=demisto_args.get('asset_unique_id'))
-            if isinstance(alerts, str):
-                return_error(alerts)
-            if not alerts:
-                return_error("Alerts not exists")
+            alert_type = demisto_args.get('alert_type')
+            asset_unique_id = demisto_args.get('asset_unique_id')
+            alerts = orca_client.get_alerts_by_filter(alert_type=alert_type, asset_unique_id=asset_unique_id)
+            if not alerts or isinstance(alerts, str):
+                error_message = f"Could not find alerts from {alert_type=}" if alert_type else f"Could not find alerts from {asset_unique_id=}"  # noqa: E501
+                alerts = {"alerts": error_message}  # type: ignore
+
             command_result = CommandResults(outputs_prefix="Orca.Manager.Alerts", outputs=alerts, raw_response=alerts)
             return_results(command_result)
 
@@ -232,7 +233,7 @@ def main() -> None:
             asset = orca_client.get_asset(asset_unique_id=demisto.args()['asset_unique_id'])
             if not isinstance(asset, Dict):
                 # this means asset not found
-                return_error(asset)
+                asset = {"asset": asset}  # type: ignore
 
             command_result = CommandResults(outputs_prefix="Orca.Manager.Asset", outputs=[asset], raw_response=asset)
             return_results(command_result)
