@@ -3,6 +3,8 @@
 
 Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
 
+**Note:** The `gcb-list-alerts` command would fetch both Asset as well as User alerts if any specific alert type is not specified. In this case, the total number of alerts fetched might not match with the value of the page_size argument and this is a known behaviour with respect to the endpoint from which we are fetching the alerts.
+
 ## Configure Chronicle on Cortex XSOAR
 ---
 
