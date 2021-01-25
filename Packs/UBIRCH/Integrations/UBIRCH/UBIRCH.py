@@ -65,6 +65,25 @@ class Client:
 ''' HELPER FUNCTIONS '''
 
 
+def get_severity(incident: Dict) -> int:
+    error_code_key = "errorCode"
+    severity_dict = {
+        "1000": LOW_SEVERITY,
+        "2000": MEDIUM_SEVERITY,
+        "3000": MEDIUM_SEVERITY,
+        "4000": MEDIUM_SEVERITY,
+        "1100": MEDIUM_SEVERITY,
+        "1200": LOW_SEVERITY,
+        "1300": HIGH_SEVERITY,
+        "2100": LOW_SEVERITY,
+        "2200": MEDIUM_SEVERITY,
+        "2300": LOW_SEVERITY,
+        "0000": HIGH_SEVERITY,
+        "": UNKNOWN_SEVERITY
+    }
+    return severity_dict.get(incident.get(error_code_key, ""), UNKNOWN_SEVERITY)
+
+
 def create_incidents(error_message: str) -> list:
     """
     Return the incidents
@@ -83,7 +102,7 @@ def create_incidents(error_message: str) -> list:
                    {'type': "hwDeviceId", 'value': incident_dict.get("hwDeviceId")}],
         'rawJSON': json.dumps(incident_dict),
         'details': json.dumps(incident_dict),
-        'severity': CRITICAL_SEVERITY,
+        'severity': get_severity(incident_dict),
     }]
 
 

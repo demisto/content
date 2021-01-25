@@ -1,5 +1,5 @@
 import io
-from UBIRCH import create_incidents
+from UBIRCH import create_incidents, HIGH_SEVERITY
 
 
 def util_load_json(path: str) -> str:
@@ -32,5 +32,5 @@ INCIDENT_RESPONSE = [{
     'details': '{"requestId": "ec15d266-5822-4fa5-ba82-64f1653d46a4", "hwDeviceId": '
                '"ba70ad8b-a564-4e58-9a3b-224ac0f0153f", "errorCode": "1300", "error": "SignatureException: Invalid '
                'signature", "microservice": "niomon-decoder", "timestamp": "2021-01-07T18:47:52.025Z"}',
-    'severity': 4
+    'severity': HIGH_SEVERITY
 }]
