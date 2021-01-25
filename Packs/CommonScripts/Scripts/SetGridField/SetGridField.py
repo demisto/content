@@ -1,6 +1,6 @@
-# STD Libaries
+# STD Libraries
 from typing import Optional, List, Dict, Any
-# 3-rd party libaries
+# 3-rd party libraries
 import pandas as pd
 import phrases_case
 # Local packages
@@ -43,14 +43,12 @@ def filter_dict(dict_obj: Dict[Any, Any], keys: List[str], max_keys: Optional[in
     # Iterate over all the items in dictionary
     if keys[0] != "*":
         # create empty dict of given headers
-        new_dict = {key: "" for key in keys}
+        new_dict = {key: None for key in keys}
         for (key, value) in dict_obj.items():
             # Check if item satisfies the given condition then add to new dict
-            if value and key in keys:
+            if value not in {'', None} and key in keys:
                 new_dict[key] = value
-            else:
-                demisto.info(f'removing {key} key from object: {dict_obj}')
-                new_dict.pop(key)
+
     else:
         if max_keys:
             new_dict = dict(list(dict_obj.items())[:max_keys])
@@ -75,7 +73,7 @@ def unpack_all_data_from_dict(entry_context: Dict[Any, Any], keys: List[str], co
 
     filtered_dict = filter_dict(entry_context, keys)
 
-    def recursively_unpack_data(item_to_unpack, path):
+    def recursively_unpack_data(item_to_unpack: Dict[Any, Any], path: str):
         for key, value in item_to_unpack.items():
             if isinstance(value, dict):
                 recursively_unpack_data(filter_dict(value, keys), path + '.' + key)
@@ -104,14 +102,14 @@ def unpack_all_data_from_dict(entry_context: Dict[Any, Any], keys: List[str], co
 
 
 @logger
-def get_current_table(grid_id: str) -> List[Dict[Any, Any]]:
+def get_current_table(grid_id: str) -> pd.DataFrame:
     """ Get current Data from the grid
 
     Args:
         grid_id: Grid ID to retrieve data from.
 
     Returns:
-        list: Existing grid data.
+        DataFrame: Existing grid data.
     """
     current_table: Optional[List[dict]] = demisto.incidents()[0].get("CustomFields", {}).get(grid_id)
     if current_table is None:
@@ -160,7 +158,6 @@ def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_el
     if isinstance(entry_context, dict):
         return data_type
 
-    key_types = {}
     has_seen_dict = False
     for index, item in enumerate(entry_context):
         if not isinstance(item, dict):
@@ -290,8 +287,12 @@ def build_grid_command(grid_id: str, context_path: str, keys: List[str], columns
     if sort_by and sort_by in new_table.columns:
         new_table.sort_values(by=sort_by)
 
-    new_table = new_table.where(new_table.notnull(), None)
-    return new_table.to_dict(orient='records')
+    # filter empty values in the generated table
+    filtered_table = []
+    for record in new_table.to_dict(orient='records'):
+        filtered_table.append({k: v for k, v in record.items() if pd.notnull(v)})
+
+    return filtered_table
 
 
 def main():
@@ -311,8 +312,8 @@ def main():
                                    )
         # Execute automation 'setIncident` which change the Context data in the incident
         res = demisto.executeCommand("setIncident", {
-           'customFields': {
-                       grid_id: table,
+            'customFields': {
+                grid_id: table,
             },
         })
         if is_error(res):
@@ -321,8 +322,8 @@ def main():
         else:
             return_results(f'Set grid {grid_id} using {context_path} successfully.')
 
-    except Exception as e:
-        return_error(f'Failed to execute setGridField. Error: {str(e)}', error=traceback.format_exc())
+    except Exception as exc:
+        return_error(f'Failed to execute setGridField. Error: {str(exc)}', error=traceback.format_exc())
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
