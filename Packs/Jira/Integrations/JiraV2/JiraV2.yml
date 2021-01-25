@@ -3,7 +3,6 @@ commonfields:
   version: -1
 name: jira-v2
 display: Atlassian Jira v2
-fromversion: 5.0.0
 category: Case Management
 description: Use the Jira integration to manage issues and create Demisto incidents
   from projects, From version XSOAR 6.0 and above mirror issues to existing issue
@@ -11,7 +10,6 @@ description: Use the Jira integration to manage issues and create Demisto incide
 configuration:
 - display: 'Jira URL, for example: https://demisto.atlassian.net/'
   name: url
-  defaultvalue: ""
   type: 0
   required: true
 - display: |-
@@ -19,17 +17,14 @@ configuration:
 
     Username
   name: username
-  defaultvalue: ""
   type: 0
   required: false
 - display: Password (Deprecated - Use API token)
   name: password
-  defaultvalue: ""
   type: 4
   required: false
 - display: API token
   name: APItoken
-  defaultvalue: ""
   type: 4
   required: false
 - display: |-
@@ -42,12 +37,10 @@ configuration:
   required: false
 - display: AccessToken
   name: accessToken
-  defaultvalue: ""
   type: 0
   required: false
 - display: PrivateKey (PKCS8 format)
   name: privateKey
-  defaultvalue: ""
   type: 14
   required: false
 - display: Query (in JQL) for fetching incidents
@@ -57,12 +50,10 @@ configuration:
   required: false
 - display: Issue index to start fetching incidents from
   name: idOffset
-  defaultvalue: ""
   type: 0
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ''
   type: 8
   required: false
 - display: Use system proxy settings
@@ -74,25 +65,22 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- defaultvalue: 'false'
-  display: Mirror incoming incidents
-  hidden: false
+- display: Mirror incoming incidents
   name: incoming_mirror
-  required: false
+  defaultvalue: "false"
   type: 8
+  required: false
 - display: Incident type
   name: incidentType
   type: 13
   required: false
 - display: Use created field to fetch incidents
   name: fetchByCreated
-  defaultvalue: ""
   type: 8
   required: false
 script:
   script: ''
   type: python
-  subtype: python3
   commands:
   - name: jira-issue-query
     arguments:
@@ -136,15 +124,15 @@ script:
       predefined:
       - "true"
       - "false"
-      defaultValue: "false"
       description: If "true", retrives the issue's attachments.
+      defaultValue: "false"
     - name: expandLinks
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      defaultValue: "false"
       description: If "true", expands the issue's links.
+      defaultValue: "false"
     outputs:
     - contextPath: Ticket.Id
       description: The ID of the ticket.
@@ -175,19 +163,17 @@ script:
       required: true
       description: The summary of the issue.
     - name: projectKey
-      required: false
       description: The project key with which to associate the issue.
     - name: issueTypeName
       description: 'Select an issue type by name, for example: "Problem".'
     - name: issueTypeId
-      required: false
       description: Select an issue type by its numeric ID.
     - name: projectName
       description: The project name with which to associate the issue.
     - name: description
       description: A description of the issue.
     - name: labels
-      description: 'A CSV list of labels.'
+      description: A CSV list of labels.
     - name: priority
       description: 'The priority name, for example: "High" or "Medium".'
     - name: dueDate
@@ -266,9 +252,9 @@ script:
     - name: description
       description: The description of the issue.
     - name: labels
-      description: 'A CSV list of labels.'
+      description: A CSV list of labels.
     - name: priority
-      description: 'A priority name, for example "High" or "Medium".'
+      description: A priority name, for example "High" or "Medium".
     - name: dueDate
       description: The due date for the issue (in the format 2018-03-11).
     - name: assignee
@@ -312,35 +298,28 @@ script:
       description: The ID or key of the issue.
     description: Deletes an issue in Jira.
   - name: jira-get-id-offset
-    description: Returns the ID offset, for example, the first issue ID.
+    arguments: []
     outputs:
     - contextPath: Ticket.idOffSet
       description: The ID offset.
       type: string
-  - arguments:
-    - default: false
-      description: The remote incident id - Issue id.
-      isArray: false
-      name: id
+    description: Returns the ID offset, for example, the first issue ID.
+  - name: get-remote-data
+    arguments:
+    - name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+      description: The remote incident id - Issue id.
+    - name: lastUpdate
       description: UTC timestamp in seconds. The incident is only updated if it was
         modified after the last update time.
-      isArray: false
-      name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
+      defaultValue: "0"
     description: Get remote data from a remote incident. Please note that this method
       will not update the current incident, it's here for debugging purposes.
-    execution: false
-    name: get-remote-data
   dockerimage: demisto/oauthlib:1.0.0.15507
   isfetch: true
-  isremotesyncin: true
   runonce: false
+  subtype: python3
+  isremotesyncin: true
+fromversion: 5.0.0
 tests:
 - Jira-v2-Test
-defaultmapperin: classifier-mapper-incoming-JiraV2

@@ -1,8 +1,9 @@
-from requests_oauthlib import OAuth1
-from dateparser import parse
+import demistomock as demisto  # noqa: F401
 import pytz
-
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
+from dateparser import parse
+from requests_oauthlib import OAuth1
+from datetime import datetime
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -417,7 +418,7 @@ def get_issue_fields(issue_creating=False, **issue_args):
     if issue_args.get('assignee'):
         if not issue['fields'].get('assignee'):
             issue['fields']['assignee'] = {}
-        issue['fields']['assignee']['id'] = issue_args['assignee']
+        issue['fields']['assignee']['id'] = get_usr_id(issue_args['assignee'])
 
     if issue_args.get('reporter'):
         if not issue['fields'].get('reporter'):
@@ -473,6 +474,7 @@ def issue_query_command(query, start_at='', max_results=None, headers=''):
 def create_issue_command():
     url = 'rest/api/latest/issue'
     issue = get_issue_fields(issue_creating=True, **demisto.args())
+    demisto.info(json.dumps(issue))
     j_res = jira_req('POST', url, json.dumps(issue), resp_type='json')
 
     md_and_context = generate_md_context_create_issue(j_res, project_key=demisto.getArg('projectKey'),
@@ -715,6 +717,42 @@ def get_remote_data_command(id: str, lastUpdate: str) -> GetRemoteDataResponse:
                       f"\n\tRemote last updated time: {jira_modified_date}\n")
 
     return GetRemoteDataResponse(incident_update, [])
+
+
+def search_user(query_string="", max_results=50, start_at=0):
+    """Search for users matching query_string
+    """
+    url = f"rest/api/latest/user/search?query={query_string}&maxResults={max_results}&startAt={start_at}"
+
+    return jira_req('GET', url, resp_type='json')
+
+
+def get_usr_id(name_or_email: str = "") -> str:
+    """Get Jira accountId from displayName or emailAddress
+    """
+    jira_account_id = ""
+
+    if not name_or_email:
+        return jira_account_id
+
+    name_or_email = name_or_email.lower()
+    chunk_size = 100
+    start_at = 0
+    while jira_account_id == "":
+        user_chunk = search_user(name_or_email, max_results=chunk_size, start_at=start_at)
+        for user in user_chunk:
+            jira_display_name = user.get("displayName", "").lower()
+            jira_email_address = user.get("emailAddress", "").lower()
+            if name_or_email == jira_display_name or name_or_email == jira_email_address:
+                jira_account_id = user.get("accountId")
+                break
+
+        if len(user_chunk) < chunk_size:
+            break
+
+        start_at += chunk_size
+
+    return jira_account_id
 
 
 def main():

@@ -9,3 +9,7 @@ Fetching incidents by creation time (using the Created field), instead of using 
 As of June 2019, Basic authentication with passwords for Jira is no longer supported, please use basic authentication using API Token or use OAuth 1.0. To use basic authentication, follow [this tutorial](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) to get the API token.
 
 To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access Token. Authorizing using OAuth1.0, requires Access Token, Private Key, and Consumer Key. 
+
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/jira-v2)
