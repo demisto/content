@@ -38,7 +38,7 @@ def get_score(classification):
     return score_dict.get(classification)
 
 
-def return_error(data):
+def return_error(data):  # type: ignore
     """
     Return error as result and exit - filter 404 as non-errors
     """
@@ -234,7 +234,8 @@ def mwp(hash_type, hash_value):
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     if demisto.command() == 'test-module':
         ok, r = validate_http(requests.get(
-            BASE_URL + '/api/databrowser/malware_presence/query/md5/6a95d3d00267c9fd80bd42122738e726?extended=true&format=json', auth=AUTH))
+            BASE_URL + '/api/databrowser/malware_presence/query/md5/6a95d3d00267c9fd80bd42122738e726?extended=true&'
+                       'format=json', auth=AUTH))
         if ok:
             demisto.results('ok')
         else:

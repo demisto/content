@@ -1,12 +1,10 @@
 import os
 import re
 import shutil
-from zipfile import ZipFile
 
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
-from requests.auth import HTTPBasicAuth
 from urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
@@ -48,7 +46,7 @@ no_reference_message = "{original_message} - {added_message}".format(
 )
 
 
-def return_error(data):
+def return_error(data):  # type: ignore
     """
     Return error as result and exit - filter 404 as non-errors
     """
@@ -156,7 +154,7 @@ def file(hash_type, hash_value):
         'properties_to_append': prop
     }
     md = '## ReversingLabs A1000 reputation for: {}\n'.format(hash_value)
-    ec = {'DBotScore': []}
+    ec = {'DBotScore': []}  # type: ignore
 
     md5 = res.get('md5')
     sha1 = res.get('sha1')
@@ -187,7 +185,7 @@ def file(hash_type, hash_value):
     if file_size:
         file_data['Size'] = file_size
 
-    ec[outputPaths['file']] = file_data
+    ec[outputPaths['file']] = file_data  # type: ignore
 
     md += 'ID: **{}**\n'.format(demisto.get(res, 'summary.id'))
     md += 'Malware status: **{}**\n'.format(status)
@@ -235,7 +233,7 @@ def extracted_files():
     if not results:
         return_error(no_reference_message)
 
-    ec = {'DBotScore': []}
+    ec = {'DBotScore': []}  # type: ignore
     file_list = []
     file_context_list = []
     for res in results:
@@ -273,7 +271,8 @@ def extracted_files():
         ec['DBotScore'].append({'Indicator': sha1, 'Type': 'hash', 'Vendor': 'ReversingLabs A1000', 'Score': score})
 
     md = tableToMarkdown('ReversingLabs A1000 extracted files for: {}\n'.format(parent), file_data,
-                         ['SHA1', 'Name', 'Path', 'Info', 'Size', 'Local First', 'Local Last', 'Malware Status', 'Trust', 'Threat Name', 'Threat Level'])
+                         ['SHA1', 'Name', 'Path', 'Info', 'Size', 'Local First', 'Local Last', 'Malware Status',
+                          'Trust', 'Threat Name', 'Threat Level'])
     ec[outputPaths['file']] = file_context_list
     demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['json'],
                      'Contents': r, 'EntryContext': ec, 'HumanReadable': md})
@@ -310,7 +309,7 @@ def upload():
             md += 'SHA1: **{}**\n'.format(demisto.get(r, 'detail.sha1'))
             md += 'Created: **{}**\n'.format(demisto.get(r, 'detail.created'))
             demisto.results({'Type': entryTypes['note'], 'ContentsFormat': formats['json'], 'Contents': r, 'HumanReadable': md})
-    except:
+    except Exception:
         return_error('Entry ID {} is not a file'.format(demisto.getArg('entryId')))
 
 
