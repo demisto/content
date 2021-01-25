@@ -1,4 +1,4 @@
-category: Utilities
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: MicrosoftPolicyAndComplianceAuditLog
   version: -1
@@ -17,8 +17,8 @@ configuration:
   type: 8
   required: false
 description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: EWS Audit Log
-name: EWS Audit Log
+display: Microsoft Policy And Compliance (Audit Log)
+name: MicrosoftPolicyAndComplianceAuditLog
 script:
   commands:
   - name: ews-auditlog-auth-start
