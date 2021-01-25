@@ -329,7 +329,7 @@ script:
   runonce: false
   script: ''
   type: powershell
-fromversion: 5.5.0
+fromversion: 6.0.0
 beta: true
 tests:
 - No tests (auto formatted)
