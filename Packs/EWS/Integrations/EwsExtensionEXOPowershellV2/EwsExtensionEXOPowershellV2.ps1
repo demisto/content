@@ -35,8 +35,8 @@ class ExchangeOnlinePowershellV2Client {
         Disconnect-ExchangeOnline -Confirm:$false
     }
     [PSObject]GetEXOCASMailbox(
-        [string]$identity, 
-        [string]$organizational_unit, 
+        [string]$identity,
+        [string]$organizational_unit,
         [string]$primary_smtp_address,
         [string]$user_principal_name,
         [int]$limit
@@ -72,7 +72,7 @@ class ExchangeOnlinePowershellV2Client {
         For the best performance, we recommend using the following values:
             * User ID or user principal name (UPN)
             * GUID
-        
+
         Otherwise, you can use any value that uniquely identifies the mailbox. For example:
             * Name
             * Alias
@@ -81,14 +81,14 @@ class ExchangeOnlinePowershellV2Client {
             * Email address
             * LegacyExchangeDN
             * SamAccountName
-        
+
         .PARAMETER organizational_unit
         The OrganizationalUnit parameter filters the results based on the object's location in Active Directory.
 
         .PARAMETER primary_smtp_address
         The PrimarySmtpAddress identifies the mailbox that you want to view by primary SMTP email address (for example, navin@contoso.com).
         Can't be used with user_principal_name.
-        
+
         .PARAMETER user_principal_name
         The UserPrincipalName parameter identifies the mailbox that you want to view by UPN (for example, navin@contoso.onmicrosoft.com).
         Can't be used with primary_smtp_address.
@@ -100,7 +100,7 @@ class ExchangeOnlinePowershellV2Client {
         PSObject - Raw response
 
         .LINK
-        https://docs.microsoft.com/en-us/powershell/module/exchange/get-exocasmailbox?view=exchange-ps        
+        https://docs.microsoft.com/en-us/powershell/module/exchange/get-exocasmailbox?view=exchange-ps
         #>
     }
 
@@ -121,7 +121,7 @@ class ExchangeOnlinePowershellV2Client {
         return Get-EXOMailbox @cmd_params
         <#
         .DESCRIPTION
-        Use the Get-EXOMailbox cmdlet to view mailbox objects and attributes, 
+        Use the Get-EXOMailbox cmdlet to view mailbox objects and attributes,
         populate property pages, or supply mailbox information to other tasks.
         This cmdlet is available only in the Exchange Online PowerShell V2 module
 
@@ -130,7 +130,7 @@ class ExchangeOnlinePowershellV2Client {
         For the best performance, we recommend using the following values:
             * User ID or user principal name (UPN)
             * GUID
-        
+
         Otherwise, you can use any value that uniquely identifies the mailbox. For example:
             * Name
             * Alias
@@ -147,7 +147,7 @@ class ExchangeOnlinePowershellV2Client {
         PSObject - Raw response
 
         .LINK
-        https://docs.microsoft.com/en-us/powershell/module/exchange/get-exomailbox?view=exchange-ps        
+        https://docs.microsoft.com/en-us/powershell/module/exchange/get-exomailbox?view=exchange-ps
         #>
     }
 
@@ -163,11 +163,11 @@ class ExchangeOnlinePowershellV2Client {
         <#
         .DESCRIPTION
         View information about SendAs permissions that are configured for users.
-        This command is available only in the Exchange Online PowerShell V2 module. 
-        
+        This command is available only in the Exchange Online PowerShell V2 module.
+
         .PARAMETER identity
         The Identity parameter the user that you want to view. You can use any value that uniquely identifies the user
-    
+
         .EXAMPLE
         GetEXOMailboxPermission("1254y894-feae-9yn7-a3e1-f2483a154tft")
 
@@ -205,7 +205,7 @@ class ExchangeOnlinePowershellV2Client {
         For the best performance, we recommend using the following values:
             * User ID or user principal name (UPN)
             * GUID
-        
+
         Otherwise, you can use any value that uniquely identifies the mailbox. For example:
             * Name
             * Alias
@@ -256,7 +256,7 @@ function GetEXORecipientCommand {
     $raw_response = $client.GetEXORecipient($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXORecipient(obj.Guid === val.Guid)" = $raw_response }
-    return $human_readable, $entry_context, $raw_response
+    return Write-Output $human_readable, $entry_context, $raw_response
 }
 
 function GetEXORecipientPermissionCommand {
@@ -270,7 +270,7 @@ function GetEXORecipientPermissionCommand {
     $raw_response = $client.GetEXORecipientPermission($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXORecipientPermission(obj.Guid === val.Guid)" = $raw_response }
-    return $human_readable, $entry_context, $raw_response
+    return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOMailBoxPermissionCommand {
     [CmdletBinding()]
@@ -282,7 +282,7 @@ function GetEXOMailBoxPermissionCommand {
     $raw_response = $client.GetEXOMailBoxPermission($identity)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOMailBoxPermission(obj.Guid === val.Guid)" = $raw_response }
-    return $human_readable, $entry_context, $raw_response
+    return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOMailBoxCommand {
     [CmdletBinding()]
@@ -295,7 +295,7 @@ function GetEXOMailBoxCommand {
     $raw_response = $client.GetEXOMailBox($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOMailBox(obj.Guid === val.Guid)" = $raw_response }
-    return $human_readable, $entry_context, $raw_response
+    return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOCASMailboxCommand {
     [CmdletBinding()]
@@ -313,13 +313,14 @@ function GetEXOCASMailboxCommand {
     )
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOCASMailBox(obj.Guid === val.Guid)" = $raw_response }
-    return $human_readable, $entry_context, $raw_response
+    return Write-Output $human_readable, $entry_context, $raw_response
 }
 function TestModuleCommand(){
     Get-EXOMailbox
     $demisto.results("ok")
 }
 function Main {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Function')]
     $command = $demisto.GetCommand()
     $command_arguments = $demisto.Args()
     $integration_params = [Hashtable] $demisto.Params()
