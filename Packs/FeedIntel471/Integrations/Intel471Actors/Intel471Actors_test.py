@@ -1,8 +1,6 @@
 import pytest
 import Intel471Actors as feed
 
-# import demistomock as demisto
-
 BUILD_PARAM_DICT_DATA = [
     (
         {'credentials': {'identifier': 'username', 'password': 'apikey'}, 'insecure': True,
