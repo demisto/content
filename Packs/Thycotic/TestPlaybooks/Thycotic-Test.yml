@@ -2,6 +2,7 @@ id: Thycotic-Test
 name: Thycotic-Test
 version: -1
 starttaskid: '0'
+fromversion: 5.0.0
 tasks:
   '0':
     id: '0'
