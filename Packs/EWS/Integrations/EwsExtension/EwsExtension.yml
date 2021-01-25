@@ -1147,8 +1147,7 @@ script:
         description: ''
         type: Date
     deprecated: false
-    description: Use the ews-get-federation-configuration command to view the federation configuration
-      configured for the Exchange organization.
+    description: Use the ews-get-federation-configuration command to retrieve the Exchange organization's federated organization identifier and related details, such as federated domains, organization contact and status.
     execution: false
     name: ews-get-federation-configuration
   - arguments:
