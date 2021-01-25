@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -42,7 +42,7 @@ class NetscoutClient(BaseClient):
         'stop_time': 'stop_time_operator',
     }
 
-    def __init__(self, base_url, verify, ok_codes, headers, proxy, per_page=None, alert_class=None, alert_type=None,
+    def __init__(self, base_url, verify, headers, proxy, per_page=None, alert_class=None, alert_type=None,
                  classification=None, importance=None, importance_operator=None, ongoing=None):
         self.per_page = per_page
         self.alert_class = alert_class
@@ -52,12 +52,12 @@ class NetscoutClient(BaseClient):
         self.importance_operator = importance_operator
         self.ongoing = ongoing
 
-        super().__init__(base_url=base_url, verify=verify, ok_codes=ok_codes, headers=headers, proxy=proxy)
+        super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
     def get_annotations(self, alert_id):
         return self._http_request(
             method='GET',
-            url=f'alerts/{alert_id}/annotations'
+            url_suffix=f'alerts/{alert_id}/annotations'
         )
 
     def build_data_attribute_filter(self, **kwargs):
@@ -148,21 +148,18 @@ def test_module(client: NetscoutClient) -> str:
     return message
 
 
-def alert_annotations_command(client: NetscoutClient):
-    args = demisto.args()
+def alert_annotations_command(client: NetscoutClient, args: dict):
+
     alert_id = args.get('alert_id')
     raw_result = client.get_annotations(alert_id)
     data = raw_result.get('data')
-    data['AlertID'] = alert_id
-    CommandResults(outputs_prefix='NASightline.AlertAnnotations',
-                   outputs_key_field='alertID',
-                   outputs=data,
-                   readable_output=tableToMarkdown(f'Alert {alert_id} annotations', data, []),
-                   raw_response=raw_result)
+    context = {'AlertID': alert_id, 'Annotations': data}
+    return CommandResults(outputs_prefix='NASightline.AlertAnnotations',
+                          outputs_key_field='AlertID',
+                          outputs=context,
+                          readable_output=tableToMarkdown(f'Alert {alert_id} annotations', data, []),
+                          raw_response=raw_result)
 
-
-# def fetch_incidents_command(client: NetscoutClient):
-#     client.
 
 
 ''' MAIN FUNCTION '''
@@ -171,10 +168,10 @@ def alert_annotations_command(client: NetscoutClient):
 def main() -> None:
     params = demisto.params()
     api_token = params.get('api_token')
-    base_url = urljoin(params['url'], 'api/sp', API_VERSION)
+    base_url = urljoin(params['url'], f'api/sp/{API_VERSION}')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    max_fetch = max(params.get('max_fetch'), 100)
+    max_fetch = max(arg_to_number(params.get('max_fetch', 50)), 100)
     alert_class = params.get('alert_class')
     alert_type = params.get('alert_type')
     classification = params.get('classification')
@@ -202,12 +199,13 @@ def main() -> None:
             importance_operator=importance_operator,
             ongoing=ongoing
         )
-
+        args = demisto.args()
         if demisto.command() == 'test-module':
             result = test_module(client)
-            return_results(result)
         elif demisto.command() == 'netscout-arbor-sightline-alert-annotations':
-            alert_annotations_command(client)
+            result = alert_annotations_command(client, args)
+
+        return_results(result)
 
 
     except Exception as e:

@@ -109,8 +109,8 @@ configuration:
   required: false
   type: 15
 - additionalinfo: 'The chosen operator will be applied on the ''Importance'' parameter.
-    For example: if the chosen operator is ''<'' and the importance is ''1'', only
-    alerts with importance equals to 1 wil be fetched. Default is ''='''
+    For example: if the chosen operator is ''>'' and the importance is ''1'', only
+    alerts with importance grater to 1 wil be fetched. Default is ''='''
   defaultvalue: =
   display: Importance Operator
   hidden: false
@@ -118,12 +118,11 @@ configuration:
   options:
   - =
   - <
-  - ''
+  - >
   required: false
   type: 15
 - additionalinfo: Alert status to filter by. If none was chosen, all statuses will
     be fetched.
-  defaultvalue: All
   display: Event Status
   hidden: false
   name: ongoing
@@ -140,7 +139,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: The alert ID to list the connections.
+      description: The alert ID to list the connections. (a)[https://google.com]
       isArray: false
       name: alert_id
       required: true
