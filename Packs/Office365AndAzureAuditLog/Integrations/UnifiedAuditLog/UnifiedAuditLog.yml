@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: EWS Audit Log
+  id: Microsoft Policy And Compliance (Audit Log)
   version: -1
 configuration:
 - display: Exchange Online URL
@@ -30,7 +30,7 @@ script:
   - name: ews-auditlog-auth-test
     arguments: [ ]
     description: Tests the OAuth2.0 authorization process.
-  - name: ews-search-unified-auditlog
+  - name: ews-search-auditlog
     arguments:
     - name: start_date
       required: true
