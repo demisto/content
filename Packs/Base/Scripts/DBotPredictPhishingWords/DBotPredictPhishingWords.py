@@ -2,9 +2,11 @@
 from string import punctuation
 
 import demisto_ml
-from sortedcollections import OrderedSet
-
 from CommonServerPython import *
+
+
+def OrderedSet(iterable):
+    return list(dict.fromkeys(iterable))
 
 
 def get_model_data(model_name, store_type, is_return_error):
