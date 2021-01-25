@@ -1,0 +1,47 @@
+category: Authentication
+commonfields:
+  id: TestAuth
+  version: -1
+configuration:
+- display: Auth Type
+  name: password
+  required: false
+  type: 9
+- additionalinfo: This is a test parameter
+  defaultvalue: stam
+  display: Stam
+  name: stam
+  required: false
+  type: 0
+display: TestAuth
+name: TestAuth
+script:
+  commands:
+  - arguments:
+    - description: "This is an arg description with a list: \n\n* And another line\
+        \ here\n* And here\n"
+      name: test
+    description: "This is a long description <code>code</code> \nAnd another line\n"
+    name: test-full-context
+  - arguments:
+    - description: value to set
+      name: value
+    description: set integration context
+    name: test-set-integration-context
+  - arguments: []
+    name: test-get-integration-context
+  - arguments: []
+    description: get the params of the integration
+    name: test-params
+  - arguments:
+    - name: version
+    - name: value
+    name: test-integration-context-versioned
+  dockerimage: demisto/python3:3.9.1.14969
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
