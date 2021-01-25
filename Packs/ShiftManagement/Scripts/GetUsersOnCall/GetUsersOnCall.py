@@ -18,10 +18,8 @@ def filter_OOO_users(get_users_response, ooo_list_name):
     if isError(ooo_list[0]):
         return_error(f'Error occurred while trying to get OOO users: {ooo_list[0].get("Contents")}')
 
-    OOO_usernames = []
-    if ooo_list[0].get('EntryContext'):
-        list_info = ooo_list[0].get('EntryContext').get('ShiftManagment.OOOUsers')
-        OOO_usernames = [i['username'] for i in list_info]
+    list_info = ooo_list[0].get('EntryContext').get('ShiftManagment.OOOUsers')
+    OOO_usernames = [i['username'] for i in list_info]
 
     try:
         in_office_users = []
