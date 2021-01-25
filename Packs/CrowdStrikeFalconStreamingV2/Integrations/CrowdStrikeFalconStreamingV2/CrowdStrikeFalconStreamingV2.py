@@ -223,25 +223,25 @@ class EventStream:
             AsyncGenerator[Dict, None]: Event fetched from the stream.
         """
         while True:
-            demisto.debug(f'Starting event fetch loop. Container ID: {CONTAINER_ID}')
-            self.client = Client(
-                base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy
-            )
-            await self._discover_stream()
-            events_fetched = 0
-            new_lines_fetched = 0
-            last_fetch_stats_print = datetime.utcnow()
-            last_refresh_stream = datetime.utcnow()
-            async with ClientSession(
-                connector=TCPConnector(ssl=self.verify_ssl),
-                headers={
-                    'Authorization': f'Token {self.session_token}',
-                    'Connection': 'keep-alive'
-                },
-                trust_env=self.proxy,
-                timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
-            ) as session:
-                try:
+            try:
+                demisto.debug(f'Starting event fetch loop. Container ID: {CONTAINER_ID}')
+                self.client = Client(
+                    base_url=self.base_url, app_id=self.app_id, verify_ssl=self.verify_ssl, proxy=self.proxy
+                )
+                await self._discover_stream()
+                events_fetched = 0
+                new_lines_fetched = 0
+                last_fetch_stats_print = datetime.utcnow()
+                last_refresh_stream = datetime.utcnow()
+                async with ClientSession(
+                    connector=TCPConnector(ssl=self.verify_ssl),
+                    headers={
+                        'Authorization': f'Token {self.session_token}',
+                        'Connection': 'keep-alive'
+                    },
+                    trust_env=self.proxy,
+                    timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
+                ) as session:
                     integration_context = get_integration_context()
                     offset = integration_context.get('offset', 0) or initial_offset
                     demisto.debug(f'Starting to fetch from offset {offset} events of type {event_type} '
@@ -288,11 +288,11 @@ class EventStream:
                             if last_refresh_stream + timedelta(minutes=25) <= datetime.utcnow():
                                 await self._refresh_stream()
                                 last_refresh_stream = datetime.utcnow()
-                except Exception as e:
-                    demisto.debug(f'An error occurred in the fetch event loop: {e} - {traceback.format_exc()}. '
-                                  f'Going to sleep for 10 seconds and then retry. '
-                                  f'Container ID: {CONTAINER_ID}')
-                    await sleep(10)
+            except Exception as e:
+                demisto.debug(f'An error occurred in the fetch event loop: {e} - {traceback.format_exc()}. '
+                              f'Going to sleep for 10 seconds and then retry. '
+                              f'Container ID: {CONTAINER_ID}')
+                await sleep(10)
 
 
 class RefreshToken:
