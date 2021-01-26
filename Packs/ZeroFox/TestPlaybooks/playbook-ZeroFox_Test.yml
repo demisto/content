@@ -108,7 +108,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ZeroFox
-      description: Returns alerts matching given/default filters and parameters. By default, no filters are applied and results are sorted by timestamp.
+      description: TEST-DELETEReturns alerts matching given/default filters and parameters. By default, no filters are applied and results are sorted by timestamp.
       id: e8af833e-e8f5-4eee-8068-7ffebf8dc906
       iscommand: true
       name: zerofox-list-alerts
