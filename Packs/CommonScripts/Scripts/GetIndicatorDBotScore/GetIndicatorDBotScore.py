@@ -30,7 +30,7 @@ def main():
     indicator = demisto.args()['indicator']
     resp = demisto.executeCommand("getIndicator", {'value': indicator})
 
-    if True in [isError(entry) for entry in resp]:
+    if isError(resp):
         demisto.results(resp)
         sys.exit(0)
 
