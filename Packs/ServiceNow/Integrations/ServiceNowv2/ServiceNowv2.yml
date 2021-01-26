@@ -193,8 +193,8 @@ script:
       secret: false
     - default: false
       defaultValue: ;
-      description: The delimiter character to use to separate any fields list argument
-        in this command.
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
       required: false
@@ -771,8 +771,8 @@ script:
       secret: false
     - default: false
       defaultValue: ;
-      description: The delimiter character to use to separate any fields list argument
-        in this command.
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
       required: false
@@ -1319,8 +1319,8 @@ script:
       secret: false
     - default: false
       defaultValue: ;
-      description: The delimiter character to use to separate any fields list argument
-        in this command.
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
       required: false
@@ -1729,8 +1729,8 @@ script:
       secret: false
     - default: false
       defaultValue: ;
-      description: The delimiter character to use to separate any fields list argument
-        in this command.
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
       required: false
@@ -1799,8 +1799,8 @@ script:
       secret: false
     - default: false
       defaultValue: ;
-      description: The delimiter character to use to separate any fields list argument
-        in this command.
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
       required: false
