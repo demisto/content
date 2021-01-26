@@ -24,7 +24,7 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: first event ID to fetch from
+- display: First event ID to fetch from
   name: first_fetch_id
   defaultvalue: "0"
   type: 0

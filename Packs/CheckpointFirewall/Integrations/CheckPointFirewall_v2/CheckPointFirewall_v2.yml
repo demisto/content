@@ -16,7 +16,7 @@ configuration:
   name: domain
   required: false
   type: 0
-- display: username
+- display: Username
   name: username
   required: true
   type: 9

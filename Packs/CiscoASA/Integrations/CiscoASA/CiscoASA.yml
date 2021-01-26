@@ -21,7 +21,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: is ASAv
+- display: Is ASAv
   name: isASAv
   required: false
   type: 8

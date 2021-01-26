@@ -3,7 +3,7 @@ commonfields:
   id: Cymulate
   version: -1
 configuration:
-- display: x-token
+- display: X-token
   name: x-token
   required: true
   type: 4

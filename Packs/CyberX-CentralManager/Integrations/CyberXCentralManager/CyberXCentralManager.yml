@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: 127.0.0.1
-  display: (IP/DNS)
+  display: IP/DNS
   name: Server
   required: true
   type: 0

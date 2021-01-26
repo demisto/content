@@ -1,5 +1,5 @@
 [file:ServiceNowv2.yml]
-ignore=IN126
+ignore=IN126,IN134
 
 [file:playbook-Create_ServiceNow_Ticket.yml]
 ignore=PB106

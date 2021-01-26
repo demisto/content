@@ -52,7 +52,7 @@ configuration:
   name: replaceKeys
   required: false
   type: 8
-- display: Extract Fields - CSV fields that will be parsed out of _raw notable events
+- display: Extract Fields - CSV fields that will be parsed out of raw notable events
   name: extractFields
   required: false
   type: 12

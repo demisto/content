@@ -53,7 +53,7 @@ configuration:
   type: 0
 - defaultvalue: 'false'
   display: Determines whether to return all results, which can number in the thousands.
-    If "true", returns all results and overrides the _fullResponse_ argument (if set
+    If "true", returns all results and overrides the fullResponse argument (if set
     to "false") in a command. If "false", the fullResponse argument in the command
     determines how results are returned.
   name: fullResponseGlobal

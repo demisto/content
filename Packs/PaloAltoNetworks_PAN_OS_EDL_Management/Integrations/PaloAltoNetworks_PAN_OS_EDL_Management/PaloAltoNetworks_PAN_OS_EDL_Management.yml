@@ -7,7 +7,7 @@ configuration:
   name: hostname
   required: true
   type: 0
-- display: server port
+- display: Server port
   name: port
   required: false
   type: 0

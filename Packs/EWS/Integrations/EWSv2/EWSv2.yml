@@ -43,10 +43,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                           Manual Mode
-    Exchange Server Hostname or IP address
+- display: Manual Mode Exchange Server Hostname or IP address
   name: ewsServer
   required: false
   type: 0
@@ -62,10 +59,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                         Advanced Mode
-    Override Authentication Type (NTLM, Basic, or Digest).
+- display: Advanced Mode Override Authentication Type (NTLM, Basic, or Digest).
   name: authType
   required: false
   type: 0
