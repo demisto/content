@@ -98,7 +98,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->Authorization was reset successfully. You can now run **!azure-sql-auth-start** and **!azure-sql-auth-complete**.
+>Authorization was reset successfully. You can now run ***!azure-sql-auth-start*** and ***!azure-sql-auth-complete***.
 
 ### azure-sql-auth-test
 ***
@@ -352,8 +352,8 @@ Gets the audit settings of the specified database.
 | AzureSQL.DBAuditPolicy.retentionDays | Number | Number of days to keep in the audit logs in the storage account. | 
 | AzureSQL.DBAuditPolicy.state | String | Policy state. | 
 | AzureSQL.DBAuditPolicy.storageAccountSubscriptionId | String | Storage subscription ID. | 
-| AzureSQL.DBAuditPolicy.databaseName | String | The name of database that the audit policy is related to. | 
-| AzureSQL.DBAuditPolicy.serverName | String | The name of server that the audit policy is related to. | 
+| AzureSQL.DBAuditPolicy.databaseName | String | The name of the database that the audit policy is related to. | 
+| AzureSQL.DBAuditPolicy.serverName | String | The name of the server that the audit policy is related to. | 
 
 
 #### Command Example
@@ -420,11 +420,11 @@ Gets the threat detection policy of the specified database.
 | AzureSQL.DBThreatPolicy.name | String | Threat policy name. | 
 | AzureSQL.DBThreatPolicy.type | String | Threat policy type. | 
 | AzureSQL.DBThreatPolicy.state | String | Threat policy state. | 
-| AzureSQL.DBThreatPolicy.creationTime | String | Policy creation Time. | 
+| AzureSQL.DBThreatPolicy.creationTime | String | Threat policy creation time. | 
 | AzureSQL.DBThreatPolicy.retentionDays | Number | Number of days to keep in the Threat Detection audit logs. | 
 | AzureSQL.DBThreatPolicy.storageAccountAccessKey | String | The identifier key of the Threat Detection audit storage account. | 
 | AzureSQL.DBThreatPolicy.storageEndpoint | String | Threat Detection audit storage account. | 
-| AzureSQL.DBThreatPolicy.emailAccountAdmins | Boolean | Email account administrators who alert is sent to. | 
+| AzureSQL.DBThreatPolicy.emailAccountAdmins | Boolean | Email account administrators who the alert is sent to. | 
 | AzureSQL.DBThreatPolicy.emailAddresses | String | List of email addresses to which the alert is sent. | 
 | AzureSQL.DBThreatPolicy.disabledAlerts | String |  List of alerts that are disabled, or an empty string if no alerts are disabled. | 
 | AzureSQL.DBThreatPolicy.useServerDefault | Unknown | Whether to use the default server policy. | 
@@ -485,7 +485,7 @@ Creates or updates the database's auditing policy.
 | --- | --- | --- |
 | server_name | Server name. | Required | 
 | db_name | Database name. | Required | 
-| state | Set the state of the policy. Possible values: "Enable" or "Disable". When state is enabled, storage_endpoint or is_azure_monitor_target_enabled are required. | Required | 
+| state | Set the state of the policy. Possible values: "Enable" or "Disable". When *state* is enabled, *storage_endpoint* or *is_azure_monitor_target_enabled* are required. | Required | 
 | audit_actions_groups | Comma-separated list of actions groups and actions to audit. For all possible values, see the integration documentation at https://xsoar.pan.dev/reference/integrations/Azure-SQL-Management. | Optional | 
 | is_azure_monitor_target_enabled | Whether audit events are sent to the Azure Monitor. Possible values: "true" and "false". | Optional | 
 | is_storage_secondary_key_in_use | Whether the storage Account Access Key value is the storage's secondary key. Possible values: "true" and "false". | Optional | 
@@ -493,7 +493,7 @@ Creates or updates the database's auditing policy.
 | retention_days | Number of days to keep the policy in the audit logs. | Optional | 
 | storage_account_access_key | Identifier key of the auditing storage account. | Optional | 
 | storage_account_subscription_id | Storage subscription ID. | Optional | 
-| storage_endpoint | Storage endpoint. If the value for the state argument is Enabled, the value for the storage_endpoint or is_azure_monitor_target_enabled argument is required. | Optional | 
+| storage_endpoint | Storage endpoint. If the value for the state argument is enabled, the value for the &storage_endpoint* or *is_azure_monitor_target_enabled* argument is required. | Optional | 
 
 
 #### Context Output
@@ -501,15 +501,15 @@ Creates or updates the database's auditing policy.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AzureSQL.DBAuditPolicy.kind | String | Kind of audit policy. | 
-| AzureSQL.DBAuditPolicy.id | String | Audit policy id. | 
+| AzureSQL.DBAuditPolicy.id | String | Audit policy ID. | 
 | AzureSQL.DBAuditPolicy.name | String | Audit policy name. | 
 | AzureSQL.DBAuditPolicy.type | String | Resource type. | 
-| AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to Azure Monitor. The value is "True" (Enabled) or "False" (Disabled). | 
+| AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled | Boolean | Whether audit events are sent to the Azure Monitor. The value is "True" (Enabled) or "False" (Disabled). | 
 | AzureSQL.DBAuditPolicy.retentionDays | Number | Number of days to keep in the audit logs in the storage account. | 
 | AzureSQL.DBAuditPolicy.state | String | Policy state. | 
 | AzureSQL.DBAuditPolicy.storageAccountSubscriptionId | String | Storage subscription ID. | 
 | AzureSQL.DBAuditPolicy.auditActionsAndGroups | Unknown | Audit actions and groups to audit. | 
-| AzureSQL.DBAuditPolicy.isStorageSecondaryKeyInUse | String | Whether the storage_account_access_key value is the storage's secondary key. | 
+| AzureSQL.DBAuditPolicy.isStorageSecondaryKeyInUse | String | Whether the *storage_account_access_key* value is the storage's secondary key. | 
 | AzureSQL.DBAuditPolicy.queueDelayMs | String | Time in milliseconds that can elapse before audit actions are forced to be processed. | 
 | AzureSQL.DBAuditPolicy.storageAccountAccessKey | String | Identifier key of the auditing storage account. | 
 | AzureSQL.DBAuditPolicy.storageEndpoint | String | Storage endpoint. | 
@@ -555,7 +555,7 @@ Creates or updates the database's auditing policy.
 
 ### azure-sql-db-threat-policy-create-update
 ***
-Creates or updates the  database's threat detection policy.
+Creates or updates the database's threat detection policy.
 
 
 #### Base Command
@@ -571,7 +571,7 @@ Creates or updates the  database's threat detection policy.
 | retention_days | Number of days to keep the policy in the audit logs. | Optional | 
 | storage_account_access_key | The identifier key of the threat detection audit storage account | Optional | 
 | storage_endpoint | The blob storage endpoint. This blob storage will hold all Threat Detection audit logs. | Optional | 
-| disabled_alerts | Comma-separated list of alerts that are disabled. Possible values:        "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration", "Unsafe_Action". | Optional | 
+| disabled_alerts | Comma-separated list of alerts that are disabled. Possible values: "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration", and "Unsafe_Action". | Optional | 
 | email_addresses | Comma-separated list of email addresses to which the alert is sent. | Optional | 
 | email_account_admins | Whether the alert is sent to the account administrators. Possible values: "true" and "false". | Optional | 
 | use_server_default | Whether to use the default server policy. Possible values: "Enabled" and "Disabled". | Optional | 
@@ -586,8 +586,8 @@ Creates or updates the  database's threat detection policy.
 | AzureSQL.DBThreatPolicy.id | String | Threat policy ID. | 
 | AzureSQL.DBThreatPolicy.name | String | Threat policy name. | 
 | AzureSQL.DBThreatPolicy.type | String | Threat policy type. | 
-| AzureSQL.DBThreatPolicy.state | String | Policy state. | 
-| AzureSQL.DBThreatPolicy.creationTime | String | Policy creation time. | 
+| AzureSQL.DBThreatPolicy.state | String | Threat policy state. | 
+| AzureSQL.DBThreatPolicy.creationTime | String | Threat policy creation time. | 
 | AzureSQL.DBThreatPolicy.retentionDays | Number | Number of days to keep in the Threat Detection audit logs. | 
 | AzureSQL.DBThreatPolicy.storageAccountAccessKey | String | The identifier key of the Threat Detection audit storage account. | 
 | AzureSQL.DBThreatPolicy.storageEndpoint | String | Threat Detection audit storage account. | 
