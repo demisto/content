@@ -22,61 +22,59 @@
         "apt"
     ],
     "dependencies": {
-        "EWSMailSender": {
-            "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
-        "MicrosoftGraphListener": {
-            "mandatory": false,
-            "display_name": "Microsoft Graph Mail Single User"
-        },
-        "MailSenderNew": {
-            "mandatory": false,
-            "display_name": "Mail Sender (New)"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        },
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        },
-        "XDR_iocs": {
-            "mandatory": true,
-            "display_name": "Cortex XDR - IOC"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "Gmail": {
-            "mandatory": false,
-            "display_name": "Gmail"
-        },
-        "DemistoRESTAPI": {
-            "mandatory": false,
-            "display_name": "Demisto REST API"
-        },
         "PANWComprehensiveInvestigation": {
             "mandatory": false,
             "display_name": "PANW Comprehensive Investigation"
         },
-        "GmailSingleUser": {
+        "CommonPlaybooks": {
             "mandatory": false,
-            "display_name": "Gmail Single User (Beta)"
+            "display_name": "Common Playbooks"
         },
         "AutoFocus": {
             "mandatory": false,
             "display_name": "AutoFocus"
         },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "MicrosoftGraphListener": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail Single User"
+        },
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
+        },
         "MicrosoftGraphMail": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
         },
-        "PortScan": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "GmailSingleUser": {
             "mandatory": false,
-            "display_name": "Port Scan"
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
         }
     }
 }
+
+
