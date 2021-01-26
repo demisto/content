@@ -49,7 +49,7 @@ def main():
     page_number = 0
     number_of_failed = 0
     number_of_errors = 0
-    total_incidents = []
+    total_incidents: list = []
     incidents_output: list = []
     total_failed_incidents = []
 
@@ -97,7 +97,7 @@ def main():
                     "Playbook Name": task.get("ancestors", [''])[0],
                     "Task Name": task.get("task", {}).get("name"),
                     "Error Entry ID": error_entries,
-                    "Number of Errors": str(len(error_entries)),
+                    "Number of Errors": len(error_entries),
                     "Task ID": task.get("id"),
                     "Incident Created Date": incident.get("created", '').replace("T", " "),
                     "Command Name": task.get("task", {}).get("scriptId", '').replace('|||', ''),
