@@ -1,5 +1,5 @@
-$script:COMMAND_PREFIX = "ews"
-$script:INTEGRATION_ENTRY_CONTEXT = "EWS"
+$script:COMMAND_PREFIX = "o365"
+$script:INTEGRATION_ENTRY_CONTEXT = "O365"
 
 function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
     $integration_context = @{
@@ -582,7 +582,7 @@ function SearchAuditLogCommand{
         }
         $human_readable = TableToMarkdown $list.ToArray() "Audit log"
         $context = @{
-            "$script:INTEGRATION_ENTRY_CONTEXT.AuditLog(val.InterSystemsId === obj.InterSystemsId)" = $list
+            "$script:INTEGRATION_ENTRY_CONTEXT.AuditLog(val.Id === obj.Id)" = $list
         }
         return Write-Output $human_readable, $context, $list
     } finally {
@@ -591,9 +591,9 @@ function SearchAuditLogCommand{
 }
 
 function Main {
-    $command = $Demisto.GetCommand()
-    $command_arguments = $Demisto.Args()
-    $integration_params = $Demisto.Params()
+    $command = $demisto.GetCommand()
+    $command_arguments = $demisto.Args()
+    $integration_params = $demisto.Params()
     <#
         Proxy currently isn't supported by PWSH New-Pssession, However partly implmentation of proxy feature still function (OAuth2.0 and redirect),
         leaving this parameter for feature development if required.
@@ -612,13 +612,13 @@ function Main {
                 $integration_params.url, $integration_params.credentials.identifier,
                 $integration_params.credentials.password, $oauth2_client.access_token, $insecure, $no_proxy)
         # Executing command
-        $demisto.Debug("Command being called is $Command")
+        $demisto.Debug("Command being called is $command")
         switch ($command)
         {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client $exo_client
             }
-            "$script:COMMAND_PREFIX-search-unified-auditlog" {
+            "$script:COMMAND_PREFIX-search-auditlog" {
                 ($human_readable, $entry_context, $raw_response) = SearchAuditLogCommand $exo_client $command_arguments
             }
                 "$script:COMMAND_PREFIX-auditlog-auth-start" {
@@ -630,8 +630,11 @@ function Main {
             "$script:COMMAND_PREFIX-auditlog-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $exo_client
             }
+            default{
+                throw "Command $command no implemented"
+            }
         }
-                # Updating integration context if access token changed
+        # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
         # Return results to Demisto Server
         ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
