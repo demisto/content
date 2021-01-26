@@ -1,45 +1,44 @@
-description: "Post Intrusion Ransomware Investigation Playbook provides a baseline\
-  \ for investigating Ransomware incidents.\nIn such a complex incident, knowing is\
-  \ half the battle.\nThis playbook will help you better understand your position\
+description: "Post Intrusion Ransomware Investigation playbook provides a baseline\
+  \ for investigating ransomware incidents.\nThis playbook will help you better understand your position\
   \ and exposure against the threat actor group by collecting the needed information\
   \ from your environment, performing the required investigation steps, containing\
   \ the incident, and visualizing the data with its custom Post Intrusion Ransomware\
   \ Investigation incident layout.\nThe main features of this semi-automated playbook\
-  \ are:\n - Automated Users and Hosts data enrichment.\n - Automated endpoint isolation\
+  \ are:\n - Automated user and host data enrichment.\n - Automated endpoint isolation\
   \ and user revocation.\n - Guidance to retrieve the necessary files to identify\
-  \ the ransomware strain and data enrichment.\n - Extract indicators from the ransomware\
-  \ note, including Cryptocurrency addresses and Onion URLs.\n - Guidance to further\
-  \ Recommended investigation steps such as Endpoint Forensics, searching for more\
-  \ infected endpoints, Users investigation.\n -  Active Directory forensics. \n -\
-  \ Automated block for malicious indicators \n\nPlaybook Settings and Mapping:\n\
+  \ the ransomware strain.\n - Extract indicators from the ransomware\
+  \ note, including cryptocurrency addresses and onion URLs.\n - Guidance to further\
+  \ recommended investigation steps such as endpoint forensics, searching for more\
+  \ infected endpoints, and investigation of the infected user activity.\n -  Active Directory forensics. \n -\
+  \ Automated block of malicious indicators. \n\nPlaybook settings and mapping:\n\
   For the operation of the playbook, the following data should be mapped to the relevant\
-  \ incident field.\nUsername - Users (Incident field)\nHostname  -Hosts (Incident\
+  \ incident fields:\nUsername - Users (Incident field)\nHostname - Hosts (Incident\
   \ field)\n\n\n\n"
-id: Post Intrusion Ransomware Investigation
+id: Post Intrusion Ransomware Investigation v2
 inputs:
-- description: "This input determines if to perform auto-isolation for the infected\
-    \ endpoint.\nValues:\n- True\n- False "
+- description: "Determines whether to perform auto-isolation for the infected\
+    \ endpoint.\nValues:\n- True\n- False. This is the default. "
   key: AutoIsolation
   playbookInputQuery:
   required: false
   value:
     simple: "False"
 - description: |-
-    The Email address to notify if there is a possibility of the malware spreading and infecting other endpoints.
+    The email addresses to notify if there is a possibility of the malware spreading and infecting other endpoints.
     Can be a CSV list.
   key: NotificationEmail
   playbookInputQuery:
   required: false
   value: {}
-- description: The notification message content.
+- description: The malware notification message content.
   key: EmailBody
   playbookInputQuery:
   required: false
   value:
     simple: |-
       During an endpoint investigation in XSOAR, other infected endpoints were found, indicating the malware is spreading in your organization and requires your attention.
-      To get more information, go to this incident in Demisto: ${incident.id}
-name: Post Intrusion Ransomware Investigation
+      To get more information, go to this incident in XSOAR: ${incident.id}.
+name: Post Intrusion Ransomware Investigation v2
 outputs: []
 starttaskid: "0"
 tasks:
@@ -156,7 +155,7 @@ tasks:
         id: "0"
         label: ""
         labelarg:
-          simple: 'Where binary files retrieved? '
+          simple: 'Were binary files retrieved? '
         options:
         - "No"
         - "Yes"
@@ -167,14 +166,14 @@ tasks:
         tooltip: ""
         type: singleSelect
       sender: ""
-      title: Retrive Ransomware Files
+      title: Retrieve Ransomware Files
       totalanswers: 0
     id: "6"
     ignoreworker: false
     message:
       bcc:
       body:
-        simple: 'Where binary files retrieved? '
+        simple: 'Were binary files retrieved? '
       cc:
       format: ""
       methods: []
@@ -193,20 +192,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Ransomware creates unique files that can help identify the strain\
-        \ that you are handling with. \nsome of the special features that we can look\
-        \ for are, \n1. file extension of the encrypted files created by the ransomware\
-        \ strain.\n2. special attributes like HEX characters\n3. ransomware notes\
-        \ can contain several indicators like BTC Wallets, email addresses, or URLs/Onion\
-        \ links to communicate with the criminals.\nMake sure to retrieve the following\
-        \ files as they will be required for further investigation in this playbook.\n\
-        1. Ransom Note: \ntext or HTML file, the text usually will be located on the\
+      description: "Ransomware creates unique files that can help identify the ransomware strain\
+        \ that you are dealing with. \nSome of the special features that we can look\
+        \ for are: \n1. File extension of the encrypted files created by the ransomware\
+        \ strain.\n2. Special attributes, such as HEX characters.\n3. Ransomware notes\
+        \ can contain several indicators, such as BTC wallets, email addresses, or URLs/onion\
+        \ links to communicate with the attackers.\nMake sure to retrieve the following\
+        \ files as they will be required for further investigation in this playbook:\n\
+        1. Ransom note: \nText or HTML file. The file will usually be located on the\
         \ desktop or in other main folders like c:\\, program files, temp, etc.\n\
-        In the case of an HTML file, it can be located by the path in the address\
-        \ bar.\n2.Any encrypted file <1MB \n3. Other suspicious files that are visible\
+        In case of an HTML file, it can be located by the path in the address\
+        \ bar.\n2.Any encrypted file <1MB. \n3. Other suspicious files that are visible\
         \ and can be related to the incident.\nNote: Keep in mind that you can use\
-        \ XSOAR Built-in CLI to run commands in the context of the incident on enabled\
-        \ integration to assist in this task. "
+        \ XSOAR CLI to run commands in the context of the incident on enabled\
+        \ integrations to assist in this task. "
       id: 7ac203c4-0307-44fe-87e9-40bf8ed8066d
       iscommand: false
       name: Retrieve ransomware files
@@ -247,9 +246,9 @@ tasks:
         id: "1"
         label: ""
         labelarg:
-          simple: is  A recovery tool found?
+          simple: Was a recovery tool found?
         options:
-        - 'Not Available '
+        - 'Not Available'
         - Available
         optionsarg: []
         placeholder: ""
@@ -265,7 +264,7 @@ tasks:
     message:
       bcc:
       body:
-        simple: Enrich Ransomware according to the task details and update the results
+        simple: Enrich the ransomware according to the task details and update the results
       cc:
       format: ""
       methods: []
@@ -286,14 +285,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "It is recommended to use the community ransomware identification\
-        \ service  \nhttps://id-ransomware.malwarehunterteam.com/ made by malware\
-        \ hunter team.\nThis free service can identify more than 1000 strains of ransomware\
-        \ (it keeps growing every day) and may provide a tool or further assistance\
-        \ to decrypt the files if it is possible for the strain you are handling with.\n\
-        As requested in the previous steps, it is possible to upload for identification\
-        \ the following files:\n1. Ransom note\n2. Encrypted file <1MB \n3. email\
-        \ address or links \nPlease refer to the service's FAQ to understand the terms\
+      description: "For enrichment, it is recommended to use the community ransomware identification\
+        \ service: \nhttps://id-ransomware.malwarehunterteam.com/ made by malware\
+        \ hunter team.\nThis free service can identify more than 1,000 strains of ransomware\
+        \ (and expanding every day) and may provide a tool or further assistance\
+        \ to decrypt the files, depending on the ransomware strain you're dealing with.\n\
+        As requested in the previous steps, you can upload the following files to try to\
+        \ identify the ransomware strain:\n1. Ransom note.\n2. Encrypted file <1MB. \n3. Email\
+        \ address or links. \nPlease refer to the service FAQ to understand the terms\
         \ of service and the confidentiality of the uploaded data."
       id: 8221d89c-86d1-41b5-8ce8-fb8dc3aeaece
       iscommand: false
@@ -330,7 +329,7 @@ tasks:
       htmlBody: {}
       replyTo: {}
       subject:
-        simple: Ransomware malware is spreading in the organization
+        simple: Ransomware attack is spreading in the organization
       to:
         complex:
           root: inputs.NotificationEmail
@@ -341,7 +340,7 @@ tasks:
       description: Sends an email using EWS.
       id: d999c11e-66ab-49e3-8f10-55b5f01aea3e
       iscommand: true
-      name: Ransomware notification to relevant stake holders
+      name: Send ransomware notification to relevant stakeholders
       script: '|||send-mail'
       type: regular
       version: -1
@@ -385,7 +384,7 @@ tasks:
       }
   "13":
     form:
-      description: Retrieve and update encrypted file owner
+      description: Retrieve and update the owner of the encrypted file.
       expired: false
       questions:
       - defaultrows: []
@@ -394,20 +393,20 @@ tasks:
         id: "0"
         label: ""
         labelarg:
-          simple: Who is the file owner user?
+          simple: Who is the file owner?
         options: []
         optionsarg: []
         placeholder: ""
         readonly: false
         required: false
-        tooltip: 'The owner of the encrypted files could indicate a user or the source
-          user who encrypts the files across the domain.  This action can help to
-          determine the following: 1. User/Account whos have been compromised by the
-          attacker and responsible for the encryption  2. level of the privileges
-          attacker was able to compromise 3. Indicates a source endpoint to further
-          investigate.  To verify file ownership on windows OS, right click on one
-          of the encrypted files, under security tab click advanced. in the popped
-          up window you will able to see the file owner on the top left corner.'
+        tooltip: 'The owner of the encrypted files can provide an indication of a user or the source
+          user who encrypts the files across the domain. This action can help to
+          determine the following: 1. User/account which have been compromised by the
+          attacker and is responsible for the encryption 2. Level of the privileges the
+          attacker was able to compromise. 3. Indicates a source endpoint to further
+          investigate. To verify file ownership on windows OS, right click on one
+          of the encrypted files, under security tab click advanced. in the popup
+          window you will able to see the file owner on the top left corner.'
         type: shortText
       sender: ""
       title: Ransomware file owner investigation
@@ -438,17 +437,17 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "The encrypted file's owner could indicate a user or the source\
-        \ user who encrypts the files across the domain. \nThis action can help to\
-        \ determine the following:\n1. User/Account whos have been compromised by\
-        \ the attacker and responsible for the encryption \n2. level of the privileges\
-        \ attacker was able to compromise\n3. Indicates a source endpoint to investigate\
-        \ further.\n\nTo verify file ownership on windows OS, right-click on one of\
-        \ the encrypted files, under the Security tab, click advanced. In the popped\
-        \ up window, you will see the file owner on the top left corner.\n"
+      description: "The owner of encrypted files can provide an indication of a user whose activity should be investigated. This user may\
+        \ have encrypted the files across the domain. \nThis action can help to\
+        \ determine the following:\n1. User/account that have been compromised by\
+        \ the attacker and responsible for the encryption. \n2. The level of the privileges the\
+        \ attacker was able to compromise.\n3. Indication of a source endpoint to investigate\
+        \ further.\n\nVerify file ownership on Windows OS by right-clicking one of\
+        \ the encrypted files > Security tab > Advanced. In the pop-up\
+        \ window you will see the file owner in the top left corner.\n"
       id: c684eee8-66a5-4429-8a48-c5bcd79865d7
       iscommand: false
-      name: File Owner Investigation
+      name: File owner investigation
       type: collection
       version: -1
     taskid: c684eee8-66a5-4429-8a48-c5bcd79865d7
@@ -491,7 +490,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Get file reputation using one or more integrations
+      description: Get the file reputation using one or more integrations.
       id: 21c9e7ba-c0e5-4090-8f65-fa30bd1a9f6d
       iscommand: false
       name: file_enrichment_-_file_reputation
@@ -550,12 +549,12 @@ tasks:
     task:
       brand: ""
       description: |
-        If a recovery tool is found it is recommended to test it prior to a large volume execution.
-        Test the tool on a low impact endpoint to verify it can decrypt the data and not causing permanent data loss of the encrypted files.
-        In case the tool decrypted the files successfully make sure to deploy the tool only after applying all the necessary countermeasures to clean your environment from the breach.
+        If a recovery tool was found, it is recommended to test it prior to using it on all of the encrypted files.
+        Test the tool on a low-impact endpoint to verify that it can decrypt the data without causing permanent data loss of the encrypted files.
+        If the tool decrypted the files successfully, make sure to deploy the tool only after applying all the necessary countermeasures to clean everything related to the breach from your environment.
       id: c2e12135-852c-4a5f-8b2f-ffcd7b33a3fe
       iscommand: false
-      name: Test ransomware recovery tool
+      name: Test the ransomware recovery tool.
       type: regular
       version: -1
     taskid: c2e12135-852c-4a5f-8b2f-ffcd7b33a3fe
@@ -637,7 +636,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Load the contents of a file into context.
+      description: Load the content of a file into context.
       id: 9d70aeb1-bbb0-4715-8979-311980af54f6
       iscommand: false
       name: Read ransom note
@@ -685,7 +684,7 @@ tasks:
       description: Data collection task to retrieve the ransomware files.
       id: c972be9a-49ed-43ad-8552-f74602f2659e
       iscommand: false
-      name: Where binary files retrieved?
+      name: Were binary files retrieved?
       type: condition
       version: -1
     taskid: c972be9a-49ed-43ad-8552-f74602f2659e
@@ -710,7 +709,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Detonate file through active integrations that support file detonation
+      description: Detonate the file using active integrations that support file detonation.
       id: cb8e89d3-1ce6-40fb-894f-3a7dfc7b5d8e
       iscommand: false
       name: Detonate File - Generic
@@ -739,7 +738,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Get file reputation using one or more integrations
+      description: Get the file reputation using one or more active integrations.
       id: d5075ccc-0833-462e-8102-6afa93c89439
       iscommand: false
       name: file_enrichment_-_file_reputation
@@ -787,7 +786,7 @@ tasks:
       description: ''
       id: d61da26f-5140-4e91-8007-6e65e24c1253
       iscommand: false
-      name: Where binary files retrieved?
+      name: Were binary files retrieved?
       type: condition
       version: -1
     taskid: d61da26f-5140-4e91-8007-6e65e24c1253
@@ -843,10 +842,10 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Fetch incidents that are related/close to given incident
+      description: Fetches incidents that are related/close to the given incident.
       id: 7391dfd5-853f-4fd5-8e91-d5ba3733b2ad
       iscommand: true
-      name: relatedIncidents
+      name: Fetch related incidents
       script: Builtin|||relatedIncidents
       type: regular
       version: -1
@@ -890,7 +889,7 @@ tasks:
       description: ''
       id: 28800055-3082-4220-819f-f0b3061c9eaf
       iscommand: false
-      name: Auto Isolation/User revocation?
+      name: Auto Isolation/User Revocation?
       type: condition
       version: -1
     taskid: 28800055-3082-4220-819f-f0b3061c9eaf
@@ -926,7 +925,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Enrich an endpoint by hostname using one or more integrations.
+        Enrich an endpoint by using the hostname information and one or more of the integrations available.
         Supported integrations:
         - Active Directory Query v2
         - McAfee ePolicy Orchestrator
@@ -975,7 +974,7 @@ tasks:
     task:
       brand: ""
       description: |-
-        Enrich accounts using one or more integrations.
+        Enrich accounts using available integrations.
         Supported integrations:
         - Active Directory
       id: abc03f0b-2bc3-4da1-884a-36b5c5bef954
@@ -1015,7 +1014,7 @@ tasks:
       description: Disables an Active Directory user account.
       id: e9eab7d7-e8ac-4a7f-8cf1-5dd88c51ac82
       iscommand: true
-      name: 'Active Directory - Disable account '
+      name: 'Active Directory - disable user account '
       script: Active Directory Query v2|||ad-disable-account
       type: regular
       version: -1
@@ -1052,8 +1051,8 @@ tasks:
         Additional investigative information is provided for manual investigation.
       id: 6dbe5bfb-95c0-4cd3-8e05-da89d4f3a51c
       iscommand: false
-      name: f8c30530-5ac8-416e-83d0-d7198a5ae50f
-      playbookId: f8c30530-5ac8-416e-83d0-d7198a5ae50f
+      name: Active Directory Investigation
+      playbookId: Active Directory Investigation
       type: playbook
       version: -1
     taskid: 6dbe5bfb-95c0-4cd3-8e05-da89d4f3a51c
@@ -1181,7 +1180,7 @@ tasks:
     task:
       brand: ""
       description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+        This playbook blocks malicious Indicators using all integrations that are enabled, and the following sub-playbooks:
 
         - Block URL - Generic
         - Block Account - Generic
@@ -1274,7 +1273,7 @@ tasks:
         id: "0"
         label: ""
         labelarg:
-          simple: 'Where binary files retrieved? '
+          simple: 'Were binary files retrieved? '
         options: []
         optionsarg:
         - simple: "Yes"
@@ -1290,7 +1289,7 @@ tasks:
         id: "1"
         label: ""
         labelarg:
-          simple: what the total number of encrypted endpoints?
+          simple: What is the total number of encrypted endpoints?
         options: []
         optionsarg: []
         placeholder: ""
@@ -1328,18 +1327,18 @@ tasks:
       brand: ""
       description: "Single endpoint forensics - if possible, use the file owner endpoint.\n\
         \n1. Behavioral Signature:\nas a first step, it is required to gain a behavioral\
-        \ signature used to discover encrypted endpoints across the domain.\nLook\
-        \ for a simple behavioral signature that will be possibly observed on all\
-        \ endpoint, such as:\n-  File creation in a common folder\n-  Unique process\
+        \ signature that is used to discover encrypted endpoints across the domain.\nLook\
+        \ for a simple behavioral signature that might be observed on all\
+        \ endpoints, such as:\n-  File creation in a common folder\n-  Unique process\
         \  creation\n-  File Hash\n-  Unique network connection \n\n2. Forensic Investigation\
         \ :\nAnalyse Network Share, running process, network connection, auto-run\
         \ data, memory dump, and other forensics methods to help you gain more knowledge\
-        \ about the ransomware.\n\n3. Search for more infected Endpoints\nUse the\
+        \ about the ransomware.\n\n3. Search for additional infected endpoints:\nUse the\
         \ behavioral signature collected from the forensic investigation task to search\
-        \ for more infected endpoints.\n\n\n"
+        \ for additional infected endpoints.\n\n\n"
       id: 2b4be8f0-4f09-4b5f-8769-16e9507402fb
       iscommand: false
-      name: Endpoint Forensic Investigation
+      name: Endpoint forensic investigation
       type: collection
       version: -1
     taskid: 2b4be8f0-4f09-4b5f-8769-16e9507402fb
@@ -1364,9 +1363,9 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: "Incident Timeline:\nFor a proper recovery process, it is essential\
+      description: "For a proper recovery process, it is essential\
         \ to set the timeline for the breach. Encrypting the data is the final step\
-        \ in the attack kill chain. \nBefore data encryption, attackers must have\
+        \ in the attack. \nBefore data encryption, attackers must have\
         \ gained initial access and moved laterally across the domain to gain higher\
         \ privileges so they can distribute the encryption payload to the highest\
         \ number of endpoints. \n1. Use Cortex XSOAR to investigate past incidents\
@@ -1378,7 +1377,7 @@ tasks:
         \ vulnerabilities on external-facing applications and services like web servers/VPN/RDP.\n"
       id: f300b5bc-f90c-4665-8b39-7dbabd9e46ff
       iscommand: false
-      name: Set A time-line for the incident
+      name: Set a timeline for the incident
       type: regular
       version: -1
     taskid: f300b5bc-f90c-4665-8b39-7dbabd9e46ff
@@ -1421,7 +1420,7 @@ tasks:
       description: ''
       id: 789f1b24-1189-43eb-8376-15fc8d73ca22
       iscommand: false
-      name: Where a Recovery tool found?
+      name: Was a Recovery tool found?
       type: condition
       version: -1
     taskid: 789f1b24-1189-43eb-8376-15fc8d73ca22
@@ -1994,7 +1993,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Updates the file owner field for the incident.
       id: 7afd79a3-fcda-4239-8eb9-c45f747bc387
       iscommand: true
       name: Set file owner field
@@ -2600,7 +2599,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Sets the number of affected endpoints.
       id: 3461fbc3-46c2-4b56-8006-b24a9b9bd258
       iscommand: true
       name: Count
@@ -2642,7 +2641,7 @@ tasks:
       description: Converts the body of an email to an image file or a PDF file.
       id: 7389c157-36f7-4e37-8c52-8c6afa481dac
       iscommand: true
-      name: Display Note
+      name: Display ransom note
       script: Rasterize|||rasterize-email
       tags:
       - RansomwareNote
@@ -3331,7 +3330,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Updates the incident with attacker information.
       id: f01c3b36-820c-49da-8bc9-f1ba5caa083e
       iscommand: true
       name: Set attacker information fields
@@ -3422,7 +3421,7 @@ tasks:
       description: ''
       id: 78a34ba4-9246-4f0b-80d8-168b41aff2fb
       iscommand: false
-      name: Notify Ransomware?
+      name: Send ransomware notification?
       type: condition
       version: -1
     taskid: 78a34ba4-9246-4f0b-80d8-168b41aff2fb
@@ -3452,7 +3451,7 @@ tasks:
       description: ''
       id: 1020bfa8-f139-4c58-88e0-89cf37626fc4
       iscommand: false
-      name: Manual - Get analyst approval for auto-remediation
+      name: Manual - get analyst approval for auto-remediation
       type: condition
       version: -1
     taskid: 1020bfa8-f139-4c58-88e0-89cf37626fc4
@@ -3477,10 +3476,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Block the indicators manually extracted in the investigation.
+      description: Block the indicators extracted during the investigation manually.
       id: 4ae3431b-02ef-4606-8e33-b00c97b7c1d6
       iscommand: false
-      name: Manual Containment
+      name: Manual containment
       type: regular
       version: -1
     taskid: 4ae3431b-02ef-4606-8e33-b00c97b7c1d6
@@ -3783,7 +3782,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Updates the incident with ransomware information.
       id: 651a8d18-3fe4-4389-8389-bd97cc88ce2f
       iscommand: true
       name: Set Ransomware information
@@ -3958,10 +3957,10 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.indicators
+      description: Updates the severity of the cryptocurrency indicators to malicious.
       id: dafcb692-04c6-40c3-89d3-dadb627a0d47
       iscommand: true
-      name: 'Set Cryptocurrency indicators as malicious '
+      name: 'Set cryptocurrency indicators as malicious '
       script: Builtin|||setIndicators
       type: regular
       version: -1
@@ -4133,7 +4132,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.indicators
+      description: Updates the severity of the onion address indicators to malicious.
       id: 4d50a279-67ed-4c6d-898e-407f159d74c2
       iscommand: true
       name: 'Set onion addresses indicators as malicious '
@@ -4308,7 +4307,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.indicators
+      description: Updates the severity of the attacker email address indicators to malicious.
       id: fbf7360c-2299-4364-81cb-2f8b7761f066
       iscommand: true
       name: 'Set attacker email addresses indicators as malicious '
