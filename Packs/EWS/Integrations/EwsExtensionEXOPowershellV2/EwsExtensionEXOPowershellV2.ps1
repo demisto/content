@@ -54,13 +54,13 @@ class ExchangeOnlinePowershellV2Client {
         if ($user_principal_name) {
             $cmd_params.UserPrincipalName = $user_principal_name
         }
-        if ($limit -ge 0){
-            $cmd_params.ResultSize = $limit
+        if ($limit -gt 0){
+            return Get-EXOCASMailbox @cmd_params -ResultSize $limit
         } else
         {
-            $cmd_params.ResultSize = Unlimited
+            return Get-EXOCASMailbox @cmd_params -ResultSize Unlimited
         }
-        return Get-EXOCASMailbox @cmd_params
+
         <#
         .DESCRIPTION
         This cmdlet returns a variety of client access settings for one or more mailboxes.
@@ -86,7 +86,7 @@ class ExchangeOnlinePowershellV2Client {
         The OrganizationalUnit parameter filters the results based on the object's location in Active Directory.
 
         .PARAMETER primary_smtp_address
-        The PrimarySmtpAddress identifies the mailbox that you want to view by primary SMTP email address (for example, navin@contoso.com).
+        The PrimarySmtpAddress identifies the mailbox that you want to view by primary SMTP email address (for example, navin@contoso.onmicrosoft.com).
         Can't be used with user_principal_name.
 
         .PARAMETER user_principal_name
@@ -112,13 +112,12 @@ class ExchangeOnlinePowershellV2Client {
         if ($identity) {
             $cmd_params.Identity = $identity
         }
-        if ($limit -ge 0){
-            $cmd_params.ResultSize = $limit
+        if ($limit -gt 0){
+            return Get-EXOMailbox @cmd_params -ResultSize $limit
         } else
         {
-            $cmd_params.ResultSize = Unlimited
+            return Get-EXOMailbox @cmd_params -ResultSize Unlimited
         }
-        return Get-EXOMailbox @cmd_params
         <#
         .DESCRIPTION
         Use the Get-EXOMailbox cmdlet to view mailbox objects and attributes,
@@ -186,14 +185,13 @@ class ExchangeOnlinePowershellV2Client {
         if ($identity) {
             $cmd_params.Identity = $identity
         }
-        if ($limit -ge 0){
-            $cmd_params.ResultSize = $limit
+        if ($limit -gt 0){
+            return Get-EXORecipientPermission @cmd_params -ResultSize $limit
         }
         else
         {
-            $cmd_params.ResultSize = Unlimited
+            return Get-EXORecipientPermission @cmd_params -ResultSize Unlimited
         }
-        return Get-EXORecipientPermission @cmd_params
         <#
         .DESCRIPTION
         Use the Get-EXORecipientPermission cmdlet to view information about SendAs permissions that are
@@ -226,15 +224,14 @@ class ExchangeOnlinePowershellV2Client {
             {
                 $cmd_params.Identity = $identity
             }
-            if ($limit -ge 0)
+            if ($limit -gt 0)
             {
-                $cmd_params.ResultSize = $limit
+                return Get-EXORecipient @cmd_params -ResultSize $limit
             }
             else
             {
-                $cmd_params.ResultSize = Unlimited
+                return Get-EXORecipient @cmd_params -ResultSize Unlimited
             }
-            return Get-EXORecipient @cmd_params
             <#
             .DESCRIPTION
             Use the Get-ExORecipient cmdlet to view existing recipient objects in your organization.
@@ -281,7 +278,7 @@ function GetEXOMailBoxPermissionCommand {
     $identity = $kwargs.identity
     $raw_response = $client.GetEXOMailBoxPermission($identity)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOMailBoxPermission(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOMailboxPermission(obj.Guid === val.Guid)" = $raw_response }
     return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOMailBoxCommand {
@@ -294,7 +291,7 @@ function GetEXOMailBoxCommand {
     $limit = $kwargs.limit -as [int]
     $raw_response = $client.GetEXOMailBox($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOMailBox(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOMailbox(obj.Guid === val.Guid)" = $raw_response }
     return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOCASMailboxCommand {

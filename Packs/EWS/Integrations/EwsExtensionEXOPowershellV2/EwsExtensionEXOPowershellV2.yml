@@ -62,73 +62,73 @@ script:
       secret: false
     deprecated: false
     outputs:
-      - contextPath: EWS.EXOMailBox.EmailAddresses
+      - contextPath: EWS.EXOMailbox.EmailAddresses
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.AuditBypassEnabled
+      - contextPath: EWS.EXOMailbox.AuditBypassEnabled
         description: ''
         type: Boolean
-      - contextPath: EWS.EXOMailBox.DistinguishedName
+      - contextPath: EWS.EXOMailbox.DistinguishedName
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.ExchangeObjectId
+      - contextPath: EWS.EXOMailbox.ExchangeObjectId
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.ExchangeVersion
+      - contextPath: EWS.EXOMailbox.ExchangeVersion
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.Guid
+      - contextPath: EWS.EXOMailbox.Guid
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.Id
+      - contextPath: EWS.EXOMailbox.Id
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.Identity
+      - contextPath: EWS.EXOMailbox.Identity
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.IsValid
+      - contextPath: EWS.EXOMailbox.IsValid
         description: ''
         type: Boolean
-      - contextPath: EWS.EXOMailBox.Name
+      - contextPath: EWS.EXOMailbox.Name
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.ObjectCategory
+      - contextPath: EWS.EXOMailbox.ObjectCategory
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.ObjectClass
+      - contextPath: EWS.EXOMailbox.ObjectClass
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.ObjectId
+      - contextPath: EWS.EXOMailbox.ObjectId
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.ObjectState
+      - contextPath: EWS.EXOMailbox.ObjectState
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.OrganizationId
+      - contextPath: EWS.EXOMailbox.OrganizationId
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.OriginatingServer
+      - contextPath: EWS.EXOMailbox.OriginatingServer
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.PSComputerName
+      - contextPath: EWS.EXOMailbox.PSComputerName
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.PSShowComputerName
+      - contextPath: EWS.EXOMailbox.PSShowComputerName
         description: ''
         type: Boolean
-      - contextPath: EWS.EXOMailBox.RunspaceId
+      - contextPath: EWS.EXOMailbox.RunspaceId
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBox.WhenChanged
+      - contextPath: EWS.EXOMailbox.WhenChanged
         description: ''
         type: Date
-      - contextPath: EWS.EXOMailBox.WhenChangedUTC
+      - contextPath: EWS.EXOMailbox.WhenChangedUTC
         description: ''
         type: Date
-      - contextPath: EWS.EXOMailBox.WhenCreated
+      - contextPath: EWS.EXOMailbox.WhenCreated
         description: ''
         type: Date
-      - contextPath: EWS.EXOMailBox.WhenCreatedUTC
+      - contextPath: EWS.EXOMailbox.WhenCreatedUTC
         description: ''
         type: Date
     description: Use the ews-get-federation-trust command to view the federation trust
@@ -250,22 +250,22 @@ script:
       required: true
       secret: false
     outputs:
-      - contextPath: EWS.EXOMailBoxPermission.AccessRights
+      - contextPath: EWS.EXOMailboxPermission.AccessRights
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBoxPermission.Deny.IsPresent
+      - contextPath: EWS.EXOMailboxPermission.Deny.IsPresent
         description: ''
         type: Boolean
-      - contextPath: EWS.EXOMailBoxPermission.Identity
+      - contextPath: EWS.EXOMailboxPermission.Identity
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBoxPermission.InheritanceType
+      - contextPath: EWS.EXOMailboxPermission.InheritanceType
         description: ''
         type: String
-      - contextPath: EWS.EXOMailBoxPermission.IsInherited
+      - contextPath: EWS.EXOMailboxPermission.IsInherited
         description: ''
         type: Boolean
-      - contextPath: EWS.EXOMailBoxPermission.User
+      - contextPath: EWS.EXOMailboxPermission.User
         description: ''
         type: String
     deprecated: false
