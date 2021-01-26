@@ -1158,7 +1158,7 @@ class Pack(object):
         """
         task_status = False
         not_updated_build = False
-        packs_latest_release_notes = Pack.PACK_INITIAL_VERSION
+        packs_latest_release_notes_version = Pack.PACK_INITIAL_VERSION
 
         try:
             # load changelog from downloaded index
@@ -1171,7 +1171,7 @@ class Pack(object):
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version
                     )
-                    packs_latest_release_notes = latest_release_notes
+                    packs_latest_release_notes_version = latest_release_notes
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     if self._current_version != latest_release_notes:
@@ -1179,7 +1179,7 @@ class Pack(object):
                         logging.error(f"Version mismatch detected between current version: {self._current_version} "
                                       f"and latest release notes version: {latest_release_notes}")
                         task_status = False
-                        return task_status, not_updated_build, packs_latest_release_notes
+                        return task_status, not_updated_build, packs_latest_release_notes_version
                     else:
                         if latest_release_notes in changelog:
                             logging.info(f"Found existing release notes for version: {latest_release_notes}")
@@ -1203,7 +1203,7 @@ class Pack(object):
                         logging.warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
                         task_status, not_updated_build = True, True
-                        return task_status, not_updated_build, packs_latest_release_notes
+                        return task_status, not_updated_build, packs_latest_release_notes_version
 
                     changelog[Pack.PACK_INITIAL_VERSION] = self._create_changelog_entry(
                         release_notes=self.description,
@@ -1228,7 +1228,7 @@ class Pack(object):
             else:
                 logging.error(f"No release notes found for: {self._pack_name}")
                 task_status = False
-                return task_status, not_updated_build, packs_latest_release_notes
+                return task_status, not_updated_build, packs_latest_release_notes_version
 
             # write back changelog with changes to pack folder
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
@@ -1240,7 +1240,7 @@ class Pack(object):
             logging.error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
                           f"Additional info: {e}")
         finally:
-            return task_status, not_updated_build, packs_latest_release_notes
+            return task_status, not_updated_build, packs_latest_release_notes_version
 
     def create_local_changelog(self, build_index_folder_path):
         """ Copies the pack index changelog.json file to the pack path
