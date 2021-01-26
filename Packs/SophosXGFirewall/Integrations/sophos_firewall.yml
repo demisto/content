@@ -4110,5 +4110,5 @@ script:
   subtype: python3
   type: python
 tests:
-- SophosXGFirewall-test
+- No tests
 fromversion: 5.0.0
