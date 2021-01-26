@@ -73,7 +73,7 @@ The following platforms are supported as the "platform" command
   - dell_dnos9
   - dell_dnos9_ssh
   - dell_force10
-  - dell_force10_ssh	
+  - dell_force10_ssh
   - dell_isilon
   - dell_isilon_ssh
   - dell_os10
@@ -140,7 +140,7 @@ The following platforms are supported as the "platform" command
   - ipinfusion_ocnos_ssh
   - ipinfusion_ocnos_telnet
   - juniper
-  - juniper_juno
+  - juniper_junos
   - juniper_junos_ssh
   - juniper_junos_telnet
   - juniper_ssh
