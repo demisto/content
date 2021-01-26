@@ -132,8 +132,9 @@ def validate_entry_context(context_path, entry_context: Any, keys: List[str], un
             1. Dict[str, Any]
 
     Args:
+        context_path: Path of entry context
         entry_context: Entry context to validate
-        keys: keys to collect data from
+        keys: Keys to collect data from
         unpack_nested_elements: True for unpacking nested elements, False otherwise.
 
     Raises:
