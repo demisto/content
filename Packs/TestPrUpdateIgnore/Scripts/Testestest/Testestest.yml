@@ -1,9 +1,15 @@
 args:
-- name: field1
+- name: field1-reviewer_edit
   required: true
-- name: field333
+- name: field222
   required: true
-comment: test description
+- name: field333 - new by reviewer
+  required: true
+- name: field
+  required: true
+- name: field333 - new by reviewer
+  required: true
+comment: test description - reviewer edit
 commonfields:
   id: testestest
   version: -1
