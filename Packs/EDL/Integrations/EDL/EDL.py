@@ -462,7 +462,7 @@ def route_edl_values() -> Response:
     values = get_edl_ioc_values(
         on_demand=params.get('on_demand'),
         request_args=request_args,
-        integration_context=demisto.getIntegrationContext(),
+        integration_context=get_integration_context(),
         cache_refresh_rate=params.get('cache_refresh_rate'),
     )
     return Response(values, status=200, mimetype='text/plain')
