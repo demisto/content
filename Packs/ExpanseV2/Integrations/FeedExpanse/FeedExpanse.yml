@@ -111,35 +111,35 @@ script:
   commands:
   - name: feedexpanse-get-indicators
     arguments:
-    - default: true
+    - default: false
       defaultValue: '10'
       description: The maximum number of results to return per type
       isArray: false
       name: max_indicators
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 'yes'
       description: Retrieve discovered IPs
       isArray: false
       name: ip
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 'yes'
       description: Retrieve discovered Domains
       isArray: false
       name: domain
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 'yes'
       description: Retrieve discovered certificates
       isArray: false
       name: certificate
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 'yes'
       description: Retrieve IP Ranges
       isArray: false
