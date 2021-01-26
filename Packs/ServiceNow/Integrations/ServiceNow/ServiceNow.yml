@@ -64,7 +64,7 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-description: Deprecated. We recommend using ServiceNow v2 instead.
+description: Deprecated. Use the ServiceNow v2 integration instead.
 display: ServiceNow (Deprecated)
 deprecated: true
 name: ServiceNow
