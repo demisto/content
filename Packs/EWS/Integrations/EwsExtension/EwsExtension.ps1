@@ -971,9 +971,12 @@ class ExchangeOnlineClient {
             }
             if ($limit -gt 0)
             {
-                $cmd_params.ResultSize = $limit
+                return Get-User @cmd_params -ResultSize $limit
             }
-            return Get-User @cmd_params
+            else
+            {
+                return Get-User @cmd_params -ResultSize Unlimited
+            }
         } finally {
             $this.CloseSession()
         }
@@ -1273,7 +1276,7 @@ function GetRemoteDomainCommand {
     )
     $identity = $kwargs.identity
     $domain_controller = $kwargs.domain_controller
-    $raw_response = $client. ($domain_controller, $identity)
+    $raw_response = $client.GetRemoteDomain($domain_controller, $identity)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.RemoteDomain(obj.Guid === val.Guid)" = $raw_response }
     return Write-Output $human_readable, $entry_context, $raw_response
