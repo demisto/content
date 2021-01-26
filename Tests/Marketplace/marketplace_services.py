@@ -198,6 +198,7 @@ class Pack(object):
         self._aggregated = False  # weather the pack's rn was aggregated or not.
         self._aggregation_str = ""  # the aggregation string msg when the pack versions are aggregated
         self._create_date = None
+        self._update_date = None
 
     @property
     def name(self):
@@ -368,6 +369,12 @@ class Pack(object):
         """ str: pack create date.
         """
         return self._create_date
+
+    @property
+    def update_date(self):
+        """ str: pack update date.
+        """
+        return self._update_date
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -569,7 +576,7 @@ class Pack(object):
         pack_metadata['id'] = pack_id
         pack_metadata['description'] = user_metadata.get('description') or pack_id
         pack_metadata['created'] = self._create_date
-        pack_metadata['updated'] = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+        pack_metadata['updated'] = self._update_date
         pack_metadata['legacy'] = user_metadata.get('legacy', True)
         pack_metadata['support'] = user_metadata.get('support') or Metadata.XSOAR_SUPPORT
         pack_metadata['supportDetails'] = Pack._create_support_section(support_type=pack_metadata['support'],
@@ -658,8 +665,8 @@ class Pack(object):
 
         return downloads_count
 
-    def _create_changelog_entry(self, release_notes, version_display_name, build_number, new_version=True,
-                                initial_release=False):
+    def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
+                                new_version=True, initial_release=False):
         """ Creates dictionary entry for changelog.
 
         Args:
@@ -682,10 +689,13 @@ class Pack(object):
             return {'releaseNotes': release_notes,
                     'displayName': f'{version_display_name} - {build_number}',
                     'released': self._create_date}
-        else:
+
+        elif pack_was_modified:
             return {'releaseNotes': release_notes,
                     'displayName': f'{version_display_name} - R{build_number}',
                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+
+        return {}
 
     def remove_unwanted_files(self, delete_test_playbooks=True):
         """ Iterates over pack folder and removes hidden files and unwanted folders.
@@ -1130,7 +1140,7 @@ class Pack(object):
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def prepare_release_notes(self, index_folder_path, build_number):
+    def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1143,6 +1153,7 @@ class Pack(object):
         """
         task_status = False
         not_updated_build = False
+        packs_latest_release_notes = Pack.PACK_INITIAL_VERSION
 
         try:
             # load changelog from downloaded index
@@ -1155,6 +1166,7 @@ class Pack(object):
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version
                     )
+                    packs_latest_release_notes = latest_release_notes
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     if self._current_version != latest_release_notes:
@@ -1162,13 +1174,14 @@ class Pack(object):
                         logging.error(f"Version mismatch detected between current version: {self._current_version} "
                                       f"and latest release notes version: {latest_release_notes}")
                         task_status = False
-                        return task_status, not_updated_build
+                        return task_status, not_updated_build, packs_latest_release_notes
                     else:
                         if latest_release_notes in changelog:
                             logging.info(f"Found existing release notes for version: {latest_release_notes}")
                             version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
+                                                                             pack_was_modified=pack_was_modified,
                                                                              new_version=False)
 
                         else:
@@ -1178,13 +1191,14 @@ class Pack(object):
                                                                              build_number=build_number,
                                                                              new_version=True)
 
-                        changelog[latest_release_notes] = version_changelog
+                        if version_changelog:
+                            changelog[latest_release_notes] = version_changelog
                 else:  # will enter only on initial version and release notes folder still was not created
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
                         logging.warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
                         task_status, not_updated_build = True, True
-                        return task_status, not_updated_build
+                        return task_status, not_updated_build, packs_latest_release_notes
 
                     changelog[Pack.PACK_INITIAL_VERSION] = self._create_changelog_entry(
                         release_notes=self.description,
@@ -1209,7 +1223,7 @@ class Pack(object):
             else:
                 logging.error(f"No release notes found for: {self._pack_name}")
                 task_status = False
-                return task_status, not_updated_build
+                return task_status, not_updated_build, packs_latest_release_notes
 
             # write back changelog with changes to pack folder
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
@@ -1221,7 +1235,7 @@ class Pack(object):
             logging.error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
                           f"Additional info: {e}")
         finally:
-            return task_status, not_updated_build
+            return task_status, not_updated_build, packs_latest_release_notes
 
     def create_local_changelog(self, build_index_folder_path):
         """ Copies the pack index changelog.json file to the pack path
@@ -1451,7 +1465,8 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df):
+                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df,
+                        packs_latest_release_notes):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1491,6 +1506,7 @@ class Pack(object):
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
             self._create_date = self._get_pack_creation_date(index_folder_path)
+            self._update_date = self._get_pack_update_date(index_folder_path, packs_latest_release_notes)
             formatted_metadata = self._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
@@ -1512,6 +1528,15 @@ class Pack(object):
         finally:
             return task_status
 
+    def _get_changelog(self, index_folder_path):
+        # load changelog from downloaded index
+        changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+        changelog = {}
+        if os.path.exists(changelog_index_path):
+            with open(changelog_index_path, "r") as changelog_file:
+                changelog = json.load(changelog_file)
+        return changelog
+
     def _get_pack_creation_date(self, index_folder_path):
         """ Gets the pack created date.
         Args:
@@ -1520,18 +1545,27 @@ class Pack(object):
             datetime: Pack created date.
 
         """
-
-        # load changelog from downloaded index
-        changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
-        changelog = {}
-        if os.path.exists(changelog_index_path):
-            with open(changelog_index_path, "r") as changelog_file:
-                changelog = json.load(changelog_file)
+        changelog = self._get_changelog(index_folder_path)
 
         initial_changelog_version = changelog.get(Pack.PACK_INITIAL_VERSION, {})
         init_changelog_released_date = initial_changelog_version.get('released',
                                                                      datetime.utcnow().strftime(Metadata.DATE_FORMAT))
         return init_changelog_released_date
+
+    def _get_pack_update_date(self, index_folder_path, packs_latest_release_notes):
+        """ Gets the pack created date.
+        Args:
+            index_folder_path (str): downloaded index folder directory path.
+        Returns:
+            datetime: Pack created date.
+
+        """
+        changelog = self._get_changelog(index_folder_path)
+
+        latest_changelog_version = changelog.get(packs_latest_release_notes, {})
+        latest_changelog_released_date = latest_changelog_version.get('released',
+                                                                     datetime.utcnow().strftime(Metadata.DATE_FORMAT))
+        return latest_changelog_released_date
 
     def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
         pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
