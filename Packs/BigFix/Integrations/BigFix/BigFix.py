@@ -8,6 +8,7 @@ requests.packages.urllib3.disable_warnings()
 BASE_URL = demisto.params().get('url')
 VERIFY_CERTIFICATE = not demisto.params().get('unsecure')
 
+# add this note
 USERNAME = demisto.params()['credentials']['identifier']
 PASSWORD = demisto.params()['credentials']['password']
 
