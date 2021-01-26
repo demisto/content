@@ -3,7 +3,6 @@
     "custom": true,
     "defaultIncidentType": "ServiceNow Ticket",
     "id": "ServiceNow Classifier",
-    "incidentSamples": [],
     "isDefault": false,
     "keyTypeMap": {
         "incident": "ServiceNow Ticket"
@@ -741,12 +740,10 @@
             }
         }
     },
-    "sortValues": null,
     "transformer": {
         "complex": null,
         "simple": "sys_class_name"
     },
-    "unclassifiedCases": {},
     "version": -1,
     "fromVersion": "5.0.0",
     "toVersion": "5.9.9"
