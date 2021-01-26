@@ -27,7 +27,7 @@
             "display_name": "PANW Comprehensive Investigation"
         },
         "CommonPlaybooks": {
-            "mandatory": false,
+            "mandatory": true,
             "display_name": "Common Playbooks"
         },
         "AutoFocus": {
