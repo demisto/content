@@ -1,9 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
+from IAMApiModule import *
 import traceback
-
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 ERROR_CODES_TO_SKIP = [
@@ -308,8 +309,6 @@ def main():
         # For any other integration command exception, return an error
         return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
 
-
-from IAMApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
