@@ -412,8 +412,8 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build, _ = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                       build_number=build_number)
         assert task_status is True
         assert not_updated_build is False
 
@@ -446,8 +446,8 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build, _ = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                       build_number=build_number)
         assert task_status is True
         assert not_updated_build is False
 
@@ -480,8 +480,8 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build, _ = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                       build_number=build_number)
         assert task_status is False
         assert not_updated_build is False
 
@@ -514,8 +514,8 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build, _ = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
+                                                                       build_number=build_number)
         assert task_status is True
         assert not_updated_build is False
 
@@ -624,7 +624,8 @@ This is visible
         build_number = "5555"
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False)
+                                                               build_number=build_number, new_version=False,
+                                                               pack_was_modified=True)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'

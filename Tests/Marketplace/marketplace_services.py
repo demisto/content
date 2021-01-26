@@ -1140,7 +1140,7 @@ class Pack(object):
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified):
+    def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1564,7 +1564,7 @@ class Pack(object):
 
         latest_changelog_version = changelog.get(packs_latest_release_notes, {})
         latest_changelog_released_date = latest_changelog_version.get('released',
-                                                                     datetime.utcnow().strftime(Metadata.DATE_FORMAT))
+                                                                      datetime.utcnow().strftime(Metadata.DATE_FORMAT))
         return latest_changelog_released_date
 
     def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
