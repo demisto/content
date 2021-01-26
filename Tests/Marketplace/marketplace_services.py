@@ -684,7 +684,7 @@ class Pack(object):
                     'released': self._create_date}
         else:
             return {'releaseNotes': release_notes,
-                    'displayName': f'{version_display_name} - R{build_number}',
+                    'displayName': f'{version_display_name} - A{build_number}',
                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
 
     def remove_unwanted_files(self, delete_test_playbooks=True):
