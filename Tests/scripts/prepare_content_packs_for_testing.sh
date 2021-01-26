@@ -30,8 +30,14 @@ CONTENT_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"
 BUCKET_FULL_TARGET_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH"
 
 # ====== PRODUCTION CONFIGURATION ======
-GCS_MARKET_BUCKET="marketplace-dist"
-SOURCE_PATH="content"
+GCS_MARKET_BUCKET="marketplace-dist-dev"
+SOURCE_PATH="upload-flow/builds/$CIRCLE_BRANCH/$CIRCLE_BUILD_NUM/content"
+
+# ====== UPDATING TESTING BUCKET ======
+echo "Copying production bucket files at: gs://marketplace-dist/content to testing bucket at path: gs://marketplace-dist-dev/$SOURCE_PATH ..."
+gsutil -m cp -r "gs://marketplace-dist/content" "gs://marketplace-dist-dev/$SOURCE_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
+echo "Finished copying successfully."
+# ====== UPDATING TESTING BUCKET ======
 
 echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to target path: gs://$CONTENT_FULL_TARGET_PATH ..."
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$CONTENT_FULL_TARGET_PATH" > "$CIRCLE_ARTIFACTS/logs/Prepare Content Packs For Testing.log" 2>&1
@@ -56,7 +62,7 @@ else
   # In Upload-Flow, we exclude test-pbs in the zipped packs
   REMOVE_PBS=true
   BUCKET_UPLOAD_FLOW=true
-  GCS_PRIVATE_BUCKET="marketplace-dist-private"
+  GCS_PRIVATE_BUCKET="marketplace-dist-private-test"
   if [ -n "${FORCE_PACK_UPLOAD}" ] && [ -n "${PACKS_TO_UPLOAD}" ]; then
     # In case the workflow is force upload, we override the forced packs
     echo "Force uploading to production the following packs: ${PACKS_TO_UPLOAD}"
