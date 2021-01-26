@@ -465,8 +465,8 @@
         ]
     },
     "group": "incident",
-    "id": "shift handover",
-    "name": "shift handover",
+    "id": "Shift handover",
+    "name": "Shift handover",
     "quickView": {
         "sections": [
             {
