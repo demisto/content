@@ -5,10 +5,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 0145a4ef-1dc0-4693-8628-ec317f3e12ff
+    taskid: '0'
     type: start
     task:
-      id: 0145a4ef-1dc0-4693-8628-ec317f3e12ff
+      id: '0'
       version: -1
       name: ''
       iscommand: false
@@ -24,10 +24,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: 193e0203-d233-41ef-8b4b-7ed27d74e4fd
+    taskid: '1'
     type: regular
     task:
-      id: 193e0203-d233-41ef-8b4b-7ed27d74e4fd
+      id: '1'
       version: -1
       name: DeleteContext
       description: ''
@@ -49,10 +49,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: c3a162cb-7156-478f-8995-bb2a6d5b36e3
+    taskid: '2'
     type: regular
     task:
-      id: c3a162cb-7156-478f-8995-bb2a6d5b36e3
+      id: '2'
       version: -1
       name: cyberint-list-alerts
       description: ''
@@ -72,10 +72,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: 0250a72b-0239-4fb4-8da8-7c48c883e293
+    taskid: '3'
     type: condition
     task:
-      id: 0250a72b-0239-4fb4-8da8-7c48c883e293
+      id: '3'
       version: -1
       name: Verify Outputs
       type: condition
@@ -336,10 +336,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: 76117792-93a4-4992-808b-47e7980da5d8
+    taskid: '4'
     type: regular
     task:
-      id: 76117792-93a4-4992-808b-47e7980da5d8
+      id: '4'
       version: -1
       name: cyberint-update-alerts
       description: ''
@@ -359,10 +359,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: f8ca21f6-090a-4630-8c57-9e384f47fe34
+    taskid: '5'
     type: condition
     task:
-      id: f8ca21f6-090a-4630-8c57-9e384f47fe34
+      id: '5'
       version: -1
       name: Verify Outputs
       type: condition
@@ -398,10 +398,10 @@ tasks:
     skipunavailable: false
   '6':
     id: '6'
-    taskid: 4a4ca1d1-f93f-45e7-8b12-40c665a58bfc
+    taskid: '6'
     type: title
     task:
-      id: 4a4ca1d1-f93f-45e7-8b12-40c665a58bfc
+      id: '6'
       version: -1
       name: Test Done
       type: title
