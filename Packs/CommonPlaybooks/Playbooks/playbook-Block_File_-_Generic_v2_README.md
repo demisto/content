@@ -49,4 +49,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Block File - Generic v2](Insert the link to your image here)
+![Block File - Generic v2](https://raw.githubusercontent.com/demisto/content/a1776317084284686bb73a07de30693ae4ff81f8/Packs/CommonPlaybooks/doc_files/Block_File_-_Generic_v2.png)
