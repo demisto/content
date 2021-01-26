@@ -110,7 +110,7 @@ script:
       defaultValue: "10"
     - default: false
       defaultValue: id,name,type,status,severity,owner,occured
-      description: Which columns to display. To display all columns, insert 'all',
+      description: Which columns to display. Default is 'id,name,type,status,severity,owner,occured'. To display all columns, insert 'all'.
       isArray: true
       name: columns
       required: false
