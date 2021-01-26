@@ -225,25 +225,6 @@ script:
     name: ews-get-cas-mailbox
   - arguments:
     - default: false
-      description: |-
-        This argument is available only in on-premises Exchange.
-        You identify the domain controller by its fully qualified domain name (FQDN). For example, dc01.contoso.com.
-      isArray: false
-      name: domain_controller
-      required: false
-      secret: false
-    - default: false
-      description: The Identity parameter specifies the remote domain that you want to view.
-      isArray: false
-      name: identity
-      required: false
-      secret: false
-    deprecated: false
-    description: View the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V2 module.
-    execution: false
-    name: ews-get-remote-domain
-  - arguments:
-    - default: false
       description: The Identity parameter specifies the mailbox you want to view.
       isArray: false
       name: identity
