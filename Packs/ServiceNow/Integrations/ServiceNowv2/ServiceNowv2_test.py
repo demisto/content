@@ -94,6 +94,30 @@ def test_split_fields():
     assert False
 
 
+def test_split_fields_with_special_delimiter():
+    """Unit test
+    Given
+    - split_fields method
+    - the default delimiter is ;
+    When
+    - splitting values with a different delimiter - ','
+    Then
+    -  Validate the fields were created correctly
+    """
+    expected_dict_fields = {'a': 'b', 'c': 'd'}
+    assert expected_dict_fields == split_fields('a=b,c=d', ',')
+
+    expected_custom_field = {'u_customfield': "<a href=\'https://google.com\'>Link text<;/a>"}
+    assert expected_custom_field == split_fields("u_customfield=<a href=\'https://google.com\'>Link text<;/a>", ',')
+
+    try:
+        split_fields('a')
+    except Exception as err:
+        assert "must contain a '=' to specify the keys and values" in str(err)
+        return
+    assert False
+
+
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
     (update_ticket_command, {'id': '1234', 'impact': '2'}, RESPONSE_UPDATE_TICKET, EXPECTED_UPDATE_TICKET, True),
     (update_ticket_command, {'id': '1234', 'ticket_type': 'sc_req_item', 'approval': 'requested'},
