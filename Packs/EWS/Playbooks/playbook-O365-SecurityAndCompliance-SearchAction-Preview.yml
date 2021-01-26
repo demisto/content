@@ -129,7 +129,6 @@ outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
   description: Security and compliance search action Tenant ID.
   type: String
-sourceplaybookid: O365 - Security And Compliance - Search Action
 starttaskid: "0"
 tasks:
   "0":
@@ -204,7 +203,7 @@ tasks:
         3. (optional) Get the results of the operation.
       id: e2ecd88d-eaa1-4f71-89a4-2afbcac752af
       iscommand: false
-      name: Waiting for search action to complete
+      name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1

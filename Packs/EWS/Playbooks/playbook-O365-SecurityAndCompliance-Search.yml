@@ -305,7 +305,6 @@ outputs:
 - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
   description: Security and compliance search action Tenant ID.
   type: String
-sourceplaybookid: O365 - Security And Compliance - Search Start
 starttaskid: "0"
 tasks:
   "0":
@@ -380,7 +379,7 @@ tasks:
         3. (optional) Get the results of the operation.
       id: 773d2beb-d212-48b7-8f46-81ac7b5a7dd8
       iscommand: false
-      name: Waiting for the compliance search to complete.
+      name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
@@ -687,8 +686,8 @@ tasks:
     task:
       brand: ""
       description: If the compliance search exists and force == "true", the existing
-        compliance search will be removed and a new one will be created. If force == "false",
-        the existing search will be used.
+        compliance search will be removed and a new one will be created. If force
+        == "false", the existing search will be used.
       id: 877404e3-7a2f-47d2-817e-db477bf4b028
       iscommand: false
       name: Whether to overwrite the existing search.

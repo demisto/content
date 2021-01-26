@@ -179,7 +179,8 @@ inputs:
   value:
     simple: inbox,inbox\TESTATTACH
   required: true
-  description: "A comma-separated List of folder paths from the Inbox. \nFor example: inbox,inbox\\\\folder"
+  description: "A comma-separated List of folder paths from the Inbox. \nFor example:\
+    \ inbox,inbox\\\\folder"
 - key: listName
   value: {}
   required: true

@@ -5,8 +5,9 @@ import warnings
 from collections import deque
 from multiprocessing import Process
 
+import demistomock as demisto  # noqa: F401
 import exchangelib
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
 from cStringIO import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Body, Build, Configuration, Credentials, EWSDateTime,
@@ -1137,18 +1138,8 @@ def parse_incident_from_item(item, is_fetch):
                         if hasattr(attachment, 'item') and attachment.item.mime_content:
                             attached_email = email.message_from_string(attachment.item.mime_content)
                             if attachment.item.headers:
-                                attached_email_headers = []
-                                for h, v in attached_email.items():
-                                    if not isinstance(v, str):
-                                        try:
-                                            v = str(v)
-                                        except:     # noqa: E722
-                                            demisto.debug('cannot parse the header "{}"'.format(h))
-                                            continue
-
-                                    v = ' '.join(map(str.strip, v.split('\r\n')))
-                                    attached_email_headers.append((h, v))
-
+                                attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
+                                                          attached_email.items()]
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
                                             and header.name != 'Content-Type':
@@ -1862,35 +1853,36 @@ def get_compliance_search(search_name, show_only_recipients):
 
     # Parse search results from script output if the search has completed. Output to warroom as table.
     if stdout[0] == 'Completed':
-        if stdout[1] and stdout[1] != '{}':
-            res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
-            res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
-            entry = {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['text'],
-                'Contents': stdout,
-                'ReadableContentsFormat': formats['markdown'],
-            }
-            if show_only_recipients == 'True':
-                res = filter(lambda x: int(x['Item count']) > 0, res)
-
-                entry['EntryContext'] = {
-                    'EWS.ComplianceSearch(val.Name == obj.Name)': {
-                        'Name': search_name,
-                        'Results': res
-                    }
-                }
-
-            entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
-                                                     ['Location', 'Item count', 'Total size'])
-        else:
-            entry = {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['text'],
-                'Contents': stdout,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': "The compliance search didn't return any results."
-            }
+        stdout = {}
+        # if stdout[1]:
+        #     # res = list(r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n'))
+        #     # res = map(lambda x: {k: v for k, v in (s.split(': ') for s in x)}, res)
+        #     # entry = {
+        #     #     'Type': entryTypes['note'],
+        #     #     'ContentsFormat': formats['text'],
+        #     #     'Contents': stdout,
+        #     #     'ReadableContentsFormat': formats['markdown'],
+        #     # }
+        #     # if show_only_recipients == 'True':
+        #     #     res = filter(lambda x: int(x['Item count']) > 0, res)
+        #     #
+        #     #     entry['EntryContext'] = {
+        #     #         'EWS.ComplianceSearch(val.Name == obj.Name)': {
+        #     #             'Name': search_name,
+        #     #             'Results': res
+        #     #         }
+        #     #     }
+        #
+        #     # entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
+        #     #                                          ['Location', 'Item count', 'Total size'])
+        # else:
+        entry = {
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': stdout,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': "The compliance search didn't return any results."
+        }
 
         results.append(entry)
     return results
@@ -1996,16 +1988,8 @@ def get_item_as_eml(item_id, target_mailbox=None):
     if item.mime_content:
         email_content = email.message_from_string(item.mime_content)
         if item.headers:
-            attached_email_headers = []
-            for h, v in email_content.items():
-                if not isinstance(v, str):
-                    try:
-                        v = str(v)
-                    except:     # noqa: E722
-                        demisto.debug('cannot parse the header "{}"'.format(h))
-
-                v = ' '.join(map(str.strip, v.split('\r\n')))
-                attached_email_headers.append((h, v))
+            attached_email_headers = [(h, ' '.join(map(str.strip, v.split('\r\n')))) for (h, v) in
+                                      email_content.items()]
             for header in item.headers:
                 if (header.name, header.value) not in attached_email_headers \
                         and header.name != 'Content-Type':

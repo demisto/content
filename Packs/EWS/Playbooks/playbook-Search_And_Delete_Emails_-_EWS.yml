@@ -2,7 +2,8 @@ id: search_and_delete_emails_-_ews
 version: -1
 name: Search And Delete Emails - EWS
 fromversion: 5.0.0
-description: This playbook searches EWS to identify and delete emails with similar attributes of a malicious email.
+description: This playbook searches EWS to identify and delete emails with similar
+  attributes of a malicious email.
 starttaskid: "0"
 tasks:
   "0":
@@ -35,7 +36,8 @@ tasks:
       id: e0bc8761-e7dd-41fa-80a6-516440e7218e
       version: -1
       name: Search EWS for similar emails
-      description: Search all mailboxes in EWS to identify emails with similar attributes of a malicious email.
+      description: Search all mailboxes in EWS to identify emails with similar attributes
+        of a malicious email.
       script: EWS v2|||ews-search-mailboxes
       type: regular
       iscommand: true
