@@ -122,7 +122,7 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
 
 
 @logger
-def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_elements: bool):
+def validate_entry_context(context_path, entry_context: Any, keys: List[str], unpack_nested_elements: bool):
     """ Validate entry context structure is valid, should be:
         - For unpack_nested_elements==False:
             1. List[Dict[str, str/bool/int/float]]
@@ -143,14 +143,14 @@ def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_el
     if unpack_nested_elements:
         if not isinstance(entry_context, dict):
             raise ValueError(
-                "When unpack_nested_elements argument is set to True, the context object for the path should be "
-                "of type dict.")
+                'When the unpack_nested_elements argument is set to True, the context object for the path should be '
+                'of type dict.')
         else:
             return
 
     if not isinstance(entry_context, (list, dict)):
         raise ValueError(
-            'The context object for the specified path should be of one of the following types: dict, list.\n'
+            f'The context object {context_path} should be of type dict or list.\n'
             f'Received type: {type(entry_context)}')
 
     data_type = 'dict'
@@ -163,8 +163,8 @@ def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_el
         if not isinstance(item, dict):
             if has_seen_dict:
                 raise ValueError(
-                    f'The context object for the specified path contains mixed types of dict and {type(item)}.'
-                    f'item of type {type(item)} can be found at index {index}:\n{item}')
+                    f'The context object in index {index} - {item} is of invalid type ({type(item)}).\n'
+                    f'The object {context_path} should contain only dict type values.')
             else:
                 break
 
@@ -176,16 +176,18 @@ def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_el
                 demisto.error(f'expected list of dictionaries with simple values, found a complex item with '
                               f'key {type(key)} type:\t {key}\nproblematic item: {item}')
                 raise ValueError(
-                    f'The context object for the specified path contains a dict item with a complex value.\n'
-                    f'item at index {index} contains key {key} with value of type {type(value)}:\n{value}.')
+                    f'The context path {context_path} in index {index} - key {key} contains a dict item with a '
+                    f'complex value.\n'
+                    f'The value must be of type: string, number, boolean.')
 
     if not has_seen_dict:
         data_type = 'list'
-        for item in entry_context:
+        for index, item in enumerate(entry_context):
             if not isinstance(item, (str, int, float, bool)):
                 raise ValueError(
-                    f'expected a list of simple values (str, int, float, bool), received item of type {type(item)}.'
-                    f'item:\n{item}')
+                    f'The context path {context_path} should contain a list of simple values '
+                    f'(string, number, boolean)\n'
+                    f'received item in index {index} of type {type(item)}:\n{item}')
 
     return data_type
 
@@ -209,7 +211,7 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_ne
     # Retrieve entry context data
     entry_context_data = demisto.dt(demisto.context(), context_path)
     # Validate entry context structure
-    data_type = validate_entry_context(entry_context_data, keys, unpack_nested_elements)
+    data_type = validate_entry_context(context_path, entry_context_data, keys, unpack_nested_elements)
 
     demisto.debug('context object is valid. starting to build the grid.')
     # Building new Grid
