@@ -37,11 +37,13 @@ def test_validate_entry_context(capfd, entry_context: dict, keys: list, raise_ex
     if raise_exception:
         # disabling the stdout check cause along with the exception, we write additional data to the log.
         with pytest.raises(ValueError), capfd.disabled():
-            validate_entry_context(entry_context=entry_context,
+            validate_entry_context(context_path='Path',
+                                   entry_context=entry_context,
                                    keys=keys,
                                    unpack_nested_elements=unpack_nested)
     else:
-        validate_entry_context(entry_context=entry_context,
+        validate_entry_context(context_path='Path',
+                               entry_context=entry_context,
                                keys=keys,
                                unpack_nested_elements=unpack_nested)
 
