@@ -84,7 +84,7 @@ class OrcaClient:
         try:
             response = self.client._http_request(method="GET", url_suffix=f"/assets/{asset_unique_id}")
         except DemistoException:
-            demisto.log(f"could not find {asset_unique_id}")
+            demisto.debug(f"could not find {asset_unique_id}")
             return {}
 
         if 'error' in response or not response:
