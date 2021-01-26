@@ -67,7 +67,7 @@ index 846811499..130ce8471 100644
            condition:
              equal:
 -              - master
-+              - upload-metadata
++              - test-upload
                - << pipeline.git.branch >>
            steps:
              - run:
@@ -89,7 +89,7 @@ index 846811499..130ce8471 100644
              branches:
                only:
 -                - master
-+                - upload-metadata
++                - test-upload
            requires:
              - Setup Environment
        - Force Upload Packs To Marketplace:
@@ -98,7 +98,7 @@ index 846811499..130ce8471 100644
              branches:
                only:
 -                - master
-+                - upload-metadata
++                - test-upload
            requires:
              - Create Instances
  
@@ -157,7 +157,7 @@ index 6dcff82f8..9c575d060 100644
      branch_name = branch_name_reg.group(1)
  
 -    if branch_name == 'master':
-+    if branch_name == 'upload-metadata':
++    if branch_name == 'test-upload':
          logging.info("Extracting build status")
          if test_type == UNITTESTS_TYPE:
              logging.info("Starting Slack notifications about nightly build - unit tests")
@@ -179,7 +179,7 @@ index 2571b1d9f..e79010041 100755
  post_data=$(cat <<-EOF
  {
 -  "branch": "master",
-+  "branch": "upload-metadata",
++  "branch": "test-upload",
    "parameters": {
      "force_pack_upload": "true",
      "packs_to_upload": "${_packs}"
@@ -192,7 +192,7 @@ index 6312c257c..aabe87f77 100755
  post_data=$(cat <<-EOF
  {
 -  "branch": "master",
-+  "branch": "upload-metadata",
++  "branch": "test-upload",
    "parameters": {
      "bucket_upload": "true"
    }

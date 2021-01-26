@@ -1013,7 +1013,7 @@ jobs:
       - when:
           condition:
             equal:
-              - upload-metadata
+              - test-upload
               - << pipeline.git.branch >>
           steps:
             - run:
@@ -1297,7 +1297,7 @@ workflows:
           filters:
             branches:
               only:
-                - upload-metadata
+                - test-upload
           requires:
             - Setup Environment
       - Force Upload Packs To Marketplace:
@@ -1305,7 +1305,7 @@ workflows:
           filters:
             branches:
               only:
-                - upload-metadata
+                - test-upload
           requires:
             - Create Instances
 
