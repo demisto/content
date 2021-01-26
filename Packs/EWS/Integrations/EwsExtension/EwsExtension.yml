@@ -4,7 +4,8 @@ commonfields:
 name: EwsExtension
 display: O365 - EWS - Extension
 category: Messaging
-description: This integration enables you to manage and interact with Microsoft O365 - Exchange Online from within XSOAR.
+description: This integration enables you to manage and interact with Microsoft O365
+  - Exchange Online from within XSOAR.
 configuration:
 - display: Exchange Online URL
   name: url
@@ -25,7 +26,7 @@ script:
   commands:
   - name: ews-auth-start
     arguments: []
-    description:  Starts the OAuth2.0 authorization process.
+    description: Starts the OAuth2.0 authorization process.
   - name: ews-auth-complete
     arguments: []
     description: Completes the OAuth2.0 authorization process.
@@ -39,56 +40,61 @@ script:
       description: ID of the mailbox for which to get junk rules.
     description: Gets junk rules for the specified mailbox.
     outputs:
-      - contextPath: EWS.Rule.Junk.BlockedSendersAndDomains
-        description: 'Blocked senders and domains list.'
-        type: String
-      - contextPath: EWS.Rule.Junk.ContactsTrusted
-        description: 'If true, contacts are trusted by default.'
-        type: Boolean
-      - contextPath: EWS.Rule.Junk.Email
-        description: 'Junk rule mailbox.'
-        type: String
-      - contextPath: EWS.Rule.Junk.Enabled
-        description: 'If true, junk rule is enabled.'
-        type: Boolean
-      - contextPath: EWS.Rule.Junk.Identity
-        description: 'Junk rule identity.'
-        type: String
-      - contextPath: EWS.Rule.Junk.MailboxOwnerId
-        description: 'Mail box owner ID.'
-        type: String
-      - contextPath: EWS.Rule.Junk.TrustedListsOnly
-        description: 'If true, only a list defined in the trusted lists are trusted.'
-        type: Boolean
-      - contextPath: EWS.Rule.Junk.TrustedRecipientsAndDomains
-        description: 'List of trusted recipients and domains.'
-        type: String
-      - contextPath: EWS.Rule.Junk.TrustedSendersAndDomains
-        description: 'List of trusted senders and domains.'
-        type: String
+    - contextPath: EWS.Rule.Junk.BlockedSendersAndDomains
+      description: 'Blocked senders and domains list.'
+      type: String
+    - contextPath: EWS.Rule.Junk.ContactsTrusted
+      description: 'If true, contacts are trusted by default.'
+      type: Boolean
+    - contextPath: EWS.Rule.Junk.Email
+      description: 'Junk rule mailbox.'
+      type: String
+    - contextPath: EWS.Rule.Junk.Enabled
+      description: 'If true, junk rule is enabled.'
+      type: Boolean
+    - contextPath: EWS.Rule.Junk.Identity
+      description: 'Junk rule identity.'
+      type: String
+    - contextPath: EWS.Rule.Junk.MailboxOwnerId
+      description: 'Mail box owner ID.'
+      type: String
+    - contextPath: EWS.Rule.Junk.TrustedListsOnly
+      description: 'If true, only a list defined in the trusted lists are trusted.'
+      type: Boolean
+    - contextPath: EWS.Rule.Junk.TrustedRecipientsAndDomains
+      description: 'List of trusted recipients and domains.'
+      type: String
+    - contextPath: EWS.Rule.Junk.TrustedSendersAndDomains
+      description: 'List of trusted senders and domains.'
+      type: String
   - name: ews-junk-rules-set
     arguments:
     - name: mailbox
       required: true
       description: ID of the mailbox for which to set junk rules.
     - name: add_blocked_senders_and_domains
-      description: Comma-separated list of blocked senders and domains to add to the mailbox.
+      description: Comma-separated list of blocked senders and domains to add to the
+        mailbox.
       isArray: true
     - name: remove_blocked_senders_and_domains
-      description: Comma-separated list of blocked senders and domains to remove from the mailbox.
+      description: Comma-separated list of blocked senders and domains to remove from
+        the mailbox.
       isArray: true
     - name: add_trusted_senders_and_domains
-      description: Comma-separated list of trusted senders and domains to add to the mailbox.
+      description: Comma-separated list of trusted senders and domains to add to the
+        mailbox.
       isArray: true
     - name: remove_trusted_senders_and_domains
-      description: Comma-separated list of trusted senders and domains to remove from the mailbox.
+      description: Comma-separated list of trusted senders and domains to remove from
+        the mailbox.
       isArray: true
     - name: trusted_lists_only
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
-      description: If true, trust only lists defined in the trusted lists. Can be "true" or "false".
+      description: If true, trust only lists defined in the trusted lists. Can be
+        "true" or "false".
     - name: contacts_trusted
       auto: PREDEFINED
       predefined:
@@ -105,34 +111,39 @@ script:
   - name: ews-global-junk-rules-set
     arguments:
     - name: add_blocked_senders_and_domains
-      description: Comma-separated list of blocked senders and domains to add to the mailbox.
+      description: Comma-separated list of blocked senders and domains to add to the
+        mailbox.
       isArray: true
     - name: remove_blocked_senders_and_domains
-      description: Comma-separated list of blocked senders and domains to remove from the mailbox.
+      description: Comma-separated list of blocked senders and domains to remove from
+        the mailbox.
       isArray: true
     - name: add_trusted_senders_and_domains
-      description: Comma-separated list of trusted senders and domains to add to the mailbox.
+      description: Comma-separated list of trusted senders and domains to add to the
+        mailbox.
       isArray: true
     - name: remove_trusted_senders_and_domains
-      description: Comma-separated list of trusted senders and domains to remove from the mailbox.
+      description: Comma-separated list of trusted senders and domains to remove from
+        the mailbox.
       isArray: true
     - name: trusted_lists_only
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
-      description: If true, trust only lists defined in the trusted lists. Can be "true" or "false".
+      - "true"
+      - "false"
+      description: If true, trust only lists defined in the trusted lists. Can be
+        "true" or "false".
     - name: contacts_trusted
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
       description: If true, contacts are trusted by default. Can be "true" or "false".
     - name: enabled
       auto: PREDEFINED
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
       description: If true, the junk rule is enabled. Can be "true" or "false".
     description: Sets junk rules in all managed accounts.
   - name: ews-message-trace-get
@@ -220,13 +231,13 @@ script:
           * FilteredAsSpam: The message was marked as spam.
       auto: PREDEFINED
       predefined:
-        - "GettingStatus"
-        - "Failed"
-        - "Pending"
-        - "Delivered"
-        - "Expanded"
-        - "Quarantined"
-        - "FilteredAsSpam"
+      - "GettingStatus"
+      - "Failed"
+      - "Pending"
+      - "Delivered"
+      - "Expanded"
+      - "Quarantined"
+      - "FilteredAsSpam"
     description: |
       Searches message data for the last 10 days. If you run this command without any arguments, only data from the last 48 hours is returned.
       If you enter a start date that is older than 10 days, you will receive an error and the command will return no results.
@@ -236,7 +247,8 @@ script:
       description: 'The public IP address of the SMTP email server that sent the message.'
       type: String
     - contextPath: EWS.MessageTrace.ToIP
-      description: 'The public IP address in the resolved MX record for the destination domain. For incoming messages to Exchange Online, the value is blank.'
+      description: 'The public IP address in the resolved MX record for the destination
+        domain. For incoming messages to Exchange Online, the value is blank.'
       type: String
     - contextPath: EWS.MessageTrace.Index
       description: 'Message index in pagination. (Index starts from 0)'
@@ -278,4 +290,4 @@ script:
   runonce: false
 fromversion: 5.5.0
 tests:
-  - O365 - EWS - Extension - Test
+- O365 - EWS - Extension - Test

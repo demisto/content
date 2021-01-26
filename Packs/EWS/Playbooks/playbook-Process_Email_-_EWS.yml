@@ -35,7 +35,8 @@ tasks:
       id: 4c421b2d-b73c-42a3-8e74-c9fa804196b9
       version: -1
       name: Get attachments
-      description: Get EWS email all attachments - file attachments and item attachments (other email, calendar item, etc..)
+      description: Get EWS email all attachments - file attachments and item attachments
+        (other email, calendar item, etc..)
       script: EWS v2|||ews-get-attachment
       type: regular
       iscommand: true
@@ -99,7 +100,8 @@ tasks:
       id: 86c8a1a4-96d2-4d5b-8d24-7710318ac280
       version: -1
       name: Set email context key
-      description: If email attachments exist - set Email context key with the item values.
+      description: If email attachments exist - set Email context key with the item
+        values.
       scriptName: Set
       type: regular
       iscommand: false
@@ -114,7 +116,9 @@ tasks:
       key:
         simple: Email
       value:
-        simple: '${EWS.Items.ItemAttachments={To: val[''toRecipients''], CC: val[''ccRecipients''], From: val[''sender''], Subject: val[''subject''], Text: val[''text_body''], HTML: val[''body''], Headers: val[''headers'']}}'
+        simple: '${EWS.Items.ItemAttachments={To: val[''toRecipients''], CC: val[''ccRecipients''],
+          From: val[''sender''], Subject: val[''subject''], Text: val[''text_body''],
+          HTML: val[''body''], Headers: val[''headers'']}}'
     separatecontext: false
     view: |-
       {

@@ -54,6 +54,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: a1a49226-b388-42f6-8fde-4e114a181ed7
     timertriggers: []
     type: start
@@ -602,6 +603,7 @@ tasks:
       name: Test playbook finished successfully
       type: title
       version: -1
+      description: ''
     taskid: 98554d50-d872-4788-8f74-3cbe55e1741c
     timertriggers: []
     type: title

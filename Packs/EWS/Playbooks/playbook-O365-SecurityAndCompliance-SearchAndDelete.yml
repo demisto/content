@@ -590,7 +590,7 @@ tasks:
         3. Retrieves the delete search action.
       id: e3f49938-386d-4310-8ef9-55fa8529f584
       iscommand: false
-      name: Soft delete
+      name: O365 - Security And Compliance - Search Action - Delete
       playbookId: O365 - Security And Compliance - Search Action - Delete
       type: playbook
       version: -1
@@ -635,7 +635,7 @@ tasks:
         3. Retrieves the delete search action.
       id: c6b58231-3264-4c5a-84c1-88d3fbc62c2d
       iscommand: false
-      name: Hard delete
+      name: O365 - Security And Compliance - Search Action - Delete
       playbookId: O365 - Security And Compliance - Search Action - Delete
       type: playbook
       version: -1
