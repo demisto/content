@@ -3,7 +3,7 @@ commonfields:
   id: sophos_firewall
   version: -1
 configuration:
-- additionalinfo: 'Server URL used to enter Sophos XG Firewall webconsole. e.g., https://ip:port/'
+- additionalinfo: 'Server URL used to enter the Sophos XG Firewall web console. e.g., https://ip:port/'
   display: Server URL
   name: server_url
   required: true
@@ -20,7 +20,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: On-premise firewall by Sophos
+description: On-premise firewall by Sophos enables you to manage your firewall, respond to threats, and monitor what’s
+happening on your network.
 display: Sophos Firewall
 name: sophos_firewall
 script:
@@ -41,7 +42,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all firewall rules. IMPORTANT: Listing starts at 0 (not 1)!'
+    description: 'Lists all firewall rules. IMPORTANT: The list starts at 0 (not 1)!'
     execution: false
     name: sophos-firewall-rule-list
     outputs:
@@ -121,7 +122,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Enable
-      description: 'Whether the rule is enabled. Possible values: "Enable" and "Disable". Default is "Enable".'
+      description: 'Whether to enable the new rule. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
       name: status
       predefined:
@@ -142,9 +143,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the rule should be at the "top" or "bottom" of the list, or "before" or\
-        \ "after" a specific rule? IMPORTANT: If "before" or "after" is selected, provide the\
-        \ position_policy_name parameter.'
+      description: 'The position of the new rule in the list. Possible values: "top", "bottom", "before", and "after". If "before" or "after" is selected, you must provide a value for the position_policy_name argument.'
       isArray: false
       name: position
       predefined:
@@ -155,14 +154,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'The name of the policy that the rule should be created before or after. REQUIRED: When the position is "before" or "after".'
+      description: 'The name of the policy that the rule should be created before or after. This argument is required when the value of the position argument is "before" or "after".'
       isArray: false
       name: position_policy_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of the new rule (policy). Possible values: "User" and "Network".'
+      description: 'Policy type of the new rule. Possible values: "User" and "Network".'
       isArray: false
       name: policy_type
       predefined:
@@ -172,7 +171,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Source zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", "WiFi".'
+      description: 'Source zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: source_zones
       predefined:
@@ -192,7 +191,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Destination zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", "WiFi".'
+      description: 'Destination zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: destination_zones
       predefined:
@@ -246,7 +245,7 @@ script:
       default: true
       defaultValue: Disable
       description: 'Whether to check if the specified user/user group from the\
-        \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: When enabling match_identity, the members argument is required.'
+        \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". When enabling match_identity, the members argument is required.'
       isArray: false
       name: match_identity
       predefined:
@@ -257,9 +256,9 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Disable
-      description: 'Whether to accept traffic from unknown users. Captive portal page\
-        \ is displayed to the user where the user can login to access the Internet.\
-        \ Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: MatchIdentity must be Enabled. PARAMETER OF: UserPolicy.'
+      description: 'Whether to accept traffic from unknown users. The captive portal page\
+        \ is displayed to the user where the user can log in to access the Internet.\
+        \ Possible values: "Enable" and "Disable". Default is "Disable". To enable this argument, the match_identity argument must be enabled and the value of the policy_type is "User".'
       isArray: false
       name: show_captive_portal
       predefined:
@@ -268,8 +267,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "An existing user(s) or group(s) to add to the rule. REQUIRED\
-        \ when match_identity is enabled. "
+      description: An existing user(s) or group(s) to add to the rule. This argument is required when match_identity is enabled.
       isArray: true
       name: members
       required: false
@@ -335,7 +333,7 @@ script:
       default: true
       defaultValue: Revoke
       description: 'Whether to limit the bandwidth for the URLs categorized under the Web\
-        \ category. This tag is only applicable when any web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
+        \ category. This tag is only applicable when a web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
       isArray: false
       name: web_category_base_qos_policy
       predefined:
@@ -353,7 +351,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Disable
-      description: 'Whether to enable virus and spam scanning for HTTP protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable virus and spam scanning for the HTTP protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: scan_http
       predefined:
@@ -364,7 +362,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Disable
-      description: 'Whether to enable virus and spam scanning for HTTPS protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable virus and spam scanning for the HTTPS protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: scan_https
       predefined:
@@ -409,7 +407,7 @@ script:
       default: true
       defaultValue: Disable
       description: 'Whether to exclude a user''s network traffic from data accounting.
-        This option is available only if the parameter "Match rule-based on user identity" is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
+        This option is available only if the match_identity argument is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: data_accounting
       predefined:
@@ -431,7 +429,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Disable
-      description: 'Whether to enable the internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable the Internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: web_filter_internet_scheme
       predefined:
@@ -442,7 +440,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Disable
-      description: 'Whether to enable the internet scheme to apply user-based Application Filter Policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable the Internet scheme to apply user-based Application Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: application_control_internet_scheme
       predefined:
@@ -485,7 +483,7 @@ script:
       secret: false
     - default: true
       defaultValue: MASQ
-      description: The NAT policy to be applied. Default is "MASQ".
+      description: The NAT policy to apply. Default is "MASQ".
       isArray: false
       name: outbound_address
       required: false
@@ -577,9 +575,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Whether the rule should be at the "top" or "bottom" of the list, or "before" or\
-        \ "after" a specific rule? IMPORTANT: If "before" or "after" is selected, provide the\
-        \ position_policy_name parameter.'
+      description: 'The position of the new rule in the list. Possible values: "top", "bottom", "before", and "after". If "before" or "after" is selected, you must provide a value for the position_policy_name argument.'
       isArray: false
       name: position
       predefined:
@@ -590,14 +586,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The name of the policy that the rule should be created before or after. REQUIRED: When the position is "before" or "after".'
+      description: 'The name of the policy that the rule should be created before or after. This argument is required when the value of the position argument is "before" or "after".'
       isArray: false
       name: position_policy_name
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of the new rule (policy). Possible values: "User" and "Network".'
+      description: 'Policy type of the new rule. Possible values: "User" and "Network".'
       isArray: false
       name: policy_type
       predefined:
@@ -607,7 +603,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Source zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", "WiFi".'
+      description: 'Source zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: source_zones
       predefined:
@@ -627,7 +623,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Destination zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", "WiFi".'
+      description: 'Destination zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", and "WiFi".'
       isArray: true
       name: destination_zones
       predefined:
@@ -692,9 +688,9 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Disable
-      description: 'Whether to accept traffic from unknown users. Captive portal page\
-        \ is displayed to the user where the user can login to access the Internet.\
-        \ Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: MatchIdentity must be Enabled. PARAMETER OF: UserPolicy.'
+      description: 'Whether to accept traffic from unknown users. The captive portal page\
+        \ is displayed to the user where the user can log in to access the Internet.\
+        \ Possible values: "Enable" and "Disable". Default is "Disable". To enable this argument, the match_identity argument must be enabled and the value of the policy_type is "User".'
       isArray: false
       name: show_captive_portal
       predefined:
@@ -703,8 +699,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "An existing user(s) or group(s) to add to the rule. REQUIRED \
-        \ when match_identity is enabled. "
+      description: An existing user(s) or group(s) to add to the rule. This argument is required  when match_identity is enabled.
       isArray: true
       name: members
       required: false
@@ -770,7 +765,7 @@ script:
       default: true
       defaultValue: Revoke
       description: 'Whether to limit the bandwidth for the URLs categorized under the Web\
-        \ category. This tag is only applicable when any web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
+        \ category. This tag is only applicable when a web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
       isArray: false
       name: web_category_base_qos_policy
       predefined:
@@ -844,7 +839,7 @@ script:
       default: true
       defaultValue: Disable
       description: 'Whether to exclude a user''s network traffic from data accounting.
-        This option is available only if the parameter "Match rule-based on user identity" is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
+        This option is available only if the match_identity argument is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: data_accounting
       predefined:
@@ -866,7 +861,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Disable
-      description: 'Whether to enable the internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".' 
+      description: 'Whether to enable the Internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".' 
       isArray: false
       name: web_filter_internet_scheme
       predefined:
@@ -877,7 +872,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Disable
-      description: 'Whether to enable the internet scheme to apply user-based Application Filter Policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
+      description: 'Whether to enable the Internet scheme to apply user-based Application Filter Policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
       name: application_control_internet_scheme
       predefined:
@@ -1009,7 +1004,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all firewall rule groups. IMPORTANT: Listing starts at 0 (not 1)!'
+    description: 'Lists all firewall rule groups. IMPORTANT: The list starts at 0 (not 1)!'
     execution: false
     name: sophos-firewall-rule-group-list
     outputs:
@@ -1076,7 +1071,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of the rules (policies) inside the group. Possible values: "Any", "User/network rule", "User rule", "Business application rule".'
+      description: 'Type of the rules (policies) inside the group. Possible values: "Any", "User/network rule", "User rule", and "Business application rule".'
       isArray: false
       name: policy_type
       predefined:
@@ -1095,7 +1090,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Source zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", "WiFi.'
+      description: 'Source zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: source_zones
       predefined:
@@ -1109,7 +1104,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Destination zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", "WiFi.'
+      description: 'Destination zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: destination_zones
       predefined:
@@ -1159,7 +1154,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of the rules (policies) inside the group. Possible values: "Any", "User/network rule", "User rule", "Business application rule".'
+      description: 'Type of the rules (policies) inside the group. Possible values: "Any", "User/network rule", "User rule", and "Business application rule".'
       isArray: false
       name: policy_type
       predefined:
@@ -1178,7 +1173,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Source zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", "WiFi.'
+      description: 'Source zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: source_zones
       predefined:
@@ -1192,7 +1187,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Destination zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", "WiFi.'
+      description: 'Destination zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", and "WiFi.'
       isArray: true
       name: destination_zones
       predefined:
@@ -1261,7 +1256,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all URL groups. IMPORTANT: Listing starts at 0 (not 1)!'
+    description: 'Lists all URL groups. IMPORTANT: The list starts at 0 (not 1)!'
     execution: false
     name: sophos-firewall-url-group-list
     outputs:
@@ -1272,7 +1267,7 @@ script:
       description: Description of the URL group.
       type: String
     - contextPath: SophosFirewall.WebFilterURLGroup.URLlist.URL
-      description: URL in the group.
+      description: URL contained in the group.
       type: String
   - arguments:
     - default: false
@@ -1309,13 +1304,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: URLs to add to the group.
+      description: Comma-separated list of URLs to add to the group.
       isArray: true
       name: urls
       required: true
       secret: false
     deprecated: false
-    description: Adds a new URL group.
+    description: Adds new URLs to the group.
     execution: false
     name: sophos-firewall-url-group-add
     outputs:
@@ -1342,7 +1337,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: URLs to add to the group.
+      description: Comma-separated list of URLs to add to the group.
       isArray: true
       name: urls
       required: false
@@ -1395,7 +1390,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all IP hosts. IMPORTANT: Listing starts at 0 (not 1)!'
+    description: 'Lists all IP hosts. IMPORTANT: The list starts at 0 (not 1)!'
     execution: false
     name: sophos-firewall-ip-host-list
     outputs:
@@ -1438,7 +1433,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of the host. Possible values: "IP", "Network", "IPRange", "IPList".'
+      description: 'Type of the host. Possible values: "IP", "Network", "IPRange", and "IPList".'
       isArray: false
       name: host_type
       predefined:
@@ -1460,31 +1455,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP address if IP or network was the chosen type.
+      description: IP address if IP or Network was the chosen host_type.
       isArray: false
       name: ip_address
       required: false
       secret: false
     - default: false
-      description: Subnet mask if network was the chosen type.
+      description: Subnet mask if Network was the chosen host_type.
       isArray: false
       name: subnet_mask
       required: false
       secret: false
     - default: false
-      description: Start of the IP range if IPRange was chosen.
+      description: Start of the IP range if IPRange was the chosen host_type.
       isArray: false
       name: start_ip
       required: false
       secret: false
     - default: false
-      description: End of the IP range if IPRange was chosen.
+      description: End of the IP range if IPRange was the chosen host_type.
       isArray: false
       name: end_ip
       required: false
       secret: false
     - default: false
-      description: List of IP addresses if IPList was chosen.
+      description: List of IP addresses if IPList was the chosen host_type.
       isArray: true
       name: ip_addresses
       required: false
@@ -1518,7 +1513,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of the host. Possible values: "IP", "Network", "IPRange", "IPList".'
+      description: 'Type of the host. Possible values: "IP", "Network", "IPRange", and "IPList".'
       isArray: false
       name: host_type
       predefined:
@@ -1540,31 +1535,31 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP address if IP or network was the chosen type.
+      description: IP address if IP or Network was the chosen host_type.
       isArray: false
       name: ip_address
       required: false
       secret: false
     - default: false
-      description: Subnet mask if network was the chosen type.
+      description: Subnet mask if Network was the chosen host_type.
       isArray: false
       name: subnet_mask
       required: false
       secret: false
     - default: false
-      description: Start of the IP range if IPRange was chosen.
+      description: Start of the IP range if IPRange was the chosen host_type.
       isArray: false
       name: start_ip
       required: false
       secret: false
     - default: false
-      description: End of the IP range if IPRange was chosen.
+      description: End of the IP range if IPRange was the chosen host_type.
       isArray: false
       name: end_ip
       required: false
       secret: false
     - default: false
-      description: List of IP addresses if IPList was chosen.
+      description: List of IP addresses if IPList was the chosen host_type.
       isArray: true
       name: ip_addresses
       required: false
@@ -1623,7 +1618,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all IP host groups. IMPORTANT: Listing starts at 0 (not 1)!'
+    description: 'Lists all IP host groups. IMPORTANT: The list starts at 0 (not 1)!'
     execution: false
     name: sophos-firewall-ip-host-group-list
     outputs:
@@ -1687,8 +1682,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP hosts contained in the group. Must be hosts already existing
-        in the system.
+      description: IP hosts contained in the group. Must be hosts that exist in the system.
       isArray: true
       name: hosts
       required: false
@@ -1734,8 +1728,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP hosts contained in the group. Must be hosts already existing
-        in the system.
+      description: IP hosts contained in the group. Must be hosts that exist in the system.
       isArray: true
       name: hosts
       required: false
@@ -1791,7 +1784,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all firewall services. IMPORTANT: Listing starts at 0 (not 1)!'
+    description: 'Lists all firewall services. IMPORTANT: The list starts at 0 (not 1)!'
     execution: false
     name: sophos-firewall-services-list
     outputs:
@@ -1834,7 +1827,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", "ICMPv6".'
+      description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", and "ICMPv6".'
       isArray: false
       name: service_type
       predefined:
@@ -2286,7 +2279,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", "ICMPv6".'
+      description: 'Type of service. Possible values: "TCPorUDP", "IP", "ICMP", and "ICMPv6".'
       isArray: false
       name: service_type
       predefined:
@@ -2763,7 +2756,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all users. IMPORTANT: Listing starts at 0 (not 1)!'
+    description: 'Lists all users. IMPORTANT: The list starts at 0 (not 1)!'
     execution: false
     name: sophos-firewall-user-list
     outputs:
@@ -2872,7 +2865,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", "HAProfile". IMPORTANT: You can
+      description: 'Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", and "HAProfile". IMPORTANT: You can
         add more types in the web console.'
       isArray: false
       name: profile
@@ -2922,7 +2915,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Enable
-      description: 'Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Eanble".'
+      description: 'Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
       name: simultaneous_logins_global
       predefined:
@@ -3033,7 +3026,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", "HAProfile". IMPORTANT: You can
+      description: 'Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", and "HAProfile". IMPORTANT: You can
         add more types in the web console.'
       isArray: false
       name: profile
@@ -3083,7 +3076,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: Enable
-      description: 'Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Eanble".'
+      description: 'Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
       name: simultaneous_logins_global
       predefined:
@@ -3177,7 +3170,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all app policies. IMPORTANT: Listing starst at 0 (not 1)!'
+    description: 'Lists all app policies. IMPORTANT: The list starst at 0 (not 1)!'
     execution: false
     name: sophos-firewall-app-policy-list
     outputs:
@@ -3215,7 +3208,7 @@ script:
       description: Description of the firewall app policy.
       type: String
     - contextPath: SophosFirewall.ApplicationFilterPolicy.MicroAppSupport
-      description: Does the policy support microapps.
+      description: Whether the policy supports microapps.
       type: String
     - contextPath: SophosFirewall.ApplicationFilterPolicy.DefaultAction
       description: Default action the policy executes.
@@ -3505,7 +3498,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all app filter categories. IMPORTANT: Listing starts at 0 (not 1)!'
+    description: 'Lists all app filter categories. IMPORTANT: The list starts at 0 (not 1)!'
     execution: false
     name: sophos-firewall-app-category-list
     outputs:
@@ -3597,7 +3590,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: 'Lists all web filter policies. IMPORTANT: Listing starts at 0 (not 1)!'
+    description: 'Lists all web filter policies. IMPORTANT: The list starts at 0 (not 1)!'
     execution: false
     name: sophos-firewall-web-filter-list
     outputs:
@@ -3696,7 +3689,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Enable to specify domains allowed to access google service. Possible values: "0" and "1".'
+      description: 'Enable to specify domains allowed to access the Google service. Possible values: "0" and "1".'
       isArray: false
       name: goog_app_domain_list_enabled
       predefined:
@@ -3705,7 +3698,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The domains allowed to access google service.
+      description: The domains allowed to access the Google service.
       isArray: false
       name: goog_app_domain_list
       required: false
@@ -3733,7 +3726,7 @@ script:
     - auto: PREDEFINED
       default: false
       description: 'Enable to block websites containing pornography and explicit sexual
-        content from appearing in the search results of Google, Yahoo, Bing search
+        content from appearing in the search results of Google, Yahoo, and Bing search
         results. Possible values: "0" and "1".'
       isArray: false
       name: enforce_safe_search
@@ -3811,13 +3804,13 @@ script:
       name: user_names
       required: false
       secret: false
-    - description: 'A comma-separated list of CCL names. REQUIRED: When ccl_rule_enabled is ON.'
+    - description: 'A comma-separated list of CCL names. This argument is required When ccl_rule_enabled is ON.'
       isArray: false
       name: ccl_names
       required: false
       secret: false
     - auto: PREDEFINED
-      description: 'Whether to enable the CCL rule. Possible values: "0" and "1". IMPORTANT: If enabled, ccl_name is required.'
+      description: 'Whether to enable the CCL rule. Possible values: "0" and "1". If enabled, ccl_name is required.'
       isArray: false
       name: ccl_rule_enabled
       predefined:
@@ -3921,7 +3914,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma-separated list of domains allowed to access google service.
+      description: Comma-separated list of domains allowed to access the Google service.
       isArray: false
       name: goog_app_domain_list
       required: false
