@@ -79,12 +79,13 @@ class OrcaClient:
 
         return alerts
 
-    def get_asset(self, asset_unique_id: str) -> Union[List[Dict[str, Any]], str]:  # pylint: disable=E1136
+    def get_asset(self, asset_unique_id: str) -> Union[Dict[str, Any], str]:  # pylint: disable=E1136
         demisto.debug("get_asset, enter")
         try:
             response = self.client._http_request(method="GET", url_suffix=f"/assets/{asset_unique_id}")
         except DemistoException:
-            return f"could not find {asset_unique_id}"
+            demisto.log(f"could not find {asset_unique_id}")
+            return {}
 
         if 'error' in response or not response:
             return "Asset Not Found"
@@ -222,19 +223,17 @@ def main() -> None:
             alert_type = demisto_args.get('alert_type')
             asset_unique_id = demisto_args.get('asset_unique_id')
             alerts = orca_client.get_alerts_by_filter(alert_type=alert_type, asset_unique_id=asset_unique_id)
-            if not alerts or isinstance(alerts, str):
-                error_message = f"Could not find alerts from {alert_type=}" if alert_type else f"Could not find alerts from {asset_unique_id=}"  # noqa: E501
-                alerts = {"alerts": error_message}  # type: ignore
+            if isinstance(alerts, str):
+                #  this means alert is an error
+                command_result = CommandResults(readable_output=alerts, raw_response=alerts)
+            else:
+                command_result = CommandResults(outputs_prefix="Orca.Manager.Alerts", outputs=alerts,
+                                                raw_response=alerts)
 
-            command_result = CommandResults(outputs_prefix="Orca.Manager.Alerts", outputs=alerts, raw_response=alerts)
             return_results(command_result)
 
         elif command == "orca-get-asset":
             asset = orca_client.get_asset(asset_unique_id=demisto.args()['asset_unique_id'])
-            if not isinstance(asset, Dict):
-                # this means asset not found
-                asset = {"asset": asset}  # type: ignore
-
             command_result = CommandResults(outputs_prefix="Orca.Manager.Asset", outputs=[asset], raw_response=asset)
             return_results(command_result)
 
