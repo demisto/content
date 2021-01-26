@@ -22,6 +22,7 @@ from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from typing import Tuple, Any, Union
+import collections
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
@@ -1553,9 +1554,17 @@ class Pack(object):
         Returns:
             datetime: Pack created date.
         """
-        changelog = self._get_changelog(index_folder_path)
 
+        changelog = self._get_changelog(index_folder_path)
         initial_changelog_version = changelog.get(Pack.PACK_INITIAL_VERSION, {})
+
+        if not initial_changelog_version:
+            # if the changelog exists but the first version isn't PACK_INITIAL_VERSION
+            sorted_changelog = collections.OrderedDict(sorted(changelog.items()))
+            for version, _ in sorted_changelog.items():
+                initial_changelog_version = changelog.get(version, {})
+                break
+
         init_changelog_released_date = initial_changelog_version.get('released',
                                                                      datetime.utcnow().strftime(Metadata.DATE_FORMAT))
         return init_changelog_released_date
