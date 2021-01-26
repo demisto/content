@@ -190,7 +190,7 @@ script:
       name: did
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '5'
       description: Maximum number of results to return
       isArray: false
@@ -227,7 +227,7 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'true'
       description: 'Boolean: Include devices that have recently connected to the endpoint'
       isArray: true
@@ -238,7 +238,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'true'
       description: 'Boolean: Return additional info about the devices'
       isArray: true
@@ -249,7 +249,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'true'
       description: 'Boolean: Return rarity data for this endpoint'
       isArray: false
@@ -302,7 +302,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: Return an entry for all time intervals in the graph data, including
         zero counts. (Not recommended)
@@ -313,7 +313,7 @@ script:
       - 'false'
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '0'
       description: Return data for the primary device and this number of similar devices.
       isArray: false
@@ -321,7 +321,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'false'
       description: Return the full device detail objects for all devices referenced
         by data in an API response. Use of this parameter will alter the JSON structure
@@ -350,7 +350,7 @@ script:
         It is recommended to run the command to check the relevant fields in context.
       type: Unknown
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '50'
       description: Max number of devices to return. Default is 50.
       isArray: false
@@ -358,10 +358,9 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: lastSeen
-      description: 'Orders the response by the specified filter. Default value is
-        lastSeen. '
+      description: 'Orders the response by the specified filter. Default value is lastSeen.'
       isArray: true
       name: order_by
       predefined:
@@ -378,7 +377,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: desc
       description: Sets the sort order for returned devices as ascending (asc) or
         descending (desc). Default is ascending.
@@ -416,14 +415,14 @@ script:
         the command to check the relevant fields in context.
       type: Unknown
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '50'
       description: Maximum number of items to return. Default is 50.
       isArray: false
       name: max_results
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '0'
       description: Starting index to return results from (for example offset=20 with
         max_results=50 will bring results from index 20 to index 70)
