@@ -1,6 +1,10 @@
 id: Set up a Shift handover meeting
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Set up a Shift handover meeting
+description: This playbook is used to create an online meeting for shift handover.
+  Currently, this playbook supports Zoom.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,13 +20,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 50
+          "x": 450,
+          "y": -50
         }
       }
     note: false
@@ -32,10 +36,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: b6b9047d-5a20-4857-8090-f089a2a713e9
+    taskid: ae952a46-097b-429f-8e23-bf92efe8caf4
     type: regular
     task:
-      id: b6b9047d-5a20-4857-8090-f089a2a713e9
+      id: ae952a46-097b-429f-8e23-bf92efe8caf4
       version: -1
       name: 'Create Zoom meeting '
       description: Create a new Zoom meeting (scheduled or instant).
@@ -50,21 +54,23 @@ tasks:
       auto-record-meeting: {}
       start-time: {}
       timezone: {}
-      topic: {}
+      topic:
+        simple: ${inputs.Topic}
       type: {}
-      user: {}
+      user:
+        simple: ${inputs.User}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 210
+          "x": 770,
+          "y": 340
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
   "3":
     id: "3"
@@ -82,8 +88,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 730
+          "x": 450,
+          "y": 900
         }
       }
     note: false
@@ -93,10 +99,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 538d92c2-f73a-4d58-861f-40a876ca6add
+    taskid: 09e5b0a6-ea0c-4b1d-844d-f2015d2d00d6
     type: regular
     task:
-      id: 538d92c2-f73a-4d58-861f-40a876ca6add
+      id: 09e5b0a6-ea0c-4b1d-844d-f2015d2d00d6
       version: -1
       name: Set Zoom links to layout
       description: commands.local.cmd.set.incident
@@ -116,9 +122,11 @@ tasks:
       alertid: {}
       alertname: {}
       app: {}
+      appchannelname: {}
       appendMultiSelect: {}
       applicationid: {}
       applicationname: {}
+      appmessage: {}
       assetid: {}
       assettable: {}
       assigneduser: {}
@@ -318,6 +326,7 @@ tasks:
       os: {}
       osversion: {}
       outgoingmirrorerror: {}
+      outofftheoffice: {}
       owner: {}
       parentprocessid: {}
       personalemail: {}
@@ -368,10 +377,12 @@ tasks:
       sha1: {}
       sha256: {}
       sha512: {}
+      shiftmanagerbriefing: {}
       shiftmanagerdebriefing: {}
       shiftopenincidents: {}
       signature: {}
       similarincident: {}
+      similarincidents: {}
       skuname: {}
       skutier: {}
       sla: {}
@@ -404,6 +415,7 @@ tasks:
       switchidasset: {}
       switchportidasset: {}
       systems: {}
+      teamname: {}
       technicalowner: {}
       technicalownercontact: {}
       technicaluser: {}
@@ -470,36 +482,78 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 460
+          "x": 770,
+          "y": 540
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
+  "5":
+    id: "5"
+    taskid: 75e608e4-53b7-4d06-8019-d3f15185d5d2
+    type: condition
+    task:
+      id: 75e608e4-53b7-4d06-8019-d3f15185d5d2
+      version: -1
+      name: 'Is Zoom enabled '
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: Zoom
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 745,
-        "width": 380,
-        "x": 440,
-        "y": 50
+        "height": 1015,
+        "width": 700,
+        "x": 450,
+        "y": -50
       }
     }
   }
 inputs:
-- key: ""
+- key: User
   value: {}
   required: false
-  description: ""
+  description: The user account for Zoom integration.
+  playbookInputQuery:
+- key: Topic
+  value:
+    simple: SOC shift handover meeting
+  required: false
+  description: The topic for the Zoom meeting.
   playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
-description: This playbook is used to create an online meeting for shift handover.
-  Currently, this playbook supports Zoom.

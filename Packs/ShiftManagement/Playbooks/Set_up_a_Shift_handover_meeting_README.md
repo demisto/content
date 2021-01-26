@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* IsIntegrationAvailable
 
 ### Commands
 * zoom-create-meeting
@@ -21,7 +21,8 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-|  |  |  | Optional |
+| User | The user account for Zoom integration. |  | Optional |
+| Topic | The topic for the Zoom meeting. | SOC shift handover meeting | Optional |
 
 ## Playbook Outputs
 ---

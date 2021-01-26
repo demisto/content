@@ -1,13 +1,11 @@
 id: Shift handover
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Shift handover
-description: "This playbook is used to set up shift handover meetings with all the\
-  \ accompanying processes such as creating an online meeting, creating a notification\
-  \ in a integrated chat app (for example Slack), creating a SOC manager briefing,\
-  \ and creating a display of the active incidents, team members who are on-call,\
-  \ and team members who are out of the office.\nBy modifying the playbook inputs\
-  \ you can decide whether to activate the Assign Active Incidents to Next Shift and\
-  \ whether a user who is out of the office will be taken into consideration."
+description: |-
+  This playbook is used to set up shift handover meetings with all the accompanying processes such as creating an online meeting, creating a notification in a integrated chat app (for example Slack), creating a SOC manager briefing, and creating a display of the active incidents, team members who are on-call, and team members who are out of the office.
+  By modifying the playbook inputs you can decide whether to activate the Assign Active Incidents to Next Shift and whether a user who is out of the office will be taken into consideration.
 starttaskid: "0"
 tasks:
   "0":
@@ -54,7 +52,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2490
+          "y": 2740
         }
       }
     note: false
@@ -191,20 +189,19 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 23e39110-27fc-462f-8abd-c42c0df89a59
+    taskid: 08864099-a628-4e01-8a4b-06407dc5e336
     type: playbook
     task:
-      id: 23e39110-27fc-462f-8abd-c42c0df89a59
+      id: 08864099-a628-4e01-8a4b-06407dc5e336
       version: -1
       name: Assign Active Incidents to Next Shift V2
       description: "This playbook reassigns Active Incidents to the current users\
-        \ on call. It requires shift management to be setup. This playbook can be\
+        \ on call. It requires shift management to be set up.  The playbook can be\
         \ run as a job a few minutes after the scheduled shift change time.\n\nYou\
-        \ can update the playbook input with a different search query if required.\
-        \  The flow will branch if there are no incidents that match the query or\
-        \ no users on call. \n\nSearch results are the default 100 incidents returned\
-        \ by the query.\n\nCases will not be assigned to users who are defined as\
-        \ OOO (by the OutOfOffice automation)."
+        \ can update the playbook input with a different search query, if required.\
+        \  Will branch if there are no incidents that match the query and no users\
+        \ on call. \n\nCases will not be assigned to users that defined OOO (by OutOfOffice\
+        \ automation)."
       playbookName: Assign Active Incidents to Next Shift V2
       type: playbook
       iscommand: false
@@ -214,7 +211,7 @@ tasks:
       - "19"
     scriptarguments:
       IncidentSearchQuery:
-        simple: status:active -category:job
+        simple: '-status:closed -category:job -type:"Shift handover" '
     separatecontext: false
     loop:
       iscommand: false
@@ -263,7 +260,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2230
+          "y": 2560
         }
       }
     note: false
@@ -273,22 +270,24 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 5eaa35ff-ffca-482f-8b58-c0f25ecfedf7
+    taskid: f6c06d18-7e35-41d1-8fcf-6aebfeedb16d
     type: playbook
     task:
-      id: 5eaa35ff-ffca-482f-8b58-c0f25ecfedf7
+      id: f6c06d18-7e35-41d1-8fcf-6aebfeedb16d
       version: -1
       name: Set up a Shift handover meeting
+      description: This playbook is used to create an online meeting for shift handover.
+        Currently, this playbook supports Zoom.
       playbookName: Set up a Shift handover meeting
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "13"
     scriptarguments:
-      "": {}
+      Topic: {}
+      User: {}
     separatecontext: false
     loop:
       iscommand: false
@@ -299,7 +298,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1570
+          "y": 1560
         }
       }
     note: false
@@ -363,9 +362,9 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "16"
       - "31"
       - "22"
+      - "16"
     separatecontext: false
     view: |-
       {
@@ -438,8 +437,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 1800
+          "x": 1240,
+          "y": 1850
         }
       }
     note: false
@@ -462,7 +461,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "13"
     scriptarguments:
       columns:
         simple: User name,Off until, Added by
@@ -479,8 +478,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1130,
-          "y": 1970
+          "x": 1240,
+          "y": 2050
         }
       }
     note: false
@@ -490,10 +489,10 @@ tasks:
     quietmode: 0
   "26":
     id: "26"
-    taskid: 0b6a512d-6294-40bf-8e3c-6ef75161b160
+    taskid: d505b300-1716-49db-861a-dd56cfa2e56f
     type: condition
     task:
-      id: 0b6a512d-6294-40bf-8e3c-6ef75161b160
+      id: d505b300-1716-49db-861a-dd56cfa2e56f
       version: -1
       name: Are there OOO users?
       type: condition
@@ -502,7 +501,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "5"
+      - "13"
       "yes":
       - "24"
     separatecontext: false
@@ -1066,10 +1065,10 @@ tasks:
     quietmode: 0
   "32":
     id: "32"
-    taskid: 3eaf1151-7598-4efd-84aa-772330c08cbb
+    taskid: 0fc09a7d-5e23-4554-8c99-6e3e4bab7a3d
     type: condition
     task:
-      id: 3eaf1151-7598-4efd-84aa-772330c08cbb
+      id: 0fc09a7d-5e23-4554-8c99-6e3e4bab7a3d
       version: -1
       name: Should get notification by Email?
       type: condition
@@ -1094,7 +1093,7 @@ tasks:
       {
         "position": {
           "x": -160,
-          "y": 1570
+          "y": 1560
         }
       }
     note: false
@@ -1576,7 +1575,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - "13"
     separatecontext: false
     view: |-
       {
@@ -1590,18 +1589,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "18_28_#default#": 0.58,
       "26_24_yes": 0.64,
-      "26_5_#default#": 0.69,
       "32_35_#default#": 0.72
     },
     "paper": {
       "dimensions": {
-        "height": 3595,
-        "width": 1960,
+        "height": 3845,
+        "width": 2070,
         "x": -450,
         "y": -1040
       }
@@ -1617,16 +1616,8 @@ inputs:
     No- If you do not want to reassign active incidents to on-call users. The current\
     \ incident owner will remain. \n"
   playbookInputQuery:
-- key: IncidentSearchQuery
-  value:
-    simple: '-status:closed -category:job type:"Shift handover" '
-  required: false
-  description: 'Query for the incidents to reassign.  Incidents need to be active.
-    The playbook will not reassign pending incidents. '
-  playbookInputQuery:
 - key: 'AppChannelName '
-  value:
-    simple: 
+  value: {}
   required: false
   description: "The name of channel that will be created in your messaging app for\
     \ the shift handover.\nThe name of the channel should not contain uppercase or\
@@ -1642,8 +1633,7 @@ inputs:
     that you created.
   playbookInputQuery:
 - key: SOCManagerEmail
-  value:
-    simple: 
+  value: {}
   required: false
   description: If the Shift manager briefing section is left empty when a new shift
     handover incident is opened, an email will be sent to this address to request
@@ -1657,8 +1647,7 @@ inputs:
     the layout.
   playbookInputQuery:
 - key: TeamName
-  value:
-    simple: 
+  value: {}
   required: false
   description: If using Microsoft Teams, provide your Microsoft team name. This input
     is mandatory for Microsoft Teams.

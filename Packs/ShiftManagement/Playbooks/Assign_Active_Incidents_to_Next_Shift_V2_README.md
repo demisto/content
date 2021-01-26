@@ -26,7 +26,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IncidentSearchQuery | Query for the incidents to reassign.  Incidents need to be active for this to work. It will not reassign pending incidents.  | status:active  -category:job  | Optional |
+| IncidentSearchQuery | Query for the incidents to reassign.  Incidents need to be active for this to work. It will not reassign pending incidents.  | -status:closed -category:job -type:"Shift handover"   | Optional |
 
 ## Playbook Outputs
 ---

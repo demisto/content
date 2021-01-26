@@ -381,7 +381,7 @@ view: |-
 inputs:
 - key: IncidentSearchQuery
   value:
-    simple: 'status:active  -category:job '
+    simple: 'status:active -category:job -type:"Shift handover" '
   required: false
   description: 'Query for the incidents to reassign. Incidents need to be active.
     It will not reassign pending incidents. '
