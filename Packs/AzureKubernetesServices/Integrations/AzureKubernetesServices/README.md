@@ -1,8 +1,8 @@
 Deploy and manage containerized applications with a fully managed Kubernetes service.
 
-This integration was integrated and tested with API version ***2020-09-01*** of AKS.
+This integration was integrated and tested with API version 2020-09-01 of AKS.
 
-Note: The integration is in ***beta*** as it uses a preview version of the AKS API. The stable AKS API version does not contain all required endpoints used in some of the integration commands.
+Note: The integration is in beta as it uses a preview version of the AKS API. The stable AKS API version does not contain all required endpoints used in some of the integration commands.
 
 ## Authorization
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
@@ -48,7 +48,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### azure-ks-auth-test
 ***
-Tests the connectivity to the Azure.
+Tests the connectivity to Azure.
 
 
 #### Base Command
@@ -79,13 +79,13 @@ There are no input arguments for this command.
 >        1. To sign in, use a web browser to open the page:
 >            [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
 >           and enter the code **XXXXXXXX** to authenticate.
->        2. Run the **!azure-ks-auth-complete** command in the War Room.
+>        2. Run the ***!azure-ks-auth-complete*** command in the War Room.
 
 
 
 ### azure-ks-auth-complete
 ***
-Run this command to complete the authorization process. Should be used after running the azure-ks-auth-start command.
+Run this command to complete the authorization process. Should be used after running the ***azure-ks-auth-start*** command.
 
 
 #### Base Command
@@ -113,7 +113,7 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->Authorization was reset successfully. You can now run **!azure-ks-auth-start** and **!azure-ks-auth-complete**.
+>Authorization was reset successfully. You can now run ***!azure-ks-auth-start*** and ***!azure-ks-auth-complete***.
 
 ### azure-ks-clusters-list
 ***
@@ -138,17 +138,17 @@ There are no input arguments for this command.
 | AzureKS.ManagedCluster.type | String | Resource type. | 
 | AzureKS.ManagedCluster.properties.provisioningState | String | The current deployment or provisioning state, which only appears in the response. | 
 | AzureKS.ManagedCluster.properties.kubernetesVersion | String | Version of Kubernetes specified when creating the managed cluster. | 
-| AzureKS.ManagedCluster.properties.maxAgentPools | Number | The max number of agent pools for the managed cluster. | 
+| AzureKS.ManagedCluster.properties.maxAgentPools | Number | The maximum number of agent pools for the managed cluster. | 
 | AzureKS.ManagedCluster.properties.dnsPrefix | String | DNS prefix specified when creating the managed cluster. | 
 | AzureKS.ManagedCluster.properties.fqdn | String | FQDN for the master pool. | 
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.name | String | Unique name of the agent pool profile in the context of the subscription and resource group. | 
-| AzureKS.ManagedCluster.properties.agentPoolProfiles.count | Number | Number of agents \(VMs\) to host docker containers. Allowed values must be in the range of 0 to 100 \(inclusive\) for user pools and in the range of 1 to 100 \(inclusive\) for system pools. | 
+| AzureKS.ManagedCluster.properties.agentPoolProfiles.count | Number | Number of agents \(VMs\) to host Docker containers. Allowed values must be in the range of 0 to 100 \(inclusive\) for user pools and in the range of 1 to 100 \(inclusive\) for system pools. | 
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.vmSize | String | Size of agent VMs. | 
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.maxPods | Number | Maximum number of pods that can run on a node. | 
-| AzureKS.ManagedCluster.properties.agentPoolProfiles.osType | String | OsType to be used to specify os type. Choose from Linux and Windows. | 
+| AzureKS.ManagedCluster.properties.agentPoolProfiles.osType | String | The operating system type, either Linux or Windows. | 
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.provisioningState | String | The current deployment or provisioning state. | 
 | AzureKS.ManagedCluster.properties.agentPoolProfiles.orchestratorVersion | String | Version of orchestrator specified when creating the managed cluster. | 
-| AzureKS.ManagedCluster.properties.linuxProfile.adminUsername | String | Specifies the name of the administrator account. | 
+| AzureKS.ManagedCluster.properties.linuxProfile.adminUsername | String | The name of the administrator account. | 
 | AzureKS.ManagedCluster.properties.linuxProfile.ssh.publicKeys.keyData | String | Certificate public key used to authenticate with VMs through SSH. | 
 | AzureKS.ManagedCluster.properties.servicePrincipalProfile.clientId | String | The ID for the service principal. | 
 | AzureKS.ManagedCluster.properties.nodeResourceGroup | String | Name of the resource group containing agent pool nodes. | 
@@ -161,8 +161,8 @@ There are no input arguments for this command.
 | AzureKS.ManagedCluster.properties.networkProfile.dockerBridgeCidr | String | A CIDR notation IP range assigned to the Docker bridge network. | 
 | AzureKS.ManagedCluster.properties.addonProfiles.omsagent.enabled | Boolean | Whether the Operations Management Suite Agent is enabled. | 
 | AzureKS.ManagedCluster.properties.addonProfiles.omsagent.config.logAnalyticsWorkspaceResourceID | String | The resource ID of an existing Log Analytics Workspace to use for storing monitoring data. | 
-| AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.enabled | Boolean | Whether the ingress is configuredd with automatic public DNS name creation. | 
-| AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | String | The suscription DNS zone name. | 
+| AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.enabled | Boolean | Whether the ingress is configured with automatic public DNS name creation. | 
+| AzureKS.ManagedCluster.properties.addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName | String | The subscription DNS zone name. | 
 
 
 #### Command Example
@@ -261,11 +261,11 @@ Updates a managed cluster with the specified configuration.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_name | The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command. | Required | 
+| resource_name | The name of the managed cluster resource. Can be retrieved using the ***azure-ks-clusters-list*** command. | Required | 
 | location | Resource location. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilse, brazilsouth, canadacentral, canadaeast, centralfrance, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, germanyn, germanywc, japaneast, japanwest, koreacentral, koreasouth, northcentralus, northeurope, norwaye, norwayw, southafricanorth, southafricawest, southcentralus, southeastasia, southfrance, southindia, switzerlandn, switzerlandw, uaecentral, uaenorth, uknorth, uksouth, uksouth2, ukwest, westcentralus, westeurope, westindia, westus, westus2. | Required | 
 | http_application_routing_enabled | Whether to configure ingress with automatic public DNS name creation. Possible values are: true, false. | Optional | 
-| monitoring_agent_enabled | Whether to turn on Log Analytics monitoring. If enabled and monitoring_resource_id is not specified, will use the current configured workspace resource ID. Possible values are: true, false. | Optional | 
-| monitoring_resource_name | The name of an existing Log Analytics Workspace to use for storing monitoring data. Can be retrieved in the Log Analytics Workspace from Azure portal. | Optional | 
+| monitoring_agent_enabled | Whether to turn on Log Analytics monitoring. If enabled and *monitoring_resource_id* is not specified, will use the current configured workspace resource ID. Possible values are: true, false. | Optional | 
+| monitoring_resource_name | The name of an existing Log Analytics Workspace to use for storing monitoring data. Can be retrieved in the Log Analytics workspace from the Azure portal. | Optional | 
 
 
 #### Context Output
