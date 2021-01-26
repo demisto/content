@@ -17,9 +17,9 @@ def main():
         html = f"<h1 style={RED_HTML_STYLE}{len(incident_ids)}</h1>"
 
     demisto.results({
-        'ContentsFormat': EntryFormat.HTML,
-        'Type': EntryType.NOTE,
-        'Contents': html,
+        'ContentsFormat': formats['html'],
+        'Type': entryTypes['note'],
+        'Contents': html
     })
 
 
