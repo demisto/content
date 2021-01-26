@@ -1,3 +1,4 @@
+import hashlib
 import uuid
 from itertools import combinations
 
@@ -154,6 +155,13 @@ SHORTENED_DOMAINS = {"adf.ly", "t.co", "goo.gl", "adbooth.net", "adfoc.us", "bc.
                      "sk.gy", "snpurl.biz", "socialcampaign.com", "swyze.com", "theminiurl.com", "tinylord.com",
                      "tinyurl.ms", "tip.pe", "ty.by"}
 
+
+def hash_value(simple_value):
+    if not isinstance(simple_value, str):
+        simple_value = str(simple_value)
+    if simple_value.lower() in ["none", "null"]:
+        return None
+    return hashlib.md5(simple_value.encode('utf8')).hexdigest()
 
 def find_label_fields_candidates(incidents_df):
     candidates = [col for col in list(incidents_df) if
@@ -531,6 +539,33 @@ def transform_text_to_ngrams_counter(email_body_word_tokenized, email_subject_wo
     return text_ngrams
 
 
+def get_closing_fields_from_incident(row):
+    if 'owner' in row:
+        owner = row['owner']
+        if owner not in ['admin', '']:
+            owner = hash_value(owner)
+    else:
+        owner = float('nan')
+    if 'closingUserId' in row:
+        closing_user = row['closingUserId']
+        if closing_user not in ['admin', '', 'DBot']:
+            closing_user = hash_value(closing_user)
+    else:
+        closing_user = float('nan')
+    if 'closeNotes' in row:
+        close_notes = row['closeNotes']
+        if isinstance(close_notes, str):
+            close_notes = close_notes.strip().lower()
+            close_notes_tokenized = word_tokenize(close_notes)
+            close_notes_tokenized = [token if token in EMBEDDING_DICT_FASTTEXT else hash_value(token)
+                                     for token in close_notes_tokenized]
+            close_notes = ' '.join(close_notes_tokenized)
+
+    else:
+        close_notes = float('nan')
+    return {'owner': owner, 'closing_user': closing_user, 'close_notes': close_notes}
+
+
 def extract_features_from_incident(row, label_fields):
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_ATTACHMENT_FIELD, EMAIL_HEADERS_FIELD
     email_body = row[EMAIL_BODY_FIELD] if EMAIL_BODY_FIELD in row else ''
@@ -582,6 +617,7 @@ def extract_features_from_incident(row, label_fields):
             res[label] = row[label]
         else:
             res[label] = float('nan')
+    res.update(get_closing_fields_from_incident(row))
     return res
 
 
