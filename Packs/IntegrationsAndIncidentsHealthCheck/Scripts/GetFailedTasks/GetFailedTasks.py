@@ -50,7 +50,7 @@ def main():
     number_of_failed = 0
     number_of_errors = 0
     total_incidents = []
-    incidents_output: list = [{}]
+    incidents_output: list = []
     total_failed_incidents = []
 
     while True:
@@ -91,12 +91,13 @@ def main():
 
         if tasks:
             for task in tasks:
+                error_entries = task.get("entries", [])
                 entry = {
                     "Incident ID": incident.get("id"),
                     "Playbook Name": task.get("ancestors", [''])[0],
                     "Task Name": task.get("task", {}).get("name"),
-                    "Error Entry ID": task.get("entries"),
-                    "Number of Errors": len(task.get("entries", [])),
+                    "Error Entry ID": error_entries,
+                    "Number of Errors": str(len(error_entries)),
                     "Task ID": task.get("id"),
                     "Incident Created Date": incident.get("created", '').replace("T", " "),
                     "Command Name": task.get("task", {}).get("scriptId", '').replace('|||', ''),
@@ -108,27 +109,24 @@ def main():
                 incidents_output.append(entry)
 
                 number_of_failed = number_of_failed + 1
-                number_of_errors = number_of_errors + entry["Number of Errors"]
+                number_of_errors = number_of_errors + len(error_entries)
 
     total_failed_incidents.append({
         'total of failed incidents': number_of_failed,
-        'Number of total errors': number_of_errors
+        'Number of total errors': number_of_errors,
     })
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': incidents_output,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown("GetFailedTasks:", incidents_output,
-                                         ["Incident Created Date", "Incident ID", "Task Name", "Task ID",
-                                          "Playbook Name",
-                                          "Command Name", "Error Entry ID"]),
-        'EntryContext': {
+    return_results(CommandResults(
+        raw_response=incidents_output,
+        readable_output=tableToMarkdown("GetFailedTasks:", incidents_output,
+                                        ["Incident Created Date", "Incident ID", "Task Name", "Task ID",
+                                         "Playbook Name",
+                                            "Command Name", "Error Entry ID"]),
+        outputs={
             "GetFailedTasks": incidents_output,
-            "NumberofFailedIncidents": total_failed_incidents
+            "NumberofFailedIncidents": total_failed_incidents,
         }
-    })
+    ))
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
