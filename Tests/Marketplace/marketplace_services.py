@@ -673,6 +673,7 @@ class Pack(object):
             release_notes (str): release notes md.
             version_display_name (str): display name version.
             build_number (srt): current build number.
+            pack_was_modified (bool): whether the pack was modified.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
             initial_release (bool): whether the entry is an initial release or not.
 
@@ -1147,9 +1148,12 @@ class Pack(object):
         Args:
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
+            pack_was_modified (bool): whether the pack modified or not.
+
         Returns:
             bool: whether the operation succeeded.
             bool: whether running build has not updated pack release notes.
+            str: packs latest release notes
         """
         task_status = False
         not_updated_build = False
@@ -1529,7 +1533,12 @@ class Pack(object):
             return task_status
 
     def _get_changelog(self, index_folder_path):
-        # load changelog from downloaded index
+        """ Gets the pack changelog data.
+        Args:
+            index_folder_path (str): downloaded index folder directory path.
+        Returns:
+            dict: Get the changelog from downloaded index
+        """
         changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
         changelog = {}
         if os.path.exists(changelog_index_path):
@@ -1543,7 +1552,6 @@ class Pack(object):
             index_folder_path (str): downloaded index folder directory path.
         Returns:
             datetime: Pack created date.
-
         """
         changelog = self._get_changelog(index_folder_path)
 
@@ -1553,15 +1561,14 @@ class Pack(object):
         return init_changelog_released_date
 
     def _get_pack_update_date(self, index_folder_path, packs_latest_release_notes):
-        """ Gets the pack created date.
+        """ Gets the pack update date.
         Args:
             index_folder_path (str): downloaded index folder directory path.
+            packs_latest_release_notes (str): the latest release notes version.
         Returns:
-            datetime: Pack created date.
-
+            datetime: Pack update date.
         """
         changelog = self._get_changelog(index_folder_path)
-
         latest_changelog_version = changelog.get(packs_latest_release_notes, {})
         latest_changelog_released_date = latest_changelog_version.get('released',
                                                                       datetime.utcnow().strftime(Metadata.DATE_FORMAT))
