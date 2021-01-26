@@ -63,7 +63,6 @@ script:
         description: Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.)
         isArray: false
         default: false
-        defaultValue: '1 day'
         required: true
         secret: false
       - name: severity
@@ -324,7 +323,6 @@ script:
         description: Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.)
         isArray: false
         default: false
-        defaultValue: '1 day'
         required: true
         secret: false
       - name: severity
@@ -431,7 +429,6 @@ script:
         description: Examples are (2 hours, 4 minutes, 6 month, 1 day, etc.)
         isArray: false
         default: false
-        defaultValue: '1 day'
         required: true
         secret: false
       - name: severity
