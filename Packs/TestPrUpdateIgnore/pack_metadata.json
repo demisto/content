@@ -1,0 +1,17 @@
+{
+    "name": "test pr update ignore",
+    "description": "desc_testttt updated",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "author_test2",
+    "url": "",
+    "email": "",
+    "created": "2021-01-26T20:15:36Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "dantavori"
+    ]
+}
