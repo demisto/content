@@ -1626,7 +1626,7 @@ inputs:
   playbookInputQuery:
 - key: 'AppChannelName '
   value:
-    simple: daud
+    simple: 
   required: false
   description: "The name of channel that will be created in your messaging app for\
     \ the shift handover.\nThe name of the channel should not contain uppercase or\
@@ -1643,7 +1643,7 @@ inputs:
   playbookInputQuery:
 - key: SOCManagerEmail
   value:
-    simple: evisochek@paloaltonetworks.com
+    simple: 
   required: false
   description: If the Shift manager briefing section is left empty when a new shift
     handover incident is opened, an email will be sent to this address to request
@@ -1658,7 +1658,7 @@ inputs:
   playbookInputQuery:
 - key: TeamName
   value:
-    simple: DemistoTeam
+    simple: 
   required: false
   description: If using Microsoft Teams, provide your Microsoft team name. This input
     is mandatory for Microsoft Teams.
