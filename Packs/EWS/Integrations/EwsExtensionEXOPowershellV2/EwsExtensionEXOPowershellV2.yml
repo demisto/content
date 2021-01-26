@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Ews Extension Online Powershell v2
+  id: EWS Extension Online Powershell v2
   version: -1
 configuration:
 - defaultvalue: https://outlook.office365.com
@@ -23,9 +23,9 @@ configuration:
   name: app_id
   required: false
   type: 0
-description: Use the Ews Extension Online Powershell v2 integration to get information about mail boxes and users in your organization.
-display: Ews Extension Online Powershell v2
-name: Ews Extension Online Powershell v2
+description: Use the EWS Extension Online Powershell v2 integration to get information about mail boxes and users in your organization.
+display: O365 - EWS - Extension Online Powershell v2
+name: EWS Extension Online Powershell v2
 script:
   commands:
   - arguments:
