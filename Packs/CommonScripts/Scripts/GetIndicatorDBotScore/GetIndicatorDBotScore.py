@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-INDICATOR_TYPE_DICTIONARY = {
+indicator_types = {
     'IP': "ip",
     'File SHA1': "file",
     'File MD5': "file",
@@ -11,52 +11,38 @@ INDICATOR_TYPE_DICTIONARY = {
     'URL': "url"
 }
 
-indicator = demisto.args()['indicator']
-resp = demisto.executeCommand("getIndicator", {'value': indicator})
 
-if True in [isError(entry) for entry in resp]:
-    demisto.results(resp)
-    sys.exit(0)
-
-data = demisto.get(resp[0], "Contents")
-
-if not data:
-    demisto.results("No results.")
-    sys.exit(0)
-
-ec = {}  # type: ignore
-ec["DBotScore"] = []
-
-for entry in data:
+def iterate_indicator_entry(indicator, entry):
     indicator_type = entry["indicator_type"]
-    score = entry["score"]
+    indicator_type = indicator_types.get(indicator_type, indicator_type)
     sources = entry.get('sourceBrands', [])
-    if hasattr(INDICATOR_TYPE_DICTIONARY, indicator_type):
-        indicator_type = INDICATOR_TYPE_DICTIONARY[indicator_type]
-
-    if sources:
-        for source in sources:
-            ec["DBotScore"].append({
-                "Indicator": indicator,
-                "Type": indicator_type,
-                "Vendor": source,
-                "Score": score
-            })
-    else:
-        ec["DBotScore"].append({
-            "Indicator": indicator,
-            "Type": indicator_type,
-            "Vendor": '',
-            "Score": score
-        })
+    sources = sources if sources else ['']
+    for source in sources:
+        dbot_score = Common.DBotScore(indicator=indicator, indicator_type=indicator_type,
+                                      integration_name=source, score=entry["score"]).to_context()
+        yield CommandResults(
+            readable_output=tableToMarkdown('Indicator DBot Score', dbot_score),
+            outputs=dbot_score
+        )
 
 
-md = tableToMarkdown("Indicator DBot Score", ec["DBotScore"])
+def main():
+    indicator = demisto.args()['indicator']
+    resp = demisto.executeCommand("getIndicator", {'value': indicator})
 
-demisto.results({
-    "Type": entryTypes["note"],
-    "ContentsFormat": formats["json"],
-    "Contents": ec,
-    "HumanReadable": md,
-    "EntryContext": ec
-})
+    if True in [isError(entry) for entry in resp]:
+        demisto.results(resp)
+        sys.exit(0)
+
+    data = demisto.get(resp[0], "Contents")
+
+    if not data:
+        demisto.results("No results.")
+        sys.exit(0)
+    for entry in data:
+        for db_entry in iterate_indicator_entry(indicator, entry):
+            return_results(db_entry)
+
+
+if __name__ in ["builtins", "__main__"]:
+    main()
