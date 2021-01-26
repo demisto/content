@@ -3254,8 +3254,7 @@
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
-        "Tenable.io Scan Test": "Issue 26728",
-        "MicrosoftGraphMail-Test": "Issue 24445"
+        "Tenable.io Scan Test": "Issue 26728"
     },
     "skipped_integrations": {
 
