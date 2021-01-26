@@ -1,4 +1,4 @@
-comment: Retrieves number of users that are currently on-call (on shift).
+comment: Retrieves the number of users who are currently on call.
 commonfields:
   id: GetNumberOfUsersOnCall
   version: -1
@@ -12,5 +12,5 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.8.5.10845
+dockerimage: demisto/python3:3.9.1.14969
 fromversion: 5.5.0
