@@ -108,9 +108,13 @@ script:
     - name: max_results
       description: How many incidents to retrieve.
       defaultValue: "10"
-    - name: columns
-      description: Which columns to display.
+    - default: false
       defaultValue: id,name,type,status,severity,owner,occured
+      description: Which columns to display. Default is 'id,name,type,status,severity,owner,occured'. To display all columns, insert 'all'.
+      isArray: true
+      name: columns
+      required: false
+      secret: false
     description: Search remote XSOAR for incidents
   - name: xsoar-get-incident
     arguments:
@@ -142,7 +146,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: true
   runonce: false
   subtype: python3
