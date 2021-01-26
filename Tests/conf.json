@@ -3254,8 +3254,7 @@
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
-        "Tenable.io Scan Test": "Issue 26728",
-        "MicrosoftGraphMail-Test": "Issue 24445"
+        "Tenable.io Scan Test": "Issue 26728"
     },
     "skipped_integrations": {
 
@@ -3358,8 +3357,7 @@
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
         "AttackIQFireDrill": "License issues #29774",
         "CrowdStrike Falcon Intel v2": "License issues #32473",
-        "CrowdStrikeMalquery": "License issues #32473",
-        "CrowdstrikeFalcon": "License issues #32473"
+        "CrowdStrikeMalquery": "License issues #32473"
     },
     "nightly_integrations": [
         "Lastline v2",
