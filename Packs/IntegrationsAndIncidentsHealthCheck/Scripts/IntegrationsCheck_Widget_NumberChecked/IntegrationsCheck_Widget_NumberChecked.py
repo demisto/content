@@ -8,10 +8,10 @@ def main():
     failing_incident_count = len(list_content)
 
     if list_content == ['']:
-        demisto.results(0)
+        return_results(NumberWidget(0))
 
     else:
-        demisto.results(failing_incident_count)
+        return_results(NumberWidget(failing_incident_count))
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

@@ -55,7 +55,7 @@ def main():
             "color": "#00CD33"
         }]
 
-    demisto.results(json.dumps(data))
+    return_results(json.dumps(data))
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

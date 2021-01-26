@@ -15,9 +15,9 @@ def main():
     else:
         html = f"<h1 style={RED_HTML_STYLE}{str(query)}</h1>"
 
-    demisto.results({
-        'ContentsFormat': formats['html'],
-        'Type': entryTypes['note'],
+    return_results({
+        'ContentsFormat': EntryFormat.HTML,
+        'Type': EntryType.NOTE,
         'Contents': html
     })
 

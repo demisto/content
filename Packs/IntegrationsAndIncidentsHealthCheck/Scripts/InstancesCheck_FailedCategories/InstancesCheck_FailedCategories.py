@@ -71,7 +71,7 @@ def main():
             }
         }
 
-    demisto.results(data)
+    return_results(data)
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
