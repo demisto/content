@@ -146,8 +146,9 @@ def refresh_edl_context(request_args: RequestArguments) -> str:
         out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
     out_dict["last_run"] = date_to_timestamp(now)
-    out_dict["current_iocs"] = iocs
-    demisto.setIntegrationContext(out_dict)
+    out_dict["current_iocs"] = [{'value': ioc.get('value'), 'indicator_type': ioc.get('indicator_type')}
+                                for ioc in iocs]
+    set_integration_context(out_dict)
     return out_dict[EDL_VALUES_KEY]
 
 
@@ -357,7 +358,8 @@ def get_edl_ioc_values(on_demand: bool,
     # on_demand ignores cache
     if on_demand:
         if request_args.is_request_change(integration_context):
-            values_str = get_ioc_values_str_from_context(integration_context, request_args=request_args, iocs=current_iocs)
+            values_str = get_ioc_values_str_from_context(integration_context, request_args=request_args,
+                                                         iocs=current_iocs)
 
         else:
             values_str = get_ioc_values_str_from_context(integration_context, request_args=request_args)
@@ -394,7 +396,7 @@ def get_ioc_values_str_from_context(integration_context: dict,
         iocs = iocs[request_args.offset: request_args.limit + request_args.offset]
         returned_dict, _ = create_values_for_returned_dict(iocs, request_args=request_args)
         integration_context['last_output'] = returned_dict
-        demisto.setIntegrationContext(integration_context)
+        set_integration_context(integration_context)
 
     else:
         returned_dict = integration_context.get('last_output', {})
