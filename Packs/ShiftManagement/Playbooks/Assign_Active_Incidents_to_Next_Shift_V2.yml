@@ -149,7 +149,7 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      incident_id:
+      incidentIds:
         simple: ${foundIncidents.id}
       listname: {}
     separatecontext: false
