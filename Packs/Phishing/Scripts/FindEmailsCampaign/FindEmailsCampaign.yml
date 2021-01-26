@@ -116,6 +116,15 @@ args:
   name: minUniqueRecipients
   required: false
   secret: false
+- default: false
+  description: A comma-seperated list of fields. For example, can be "emailclassification,closereason".
+    If provided and campagin is detected, these incidents fields will be displayed.
+  isArray: false
+  name: fieldsToDisplay
+  predefined:
+  - ''
+  required: false
+  secret: false
 comment: Find a campaing of emails based on their textual similarity.
 commonfields:
   id: FindEmailsCampaign

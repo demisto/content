@@ -74,7 +74,11 @@ def get_existing_incidents(input_args, current_incident_type):
 
     fields = [EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, FROM_DOMAIN_FIELD, 'created', 'id',
               'name', 'status']
-    get_incidents_args['populateFields'] = ','.join(fields)
+
+    if 'populateFields' in input_args and input_args['populateFields'] is not None:
+        get_incidents_args['populateFields'] = ','.join([','.join(fields), input_args['populateFields']])
+    else:
+        get_incidents_args['populateFields'] = ','.join(fields)
     incidents_query_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))

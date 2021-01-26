@@ -126,6 +126,12 @@ args:
   name: maxIncidentsToReturn
   required: false
   secret: false
+- default: false
+  description: A comma-separated list of incidents fields to poplulate.
+  isArray: false
+  name: populateFields
+  required: false
+  secret: false
 comment: Can be used to find duplicate emails for incidents of type Phishing, including  malicious,
   spam, and legitimate emails.
 commonfields:

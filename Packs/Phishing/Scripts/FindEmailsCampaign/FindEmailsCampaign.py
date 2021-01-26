@@ -273,7 +273,11 @@ def return_indicator_entry(incidents_df):
     return indicators
 
 
-def return_involved_incdients_entry(incidents_df):
+def get_comma_sep_list(value):
+    return [x.strip() for x in value.split(",")]
+
+
+def return_involved_incdients_entry(incidents_df, fields_to_display):
     incidents_df['Id'] = incidents_df['id'].apply(lambda x: "[%s](#/Details/%s)" % (x, x))
     incidents_df = incidents_df.sort_values('created', ascending=False).reset_index(drop=True)
     incidents_df['created_dt'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
@@ -290,6 +294,10 @@ def return_involved_incdients_entry(incidents_df):
         'similarity': 'Similarity to Current Incident'},
         axis=1, inplace=True)
     incidents_headers = ['Id', 'Created', 'Name', 'Email From', 'Similarity to Current Incident']
+    if fields_to_display is not None:
+        fields_list = get_comma_sep_list(fields_to_display)
+        fields_list = [f for f in fields_list if f in incidents_df.columns]
+        incidents_headers += fields_list
     hr = '\n\n' + tableToMarkdown('Involved Incidents', incidents_df[incidents_headers].to_dict(orient='records'),
                                   headers=incidents_headers)
     return_outputs(hr)
@@ -299,11 +307,11 @@ def draw_canvas(incidents, indicators):
     pass
 
 
-def analyze_incidents_campaign(incidents):
+def analyze_incidents_campaign(incidents, fields_to_display):
     incidents_df = pd.DataFrame(incidents)
     return_campaign_details_entry(incidents_df)
     indicators = return_indicator_entry(incidents_df)
-    return_involved_incdients_entry(incidents_df)
+    return_involved_incdients_entry(incidents_df, fields_to_display)
     draw_canvas(incidents, indicators)
 
 
@@ -314,7 +322,9 @@ def main():
     EMAIL_SUBJECT_FIELD = input_args.get('emailSubject', EMAIL_SUBJECT_FIELD)
     EMAIL_HTML_FIELD = input_args.get('emailBodyHTML', EMAIL_HTML_FIELD)
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
-
+    fields_to_display = input_args.get('fieldsToDisplay')
+    if fields_to_display is not None:
+        input_args['populateFields'] = fields_to_display
     res = demisto.executeCommand('FindDuplicateEmailIncidents', input_args)
     if is_error(res):
         return_error(get_error(res))
@@ -324,7 +334,7 @@ def main():
         return
     if is_number_of_unique_recipients_is_too_low(incidents):
         return
-    analyze_incidents_campaign(incidents)
+    analyze_incidents_campaign(incidents, fields_to_display)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
