@@ -41,4 +41,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Shift handover](Insert the link to your image here)
+![Shift handover](https://raw.githubusercontent.com/demisto/content/b38c74f48cef1fd878e3a326abf3676e92cc2654/Packs/ShiftManagement/doc_files/Shift_management_-_Shift_handover.PNG)
