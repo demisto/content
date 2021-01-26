@@ -18,14 +18,14 @@ script:
       name: entryid
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '0.5'
       description: minimum probability to filter weak detections
       isArray: false
       name: confidence
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '0.3'
       description: threshold when applying non-maxima suppression
       isArray: false
