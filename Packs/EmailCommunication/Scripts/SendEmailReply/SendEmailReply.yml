@@ -18,7 +18,7 @@ args:
   description: The mailbox from which emails are sent from the 3rd party integration.
   isArray: false
   name: service_mail
-  required: true
+  required: false
   secret: false
 comment: Send email reply
 commonfields:
