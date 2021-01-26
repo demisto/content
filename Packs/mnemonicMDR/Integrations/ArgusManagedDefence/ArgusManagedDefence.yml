@@ -4269,10 +4269,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: ID of attachment to download
+      description: 'ID of attachment to download. '
       isArray: false
       name: attachment_id
       required: true
+      secret: false
+    - default: false
+      description: Filename of attachment, will otherwise be the ID.
+      isArray: false
+      name: file_name
+      required: false
       secret: false
     deprecated: false
     description: Download specific attachment contents.
@@ -6694,7 +6700,7 @@ script:
     - default: false
       description: Argus Case ID
       isArray: false
-      name: case_id
+      name: id
       required: true
       secret: false
     - default: false
@@ -6714,7 +6720,7 @@ script:
       defaultValue: last_updated
       description: Argus Case ID
       isArray: false
-      name: case_id
+      name: id
       predefined:
       - Time or timestamp case was last updated.
       required: false
@@ -6728,7 +6734,7 @@ script:
     - default: false
       description: Argus Case ID
       isArray: false
-      name: case_id
+      name: id
       required: false
       secret: false
     - default: false
@@ -6745,7 +6751,55 @@ script:
     description: Get mapping fields for mirroring
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/argus-toolbelt:1.0.0.14739
+  - arguments:
+    - default: false
+      description: Case ID
+      isArray: false
+      name: case_id
+      required: true
+      secret: false
+    - default: false
+      description: Filename
+      isArray: false
+      name: file_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Downloads case attachment by best-effort search of filename.
+    execution: false
+    name: argus-download-attachment-by-filename
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+  dockerimage: demisto/argus-toolbelt:1.0.0.15350
   feed: false
   isfetch: true
   longRunning: false

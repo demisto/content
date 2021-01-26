@@ -220,6 +220,69 @@ def fetch_incidents(
         timeFieldStrategy=["createdTimestamp"],
     )
     incidents = []
+    for case in result.get("data", []):
+        # Get base incident
+        incident = {
+            "name": f"#{case['id']}: {case['subject']}",
+            "occurred": case["createdTime"],
+            "severity": argus_priority_to_demisto_severity(case["priority"]),
+            "status": argus_status_to_demisto_status(case["status"]),
+            "customFields": {  # In case mapper is not present?
+                "argus_id": str(case["id"]),
+                "type": case["type"],
+                "category": case["category"]["name"] if case["category"] else None,
+                "service": case["service"]["name"],
+                "lastUpdatedTime": case["lastUpdatedTime"],
+                "createdTimestamp": case["createdTimestamp"],
+                "customer": case["customer"]["shortName"],
+            },
+            "details": json.dumps(case),
+            "rawJSON": json.dumps(case),
+        }
+
+        # Attach files
+        # TODO add json to case?
+        argus_attachments = list_case_attachments(caseID=case["id"]).get("data", [])
+        incident_attachments = []
+        for attachment in argus_attachments:
+            file = download_attachment_command(
+                {
+                    "case_id": case["id"],
+                    "attachment_id": attachment["id"],
+                    "file_name": attachment["name"],
+                }
+            )
+            incident_attachments.append(
+                {"path": file.get("FileID", ""), "name": file.get("File", "")}
+            )
+        incident["attachment"] = incident_attachments
+
+        # Append incident
+        incidents.append(incident)
+
+    if result.get("data", []):
+        last_run["start_time"] = str(result.get("data")[-1]["createdTimestamp"] + 1)
+
+    return last_run, incidents
+
+
+def fetch_incidents_old(
+    last_run: dict, first_fetch_period: str, limit: int = 25, min_severity: str = "low"
+):
+    start_timestamp = last_run.get("start_time", None) if last_run else None
+    # noinspection PyTypeChecker
+    result = advanced_case_search(
+        startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
+        endTimestamp="now",
+        limit=limit,
+        sortBy=["createdTimestamp"],
+        priority=build_argus_priority_from_min_severity(min_severity),
+        subCriteria=[
+            {"exclude": True, "status": ["closed"]},
+        ],
+        timeFieldStrategy=["createdTimestamp"],
+    )
+    incidents = []
     for case in result["data"]:
         incidents.append(
             {
@@ -247,7 +310,10 @@ def fetch_incidents(
 
 
 def get_remote_data_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    demisto.debug(str(args))
+    demisto.results(str(args))
+    # Attach comments as notes
+    # Attach case tags
 
 
 def get_modified_remote_data_command(args: Dict[str, Any]) -> CommandResults:
@@ -467,17 +533,40 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def download_attachment_command(args: Dict[str, Any]) -> Any:
+def download_attachment_by_filename_command(args: Dict[str, Any]) -> Any:
     case_id = args.get("case_id", None)
-    attachment_id = args.get("attachment_id", None)
-    if not case_id:
+    file_name = args.get("file_name", None)
+    if case_id is None:
         raise ValueError("case id not specified")
+    if not file_name:
+        raise ValueError("file name not given")
+    attachment_id = ""
+    case_attachments = list_case_attachments(caseID=case_id)
+    for attachment in case_attachments:
+        if file_name in attachment.get("name", ""):
+            attachment_id = attachment.get("id", "")
+            file_name = attachment.get("name", "")
+            break
     if not attachment_id:
-        raise ValueError("attachment id not specified")
+        raise ValueError("file name not found in case")
 
     result = download_attachment(caseID=case_id, attachmentID=attachment_id)
 
-    return fileResult(attachment_id, result.content)
+    return fileResult(file_name, result.content)
+
+
+def download_attachment_command(args: Dict[str, Any]) -> Any:
+    case_id = args.get("case_id", None)
+    attachment_id = args.get("attachment_id", None)
+    file_name = args.get("file_name", attachment_id)
+    if case_id is None:
+        raise ValueError("case id not specified")
+    if not attachment_id:
+        raise ValueError("attachment id not given")
+
+    result = download_attachment(caseID=case_id, attachmentID=attachment_id)
+
+    return fileResult(file_name, result.content)
 
 
 def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
@@ -1027,6 +1116,9 @@ def main() -> None:
             return_results(add_comment_command(demisto.args()))
 
         elif demisto.command() == "argus-advanced-case-search":
+            demisto.log(json.dumps(demisto.args()))
+            demisto.log(json.dumps(demisto.params()))
+            demisto.log(str(demisto))
             return_results(advanced_case_search_command(demisto.args()))
 
         elif demisto.command() == "argus-close-case":

@@ -163,8 +163,20 @@ def test_fetch_incidents(requests_mock):
 
     with open("argus_json/argus_case_search.json") as json_file:
         data = json.load(json_file)
+    with open("argus_json/argus_case_attachments.json") as attachments_file:
+        attachments = json.load(attachments_file)
+    with open("argus_json/argus_case_attachment.json", "rb") as attachment_file:
+        attachment = attachment_file.read()
+
     method_url = "/cases/v2/case/search"
     requests_mock.post(f"{BASE_URL}{method_url}", json=data)
+
+    method_url = f"/cases/v2/case/{0}/attachments"
+    requests_mock.get(f"{BASE_URL}{method_url}", json=attachments)
+
+    method_url = f"/cases/v2/case/{0}/attachments/{'3fa85f64-5717-4562-b3fc-2c963f66afa6'}/download"
+    requests_mock.get(f"{BASE_URL}{method_url}", content=attachment)
+
     last_run = {"start_time": 1603372183576}
     next_run, incidents = fetch_incidents(last_run, "-1 day")
     assert len(incidents) == 1
@@ -172,8 +184,22 @@ def test_fetch_incidents(requests_mock):
     assert next_run.get("start_time") == "1"
 
 
-def test_fetch_incidents_increment_timestamp(requests_mock):
-    from ArgusManagedDefence import fetch_incidents
+def test_fetch_incidents_old(requests_mock):
+    from ArgusManagedDefence import fetch_incidents_old
+
+    with open("argus_json/argus_case_search.json") as json_file:
+        data = json.load(json_file)
+    method_url = "/cases/v2/case/search"
+    requests_mock.post(f"{BASE_URL}{method_url}", json=data)
+    last_run = {"start_time": 1603372183576}
+    next_run, incidents = fetch_incidents_old(last_run, "-1 day")
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "#0: string"
+    assert next_run.get("start_time") == "1"
+
+
+def test_fetch_incidents_increment_timestamp_old(requests_mock):
+    from ArgusManagedDefence import fetch_incidents_old
 
     method_url = "/cases/v2/case/search"
     timestamp = 327645
@@ -183,7 +209,7 @@ def test_fetch_incidents_increment_timestamp(requests_mock):
 
     requests_mock.post(f"{BASE_URL}{method_url}", json=data)
 
-    next_run, incidents = fetch_incidents({}, "-1 day")
+    next_run, incidents = fetch_incidents_old({}, "-1 day")
     assert len(incidents) == 1
     assert next_run.get("start_time") == str(timestamp + 1)
 
