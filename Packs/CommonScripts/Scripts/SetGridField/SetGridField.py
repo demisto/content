@@ -140,18 +140,18 @@ def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_el
         ValueError: If structure is not valid.
         data_type (str): The type of information in the context path.
     """
-    exception_msg = "When unpack_nested_elements argument is set to True, the context object for the path should be " \
-                    "of type dict"
     if unpack_nested_elements:
         if not isinstance(entry_context, dict):
-            raise ValueError(exception_msg)
+            raise ValueError(
+                "When unpack_nested_elements argument is set to True, the context object for the path should be "
+                "of type dict.")
         else:
             return
 
-    exception_msg = "The context object for the specified path should be of one of the following types:" \
-                    " dict[str,str] or list[dict[str,str]] or List[str/bool/int/float]"
     if not isinstance(entry_context, (list, dict)):
-        raise ValueError(exception_msg)
+        raise ValueError(
+            'The context object for the specified path should be of one of the following types: dict, list.\n'
+            f'Received type: {type(entry_context)}')
 
     data_type = 'dict'
 
@@ -162,27 +162,30 @@ def validate_entry_context(entry_context: Any, keys: List[str], unpack_nested_el
     for index, item in enumerate(entry_context):
         if not isinstance(item, dict):
             if has_seen_dict:
-                demisto.error(f'expected list of dictionaries, found item of {type(item)} type:\n {item}')
-                raise ValueError(f'The context object for the specified path contains mixed types of '
-                                 f'dict and {type(item)}. item of type {type(item)} can be found at index {index}.')
+                raise ValueError(
+                    f'The context object for the specified path contains mixed types of dict and {type(item)}.'
+                    f'item of type {type(item)} can be found at index {index}:\n{item}')
             else:
                 break
 
         has_seen_dict = True
-        for key, value in list(item.items()):
-            if key in keys:
-                if value is not None and not isinstance(value, (str, int, float, bool)):
-                    demisto.error(f'expected list of dictionaries with simple values, found a complex item with '
-                                  f'key {type(key)} type:\t {key}\nproblematic item: {item}')
-                    raise ValueError(
-                        f'The context object for the specified path contains a dict item with a complex value.\n'
-                        f'item at index {index} contains key {key} with value of type {type(value)}:\n{value}.')
+        for key, value in item.items():
+            if key not in keys:
+                continue
+            if value is not None and not isinstance(value, (str, int, float, bool)):
+                demisto.error(f'expected list of dictionaries with simple values, found a complex item with '
+                              f'key {type(key)} type:\t {key}\nproblematic item: {item}')
+                raise ValueError(
+                    f'The context object for the specified path contains a dict item with a complex value.\n'
+                    f'item at index {index} contains key {key} with value of type {type(value)}:\n{value}.')
 
     if not has_seen_dict:
         data_type = 'list'
         for item in entry_context:
             if not isinstance(item, (str, int, float, bool)):
-                raise ValueError(exception_msg)
+                raise ValueError(
+                    f'expected a list of simple values (str, int, float, bool), received item of type {type(item)}.'
+                    f'item:\n{item}')
 
     return data_type
 
@@ -208,7 +211,7 @@ def build_grid(context_path: str, keys: List[str], columns: List[str], unpack_ne
     # Validate entry context structure
     data_type = validate_entry_context(entry_context_data, keys, unpack_nested_elements)
 
-    demisto.info('context object is valid. starting to build the grid.')
+    demisto.debug('context object is valid. starting to build the grid.')
     # Building new Grid
     if unpack_nested_elements:
         # Handle entry context as dict, with unpacking of nested elements
