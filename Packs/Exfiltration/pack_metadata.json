@@ -1,0 +1,15 @@
+{
+    "name": "Exfiltration",
+    "description": "Respond to exfiltration incidents as they occur, asses the damage and remediate them in a timely manner.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": ["Data Leak", "Data Loss"],
+    "useCases": ["Exfiltration"],
+    "keywords": []
+}
