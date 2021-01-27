@@ -4,7 +4,7 @@
   "Tidy install"
  ],
  "caseInsensitive": false,
- "cliName": "githubtoken",
+ "cliName": "tidygithubtoken",
  "closeForm": false,
  "content": true,
  "editForm": true,
