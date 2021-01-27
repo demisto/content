@@ -22,7 +22,7 @@ FETCH_TIME: str = demisto.params().get('fetch_time', FETCH_TIME_DEFAULT).strip()
 
 ''' HELPER FUNCTIONS '''
 
-
+# comment for test
 def dict_value_to_integer(params: Dict, key: str):
     """
     :param params: A dictionary which has the key param
