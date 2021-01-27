@@ -70,7 +70,7 @@ script:
     - contextPath: PsRemote.Command.Result
       description: The result of the command run from target machine
       type: string
-    - contextPath: PsRemote.Command.Command
+    - contextPath: PsRemote.Command.CommandName
       description: The command sent to target machine, used as ID of that query.
       type: string
   - arguments:

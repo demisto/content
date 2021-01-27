@@ -486,17 +486,22 @@ function InvokeCommandCommand([RemotingClient]$client, [string]$command)
     $client.CloseSession()
     $context_result = @{
         Command = $command
-        Result = @{}
+        Result = [System.Collections.ArrayList]::new()
     }
+    $tmp_context = @{}
     # create result dictionary with the computer as a key
     For ($i=0; $i -lt $raw_result.Length; $i++) {
+        # TODO: cut the computer name after first dot
         $computer_name = [string]($raw_result[$i] | Select-Object -ExpandProperty PSComputerName)
-        if ([bool]($context_result["Result"].Keys -match $computer_name)) {
-            $context_result["Result"][$computer_name] += $raw_result[$i]
+        if ([bool]($tmp_context.Keys -match $computer_name)) {
+            $tmp_context[$computer_name] += $raw_result[$i]
         }
         else {
-            $context_result["Result"][$computer_name] = @($raw_result[$i])
+            $tmp_context[$computer_name] = @($raw_result[$i])
         }
+    }
+    foreach ($h in $tmp_context.GetEnumerator()) {
+        $tmp = $context_result['Result'].Add($h.value)
     }
     $entry_context = @{
         $script:INTEGRATION_ENTRY_CONTEX = @{ Command = $context_result }
