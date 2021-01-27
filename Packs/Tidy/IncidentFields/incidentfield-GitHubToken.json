@@ -13,7 +13,7 @@
  "id": "incident_githubtoken",
  "isReadOnly": false,
  "locked": false,
- "name": "GitHubToken",
+ "name": "TidyGitHubToken",
  "neverSetAsRequired": false,
  "ownerOnly": false,
  "required": false,
