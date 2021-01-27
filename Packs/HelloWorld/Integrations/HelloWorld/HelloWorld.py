@@ -1416,7 +1416,7 @@ def main() -> None:
             # saves next_run for the time fetch-incidents is invoked
             demisto.setLastRun(next_run)
             # fetch-incidents calls ``demisto.incidents()`` to provide the list
-            # of incidents to crate
+            # of incidents to create
             demisto.incidents(incidents)
 
         elif demisto.command() == 'ip':
