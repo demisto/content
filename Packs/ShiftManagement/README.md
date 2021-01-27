@@ -11,4 +11,4 @@ This pack's purpose is provide a single interface for all those essential elemen
 
 For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/articles/Shift_management)
 
-![Email_Communication_layout](https://raw.githubusercontent.com/demisto/content/a80017bdd6a2c5aba73dd5940dfdcf42f559c655/Packs/ShiftManagement/doc_files/layout.PNG)
+![Shift_management_layout](https://raw.githubusercontent.com/demisto/content/a80017bdd6a2c5aba73dd5940dfdcf42f559c655/Packs/ShiftManagement/doc_files/layout.PNG)
