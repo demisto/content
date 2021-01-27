@@ -774,13 +774,12 @@ class Pack(object):
             subprocess.call('chmod +x ./encryptor', shell=True)
 
             output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
-            full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "' \
-                f'{encryption_key}"'
+            full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
             subprocess.call(full_command, shell=True)
 
             new_encryption_key_output_file = zip_pack_path.replace("_not_encrypted.zip", ".enc2.zip")
             full_command_with_new_encryption = f'./encryptor ./{pack_name}_not_encrypted.zip ' \
-                f'{new_encryption_key_output_file} {new_encryption_key}"'
+                f'{new_encryption_key_output_file} "{new_encryption_key}"'
             subprocess.call(full_command_with_new_encryption, shell=True)
 
             new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
