@@ -47,13 +47,13 @@ def main():
     if list_content != ['']:
         data = parse_data(list_content)
     else:
-        data = {
+        data = [{
             "data": [
                 0
             ],
-            "name": "N\\A",
+            "name": "2020-01-01",
             "color": "#00CD33"
-        }
+        }]
 
     demisto.results(json.dumps(data))
 

@@ -130,7 +130,6 @@ def check_cpus(num_cpus: int) -> str:
     for p in processes:
         p.join()
     runtime2 = time.time_ns() - start
-    p.close()
     # runtime 2 should be 2 times slower. But we give it a safty as the machine itself maybe loaded
     LOG("cpus check runtime for {} processes time: {}".format(num_cpus * 2, runtime2))
     if runtime2 < runtime * 1.5:
@@ -184,7 +183,7 @@ def main():
     return_outputs(table)
     if failed:
         return_error(f'Failed verifying docker hardening:\n{failed_msg}'
-                     'More details at: https://support.demisto.com/hc/en-us/articles/360040922194')
+                     'More details at: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/docker-hardening-guide.html')  # noqa
 
 
 # python2 uses __builtin__ python3 uses builtins

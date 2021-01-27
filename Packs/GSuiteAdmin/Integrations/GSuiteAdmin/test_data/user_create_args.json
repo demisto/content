@@ -1,0 +1,14 @@
+{
+ "first_name": "first_name",
+  "last_name": "last_name",
+  "password": "password",
+  "primary_email": "newuser@domain.io",
+  "country": "india",
+  "address_type": "home",
+  "postal_code": "361001",
+  "is_address_primary": "false",
+  "extended_address": "near india",
+  "street_address": "near india",
+  "gender": "male",
+  "is_ip_white_listed": "false"
+}

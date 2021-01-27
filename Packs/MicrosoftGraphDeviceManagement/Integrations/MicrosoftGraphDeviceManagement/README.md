@@ -1,6 +1,17 @@
 Microsoft Intune is a Microsoft cloud-based management solution that provides for mobile device and operating system management
-This integration was integrated and tested with version xx of Microsoft Graph Device Management
-## Configure Microsoft Graph Device Management on Demisto
+
+## Authentication
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
+
+### Required Permissions
+* DeviceManagementApps.ReadWrite.All - Application
+* DeviceManagementConfiguration.ReadWrite.All - Application
+* DeviceManagementManagedDevices.PrivilegedOperations.All - Application
+* DeviceManagementManagedDevices.ReadWrite.All - Application
+* DeviceManagementRBAC.ReadWrite.All - Application
+* DeviceManagementServiceConfig.ReadWrite.All - Application
+
+## Configure Microsoft Graph Device Management on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Microsoft Graph Device Management.
@@ -18,7 +29,7 @@ This integration was integrated and tested with version xx of Microsoft Graph De
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### msgraph-get-managed-device-by-id
 ***

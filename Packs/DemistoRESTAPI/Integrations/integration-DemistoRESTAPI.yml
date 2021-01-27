@@ -244,6 +244,7 @@ script:
     - name: ids
       required: true
       description: IDs of the incidents to delete
+      isArray: true
     description: Delete Demisto incidents
     execution: true
   runonce: false

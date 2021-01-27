@@ -1,0 +1,48 @@
+name: Handle New External PRs
+on:
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  handle_new_external_pr:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content' && github.event.action == 'opened' && github.event.pull_request.head.repo.fork == true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: master
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Print Context
+        run: |
+          echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pipenv
+      - name: Update External PR
+        env:
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          EVENT_PAYLOAD: ${{ toJson(github.event) }}
+        run: |
+          echo "Updating External PR ${{ github.event.pull_request.html_url }}"
+          cd Utils/github_workflow_scripts
+          pipenv install --dev
+          pipenv run ./handle_external_pr.py
+          echo "Finished Handling External PR"
+      - name: Send Notification
+        env:
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          EVENT_PAYLOAD: ${{ toJson(github.event) }}
+          CORTEX_XSOAR_SLACK_TOKEN: ${{ secrets.CORTEX_XSOAR_SLACK_TOKEN }}
+        run: |
+          echo "Sending notification about External PR ${{ github.event.pull_request.html_url }}"
+          cd Utils/github_workflow_scripts
+          pipenv run ./send_slack_message.py

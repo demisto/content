@@ -31,7 +31,6 @@ SEVERITY_DICT = {
     'Critical': 4
 }
 
-
 USER_TAG_EXPRESSION = '<@(.*?)>'
 CHANNEL_TAG_EXPRESSION = '<#(.*?)>'
 URL_EXPRESSION = r'<(https?://.+?)(?:\|.+)?>'
@@ -47,7 +46,7 @@ ENDPOINT_URL = 'https://oproxy.demisto.ninja/slack-poll'
 POLL_INTERVAL_MINUTES: Dict[Tuple, float] = {
     (0, 15): 1,
     (15, 60): 2,
-    (60, ): 5
+    (60,): 5
 }
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 OBJECTS_TO_KEYS = {
@@ -58,7 +57,6 @@ OBJECTS_TO_KEYS = {
 SYNC_CONTEXT = True
 
 ''' GLOBALS '''
-
 
 BOT_TOKEN: str
 ACCESS_TOKEN: str
@@ -271,7 +269,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
                 response = client.api_call(method, http_verb='GET', params=body)
         except SlackApiError as api_error:
             response = api_error.response
-            headers = response.headers
+            headers = response.headers  # type: ignore
             if 'Retry-After' in headers:
                 retry_after = int(headers['Retry-After'])
                 total_try_time += retry_after
@@ -281,7 +279,7 @@ def send_slack_request_sync(client: slack.WebClient, method: str, http_verb: str
             raise
         break
 
-    return response
+    return response  # type: ignore
 
 
 async def send_slack_request_async(client: slack.WebClient, method: str, http_verb: str = 'POST', file_: str = '',
@@ -308,11 +306,11 @@ async def send_slack_request_async(client: slack.WebClient, method: str, http_ve
         try:
             if http_verb == 'POST':
                 if file_:
-                    response = await client.api_call(method, files={"file": file_}, data=body)
+                    response = await client.api_call(method, files={"file": file_}, data=body)  # type: ignore
                 else:
-                    response = await client.api_call(method, json=body)
+                    response = await client.api_call(method, json=body)  # type: ignore
             else:
-                response = await client.api_call(method, http_verb='GET', params=body)
+                response = await client.api_call(method, http_verb='GET', params=body)  # type: ignore
         except SlackApiError as api_error:
             response = api_error.response
             headers = response.headers
@@ -376,7 +374,7 @@ async def get_slack_name(slack_id: str, client) -> str:
                 'user': slack_id
             }
             user = (await send_slack_request_async(client, 'users.info', http_verb='GET',
-                                                           body=body)).get('user', {})
+                                                   body=body)).get('user', {})
 
         slack_name = user.get('name', '')
 
@@ -663,7 +661,8 @@ def check_for_answers():
         body = {
             'entitlement': entitlement
         }
-        res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, proxies=PROXIES, verify=VERIFY_CERT)
+        res = requests.post(ENDPOINT_URL, data=json.dumps(body), headers=headers, proxies=PROXIES, verify=VERIFY_CERT,
+                            timeout=30)
         if res.status_code != 200:
             demisto.error(f'Slack - failed to poll for answers: {res.content!r}, status code: {res.status_code!r}')
             continue
@@ -773,8 +772,11 @@ def check_for_mirrors():
                     users: List[Dict] = demisto.mirrorInvestigation(investigation_id,
                                                                     f'{mirror_type}:{direction}', auto_close)
                     if mirror_type != 'none':
-                        invited_users = invite_to_mirrored_channel(channel_id, users)
-                        updated_users.extend(invited_users)
+                        try:
+                            invited_users = invite_to_mirrored_channel(channel_id, users)
+                            updated_users.extend(invited_users)
+                        except Exception as error:
+                            demisto.error(f"Could not invite investigation users to the mirrored channel: {error}")
 
                     mirror['mirrored'] = True
                     updated_mirrors.append(mirror)
@@ -1310,11 +1312,23 @@ def slack_send():
     thread_id = demisto.args().get('threadID', '')
     severity = demisto.args().get('severity')  # From server
     blocks = demisto.args().get('blocks')
+    entry_object = demisto.args().get('entryObject')  # From server, available from demisto v6.1 and above
     entitlement = ''
 
     if message_type == MIRROR_TYPE and original_message.find(MESSAGE_FOOTER) != -1:
         # return so there will not be a loop of messages
         return
+
+    if message_type == MIRROR_TYPE:
+        tags = argToList(demisto.params().get('filtered_tags', []))
+        entry_tags = entry_object.get('tags', [])
+
+        if tags and not entry_tags:
+            return
+
+        # return if the entry tags is not containing any of the filtered_tags
+        if tags and not any(elem in entry_tags for elem in tags):
+            return
 
     if (to and group) or (to and original_channel) or (to and original_channel and group):
         return_error('Only one destination can be provided.')
@@ -1503,7 +1517,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
     return response
 
 
-def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = '')\
+def send_message_to_destinations(destinations: list, message: str, thread_id: str, blocks: str = '') \
         -> Optional[SlackResponse]:
     """
     Sends a message to provided destinations Slack.
@@ -1523,7 +1537,7 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     if message:
         body['text'] = message
     if blocks:
-        block_list = json.loads(blocks)
+        block_list = json.loads(blocks, strict=False)
         body['blocks'] = block_list
     if thread_id:
         body['thread_ts'] = thread_id
@@ -1535,7 +1549,8 @@ def send_message_to_destinations(destinations: list, message: str, thread_id: st
     return response
 
 
-def send_file(destinations: list, file_dict: dict, integration_context: dict, thread_id: str) -> Optional[SlackResponse]:
+def send_file(destinations: list, file_dict: dict, integration_context: dict, thread_id: str) -> \
+        Optional[SlackResponse]:
     """
     Sends a file to Slack.
 
@@ -1595,7 +1610,7 @@ def send_file_to_destinations(destinations: list, file_dict: dict, thread_id: st
 
 
 def slack_send_request(to: str, channel: str, group: str, entry: str = '', ignore_add_url: bool = False,
-                       thread_id: str = '', message: str = '', blocks: str = '', file_dict: dict = None)\
+                       thread_id: str = '', message: str = '', blocks: str = '', file_dict: dict = None) \
         -> Optional[SlackResponse]:
     """
     Requests to send a message or a file to Slack.
@@ -1947,7 +1962,7 @@ def loop_info(loop: asyncio.AbstractEventLoop):
         return "loop is None"
     info = f'loop: {loop}. id: {id(loop)}.'
     info += f'executor: {loop._default_executor} id: {id(loop._default_executor)}'  # type: ignore[attr-defined]
-    if loop._default_executor:   # type: ignore[attr-defined]
+    if loop._default_executor:  # type: ignore[attr-defined]
         info += f' executor threads size: {len(loop._default_executor._threads)}'  # type: ignore[attr-defined]
         info += f' max: {loop._default_executor._max_workers} {loop._default_executor._threads}'  # type: ignore[attr-defined]
     return info
@@ -1988,7 +2003,7 @@ def main():
         LOG(e)
         return_error(str(e))
     finally:
-        demisto.info(f'{command_name} completed. loop: {loop_info(CLIENT._event_loop)}')
+        demisto.info(f'{command_name} completed. loop: {loop_info(CLIENT._event_loop)}')  # type: ignore
         if is_debug_mode():
             print_thread_dump()
 

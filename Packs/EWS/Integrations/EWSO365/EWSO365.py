@@ -1835,9 +1835,6 @@ def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, a
         html_body, html_attachments = handle_html(html_body)
         attachments += html_attachments
 
-        if body:
-            html_body = f'{body}<br/><br/>{html_body}'
-
         message = create_message_object(to, cc, bcc, subject, HTMLBody(html_body), additional_headers)
 
         for attachment in attachments:

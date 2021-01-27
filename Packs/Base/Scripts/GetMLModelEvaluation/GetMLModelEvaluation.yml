@@ -27,7 +27,8 @@ args:
   secret: false
 - default: false
   defaultValue: 'true'
-  description: if set to 'true', the output will include a full exaplanation of the confidence threshold meaning
+  description: if set to 'true', the output will include a full exaplanation of the
+    confidence threshold meaning
   isArray: true
   name: detailedOutput
   predefined:
@@ -49,7 +50,8 @@ outputs:
   description: The model evaluation confusion matrix for mails above the threhsold.
   type: Unknown
 - contextPath: GetMLModelEvaluation.Metrics
-  description: Metrics per each class (includes precision, true positive, coverage, etc.)
+  description: Metrics per each class (includes precision, true positive, coverage,
+    etc.)
   type: Unknown
 script: '-'
 subtype: python3
@@ -58,7 +60,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/dl:1.4
+dockerimage: demisto/ml:1.0.0.13629
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0

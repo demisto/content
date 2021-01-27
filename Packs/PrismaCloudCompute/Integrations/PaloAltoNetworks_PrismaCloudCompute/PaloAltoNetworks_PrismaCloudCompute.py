@@ -81,11 +81,21 @@ class Client(BaseClient):
         if from_:
             params['from'] = from_
 
-        return self._http_request(
-            method='GET',
-            url_suffix='demisto-alerts',
-            params=params
-        )
+        # If the endpoint not found, fallback to the previous demisto-alerts endpoint (backward compatibility)
+        try:
+            return self._http_request(
+                method='GET',
+                url_suffix='xsoar-alerts',
+                params=params
+            )
+        except Exception as e:
+            if '[404]' in str(e):
+                return self._http_request(
+                    method='GET',
+                    url_suffix='demisto-alerts',
+                    params=params
+                )
+            raise e
 
 
 def str_to_bool(s):
@@ -127,10 +137,10 @@ def camel_case_transformer(s):
     REMARK: the exceptions list below is returned uppercase, e.g. "cve" => "CVE"
     """
 
-    str = re.sub('([a-z])([A-Z])', r'\g<1> \g<2>', s)
-    if str in ['id', 'cve', 'arn']:
-        return str.upper()
-    return str.title()
+    transformed_string = re.sub('([a-z])([A-Z])', r'\g<1> \g<2>', str(s))
+    if transformed_string in ['id', 'cve', 'arn']:
+        return transformed_string.upper()
+    return transformed_string.title()
 
 
 def get_headers(name: str, data: list) -> list:

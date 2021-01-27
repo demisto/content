@@ -1,3 +1,36 @@
+## Overview
+---
+
+Integration Overview Manage Check Point Firewall. Read information and to send commands to the Check Point Firewall server. 
+This integration was integrated and tested with version R80.30 of CheckPoint SmartConsole.
+
+Product Name: Check Point Firewall  
+Product Type: Network Security  
+Product Version: R80.30  
+
+### How to configure the integration:
+
+In the Smart Console, enable the web api: **Management & Setting** → **Blades** → **Management API, Advanced Setting** → **All IP address**
+
+Enable sftp on your server Check Point guide to walk you through: https://supportcenter.checkpoint.com/supportcenter/portal?eventSubmit_doGoviewsolutiondetails=&solutionid=sk82281 
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for CheckPoint_FW.
+3. Click **Add instance** to create and configure a new integration instance.
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| server | Server URL \(e.g. example.net or 8.8.8.8\) | True |
+| port | Server Port \(e.g. 4434\) | True |
+| domain | Domain (used in Multi Domain Server) | False |
+| username | username | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
+
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+
 ## Commands
 You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -2202,6 +2235,7 @@ Login to CheckPoint and get the session id
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | session_timeout | Session expiration timeout in seconds. Default 600 seconds. Session timeout range is between 600 to 3600 seconds. | Optional | 
+| domain | Name of domain to log in to, for use with MDS. | Optional | 
 
 
 #### Context Output
@@ -2212,7 +2246,10 @@ Login to CheckPoint and get the session id
 
 
 #### Command Example
-```!checkpoint-login-and-get-session-id```
+```
+!checkpoint-login-and-get-session-id
+!checkpoint-login-and-get-session-id domain='Corp'
+```
 
 #### Context Example
 ```
@@ -2701,4 +2738,68 @@ Retrieve data about objects.
 >|name|uid|type|
 >|---|---|---|
 >| All_Internet | f90e0a2b-f166-427a-b47f-a107b6fe43b9 | address-range |
+
+
+### checkpoint-package-list
+***
+Get checkpoint-packages details.
+
+
+#### Base Command
+
+`checkpoint-package-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | Object unique identifier or name. | Required | 
+| session_id | Execute command with a specific session ID. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CheckPoint.Package.name | String | The name of the package. |
+| CheckPoint.Package.target-name | String | The name of the targe. |
+| CheckPoint.Package.target-uid | String | The UID of the target. |
+| CheckPoint.Package.revision.domain.domain-type | String | The type of the domain. |
+| CheckPoint.Package.revision.domain.name | String | The name of the domain. |
+| CheckPoint.Package.revision.domain.uid | String | The UID of the domain. |
+| CheckPoint.Package.revision.type | String | The type of the revision. |
+| CheckPoint.Package.revision.uid | String | The UID of the revision. |
+
+
+#### Command Example
+```!checkpoint-package-list identifier=Standard session_id=GFcJQ9N-Zv8eG33qc4WQ7d4zmdsNvK_l3GcnOUqo8ew```
+
+
+#### Context Example
+```
+{
+    "CheckPoint": {
+        "Package": {
+            "name": "Standard",
+            "target-name": "Host1",
+            "target-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+            "revision": {
+                "domain": {
+                    "name": "test",
+                    "domain-type": "domain",
+                    "uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"
+                },
+                "type": "session",
+                "uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### CheckPoint data for objects:
+>|target-name|name|target-uid|revision
+>|---|---|---|---|
+>| Host1 | Standard | 41e821a0-3720-11e3-aa6e-0800200c9fde | "domain": {<br/>"name": "test",<br/>"domain-type": "domain",<br/>"uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/>},<br/>"type": "session",<br/>"uid", "41e821a0-3720-11e3-aa6e-0800200c9fde"<br/> |
 

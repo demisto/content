@@ -14,21 +14,25 @@ For more information about manage syntax, see the https://support.atlassian.com/
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Jira v2.
-3. Click __Add instance__ to create and configure a new integration instance.
+3. __Authentiction__: As of June 2019, Basic authentication using passwords for Jira is no longer supported, please use an API Token or OAuth 1.0.
+4. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Jira URL, for example: https://demisto.atlassian.net/__
-    * _______________ Basic Authentication ____________
-
-Username__
-    * __Password (Deprecated - Use API token)__
-    * __API token__
+    *  ______________ Basic Authentication ________________
+    
+        To use basic authentication, follow [this tutorial](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) to get the API token. Authorizing using basic authentication requires:
+    
+        * __Username__
+        * __Password (Deprecated)__
+        * __API token__
+        
     * ____________________ OAuth 1.0 __________________
+           
+      To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access Token. Authorizing using OAuth1.0 requires:
 
-For OAuth: See the https://developer.atlassian.com/server/jira/platform/oauth/
-
-ConsumerKey__
-    * __AccessToken__
-    * __PrivateKey__
+        * __ConsumerKey__
+        * __AccessToken__
+        * __PrivateKey__
     * __Query (in JQL) for fetching incidents__
     * __Issue index to start fetching incidents from__
     * __Trust any certificate (not secure)__
@@ -40,6 +44,7 @@ ConsumerKey__
 ## Fetched Incidents Data
 ---
 When you enable fetched incidents, Demisto fetches the first batch of Jira issues from the 10 minutes prior to when the integration was added. After the first batch of fetched issues, Demisto fetches new Jira issues as soon as they are generated in Jira. By default, 50 issues are pulled for each call. To pull older Jira issues, use the query to fetch issues option.
+If mirror `Mirror incoming incidents` is enabled, any incident data changed in remote JIRA server will reflected on existing fetched incidents.
 
 ## Commands
 ---
@@ -202,8 +207,8 @@ Creates a new issue in Jira.
 | labels | A CSV list of labels.  | Optional | 
 | priority | The priority name, for example: "High" or "Medium". | Optional | 
 | dueDate | The due date for the issue (in the format: 2018-03-11). | Optional | 
-| assignee | The name of the assignee. | Optional | 
-| reporter | The ID of the reporter. | Optional | 
+| assignee | The account ID of the assignee. | Optional | 
+| reporter | The account ID of the reporter. | Optional | 
 | parentIssueKey | The parent issue key (if you create a sub-task). | Optional | 
 | parentIssueId | The parent issue ID (if you create a sub-task). | Optional | 
 
@@ -217,7 +222,7 @@ Creates a new issue in Jira.
 
 
 ##### Command Example
-```!jira-create-issue summary="test SOC issue26" projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}\````
+```!jira-create-issue summary="test SOC issue26" issueTypeId=10008 projectKey=DEM issueJson=\`{"fields":{"issuetype":{"name":"Request for Action"}}}\````
 
 ##### Context Example
 ```
@@ -356,7 +361,7 @@ Modifies an issue in JIRA.
 | labels |  A CSV list of labels.  | Optional | 
 | priority |  A priority name, for example "High" or "Medium".  | Optional | 
 | dueDate | The due date for the issue (in the format 2018-03-11). | Optional | 
-| assignee | The name of the assignee. | Optional | 
+| assignee | The account ID of the assignee. | Optional | 
 | status | The name of the status. | Optional | 
 
 

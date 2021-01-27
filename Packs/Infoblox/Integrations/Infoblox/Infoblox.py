@@ -902,7 +902,7 @@ def main():  # pragma: no cover
     params = demisto.params()
     base_url = f"{params.get('url', '').rstrip('/')}/wapi/v2.3/"
     verify = not params.get('insecure', False)
-    proxy = params.get('proxy') == 'true'
+    proxy = params.get('proxy', False)
     user = demisto.get(params, 'credentials.identifier')
     password = demisto.get(params, 'credentials.password')
     default_request_params = {

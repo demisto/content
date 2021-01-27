@@ -46,7 +46,7 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- defaultvalue: 10 minutes
+- defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
     months, 1 year)
   hidden: false
@@ -56,13 +56,6 @@ configuration:
 - display: List of fields from the application to gets into the incident
   hidden: false
   name: fields_to_fetch
-  required: false
-  type: 0
-- defaultvalue: '0'
-  display: Timezone offset in minutes of the RSA Archer server machine (+60, -60,
-    in minutes)
-  hidden: false
-  name: time_zone
   required: false
   type: 0
 - display: Trust any certificate (not secure)
@@ -331,6 +324,25 @@ script:
       name: entryId
       required: true
       secret: false
+    - default: false
+      description: ID of the application which we want to upload the file to.
+      isArray: false
+      name: applicationId
+      required: false
+      secret: false
+    - default: false
+      description: The Content (record) ID to update.
+      isArray: false
+      name: contentId
+      required: false
+      secret: false
+    - default: false
+      defaultValue: Supporting Documentation
+      description: Archer field name to associate the file with.
+      isArray: false
+      name: associatedField
+      required: false
+      secret: false
     deprecated: false
     description: Uploads a file to Archer.
     execution: false
@@ -346,6 +358,38 @@ script:
     description: Downloads a file from Archer to Cortex XSOAR context.
     execution: false
     name: archer-get-file
+    outputs:
+    - contextPath: File
+      description: The file details command results.
+      type: Unknown
+    - contextPath: File.Name
+      description: The full file name (including the file extension).
+      type: String
+    - contextPath: File.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: 'The file extension. For example: "xls".'
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in
+        file entries).
+      type: String
   - arguments:
     - default: false
       description: The ID of the user for which to get details. Leave empty to get
@@ -498,7 +542,7 @@ script:
     description: prints Archer's integration cache.
     execution: false
     name: archer-print-cache
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false

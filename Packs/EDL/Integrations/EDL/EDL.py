@@ -8,14 +8,14 @@ from multiprocessing import Process
 from gevent.pywsgi import WSGIServer
 from tempfile import NamedTemporaryFile
 from flask import Flask, Response, request
-from netaddr import IPAddress, iprange_to_cidrs
+from netaddr import IPAddress, IPSet
 from typing import Callable, List, Any, Dict, cast, Tuple
 from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 
 
 class Handler:
     @staticmethod
-    def write(msg):
+    def write(msg: str):
         demisto.info(msg)
 
 
@@ -60,7 +60,7 @@ class RequestArguments:
         self.drop_invalids = drop_invalids
         self.collapse_ips = collapse_ips
 
-    def is_request_change(self, last_update_data):
+    def is_request_change(self, last_update_data: Dict):
         if self.limit != last_update_data.get('last_limit'):
             return True
 
@@ -146,8 +146,9 @@ def refresh_edl_context(request_args: RequestArguments) -> str:
         out_dict, actual_indicator_amount = create_values_for_returned_dict(iocs, request_args)
 
     out_dict["last_run"] = date_to_timestamp(now)
-    out_dict["current_iocs"] = iocs
-    demisto.setIntegrationContext(out_dict)
+    out_dict["current_iocs"] = [{'value': ioc.get('value'), 'indicator_type': ioc.get('indicator_type')}
+                                for ioc in iocs]
+    set_integration_context(out_dict)
     return out_dict[EDL_VALUES_KEY]
 
 
@@ -204,7 +205,9 @@ def find_indicators_to_limit_loop(indicator_query: str, limit: int, total_fetche
     if not last_found_len:
         last_found_len = total_fetched
     while last_found_len == PAGE_SIZE and limit and total_fetched < limit:
-        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs', [])
+        fetched_iocs = demisto.searchIndicators(query=indicator_query, page=next_page, size=PAGE_SIZE).get('iocs')
+        # In case the result from searchIndicators includes the key `iocs` but it's value is None
+        fetched_iocs = fetched_iocs or []
         iocs.extend(fetched_iocs)
         last_found_len = len(fetched_iocs)
         total_fetched += last_found_len
@@ -222,36 +225,14 @@ def ip_groups_to_cidrs(ip_range_groups: list):
         list. a list of CIDRs.
     """
     ip_ranges = []  # type:List
-    for group in ip_range_groups:
+    for cidr in ip_range_groups:
         # handle single ips
-        if len(group) == 1:
-            ip_ranges.append(str(group[0]))
+        if len(cidr) == 1:
+            # CIDR with a single IP appears with "/32" suffix so handle them differently
+            ip_ranges.append(str(cidr[0]))
             continue
 
-        min_ip = group[0]
-        max_ip = group[-1]
-        moved_ip = False
-        # CIDR must begin with an even LSB
-        # if the first ip does not - separate it from the rest of the range
-        if (int(str(min_ip).split('.')[-1]) % 2) != 0:
-            ip_ranges.append(str(min_ip))
-            min_ip = group[1]
-            moved_ip = True
-
-        # CIDR must end with uneven LSB
-        # if the last ip does not - separate it from the rest of the range
-        if (int(str(max_ip).split('.')[-1]) % 2) == 0:
-            ip_ranges.append(str(max_ip))
-            max_ip = group[-2]
-            moved_ip = True
-
-        # if both min and max ips were shifted and there are only 2 ips in the range
-        # we added both ips by the shift and now we move to the next  range
-        if moved_ip and len(group) == 2:
-            continue
-
-        else:
-            ip_ranges.append(str(iprange_to_cidrs(min_ip, max_ip)[0].cidr))
+        ip_ranges.append(str(cidr))
 
     return ip_ranges
 
@@ -272,14 +253,12 @@ def ip_groups_to_ranges(ip_range_groups: list):
             ip_ranges.append(str(group[0]))
             continue
 
-        min_ip = group[0]
-        max_ip = group[-1]
-        ip_ranges.append(str(min_ip) + "-" + str(max_ip))
+        ip_ranges.append(str(group))
 
     return ip_ranges
 
 
-def ips_to_ranges(ips: list, collapse_ips):
+def ips_to_ranges(ips: list, collapse_ips: str):
     """Collapse IPs to Ranges or CIDRs.
 
     Args:
@@ -289,30 +268,14 @@ def ips_to_ranges(ips: list, collapse_ips):
     Returns:
         list. a list to Ranges or CIDRs.
     """
-    ips_range_groups = []  # type:List
-    ips = sorted(ips)
-
-    if len(ips) > 0:
-        ips_range_groups.append([ips[0]])
-
-    if len(ips) > 1:
-        for ip in ips[1:]:
-            appended = False
-
-            for group in ips_range_groups:
-                if IPAddress(int(ip) + 1) in group or IPAddress(int(ip) - 1) in group:
-                    group.append(ip)
-                    sorted(group)
-                    appended = True
-
-            if not appended:
-                ips_range_groups.append([ip])
 
     if collapse_ips == COLLAPSE_TO_RANGES:
+        ips_range_groups = IPSet(ips).iter_ipranges()
         return ip_groups_to_ranges(ips_range_groups)
 
     else:
-        return ip_groups_to_cidrs(ips_range_groups)
+        cidrs = IPSet(ips).iter_cidrs()
+        return ip_groups_to_cidrs(cidrs)
 
 
 def create_values_for_returned_dict(iocs: list, request_args: RequestArguments) -> Tuple[dict, int]:
@@ -395,7 +358,8 @@ def get_edl_ioc_values(on_demand: bool,
     # on_demand ignores cache
     if on_demand:
         if request_args.is_request_change(integration_context):
-            values_str = get_ioc_values_str_from_context(integration_context, request_args=request_args, iocs=current_iocs)
+            values_str = get_ioc_values_str_from_context(integration_context, request_args=request_args,
+                                                         iocs=current_iocs)
 
         else:
             values_str = get_ioc_values_str_from_context(integration_context, request_args=request_args)
@@ -432,7 +396,7 @@ def get_ioc_values_str_from_context(integration_context: dict,
         iocs = iocs[request_args.offset: request_args.limit + request_args.offset]
         returned_dict, _ = create_values_for_returned_dict(iocs, request_args=request_args)
         integration_context['last_output'] = returned_dict
-        demisto.setIntegrationContext(integration_context)
+        set_integration_context(integration_context)
 
     else:
         returned_dict = integration_context.get('last_output', {})
@@ -498,7 +462,7 @@ def route_edl_values() -> Response:
     values = get_edl_ioc_values(
         on_demand=params.get('on_demand'),
         request_args=request_args,
-        integration_context=demisto.getIntegrationContext(),
+        integration_context=get_integration_context(),
         cache_refresh_rate=params.get('cache_refresh_rate'),
     )
     return Response(values, status=200, mimetype='text/plain')
@@ -547,7 +511,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(_, params):
+def test_module(_: Dict, params: Dict):
     """
     Validates:
         1. Valid port.
@@ -577,7 +541,7 @@ def test_module(_, params):
     return 'ok', {}, {}
 
 
-def run_long_running(params, is_test=False):
+def run_long_running(params: Dict, is_test: bool = False):
     """
     Start the long running server
     :param params: Demisto params
@@ -636,18 +600,18 @@ def run_long_running(params, is_test=False):
             os.unlink(private_key_path)
 
 
-def update_edl_command(args, params):
+def update_edl_command(args: Dict, params: Dict):
     """
     Updates the EDL values and format on demand
     """
-    on_demand = demisto.params().get('on_demand')
+    on_demand = params.get('on_demand')
     if not on_demand:
         raise DemistoException(
             '"Update EDL On Demand" is off. If you want to update the EDL manually please toggle it on.')
     limit = try_parse_integer(args.get('edl_size', params.get('edl_size')), EDL_LIMIT_ERR_MSG)
     print_indicators = args.get('print_indicators')
-    query = args.get('query')
-    collapse_ips = args.get('collapse_ips')
+    query = args.get('query', '')
+    collapse_ips = args.get('collapse_ips', DONT_COLLAPSE)
     url_port_stripping = args.get('url_port_stripping', '').lower() == 'true'
     drop_invalids = args.get('drop_invalids', '').lower() == 'true'
     offset = try_parse_integer(args.get('offset', 0), EDL_OFFSET_ERR_MSG)
@@ -673,18 +637,20 @@ def main():
         raise DemistoException(err_msg)
 
     command = demisto.command()
-    demisto.debug('Command being called is {}'.format(command))
+    demisto.debug(f'Command being called is {command}')
     commands = {
         'test-module': test_module,
-        'edl-update': update_edl_command
+        'edl-update': update_edl_command,
     }
 
     try:
         if command == 'long-running-execution':
             run_long_running(params)
-        else:
+        elif command in commands:
             readable_output, outputs, raw_response = commands[command](demisto.args(), params)
             return_outputs(readable_output, outputs, raw_response)
+        else:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)

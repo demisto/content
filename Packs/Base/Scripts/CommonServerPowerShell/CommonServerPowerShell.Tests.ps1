@@ -11,6 +11,24 @@ Describe 'Check-DemistoServerRequest' {
 }
 
 Describe 'Check-UtilityFunctions' {
+    It "VersionEqualGreaterThen" {
+        class DemistoObject {
+            DemistoObject () {
+            }
+
+            [array] DemistoVersion () {
+                return @{
+                    "version" = "6.0.0-build"
+                }
+            }
+        }
+        [DemistoObject]$demisto = [DemistoObject]::New()
+        DemistoVersionGreaterEqualThen -version "6.0.0"  | Should -BeTrue
+        DemistoVersionGreaterEqualThen "5.0.1-build"  | Should -BeTrue
+        DemistoVersionGreaterEqualThen -version "6.0.1"  | Should -BeFalse
+        DemistoVersionGreaterEqualThen -version "6.0.2-build"  | Should -BeFalse
+    }
+
     It "ArgToList" {
         $r = argToList "a,b,c,2"
         $r.GetType().IsArray | Should -BeTrue
@@ -145,6 +163,13 @@ Describe 'Check-UtilityFunctions' {
         }
         It "Check with a list of hashtables"{
              $HashTableWithOneEntry | TableToMarkdown | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n"
+        }
+        It "Check with False boolean that is not $null" {
+            @{test=$false} | TableToMarkdown | Should -Be "| test`n| ---`n| False`n"
+        }
+        It "Check with PSObject that nested list" {
+            $OneElementObject += New-Object PSObject -Property @{Index=1;Name=@('test1';'test2')}
+            $OneElementObject | TableToMarkdown | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n| 1 | \[`"test1`",`"test2`"\]`n"
         }
         
     }

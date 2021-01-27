@@ -1,0 +1,68 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "ArgusCaseMapper",
+    "mapping": {
+        "Argus Case": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Argus Case Category": {
+                    "complex": null,
+                    "simple": "category.shortName"
+                },
+                "Argus Case ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Argus Case Service": {
+                    "complex": null,
+                    "simple": "service.shortName"
+                },
+                "Argus Case Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "Argus Customer ID": {
+                    "complex": null,
+                    "simple": "customer.id"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "category": {
+                    "complex": {
+                        "accessor": "name",
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "createdTimestamp",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Argus Case Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

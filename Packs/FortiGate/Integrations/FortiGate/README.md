@@ -6,7 +6,7 @@
 <h2>Configure FortiGate on Demisto</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for FortiGate_copy.</li>
+<li>Search for FortiGate.</li>
 <li>Click <strong>Add instance</strong> to create and configure a new integration instance.<br>
 <ul>
 <li>

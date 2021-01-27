@@ -34,7 +34,7 @@ def results_return(command, thingtoreturn):
             outputs_prefix='Spamcop.' + str(command),
             outputs_key_field='indicator',
             outputs=ip_reputation,
-            indicators=[ip]
+            indicator=ip
         )
         return_results(results)
 

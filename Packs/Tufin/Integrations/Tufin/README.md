@@ -43,8 +43,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### 1. tufin-search-topology
 ---
 Search the Tufin Topology Map
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
+
 ##### Base Command
 
 `tufin-search-topology`
@@ -74,8 +73,6 @@ Search the Tufin Topology Map
 ### 2. tufin-search-topology-image
 ---
 Search the Tufin Topology Map, returning an image
-##### Required Permissions
-**FILL IN REQUIRED PERMISSIONS HERE**
 ##### Base Command
 
 `tufin-search-topology-image`
@@ -354,12 +351,6 @@ Get SecureApp application connections
 
 ##### Human Readable Output
 ![image](https://raw.githubusercontent.com/demisto/content/02e1aa1b9ec01b73d5c6d1c15584271a4f0e3fa6/Packs/Tufin/doc_files/tufin-search-application-connections.png)
-
-## Additional Information
----
-
-## Known Limitations
----
 
 ## Troubleshooting
 ---

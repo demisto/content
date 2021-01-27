@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "User Profile"
+ ],
+ "caseInsensitive": true,
+ "cliName": "givenname",
+ "closeForm": false,
+ "content": true,
+ "description": "Given Name",
+ "editForm": true,
+ "group": 2,
+ "hidden": false,
+ "id": "indicator_givenname",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Given Name",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

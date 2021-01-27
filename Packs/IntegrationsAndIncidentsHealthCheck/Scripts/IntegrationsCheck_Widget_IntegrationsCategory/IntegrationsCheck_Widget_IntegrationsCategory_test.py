@@ -11,8 +11,8 @@ from IntegrationsCheck_Widget_IntegrationsCategory import main, random
       '"#3e8"}, {"data": [2], "name": "Endpoint", "color": "#3e8"}, {"data": [1], '
       '"name": "Vulnerability Management", "color": "#3e8"}, {"data": [1], "name": '
       '"Forensics & Malware Analysis", "color": "#3e8"}]')),
-    ([{'Contents': ''}], '{"data": [0], "name": "N\\\\A", "color": "#00CD33"}'),
-    ([{}], '{"data": [0], "name": "N\\\\A", "color": "#00CD33"}'),
+    ([{'Contents': ''}], '[{"data": [0], "name": "N\\\\A", "color": "#00CD33"}]'),
+    ([{}], '[{"data": [0], "name": "N\\\\A", "color": "#00CD33"}]'),
 ])
 def test_script(mocker, list_, expected):
     mocker.patch.object(random, 'randint', return_value=1000)

@@ -84,11 +84,20 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "firstseen",
+								"fieldId": "published",
 								"height": 22,
-								"id": "4ccc29d0-ccca-11ea-a049-6b4b59f3b34f",
+								"id": "9f819ad0-d188-11ea-a049-6b4b59f3b34f",
 								"index": 0,
 								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "firstseenbysource",
+								"height": 22,
+								"id": "abd48da0-1856-11eb-9714-1bd5b27d7ceb",
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -98,42 +107,31 @@
 								"fieldId": "modified",
 								"height": 22,
 								"id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
-								"index": 1,
+								"index": 2,
 								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "published",
-								"height": 22,
-								"id": "9f819ad0-d188-11ea-a049-6b4b59f3b34f",
-								"index": 0,
-								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
-								"sectionItemType": "field",
-								"startCol": 2
-							},
-							{
-								"dropEffect": "move",
-								"endCol": 4,
+								"endCol": 2,
 								"fieldId": "stixid",
 								"height": 22,
 								"id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
-								"index": 1,
+								"index": 3,
 								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
 								"sectionItemType": "field",
-								"startCol": 2
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
 						"minH": 1,
 						"minW": 1,
 						"moved": false,
-						"name": "Report Details",
+						"name": "STIX Report Details",
 						"static": false,
-						"w": 2,
-						"x": 0,
+						"w": 1,
+						"x": 1,
 						"y": 0
 					},
 					{
@@ -149,7 +147,7 @@
 						"type": "indicatorTimeline",
 						"w": 1,
 						"x": 2,
-						"y": 10
+						"y": 9
 					},
 					{
 						"h": 3,
@@ -164,7 +162,7 @@
 						"type": "comments",
 						"w": 1,
 						"x": 2,
-						"y": 4
+						"y": 3
 					},
 					{
 						"displayType": "CARD",
@@ -238,22 +236,6 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 1
-					},
-					{
-						"displayType": "ROW",
-						"h": 1,
-						"hideName": false,
-						"i": "main-d59381d0-aa49-11ea-9e46-5ff91c1cf9b7",
-						"items": [],
-						"maxW": 3,
-						"minH": 1,
-						"minW": 1,
-						"moved": false,
-						"name": "Actions",
-						"static": false,
-						"w": 1,
-						"x": 2,
 						"y": 0
 					},
 					{
@@ -292,7 +274,7 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 3
+						"y": 2
 					},
 					{
 						"displayType": "ROW",
@@ -348,7 +330,53 @@
 						"static": false,
 						"w": 1,
 						"x": 2,
-						"y": 7
+						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "main-bb9f9790-1854-11eb-9714-1bd5b27d7ceb",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "indicatortype",
+								"height": 22,
+								"id": "d03c14d0-1854-11eb-9714-1bd5b27d7ceb",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "firstseen",
+								"height": 22,
+								"id": "4ccc29d0-ccca-11ea-a049-6b4b59f3b34f",
+								"index": 1,
+								"listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "lastseen",
+								"height": 22,
+								"id": "bae70b10-1856-11eb-9714-1bd5b27d7ceb",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "XSOAR Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
 					}
 				],
 				"type": "custom"

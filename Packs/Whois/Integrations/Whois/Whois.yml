@@ -319,7 +319,7 @@ script:
     - contextPath: Domain.Whois.QueryResult
       description: Whether the query found a matching result.
       type: Boolean
-  dockerimage: demisto/ippysocks:1.0.0.10948
+  dockerimage: demisto/ippysocks:1.0.0.13524
   isfetch: false
   runonce: false
   script: ''

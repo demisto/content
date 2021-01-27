@@ -56,7 +56,6 @@ class MsGraphClient:
                  redirect_uri, auth_code):
         grant_type = AUTHORIZATION_CODE if self_deployed else CLIENT_CREDENTIALS
         resource = None if self_deployed else ''
-        tenant_id = demisto.getIntegrationContext().get('current_refresh_token') or tenant_id
         self.ms_client = MicrosoftClient(tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                                          base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed,
                                          redirect_uri=redirect_uri, auth_code=auth_code, grant_type=grant_type,

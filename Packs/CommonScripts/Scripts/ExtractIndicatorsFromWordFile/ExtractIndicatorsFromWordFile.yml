@@ -24,7 +24,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python2
-dockerimage: demisto/office-utils:1.0.0.91
+dockerimage: demisto/office-utils:2.0.0.5456
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0

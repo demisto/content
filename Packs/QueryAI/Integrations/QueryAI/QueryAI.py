@@ -15,20 +15,21 @@ DEFAULT_TIMEOUT = 60    # in seconds
 class Client(BaseClient):   # type: ignore
 
     def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None,
-                 email=None, license_key=None, connection_params='{}', alias=None, timeout=DEFAULT_TIMEOUT):
+                 api_token=None, connection_params='{}', alias=None, timeout=DEFAULT_TIMEOUT):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
-        self._email = email
-        self._license_key = license_key
+        self._api_token = api_token
         self.alias = alias
         self.connection_params = safe_load_json(connection_params) if connection_params else {}
         self.timeout = timeout
+        self._headers = {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Authorization': self._api_token
+        }
 
     def queryai_http_request(self, method, url_suffix, json_data=None, params=None, data=None, **kwargs):
         if not json_data:
             json_data = {}
-        json_data['email'] = self._email
-        json_data['license_key'] = self._license_key
-
         return self._http_request(
             method=method,
             url_suffix=url_suffix,
@@ -87,7 +88,7 @@ class Client(BaseClient):   # type: ignore
 
 
 def generate_drilldown_url(query, alias, time_text=None, workflow_params=None):
-    base_drilldown = 'https://ai.query.ai/login;'
+    base_drilldown = 'https://app.query.ai/login;'
     questions_url_param = f'questions={urllib.parse.quote(query)};'
     alias_url_param = f'alias={urllib.parse.quote(alias)};'
     drilldown_url = base_drilldown + questions_url_param + alias_url_param
@@ -166,7 +167,7 @@ def test_module(client: Client) -> str:
         client.run_query(query='hello')
     except DemistoException as e:
         if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure License Key and Email is correctly set'
+            return 'Authorization Error: make sure API token is correctly set'
         elif 'requests.exceptions.ConnectionError' in str(e) or 'Error in API call' in str(e):
             return 'Connection Error - Check that the Query.AI Proxy URL parameter is correct.'
         else:
@@ -176,20 +177,16 @@ def test_module(client: Client) -> str:
 
 def main() -> None:
     """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
     """
+    params = demisto.params()
+    api_token = params.get('api_token')
+    base_url = urljoin(params['url'], '/api/v1')
+    alias = params.get('alias')
+    connection_params = params.get('connection_params', '{}')
+    timeout = int(params.get('timeout', DEFAULT_TIMEOUT))
 
-    email = demisto.params().get('email')
-    license_key = demisto.params().get('license_key')
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-    alias = demisto.params().get('alias')
-    connection_params = demisto.params().get('connection_params', '{}')
-    timeout = int(demisto.params().get('timeout', DEFAULT_TIMEOUT))
-
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -199,8 +196,7 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy,
-            email=email,
-            license_key=license_key,
+            api_token=api_token,
             alias=alias,
             connection_params=connection_params,
             timeout=timeout

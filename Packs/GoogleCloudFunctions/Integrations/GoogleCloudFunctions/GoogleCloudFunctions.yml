@@ -148,7 +148,7 @@ script:
     - contextPath: GoogleCloudFunctions.Execution.error
       description: Either a system or user-function generated error. Set if the execution was not successful.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.6697
+  dockerimage: demisto/google-api-py3:1.0.0.13945
   isfetch: false
   runonce: false
   script: '-'

@@ -44,6 +44,11 @@
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
+<h2 id="fetch-incidents-">Fetch incidents:</h2>
+<p>You can apply additional (optional) filters for the fetch-incident query using the <code>Query to fetch offenses</code> integration parameter. For more information on how to use the filter syntax, see the <a href="https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.3/com.ibm.qradar.doc/c_rest_api_filtering.html">QRadar filter documentation</a> and <a href="https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.2/com.ibm.qradar.doc/11.0--siem-offenses-GET.html">QRadar offense documentation</a>.</p>
+<ul>
+<li>Full Incident Enrichment - Clear this checkbox to disable QRadar offense enrichment performed in fetch-incidents. This might help if you encounter a timeout while fetching new incidents.</li>
+</ul>
 <h2>Commands</h2>
 <p>You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>

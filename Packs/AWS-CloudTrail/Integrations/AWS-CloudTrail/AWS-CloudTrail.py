@@ -54,9 +54,9 @@ def aws_session(service='cloudtrail', region=None, roleArn=None, roleSessionName
         kwargs.update({'Policy': rolePolicy})
     elif AWS_ROLE_POLICY is not None:
         kwargs.update({'Policy': AWS_ROLE_POLICY})
-    if kwargs and AWS_ACCESS_KEY_ID is None:
+    if kwargs and not AWS_ACCESS_KEY_ID:
 
-        if AWS_ACCESS_KEY_ID is None:
+        if not AWS_ACCESS_KEY_ID:
             sts_client = boto3.client('sts', config=config, verify=VERIFY_CERTIFICATE)
             sts_response = sts_client.assume_role(**kwargs)
             if region is not None:
@@ -122,6 +122,17 @@ def aws_session(service='cloudtrail', region=None, roleArn=None, roleSessionName
             )
 
     return client
+
+
+def handle_returning_date_to_string(date_obj):
+    """Gets date object to string"""
+    # if the returning date is a string leave it as is.
+    if isinstance(date_obj, str):
+        return date_obj
+
+    # if event time is datetime object - convert it to string.
+    else:
+        return date_obj.isoformat()
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -377,13 +388,13 @@ def lookup_events(args):
     for response in paginator.paginate(**kwargs):
         for i, event in enumerate(response['Events']):
             data.append({
-                'EventId': event['EventId'],
-                'EventName': event['EventName'],
-                'EventTime': datetime.strptime(event['EventTime'], '%Y-%m-%dT%H:%M:%S'),
-                'EventSource': event['EventSource'],
-                'ResourceName': event['Resources'][0]['ResourceName'],
-                'ResourceType': event['Resources'][0]['ResourceType'],
-                'CloudTrailEvent': event['CloudTrailEvent']
+                'EventId': event.get('EventId'),
+                'EventName': event.get('EventName'),
+                'EventTime': handle_returning_date_to_string(event.get('EventTime', '01-01-01T00:00:00')),
+                'EventSource': event.get('EventSource'),
+                'ResourceName': event.get('Resources')[0].get('ResourceName') if event.get('Resources') else None,
+                'ResourceType': event.get('Resources')[0].get('ResourceType') if event.get('Resources') else None,
+                'CloudTrailEvent': event.get('CloudTrailEvent')
             })
             if 'Username' in event:
                 data[i].update({'Username': event['Username']})
@@ -422,9 +433,9 @@ try:
 except ResponseParserError as e:
     return_error('Could not connect to the AWS endpoint. Please check that the region is valid.\n {error}'.format(
         error=type(e)))
-    LOG(str(e))
+    demisto.error(traceback.format_exc())
 
 except Exception as e:
-    LOG(str(e))
+    demisto.error(traceback.format_exc())
     return_error('Error has occurred in the AWS CloudTrail Integration: {code}\n {message}'.format(
         code=type(e), message=str(e)))

@@ -4,7 +4,7 @@ commonfields:
 name: ARIA Packet Intelligence
 display: ARIA Packet Intelligence
 category: Network Security
-description: 'The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integrates with Demisto to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.'
+description: 'The ARIA Cybesecurity Solutions Software-Defined Security (SDS)  platform integrates with Cortex XSOAR to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.'
 configuration:
 - display: SDSo Base URL (e.g. http://<IP address or FQDN of SDSo Node>:7443)
   name: sdso
@@ -41,18 +41,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to create.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.BlockConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.BlockConversation.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.BlockConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -63,18 +59,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.UnblockConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.UnblockConversation.Status
-      description: 'Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.UnblockConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -126,18 +118,14 @@ script:
       description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191. If the trigger_type is re-trigger-ms or re-triggersec, this is the total amount of time (in msecs or secs), respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.RecordConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.RecordConversation.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.RecordConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -148,18 +136,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.StopRecordingConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.StopRecordingConversation.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.StopRecordingConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -207,18 +191,14 @@ script:
     - name: trigger_value
       required: true
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191. If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.AlertConversation.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.AlertConversation.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.AlertConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -229,18 +209,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.MuteAlertConversation.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.MuteAlertConversation.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.MuteAlertConversation.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -254,18 +230,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to create.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.BlockDestPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.BlockDestPort.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.BlockDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -276,18 +248,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.UnblockDestPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.UnblockDestPort.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.UnblockDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -330,18 +298,14 @@ script:
       description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.RecordDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.RecordDestPort.Status
-      description: 'Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.RecordDestPort.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -352,18 +316,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.StopRecordingDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.StopRecordingDestPort.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.StopRecordingDestPort.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -402,18 +362,14 @@ script:
     - name: trigger_value
       required: true
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.AlertDestPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.AlertDestPort.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.AlertDestPort.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -424,18 +380,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.MuteAlertDestPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.MuteAlertDestPort.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.MuteAlertDestPort.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -449,18 +401,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to create.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.BlockSrcPort.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.BlockSrcPort.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.BlockSrcPort.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -471,18 +419,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.UnblockSrcPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.UnblockSrcPort.Status
-      description: 'Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.UnblockSrcPort.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -525,18 +469,14 @@ script:
       description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.RecordSrcPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.RecordSrcPort.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.RecordSrcPort.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -547,18 +487,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.StopRecordingSrcPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.StopRecordingSrcPort.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.StopRecordingSrcPort.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -597,18 +533,14 @@ script:
     - name: trigger_value
       required: true
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.AlertSrcPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.AlertSrcPort.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.AlertSrcPort.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -619,18 +551,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.MuteAlertSrcPort.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.MuteAlertSrcPort.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.MuteAlertSrcPort.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -644,18 +572,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to create.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.BlockDestSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.BlockDestSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.BlockDestSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -666,18 +590,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.UnblockDestSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.UnblockDestSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.UnblockDestSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -720,18 +640,14 @@ script:
       description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.RecordDestSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.RecordDestSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.RecordDestSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -742,18 +658,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.StopRecordingDestSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.StopRecordingDestSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.StopRecordingDestSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -792,18 +704,14 @@ script:
     - name: trigger_value
       required: true
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.AlertDestSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.AlertDestSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.AlertDestSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -814,18 +722,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.MuteAlertDestSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.MuteAlertDestSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.MuteAlertDestSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -839,18 +743,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to create.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.BlockSrcSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.BlockSrcSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.BlockSrcSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -861,18 +761,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.UnblockSrcSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.UnblockSrcSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also includes information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.UnblockSrcSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -915,18 +811,14 @@ script:
       description: 'The frequency of the alert. one-shot: The alert is triggered when the number of packets matching the criteria reaches the threshold specified in the trigger_value field. After the alert triggers, it is disabled until the flow expires or times out.  re-trigger-count: The alert is triggered when the number of packets that match the criteria reaches the threshold specified in the trigger_value field. The counter then resets to 0, and the alert is triggered again the next time the threshold is met. re-trigger-timed-ms: The alert is triggered, and then the application waits the amount of time (in msecs) defined in the trigger_value field. Once this time passes, the alert is triggered again. re-trigger-timed-sec: The alert is triggered, and then the application waits the amount of time (in seconds) defined in the trigger_value field. After this time passes, the alert is triggered again.'
     - name: trigger_value
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.RecordSrcSubnet.Rule
       description: 'Specifies the name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.RecordSrcSubnet.Status
-      description: 'Returns the response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.RecordSrcSubnet.Endpoints
       description: 'Returns endpoints information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -937,18 +829,14 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.StopRecordingSrcSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.StopRecordingSrcSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.StopRecordingSrcSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -987,18 +875,14 @@ script:
     - name: trigger_value
       required: true
       description: The threshold that must be met before the alert is triggered. The value entered here depends on the trigger_type. If the trigger_type is one-shot or retrigger-count, this is the total number of packets that must be received before the alert is triggered. The valid range is 1-8191, If the trigger_type is re-trigger-ms or re-triggersec, this is the total number of msecs or secs, respectively, that must elapse before the alert is triggered again. The valid range is 1-8191.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is added to every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.AlertSrcSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.AlertSrcSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.AlertSrcSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
@@ -1009,24 +893,20 @@ script:
     - name: rule_name
       required: true
       description: The name of the rule to delete.
-    - name: label_sia_group
-      description: 'The name of the group to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_name
-      description: 'The name of the SIA. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
-    - name: label_sia_region
-      description: 'The name of the region to which the SIA belongs. NOTE: Only two labels are allowed. If you enter values for all three labels, the command will fail. Also, if no labels are provided (i.e., they are empty), the rule is deleted from every SIA attached to the SDSo.'
+    - name: rcs
+      description: 'The remediation configuration string. Please refer to the integration documentation for more information.'
     outputs:
     - contextPath: Aria.MuteAlertSrcSubnet.Rule
       description: 'The name of the rule and the settings that define the rule.'
       type: string
     - contextPath: Aria.MuteAlertSrcSubnet.Status
-      description: 'The response code, the state of the command, and the timestamp indicating when the command completed. If an error occurs or the response code is not 201, this also returns information about the error.'
+      description: 'The state of the command, and the timestamp indicating when the command completed. Possible states include "Success", "Failure", or "Endpoint matching RCS not found".'
       type: string
     - contextPath: Aria.MuteAlertSrcSubnet.Endpoints
       description: 'Endpoint information, such as the IP address, about the SIAs that were modified based on the rule change.'
       type: string
     description: Removes a named rule from the source subnet logic block, disabling the alerts.
-  dockerimage: demisto/python3:3.7.4.1502
+  dockerimage: demisto/python3:3.8.6.13358
   runonce: false
 tests:
 - No test

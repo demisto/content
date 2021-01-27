@@ -24,7 +24,7 @@ jobs:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
         run: |
           echo "Updating contribution base branches (contrib/*)"
-          cd Utils/contribution_sync
+          cd Utils/github_workflow_scripts
           pipenv install --dev
           pipenv run ./sync_contrib_base.py
           echo "Finished updating base branches"

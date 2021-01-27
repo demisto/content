@@ -239,11 +239,13 @@ script:
         return createTableEntry(title || "Incident:",incident, context);
     };
 
-
-    var fetchIncidents = function(query) {
+    var fetchIncidents = function(query, test_module=false) {
         var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/';
         if(query) {
             url += '?q=' + encodeURIComponent(query);
+        }
+        if (test_module) {
+            url += '?limit=1'
         }
         var token = login();
         var res = sendRequest(url, token);
@@ -310,7 +312,7 @@ script:
 
     switch (command) {
         case 'test-module':
-            fetchIncidents();
+            fetchIncidents(query=null, test_module=true);
             return 'ok';
         case 'fetch-incidents':
             return fetchIncidentsToDemisto();

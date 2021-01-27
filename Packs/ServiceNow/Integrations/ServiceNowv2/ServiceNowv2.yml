@@ -7,10 +7,17 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Username
+- display: Username/Client ID
   name: credentials
   required: false
   type: 9
+- additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?)
+    for more information.
+  display: Use OAuth Login
+  hidden: false
+  name: use_oauth
+  required: false
+  type: 8
 - additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request,
     sc_task or sc_req_item.'
   defaultvalue: incident
@@ -172,7 +179,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Custom fields on which to query. For example: state_code=AR,time_zone=PST.'
+      description: 'Custom fields on which to query. For example: state_code=AR;time_zone=PST.'
       isArray: false
       name: custom_fields
       required: false
@@ -182,6 +189,14 @@ script:
         context.
       isArray: true
       name: additional_fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -475,17 +490,6 @@ script:
       name: delivery_plan
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to display comments, work notes, and so on. Can be "true"
-        or "false".
-      isArray: false
-      name: display
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Ticket description.
       isArray: false
@@ -496,12 +500,6 @@ script:
       description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       isArray: false
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: Escalation
-      isArray: false
-      name: escalation
       required: false
       secret: false
     - default: false
@@ -769,6 +767,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -1040,17 +1046,6 @@ script:
       name: delivery_plan
       required: false
       secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Whether to display comments, work notes, and so on. Can be "true"
-        or "false".
-      isArray: false
-      name: display
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
     - default: false
       description: Ticket description.
       isArray: false
@@ -1061,12 +1056,6 @@ script:
       description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       isArray: false
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: Escalation.
-      isArray: false
-      name: escalation
       required: false
       secret: false
     - default: false
@@ -1326,6 +1315,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -1730,6 +1727,14 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new record in the specified ServiceNow table.
     execution: false
@@ -1790,6 +1795,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -2336,7 +2349,29 @@ script:
       the current incident, and should be used for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/python3:3.8.6.12176
+  - arguments:
+    - default: false
+      description: The username to use for login.
+      isArray: false
+      name: username
+      required: true
+      secret: true
+    - default: false
+      description: The password to use for login.
+      isArray: false
+      name: password
+      required: true
+      secret: true
+    deprecated: false
+    description: This function should be used once before running any command when
+      using OAuth2 authentication.
+    execution: false
+    name: servicenow-oauth-login
+  - deprecated: false
+    description: Test the instance configuration when using OAuth2 authentication.
+    execution: false
+    name: servicenow-oauth-test
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false
@@ -2350,4 +2385,5 @@ script:
   type: python
 tests:
 - servicenow_test_v2
+- ServiceNow_OAuth_Test
 fromversion: 5.0.0

@@ -14,6 +14,12 @@ class ResponseMock:
         return self._json
 
 
+class ObjectMocker(dict):
+    __getattr__ = dict.__getitem__
+    __setattr__ = dict.__setitem__
+    __delattr__ = dict.__delitem__
+
+
 def run_command_test(command_func, args, response_path, expected_result_path, mocker):
     with open(response_path, 'r') as response_f:
         response = ResponseMock(json.load(response_f))
@@ -118,6 +124,26 @@ def test_get_categories(mocker):
                      mocker=mocker)
 
 
+def test_get_categories_custom_only(mocker):
+    # zscaler-get-categories
+    import Zscaler
+    run_command_test(command_func=Zscaler.get_categories_command,
+                     args={'display_url': 'true', 'custom_only': True},
+                     response_path='test_data/responses/categories2.json',
+                     expected_result_path='test_data/results/get_categories.json',
+                     mocker=mocker)
+
+
+def test_url_quota_command(mocker):
+    # zscaler-url-quota
+    import Zscaler
+    run_command_test(command_func=Zscaler.url_quota_command,
+                     args={},
+                     response_path='test_data/responses/url_quota.json',
+                     expected_result_path='test_data/results/url_quota.json',
+                     mocker=mocker)
+
+
 def test_get_blacklist(mocker):
     # zscaler-get-blacklist
     import Zscaler
@@ -180,3 +206,156 @@ def test_url_multiple_arg(url, multiple, expected_data):
     request_data = m.last_request.json()
     assert len(request_data) == len(expected_data)
     assert request_data == expected_data
+
+
+def test_login__active_session(mocker):
+    """
+    Scenario: test login with an active session
+
+    Given:
+     - User has authorization to login
+     - There is an active session
+    When:
+     - login is called
+    Then:
+     - No login request is done
+     - Result is as expected
+    """
+    import Zscaler
+    mock_id = 'mock_id'
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={Zscaler.SESSION_ID_KEY: mock_id})
+    mocker.patch.object(Zscaler, 'test_module')
+    Zscaler.login()
+
+    assert Zscaler.DEFAULT_HEADERS['cookie'] == mock_id
+
+
+def test_login__no_active_session(mocker):
+    """
+    Scenario: test login when there is no active session
+
+    Given:
+     - User has authorization to login
+     - There is an active session
+    When:
+     - User wishes to login using login command
+    Then:
+     - Result is as expected
+    """
+    import Zscaler
+    mock_header = 'JSESSIONID=MOCK_ID; Path=/; Secure; HttpOnly'
+    Zscaler.API_KEY = 'Lcb38EvjtZVc'
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={})
+    mocker.patch.object(Zscaler, 'test_module')
+    mocker.patch.object(Zscaler, 'http_request', return_value=ObjectMocker({'headers': {'Set-Cookie': mock_header}}))
+    Zscaler.login()
+
+    assert Zscaler.DEFAULT_HEADERS['cookie'] == 'JSESSIONID=MOCK_ID'
+
+
+def test_login_command(mocker):
+    """
+    Scenario: test successful login command
+
+    Given:
+     - User provided valid credentials
+     - Integration context is empty
+    When:
+     - zscaler-login command is called
+    Then:
+     - Ensure logout is not called
+     - Ensure login is called
+     - Ensure readable output is as expected
+    """
+    import Zscaler
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={})
+    logout_mock = mocker.patch.object(Zscaler, 'logout')
+    login_mock = mocker.patch.object(Zscaler, 'login')
+    raw_res = Zscaler.login_command()
+
+    assert not logout_mock.called
+    assert login_mock.called
+    assert raw_res.readable_output == 'Zscaler session created successfully.'
+
+
+def test_login_command__load_from_context(mocker):
+    """
+    Scenario: test successful login command attempt with load from the context
+
+    Given:
+     - User has provided valid credentials
+     - Integration context has a previous session
+    When:
+     - zscaler-login command is called
+    Then:
+     - Ensure logout is called
+     - Ensure login is called
+     - Ensure readable output is as expected
+    """
+    import Zscaler
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={Zscaler.SESSION_ID_KEY: 'test_key'})
+    logout_mock = mocker.patch.object(Zscaler, 'logout')
+    login_mock = mocker.patch.object(Zscaler, 'login')
+    raw_res = Zscaler.login_command()
+
+    assert logout_mock.called
+    assert login_mock.called
+    assert raw_res.readable_output == 'Zscaler session created successfully.'
+
+
+def test_logout_command__no_context(mocker):
+    """
+    Scenario: logout when there's no active session
+
+    Given:
+     - There is no active session
+    When:
+     - logout command is performed
+    Then:
+     - Return readable output detailing no action was performed
+    """
+    import Zscaler
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={})
+    raw_res = Zscaler.logout_command()
+    assert raw_res.readable_output == 'No API session was found. No action was performed.'
+
+
+def test_logout_command__happy_context(mocker):
+    """
+    Scenario: logout when there's an active session
+
+    Given:
+     - There is an active session
+    When:
+     - logout command is performed
+    Then:
+     - Return readable output detailing logout was performed
+    """
+    import Zscaler
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={Zscaler.SESSION_ID_KEY: 'test_key'})
+    mocker.patch.object(Zscaler, 'logout', return_value=ResponseMock({}))
+    raw_res = Zscaler.logout_command()
+    assert raw_res.readable_output == "API session logged out of Zscaler successfully."
+
+
+def test_logout_command__context_expired(mocker):
+    """
+    Scenario: fail to logout with AuthorizationError when there's an active session
+
+    Given:
+     - There is an active session
+    When:
+     - logout command is performed
+     - logout action fails with AuthorizationError
+    Then:
+     - Return readable output detailing no logout was done
+    """
+    import Zscaler
+    mocker.patch.object(Zscaler, 'get_integration_context', return_value={Zscaler.SESSION_ID_KEY: 'test_key'})
+    mocker.patch.object(Zscaler, 'logout', side_effect=Zscaler.AuthorizationError(''))
+    raw_res = Zscaler.logout_command()
+    assert raw_res.readable_output == "API session is not authenticated. No action was performed."

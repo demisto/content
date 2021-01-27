@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <p>Use the CrowdStrike Falcon Sandbox integration to submit and analyze files and URLs.</p>
-<p>Supported File Types</p>
 <p>The maximum file upload size is 100 MB.</p>
+<p>Supported File Types:</p>
 <ul>
 <li>PE (.exe, .scr, .pif, .dll, .com, .cpl, and so on)</li>
 <li>Microsoft Word (.doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub)</li>
@@ -52,7 +52,7 @@
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Server URL (e.g., <a href="https://216.3.128.82/">https://216.3.128.82</a>)</strong></li>
+<li><strong>Server URL (e.g., https://216.3.128.82)</strong></li>
 <li><strong>API Key</strong></li>
 <li><strong>Secret Key (applicable only for v1)</strong></li>
 <li><strong>API Version (v1,v2)</strong></li>
@@ -727,9 +727,7 @@
             "description": "Windows 7 32 bit", 
             "VMs_invalid": 3, 
             "groupicon": "windows", 
-            "description_long": "", 
             "architecture": "WINDOWS", 
-            "is32bit": "true", 
             "ID": 100, 
             "VMs_busy": 3, 
             "analysisMode": "KERNELMODE"
@@ -739,9 +737,7 @@
             "description": "Windows 7 32 bit (HWP Support)", 
             "VMs_invalid": 3, 
             "groupicon": "windows", 
-            "description_long": "This environment can process Hangul Word Processor (HWP) files", 
             "architecture": "WINDOWS", 
-            "is32bit": "true", 
             "ID": 110, 
             "VMs_busy": 3, 
             "analysisMode": "KERNELMODE"
@@ -751,9 +747,7 @@
             "description": "Windows 7 64 bit", 
             "VMs_invalid": 0, 
             "groupicon": "windows", 
-            "description_long": null, 
             "architecture": "WINDOWS", 
-            "is32bit": "false", 
             "ID": 120, 
             "VMs_busy": 4, 
             "analysisMode": "KERNELMODE"
@@ -763,9 +757,7 @@
             "description": "Linux (Ubuntu 16.04, 64 bit)", 
             "VMs_invalid": 0, 
             "groupicon": "linux", 
-            "description_long": null, 
             "architecture": "WINDOWS", 
-            "is32bit": "false", 
             "ID": 300, 
             "VMs_busy": 0, 
             "analysisMode": "USERMODE"
@@ -775,9 +767,7 @@
             "description": "Android Static Analysis", 
             "VMs_invalid": 0, 
             "groupicon": "android", 
-            "description_long": "", 
             "architecture": "ANDROID", 
-            "is32bit": "false", 
             "ID": 200, 
             "VMs_busy": 0, 
             "analysisMode": "USERMODE"
@@ -789,9 +779,7 @@
             "description": "Windows 7 32 bit", 
             "VMs_invalid": 3, 
             "groupicon": "windows", 
-            "description_long": "", 
             "architecture": "WINDOWS", 
-            "is32bit": "true", 
             "ID": 100, 
             "VMs_busy": 3, 
             "analysisMode": "KERNELMODE"
@@ -801,9 +789,7 @@
             "description": "Windows 7 32 bit (HWP Support)", 
             "VMs_invalid": 3, 
             "groupicon": "windows", 
-            "description_long": "This environment can process Hangul Word Processor (HWP) files", 
             "architecture": "WINDOWS", 
-            "is32bit": "true", 
             "ID": 110, 
             "VMs_busy": 3, 
             "analysisMode": "KERNELMODE"
@@ -813,9 +799,7 @@
             "description": "Windows 7 64 bit", 
             "VMs_invalid": 0, 
             "groupicon": "windows", 
-            "description_long": null, 
             "architecture": "WINDOWS", 
-            "is32bit": "false", 
             "ID": 120, 
             "VMs_busy": 4, 
             "analysisMode": "KERNELMODE"
@@ -825,9 +809,7 @@
             "description": "Linux (Ubuntu 16.04, 64 bit)", 
             "VMs_invalid": 0, 
             "groupicon": "linux", 
-            "description_long": null, 
             "architecture": "WINDOWS", 
-            "is32bit": "false", 
             "ID": 300, 
             "VMs_busy": 0, 
             "analysisMode": "USERMODE"
@@ -837,9 +819,7 @@
             "description": "Android Static Analysis", 
             "VMs_invalid": 0, 
             "groupicon": "android", 
-            "description_long": "", 
             "architecture": "ANDROID", 
-            "is32bit": "false", 
             "ID": 200, 
             "VMs_busy": 0, 
             "analysisMode": "USERMODE"

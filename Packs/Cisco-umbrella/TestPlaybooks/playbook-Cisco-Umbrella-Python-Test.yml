@@ -1011,7 +1011,7 @@ tasks:
       - "35"
     scriptarguments:
       emails:
-        simple: dns@google.com
+        simple: dns@google.com,SomeMail@gmail.com
       limit: {}
       offset: {}
       sort: {}
@@ -1274,14 +1274,11 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isExists
           left:
             value:
               simple: Umbrella.AssociatedDomains.Data.Domains.Name
             iscontext: true
-          right:
-            value:
-              simple: careersgoogle.com
     view: |-
       {
         "position": {

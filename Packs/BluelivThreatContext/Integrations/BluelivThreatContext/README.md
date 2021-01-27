@@ -1,5 +1,5 @@
 The Threat Context module provides SOC, Incident Response and Threat Intelligence teams with continuously updated and intuitive information around threat actors, campaigns, malware indicators, attack patterns, tools, signatures and CVEs.
-This integration was integrated and tested with version xx of Blueliv ThreatContext
+
 ## Configure Blueliv ThreatContext on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

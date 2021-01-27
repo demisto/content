@@ -1,17 +1,19 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import os
 import socket
 import ssl
 from pathlib import Path
 from typing import List, Dict, Optional, Any
-
-import demistomock as demisto  # noqa: F401
+import subprocess
+import re
 import pem
-from CommonServerPython import *  # noqa: F401
 from cryptography import x509
+from cryptography.x509.extensions import ExtensionNotFound
 from cryptography.hazmat.backends import default_backend
 
 
-def parse_issuer_certificate_attr(certificate: x509.Name, oid: x509.ObjectIdentifier) -> Optional[List[str]]:
+def parse_certificate_object_identifier_name(certificate: x509.Name, oid: x509.ObjectIdentifier) -> Optional[List[str]]:
     """ Get attribute from decoded certificate.
 
     Args:
@@ -22,6 +24,26 @@ def parse_issuer_certificate_attr(certificate: x509.Name, oid: x509.ObjectIdenti
         list: Decoded values.
     """
     attributes = [attr.value for attr in certificate.get_attributes_for_oid(oid)]
+
+    return attributes if attributes else None
+
+
+def parse_certificate_object_identifier_extentions(certificate: x509.Extensions, oid: x509.ObjectIdentifier) -> \
+        Optional[List[str]]:
+    """ Get attribute from decoded certificate extension.
+
+    Args:
+        certificate: Certificate as x509.Certificate .
+        oid: Enum value from x509.ExtentionOID .
+
+    Returns:
+        list: Decoded values.
+    """
+    try:
+        values = certificate.get_extension_for_oid(oid).value
+        attributes = [item.value for item in values]    # type: ignore[attr-defined]
+    except ExtensionNotFound:
+        attributes = []
 
     return attributes if attributes else None
 
@@ -37,36 +59,58 @@ def certificate_to_ec(certificate_name: x509.Name) -> dict:
     """
     return {
         # Contact details
-        "EmailAddress": parse_issuer_certificate_attr(certificate_name, x509.NameOID.EMAIL_ADDRESS),
-        "SurName": parse_issuer_certificate_attr(certificate_name, x509.NameOID.SURNAME),
+        "EmailAddress": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.EMAIL_ADDRESS),
+        "SurName": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.SURNAME),
         # Location related
-        "CountryName": parse_issuer_certificate_attr(certificate_name, x509.NameOID.COUNTRY_NAME),
-        "StateOrProvinceName": parse_issuer_certificate_attr(certificate_name, x509.NameOID.STATE_OR_PROVINCE_NAME),
-        "LocalityName": parse_issuer_certificate_attr(certificate_name, x509.NameOID.LOCALITY_NAME),
-        "JurisdictionCountryName": parse_issuer_certificate_attr(certificate_name,
-                                                                 x509.NameOID.JURISDICTION_COUNTRY_NAME),
-        "JurisdictionLocalityName": parse_issuer_certificate_attr(certificate_name,
-                                                                  x509.NameOID.JURISDICTION_LOCALITY_NAME),
-        "JurisdictionStateOrProvinceName": parse_issuer_certificate_attr(certificate_name,
-                                                                         x509.NameOID.JURISDICTION_STATE_OR_PROVINCE_NAME),
-        "PostalAddress": parse_issuer_certificate_attr(certificate_name, x509.NameOID.POSTAL_ADDRESS),
-        "PostalCode": parse_issuer_certificate_attr(certificate_name, x509.NameOID.POSTAL_CODE),
-        "StreetAddress": parse_issuer_certificate_attr(certificate_name, x509.NameOID.STREET_ADDRESS),
+        "CountryName": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.COUNTRY_NAME),
+        "StateOrProvinceName": parse_certificate_object_identifier_name(certificate_name,
+                                                                        x509.NameOID.STATE_OR_PROVINCE_NAME),
+        "LocalityName": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.LOCALITY_NAME),
+        "JurisdictionCountryName": parse_certificate_object_identifier_name(certificate_name,
+                                                                            x509.NameOID.JURISDICTION_COUNTRY_NAME),
+        "JurisdictionLocalityName": parse_certificate_object_identifier_name(certificate_name,
+                                                                             x509.NameOID.JURISDICTION_LOCALITY_NAME),
+        "JurisdictionStateOrProvinceName": parse_certificate_object_identifier_name(
+            certificate_name,
+            x509.NameOID.JURISDICTION_STATE_OR_PROVINCE_NAME),
+        "PostalAddress": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.POSTAL_ADDRESS),
+        "PostalCode": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.POSTAL_CODE),
+        "StreetAddress": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.STREET_ADDRESS),
         # Domain / URL
-        "DomainNameQualifier": parse_issuer_certificate_attr(certificate_name, x509.NameOID.DN_QUALIFIER),
-        "DomainComponent": parse_issuer_certificate_attr(certificate_name, x509.NameOID.DOMAIN_COMPONENT),
-        "GenerationQualifier": parse_issuer_certificate_attr(certificate_name, x509.NameOID.GENERATION_QUALIFIER),
-        "GivenName": parse_issuer_certificate_attr(certificate_name, x509.NameOID.GIVEN_NAME),
-        "CommonName": parse_issuer_certificate_attr(certificate_name, x509.NameOID.COMMON_NAME),
+        "DomainNameQualifier": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.DN_QUALIFIER),
+        "DomainComponent": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.DOMAIN_COMPONENT),
+        "GenerationQualifier": parse_certificate_object_identifier_name(certificate_name,
+                                                                        x509.NameOID.GENERATION_QUALIFIER),
+        "GivenName": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.GIVEN_NAME),
+        "CommonName": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.COMMON_NAME),
         # Business
-        "BusinessCategory": parse_issuer_certificate_attr(certificate_name, x509.NameOID.BUSINESS_CATEGORY),
-        "OrganizationName": parse_issuer_certificate_attr(certificate_name, x509.NameOID.ORGANIZATION_NAME),
-        "OrganizationalUnitName": parse_issuer_certificate_attr(certificate_name,
-                                                                x509.NameOID.ORGANIZATIONAL_UNIT_NAME),
+        "BusinessCategory": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.BUSINESS_CATEGORY),
+        "OrganizationName": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.ORGANIZATION_NAME),
+        "OrganizationalUnitName": parse_certificate_object_identifier_name(certificate_name,
+                                                                           x509.NameOID.ORGANIZATIONAL_UNIT_NAME),
         # General
-        "Title": parse_issuer_certificate_attr(certificate_name, x509.NameOID.TITLE),
-        "SerialNumber": parse_issuer_certificate_attr(certificate_name, x509.NameOID.SERIAL_NUMBER),
-        "Pseudonym": parse_issuer_certificate_attr(certificate_name, x509.NameOID.PSEUDONYM),
+        "Title": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.TITLE),
+        "SerialNumber": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.SERIAL_NUMBER),
+        "Pseudonym": parse_certificate_object_identifier_name(certificate_name, x509.NameOID.PSEUDONYM),
+    }
+
+
+def certificate_extentions_to_ec(certificate_ext: x509.Extensions) -> dict:
+    """ Translate abstrcat object x509.Name to entry context.
+
+    Args:
+        certificate_ext: Certificate extension.
+
+    Returns:
+        dict: Corresponding enrty context.
+    """
+    return {
+        "IssuerAlternativeName": parse_certificate_object_identifier_extentions(
+            certificate_ext,
+            x509.ExtensionOID.ISSUER_ALTERNATIVE_NAME),
+        "SubjectAlternativeName": parse_certificate_object_identifier_extentions(
+            certificate_ext,
+            x509.ExtensionOID.SUBJECT_ALTERNATIVE_NAME),
     }
 
 
@@ -84,7 +128,11 @@ def parse_certificate(certificate: str) -> dict:
         "Raw": certificate,
         "Decode": {
             "Issuer": certificate_to_ec(decode_certificate.issuer),
-            "Subject": certificate_to_ec(decode_certificate.subject)
+            "Subject": certificate_to_ec(decode_certificate.subject),
+            "Extentions": certificate_extentions_to_ec(decode_certificate.extensions),
+            "NotValidBefore": str(decode_certificate.not_valid_before),
+            "NotValidAfter": str(decode_certificate.not_valid_after),
+            "Version": decode_certificate.version.value,
         }
     }
 
@@ -106,23 +154,28 @@ def docker_container_details() -> dict:
             1. Global veriables which used by requests module:
                 a. SSL_CERT_FILE
                 b. REQUESTS_CA_BUNDLE
-            2. Custom python ssl file located in docker container - /etc/custom-python-ssl/certs.pem
+            2. Custom python ssl file located in docker container - SSL_CERT_FILE
 
     Returns:
         dict: Corresponding enrty context.
     """
-    container_ca_file = Path('/etc/custom-python-ssl/certs.pem')
-    certificates = "" if not container_ca_file.is_file() else container_ca_file.read_text()
+    ssl_cert_file_env = os.environ.get('SSL_CERT_FILE')
+    custom_certs = []
+    if ssl_cert_file_env:
+        container_ca_file = Path(ssl_cert_file_env)
+        certificates = "" if not container_ca_file.is_file() else container_ca_file.read_text()
+        custom_certs = parse_all_certificates(certificates)
+        demisto.debug(f'custom certs len: {len(custom_certs)}')
     return {
         "ShellVariables": {
             "SSL_CERT_FILE": os.environ.get('SSL_CERT_FILE'),
             "CERT_FILE": os.environ.get('REQUESTS_CA_BUNDLE'),
         },
-        "CustomCertificateAuthorities": parse_all_certificates(certificates),
+        "CustomCertificateAuthorities": custom_certs[:5],
     }
 
 
-def get_certificate(endpoint: str, port: str) -> str:
+def get_certificates(endpoint: str, port: str) -> str:
     """Download certificate from remote server.
 
     Args:
@@ -130,15 +183,27 @@ def get_certificate(endpoint: str, port: str) -> str:
         port: endpoint port.
 
     Returns:
-        str: certificate string in PEM format.
+        str: certificate string containing the certs in PEM format.
     """
-    hostname = endpoint
-    conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-    sock = context.wrap_socket(conn, server_hostname=hostname)
-    sock.connect((hostname, int(port)))
-
-    return ssl.DER_cert_to_PEM_cert(sock.getpeercert(True))  # type: ignore
+    mode = demisto.getArg('mode') or 'python'
+    if mode == "openssl":
+        openssl_res = subprocess.check_output(['openssl', 's_client', '-servername', endpoint,
+                                               '-host', endpoint, '-port', port, '-showcerts'], text=True,
+                                              stderr=subprocess.STDOUT)
+        demisto.debug(f'openssl output: {openssl_res}')
+        return '\n'.join(re.findall(r'^-----BEGIN CERT.*?^-----END CERTIFICATE-----', openssl_res, re.DOTALL | re.MULTILINE))
+    else:
+        hostname = endpoint
+        conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+        sock = context.wrap_socket(conn, server_hostname=hostname)
+        sock.settimeout(60)  # make sure we don't get stuck
+        sock.connect((hostname, int(port)))
+        peer_cert = sock.getpeercert(True)
+        if peer_cert:
+            return ssl.DER_cert_to_PEM_cert(peer_cert)
+        else:
+            return ""
 
 
 def endpoint_certificate(endpoint: str, port: str) -> dict:
@@ -151,7 +216,8 @@ def endpoint_certificate(endpoint: str, port: str) -> dict:
     Returns:
         dict: Corresponding enrty context.
     """
-    certificates = get_certificate(endpoint, port)
+    certificates = get_certificates(endpoint, port)
+    demisto.debug(f'endpoint: {endpoint} port: {port} certs: {certificates}')
     return {
         "Identifier": endpoint,
         "Certificates": parse_all_certificates(certificates)
@@ -164,21 +230,41 @@ def build_human_readable(entry_context: dict) -> str:
     # Engine docker container
     engine: dict = dict_safe_get(entry_context, ['Engine', 'SSL/TLS'], {}, dict)
     human_readable += "## Docker container engine - custom certificate\n"
-    readable_engine_issuer = [dict_safe_get(item, ('Decode', 'Issuer')) for item in
-                              engine.get('CustomCertificateAuthorities', {})]
-    readable_engine_subject = [dict_safe_get(item, ('Decode', 'Subject')) for item in
-                               engine.get('CustomCertificateAuthorities', {})]
-    readable_engine_vars = engine.get('ShellVariables')
-    human_readable += tableToMarkdown(name="Enviorment variables", t=readable_engine_vars)
-    human_readable += tableToMarkdown(name="Issuer", t=readable_engine_issuer, removeNull=True)
-    human_readable += tableToMarkdown(name="Subject", t=readable_engine_subject, removeNull=True)
+    engine_cer_general = [dict_safe_get(item, ['Decode']) for item in
+                          engine.get('CustomCertificateAuthorities', {})]
+    engine_cer_issuer = [dict_safe_get(item, ('Decode', 'Issuer')) for item in
+                         engine.get('CustomCertificateAuthorities', {})]
+    engine_cer_subjects = [dict_safe_get(item, ('Decode', 'Subject')) for item in
+                           engine.get('CustomCertificateAuthorities', {})]
+    engine_cer_extentions = [dict_safe_get(item, ('Decode', 'Extentions')) for item in
+                             engine.get('CustomCertificateAuthorities', {})]
+    engine_vars = engine.get('ShellVariables')
+    human_readable += tableToMarkdown(name="Enviorment variables", t=engine_vars)
+    human_readable += tableToMarkdown(name="General", t=engine_cer_general,
+                                      headers=['NotValidBefore', 'NotValidAfter', 'Version']) \
+        if engine_cer_extentions else ''
+    human_readable += tableToMarkdown(name="Issuer", t=engine_cer_issuer, removeNull=True) \
+        if engine_cer_issuer else ''
+    human_readable += tableToMarkdown(name="Subject", t=engine_cer_subjects, removeNull=True) \
+        if engine_cer_subjects else ''
+    human_readable += tableToMarkdown(name="Extentions", t=engine_cer_extentions, removeNull=True) \
+        if engine_cer_extentions else ''
     # Endpoint
     endpoint: dict = entry_context.get('Endpoint', {}).get('SSL/TLS', {})
-    readable_endpoint_issuer = [item.get('Decode').get('Issuer') for item in endpoint.get('Certificates', {})]
-    readable_endpoint_subject = [item.get('Decode').get('Subject') for item in endpoint.get('Certificates', {})]
+    endpoint_cer_general = [dict_safe_get(item, ['Decode']) for item in
+                            endpoint.get('Certificates', {})]
+    endpoint_cer_issuer = [dict_safe_get(item, ('Decode', 'Issuer')) for item in
+                           endpoint.get('Certificates', {})]
+    endpoint_cer_subject = [dict_safe_get(item, ('Decode', 'Subject')) for item in
+                            endpoint.get('Certificates', {})]
+    endpoint_cer_extentions = [dict_safe_get(item, ('Decode', 'Extentions')) for item in
+                               endpoint.get('Certificates', {})]
     human_readable += f"\n\n## Endpoint certificate - {endpoint.get('Identifier')}\n"
-    human_readable += tableToMarkdown(name="Issuer", t=readable_endpoint_issuer, removeNull=True)
-    human_readable += tableToMarkdown(name="Subject", t=readable_endpoint_subject, removeNull=True)
+    human_readable += tableToMarkdown(name="General", t=endpoint_cer_general,
+                                      headers=['NotValidBefore', 'NotValidAfter', 'Version'])
+    human_readable += tableToMarkdown(name="Issuer", t=endpoint_cer_issuer, removeNull=True)
+    human_readable += tableToMarkdown(name="Subject", t=endpoint_cer_subject, removeNull=True)
+    human_readable += tableToMarkdown(name="Extentions", t=endpoint_cer_extentions, removeNull=True)
     human_readable += "\n"
 
     return human_readable

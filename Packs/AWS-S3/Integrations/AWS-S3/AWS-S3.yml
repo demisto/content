@@ -77,13 +77,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: Specifies the region where the bucket will be created. If you don't specify a region, the bucket will be created in US Standard.
+      description: Specifies the region where the bucket will be created. If you don't
+        specify a region, the bucket will be created in US Standard.
       isArray: false
       name: locationConstraint
       required: false
       secret: false
     - default: false
-      description: Allows grantee the read, write, read ACP, and write ACP permissions on the bucket.
+      description: Allows grantee the read, write, read ACP, and write ACP permissions
+        on the bucket.
       isArray: false
       name: grantFullControl
       required: false
@@ -101,7 +103,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Allows grantee to create, overwrite, and delete any object in the bucket.
+      description: Allows grantee to create, overwrite, and delete any object in the
+        bucket.
       isArray: false
       name: grantWrite
       required: false
@@ -131,7 +134,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -173,7 +178,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -202,7 +209,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -244,7 +253,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -307,7 +318,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -348,7 +361,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -383,7 +398,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -417,7 +434,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set this parameter to true to confirm that you want to remove your permissions to change this bucket policy in the future.
+      description: Set this parameter to true to confirm that you want to remove your
+        permissions to change this bucket policy in the future.
       isArray: false
       name: confirmRemoveSelfBucketAccess
       predefined:
@@ -444,13 +462,16 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
       secret: false
     deprecated: false
-    description: Replaces a policy on a bucket. If the bucket already has a policy, the one in this request completely replaces it.
+    description: Replaces a policy on a bucket. If the bucket already has a policy,
+      the one in this request completely replaces it.
     execution: false
     name: aws-s3-put-bucket-policy
   - arguments:
@@ -491,7 +512,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      description: The duration, in seconds, of the role session. The value can range
+        from 900 seconds (15 minutes) up to the maximum session duration setting for
+        the role.
       isArray: false
       name: roleSessionDuration
       required: false
@@ -500,7 +523,7 @@ script:
     description: Upload file to S3 bucket
     execution: false
     name: aws-s3-upload-file
-  dockerimage: demisto/boto3:1.9.55
+  dockerimage: demisto/boto3:2.0.0.13188
   isfetch: false
   runonce: false
   script: ''

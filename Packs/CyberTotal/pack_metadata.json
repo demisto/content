@@ -2,17 +2,16 @@
     "name": "CyberTotal",
     "description": "This pack is the integration of Demisto and CyberTotal. CyberTotal is a cloud-based threat intelligence service developed by CyCraft, which cohesively integrates multiple and varied CTI sources, open source intel, and proprietary threat intel to provide best-in-class threat intelligence. CyberTotal helps companies quickly identify and triage threats as well as verify security alerts through automated correlation analysis and knowledge base optimization.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.3",
     "author": "CyCraft Technology Corporation.",
-    "url": "https://github.com/bpyliu",
+    "url": "",
     "email": "barry.liu@cycraft.com",
     "created": "2020-06-09T10:10:24Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [
-        "1.0.0"
-    ],
+    "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "certification": "certified"
 }

@@ -130,7 +130,7 @@ def build_link(query, start_ts_milli, end_ts_milli, mode='queryApp'):
 def check_configuration():
     # Check all settings related if set
     # Basic functionality of integration
-    list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT)
+    list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
          .query(HEALTHCHECK_QUERY, start=int(time.time() - 1), stop=int(time.time()), output='dict'))
 
     if WRITER_RELAY and WRITER_CREDENTIALS:
@@ -249,7 +249,8 @@ def get_writer_creds():
 
 
 def parallel_query_helper(sub_query, append_list, timestamp_from, timestamp_to):
-    append_list.extend(list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT)
+    append_list.extend(list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT,
+                                      verify=not ALLOW_INSECURE)
                        .query(sub_query, start=float(timestamp_from), stop=float(timestamp_to),
                        output='dict', ts_format='iso')))
 
@@ -291,7 +292,7 @@ def fetch_incidents():
 
     # execute the query and get the events
     # reverse the list so that the most recent event timestamp event is taken when de-duping if needed.
-    events = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT)
+    events = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
                     .query(alert_query, start=float(from_time), stop=float(to_time),
                            output='dict', ts_format='timestamp'))[::-1]
 
@@ -335,7 +336,7 @@ def run_query_command():
 
     time_range = get_time_range(timestamp_from, timestamp_to)
 
-    results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT)
+    results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
                    .query(to_query, start=float(time_range[0]), stop=float(time_range[1]),
                    output='dict', ts_format='iso'))
 
@@ -398,7 +399,7 @@ def get_alerts_command():
                       for filt in alert_filters['filters']])
         alert_query = f'{alert_query} where {filter_string}'
 
-    results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT)
+    results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)
                    .query(alert_query, start=float(time_range[0]), stop=float(time_range[1]),
                    output='dict', ts_format='iso'))
 
@@ -461,7 +462,7 @@ def multi_table_query_command():
     sub_queries = []
 
     for table in tables_to_query:
-        fields = ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT)\
+        fields = ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE)\
             ._get_types(f'from {table} select *', 'now', 'iso').keys()
         clauses = [f"( isnotnull({field}) and str({field})->\"" + search_token + "\")" for field in fields]
         sub_queries.append("from " + table + " where" + " or ".join(clauses) + " select *")

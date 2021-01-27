@@ -1,0 +1,97 @@
+category: Network Security
+commonfields:
+  id: Cisco IronPort EMail API
+  version: -1
+configuration:
+- display: 'Base Url like : http://example.com'
+  name: baseurl
+  required: true
+  type: 0
+- display: userName
+  name: userName
+  required: true
+  type: 0
+- display: password
+  name: password
+  required: true
+  type: 4
+- defaultvalue: Policy
+  display: quarantineName
+  name: quarantineName
+  required: true
+  type: 0
+description: Cisco ESA IronPort EMail API
+display: Cisco IronPort EMail API
+name: Cisco IronPort EMail API
+script:
+  commands:
+  - arguments:
+    - description: 'Message ID '
+      name: mid
+      required: true
+    description: Release Email from Quaranties
+    name: iron-port-quarantine-release-email
+  - arguments:
+    - defaultValue: "1"
+      description: 'Last # number of Days to search in '
+      name: periodInDays
+      required: true
+    - description: Sender CONTAINS "your Pattern"
+      name: senderPattern
+    - description: recipient CONTAINS "your Pattern"
+      name: recipientPattern
+    - description: subjectPattern
+      name: subjectPattern
+    - defaultValue: "50"
+      description: limit
+      name: limit
+    description: ironPortSearchQuarantines Can combine multiple parameters
+    name: iron-port-search-quarantines
+    outputs:
+    - contextPath: ironPortSearchQuarantinesOutput.data
+      description: 'Search in Quarantines '
+  - arguments:
+    - defaultValue: "1"
+      description: 'Last # number of Days to search in '
+      name: periodInDays
+      required: true
+    - description: Sender CONTAINS "your Pattern"
+      name: senderPattern
+    - description: recipient CONTAINS "your Pattern"
+      name: recipientPattern
+    - description: subjectPattern
+      name: subjectPattern
+    - defaultValue: "50"
+      description: limit
+      name: limit
+    description: 'Search in SPAM , Only One Parameter at once '
+    name: iron-port-search-spam
+  - arguments:
+    - description: MID
+      name: mid
+      required: true
+    description: Release Email from Spam
+    name: iron-port-spam-release-Email
+  - arguments:
+    - description: periodInDays
+      name: periodInDays
+      required: true
+    - description: senderPattern
+      name: senderPattern
+    - description: recipientPattern
+      name: recipientPattern
+    - description: subjectPattern
+      name: subjectPattern
+    - defaultValue: "50"
+      description: limit of output
+      name: limit
+    description: Genral search , can combine multiple parameters
+    name: iron-port-search
+  dockerimage: demisto/python3:3.8.6.12176
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

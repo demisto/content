@@ -1,0 +1,39 @@
+{
+ "id": "incident_fireeyenxalerttype",
+ "version": -1,
+ "modified": "2020-08-26T22:03:33.210859737+05:30",
+ "name": "FireEye NX Alert Type",
+ "ownerOnly": false,
+ "placeholder": "The type of the alert.",
+ "description": "The type of the alert.",
+ "cliName": "fireeyenxalerttype",
+ "type": "singleSelect",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [
+  "DOMAIN_MATCH",
+  "MALWARE_CALLBACK",
+  "MALWARE_OBJECT",
+  "WEB_INFECTION",
+  "INFECTION_MATCH"
+ ],
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "FireEye NX Alert"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

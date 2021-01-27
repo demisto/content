@@ -1,0 +1,14 @@
+{
+    "name": "Pulsedive",
+    "description": "Leverage Pulsedive threat intelligence in Cortex XSOAR to enrich any domain, URL, or IP. Retrieve risk scores and factors, investigate contextual data, pivot on any data point, and investigate potential threats.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Konrad Zacharias",
+    "url": "https://pulsedive.com",
+    "email": "mailto:support@pulsedive.com ",
+    "created": "2020-10-12T19:45:01Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}

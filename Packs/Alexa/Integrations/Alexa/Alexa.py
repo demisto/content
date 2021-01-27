@@ -11,6 +11,7 @@ requests.packages.urllib3.disable_warnings()
 
 """GLOBAL VARIABLES/CONSTANTS"""
 THRESHOLD = int(demisto.params().get('threshold'))
+BENIGN = int(demisto.params().get('benign'), 0)
 USE_SSL = not demisto.params().get('insecure', False)
 PROXIES = handle_proxy()
 
@@ -19,8 +20,8 @@ PROXIES = handle_proxy()
 
 def alexa_fallback_command(domain):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, '
-                      'like Gecko) Chrome/76.0.3809.132 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, '
+                      'like Gecko) Chrome/85.0.4183.121 Safari/537.36'
     }
     resp = requests.request('GET', 'https://www.alexa.com/minisiteinfo/{}'.format(domain),
                             headers=headers, verify=USE_SSL, proxies=PROXIES)
@@ -45,7 +46,10 @@ def alexa_domain_command():
         rank = root.find(".//POPULARITY").attrib['TEXT']  # type: ignore
     except:  # noqa
         rank = alexa_fallback_command(domain)
-    if int(rank) > THRESHOLD:
+    if int(rank) <= BENIGN:
+        dbot_score = 1
+        dbot_score_text = 'good'
+    elif int(rank) > THRESHOLD:
         dbot_score = 2
         dbot_score_text = 'suspicious'
     elif (int(rank) < THRESHOLD) and rank != '-1':
@@ -71,8 +75,9 @@ def alexa_domain_command():
             'Rank': rank
         }
     }
-    hr_string = ('The Alexa rank of {} is {} and has been marked as {}'
-                 ' while the threshold is {}'.format(domain, rank, dbot_score_text, THRESHOLD))
+    hr_string = ('The Alexa rank of {} is {} and has been marked as {}. '
+                 'The benign threshold is {} while the suspicious '
+                 'threshold is {}.'.format(domain, rank, dbot_score_text, BENIGN, THRESHOLD))
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['markdown'],

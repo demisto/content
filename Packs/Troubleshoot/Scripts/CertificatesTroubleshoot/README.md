@@ -6,6 +6,13 @@ This automation exports all custom certificate-related information from the Pyth
 
 After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/configure-python-docker-integrations-to-trust-custom-certificates) to update your custom certificate in `Cortex XSOAR Server`/ `Cortex XSOAR Engine`, validate the configuration applied using this script.
 
+The script supports two modes of operation:
+
+  1. **python**: Uses the Python built-in SSL library to detect the endpoint's certificates.
+  2. **openssl**: Uses the OpenSSL client to detect the endpoint's certificates. Use this mode if the `python` mode fails for some reason.
+
+When reporting issues always run this script with `debug-mode=true` and include the debug-mode log file.
+
 ## Script Data
 
 ---
@@ -23,6 +30,7 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 | --- | --- |
 | endpoint | The endpoint identifier IP address or URL:Port. If the port is not included, 443 will be used by default. |
 | port | The endpoint port. Default is 443. |
+| mode | Operation mode. Determines how the endpoint is inspected. Either using python built-in SSL or openssl client. |
 
 ## Outputs
 
@@ -76,6 +84,11 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.CountryName | The country of the authority that issued the engine custom SSL certificate. | String |
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.EmailAddress | The email address of the authority that issued the engine custom SSL certificate. | String |
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Issuer.DomainNameQualifier | The domain name qualifier of the authority that issued the engine custom SSL certificate. | String |
+| TroubleShoot.Engine.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName | The alternate names of the issuer. | String |
+| TroubleShoot.Engine.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName | The alternate names of the subject. | String |
+| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore | The beginning of the validity period for the certificate in UTC format. | Date |
+| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter | The end of the validity period for the certificate in UTC format. | Date |
+| TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Decode.Version| The version of the certificate. | Number |
 | TroubleShoot.Engine.SSL/TLS.CustomCertificateAuthorities.Raw | The raw engine custom SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.OrganizationalUnitName | The unit name of the organization that is the holder of the endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Subject.OrganizationName | The name of the organization that is the holder of the endpoint SSL certificate. | String |
@@ -121,12 +134,17 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.CountryName | The country of the authority that issued the endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.EmailAddress | The email address of the authority that issued the endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Issuer.DomainNameQualifier | The domain name qualifier of the authority that issued the endpoint SSL certificate. | String |
+| TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.IssuerAlternativeName | The alternate names of the issuer. | String |
+| TroubleShoot.Endpoint.SSL/TLS.Certificates.Decode.Extentions.SubjectAlternativeName | The alternate names of the subject. | String |
+| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidBefore | The beginning of the validity period for the certificate in UTC format. | Date |
+| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.NotValidAfter | The end of the validity period for the certificate in UTC format. | Date |
+| TroubleShoot.Endpoint.SSL/TLS.CustomCertificateAuthorities.Decode.Version| The version of the certificate. | Number |
 | TroubleShoot.Endpoint.SSL/TLS.Certificates.Raw | The raw endpoint SSL certificate. | String |
 | TroubleShoot.Endpoint.SSL/TLS.Identifier | The endpoint SSL identifier. | String |
 
 #### Command Example
 
-```CertificatesTroubleshoot endpoint=test.compute.amazonaws.com port=5443```
+```CertificatesTroubleshoot endpoint=google.com port=443```
 
 #### Context Example
 
@@ -307,7 +325,14 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
                         "Raw": "-----BEGIN CERTIFICATE-----\nxxxx\n-----END CERTIFICATE-----\n"
                     }
                 ], 
-                "Identifier": "test.compute.amazonaws.com"
+                "Identifier": "test.compute.amazonaws.com",
+                "NotValidBefore": "2020-09-22 11:37:45",
+                "NotValidAfter": "2025-09-21 11:37:45",
+                "Version": 0,
+                "Extentions: {
+                    "IssuerAlternativeName": [*.google.com, *.appengine.google.com],
+                    "SubjectAlternativeName": [*.google.com, *.appengine.google.com]
+                }
             }
         }
     }
@@ -321,6 +346,11 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 > |CERT_FILE|SSL_CERT_FILE|
 > |---|---|
 > | /etc/custom-python-ssl/certs.pem | /etc/custom-python-ssl/certs.pem |
+>
+> ### General
+> |NotValidBefore|NotValidAfter|Version|
+> |---|---|---|
+> | 2020-09-22 15:22:19 | 2020-12-15 15:22:19 | 2 |
 > ### Issuer
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
@@ -329,7 +359,12 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
 > | Demisto TLS | IL | all@paloaltonetworks.com | Tel Aviv | Demisto | Content | Hamerkaz |
+>
 > ## Endpoint certificate - ec2-54-220-131-136.eu-west-1.compute.amazonaws.com
+> ### General
+> |NotValidBefore|NotValidAfter|Version|
+> |---|---|---|
+> | 2020-09-22 15:22:19 | 2020-12-15 15:22:19 | 2 |
 > ### Issuer
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
@@ -338,6 +373,10 @@ After following the [tutorial](https://docs.paloaltonetworks.com/cortex/cortex-x
 > |CommonName|CountryName|EmailAddress|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|
 > | ec2-54-220-131-136.eu-west-1.compute.amazonaws.com | IL | test@gmail.com | Content | Test | Demisto |
+> ### Extentions
+> |IssuerAlternativeName|
+> |---|
+> | *.google.com,*.android.com,*.appengine.google.com,*.bdn.dev,*.cloud.google.com |
 
 
  

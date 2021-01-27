@@ -3,8 +3,10 @@ import os
 import uuid
 import json
 import tempfile
+import logging
 from Tests.Marketplace.upload_packs import init_storage_client, download_and_extract_index, upload_index_to_storage
 from Tests.Marketplace.marketplace_services import GCPConfig, Pack
+from Tests.scripts.utils.log_util import install_logging
 
 
 def option_handler():
@@ -79,6 +81,7 @@ def normalize_pack_integration_urls(pack, original_base_path):
 
 
 def main():
+    install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
@@ -95,16 +98,16 @@ def main():
     storage_bucket = storage_client.bucket(storage_bucket_name)
 
     # download and extract index from test bucket
-    index_folder_path, index_blob = download_and_extract_index(storage_bucket, extract_destination_path)
+    index_folder_path, index_blob, _ = download_and_extract_index(storage_bucket, extract_destination_path)
 
-    print(f"Starting iterating over packs in {GCPConfig.INDEX_NAME} and normalizing packs integration URLs")
+    logging.info(f"Starting iterating over packs in {GCPConfig.INDEX_NAME} and normalizing packs integration URLs")
     # starting iterating over packs folders inside index
 
     for pack in os.scandir(index_folder_path):
         normalize_pack_integration_urls(pack=pack, original_base_path=original_base_path)
 
     # finished iteration over packs inside index
-    print(f"Finished iterating over packs in {GCPConfig.INDEX_NAME}")
+    logging.info(f"Finished iterating over packs in {GCPConfig.INDEX_NAME}")
 
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
                             index_blob=index_blob, build_number=build_number, private_packs=[])
