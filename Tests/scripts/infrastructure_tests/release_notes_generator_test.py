@@ -380,7 +380,7 @@ class TestMergeVersionBlocks:
         """
         release_notes_paths = [
             os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
         ]
 
         pack_versions_dict = {}
@@ -410,7 +410,7 @@ class TestMergeVersionBlocks:
         """
         release_notes_paths = [
             os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_2.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack6', 'ReleaseNotes', '1_0_1.md'),
         ]
 
         pack_versions_dict = {}
