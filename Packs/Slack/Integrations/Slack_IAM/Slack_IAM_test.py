@@ -1,5 +1,5 @@
 from Slack_IAM import Client, get_mapping_fields
-from CommonServerPython import IAMCommand, IAMErrors, IAMUserProfile, IAMActions, IAMUserAppData
+from IAMApiModule import *
 
 APP_USER_OUTPUT = {
     "schemas": [
