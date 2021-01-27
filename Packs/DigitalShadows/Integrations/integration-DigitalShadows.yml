@@ -750,19 +750,30 @@ script:
 
 
     var fetchCommandIncidents = function(comnd, bodyArgs, name){
-        incidents = [];
         cmd = commandDictionary[comnd];
+        bodyArgs.pagination_size = 500;
+        bodyArgs.pagination_offset = 0;
+        return fetchCommandIncidentPages(cmd, bodyArgs, name);
+    };
+
+    var fetchCommandIncidentPages = function(cmd, bodyArgs, name) {
+        incidents = [];
         res = sendRequest(url+cmd.url, cmd.method, createBody(bodyArgs, arrayArgs));
         parsed_res = JSON.parse(res);
         if (parsed_res && parsed_res.content){
             parsed_res.content.forEach(function(inc){
                 inc['origin'] = name;
                 incidents.push({
-                  name: name,
-                  rawJSON: JSON.stringify(inc)
+                name: name,
+                rawJSON: JSON.stringify(inc)
                 });
             });
         }
+        if ( parsed_res.total > (bodyArgs.pagination_size + bodyArgs.pagination_offset)) {
+            bodyArgs.pagination_offset = bodyArgs.pagination_offset + bodyArgs.pagination_size ;
+            incidents = incidents.concat(fetchCommandIncidentPages(cmd, bodyArgs, name));
+        }
+
         return incidents;
     };
 
@@ -810,10 +821,6 @@ script:
 
         // third API call - fetch intelligence incidents (within the date range)
         incidents = incidents.concat(fetchCommandIncidents('ds-find-intelligence-incidents', bodyArgs, 'Intelligence Incident'));
-
-        // fourth API call - fetch data breaches (within the date range)
-        bodyArgs = {filter_published: lastRun.value + '/' + now};
-        incidents = incidents.concat(fetchCommandIncidents('ds-find-data-breaches', bodyArgs, 'Data Breach'));
 
         setLastRun({value: now});
         return JSON.stringify(incidents);
