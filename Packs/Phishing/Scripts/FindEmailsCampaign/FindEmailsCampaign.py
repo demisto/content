@@ -76,7 +76,7 @@ CONTEXT_FUNCTIONS = [create_context_for_campaign_details, create_context_for_ind
 
 
 def create_empty_context():
-    context = {}   # type: ignore
+    context = {}  # type: ignore
     for f in CONTEXT_FUNCTIONS:
         context = {**context, **f()}  # type: ignore
     context = add_context_key(context)
@@ -120,10 +120,10 @@ def get_str_representation_top_n_values(values_list, counter_tuples_list, top_n)
     domains_counter_top = counter_tuples_list[:top_n]
     if len(counter_tuples_list) > top_n:
         domains_counter_top += [('Other', len(values_list) - sum(x[1] for x in domains_counter_top))]
-    return ','.join('{} ({})'.format(domain, count) for domain, count in domains_counter_top)
+    return ', '.join('{} ({})'.format(domain, count) for domain, count in domains_counter_top)
 
 
-def calculate_campaign_details_table(incidents_df):
+def calculate_campaign_details_table(incidents_df, fields_to_display):
     n_incidents = len(incidents_df)
     similarities = incidents_df['similarity'].dropna().to_list()
     max_similarity = max(similarities)
@@ -168,9 +168,23 @@ def calculate_campaign_details_table(incidents_df):
     contents.append(domain_value)
     headers.append(sender_header)
     contents.append(sender_value)
+    for field in fields_to_display:
+        if field in incidents_df.columns:
+            field_values = get_non_na_empty_values(incidents_df, field)
+            if len(field_values) > 0:
+                field_values_counter = Counter(field_values).most_common()
+                field_value_str = get_str_representation_top_n_values(field_values, field_values_counter, top_n)
+                headers.append(field)
+                contents.append(field_value_str)
     hr = tableToMarkdown('Possible Campaign Detected', {header: value for header, value in zip(headers, contents)},
                          headers=headers)
     return hr
+
+
+def get_non_na_empty_values(incidents_df, field):
+    field_values = incidents_df[field].replace('', None).dropna().tolist()
+    field_values = [x for x in field_values if len(str(x).strip()) > 0]
+    return field_values
 
 
 def cosine_sim(a, b):
@@ -229,8 +243,8 @@ def create_email_summary_hr(incidents_df):
     return context, hr_email_summary
 
 
-def return_campaign_details_entry(incidents_df):
-    hr_campaign_details = calculate_campaign_details_table(incidents_df)
+def return_campaign_details_entry(incidents_df, fields_to_display):
+    hr_campaign_details = calculate_campaign_details_table(incidents_df, fields_to_display)
     context, hr_email_summary = create_email_summary_hr(incidents_df)
     hr = '\n'.join([hr_campaign_details, hr_email_summary])
     return return_outputs(hr, context)
@@ -274,7 +288,8 @@ def return_indicator_entry(incidents_df):
 
 
 def get_comma_sep_list(value):
-    return [x.strip() for x in value.split(",")]
+    res = [x.strip() for x in value.split(",")]
+    return [x for x in res if x != '']
 
 
 def return_involved_incdients_entry(incidents_df, fields_to_display):
@@ -295,9 +310,10 @@ def return_involved_incdients_entry(incidents_df, fields_to_display):
         axis=1, inplace=True)
     incidents_headers = ['Id', 'Created', 'Name', 'Email From', 'Similarity to Current Incident']
     if fields_to_display is not None:
-        fields_list = get_comma_sep_list(fields_to_display)
-        fields_list = [f for f in fields_list if f in incidents_df.columns]
-        incidents_headers += fields_list
+        fields_to_display = [f for f in fields_to_display if f in incidents_df.columns]
+        incidents_df[fields_to_display] = incidents_df[fields_to_display].fillna('')
+        fields_to_display = [f for f in fields_to_display if len(get_non_na_empty_values(incidents_df, f))>0]
+        incidents_headers += fields_to_display
     hr = '\n\n' + tableToMarkdown('Involved Incidents', incidents_df[incidents_headers].to_dict(orient='records'),
                                   headers=incidents_headers)
     return_outputs(hr)
@@ -309,7 +325,7 @@ def draw_canvas(incidents, indicators):
 
 def analyze_incidents_campaign(incidents, fields_to_display):
     incidents_df = pd.DataFrame(incidents)
-    return_campaign_details_entry(incidents_df)
+    return_campaign_details_entry(incidents_df, fields_to_display)
     indicators = return_indicator_entry(incidents_df)
     return_involved_incdients_entry(incidents_df, fields_to_display)
     draw_canvas(incidents, indicators)
@@ -325,6 +341,9 @@ def main():
     fields_to_display = input_args.get('fieldsToDisplay')
     if fields_to_display is not None:
         input_args['populateFields'] = fields_to_display
+        fields_to_display = get_comma_sep_list(fields_to_display)
+    else:
+        fields_to_display = []
     res = demisto.executeCommand('FindDuplicateEmailIncidents', input_args)
     if is_error(res):
         return_error(get_error(res))
