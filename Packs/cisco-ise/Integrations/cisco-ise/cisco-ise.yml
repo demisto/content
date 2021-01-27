@@ -74,7 +74,7 @@ script:
       description: Endpoint MAC address.
       type: string
     - contextPath: CiscoISE.Endpoint.Group
-      description: Endpoint group name
+      description: Endpoint group name.
       type: string
     - contextPath: Endpoint.ID
       description: Endpoint ID.
@@ -86,10 +86,10 @@ script:
       description: Endpoint custom attributes.
       type: string
     - contextPath: CiscoISE.Endpoint.StaticGroupAssignment
-      description: True if endpoint has static group assignment
+      description: True if the endpoint has static group assignment.
       type: boolean
     - contextPath: CiscoISE.Endpoint.StaticProfileAssignment
-      description: Whether th endpoint has a static profile assignment.
+      description: Whether the endpoint has a static profile assignment.
       type: boolean
     - contextPath: CiscoISE.Endpoint.User
       description: Profile of the user associated with the endpoint.
@@ -160,7 +160,7 @@ script:
     name: cisco-ise-update-endpoint-custom-attribute
   - arguments:
     - default: false
-      description: The group ID to assign to this endpoint, e.g. 1
+      description: The group ID to assign to this endpoint, e.g., 1.
       isArray: false
       name: groupId
       required: false
@@ -202,7 +202,7 @@ script:
       description: The name of the endpoint identity groups.
       type: String
   - deprecated: false
-    description: Return all Adaptive Network Control policies.
+    description: Returns all Adaptive Network Control policies.
     execution: false
     name: cisco-ise-get-policies
     outputs:
@@ -260,7 +260,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Creates an ANC policy.
+    description: Creates an Adapative Network Control policy.
     execution: false
     name: cisco-ise-create-policy
     outputs:
@@ -319,18 +319,17 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A list of custom attributes'
+      description: 'A list of custom attributes.'
       isArray: false
       name: attributes_map
       required: false
     deprecated: false
-    description: Given a mac address and custom attribute list, a new Endpoint is
-      created on Cisco ISE.
+    description: Creates a new endpoint on Cisco ISE according to the passed MAC address and custom attribute list.
     execution: false
     name: cisco-ise-create-endpoint
     outputs:
     - contextPath: CiscoISE.Endpoint.MACAddress
-      description: Mac address of the newly created Endpoint.
+      description: MAC address of the new endpoint.
       type: string
   - deprecated: false
     description: Returns data for all Cisco ISE nodes in the deployment.
@@ -376,7 +375,7 @@ script:
       description: The policy name that was removed from the endpoint.
       type: string
   - arguments:
-    - description: IP address to query in ISE platform.
+    - description: IP address to query in the ISE platform.
       name: ip_address
       required: true
     description: Queries an IP address and returns its session data from an active
