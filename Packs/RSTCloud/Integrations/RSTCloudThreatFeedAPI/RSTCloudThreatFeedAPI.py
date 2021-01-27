@@ -135,7 +135,7 @@ class RSTUrl(Common.URL):
         return ret_value
 
 
-class Client(BaseClient):
+class Client:
     def __init__(self, apikey, api_url='https://api.rstcloud.net/v1', verify=False, proxy=False):
         self.apikey = apikey
         self.api_url = api_url
@@ -195,6 +195,31 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def check_arg_type(arg_name: str, arg_value: str):
+    """
+        Checks that RST Threat Feed API parameters are valid.
+
+        Args:
+          arg_name (str): paramater name
+          arg_value (str): paramater value to verify
+        Returns:
+          (str): a null string means OK while any text is an error
+        """
+    output = ''
+    try:
+        isinstance(int(arg_value), int)
+        value = int(arg_value)
+        if 'threshold' in arg_name:
+            if value < 0 or value > 100:
+                output = str(arg_name) + ': the value must be between 0 and 100; '
+        if 'indicator_expiration' in arg_name:
+            if value < 0:
+                output = str(arg_name) + ': the value must be positive (>0); '
+    except Exception:
+        return str(arg_name) + ': bad format, must be a number; '
+    return output
+
+
 def calculate_score(score: int, threshold: int, itype: str, lseen: int) -> int:
     """
     Calculates and converts RST Threat Feed score into XSOAR score.
@@ -216,10 +241,17 @@ def calculate_score(score: int, threshold: int, itype: str, lseen: int) -> int:
 
 
 def parse_indicator_response(res, indicator_type):
-    indicator = {}
-    indicator['IndicatorValue'] = res.get('ioc_value', '')
-    indicator['IndicatorType'] = indicator_type
-    if not 'error' in res:
+    """
+    Parses responses from RST Threat Feed API.
+
+    Args:
+      res (Dict[str, str]): RST Threat Feed response
+      indicator_type (str): IP, Domain or UL
+    Returns:
+      (Dict[str, str]): a result to return into XSOAR's context.
+    """
+    indicator = {'IndicatorValue': res.get('ioc_value', ''), 'IndicatorType': indicator_type}
+    if 'error' not in res:
         first_seen = str(int(res.get('fseen', '')) * 1000)
         last_seen = str(int(res.get('lseen', '')) * 1000)
 
@@ -227,7 +259,6 @@ def parse_indicator_response(res, indicator_type):
             indicator['FirstSeen'] = timestamp_to_datestring(first_seen)
         if last_seen:
             indicator['LastSeen'] = timestamp_to_datestring(last_seen)
-
         if 'tags' in res:
             indicator['Tags'] = res.get('tags').get('str', '')
         if 'fp' in res:
@@ -271,8 +302,17 @@ def test_module(client: Client) -> str:
     Returns:
       str: 'ok' if test passed, anything else will fail the test.
     """
-
-    return 'ok' if client.get_indicator('1.1.1.1') else 'Connection failed.'
+    result = ''
+    params = ['threshold_ip', 'threshold_domain', 'threshold_url', 'indicator_expiration_ip',
+              'indicator_expiration_domain', 'indicator_expiration_url']
+    for param in params:
+        result += check_arg_type(param, demisto.params().get(param))
+    if result == '':
+        if client.get_indicator('1.1.1.1'):
+            result += 'ok'
+        else:
+            result += 'Connection failed.'
+    return result
 
 
 def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
@@ -288,14 +328,21 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
       list(dict): the raw results to return into XSOAR's context.
     """
     addresses = argToList(args.get('ip', ''))
-    threshold = int(demisto.params().get('threshold_ip', DEFAULT_THRESHOLD))
+    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
+    if check_arg_type('threshold_ip', str(threshold)) != '':
+        raise Exception(str(threshold) + ': threshold must be from 0 to 100')
     markdown = []
     raw_results = []
     indicators = []
 
     for ip in addresses:
         markdown_item = ''
-        indicator = client.get_indicator(ip)
+        ipv4regex = re.compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")
+        ipv4match = ipv4regex.fullmatch(ip)
+        if ipv4match:
+            indicator = client.get_indicator(ip)
+        else:
+            raise Exception('is not valid IP')
         if 'error' in indicator:
             if indicator['error'] == 'Not Found':
                 score = Common.DBotScore(
@@ -319,7 +366,8 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
                 indicator=indicator['ioc_value'],
                 indicator_type=DBotScoreType.IP,
                 integration_name='RST Cloud',
-                score=calc_score
+                score=calc_score,
+                malicious_description=indicator.get('description', '')
             )
 
             human_readable_score = ''
@@ -332,20 +380,16 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
                 asn=indicator.get('asn', {}).get('num', ''),
                 geo_country=indicator.get('geo', {}).get('country', ''),
                 dbot_score=dbot_score,
-                rstscore=total_score,
-                tags=indicator.get('tags', '').get('str', ''),
-                malwarefamily=indicator.get('threat', ''),
-                firstseenbysource=timestamp_to_datestring(str(int(indicator.get('fseen', '')) * 1000)),
-                lastseenbysource=timestamp_to_datestring(str(int(indicator.get('lseen', '')) * 1000))
+                tags=indicator.get('tags', '').get('str', '')
             )
             table = {'Score': total_score,
                      'Relevance': human_readable_score,
                      'Threat': ', '.join(threat for threat in indicator.get('threat', '')),
                      'Last Seen': time.strftime('%Y-%m-%d', time.localtime(int(indicator.get('lseen', '')))),
-                     'Description': f"\n{string_to_context_key(indicator.get('description', ''))}\n",
+                     'Description': f"{string_to_context_key(indicator.get('description', ''))}\n",
                      'Tags': ', '.join(tag for tag in indicator.get('tags', '').get('str', ''))}
-            markdown_item += tableToMarkdown(f'RST Threat Feed IP Reputation for: {indicator["ioc_value"]}\n'
-                                             f'{RST_URL}uuid?id={indicator["id"]}', table, removeNull=True)
+            markdown_item += tableToMarkdown(f'RST Threat Feed IP Reputation for: {indicator["ioc_value"]}\n',
+                                             table, removeNull=True)
             markdown.append(markdown_item)
             raw_results.append(parse_indicator_response(indicator, 'IP'))
             indicators.append(result)
@@ -367,14 +411,21 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, li
     """
 
     domains = argToList(args.get('domain', ''))
-    threshold = int(demisto.params().get('threshold_domain', DEFAULT_THRESHOLD))
+    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
+    if check_arg_type('threshold_domain', str(threshold)) != '':
+        raise Exception(str(threshold) + ': threshold must be from 0 to 100')
     markdown = []
     raw_results = []
     indicators = []
 
     for domain in domains:
         markdown_item = ''
-        indicator = client.get_indicator(domain)
+        domainregex = re.compile("(((?=[a-z0-9\-_]{1,63}\.)(xn--)?[a-z0-9_\-]+(-[a-z0-9_]+)*\.)+[a-z-0-9]{2,63})(:\d+)?")
+        domainmatch = domainregex.fullmatch(domain)
+        if domainmatch:
+            indicator = client.get_indicator(domain)
+        else:
+            raise Exception('is not valid Domain name')
         if 'error' in indicator:
             if indicator['error'] == 'Not Found':
                 score = Common.DBotScore(
@@ -398,7 +449,8 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, li
                 indicator=indicator['ioc_value'],
                 indicator_type=DBotScoreType.DOMAIN,
                 integration_name='RST Cloud',
-                score=calc_score
+                score=calc_score,
+                malicious_description=indicator.get('description', '')
             )
             human_readable_score = ''
             if calc_score == 3:
@@ -414,20 +466,16 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, li
                 registrar_name=indicator.get('whois', {}).get('registrar', ''),
                 registrant_name=indicator.get('whois', {}).get('registrant', ''),
                 dbot_score=dbot_score,
-                rstscore=total_score,
-                tags=indicator.get('tags', '').get('str', ''),
-                malwarefamily=indicator.get('threat', ''),
-                firstseenbysource=timestamp_to_datestring(str(int(indicator.get('fseen', '')) * 1000)),
-                lastseenbysource=timestamp_to_datestring(str(int(indicator.get('lseen', '')) * 1000))
+                tags=indicator.get('tags', '').get('str', '')
             )
             table = {'Score': total_score,
                      'Relevance:': human_readable_score,
                      'Threat': ', '.join(threat for threat in indicator.get('threat', '')),
                      'Last Seen': time.strftime('%Y-%m-%d', time.localtime(int(indicator.get('lseen', '')))),
-                     'Description': f"\n{string_to_context_key(indicator.get('description', ''))}\n",
+                     'Description': f"{string_to_context_key(indicator.get('description', ''))}\n",
                      'Tags': ', '.join(tag for tag in indicator.get('tags', '').get('str', ''))}
-            markdown_item += tableToMarkdown(f'RST Threat Feed Domain Reputation for: {indicator["ioc_value"]}\n'
-                                             f'{RST_URL}uuid?id={indicator["id"]}', table, removeNull=True)
+            markdown_item += tableToMarkdown(f'RST Threat Feed Domain Reputation for: {indicator["ioc_value"]}\n',
+                                             table, removeNull=True)
             markdown.append(markdown_item)
             raw_results.append(parse_indicator_response(indicator, 'Domain'))
             indicators.append(result)
@@ -449,14 +497,22 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
     """
 
     urls = argToList(args.get('url', ''))
-    threshold = int(demisto.params().get('threshold_url', DEFAULT_THRESHOLD))
+    threshold = int(args.get('threshold', DEFAULT_THRESHOLD))
+    if check_arg_type('threshold_url', str(threshold)) != '':
+        raise Exception(str(threshold) + ': threshold must be from 0 to 100')
     markdown = []
     raw_results = []
     indicators = []
 
     for url in urls:
         markdown_item = ''
-        indicator = client.get_indicator(url)
+        urlregex = re.compile(
+            "^(?:(?:(?:https?|ftps?):)?\/\/)?((?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62})?[a-z0-9\\u00a1-\\uffff]\.)+(?:[a-z\\u00a1-\\uffff]{2,}|xn--[a-z0-9]+\.?))(?::\d{2,5})?(?:[\/?#]\S*)?)$")
+        urlmatch = urlregex.fullmatch(url)
+        if urlmatch:
+            indicator = client.get_indicator(url)
+        else:
+            raise Exception('is not valid URL')
         if 'error' in indicator:
             if indicator['error'] == 'Not Found':
                 score = Common.DBotScore(
@@ -480,16 +536,13 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
                 indicator=indicator['ioc_value'],
                 indicator_type=DBotScoreType.URL,
                 integration_name='RST Cloud',
-                score=calc_score
+                score=calc_score,
+                malicious_description=indicator.get('description', '')
             )
             result = RSTUrl(
                 url=indicator['ioc_value'],
                 dbot_score=dbot_score,
-                rstscore=total_score,
-                tags=indicator.get('tags', '').get('str', ''),
-                malwarefamily=indicator.get('threat', ''),
-                firstseenbysource=timestamp_to_datestring(str(int(indicator.get('fseen', '')) * 1000)),
-                lastseenbysource=timestamp_to_datestring(str(int(indicator.get('lseen', '')) * 1000))
+                tags=indicator.get('tags', '').get('str', '')
             )
             human_readable_score = ''
             if calc_score == 3:
@@ -501,10 +554,10 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
                      'Relevance': human_readable_score,
                      'Threat': ', '.join(threat for threat in indicator.get('threat', '')),
                      'Last Seen': time.strftime('%Y-%m-%d', time.localtime(int(indicator.get('lseen', '')))),
-                     'Description': f"\n{string_to_context_key(indicator.get('description', ''))}\n",
+                     'Description': f"{string_to_context_key(indicator.get('description', ''))}\n",
                      'Tags': ', '.join(tag for tag in indicator.get('tags', '').get('str', ''))}
-            markdown_item += tableToMarkdown(f'RST Threat Feed URL Reputation for: {url}\n'
-                                             f'{RST_URL}uuid?id={indicator["id"]}', table, removeNull=True)
+            markdown_item += tableToMarkdown(f'RST Threat Feed URL Reputation for: {indicator["ioc_value"]}\n',
+                                             table, removeNull=True)
             markdown.append(markdown_item)
             raw_results.append(parse_indicator_response(indicator, 'URL'))
             indicators.append(result)
@@ -513,6 +566,15 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
 
 
 def submit_command(client: Client, args: Dict[str, str]) -> list:
+    """
+        Submits a new indicator to RST Threat Feed via API
+
+        Args:
+          client (Client): RST Threat Feed client.
+          args (Dict[str, str]): the arguments for the command.
+        Returns:
+          list(str): human readable presentation of the API response
+    """
     iocs = argToList(args.get('ioc', ''))
     description = argToList(args.get('description', 'manual submission'))
     markdown = []
@@ -527,6 +589,15 @@ def submit_command(client: Client, args: Dict[str, str]) -> list:
 
 
 def submitfp_command(client: Client, args: Dict[str, str]) -> list:
+    """
+            Submits a potential False Positive indicator to RST Threat Feed via API
+
+            Args:
+              client (Client): RST Threat Feed client.
+              args (Dict[str, str]): the arguments for the command.
+            Returns:
+              list(str): human readable presentation of the API response
+    """
     iocs = argToList(args.get('ioc', ''))
     description = argToList(args.get('description', 'manual submission'))
     markdown = []
@@ -553,45 +624,45 @@ def main():
     try:
         if command == 'test-module':
             demisto.results(test_module(client))
-        elif command == 'rst-threat-feed-ip':
+        elif command == 'ip':
             markdown, raw_results, indicators = ip_command(client, demisto.args())
             for i in range(0, len(raw_results)):
                 output = CommandResults(
                     readable_output=markdown[i],
-                    outputs_prefix='IP',
-                    outputs_key_field='Address',
-                    outputs={'Address': raw_results[i]['IndicatorValue'], 'RST': raw_results[i]},
+                    outputs_prefix='RST.IP',
+                    outputs_key_field='IndicatorValue',
+                    outputs=raw_results[i],
                     indicator=indicators[i]
                 )
                 return_results(output)
-        elif command == 'rst-threat-feed-domain':
+        elif command == 'domain':
             markdown, raw_results, indicators = domain_command(client, demisto.args())
             for i in range(0, len(raw_results)):
                 output = CommandResults(
                     readable_output=markdown[i],
-                    outputs_prefix='Domain',
-                    outputs_key_field='Name',
-                    outputs={'Name': raw_results[i]['IndicatorValue'], 'RST': raw_results[i]},
+                    outputs_prefix='RST.Domain',
+                    outputs_key_field='IndicatorValue',
+                    outputs=raw_results[i],
                     indicator=indicators[i]
                 )
                 return_results(output)
-        elif command == 'rst-threat-feed-url':
+        elif command == 'url':
             markdown, raw_results, indicators = url_command(client, demisto.args())
             for i in range(0, len(raw_results)):
                 output = CommandResults(
                     readable_output=markdown[i],
-                    outputs_prefix='URL',
-                    outputs_key_field='Data',
-                    outputs={'Data': raw_results[i]['IndicatorValue'], 'RST': raw_results[i]},
+                    outputs_prefix='RST.URL',
+                    outputs_key_field='IndicatorValue',
+                    outputs=raw_results[i],
                     indicator=indicators[i]
                 )
                 return_results(output)
-        elif command == 'rst-threat-feed-submit':
+        elif command == 'rst-submit-new':
             markdown = submit_command(client, demisto.args())
             for i in range(0, len(markdown)):
                 output = CommandResults(readable_output=markdown[i])
                 return_results(output)
-        elif command == 'rst-threat-feed-submit-fp':
+        elif command == 'rst-submit-fp':
             markdown = submitfp_command(client, demisto.args())
             for i in range(0, len(markdown)):
                 output = CommandResults(readable_output=markdown[i])

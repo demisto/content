@@ -44,6 +44,7 @@ def test_ip_command(requests_mock):
     assert isinstance(indicators, list)
     assert isinstance(markdown[0], str)
     assert indicators[0].ip == value_to_check
+    assert raw_results[0].IndicatorValue == value_to_check
 
 
 def test_domain_command(requests_mock):
@@ -68,6 +69,7 @@ def test_domain_command(requests_mock):
     assert isinstance(indicators, list)
     assert isinstance(markdown[0], str)
     assert indicators[0].domain == value_to_check
+    assert raw_results[0].IndicatorValue == value_to_check
 
 
 def test_url_command(requests_mock):
@@ -92,6 +94,7 @@ def test_url_command(requests_mock):
     assert isinstance(indicators, list)
     assert isinstance(markdown[0], str)
     assert indicators[0].url == value_to_check
+    assert raw_results[0].IndicatorValue == value_to_check
 
 
 def test_submit_command(requests_mock):

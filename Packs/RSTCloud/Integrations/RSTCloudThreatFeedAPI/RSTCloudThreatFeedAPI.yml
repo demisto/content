@@ -36,21 +36,21 @@ configuration:
 - additionalinfo: Mark IP indicators older than indicator_expiration_ip value in days
     as Suspicious ignoring the last available score
   defaultvalue: '7'
-  display: indicator_expiration_ip (days)
+  display: IP Indicator Expiration (days)
   name: indicator_expiration_ip
   required: false
   type: 0
 - additionalinfo: Mark domain indicators older than indicator_expiration_domain value
     in days as Suspicious ignoring the last available score
   defaultvalue: '14'
-  display: indicator_expiration_domain (days)
+  display: Domain Indicator Expiration (days)
   name: indicator_expiration_domain
   required: false
   type: 0
 - additionalinfo: Mark URL indicators older than indicator_expiration_url value in
     days as Suspicious ignoring the last available score
   defaultvalue: '30'
-  display: indicator_expiration_url (days)
+  display: URL Indicator Expiration (days)
   name: indicator_expiration_url
   required: false
   type: 0
@@ -86,7 +86,7 @@ script:
     deprecated: false
     description: Return IP information and reputation
     execution: false
-    name: rst-threat-feed-ip
+    name: ip
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested
@@ -136,7 +136,7 @@ script:
     - contextPath: IP.Suspicious.Score
       description: The score calculated for the indicator by the vendor
       type: String
-    - contextPath: RST.IP.Address
+    - contextPath: RST.IP.IndicatorValue
       description: The actual IP address.
       type: String
     - contextPath: RST.IP.Geo.Country
@@ -217,7 +217,7 @@ script:
     deprecated: false
     description: Returns Domain information and reputation.
     execution: false
-    name: rst-threat-feed-domain
+    name: domain
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -331,7 +331,7 @@ script:
     deprecated: false
     description: Returns URL information and reputation.
     execution: false
-    name: rst-threat-feed-url
+    name: url
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested
@@ -427,7 +427,7 @@ script:
     deprecated: false
     description: Submits an indicator to RST Threat Feed
     execution: false
-    name: rst-threat-feed-submit
+    name: rst-submit-new
   - arguments:
     - default: true
       description: List of IOCs (URLs, domains or IPs)
@@ -444,7 +444,7 @@ script:
     deprecated: false
     description: Submits a potential False Positive to RST Threat Feed
     execution: false
-    name: rst-threat-feed-submit-fp
+    name: rst-submit-fp
   dockerimage: demisto/python3:3.8.6.13358
   feed: false
   isfetch: false
