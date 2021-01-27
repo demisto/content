@@ -541,7 +541,7 @@ def download_attachment_by_filename_command(args: Dict[str, Any]) -> Any:
     if not file_name:
         raise ValueError("file name not given")
     attachment_id = ""
-    case_attachments = list_case_attachments(caseID=case_id)
+    case_attachments = list_case_attachments(caseID=case_id).get("data", [])
     for attachment in case_attachments:
         if file_name in attachment.get("name", ""):
             attachment_id = attachment.get("id", "")
@@ -1135,6 +1135,9 @@ def main() -> None:
 
         elif demisto.command() == "argus-download-attachment":
             return_results(download_attachment_command(demisto.args()))
+
+        elif demisto.command() == "argus-download-attachment-by-filename":
+            return_results(download_attachment_by_filename_command(demisto.args()))
 
         elif demisto.command() == "argus-edit-comment":
             return_results(edit_comment_command(demisto.args()))
