@@ -1,5 +1,5 @@
-description: This playbook gets all available device inventory from PANW IoT Cloud
-  and updates/creates endpoints with custom attributes on ServiceNow.
+description: This playbook gets all available devices from PANW IoT Cloud
+  and updates/creates endpoints with custom attributes in ServiceNow.
 id: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
 inputs: []
 name: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
@@ -51,8 +51,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Checks if there is an active instance of the ServiceNow integration enabled. Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       id: 0af96675-0b57-4ed5-8ac6-506c60523810
       iscommand: false
       name: Is ServiceNow enabled?
@@ -81,8 +81,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: gets all available devices from the IoT cloud and sends it to the
-        ServiceNow server
+      description: Gets all available devices from the PANW IoT cloud and sends it to the
+        ServiceNow server.
       id: 4593001c-a5c1-4339-8acf-5f6a44810b7c
       iscommand: false
       name: Send all PANW IoT devices to ServiceNow
@@ -116,7 +116,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Close the current incident.
       id: 051b8b71-53e5-48fd-85b6-c0f6fba8e5b7
       iscommand: true
       name: closeInvestigation
@@ -147,7 +147,7 @@ tasks:
       integration_name:
         simple: servicenow
       message:
-        simple: Servicenow integration is not enabled
+        simple: There is no active instance of the ServiceNow integration enabled.
       playbook_name:
         simple: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
@@ -158,7 +158,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Palo Alto Networks IoT 3rd Party
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message to PANW IOT cloud.
       id: 273efe1d-6535-4ad2-865c-305b878da8ba
       iscommand: true
       name: Send disabled status back to PANW IoT cloud
@@ -192,7 +192,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Close the current incident.
       id: 9bd5d7a7-bbb3-4439-8527-4be4d4defd2a
       iscommand: true
       name: closeInvestigation
@@ -226,12 +226,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: 6b7ecd4c-b0f8-4b68-8cac-bcde4b462026
       iscommand: false
-      name: Was there an error when sending devices to servicenow?
+      name: Was there an error when sending devices to ServiceNow?
       script: isError
       type: condition
       version: -1
@@ -259,7 +259,7 @@ tasks:
       integration_name:
         simple: servicenow
       message:
-        simple: 'Error: Failed to do a bulk device sync to ServiceNow'
+        simple: 'Error: Failed to perform a bulk device sync to ServiceNow'
       playbook_name:
         simple: Bulk Export Devices to ServiceNow - PANW IoT 3rd Party Integration
       status:
@@ -304,7 +304,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Closes the current incident
       id: ab39d571-8a28-4499-8399-2e9108dea4e5
       iscommand: true
       name: closeInvestigation
