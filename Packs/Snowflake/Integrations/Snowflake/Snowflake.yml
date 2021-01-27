@@ -109,7 +109,7 @@ script:
       name: role
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '100'
       description: The number of rows to retrieve.
       isArray: false
