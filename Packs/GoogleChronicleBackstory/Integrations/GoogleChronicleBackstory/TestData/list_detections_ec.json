@@ -275,7 +275,7 @@
    "timeWindowEndTime": "2020-12-21T03:54:00Z"
   }
  ],
- "GoogleChronicleBackstory.Token(val.name == val.name)": {
+ "GoogleChronicleBackstory.Token(val.name == obj.name)": {
   "name": "gcb-list-detections",
   "nextPageToken": "foobar_page_token"
  }
