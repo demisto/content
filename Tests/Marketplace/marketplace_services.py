@@ -608,6 +608,9 @@ class Pack(object):
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
             if days_since_creation < 30 and 'New' not in pack_metadata['tags']:
+                logging.debug("\n\n*********** Debug Starts Here *********\n\n")
+                logging.debug("The packs name is:" + str(user_metadata.get('name') or pack_id))
+                logging.debug("The creation date is:" + str(self._create_date))
                 pack_metadata['tags'].append('New')
             if 'New' in pack_metadata['tags'] and days_since_creation > 30:
                 pack_metadata['tags'].remove('New')
@@ -1215,6 +1218,7 @@ class Pack(object):
                         release_notes=self.description,
                         version_display_name=Pack.PACK_INITIAL_VERSION,
                         build_number=build_number,
+                        initial_release=True, # orel - changed this line
                         new_version=False)
 
                     logging.info(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
