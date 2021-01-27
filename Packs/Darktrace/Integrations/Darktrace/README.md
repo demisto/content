@@ -1,7 +1,6 @@
 Darktrace is a Cyber AI platform for threat detection and response across cloud, email, industrial, and the network.
 This integration was integrated and tested with version 4.1.0 of Darktrace
 ## Configure Darktrace on Cortex XSOAR
-# Test
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Darktrace.
