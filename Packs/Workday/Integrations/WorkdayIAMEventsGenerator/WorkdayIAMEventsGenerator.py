@@ -975,6 +975,13 @@ def get_full_reports():
     return jsonify(integration_context)
 
 
+def test_module():
+    if int(demisto.params().get('longRunningPort', '')) and demisto.params().get("longRunning"):
+        demisto.results('ok')
+    else:
+        return_error('Please make sure the long running port is filled and the long running checkbox is marked.')
+
+
 def generate_event():
     event_type = demisto.args().get('event_type')
     user_email = demisto.args().get('user_email')
@@ -987,68 +994,76 @@ def generate_event():
     elif event_type == 'terminate':
         get_terminate_report(user_email)
 
-    return_results(f'Successfully generated "{event_type}" event.')
+    return_results(f'Successfully generated the "{event_type}" event.')
 
 
 def get_new_hire_reports(user_email):
-    if not user_email:
-        set_integration_context(NEW_HIRE_REPORT)
-    else:
-        integration_context = get_integration_context()
-        reports = NEW_HIRE_REPORT['Report_Entry']
-        for report in reports:
-            email = report.get('Email_Address')
-            if email == user_email:
-                integration_context['Report_Entry'].append(report)
-                set_integration_context(integration_context)
+    integration_context = get_integration_context()
+    reports = NEW_HIRE_REPORT['Report_Entry']
+    for report in reports:
+        email = report.get('Email_Address')
+        if user_email in integration_context:
+            return_error(f'User "{user_email}" already exist. Please try another user email.')
+        if email == user_email:
+            integration_context['Report_Entry'].append(report)
+            set_integration_context(integration_context)
 
 
 def get_terminate_report(user_email):
-    if not user_email:
-        set_integration_context(TERMINATE_USER_REPORT)
-    else:
-        integration_context = get_integration_context()
-        reports = TERMINATE_USER_REPORT['Report_Entry']
-        for report in reports:
-            email = report.get('Email_Address')
-            if email == user_email:
-                users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
-                users.append(report)
-                integration_context['Report_Entry'] = users
-                set_integration_context(integration_context)
+    integration_context = get_integration_context()
+    reports = TERMINATE_USER_REPORT['Report_Entry']
+    for report in reports:
+        email = report.get('Email_Address')
+        if email == user_email:
+            users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
+            users.append(report)
+            integration_context['Report_Entry'] = users
+            set_integration_context(integration_context)
+            return
+        else:
+            return_error(f'The user "{user_email}" does not exist. Please choose one of the following: '
+                         f'rrahardjo@test.com, sarnold@test.com, tfairy@test.com, rbuxaplenty@test.com, '
+                         f'cocarmichael@test.com, ccarmichael@test.com')
 
 
 def get_update_report(user_email):
-    if not user_email:
-        set_integration_context(UPDATE_REPORT)
-    else:
-        integration_context = get_integration_context()
-        reports = UPDATE_REPORT['Report_Entry']
-        for report in reports:
-            email = report.get('Email_Address')
-            if email == user_email:
-                users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
-                users.append(report)
-                integration_context['Report_Entry'] = users
-                set_integration_context(integration_context)
+    integration_context = get_integration_context()
+    reports = UPDATE_REPORT['Report_Entry']
+    for report in reports:
+        email = report.get('Email_Address')
+        if email == user_email:
+            users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
+            users.append(report)
+            integration_context['Report_Entry'] = users
+            set_integration_context(integration_context)
+            return
+        else:
+            return_error(f'The user "{user_email}" does not exist. Please choose one of the following: '
+                         f'rrahardjo@test.com, sarnold@test.com, tfairy@test.com, rbuxaplenty@test.com, '
+                         f'cocarmichael@test.com, ccarmichael@test.com')
 
 
 def get_rehire_report(user_email):
-    if not user_email:
-        set_integration_context(REHIRE_USER_REPORT)
-    else:
-        integration_context = get_integration_context()
-        reports = REHIRE_USER_REPORT['Report_Entry']
-        for report in reports:
-            email = report.get('Email_Address')
-            if email == user_email:
-                users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
-                users.append(report)
-                integration_context['Report_Entry'] = users
-                set_integration_context(integration_context)
+    integration_context = get_integration_context()
+    reports = REHIRE_USER_REPORT['Report_Entry']
+    for report in reports:
+        email = report.get('Email_Address')
+        if email == user_email:
+            users = [i for i in integration_context['Report_Entry'] if not (i['Email_Address'] == email)]
+            users.append(report)
+            integration_context['Report_Entry'] = users
+            set_integration_context(integration_context)
+            return
+        else:
+            return_error(f'The user "{user_email}" does not exist. Please choose one of the following: '
+                         f'rrahardjo@test.com, sarnold@test.com, tfairy@test.com, rbuxaplenty@test.com, '
+                         f'cocarmichael@test.com, ccarmichael@test.com')
 
 
-if demisto.command() == 'long-running-execution':
+if demisto.command() == 'test-module':
+    test_module()
+
+elif demisto.command() == 'long-running-execution':
     integration_context = get_integration_context()
     if not integration_context:
         set_integration_context(FIRST_RUN_REPORT)
