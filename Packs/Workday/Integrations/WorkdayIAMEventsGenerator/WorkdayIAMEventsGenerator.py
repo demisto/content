@@ -970,6 +970,11 @@ APP: Flask = Flask('xsoar-workday')
 
 
 @APP.route('/', methods=['GET'])
+def get_full_reports():
+    integration_context = get_integration_context()
+    return jsonify(integration_context)
+
+
 def generate_event():
     event_type = demisto.args().get('event_type')
     user_email = demisto.args().get('user_email')
@@ -982,8 +987,7 @@ def generate_event():
     elif event_type == 'terminate':
         get_terminate_report(user_email)
 
-    integration_context = get_integration_context()
-    return jsonify(integration_context)
+    return_results(f'Successfully generated "{event_type}" event.')
 
 
 def get_new_hire_reports(user_email):
@@ -1054,7 +1058,7 @@ if demisto.command() == 'long-running-execution':
         server.serve_forever()
 
 
-elif demisto.command() == 'generate-event':
+elif demisto.command() == 'workday-test-generate-event':
     generate_event()
 
 elif demisto.command() == 'initialize-context':
