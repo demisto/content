@@ -1096,7 +1096,7 @@ script:
     - contextPath: Thycotic.Secret.ChangePassword
       description: Secret summary object
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
   longRunning: false
