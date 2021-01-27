@@ -1209,6 +1209,7 @@ class Pack(object):
                         release_notes=self.description,
                         version_display_name=Pack.PACK_INITIAL_VERSION,
                         build_number=build_number,
+                        initial_release=True,
                         new_version=False)
 
                     logging.info(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
