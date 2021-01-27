@@ -876,7 +876,7 @@ class Client:
                 # htmlBody, htmlAttachments = handle_html(htmlBody)
                 htmlBody, htmlAttachments = self.handle_html(htmlBody)
                 msg = MIMEText(htmlBody, 'html', 'utf-8')
-                attach_body_to.attach(msg)
+                attach_body_to.attach(msg)  # type: ignore
                 if attach_cid:
                     inlineAttachments = self.collect_inline_attachments(attach_cid)
 
