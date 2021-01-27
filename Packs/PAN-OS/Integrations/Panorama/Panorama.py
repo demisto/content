@@ -3067,8 +3067,6 @@ def panorama_list_pcaps_command(args: dict):
     """
     Get list of pcap files
     """
-    if DEVICE_GROUP:
-        raise Exception('PCAP listing is only supported on Firewall (not Panorama).')
     pcap_type = args['pcapType']
     params = {
         'type': 'export',
@@ -3080,6 +3078,14 @@ def panorama_list_pcaps_command(args: dict):
         params['dlp-password'] = args['password']
     elif args['pcapType'] == 'dlp-pcap':
         raise Exception('can not provide dlp-pcap without password')
+
+    serial_number = args.get('serialNumber')
+    if VSYS and serial_number:
+        raise Exception('The serialNumber argument can only be used in a Panorama instance configuration')
+    elif DEVICE_GROUP and not serial_number:
+        raise Exception('PCAP listing is only supported on Panorama with the serialNumber argument.')
+    elif serial_number:
+        params['target'] = serial_number
 
     result = http_request(URL, 'GET', params=params, is_pcap=True)
     json_result = json.loads(xml2json(result.text))['response']
@@ -3128,8 +3134,6 @@ def panorama_get_pcap_command(args: dict):
     """
     Get pcap file
     """
-    if DEVICE_GROUP:
-        raise Exception('Downloading a PCAP file is only supported on a Firewall (not on Panorama).')
     pcap_type = args['pcapType']
     params = {
         'type': 'export',
@@ -3156,8 +3160,10 @@ def panorama_get_pcap_command(args: dict):
 
     serial_number = args.get('serialNumber')
     if VSYS and serial_number:
-        raise Exception('The serial_number argument can only be used in a Panorama instance configuration')
-    else:
+        raise Exception('The serialNumber argument can only be used in a Panorama instance configuration')
+    elif DEVICE_GROUP and not serial_number:
+        raise Exception('PCAP listing is only supported on Panorama with the serialNumber argument.')
+    elif serial_number:
         params['target'] = serial_number
 
     file_name = None
