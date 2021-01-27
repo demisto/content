@@ -1,0 +1,413 @@
+category: Utilities
+commonfields:
+  id: Armis
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: '10'
+  display: Maximum number of incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: ACTIVE
+  display: Fetch alerts with status (UNHANDLED,SUPPRESSED,RESOLVED)
+  name: alert_status
+  options:
+  - UNHANDLED
+  - SUPPRESSED
+  - RESOLVED
+  required: false
+  type: 16
+- additionalinfo: The types of Alerts are Policy Violation, System Policy Violation,
+    Anomaly Detection
+  display: Fetch alerts with type
+  name: alert_type
+  options:
+  - Policy Violation
+  - System Policy Violation
+  - Anomaly Detection
+  required: false
+  type: 16
+- defaultvalue: Low
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  options:
+  - Low
+  - Medium
+  - High
+  required: true
+  type: 15
+- defaultvalue: 3 days
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Secret API Key
+  hidden: false
+  name: secret
+  required: true
+  type: 4
+- additionalinfo: use this parameter to fetch incidents using a free AQL string rather
+    than the simpler alert type, severity, etc'
+  display: Fetch Alerts AQL
+  hidden: false
+  name: free_fetch_string
+  required: false
+  type: 0
+description: Integration with Armis
+display: Armis
+name: Armis
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert severity. Comma-separated value (Low,Medium,High)
+      isArray: true
+      name: severity
+      predefined:
+      - High
+      - Medium
+      - Low
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert status.
+      isArray: true
+      name: status
+      predefined:
+      - UNHANDLED
+      - SUPPRESSED
+      - RESOLVED
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Filter by alert type
+      isArray: true
+      name: alert_type
+      predefined:
+      - Policy Violation
+      - System Policy Violation
+      - Anomaly Detection
+      required: false
+      secret: false
+    - default: false
+      description: Maximum results to return.
+      isArray: false
+      name: max_results
+      required: false
+      secret: false
+    - default: false
+      description: "Filter by start time. \nExamples:\n  \"3 days ago\"\n  \"1 month\"\
+        \n  \"2019-10-10T12:22:00\"\n  \"2019-10-10\""
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the alert
+      isArray: false
+      name: alert_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Search Armis Alerts.
+    execution: false
+    name: armis-search-alerts
+    outputs:
+    - contextPath: Armis.SearchAlerts.activityIds
+      type: Number
+    - contextPath: Armis.SearchAlerts.activityUUIDs
+      type: String
+    - contextPath: Armis.SearchAlerts.alertId
+      description: The ID of the Alert
+      type: Number
+    - contextPath: Armis.SearchAlerts.connectionIds
+      type: Unknown
+    - contextPath: Armis.SearchAlerts.description
+      description: A text description of the Alert
+      type: String
+    - contextPath: Armis.SearchAlerts.deviceIds
+      type: Number
+    - contextPath: Armis.SearchAlerts.severity
+      description: The Severity of the Alert
+      type: String
+    - contextPath: Armis.SearchAlerts.status
+      description: The Status of the Alert
+      type: String
+    - contextPath: Armis.SearchAlerts.time
+      description: The date and time the Alert occured
+      type: Date
+    - contextPath: Armis.SearchAlerts.title
+      description: The title of the Alert
+      type: String
+    - contextPath: Armis.SearchAlerts.type
+      description: The type of the Alert
+      type: String
+  - arguments:
+    - default: false
+      description: Alert ID to update.
+      isArray: false
+      name: alert_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: New status of the alert.
+      isArray: false
+      name: status
+      predefined:
+      - UNHANDLED
+      - RESOLVED
+      - SUPPRESSED
+      required: true
+      secret: false
+    deprecated: false
+    description: Update the status for an alert.
+    execution: false
+    name: armis-update-alert-status
+  - arguments:
+    - default: false
+      description: The AQL string to search by
+      isArray: false
+      name: aql_string
+      required: true
+      secret: false
+    deprecated: false
+    description: Search the Alerts with a raw aql string
+    execution: false
+    name: armis-search-alerts-by-aql-string
+    outputs:
+    - contextPath: Armis.SearchAlertsByAQLString.activityIds
+      type: Number
+    - contextPath: Armis.SearchAlertsByAQLString.activityUUIDs
+      type: String
+    - contextPath: Armis.SearchAlertsByAQLString.alertId
+      description: The ID of the Alert
+      type: Number
+    - contextPath: Armis.SearchAlertsByAQLString.connectionIds
+      type: Unknown
+    - contextPath: Armis.SearchAlertsByAQLString.description
+      description: The description of the Alert
+      type: String
+    - contextPath: Armis.SearchAlertsByAQLString.deviceIds
+      type: Number
+    - contextPath: Armis.SearchAlertsByAQLString.severity
+      description: The Severity of the Alert
+      type: String
+    - contextPath: Armis.SearchAlertsByAQLString.status
+      description: The Status of the Alert
+      type: String
+    - contextPath: Armis.SearchAlertsByAQLString.time
+      description: The date and time the Alert occured
+      type: Date
+    - contextPath: Armis.SearchAlertsByAQLString.title
+      description: The title of the Alert
+      type: String
+    - contextPath: Armis.SearchAlertsByAQLString.type
+      description: The type of the Alert
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the device to add a tag to
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - default: false
+      description: The tags to add to the Device
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Add a tag to a Device
+    execution: false
+    name: armis-tag-device
+  - arguments:
+    - default: false
+      description: The ID of the device to remove a tag from
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - default: false
+      description: The tags to remove from the Device
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: Remove a tag from a Device
+    execution: false
+    name: armis-untag-device
+  - arguments:
+    - default: false
+      description: The name of the device
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the Device
+      isArray: false
+      name: device_id
+      required: false
+      secret: false
+    - default: false
+      description: The MAC Address of the Device
+      isArray: false
+      name: mac_address
+      required: false
+      secret: false
+    - default: false
+      description: The risk level of the device
+      isArray: false
+      name: risk_level
+      required: false
+      secret: false
+    - default: false
+      description: The IP Address of the device
+      isArray: false
+      name: ip_address
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: device_type
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: time_frame
+      required: false
+      secret: false
+    deprecated: false
+    description: Search Devices by identifiers
+    execution: false
+    name: armis-search-devices
+    outputs:
+    - contextPath: Armis.SearchDevices.accessSwitch
+      type: Unknown
+    - contextPath: Armis.SearchDevices.category
+      type: Unknown
+    - contextPath: Armis.SearchDevices.firstSeen
+      type: Unknown
+    - contextPath: Armis.SearchDevices.id
+      type: Unknown
+    - contextPath: Armis.SearchDevices.ipaddress
+      type: Unknown
+    - contextPath: Armis.SearchDevices.ipv6
+      type: Unknown
+    - contextPath: Armis.SearchDevices.lastSeen
+      type: Unknown
+    - contextPath: Armis.SearchDevices.macAddress
+      type: Unknown
+    - contextPath: Armis.SearchDevices.manufacturer
+      type: Unknown
+    - contextPath: Armis.SearchDevices.model
+      type: Unknown
+    - contextPath: Armis.SearchDevices.name
+      type: Unknown
+    - contextPath: Armis.SearchDevices.operatingSystem
+      type: Unknown
+    - contextPath: Armis.SearchDevices.operatingSystemVersion
+      type: Unknown
+    - contextPath: Armis.SearchDevices.purdueLevel
+      type: Unknown
+    - contextPath: Armis.SearchDevices.riskLevel
+      type: Unknown
+    - contextPath: Armis.SearchDevices.sensor
+      type: Unknown
+    - contextPath: Armis.SearchDevices.site
+      type: Unknown
+    - contextPath: Armis.SearchDevices.tags
+      type: Unknown
+    - contextPath: Armis.SearchDevices.type
+      type: Unknown
+    - contextPath: Armis.SearchDevices.user
+      type: Unknown
+    - contextPath: Armis.SearchDevices.visibility
+      type: Unknown
+  - arguments:
+    - default: false
+      isArray: false
+      name: aql_string
+      required: false
+      secret: false
+    deprecated: false
+    description: Search Devices with a custom AQL search string
+    execution: false
+    name: armis-search-devices-by-aql
+    outputs:
+    - contextPath: Armis.SearchDevicesByAql.accessSwitch
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.category
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.firstSeen
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.id
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.ipAddress
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.ipv6
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.lastSeen
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.macAddress
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.manufacturer
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.model
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.name
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.operatingSystem
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.operatingSystemVersion
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.purdueLevel
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.riskLevel
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.sensor
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.site
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.tags
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.type
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.user
+      type: Unknown
+    - contextPath: Armis.SearchDevicesByAql.visibility
+      type: Unknown
+  dockerimage: demisto/python3:3.8.6.12176
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: HelloWorld-mapper
+defaultclassifier: HelloWorld
+fromversion: 5.0.0
