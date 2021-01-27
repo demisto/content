@@ -35,7 +35,7 @@ CHRONICLE_OUTPUT_PATHS = {
     'UserAlert': 'GoogleChronicleBackstory.UserAlert(val.User && val.User == obj.User)',
     'Events': 'GoogleChronicleBackstory.Events',
     'Detections': 'GoogleChronicleBackstory.Detections(val.id == obj.id && val.ruleVersion == obj.ruleVersion)',
-    'Token': 'GoogleChronicleBackstory.Token(val.name == val.name)'
+    'Token': 'GoogleChronicleBackstory.Token(val.name == obj.name)'
 }
 
 ARTIFACT_NAME_DICT = {

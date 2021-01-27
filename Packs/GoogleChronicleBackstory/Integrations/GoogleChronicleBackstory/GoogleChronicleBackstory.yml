@@ -117,21 +117,6 @@ configuration:
   - User alerts
   required: false
   type: 15
-- additionalinfo: Select the time window to query Chronicle. While selecting the time
-    window consider the time delay for an event to appear in Chronicle after generation.
-    Available options are 15 (Default), 30, 45 and 60. This parameter is not applied
-    when "IOC Domain matches" Chronicle Alert Type is selected.
-  defaultvalue: '15'
-  display: Time window (in minutes)
-  hidden: false
-  name: time_window
-  options:
-  - '15'
-  - '30'
-  - '45'
-  - '60'
-  required: false
-  type: 15
 - display: Select the severity of asset alerts to be filtered for Fetch Incidents.
     Available options are 'High', 'Medium', 'Low' and 'Unspecified' (Default-No Selection).
   name: incident_severity
@@ -163,6 +148,21 @@ configuration:
   options:
   - ALERTING
   - NOT_ALERTING
+  required: false
+  type: 15
+- additionalinfo: Select the time window to query Chronicle. While selecting the time
+    window consider the time delay for an event to appear in Chronicle after generation.
+    Available options are 15 (Default), 30, 45 and 60. This parameter is not applied
+    when "IOC Domain matches" Chronicle Alert Type is selected. Don't touch unless you're missing alerts.
+  defaultvalue: '15'
+  display: Time window (in minutes)
+  hidden: false
+  name: time_window
+  options:
+  - '15'
+  - '30'
+  - '45'
+  - '60'
   required: false
   type: 15
 - display: Trust any certificate (not secure)
