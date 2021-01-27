@@ -3,7 +3,7 @@ comment: Gets all available devices from the IoT cloud and sends it to the Servi
 commonfields:
   id: SendAllPANWIoTDevicesToServiceNow
   version: -1
-dockerimage: demisto/python3:3.9.1.14969
+dockerimage: demisto/python3:3.9.1.15759
 enabled: true
 name: SendAllPANWIoTDevicesToServiceNow
 runas: DBotWeakRole
