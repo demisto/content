@@ -217,7 +217,7 @@ class TestChangedPlaybook:
 
     def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
         mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
-                            return_value=True)
+                            return_value=(True, ''))
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
@@ -399,7 +399,9 @@ class TestChangedIntegrationAndPlaybook:
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.py\n" \
                    "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self):
+    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
+                            return_value=(True, ''))
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
@@ -930,6 +932,9 @@ def test_modified_integration_content_pack_is_collected(mocker):
     - Ensure the content pack GreatPack is collected.
     - Ensure the collection runs successfully.
     """
+    mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
+                        return_value=(True, ''))
+
     from Tests.scripts import collect_tests_and_content_packs
     collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
 
@@ -1158,8 +1163,8 @@ def test_remove_ignored_tests(tests_to_filter, ignored_tests, expected_result, m
 
 
 @pytest.mark.parametrize('tests_to_filter, should_test_content, expected_result', [
-    ({'fake_test_playbook'}, False, set()),
-    ({'fake_test_playbook'}, True, {'fake_test_playbook'})
+    ({'fake_test_playbook'}, (False, 'Pack is either the "NonSupported" pack or the "DeprecatedContent" pack.'), set()),
+    ({'fake_test_playbook'}, (True, ''), {'fake_test_playbook'})
 ])
 def test_remove_tests_for_non_supported_packs(tests_to_filter, should_test_content, expected_result, mocker):
     """

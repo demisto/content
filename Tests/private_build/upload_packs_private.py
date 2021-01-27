@@ -309,12 +309,6 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    # in case that pack already exist at cloud storage path and in index, skipped further steps
-    if skipped_pack_uploading and exists_in_index:
-        pack.status = PackStatus.PACK_ALREADY_EXISTS.name
-        pack.cleanup()
-        return
-
     task_status = pack.prepare_for_index_upload()
     if not task_status:
         pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
@@ -326,6 +320,12 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                       hidden_pack=pack.hidden)
     if not task_status:
         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+        pack.cleanup()
+        return
+
+    # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
+    if skipped_pack_uploading and exists_in_index:
+        pack.status = PackStatus.PACK_ALREADY_EXISTS.name
         pack.cleanup()
         return
 
