@@ -7,39 +7,18 @@ configuration:
   display: IdentityIQ Server URL (e.g. https://identityiq-server.com/identityiq)
   name: identityiq_url
   required: true
-  type: 0
-- defaultvalue: OAUTH
-  display: Authentication Type
-  hidden: false
-  name: auth_type
-  options:
-  - OAUTH
-  - BASIC
-  required: true
-  type: 15
+  type: 12
 - additionalinfo: Client Id for OAuth 2.0
   display: Client Id (for OAuth 2.0)
   hidden: false
   name: client_id
-  required: false
+  required: true
   type: 4
 - additionalinfo: Client Secret for OAuth 2.0
   display: Client Secret (for OAuth 2.0)
   hidden: false
   name: client_secret
-  required: false
-  type: 4
-- additionalinfo: Username for Basic Authentication
-  display: Username (for Basic Auth)
-  hidden: false
-  name: username
-  required: false
-  type: 0
-- additionalinfo: Password for Basic Authentication
-  display: Password (for Basic Auth)
-  hidden: false
-  name: password
-  required: false
+  required: true
   type: 4
 - display: Fetch incidents
   name: isFetch

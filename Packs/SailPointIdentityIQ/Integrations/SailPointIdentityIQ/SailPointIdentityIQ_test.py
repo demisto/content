@@ -9,7 +9,14 @@ import SailPointIdentityIQ
 
 ''' TEST CONSTANTS '''
 
-MOCK_IIQ_BASE_URL = 'https://identityiq-server.com/identityiq'
+MOCK_IDENTITYIQ_BASE_URL = 'https://identityiq-server.com/identityiq'
+MOCK_BEARER_TOKEN = 'RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml'
+MOCK_HEADERS = {
+    'Authorization': 'Bearer %s' % MOCK_BEARER_TOKEN,
+    'Content-Type': 'application/json'
+}
+MOCK_CLIENT = SailPointIdentityIQ.Client(base_url=MOCK_IDENTITYIQ_BASE_URL, verify=False, proxy=False,
+                                         headers=MOCK_HEADERS, max_results=1000, request_timeout=10)
 
 ''' HELPER/UTILITY FUNCTIONS '''
 
@@ -156,133 +163,90 @@ def verify_alert(alert):
 ''' TESTS (UTILITY)'''
 
 
-def test_get_oauth_headers_none():
-    headers = SailPointIdentityIQ.get_oauth_headers(None, None, None)
+def test_get_headers_all_none():
+    headers = SailPointIdentityIQ.get_headers(None, None, None, None)
     assert headers is None
 
 
-def test_get_oauth_headers_client_id_none():
-    headers = SailPointIdentityIQ.get_oauth_headers(None, 'test', 'client_credentials')
+def test_get_headers_base_url_none():
+    headers = SailPointIdentityIQ.get_headers(None, 'test', 'test', 'client_credentials')
     assert headers is None
 
 
-def test_get_oauth_headers_client_secret_none():
-    headers = SailPointIdentityIQ.get_oauth_headers('test', None, 'client_credentials')
+def test_get_headers_client_id_none():
+    headers = SailPointIdentityIQ.get_headers(MOCK_IDENTITYIQ_BASE_URL, None, 'test', 'client_credentials')
     assert headers is None
 
 
-@patch('SailPointIdentityIQ.get_oauth_headers')
-def test_get_oauth_headers_grant_type(mock_oauth_header):
-    mock_oauth_header.return_value = {
-        'Authorization': 'Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml',
-        'Content-Type': 'application/json'
-    }
-    headers = SailPointIdentityIQ.get_oauth_headers('test', 'test', None)
-    assert headers['Authorization'] == 'Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml'
-    assert headers['Content-Type'] == 'application/json'
-
-
-@patch('SailPointIdentityIQ.get_oauth_headers')
-def test_get_oauth_headers_success(mock_oauth_header):
-    mock_oauth_header.return_value = {
-        'Authorization': 'Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml',
-        'Content-Type': 'application/json'
-    }
-    headers = SailPointIdentityIQ.get_oauth_headers('test', 'test', 'client_credentials')
-    assert headers['Authorization'] == 'Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml'
-    assert headers['Content-Type'] == 'application/json'
-
-
-def test_get_basic_auth_headers_none():
-    headers = SailPointIdentityIQ.get_basic_auth_headers(None, None)
-    assert headers is None
-
-
-def test_get_basic_auth_headers_username_none():
-    headers = SailPointIdentityIQ.get_basic_auth_headers(None, 'test')
-    assert headers is None
-
-
-def test_get_basic_auth_headers_password_none():
-    headers = SailPointIdentityIQ.get_basic_auth_headers('test', None)
-    assert headers is None
-
-
-def test_get_basic_auth_headers_success():
-    headers = SailPointIdentityIQ.get_basic_auth_headers('test', 'test')
-    assert headers['Authorization'] == 'Basic dGVzdDp0ZXN0'
-    assert headers['Content-Type'] == 'application/json'
-
-
-def test_get_headers_none():
-    headers = SailPointIdentityIQ.get_headers(None)
+def test_get_headers_client_secret_none():
+    headers = SailPointIdentityIQ.get_headers(MOCK_IDENTITYIQ_BASE_URL, 'test', None, 'client_credentials')
     assert headers is None
 
 
 @patch('SailPointIdentityIQ.get_headers')
-def test_get_headers_oauth_success(mock_header):
+def test_get_headers_grant_type(mock_header):
     mock_header.return_value = {
         'Authorization': 'Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml',
         'Content-Type': 'application/json'
     }
-    headers = SailPointIdentityIQ.get_headers('OAUTH')
+    headers = SailPointIdentityIQ.get_headers(MOCK_IDENTITYIQ_BASE_URL, 'test', 'test', None)
     assert headers['Authorization'] == 'Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml'
     assert headers['Content-Type'] == 'application/json'
 
 
 @patch('SailPointIdentityIQ.get_headers')
-def test_get_headers_basic_success(mock_header):
+def test_get_headers_success(mock_header):
     mock_header.return_value = {
-        'Authorization': 'Basic dGVzdDp0ZXN0',
+        'Authorization': 'Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml',
         'Content-Type': 'application/json'
     }
-    headers = SailPointIdentityIQ.get_headers('BASIC')
-    assert headers['Authorization'] == 'Basic dGVzdDp0ZXN0'
+    headers = SailPointIdentityIQ.get_headers(MOCK_IDENTITYIQ_BASE_URL, 'test', 'test', 'client_credentials')
+    assert headers['Authorization'] == 'Bearer RXAxTEQ0ZkhUVm94dmhIWDd1M2Q0TjU3NDRnQUYzN2ouZXVlV2h1WUk4OW9jMi95Zml'
     assert headers['Content-Type'] == 'application/json'
 
 
-@patch('SailPointIdentityIQ.send_request')
-def test_send_request_none(mock_response):
+@patch('SailPointIdentityIQ.Client.send_request')
+def test_send_request_all_none(mock_response):
     mock_response.return_value = None
-    response = SailPointIdentityIQ.send_request(None, None, None)
+    response = MOCK_CLIENT.send_request(None, None, None, None)
     assert response is None
 
 
-@patch('SailPointIdentityIQ.send_request')
-def test_send_request_url_none(mock_response):
+@patch('SailPointIdentityIQ.Client.send_request')
+def test_send_request_url_suffix_none(mock_response):
     mock_response.return_value = None
-    response = SailPointIdentityIQ.send_request(None, 'GET', None)
+    response = MOCK_CLIENT.send_request(None, 'GET', None, None)
     assert response is None
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_send_request_method_none(mock_response):
     mock_response.return_value = None
-    response = SailPointIdentityIQ.send_request(MOCK_IIQ_BASE_URL, None, None)
+    response = MOCK_CLIENT.send_request(MOCK_IDENTITYIQ_BASE_URL, None, None, None)
     assert response is None
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_send_request_non_200_status(mock_response):
     """
     Send request should return None in case of 3XX, 4XX or 5XX HTTP status from IdentityIQ.
     """
     json_data = util_load_json('test_data/404_Not_Found.json')
     mock_response.return_value = util_mock_http_resp(404, json_data)
-    response = SailPointIdentityIQ.send_request(MOCK_IIQ_BASE_URL, 'GET', None)
+    response = MOCK_CLIENT.send_request(MOCK_IDENTITYIQ_BASE_URL, 'GET', None)
     assert response.status_code == 404
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in response.json()['schemas']
     assert response.json()['status'] == '404'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_send_request_success(mock_response):
     """
     Send request should return response json in case of 2XX HTTP status from IdentityIQ.
     """
     json_data = util_load_json('test_data/ResourceTypes.json')
     mock_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.send_request(MOCK_IIQ_BASE_URL, 'GET', None)
+    response = MOCK_CLIENT.send_request(MOCK_IDENTITYIQ_BASE_URL, 'GET', None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), response.json()['totalResults'])
 
@@ -354,7 +318,7 @@ def test_get_markdown_objects_none():
     markdown = SailPointIdentityIQ.get_markdown('IdentityIQ.Identity', None)
     headers = ['id', 'userName', 'displayName', 'name', 'emails', 'sailpointUser', 'extendedUser', 'entitlements',
                'roles', 'capabilities', 'active']
-    assert markdown == tableToMarkdown('Identity', None, headers=headers)
+    assert markdown == tableToMarkdown('Identity(Identities)', None, headers=headers)
 
 
 def test_get_markdown():
@@ -362,7 +326,7 @@ def test_get_markdown():
     markdown = SailPointIdentityIQ.get_markdown('IdentityIQ.Identity', json_data)
     headers = ['id', 'userName', 'displayName', 'name', 'emails', 'sailpointUser', 'extendedUser', 'entitlements',
                'roles', 'capabilities', 'active']
-    assert markdown == tableToMarkdown('Identity', json_data, headers=headers)
+    assert markdown == tableToMarkdown('Identity(Identities)', json_data, headers=headers)
 
 
 def test_build_results_none():
@@ -392,63 +356,63 @@ def test_build_results_2xx_status():
 ''' TESTS (COMMAND)'''
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_connection_fail(mock_response):
     mock_response.return_value = util_mock_http_resp(404, None)
-    test_connection = SailPointIdentityIQ.test_connection()
+    test_connection = SailPointIdentityIQ.test_connection(MOCK_CLIENT)
     assert test_connection == 'Unable to connect to IdentityIQ!'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_connection_success(mock_response):
     mock_response.return_value = util_mock_http_resp(200, None)
-    test_connection = SailPointIdentityIQ.test_connection()
+    test_connection = SailPointIdentityIQ.test_connection(MOCK_CLIENT)
     assert test_connection == 'ok'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_no_resources(mock_search_identities_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.search_identities(None, None, 0, False)
+    response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 0, False)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_id_not_found(mock_search_identities_response):
     json_data = util_load_json('test_data/404_Not_Found.json')
     mock_search_identities_response.return_value = util_mock_http_resp(404, json_data)
-    response = SailPointIdentityIQ.search_identities('7f000001705911b4817059d30cf50348', None, 0, True)
+    response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, '7f000001705911b4817059d30cf50348', None, 0, True)
     assert response.status_code == 404
     assert response.json()['status'] == '404'
     assert response.json()['detail'] == 'Resource 7f000001705911b4817059d30cf50348 not found.'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_id_found(mock_search_identities_response):
     json_data = util_load_json('test_data/User.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.search_identities('7f00000174441779817444c8842b0017', None, 0, True)
+    response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, '7f00000174441779817444c8842b0017', None, 0, True)
     assert response.status_code == 200
     verify_user(response.json())
     assert response.json()['id'] == '7f00000174441779817444c8842b0017'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_email_not_found(mock_search_identities_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.search_identities(None, 'test@sailpointdemo.com', 0, True)
+    response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, 'test@sailpointdemo.com', 0, True)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_email_found(mock_search_identities_response):
     json_data = util_load_json('test_data/User_Filtered.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.search_identities(None, 'serviceaccount@sailpointdemo.com', 0, True)
+    response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, 'serviceaccount@sailpointdemo.com', 0, True)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 1)
     user = response.json()['Resources'][0]
@@ -461,31 +425,31 @@ def test_search_identities_email_found(mock_search_identities_response):
     assert has_email is True
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_risk_score_not_matched(mock_search_identities_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.search_identities(None, None, 1600, True)
+    response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 1600, True)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_risk_score_invalid(mock_search_identities_response):
     json_data = util_load_json('test_data/400_Bad_Request.json')
     mock_search_identities_response.return_value = util_mock_http_resp(400, json_data)
-    response = SailPointIdentityIQ.search_identities(None, None, -1, True)
+    response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, -1, True)
     assert response.status_code == 400
     assert response.json()['status'] == '400'
     assert response.json()['detail'] == 'Invalid filter:urn:ietf:params:scim:schemas:sailpoint:1.0:User:riskScore eq -1'
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in response.json()['schemas']
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_risk_score_matched(mock_search_identities_response):
     json_data = util_load_json('test_data/User_Filtered.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.search_identities(None, None, 100, True)
+    response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 100, True)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 1)
     user = response.json()['Resources'][0]
@@ -494,20 +458,20 @@ def test_search_identities_risk_score_matched(mock_search_identities_response):
     assert user['urn:ietf:params:scim:schemas:sailpoint:1.0:User']['riskScore'] >= 100
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_active_false(mock_search_identities_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.search_identities(None, None, 0, True)
+    response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 0, True)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_search_identities_active_true(mock_search_identities_response):
     json_data = util_load_json('test_data/Users.json')
     mock_search_identities_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.search_identities(None, None, 0, True)
+    response = SailPointIdentityIQ.search_identities(MOCK_CLIENT, None, None, 0, True)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 5)
     for user in response.json()['Resources']:
@@ -515,127 +479,129 @@ def test_search_identities_active_true(mock_search_identities_response):
         assert user['active'] is True
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_policy_violations_id_not_found(mock_policy_violations_response):
     json_data = util_load_json('test_data/404_Not_Found.json')
     mock_policy_violations_response.return_value = util_mock_http_resp(404, json_data)
-    response = SailPointIdentityIQ.get_policy_violations('8a8080824df45873014df46036521343')
+    response = SailPointIdentityIQ.get_policy_violations(MOCK_CLIENT, '8a8080824df45873014df46036521343')
     assert response.status_code == 404
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in response.json()['schemas']
     assert response.json()['status'] == '404'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_policy_violations_id_found(mock_policy_violations_response):
     json_data = util_load_json('test_data/PolicyViolation.json')
     mock_policy_violations_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_policy_violations('8a8080824df45873014df46036521328')
+    response = SailPointIdentityIQ.get_policy_violations(MOCK_CLIENT, '8a8080824df45873014df46036521328')
     assert response.status_code == 200
     verify_policy_violation(response.json())
     assert response.json()['id'] == '8a8080824df45873014df46036521328'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_policy_violations_no_resources(mock_policy_violations_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_policy_violations_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_policy_violations(None)
+    response = SailPointIdentityIQ.get_policy_violations(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_policy_violations(mock_policy_violations_response):
     json_data = util_load_json('test_data/PolicyViolations.json')
     mock_policy_violations_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_policy_violations(None)
+    response = SailPointIdentityIQ.get_policy_violations(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 2)
     for policy_violation in response.json()['Resources']:
         verify_policy_violation(policy_violation)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_task_results_id_not_found(mock_task_results_response):
     json_data = util_load_json('test_data/404_Not_Found.json')
     mock_task_results_response.return_value = util_mock_http_resp(404, json_data)
-    response = SailPointIdentityIQ.get_task_results('7f00000175891f4b81763bd218de1d64')
+    response = SailPointIdentityIQ.get_task_results(MOCK_CLIENT, '7f00000175891f4b81763bd218de1d64')
     assert response.status_code == 404
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in response.json()['schemas']
     assert response.json()['status'] == '404'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_task_results_id_found(mock_task_results_response):
     json_data = util_load_json('test_data/TaskResult.json')
     mock_task_results_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_task_results('7f00000175891f4b81763bd2181c1d5f')
+    response = SailPointIdentityIQ.get_task_results(MOCK_CLIENT, '7f00000175891f4b81763bd2181c1d5f')
     assert response.status_code == 200
     verify_task_result(response.json())
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_task_results_no_resources(mock_task_results_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_task_results_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_task_results(None)
+    response = SailPointIdentityIQ.get_task_results(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_task_results(mock_task_results_response):
     json_data = util_load_json('test_data/TaskResults.json')
     mock_task_results_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_task_results(None)
+    response = SailPointIdentityIQ.get_task_results(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 5)
     for task_result in response.json()['Resources']:
         verify_task_result(task_result)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_no_resources(mock_accounts_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, None, None, None, None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, None, None, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_id_not_found(mock_accounts_response):
     json_data = util_load_json('test_data/404_Not_Found.json')
     mock_accounts_response.return_value = util_mock_http_resp(404, json_data)
-    response = SailPointIdentityIQ.get_accounts('7f00000174441779817444c8837c5373', None, None, None, None, None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, '7f00000174441779817444c8837c5373', None, None, None, None,
+                                                None, None)
     assert response.status_code == 404
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in response.json()['schemas']
     assert response.json()['status'] == '404'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_id_found(mock_accounts_response):
     json_data = util_load_json('test_data/Account.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts('7f00000174441779817444c8837c0014', None, None, None, None, None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, '7f00000174441779817444c8837c0014', None, None, None, None,
+                                                None, None)
     assert response.status_code == 200
     verify_account(response.json())
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_display_name_not_found(mock_accounts_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, 'Black Jack', None, None, None, None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, 'Black Jack', None, None, None, None, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_display_name_found(mock_accounts_response):
     json_data = util_load_json('test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, 'bjack', None, None, None, None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, 'bjack', None, None, None, None, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 1)
     account = response.json()['Resources'][0]
@@ -644,20 +610,20 @@ def test_get_accounts_display_name_found(mock_accounts_response):
     assert account['displayName'] == 'bjack'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_last_refresh_not_matched(mock_accounts_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, '2020-12-10T08:50:25Z', None, None, None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, '2020-12-10T08:50:25Z', None, None, None, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_last_refresh_matched(mock_accounts_response):
     json_data = util_load_json('test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, '2020-08-31T00:00:00Z', None, None, None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, '2020-08-31T00:00:00Z', None, None, None, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 1)
     account = response.json()['Resources'][0]
@@ -666,20 +632,20 @@ def test_get_accounts_last_refresh_matched(mock_accounts_response):
     assert account['lastRefresh'] >= '2020-08-31T00:00:00Z'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_native_identity_not_found(mock_accounts_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, None, 'Black Jack', None, None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, 'Black Jack', None, None, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_native_identity_found(mock_accounts_response):
     json_data = util_load_json('test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, None, 'bjack', None, None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, 'bjack', None, None, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 1)
     account = response.json()['Resources'][0]
@@ -688,20 +654,20 @@ def test_get_accounts_native_identity_found(mock_accounts_response):
     assert account['nativeIdentity'] == 'bjack'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_last_target_agg_not_matched(mock_accounts_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, None, None, '2020-12-10T00:00:00Z', None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, '2020-12-10T00:00:00Z', None, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_last_target_agg_matched(mock_accounts_response):
     json_data = util_load_json('test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, None, None, '2020-08-31T00:00:00Z', None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, '2020-08-31T00:00:00Z', None, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 1)
     account = response.json()['Resources'][0]
@@ -710,20 +676,20 @@ def test_get_accounts_last_target_agg_matched(mock_accounts_response):
     assert account['lastTargetAggregation'] == '2020-09-05T09:22:45.432-05:00'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_identity_name_not_matched(mock_accounts_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, None, None, None, 'Black Jack', None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, None, 'Black Jack', None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_identity_name_matched(mock_accounts_response):
     json_data = util_load_json('test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, None, None, None, 'bjack', None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, None, 'bjack', None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 1)
     account = response.json()['Resources'][0]
@@ -733,20 +699,20 @@ def test_get_accounts_identity_name_matched(mock_accounts_response):
     assert account['identity']['userName'] == 'bjack'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_application_name_not_matched(mock_accounts_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, None, None, None, None, 'SCIM Server')
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, None, None, 'SCIM Server')
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts_application_name_matched(mock_accounts_response):
     json_data = util_load_json('test_data/Account_Filtered.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, None, None, None, None, 'SCIM SDK')
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, None, None, None, None, 'SCIM SDK')
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 1)
     account = response.json()['Resources'][0]
@@ -755,11 +721,11 @@ def test_get_accounts_application_name_matched(mock_accounts_response):
     assert account['application']['displayName'] == 'SCIM SDK'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_accounts(mock_accounts_response):
     json_data = util_load_json('test_data/Accounts.json')
     mock_accounts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_accounts(None, None, '2020-05-01T00:00:00Z', None, None, None, None)
+    response = SailPointIdentityIQ.get_accounts(MOCK_CLIENT, None, None, '2020-05-01T00:00:00Z', None, None, None, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 3)
     for account in response.json()['Resources']:
@@ -769,7 +735,7 @@ def test_get_accounts(mock_accounts_response):
 @patch('SailPointIdentityIQ.change_account_status')
 def test_change_account_id_not_found(mock_account):
     mock_account.return_value = util_load_json('test_data/404_Not_Found.json')
-    accounts = SailPointIdentityIQ.change_account_status('7f00000174441779817444c8837c5373', True)
+    accounts = SailPointIdentityIQ.change_account_status(MOCK_CLIENT, '7f00000174441779817444c8837c5373', True)
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in accounts['schemas']
     assert accounts['status'] == '404'
 
@@ -777,7 +743,7 @@ def test_change_account_id_not_found(mock_account):
 @patch('SailPointIdentityIQ.change_account_status')
 def test_change_account_enable(mock_account):
     mock_account.return_value = util_load_json('test_data/Account.json')
-    account = SailPointIdentityIQ.change_account_status('7f00000174441779817444c883c30016', True)
+    account = SailPointIdentityIQ.change_account_status(MOCK_CLIENT, '7f00000174441779817444c883c30016', True)
     verify_account(account)
     assert account['active'] is True
 
@@ -785,7 +751,7 @@ def test_change_account_enable(mock_account):
 @patch('SailPointIdentityIQ.change_account_status')
 def test_change_account_disable(mock_account):
     mock_account.return_value = util_load_json('test_data/Account_Disabled.json')
-    account = SailPointIdentityIQ.change_account_status('7f00000174441779817444c883c30016', False)
+    account = SailPointIdentityIQ.change_account_status(MOCK_CLIENT, '7f00000174441779817444c883c30016', False)
     verify_account(account)
     assert account['active'] is False
 
@@ -793,191 +759,191 @@ def test_change_account_disable(mock_account):
 @patch('SailPointIdentityIQ.delete_account')
 def test_delete_account_id_none(mock_account_response):
     mock_account_response.return_value = '405'
-    response = SailPointIdentityIQ.delete_account(None)
+    response = SailPointIdentityIQ.delete_account(MOCK_CLIENT, None)
     assert response == '405'
 
 
 @patch('SailPointIdentityIQ.delete_account')
 def test_delete_account_id_not_found(mock_account_response):
     mock_account_response.return_value = '404 : Resource 7f00000174441779817444c8837c5373 not found.'
-    response = SailPointIdentityIQ.delete_account('7f00000174441779817444c8837c5373')
+    response = SailPointIdentityIQ.delete_account(MOCK_CLIENT, '7f00000174441779817444c8837c5373')
     assert response == '404 : Resource 7f00000174441779817444c8837c5373 not found.'
 
 
 @patch('SailPointIdentityIQ.delete_account')
 def test_delete_account_deleted(mock_account_response):
     mock_account_response.return_value = '404 : Resource 7f00000174441779817444c8837c5373 not found.'
-    response = SailPointIdentityIQ.delete_account('7f00000174441779817444c8837c5373')
+    response = SailPointIdentityIQ.delete_account(MOCK_CLIENT, '7f00000174441779817444c8837c5373')
     assert response == '404 : Resource 7f00000174441779817444c8837c5373 not found.'
 
 
 @patch('SailPointIdentityIQ.delete_account')
 def test_delete_account(mock_account_response):
     mock_account_response.return_value = 'Account deleted successfully!'
-    response = SailPointIdentityIQ.delete_account('7f00000174441779817444c8837c5373')
+    response = SailPointIdentityIQ.delete_account(MOCK_CLIENT, '7f00000174441779817444c8837c5373')
     assert response == 'Account deleted successfully!'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_launched_workflows_id_not_found(mock_launched_workflows_response):
     json_data = util_load_json('test_data/404_Not_Found.json')
     mock_launched_workflows_response.return_value = util_mock_http_resp(404, json_data)
-    response = SailPointIdentityIQ.get_launched_workflows('7f00000173de18fa8173deb1064e0453')
+    response = SailPointIdentityIQ.get_launched_workflows(MOCK_CLIENT, '7f00000173de18fa8173deb1064e0453')
     assert response.status_code == 404
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in response.json()['schemas']
     assert response.json()['status'] == '404'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_launched_workflows_id_found(mock_launched_workflows_response):
     json_data = util_load_json('test_data/LaunchedWorkflow.json')
     mock_launched_workflows_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_launched_workflows('7f00000173de18fa8173deb1064e001c')
+    response = SailPointIdentityIQ.get_launched_workflows(MOCK_CLIENT, '7f00000173de18fa8173deb1064e001c')
     assert response.status_code == 200
     verify_launched_workflow(response.json())
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_launched_workflows_no_resources(mock_launched_workflows_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_launched_workflows_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_launched_workflows(None)
+    response = SailPointIdentityIQ.get_launched_workflows(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_launched_workflows(mock_launched_workflows_response):
     json_data = util_load_json('test_data/LaunchedWorkflows.json')
     mock_launched_workflows_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_launched_workflows(None)
+    response = SailPointIdentityIQ.get_launched_workflows(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 5)
     for launched_workflow in response.json()['Resources']:
         verify_launched_workflow(launched_workflow)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_roles_id_not_found(mock_roles_response):
     json_data = util_load_json('test_data/404_Not_Found.json')
     mock_roles_response.return_value = util_mock_http_resp(404, json_data)
-    response = SailPointIdentityIQ.get_roles('7f000001705911b4817059d312394432')
+    response = SailPointIdentityIQ.get_roles(MOCK_CLIENT, '7f000001705911b4817059d312394432')
     assert response.status_code == 404
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in response.json()['schemas']
     assert response.json()['status'] == '404'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_roles_id_found(mock_roles_response):
     json_data = util_load_json('test_data/Role.json')
     mock_roles_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_roles('7f000001705911b4817059d31239035f')
+    response = SailPointIdentityIQ.get_roles(MOCK_CLIENT, '7f000001705911b4817059d31239035f')
     assert response.status_code == 200
     verify_role(response.json())
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_roles_no_resources(mock_roles_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_roles_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_roles(None)
+    response = SailPointIdentityIQ.get_roles(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_roles(mock_roles_response):
     json_data = util_load_json('test_data/Roles.json')
     mock_roles_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_roles(None)
+    response = SailPointIdentityIQ.get_roles(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 5)
     for role in response.json()['Resources']:
         verify_role(role)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_entitlements_id_not_found(mock_entitlements_response):
     json_data = util_load_json('test_data/404_Not_Found.json')
     mock_entitlements_response.return_value = util_mock_http_resp(404, json_data)
-    response = SailPointIdentityIQ.get_entitlements('7f000001705911b4817059d355844443')
+    response = SailPointIdentityIQ.get_entitlements(MOCK_CLIENT, '7f000001705911b4817059d355844443')
     assert response.status_code == 404
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in response.json()['schemas']
     assert response.json()['status'] == '404'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_entitlements_id_found(mock_entitlements_response):
     json_data = util_load_json('test_data/Entitlement.json')
     mock_entitlements_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_entitlements('7f000001705911b4817059d355840657')
+    response = SailPointIdentityIQ.get_entitlements(MOCK_CLIENT, '7f000001705911b4817059d355840657')
     assert response.status_code == 200
     verify_entitlement(response.json())
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_entitlements_no_resources(mock_entitlements_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_entitlements_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_entitlements(None)
+    response = SailPointIdentityIQ.get_entitlements(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_entitlements(mock_entitlements_response):
     json_data = util_load_json('test_data/Entitlements.json')
     mock_entitlements_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_entitlements(None)
+    response = SailPointIdentityIQ.get_entitlements(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 5)
     for entitlement in response.json()['Resources']:
         verify_entitlement(entitlement)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_alerts_id_not_found(mock_alerts_response):
     json_data = util_load_json('test_data/404_Not_Found.json')
     mock_alerts_response.return_value = util_mock_http_resp(404, json_data)
-    response = SailPointIdentityIQ.get_alerts('0a000001758a173e81763f81205e6453')
+    response = SailPointIdentityIQ.get_alerts(MOCK_CLIENT, '0a000001758a173e81763f81205e6453')
     assert response.status_code == 404
     assert 'urn:ietf:params:scim:api:messages:2.0:Error' in response.json()['schemas']
     assert response.json()['status'] == '404'
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_alerts_id_found(mock_alerts_response):
     json_data = util_load_json('test_data/Alert.json')
     mock_alerts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_alerts('0a000001758a173e81763f81205e0062')
+    response = SailPointIdentityIQ.get_alerts(MOCK_CLIENT, '0a000001758a173e81763f81205e0062')
     assert response.status_code == 200
     verify_alert(response.json())
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_alerts_no_resources(mock_alerts_response):
     json_data = util_load_json('test_data/NoResources.json')
     mock_alerts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_alerts(None)
+    response = SailPointIdentityIQ.get_alerts(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 0)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_get_alerts(mock_alerts_response):
     json_data = util_load_json('test_data/Alerts.json')
     mock_alerts_response.return_value = util_mock_http_resp(200, json_data)
-    response = SailPointIdentityIQ.get_alerts(None)
+    response = SailPointIdentityIQ.get_alerts(MOCK_CLIENT, None)
     assert response.status_code == 200
     verify_scim_list_response(response.json(), 3)
     for alert in response.json()['Resources']:
         verify_alert(alert)
 
 
-@patch('SailPointIdentityIQ.send_request')
+@patch('SailPointIdentityIQ.Client.send_request')
 def test_create_alert(mock_alerts_response):
     json_data = util_load_json('test_data/Alert.json')
     mock_alerts_response.return_value = util_mock_http_resp(201, json_data)
-    response = SailPointIdentityIQ.create_alert('Test Alert')
+    response = SailPointIdentityIQ.create_alert(MOCK_CLIENT, 'Test Alert')
     assert response.status_code == 201
     verify_alert(response.json())
