@@ -231,22 +231,25 @@ script:
       required: true
       secret: false
     outputs:
-      - contextPath: EWS.EXOMailboxPermission.AccessRights
-        description: ''
-        type: String
-      - contextPath: EWS.EXOMailboxPermission.Deny.IsPresent
-        description: ''
-        type: Boolean
       - contextPath: EWS.EXOMailboxPermission.Identity
+        description: 'The given identity'
+        type: String
+      - contextPath: EWS.EXOMailboxPermission.Permission.AccessRights
         description: ''
         type: String
-      - contextPath: EWS.EXOMailboxPermission.InheritanceType
-        description: ''
-        type: String
-      - contextPath: EWS.EXOMailboxPermission.IsInherited
+      - contextPath: EWS.EXOMailboxPermission.Permission.Deny.IsPresent
         description: ''
         type: Boolean
-      - contextPath: EWS.EXOMailboxPermission.User
+      - contextPath: EWS.EXOMailboxPermission.Permission.Identity
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailboxPermission.Permission.InheritanceType
+        description: ''
+        type: String
+      - contextPath: EWS.EXOMailboxPermission.Permission.IsInherited
+        description: ''
+        type: Boolean
+      - contextPath: EWS.EXOMailboxPermission.Permission.User
         description: ''
         type: String
     deprecated: false

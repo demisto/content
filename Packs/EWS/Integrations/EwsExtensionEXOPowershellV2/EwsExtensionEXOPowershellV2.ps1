@@ -278,7 +278,12 @@ function GetEXOMailBoxPermissionCommand {
     $identity = $kwargs.identity
     $raw_response = $client.GetEXOMailBoxPermission($identity)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOMailboxPermission(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{
+        "$script:INTEGRATION_ENTRY_CONTEXT.EXOMailboxPermission(obj.Identity === val.Identity)" = @{
+            "Identity" = $identity
+            "Permission" = $raw_response
+        }
+    }
     return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOMailBoxCommand {
@@ -291,7 +296,8 @@ function GetEXOMailBoxCommand {
     $limit = $kwargs.limit -as [int]
     $raw_response = $client.GetEXOMailBox($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOMailbox(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{
+        "$script:INTEGRATION_ENTRY_CONTEXT.EXOMailbox(obj.Guid === val.Guid)" = $raw_response }
     return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOCASMailboxCommand {
