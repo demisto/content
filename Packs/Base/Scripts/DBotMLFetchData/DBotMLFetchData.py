@@ -566,6 +566,28 @@ def get_closing_fields_from_incident(row):
     return {'owner': owner, 'closing_user': closing_user, 'close_notes': close_notes}
 
 
+def find_forwarded_features(email_subject, email_body):
+    forwarded = response = False
+    if re.search('- Forwarded message -', email_body, flags=re.IGNORECASE):
+        forwarded = True
+    forwarded_patterns = ['FW', 'Fwd']
+    re_patterns = ['re']
+
+    for pattern in forwarded_patterns:
+        if re.search(r'(?<!\w)({})(?!\w)'.format(pattern), email_subject, flags=re.IGNORECASE):
+            forwarded = True
+            break
+    for pattern in re_patterns:
+        if re.search(r'(?<!\w)({})(?!\w)'.format(pattern), email_subject, flags=re.IGNORECASE):
+            response = True
+            break
+    return {'forwarded': forwarded, 'response': response}
+
+
+def clean_email_subject(email_subject):
+    return re.sub(r"\[[^\]]*?\]", '', email_subject).strip()
+
+
 def extract_features_from_incident(row, label_fields):
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, EMAIL_ATTACHMENT_FIELD, EMAIL_HEADERS_FIELD
     email_body = row[EMAIL_BODY_FIELD] if EMAIL_BODY_FIELD in row else ''
@@ -581,6 +603,7 @@ def extract_features_from_incident(row, label_fields):
     if isinstance(email_subject, float):
         email_subject = ''
     email_body, email_subject = email_body.strip().lower(), email_subject.strip().lower()
+    email_subject = clean_email_subject(email_subject)
     text = email_subject + ' ' + email_body
     if len(text) < MIN_TEXT_LENGTH:
         raise ShortTextException('Text length is shorter than allowed minimum of: {}'.format(MIN_TEXT_LENGTH))
@@ -595,6 +618,8 @@ def extract_features_from_incident(row, label_fields):
     characters_features = get_characters_features(text)
     html_feature = get_html_features(soup)
     ml_features = get_embedding_features(email_body_word_tokenized + email_subject_word_tokenized)
+    ml_features_subject = get_embedding_features(email_subject_word_tokenized)
+    ml_features_body = get_embedding_features(email_body_word_tokenized)
     headers_features = get_headers_features(email_headers)
     url_feautres = get_url_features(email_body=email_body, email_html=email_html, soup=soup)
     attachments_features = get_attachments_features(email_attachments=email_attachments)
@@ -604,6 +629,8 @@ def extract_features_from_incident(row, label_fields):
         'characters_features': characters_features,
         'html_feature': html_feature,
         'ml_features': ml_features,
+        'ml_features_subject': ml_features_subject,
+        'ml_features_body': ml_features_body,
         'headers_features': headers_features,
         'url_features': url_feautres,
         'attachments_features': attachments_features,
@@ -618,6 +645,8 @@ def extract_features_from_incident(row, label_fields):
         else:
             res[label] = float('nan')
     res.update(get_closing_fields_from_incident(row))
+    res.update(find_forwarded_features(email_subject, email_body))
+
     return res
 
 
