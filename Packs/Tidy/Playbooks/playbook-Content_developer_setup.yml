@@ -15,7 +15,7 @@ inputs:
   playbookInputQuery:
   required: true
   value:
-    simple: ${incident.githubtoken}
+    simple: ${incident.tidygithubtoken}
 name: Content developer setup
 outputs: []
 starttaskid: "0"
