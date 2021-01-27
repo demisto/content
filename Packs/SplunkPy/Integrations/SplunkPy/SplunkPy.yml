@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: SplunkPy_dev
+  id: SplunkPy
   version: -1
 configuration:
 - display: Host - ip (x.x.x.x)
@@ -123,14 +123,15 @@ configuration:
   defaultvalue: "5"
   type: 0
   required: false
+  additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
 - display: Number of Events Per Enrichment Type
   name: num_enrichment_events
   defaultvalue: "20"
   type: 0
   required: false
 description: Run queries on Splunk servers.
-display: SplunkPy_dev
-name: SplunkPy_dev
+display: SplunkPy
+name: SplunkPy
 script:
   commands:
   - arguments:

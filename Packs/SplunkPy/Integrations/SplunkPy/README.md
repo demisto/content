@@ -38,6 +38,9 @@ This integration was integrated and tested with Splunk v7.2.
 | fetch_time | The first timestamp to fetch in \<number\>\<time unit\> format. For example, "12 hours", "7 days", "3 months", "1 year". | False |
 | use_requests_handler | Use Python requests handler  | False |
 | type_field | Used only for Mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for Notable Events, however you may choose any custom field that suits the need. | False |
+| enabled_enrichments | The possible types of enrichment are: Drilldown, Asset & Identity | False |
+| num_enrichment_events | The maximal number of event to retrieve per enrichment type. Default to 20. | False | 
+| enrichment_timeout | The maximal time for an enrichment to be processed. Default to 5min. When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False
 
 The (!) `Earliest time to fetch` and `Latest time to fetch` are search parameters options. The search uses `All Time` as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as `earliest_time`, `index_earliest`, or `latest_time`.
 
@@ -69,6 +72,41 @@ Use the following naming convention: (demisto_fields_{type}).
 ![image](https://user-images.githubusercontent.com/50324325/63265811-1d5d1300-c297-11e9-8026-52ff1cf30cbf.png)
 10. (Optional) Create custom fields.
 11. Build a playbook and assign it as the default for this incident type.
+
+### Enriching fetch mechanism
+***
+Starting from version 2.0.0 of SplunkPy Pack, we allow the option to enrich fetched notables.
+
+There are 3 possible enrichment types:
+1. **Drilldown search enrichment**: fetches the drilldown search configured by the user in the rule name that triggered the notable and performs this search. The results are stored in the context of the incidents under the **Drilldown** field.
+2. **Asset search enrichment**: Runs the following query:
+`| inputlookup append=T asset_lookup_by_str where asset=$ASSETS_VALUE | inputlookup append=t asset_lookup_by_cidr where asset=$ASSETS_VALUE | rename _key as asset_id | stats values(*) as * by asset_id`
+where the **$ASSETS_VALUE** is replaced with the **src**, **dest**, **src_ip** & **dst_ip** from the fetched notable. The results are stored in the context of the incidents under the **Asset** field.
+3. **Identity search enrichment**: Runs the following query
+`| inputlookup identity_lookup_expanded where identity=$IDENTITY_VALUE`
+where the **$IDENTITY_VALUE** is replaced with the **user** & **src_user** from the fetched notable. The results are stored in the context of the incidents under the **Identity** field.
+
+#### How to configure
+1. Configure the integration to fetch incidents.
+2. Go to the `Enrichment Types` parameter and select the enrichment types you want to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment).
+3. Yoy can go to the `Enrichment Timeout (Minutes)` parameter and select the timeout for each enrichment (default to 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
+4. You can go to the `Number of Events Per Enrichment Type` parameter and select the maximal amount of events to fetch per enrichment type (default to 20).
+
+#### Knowing the status of an enrichment
+Each enriched incident **can** containt the following fields in the incident context:
+- **successful_drilldown_enrichment**: whether the drilldown enrichment was successful or not.
+- **successful_asset_enrichment**: whether the asset enrichment was successful or not.
+- **successful_identity_enrichment**: whether the identity enrichment was successful or not.
+- **successful_enrichment**: whether the whole enrichment for the incident was successful or not. Note that if this will be set to True if and only if all enrichment types has succeeded.
+
+#### Resetting the enriching fetch mechanism
+- Run the `splunk-reset-enriching-fetch-mechanism` and the mechanism will be reset to first configuration (No need to reset the `Last Run` object)
+
+#### Limitations
+- As the enrichment process is asynchronous, fetching enriched incidents takes longer. The integration was tested with 20+ fetched notables that were enriched after approximately ~4min.
+- If you wish to configure a mapper, wait for the integration to perform a first fetch, this is to make the fetch mechanism logic stable.
+- As for the drilldown search, we don't support Splunk advanced syntax. For example: Splunk filters (**|s**, **|h**, etc...) 
+***
 
 ### Mapping fetched incidents using Select Schema
 This integration supports the `Select Schema` feature of XSOAR 6.0 by providing the `get-mapping-fields` command. 
@@ -372,7 +410,8 @@ There is no context output for this command.
 ```!get-mapping-fields using="SplunkPy_7.2" raw-response="true"```
 
 ##### Human Readable Output
-```{
+```
+{
     "Access - Brute Force Access Behavior Detected - Rule": {
         "_bkt": "notable~712~66D21DF4-F4FD-4886-A986-82E72ADCBFE9",
         "_cd": "712:21939",
@@ -434,7 +473,8 @@ There is no context output for this command.
         "src_risk_object_type": "system",
         "src_risk_score": "380",
         "urgency": "low"
-=======
+}
+```
 ### splunk-kv-store-collection-create
 ***
 Creates a new KV store table.
@@ -719,8 +759,6 @@ Searches for specific objects in a store. Search can be basic key value or a ful
 }
 ```
 
-## Additional Information
-=======
 #### Human Readable Output
 
 >### list of collection values demisto_store
@@ -759,6 +797,32 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The values of the demisto_store were deleted successfully
+
+
+### splunk-reset-enriching-fetch-mechanism
+***
+Resets the enriching fetch mechanism.
+
+
+#### Base Command
+
+`splunk-reset-enriching-fetch-mechanism`
+
+#### Input
+
+There are no input arguments for this command.
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```splunk-reset-enriching-fetch-mechanism```
+
+#### Human Readable Output
+
+>Enriching fetch mechanism was reset successfully.
 
 ## Aditional Information
 To get the HEC Token
