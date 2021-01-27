@@ -142,7 +142,7 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 ### IOC Domain Matches
 |Domain|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
 |---|---|---|---|---|---|---|---|
-| [anx.tb.ask.com]() | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
+| `anx.tb.ask.com` | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
 
 
 ### 2. gcb-assets

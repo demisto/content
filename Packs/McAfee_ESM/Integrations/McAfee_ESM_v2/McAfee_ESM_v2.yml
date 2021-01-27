@@ -723,7 +723,7 @@ script:
     execution: false
     description: Returns a list of watchlists' names and IDs.
     arguments:
-    - default: true
+    - default: false
       isArray: false
       required: true
       secret: false
@@ -734,7 +734,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - default: true
+    - default: false
       isArray: false
       required: true
       secret: false
@@ -745,7 +745,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - default: true
+    - default: false
       isArray: false
       required: true
       secret: false
@@ -756,7 +756,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - default: true
+    - default: false
       isArray: false
       required: true
       secret: false
@@ -826,13 +826,13 @@ script:
     description: Deletes a watchlist.
     arguments:
     - name: ids
-      default: true
+      default: false
       isArray: true
       required: false
       secret: false
       description: The watchlist IDs to delete.
     - name: names
-      default: true
+      default: false
       isArray: true
       required: false
       secret: false
@@ -901,14 +901,14 @@ script:
       secret: false
       description: The watchlist ID.
     - name: limit
-      default: true
+      default: false
       isArray: false
       required: true
       secret: false
       defaultValue: 50
       description: The maximum value count. Default is 50.
     - name: offset
-      default: true
+      default: false
       isArray: false
       required: true
       secret: false
@@ -921,7 +921,7 @@ script:
     - contextPath: McAfeeESM.Watchlist.name
       description: The name of the watchlist.
       type: string
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: true
   longRunning: false
