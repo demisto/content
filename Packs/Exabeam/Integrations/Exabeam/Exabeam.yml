@@ -3,7 +3,7 @@ commonfields:
   id: Exabeam
   version: -1
 configuration:
-- display: Server URL (e.g https://100.24.16.156:8484) # disable-secrets-detection
+- display: Server URL (e.g https://100.24.16.156:8484)
   name: url
   required: true
   type: 0
@@ -19,14 +19,16 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
+description: The Exabeam Security Management Platform provides end-to-end detection,
+  User Event Behavioral Analytics, and SOAR.
 display: Exabeam
 name: Exabeam
 script:
   commands:
   - arguments:
     - default: false
-      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
+      description: The time period for which to fetch notable users, such as 3 months,
+        2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
@@ -81,7 +83,8 @@ script:
       type: Boolean
   - arguments:
     - default: false
-      description: The time period for which to fetch notable users, such as 3 months, 2 days, 4 hours, 1 year, and so on.
+      description: The time period for which to fetch notable users, such as 3 months,
+        2 days, 4 hours, 1 year, and so on.
       isArray: true
       name: time_period
       required: true
@@ -430,6 +433,794 @@ script:
     - contextPath: Exabeam.Asset.LastSeen
       description: The date the asset was last seen.
       type: String
+  - arguments:
+    - default: false
+      description: ID of the session to fetch data for.
+      isArray: false
+      name: session_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns session info data for the given ID.
+    execution: false
+    name: exabeam-get-session-info-by-id
+    outputs:
+    - contextPath: Exabeam.SessionInfo.sessionId
+      description: ID of the session to fetch data for.
+      type: String
+    - contextPath: Exabeam.SessionInfo.username
+      type: String
+    - contextPath: Exabeam.SessionInfo.startTime
+      type: Date
+    - contextPath: Exabeam.SessionInfo.endTime
+      type: Date
+    - contextPath: Exabeam.SessionInfo.initialRiskScore
+      type: Number
+    - contextPath: Exabeam.SessionInfo.riskScore
+      type: Number
+    - contextPath: Exabeam.SessionInfo.numOfReasons
+      type: Number
+    - contextPath: Exabeam.SessionInfo.loginHost
+      type: String
+    - contextPath: Exabeam.SessionInfo.label
+      type: String
+    - contextPath: Exabeam.SessionInfo.accounts
+      type: String
+    - contextPath: Exabeam.SessionInfo.numOfAccounts
+      type: Number
+    - contextPath: Exabeam.SessionInfo.numOfZones
+      type: Number
+    - contextPath: Exabeam.SessionInfo.numOfAssets
+      type: Number
+    - contextPath: Exabeam.SessionInfo.numOfEvents
+      type: Number
+    - contextPath: Exabeam.SessionInfo.numOfSecurityEvents
+      type: Number
+  - arguments:
+    - default: false
+      description: ID of the sequence to fetch data for.
+      isArray: false
+      name: sequence_id
+      required: true
+      secret: false
+    - default: false
+      description: Type of the sequence to fetch data for.
+      isArray: false
+      name: sequence_type
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets all the triggered rules of a sequence.
+    execution: false
+    name: exabeam-list-triggered-rules
+    outputs:
+    - contextPath: Exabeam.TriggeredRule._Id
+      type: String
+    - contextPath: Exabeam.TriggeredRule.ruleId
+      type: String
+    - contextPath: Exabeam.TriggeredRule.ruleType
+      type: String
+    - contextPath: Exabeam.TriggeredRule.eventId
+      type: String
+    - contextPath: Exabeam.TriggeredRule.sessionId
+      type: String
+    - contextPath: Exabeam.TriggeredRule.lockoutId
+      type: String
+    - contextPath: Exabeam.TriggeredRule.sequenceId
+      type: String
+    - contextPath: Exabeam.TriggeredRule.username
+      type: String
+    - contextPath: Exabeam.TriggeredRule.eType
+      type: String
+    - contextPath: Exabeam.TriggeredRule.triggeringTime
+      type: Date
+    - contextPath: Exabeam.TriggeredRule.riskScore
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.anchorScore
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.anomalyFactor
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.ruleData.featureValue
+      type: String
+    - contextPath: Exabeam.TriggeredRule.ruleData.scopeValue
+      type: String
+    - contextPath: Exabeam.TriggeredRule.ruleData.modelName
+      type: String
+    - contextPath: Exabeam.TriggeredRule.ruleData.totalEvents
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.ruleData.numBins
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.ruleData.numObservations
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.ruleData.probability
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.ruleData.percentileThresholdValue
+      type: String
+    - contextPath: Exabeam.TriggeredRule.ruleData.percentileThresholdCount
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.ruleData.confidenceFactor
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.ruleData.distanceCountPercentile
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.ruleData.distanceValuePercentile
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.ruleData.histogramId
+      type: String
+    - contextPath: Exabeam.TriggeredRule.createdTime
+      type: Date
+    - contextPath: Exabeam.TriggeredRule.scoreData.bayesAnchorScoreData.weight
+      type: Number
+    - contextPath: Exabeam.TriggeredRule.scoreData.ruleDefScore
+      type: Number
+  - arguments:
+    - default: false
+      description: ID of the asset to fetch info for.
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximal number of users.
+      isArray: false
+      name: max_users_number
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns asset information for given asset ID (hostname or IP address).
+    execution: false
+    name: exabeam-get-asset-info
+    outputs:
+    - contextPath: Exabeam.AssetInfo.hostName
+      type: String
+    - contextPath: Exabeam.AssetInfo.ipAddress
+      type: String
+    - contextPath: Exabeam.AssetInfo.assetType
+      type: String
+    - contextPath: Exabeam.AssetInfo.firstSeen
+      type: Date
+    - contextPath: Exabeam.AssetInfo.lastSeen
+      type: Date
+    - contextPath: Exabeam.AssetInfo.riskScore
+      type: Number
+    - contextPath: Exabeam.AssetInfo.riskState
+      type: String
+    - contextPath: Exabeam.AssetInfo.zone
+      type: String
+    - contextPath: Exabeam.AssetInfo.assetGroup
+      type: String
+    - contextPath: Exabeam.AssetInfo.latestSequenceId
+      type: String
+  - arguments:
+    - default: false
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - default: false
+      isArray: false
+      name: event_time
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '150'
+      description: Preffered number of events.
+      isArray: false
+      name: number_of_events
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      isArray: false
+      name: anomaly_only
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of event types.
+      isArray: false
+      name: event_types
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: exclude
+      isArray: false
+      name: event_types_operator
+      predefined:
+      - include
+      - exclude
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of sequence types.
+      isArray: false
+      name: sequence_types
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of event categories.
+      isArray: false
+      name: event_categories
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets next events for a given asset.
+    execution: false
+    name: exabeam-list-asset-timeline-next-events
+    outputs:
+    - contextPath: Exabeam.AssetNextEvents.event_id
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.event_type
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.event_code
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.event_category
+      type: Unknown
+    - contextPath: Exabeam.AssetNextEvents.time
+      type: Date
+    - contextPath: Exabeam.AssetNextEvents.rawlog_time
+      type: Date
+    - contextPath: Exabeam.AssetNextEvents.host
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.user
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.nonmachine_user
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.account
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.hash
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.entity_asset_id
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.src_network_type
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.source
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.session_id
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.src_ip
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.session_order
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.dest_host
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.is_session_first
+      type: String
+    - contextPath: Exabeam.AssetNextEvents.src_zone
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the asset to fetch info for
+      isArray: false
+      name: asset_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: date
+      description: The key to sort results by.
+      isArray: false
+      name: sort_by
+      predefined:
+      - date
+      - riskScore
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: desc
+      description: The results order (ascending or descending).
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets security alerts for a given asset.
+    execution: false
+    name: exabeam-list-security-alerts-by-asset
+    outputs:
+    - contextPath: Exabeam.AssetSecurityAlerts
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The search keyword.
+      isArray: false
+      name: keyword
+      required: true
+      secret: false
+    - default: false
+      description: The search filter.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximal number of rules to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Results page number.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches for rules by a keyword.
+    execution: false
+    name: exabeam-search-rules
+    outputs:
+    - contextPath: Exabeam.Rule.categoryId
+      type: String
+    - contextPath: Exabeam.Rule.categoryDisplayName
+      type: String
+    - contextPath: Exabeam.Rule.ruleId
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleId
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleName
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleDescription
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.reasonTemplate
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.aggregateReasonTemplate
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleType
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.classifyIf
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleEventTypes
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.disabled
+      type: Boolean
+    - contextPath: Exabeam.Rule.ruleDef.modelName
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.factFeatureName
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.hasDynamicScore
+      type: Boolean
+    - contextPath: Exabeam.Rule.ruleDef.score
+      type: Number
+    - contextPath: Exabeam.Rule.ruleDef.percentileThreshold
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleExpression
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.dependencyExpression
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleCategory
+      type: String
+    - contextPath: Exabeam.Rule.disabled
+      type: Boolean
+    - contextPath: Exabeam.Rule.effective
+      type: Boolean
+    - contextPath: Exabeam.Rule.state
+      type: String
+    - contextPath: Exabeam.Rule.canSimpleEdit
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the rule.
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a rule's information as a string.
+    execution: false
+    name: exabeam-get-rule-string
+    outputs:
+    - contextPath: Exabeam.Rule.ID
+      type: String
+    - contextPath: Exabeam.Rule.String
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: all
+      isArray: false
+      name: filter_by
+      predefined:
+      - all
+      - custom
+      - default
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all rules.
+    execution: false
+    name: exabeam-fetch-rules
+    outputs:
+    - contextPath: Exabeam.Rule.categoryId
+      type: String
+    - contextPath: Exabeam.Rule.categoryDisplayName
+      type: String
+    - contextPath: Exabeam.Rule.ruleId
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleId
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleName
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleDescription
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.reasonTemplate
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.aggregateReasonTemplate
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleType
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.classifyIf
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleEventTypes
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.disabled
+      type: Boolean
+    - contextPath: Exabeam.Rule.ruleDef.modelName
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.factFeatureName
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.hasDynamicScore
+      type: Boolean
+    - contextPath: Exabeam.Rule.ruleDef.score
+      type: Number
+    - contextPath: Exabeam.Rule.ruleDef.percentileThreshold
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleExpression
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.dependencyExpression
+      type: String
+    - contextPath: Exabeam.Rule.ruleDef.ruleCategory
+      type: String
+    - contextPath: Exabeam.Rule.disabled
+      type: Boolean
+    - contextPath: Exabeam.Rule.effective
+      type: Boolean
+    - contextPath: Exabeam.Rule.state
+      type: String
+    - contextPath: Exabeam.Rule.canSimpleEdit
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The name of the model.
+      isArray: false
+      name: model_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a rule model definition by name.
+    execution: false
+    name: exabeam-get-rules-model-definition
+    outputs:
+    - contextPath: Exabeam.RuleModelDefinition.alpha
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.name
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.feature
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.cutOff
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.histogramEventTypes
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.featureName
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.description
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.trainIf
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.featureType
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.modelTemplate
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.convergenceFilter
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.iconName
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.modelType
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.binWidth
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.scopeType
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.agingWindow
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.category
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.disabled
+      type: String
+    - contextPath: Exabeam.RuleModelDefinition.scopeValue
+      type: String
+  - arguments:
+    - default: false
+      description: The watchlist ID.
+      isArray: false
+      name: watchlist_id
+      required: true
+      secret: false
+    - default: false
+      description: The entry ID of the CSV file.
+      isArray: false
+      name: csv_file
+      required: true
+      secret: false
+    - default: false
+      description: Number of days until asset is automatically removed from the watchlist.
+      isArray: false
+      name: watch_until_days
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The item category.
+      isArray: false
+      name: category
+      predefined:
+      - Anomalies
+      - Assets
+      - Events
+      - Sessions
+      - Users
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a watchlist item from CSV file.
+    execution: false
+    name: exabeam-watchlist-add-from-csv
+  - arguments:
+    - default: false
+      description: A keyword to search.
+      isArray: false
+      name: keyword
+      required: true
+      secret: false
+    - default: false
+      description: The watchlist ID.
+      isArray: false
+      name: watchlist_id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Maximum nmber of results to retrieve.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether or not the item is exclusive on watchlist.
+      isArray: false
+      name: is_exclusive
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether or not to search the item by its IP.
+      isArray: false
+      name: search_by_ip
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the assets of a specified watchlist according to a keyword.
+    execution: false
+    name: exabeam-watchlist-asset-search
+  - arguments:
+    - default: false
+      description: The watchlist ID.
+      isArray: false
+      name: watchlist_id
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of the items to remove.
+      isArray: false
+      name: items
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The category of the items to remove.
+      isArray: false
+      name: category
+      predefined:
+      - Anomalies
+      - Assets
+      - Events
+      - Sessions
+      - Users
+      required: true
+      secret: false
+    deprecated: false
+    description: Removes items from a watchlist.
+    execution: false
+    name: exabeam-watchilst-remove-items
+  - arguments:
+    - default: false
+      description: The name of the context table
+      isArray: false
+      name: context_table_name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The page size.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: The page number (starts from 1).
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns a list of a context table records.
+    execution: false
+    name: exabeam-list-context-table-records
+    outputs:
+    - contextPath: Exabeam.ContextTableRecord.contextTable
+      description: Name of the context table.
+      type: String
+    - contextPath: Exabeam.ContextTableRecord.key
+      type: String
+    - contextPath: Exabeam.ContextTableRecord.id
+      type: String
+    - contextPath: Exabeam.ContextTableRecord.sourceType
+      type: String
+    - contextPath: Exabeam.ContextTableRecord.position
+      type: Number
+  - arguments:
+    - default: false
+      description: The name of the context table.
+      isArray: false
+      name: context_table_name
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of the records to add.
+      isArray: false
+      name: records
+      required: true
+      secret: false
+    - default: false
+      description: The ID of update session. If not specified, a new session is created.
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: exabeam-add-context-table-records
+    outputs:
+    - contextPath: Exabeam.ContextTableAdd.Name
+      description: The name of the context table.
+      type: String
+    - contextPath: Exabeam.ContextTableAdd.Details
+      description: The raw data of the context table update.
+      type: Unknown
+  - deprecated: false
+    description: Updates records of a context table.
+    execution: false
+    name: exabeam-update-context-table-records
+    outputs:
+    - contextPath: Exabeam.ContextTableUpdate.Name
+      description: The context table name.
+      type: String
+    - contextPath: Exabeam.ContextTableUpdate.Details
+      description: The raw data of the context table update.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Name of the context table.
+      isArray: false
+      name: context_table_name
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    name: exabeam-get-context-table-in-csv
+  - arguments:
+    - default: false
+      description: Name of
+      isArray: false
+      name: context_table_name
+      required: true
+      secret: false
+    - default: false
+      description: ID of
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    - default: false
+      description: A comma
+      isArray: false
+      name: columns
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies whether the file has a header.
+      isArray: false
+      name: has_header
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+      secret: false
+    - default: false
+      description: The entry ID of the CSV file from which records will be added.
+      isArray: false
+      name: file_entry_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add context table records from CSV file in a specific modification
+      session.
+    execution: false
+    name: exabeam-context-table-addbulk
+  - arguments:
+    - default: false
+      description: Name of the context table.
+      isArray: false
+      name: context_table_name
+      required: true
+      secret: false
+    - default: false
+      description: A comma-s
+      isArray: false
+      name: records
+      required: true
+      secret: false
+    - default: false
+      description: ID of the
+      isArray: false
+      name: session_id
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: exabeam-context-table-delete-records
+  - deprecated: false
+    execution: false
+    name: exabeam-list-top-domains
   dockerimage: demisto/python3:3.7.4.1900
   isfetch: false
   longRunning: false
