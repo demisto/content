@@ -981,8 +981,10 @@ def remove_ignored_tests(tests: set, id_set: dict) -> set:
 
 
 def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
-    """Filters out test playbooks, which are not XSOAR supported or not relevant for tests (DeprecatedContent,
-        NonSupported)
+    """Filters out test playbooks, which belong to one of the following packs:
+        - Non XSOAR supported packs
+        - DeprecatedContent, NonSupported packs
+        - Deprecated packs
 
         Args:
             tests (set): Tests set to remove the tests to ignore from
@@ -997,25 +999,29 @@ def remove_tests_for_non_supported_packs(tests: set, id_set: dict) -> set:
         if content_pack_name_list:
             id_set_test_playbook_pack_name = content_pack_name_list[0]
 
-            # We don't want to test playbooks from Non-certified partners.
-            if not should_test_content_pack(id_set_test_playbook_pack_name):
-                tests_that_should_not_be_tested.add(test)
+            # We don't want to test playbooks that are not XSOAR supported, belong to the ignored packs or from
+            # deprecated packs.
+            should_test, reason = should_test_content_pack(id_set_test_playbook_pack_name)
+            if not should_test:
+                tests_that_should_not_be_tested.add(f'{test}: {reason}')
 
     if tests_that_should_not_be_tested:
         logging.debug('The following test playbooks are not supported and will not be tested: \n{} '.format(
             '\n'.join(tests_that_should_not_be_tested)))
-        tests.difference_update(tests_that_should_not_be_tested)
+        tests_names = set([test.split(':')[0] for test in tests_that_should_not_be_tested])
+        tests.difference_update(tests_names)
     return tests
 
 
 def filter_tests(tests: set, id_set: json) -> set:
     """
-    Filter tests out from the test set if they are a.Ignored b.Non XSOAR or non-supported packs.
+    Filter tests out from the test set if they are a.Ignored b.Non XSOAR or non-supported packs c. tests of
+    deprecated packs.
     Args:
         tests (set): Set of tests collected so far.
         id_set (dict): The ID set.
     Returns:
-        (set): Set of tests without ignored and non supported tests.
+        (set): Set of tests without ignored, non supported and deprecated-packs tests.
     """
     tests_with_no_dummy_strings = {test for test in tests if 'no test' not in test.lower()}
     tests_without_ignored = remove_ignored_tests(tests_with_no_dummy_strings, id_set)
@@ -1107,7 +1113,8 @@ def get_test_list_and_content_packs_to_install(files_string,
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     # All filtering out of packs should be done here
-    packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES}
+    packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES
+                        and should_test_content_pack(pack_to_install)[0]}
 
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
@@ -1240,7 +1247,8 @@ def changed_files_to_string(changed_files):
 def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
-        packs_to_install = set(filter(should_test_content_pack, os.listdir(PACKS_DIR)))
+        packs_to_install = set(filter(lambda should_test_content_pack: should_test_content_pack[0], os.listdir(
+            PACKS_DIR)))
         tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET))
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
