@@ -1,0 +1,59 @@
+args:
+- description: The name of the polling command to run.
+  name: PollingCommandName
+  required: true
+- description: The argument name to use in the polling command that holds the ID.
+  name: PollingCommandArgName
+  required: true
+- description: The ID to use initially with the polling command.
+  name: InitialId
+  required: true
+- description: The key name to use in the PollingCommand results that contains the
+    ID for consequent lookups (use dotted notation for JSON Dict, for example; key1.key2.key3)
+  name: ConsequentIdKeyName
+- description: The key name to monitor for success or failure (use dot notation for
+    a dictionary, for example;   key1.key2.key3.key4  ).
+  name: PollingCommandMonitorKeyName
+  required: true
+- defaultValue: .+
+  description: The regular expression that should match the value, found in the key
+    specified by 'PollingCommandMonitorKeyName'. Defaults to matching anything other
+    than NULL.
+  name: PollingCommandRegex
+  required: true
+- description: A JSON dictionary of additional argument names and their values to
+    be used in the PollingCommandName.
+  name: AdditionalPollingCommandArgs
+- defaultValue: "10"
+  description: The timeout, in minutes, of the polling.
+  name: Timeout
+  required: true
+- defaultValue: "10"
+  description: The delay (in seconds) between each call to the polling command.
+  name: Delay
+  required: true
+commonfields:
+  id: GenericPollingScript
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: GenericPollingScript
+outputs:
+- contextPath: GenericPolling.PollingSuccessful
+  description: Whether the monitored key matched the regex
+  type: boolean
+- contextPath: GenericPolling.FinalResult
+  description: The final result of the polling command execution
+- contextPath: GenericPolling.Runs
+  description: The number of time the command was executed
+  type: number
+runas: DBotRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

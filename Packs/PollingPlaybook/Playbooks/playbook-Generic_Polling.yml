@@ -1,0 +1,203 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5656fd85-d3b9-485c-8cde-3b86a62b640c
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 6986335a-8d03-4e27-8782-2044e0ae5001
+inputs:
+- description: The name of the polling command to run.
+  key: PollingCommandName
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: The argument name to use in the polling command that holds the ID.
+  key: PollingCommandArgName
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: The ID to use initially with the polling command.
+  key: InitialId
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: The key name to use in the PollingCommand results that contains the
+    ID for consequent lookups (use dotted notation for JSON Dict, for example; key1.key2.key3)
+  key: ConsequentIdKeyName
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: The key name to monitor for success or failure (use dot notation for
+    a dictionary, for example;   key1.key2.key3.key4  ).
+  key: PollingCommandMonitorKeyName
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: The regular expression that should match the value, found in the key
+    specified by 'PollingCommandMonitorKeyName'. Defaults to matching anything other
+    than NULL.
+  key: PollingCommandRegex
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: .+
+- description: A JSON dictionary of additional argument names and their values to
+    be used in the PollingCommandName.
+  key: AdditionalPollingCommandArgs
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: The timeout, in minutes, of the polling.
+  key: Timeout
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: "5"
+- description: The delay (in seconds) between each call to the polling command.
+  key: Delay
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: "10"
+name: Generic Polling
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2f393537-dea7-4027-84b0-e24c5e91c0a7
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 2f393537-dea7-4027-84b0-e24c5e91c0a7
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgs:
+        simple: ${inputs.AdditionalPollingCommandArgs}
+      ConsequentIdKeyName:
+        simple: ${inputs.ConsequentIdKeyName}
+      Delay:
+        simple: ${inputs.Delay}
+      InitialId:
+        simple: ${inputs.InitialId}
+      PollingCommandArgName:
+        simple: ${inputs.PollingCommandArgName}
+      PollingCommandMonitorKeyName:
+        simple: ${inputs.PollingCommandMonitorKeyName}
+      PollingCommandName:
+        simple: ${inputs.PollingCommandName}
+      PollingCommandRegex:
+        simple: ${inputs.PollingCommandRegex}
+      Timeout:
+        simple: ${inputs.Timeout}
+      additional_arguments:
+        simple: ${inputs.AdditionalPollingCommandArgValues}
+      command:
+        simple: ${inputs.PollingCommandName}
+      command_argument_name:
+        simple: ${inputs.PollingCommandArgName}
+      consequent_id_key:
+        simple: ${inputs.MonitorId}
+      consequent_id_key_name:
+        simple: ${inputs.ConsequentIdKeyName}
+      delay:
+        simple: ${inputs.delay}
+      id_argument_name:
+        simple: ${inputs.PollingCommandArgName}
+      initial_command_id:
+        simple: ${inputs.InitialId}
+      initial_id:
+        simple: ${inputs.Initial Id}
+      monitor_key:
+        simple: ${inputs.PollingCommandOutputMonitor}
+      monitor_key_name:
+        simple: ${inputs.PollingCommandMonitorKeyName}
+      monitor_regex:
+        simple: ${inputs.PollingCommandMonitorValueRegex}
+      timeout:
+        simple: ${inputs.timeout}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 853f2e00-6a57-4dac-8454-769afbbe930e
+      iscommand: false
+      name: Generic Polling Script
+      scriptName: GenericPollingScript
+      type: regular
+      version: -1
+    taskid: 853f2e00-6a57-4dac-8454-769afbbe930e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 75b5a64d-5562-4066-85f5-d27b72b507c4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 75b5a64d-5562-4066-85f5-d27b72b507c4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

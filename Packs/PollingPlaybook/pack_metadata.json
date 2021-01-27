@@ -1,0 +1,17 @@
+{
+    "name": "Polling Playbook",
+    "description": "This pack contains a playbook and script for generic polling without the need for DT.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2021-01-27T17:41:11Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "aburt-demisto"
+    ]
+}
