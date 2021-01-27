@@ -754,7 +754,7 @@ class Pack(object):
 
     @staticmethod
     def encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
-                     private_artifacts_dir):
+                     private_artifacts_dir, new_encryption_key):
         """ decrypt the pack in order to see that the pack was encrypted in the first place.
 
         Args:
@@ -763,24 +763,33 @@ class Pack(object):
             encryption_key (str): The key which we can decrypt the pack with.
             extract_destination_path (str): The path in which the pack resides.
             private_artifacts_dir (str): The chosen name for the private artifacts diriectory.
+            new_encryption_key (str) : A second key which we can decrypt the pack with.
         """
         try:
             current_working_dir = os.getcwd()
             shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
             os.chdir(extract_destination_path)
-            output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
-            subprocess.call('chmod +x ./encryptor', shell=True)
-            full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "' \
-                           f'{encryption_key}"'
 
+            subprocess.call('chmod +x ./encryptor', shell=True)
+
+            output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+            full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "' \
+                f'{encryption_key}"'
             subprocess.call(full_command, shell=True)
+
+            new_encryption_key_output_file = zip_pack_path.replace("_not_encrypted.zip", ".enc2.zip")
+            full_command_with_new_encryption = f'./encryptor ./{pack_name}_not_encrypted.zip ' \
+                f'{new_encryption_key_output_file} {new_encryption_key}"'
+            subprocess.call(full_command_with_new_encryption, shell=True)
+
             new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
             if os.path.exists(new_artefacts):
                 shutil.rmtree(new_artefacts)
             os.mkdir(path=new_artefacts)
             shutil.copy(zip_pack_path, os.path.join(new_artefacts, f'{pack_name}_not_encrypted.zip'))
             shutil.copy(output_file, os.path.join(new_artefacts, f'{pack_name}.zip'))
+            shutil.copy(new_encryption_key_output_file, os.path.join(new_artefacts, f'{pack_name}.enc2.zip'))
             os.chdir(current_working_dir)
         except (subprocess.CalledProcessError, shutil.Error) as error:
             print(f"Error while trying to encrypt pack. {error}")
@@ -837,7 +846,7 @@ class Pack(object):
         return self.decrypt_pack(encrypted_zip_pack_path, decryption_key)
 
     def zip_pack(self, extract_destination_path="", pack_name="", encryption_key="",
-                 private_artifacts_dir='private_artifacts'):
+                 private_artifacts_dir='private_artifacts', new_encryption_key=""):
         """ Zips pack folder.
 
         Returns:
@@ -857,7 +866,7 @@ class Pack(object):
 
             if encryption_key:
                 self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
-                                  private_artifacts_dir)
+                                  private_artifacts_dir, new_encryption_key)
             task_status = True
             logging.success(f"Finished zipping {self._pack_name} pack.")
         except Exception:
@@ -955,7 +964,17 @@ class Pack(object):
 
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
+
             if private_content:
+                new_encryption_key_pack_name = f"{self._pack_name}.enc2.zip"
+                new_encryption_key_path = os.path.join(new_encryption_key_pack_name, f"{self._pack_name}.zip")
+
+                blob = storage_bucket.blob(new_encryption_key_path)
+                blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+
+                with open(zip_pack_path, "rb") as pack_zip:
+                    blob.upload_from_file(pack_zip)
+
                 #  In some cases the path given is actually a zip.
                 if pack_artifacts_path.endswith('content_packs.zip'):
                     _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')

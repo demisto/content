@@ -199,6 +199,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     extract_destination_path = upload_config.extract_path
     override_all_packs = upload_config.override_all_packs
     enc_key = upload_config.encryption_key
+    new_enc_key = upload_config.new_encryption_key
     is_private_build = upload_config.is_private
     packs_artifacts_dir = upload_config.artifacts_path
     private_artifacts_dir = upload_config.private_artifacts
@@ -262,7 +263,8 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key, private_artifacts_dir)
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key,
+                                               private_artifacts_dir, new_enc_key)
 
     if not task_status:
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
@@ -374,6 +376,8 @@ def option_handler():
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-ek', '--encryption_key', type=str,
                         help='The encryption key for the pack, if it should be encrypted.', default='')
+    parser.add_argument('-nek', '--new_encryption_key', type=str,
+                        help='A second encryption key for the pack, if it should be encrypted.', default='')
     parser.add_argument('-pr', '--is_private', type=str2bool,
                         help='The encryption key for the pack, if it should be encrypted.', default=False)
     parser.add_argument('-pa', '--private_artifacts', type=str,
