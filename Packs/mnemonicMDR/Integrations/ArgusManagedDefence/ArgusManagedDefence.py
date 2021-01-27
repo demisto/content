@@ -175,10 +175,32 @@ def pretty_print_comment(comment: dict, title: str = None) -> str:
     return string
 
 
+def pretty_print_comment_html(comment: dict, title: str = None) -> str:
+    string = f"<h2>{title}</h2>" if title else ""
+    string += f"<em>{comment['addedByUser']['userName']} - {pretty_print_date(comment['addedTime'])}</em><br>"
+    string += (
+        f"<em>Last updated {pretty_print_date(comment['lastUpdatedTime'])}</em><br>\n"
+        if comment["lastUpdatedTime"]
+        else ""
+    )
+    string += f"{comment['comment']}"
+    string += f"<br><em>id: {comment['id']}</em><br>"
+    string += f"<em>Flags: {str(comment['flags'])}</em><br>" if comment["flags"] else ""
+    return string
+
+
 def pretty_print_comments(comments: list, title: str = None) -> str:
     string = title if title else ""
     for comment in comments:
         string += pretty_print_comment(comment)
+    return string
+
+
+def pretty_print_comments_html(comments: list, title: str = None) -> str:
+    string = title if title else ""
+    for comment in comments:
+        string += pretty_print_comment_html(comment)
+        string += "<hr>"
     return string
 
 
@@ -206,6 +228,7 @@ def test_module_command() -> str:
 def fetch_incidents(
     last_run: dict, first_fetch_period: str, limit: int = 25, min_severity: str = "low"
 ):
+    demisto.debug("foobar " + str(last_run), demisto.getLastRun(), first_fetch_period)
     start_timestamp = last_run.get("start_time", None) if last_run else None
     # noinspection PyTypeChecker
     result = advanced_case_search(
@@ -309,10 +332,71 @@ def fetch_incidents_old(
     return last_run, incidents
 
 
-def get_remote_data_command(args: Dict[str, Any]) -> CommandResults:
+def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
     demisto.debug(str(args))
-    demisto.results(str(args))
+    # demisto.results(str(args))
+    remote_args = GetRemoteDataArgs(args)
+    demisto.debug("foobar" + str(remote_args))
+    case_id = args.get("remote_incident_id", "")
+    if not case_id:
+        case_id = args.get("id", "")
+    if not case_id:
+        raise ValueError("case id not found")
+
+    last_mirror_update = dateparser.parse(args.get("lastUpdate", ""))
+    if not last_mirror_update:
+        raise ValueError("last update not found")
+
+    case = get_case_metadata_by_id(id=int(case_id)).get("data", {})
+
+    # There are no updates to case, return empty
+    if last_mirror_update > dateparser.parse(case.get("lastUpdatedTime", "")):
+        return GetRemoteDataResponse({}, [])
+
+    entries = []
+    last_update_timestamp = date_time_to_epoch_milliseconds(last_mirror_update)
+
+    # Add new attachments
+    case_attachments = list_case_attachments(caseID=int(case_id)).get("data", [])
+    for attachment in case_attachments:
+        if last_update_timestamp < attachment.get("addedTimestamp", 0):
+            entries.append(
+                download_attachment_command(
+                    {
+                        "case_id": case_id,
+                        "attachment_id": attachment["id"],
+                        "file_name": attachment["name"],
+                    }
+                )
+            )
+
     # Attach comments as notes
+    case_comments = list_case_comments(caseID=int(case_id)).get("data", [])
+    for comment in case_comments:
+        if last_update_timestamp < comment.get("addedTimestamp", 0):
+            entries.append(
+                {
+                    "Note": True,
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["html"],
+                    "Contents": pretty_print_comment_html(comment),
+                }
+            )
+        elif (
+            comment.get("addedTimestamp", 0)
+            < last_update_timestamp
+            < comment.get("lastUpdatedTimestamp", "")
+        ):
+            entries.append(
+                {
+                    "Note": True,
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["html"],
+                    "Contents": (pretty_print_comment_html(comment, "Comment updated")),
+                }
+            )
+
+    return GetRemoteDataResponse(case, entries)
     # Attach case tags
 
 
@@ -1069,7 +1153,7 @@ def main() -> None:
     logging.getLogger("argus_cli").setLevel("WARNING")
 
     first_fetch_period = parse_first_fetch(
-        demisto.params().get("first_fetch_period", "-1 day")
+        demisto.params().get("first_fetch", "-1 day")
     )
 
     set_argus_settings(
@@ -1091,7 +1175,7 @@ def main() -> None:
                 last_run=demisto.getLastRun(),
                 first_fetch_period=first_fetch_period,
                 limit=demisto.params().get("max_fetch", 25),
-                min_severity=demisto.params().get("min_severity", "low"),
+                min_severity=demisto.params().get("min_severity", "low").lower(),
             )
 
             demisto.setLastRun(next_run)
