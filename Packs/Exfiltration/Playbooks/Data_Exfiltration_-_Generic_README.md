@@ -56,4 +56,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Data Exfiltration - Generic](Insert the link to your image here)
+![Data Exfiltration - Generic](https://raw.githubusercontent.com/demisto/content/f028abf0392df5d6eecd2926ddc56fc233aee4e9/Packs/Exfiltration/doc_files/Data_Exfiltration_-_Generic.png)
