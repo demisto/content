@@ -443,7 +443,7 @@ Command for basic information about the users and accounts using your organizati
 >| MS Graph User | 2020-07-28T01:42:07Z | false | true |  | {"id": "12345678-cafe-dead-beef-da7d658844d0", "saas": 11161, "inst": 0} |
 >| John Smith | 2020-07-27T13:05:21.508Z | true | false | john@example.com | {"id": "12345678-cafe-dead-beef-8089fe9991e2", "saas": 11161, "inst": 0} |
 >| Cloud App Security | 2020-07-27T10:36:02.246Z | false | false |  | {"id": "Cloud App Security", "saas": 11161, "inst": 0} |
->| Lance Pettay | 2020-07-24T17:52:33.096Z | true | false | lpettay@example.com | {"id": "12345678-cafe-dead-beef-d84915c6912f", "saas": 11161, "inst": 0} |
+>| John Smith | 2020-07-24T17:52:33.096Z | true | false | john@example.com | {"id": "12345678-cafe-dead-beef-d84915c6912f", "saas": 11161, "inst": 0} |
 >| AAD App Management | 2020-07-24T16:31:08Z | false | false |  | {"id": "12345678-cafe-dead-beef-679e38eea492", "saas": 11161, "inst": 0} |
 >| Microsoft Exchange Online Protection | 2020-07-23T09:01:52Z | false | false |  | {"id": "12345678-cafe-dead-beef-000000000000", "saas": 11161, "inst": 0} |
 >| Device Registration Service | 2020-07-19T22:59:52Z | false | false |  | {"id": "12345678-cafe-dead-beef-d28bd4d359a9", "saas": 11161, "inst": 0} |
@@ -451,7 +451,7 @@ Command for basic information about the users and accounts using your organizati
 >| Trend Micro Cloud App Security | 2020-07-15T08:42:20Z | false | true |  | {"id": "12345678-cafe-dead-beef-687b755fb160", "saas": 11161, "inst": 0} |
 >| Windows Azure Service Management API | 2020-07-10T14:33:09Z | false | false |  | {"id": "12345678-cafe-dead-beef-dac1f8f63013", "saas": 11161, "inst": 0} |
 >| Azure Resource Graph | 2020-07-05T23:50:54.723Z | false | false |  | {"id": "12345678-cafe-dead-beef-e9d4a1996ca4", "saas": 11161, "inst": 0} |
->| demisto dev | 2020-07-05T13:19:55Z | true | false | dev@example.com | {"id": "12345678-cafe-dead-beef-25984e968637", "saas": 11161, "inst": 0} |
+>| demisto dev | 2020-07-05T13:19:55Z | true | false | demistodev@example.com | {"id": "12345678-cafe-dead-beef-25984e968637", "saas": 11161, "inst": 0} |
 >| Media Analysis and Transformation Service | 2020-07-05T09:12:37Z | false | false |  | {"id": "12345678-cafe-dead-beef-804ed95e767e", "saas": 11161, "inst": 0} |
 >| Office 365 SharePoint Online | 2020-07-05T09:12:30Z | false | false |  | {"id": "12345678-cafe-dead-beef-000000000000", "saas": 11161, "inst": 0} |
 >| MS Graph Files | 2020-06-30T09:11:49Z | false | true |  | {"id": "12345678-cafe-dead-beef-97d384764d79", "saas": 11161, "inst": 0} |
@@ -462,14 +462,12 @@ Command for basic information about the users and accounts using your organizati
 >| Azure Security Center | 2020-03-17T00:36:01.976Z | false | true |  | {"id": "12345678-cafe-dead-beef-744e3d8d2152", "saas": 11161, "inst": 0} |
 >| Azure Compute | 2020-03-17T00:34:32.951Z | false | true |  | {"id": "12345678-cafe-dead-beef-8d14b008aa78", "saas": 11161, "inst": 0} |
 >| AzureCompute | 2020-03-17T00:33:19.047Z | false | true |  | {"id": "12345678-cafe-dead-beef-fcff173735a5", "saas": 11161, "inst": 0} |
->| Logs Analysis test |  | true | false | logs@example.com | {"id": "12345678-cafe-dead-beef-c133c5cd19de", "saas": 11161, "inst": 0} |
 >| Microsoft.Azure.GraphExplorer |  | false | false |  | {"id": "12345678-cafe-dead-beef-000000000000", "saas": 11161, "inst": 0} |
 >| Cactus |  | true | false | itay@example.com | {"id": "12345678-cafe-dead-beef-8352e0e9df65", "saas": 11161, "inst": 0} |
 >| Azure Classic Portal |  | false | false |  | {"id": "12345678-cafe-dead-beef-000000000000", "saas": 11161, "inst": 0} |
 >| Microsoft App Access Panel |  | false | false |  | {"id": "12345678-cafe-dead-beef-000000000000", "saas": 11161, "inst": 0} |
 >| svc |  | true | false | svc@example.com | {"id": "12345678-cafe-dead-beef-836e8a8e30c9", "saas": 11161, "inst": 0} |
 >| Yammer |  | false | false |  | {"id": "12345678-cafe-dead-beef-000000000000", "saas": 11161, "inst": 0} |
->| ServiceAccount1 |  | true | false | serviceaccount1@example.com | {"id": "12345678-cafe-dead-beef-2d80b97ab19d", "saas": 11161, "inst": 0} |
 >| Power BI Service |  | false | false |  | {"id": "12345678-cafe-dead-beef-000000000000", "saas": 11161, "inst": 0} |
 >| Microsoft Office Web Apps Service |  | false | false |  | {"id": "12345678-cafe-dead-beef-0de1c7f97287", "saas": 11161, "inst": 0} |
 >| Skype for Business Online |  | false | false |  | {"id": "12345678-cafe-dead-beef-000000000000", "saas": 11161, "inst": 0} |
