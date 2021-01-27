@@ -4372,6 +4372,7 @@ def return_results(results):
 
     if hasattr(results, 'to_entry'):
         demisto.results(results.to_entry())
+        return
 
     demisto.results(results)
 
