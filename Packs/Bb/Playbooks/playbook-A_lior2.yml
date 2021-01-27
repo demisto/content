@@ -1,0 +1,250 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 6170d71b-a5a7-4c96-8c16-bf58d657b67c
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: ee19a3eb-07c3-4b7e-8f32-8fa2f8384dda
+inputs: []
+name: A_lior2
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 58daf15e-d2a4-4bcf-8b8d-b11f2b7ae56f
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 58daf15e-d2a4-4bcf-8b8d-b11f2b7ae56f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c65d8ace-fbeb-4e85-80a1-782f967d13fd
+      iscommand: false
+      name: Untitled Task
+      scriptName: A_lior
+      type: regular
+      version: -1
+    taskid: c65d8ace-fbeb-4e85-80a1-782f967d13fd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 260
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 81e09f52-61a2-4a8c-8bec-3eca76f6c949
+      iscommand: false
+      name: Untitled Task
+      scriptName: A_lior_2
+      type: regular
+      version: -1
+    taskid: 81e09f52-61a2-4a8c-8bec-3eca76f6c949
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6ae38835-ea0d-4e2b-8469-73b4e82611fe
+      iscommand: false
+      name: Untitled Task
+      scriptName: A_lior_3
+      type: regular
+      version: -1
+    taskid: 6ae38835-ea0d-4e2b-8469-73b4e82611fe
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2f22b4a8-dc95-42d5-89f8-c1d12979d795
+      iscommand: false
+      name: Untitled Task
+      scriptName: A_lior_4
+      type: regular
+      version: -1
+    taskid: 2f22b4a8-dc95-42d5-89f8-c1d12979d795
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e2a86c33-689f-438e-8427-c7eff06810f1
+      iscommand: false
+      name: Untitled Task
+      scriptName: A_lior_5
+      type: regular
+      version: -1
+    taskid: e2a86c33-689f-438e-8427-c7eff06810f1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Sums a List\ne.g. [\"25\", \"10\", \"25\"] =>  \"60\"\n\nThis
+        is an example for number transformer.\n "
+      id: f045bce2-1309-42bc-8908-19e73747d7e3
+      iscommand: false
+      name: Untitled Task
+      scriptName: SumList
+      type: regular
+      version: -1
+    taskid: f045bce2-1309-42bc-8908-19e73747d7e3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1620
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2fb9d553-fcc8-41bb-8296-5865d8e4c096
+      iscommand: false
+      name: Untitled Task
+      scriptName: A_lior_7
+      type: regular
+      version: -1
+    taskid: 2fb9d553-fcc8-41bb-8296-5865d8e4c096
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1830
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1875,
+        "width": 390,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
