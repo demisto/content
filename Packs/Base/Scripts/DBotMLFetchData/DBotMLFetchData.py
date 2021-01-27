@@ -163,6 +163,7 @@ def hash_value(simple_value):
         return None
     return hashlib.md5(simple_value.encode('utf8')).hexdigest()
 
+
 def find_label_fields_candidates(incidents_df):
     candidates = [col for col in list(incidents_df) if
                   sum(isinstance(x, str) or isinstance(x, bool) for x in incidents_df[col]) > 0.3 * len(incidents_df)]
@@ -558,7 +559,7 @@ def get_closing_fields_from_incident(row):
             close_notes = close_notes.strip().lower()
             close_notes_tokenized = word_tokenize(close_notes)
             close_notes_tokenized = [token if token in EMBEDDING_DICT_FASTTEXT else hash_value(token)
-                                     for token in close_notes_tokenized]
+                                     for token in close_notes_tokenized]  # type: ignore
             close_notes = ' '.join(close_notes_tokenized)
 
     else:
