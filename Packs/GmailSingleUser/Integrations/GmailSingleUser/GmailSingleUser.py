@@ -15,6 +15,7 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
 from email.header import Header
 import mimetypes
 import random
@@ -742,7 +743,7 @@ class Client:
                 else:
                     file_name = file['name']
 
-                content_type, encoding = mimetypes.guess_type(file_path)
+                content_type, encoding = mimetypes.guess_type(file_name)
                 if content_type is None or encoding is not None:
                     content_type = 'application/octet-stream'
 
@@ -796,6 +797,15 @@ class Client:
                 else:
                     msg_aud.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_aud)
+
+            elif att['maintype'] == 'application':
+                msg_app = MIMEApplication(att['data'], att['subtype'])
+                if att['cid'] is not None:
+                    msg_app.add_header('Content-Disposition', 'inline', filename=att['name'])
+                    msg_app.add_header('Content-ID', '<' + att['name'] + '>')
+                else:
+                    msg_app.add_header('Content-Disposition', 'attachment', filename=att['name'])
+                message.attach(msg_app)
 
             else:
                 msg_base = MIMEBase(att['maintype'], att['subtype'])
@@ -885,7 +895,6 @@ class Client:
             for h in additional_headers:
                 header_name, header_value = h.split('=', 1)
                 message[header_name] = self.header(header_value)
-
         encoded_message = base64.urlsafe_b64encode(message.as_bytes())
         command_args = {'raw': encoded_message.decode()}
 
