@@ -8,7 +8,7 @@ image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAiCAYAAACUcR1DAAAAAXN
 description: McAfee ePolicy Orchestrator
 detaileddescription: 'Integration with Intel Security''s ePolicy Orchestrator using the official API. '
 configuration:
-- display: Address (e.g. https://<address>:port)
+- display: https://<address>:port
   name: address
   defaultvalue: ""
   type: 0
