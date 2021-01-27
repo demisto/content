@@ -168,6 +168,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
             if os.path.exists(index_pack_path):
                 shutil.rmtree(index_pack_path)  # remove pack folder inside index in case that it exists
             logging.warning(f"Skipping updating {pack_name} pack files to index")
+            task_status = True
             return True
 
         # Copy new files and add metadata for latest version
