@@ -1,0 +1,165 @@
+id: Context Polling - Generic
+version: -1
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    itemVersion: 1.8.5
+    fromServerVersion: ""
+    toServerVersion: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: Context Polling - Generic
+description: This playbook polls a context key to check if a specific value exists.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d66a3885-27e3-439d-8855-b5522c6dde35
+    type: start
+    task:
+      id: d66a3885-27e3-439d-8855-b5522c6dde35
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f6f1f1f8-71bb-4f9f-8929-9995b0574393
+    type: playbook
+    task:
+      id: f6f1f1f8-71bb-4f9f-8929-9995b0574393
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: regex
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.value
+      Ids:
+        complex:
+          root: inputs.key
+      Interval:
+        complex:
+          root: inputs.frequency
+      PollingCommandArgName:
+        simple: key
+      PollingCommandName:
+        simple: CheckContextValue
+      Timeout:
+        complex:
+          root: inputs.timeout
+      dt:
+        simple: CheckContextKey(val.key=='${inputs.key}' && val.exists==false).key
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4652f620-ec05-47da-800c-76426f68efab
+    type: title
+    task:
+      id: 4652f620-ec05-47da-800c-76426f68efab
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: key
+  value: {}
+  required: true
+  description: 'The context key to poll for a value. Can contain ''.'', for example:
+    "ContextKey1.ContextKey2.ContextKey3"'
+  playbookInputQuery: null
+- key: value
+  value:
+    simple: .+
+  required: true
+  description: The regex to check the field for. By default the regex contains .+,
+    which matches anything other than None.
+  playbookInputQuery: null
+- key: frequency
+  value:
+    simple: "1"
+  required: true
+  description: How often to check (in minutes).
+  playbookInputQuery: null
+- key: timeout
+  value:
+    simple: "10"
+  required: true
+  description: When to timeout (in minutes).
+  playbookInputQuery: null
+outputs: []
+sourceplaybookid: Field Polling - Generic
