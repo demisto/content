@@ -129,6 +129,7 @@ def test_search_and_install_packs_and_their_dependencies(mocker):
     mocker.patch.object(script, 'install_packs')
     mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
     mocker.patch.object(script, 'get_pack_display_name', side_effect=mocked_get_pack_display_name)
+    mocker.patch.object(script, 'is_pack_deprecated', return_value=False)
 
     installed_packs, success = script.search_and_install_packs_and_their_dependencies(good_pack_ids,
                                                                                       client)
