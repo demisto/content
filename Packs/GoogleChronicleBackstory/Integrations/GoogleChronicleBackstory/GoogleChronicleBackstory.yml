@@ -59,7 +59,7 @@ configuration:
     level is equal or above the configured level, it would be considered as "malicious".
     The confidence level configured should have higher precedence than the suspicious
     level. This configuration is applicable to reputation commands only. Refer the
-    "confidence score" level precedence UNKNOWN SEVERITY < INFORMATIONAL < LOW < MEDIUM
+    "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM
     < HIGH.
   name: override_confidence_level_malicious
   options:
@@ -74,7 +74,7 @@ configuration:
     level is equal or above the configured level, it would be considered as "suspicious".
     The confidence level configured should have lesser precedence than the malicious
     level. This configuration is applicable to reputation commands only. Refer the
-    "confidence score" level precedence UNKNOW SEVERITY < INFORMATIONAL < LOW < MEDIUM
+    "confidence score" level precedence UNKNOW_SEVERITY < INFORMATIONAL < LOW < MEDIUM
     < HIGH.
   name: override_confidence_level_suspicious
   options:

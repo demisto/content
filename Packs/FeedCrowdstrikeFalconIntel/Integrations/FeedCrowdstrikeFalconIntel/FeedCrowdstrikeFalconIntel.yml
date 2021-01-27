@@ -120,8 +120,8 @@ configuration:
   type: 0
 - additionalinfo: 'For more information about custom filters and their structure,
     see the (Crowdstrike Falcon documentation)[https://falcon.crowdstrike.com/login/?next=%2Fsupport%2Fdocumentation%2F45%2Ffalcon-query-language-fql%3F].'
-  display: 'A custom filter by which to filter the indicators. If you pass the custom filter
-    argument it will override the custom filter parameter from the integration instance
+  display: 'A custom filter by which to filter the indicators. If you pass the custom_filter
+    argument it will override the custom_filter parameter from the integration instance
     configuration.'
   hidden: false
   name: custom_filter

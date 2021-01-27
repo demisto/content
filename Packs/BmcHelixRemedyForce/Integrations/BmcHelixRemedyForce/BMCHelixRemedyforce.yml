@@ -66,10 +66,10 @@ configuration:
   type: 8
 - additionalinfo: Incidents will be fetched based on the query. Name and LastModifiedDate
     fields are mandatory to be present inside the select clause of the query. Multiple
-    'where' clauses are not supported. (If provided other filtering parameters will be ignored) e.g. select
+    'where' clauses are not supported.
+  display: Query (If provided other filtering parameters will be ignored) e.g. select
     Name, LastModifiedDate from BMCServiceDesk__Incident__c where BMCServiceDesk__Impact_Id__c
     = 'High'
-  display: Query
   name: query
   required: false
   type: 12

@@ -52,7 +52,7 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-- display: Fetch incidents of the given providers only. Multiple providers can be inserted, seperated by a comma, e.g. "{first provider},{second provioder}". If empty, incidents of all providers will be fetched.
+- display: Fetch incidents of the given providers only. Multiple providers can be inserted, seperated by a comma, e.g. "{first_provider},{second_provioder}". If empty, incidents of all providers will be fetched.
   hidden: false
   name: fetch_providers
   required: false

@@ -27,7 +27,7 @@ configuration:
   - suspicious
   required: false
   type: 16
-- display: 'Suspicious dispositions (CheckPhish labels for suspicious phishing URLs). Default is "drug spam", "gambling", "hacked website", "streaming", "suspicious"'
+- display: 'Suspicious dispositions (CheckPhish labels for suspicious phishing URLs). Default is "drug_spam", "gambling", "hacked_website", "streaming", "suspicious"'
   name: susp_disp
   options:
   - adult
@@ -42,7 +42,7 @@ configuration:
   - suspicious
   required: false
   type: 16
-- display: 'Bad dispositions (CheckPhish labels for phishing URLs). Defaults are "cryptojacking", "phish", "likely phish", "scam".'
+- display: 'Bad dispositions (CheckPhish labels for phishing URLs). Defaults are "cryptojacking", "phish", "likely_phish", "scam".'
   name: bad_disp
   options:
   - adult

@@ -34,7 +34,7 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- display: Ticket type to fetch
+- display: Fetch tickets matching to one of SERVICE_REQUEST, INCIDENT or CHANGE
   name: ticketType
   defaultvalue: ""
   type: 0

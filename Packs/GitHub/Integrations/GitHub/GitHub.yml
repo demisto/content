@@ -15,7 +15,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- display: 'Username of the repository owner'
+- display: 'Username of the repository owner, for example: github.com/repos/{_owner_}/{repo}/issues'
   name: user
   required: false
   type: 0
