@@ -162,7 +162,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: incident.githubtoken
+              simple: incident.tidygithubtoken
           operator: isNotEmpty
       label: "yes"
     id: "4"
