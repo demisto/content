@@ -75,7 +75,7 @@ COLOR_RGB: str = 'Color RGB'
 ACTION_MAPPINGS: Dict[str, str] = {'dlpChange': 'DLPChange'}
 DRIVE_ACTIVITY_DETAIL_ACTION: str = 'detail.action_detail_case: {}'
 
-
+#TEST
 def prepare_markdown_from_dictionary(data: Dict[str, Any], ignore_fields: List[str] = []) -> str:
     """
     Prepares markdown from dictionary.

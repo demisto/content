@@ -56,7 +56,7 @@ FIELDS_THAT_CANT_BE_MODIFIED = [
 
 ''' HELPER FUNCTIONS '''
 
-
+#TEST
 def initialize_server(host, port, secure_connection, unsecure):
     """
     uses the instance configuration to initialize the LDAP server

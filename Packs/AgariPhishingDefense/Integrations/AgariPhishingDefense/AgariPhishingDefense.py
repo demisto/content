@@ -74,7 +74,7 @@ HR_MESSAGES: Dict[str, str] = {
 
 ''' CLIENT CLASS '''
 
-
+#TEST
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, proxy: bool, request_timeout: int, payload):
         """

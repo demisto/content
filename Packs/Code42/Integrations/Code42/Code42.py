@@ -136,7 +136,7 @@ def _get_all_high_risk_employees_from_page(page, risk_tags):
             res.append(employee)
     return res
 
-
+#TEST
 class Code42Client(BaseClient):
     """
     Client will implement the service API, should not contain Cortex XSOAR logic.

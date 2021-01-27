@@ -14,7 +14,7 @@ BPA_VERSION = 'v1'
 BPA_URL = BPA_HOST + '/api/' + BPA_VERSION + '/'
 DOWNLOADED_REPORT_NAME_SUFFIX = '_BPA-report.zip'
 
-
+#TEST
 class LightPanoramaClient(BaseClient):
     '''
     This is a client for Panorama API, used by integration commands to issue requests to Panorama API,

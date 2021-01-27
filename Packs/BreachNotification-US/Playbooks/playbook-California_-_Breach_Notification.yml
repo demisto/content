@@ -1,7 +1,7 @@
 id: California - Breach Notification
 version: -1
 name: California - Breach Notification
-description: "This playbook helps an analyst determine if the breached data meets\
+description: "TEST This playbook helps an analyst determine if the breached data meets\
   \ the criteria for breach notification according to California law, and, if necessary,\
   \ follows through with the notification procedures. \n\nDISCLAIMER: Please consult\
   \ with your legal team before implementing this playbook.\n\n**Source:** http://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=CIV&sectionNum=1798.82."

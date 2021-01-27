@@ -1,7 +1,7 @@
 id: Brute Force Investigation - Generic
 version: -1
 name: Brute Force Investigation - Generic
-description: "This playbook investigates a \"Brute Force\" incident by gathering user\
+description: "TEST This playbook investigates a \"Brute Force\" incident by gathering user\
   \ and IP information, calculating the incident severity based on the gathered information\
   \ and information received from the user, and performs remediation.\n\nThe playbook\
   \ handles the following use-cases:\n\n* Brute Force IP Detected - A detection of\

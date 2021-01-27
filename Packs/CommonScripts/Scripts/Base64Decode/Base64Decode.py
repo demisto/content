@@ -3,7 +3,7 @@ from CommonServerPython import *
 
 import base64
 
-
+#TEST
 def decode(value):
     decoded_bytes = base64.urlsafe_b64decode(str(value))
     res = str(decoded_bytes)

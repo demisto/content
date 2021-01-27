@@ -1,7 +1,7 @@
 id: Entity Enrichment - Generic v3
 version: -1
 name: Entity Enrichment - Generic v3
-description: Enrich entities using one or more integrations.
+description: TESTEnrich entities using one or more integrations.
 starttaskid: "0"
 tasks:
   "0":

@@ -15,7 +15,7 @@ requests.packages.urllib3.disable_warnings()
 ''' CONSTANTS '''
 ''' CLIENT CLASS '''
 
-
+#TEST
 class Client(BaseClient):
 
     def parse_reputation(self, cybertotal_result: dict, resource: str) -> Dict[str, Any]:

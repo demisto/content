@@ -20,7 +20,7 @@ CLIENT_HEADERS: dict
 VERIFY_CERT: bool
 PROXY: bool
 
-
+#TEST
 def init_globals():
     """
 
