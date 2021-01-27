@@ -204,7 +204,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       access_token:
-        simple: ${incident.githubtoken}
+        simple: ${incident.tidygithubtoken}
       hostname:
         simple: ${incident.tidyhost}
       password:
