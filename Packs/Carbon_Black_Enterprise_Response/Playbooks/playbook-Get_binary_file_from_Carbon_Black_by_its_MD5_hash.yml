@@ -1,0 +1,231 @@
+id: Get the binary file from Carbon Black by its MD5 hash
+version: -1
+name: Get the binary file from Carbon Black by its MD5 hash
+description: This playbook retrieves a binary file by its MD5 hash from the Carbon
+  Black telemetry data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 64f62e76-d158-4d5a-8b02-a273e6f3b545
+    type: start
+    task:
+      id: 64f62e76-d158-4d5a-8b02-a273e6f3b545
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2af5f32e-9d78-4753-81e3-6be566ecf9fd
+    type: condition
+    task:
+      id: 2af5f32e-9d78-4753-81e3-6be566ecf9fd
+      version: -1
+      name: 'Is VMware Carbon Black EDR v2 enabled? '
+      description: Returns 'yes' if the integration brand is available. Otherwise
+        returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: carbonblack-v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f0b5b288-8a80-4828-8d85-585db9400a03
+    type: title
+    task:
+      id: f0b5b288-8a80-4828-8d85-585db9400a03
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 906150a0-7387-437f-8bc7-998e2f0dc517
+    type: condition
+    task:
+      id: 906150a0-7387-437f-8bc7-998e2f0dc517
+      version: -1
+      name: Is the MD5 hash provided?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 417a3cd6-63f9-4c91-86f8-8e6903c288ca
+    type: regular
+    task:
+      id: 417a3cd6-63f9-4c91-86f8-8e6903c288ca
+      version: -1
+      name: Get the binary file from Carbon Black by its MD5 hash
+      description: Retrieve a binary from CarbonBlack based on its hash. Returns a
+        .zip file containing the requested file and its metadata.
+      script: '|||cb-binary-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      md5:
+        complex:
+          root: inputs.MD5
+      summary: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_no": 0.66,
+      "3_2_#default#": 0.46
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 910,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: MD5 hash of the binary file to be retrieved.
+  playbookInputQuery:
+outputs:
+- contextPath: File.Size
+  description: The size of the file.
+  type: number
+- contextPath: File.Type
+  description: The type of the file.
+  type: string
+- contextPath: File.Info
+  description: General information of the file.
+  type: string
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: string
+- contextPath: File.SSDeep
+  description: The file SSDeep.
+  type: string
+- contextPath: File.Name
+  description: The file name.
+  type: string
+- contextPath: File.EntryID
+  description: File entry ID.
+  type: string
+- contextPath: File.Extension
+  description: The file extension.
+  type: string
+tests:
+- Carbon Black Response Test
+fromversion: 5.0.0

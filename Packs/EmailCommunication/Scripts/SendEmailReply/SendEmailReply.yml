@@ -14,8 +14,8 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: 
-  description: The mailbox from which emails are sent from the 3rd party integration. 
+  defaultValue:
+  description: The mailbox from which emails are sent from the 3rd party integration.
   isArray: false
   name: service_mail
   required: true
@@ -32,6 +32,6 @@ system: false
 timeout: '0'
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.8.6.14516
 tests:
 - No tests (auto formatted)

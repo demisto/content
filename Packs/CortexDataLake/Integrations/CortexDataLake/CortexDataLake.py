@@ -1,6 +1,7 @@
 """ IMPORTS """
 from CommonServerPython import *
 import os
+import re
 import requests
 import json
 from pancloud import QueryService, Credentials, exceptions
@@ -10,6 +11,7 @@ from typing import Dict, Any, List, Tuple, Callable
 from tempfile import gettempdir
 from dateutil import parser
 import demistomock as demisto
+from datetime import timedelta
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -22,6 +24,8 @@ INSTANCE_ID_CONST = 'instance_id'
 API_URL_CONST = 'api_url'
 REGISTRATION_ID_CONST = 'reg_id'
 ENCRYPTION_KEY_CONST = 'auth_key'
+FIRST_FAILURE_TIME_CONST = 'first_failure_time'
+LAST_FAILURE_TIME_CONST = 'last_failure_time'
 DEFAULT_API_URL = 'https://api.us.cdl.paloaltonetworks.com'
 MINUTES_60 = 60 * 60
 SECONDS_30 = 30
@@ -29,6 +33,7 @@ FETCH_TABLE_HR_NAME = {
     "firewall.threat": "Cortex Firewall Threat",
     "firewall.file_data": "Cortex Firewall File Data"
 }
+BAD_REQUEST_REGEX = r'^Error in API call \[400\].*'
 
 
 class Client(BaseClient):
@@ -80,14 +85,8 @@ class Client(BaseClient):
         self.api_url = api_url
         self.instance_id = instance_id
 
-    def _oproxy_authorize(self) -> Tuple[str, str, str, str, int]:
-        oproxy_response = self._http_request('POST',
-                                             '/cdl-token',
-                                             json_data={'token': get_encrypted(self.refresh_token, self.enc_key)},
-                                             timeout=(60 * 3, 60 * 3),
-                                             retries=3,
-                                             backoff_factor=10,
-                                             status_list_to_retry=[400])
+    def _oproxy_authorize(self) -> Tuple[Any, Any, Any, Any, int]:
+        oproxy_response = self._get_access_token_with_backoff_strategy()
         access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
         api_url = oproxy_response.get('url')
         refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
@@ -99,6 +98,115 @@ class Client(BaseClient):
             raise DemistoException(f'Missing attribute in response: access_token, instance_id or api are missing.\n'
                                    f'Oproxy response: {oproxy_response}')
         return access_token, api_url, instance_id, refresh_token, expires_in
+
+    def _get_access_token_with_backoff_strategy(self) -> dict:
+        """ Implements a backoff strategy for retrieving an access token.
+        Raises an exception if the call is within one of the time windows, otherwise fetches the access token
+
+        Returns: The oproxy response or raising a DemistoException
+
+        """
+        self._backoff_strategy(demisto.getIntegrationContext())
+        return self._get_access_token()
+
+    @staticmethod
+    def _backoff_strategy(integration_context: dict):
+        """ Implements a backoff strategy for retrieving an access token. Logic as follows:
+        - First 60 minutes check for access token once every 1 minute max.
+        - Next 47 hours check for access token once every 10 minute max.
+        - After 48 hours check for access token once every 60 minutes max.
+
+        Args:
+            integration_context: The integration context
+
+        """
+        err_msg = 'We have found out that your recent attempts to authenticate against the CDL server have failed. ' \
+                  'Therefore we have limited the number of calls that the CDL integration performs. ' \
+                  'If you wish to try authenticating again, please run the `cdl-reset-authentication-timeout` ' \
+                  'command and retry. If you choose not to reset the authentication timeout, the next attempt can be ' \
+                  'done in {} {}.'
+        first_failure_time = integration_context.get(FIRST_FAILURE_TIME_CONST)
+        last_failure_time = integration_context.get(LAST_FAILURE_TIME_CONST)
+        now_datetime = datetime.utcnow()
+        demisto.debug(f'CDL - First failure time: {first_failure_time}')
+        demisto.debug(f'CDL - Last failure time: {last_failure_time}')
+        demisto.debug(f'CDL - Current time: {last_failure_time}')
+
+        if first_failure_time and last_failure_time:
+            first_failure_datetime = datetime.fromisoformat(first_failure_time)
+            last_failure_datetime = datetime.fromisoformat(last_failure_time)
+            time_from_first_failure = now_datetime - first_failure_datetime
+            time_from_last_failure = now_datetime - last_failure_datetime
+
+            if time_from_first_failure < timedelta(hours=1):
+                window = timedelta(minutes=1)
+                if time_from_last_failure < window:
+                    raise DemistoException(err_msg.format(window - time_from_last_failure, 'seconds'))
+            elif time_from_first_failure < timedelta(hours=48):
+                window = timedelta(minutes=10)
+                if time_from_last_failure < window:
+                    raise DemistoException(err_msg.format(window - time_from_last_failure, 'minutes'))
+            else:
+                window = timedelta(minutes=60)
+                if time_from_last_failure < window:
+                    raise DemistoException(err_msg.format(window - time_from_last_failure, 'minutes'))
+
+    def _get_access_token(self) -> dict:
+        """ Performs an http request to oproxy-cdl access token endpoint
+        In case of failure, handles the error, otherwise reset the failure counters and return the response
+
+        Returns: The oproxy response or raising a DemistoException
+
+        """
+        demisto.debug('CDL - Fetching access token')
+        try:
+            oproxy_response = self._http_request('POST',
+                                                 '/cdl-token',
+                                                 json_data={'token': get_encrypted(self.refresh_token, self.enc_key)},
+                                                 timeout=(60 * 3, 60 * 3),
+                                                 retries=3,
+                                                 backoff_factor=10,
+                                                 status_list_to_retry=[400])
+        except DemistoException as e:
+            if re.match(BAD_REQUEST_REGEX, str(e)):
+                demisto.error('The request to retrieve the access token has failed with 400 status code.')
+                demisto.setIntegrationContext(self._cache_failure_times(demisto.getIntegrationContext()))
+            raise e
+
+        self.reset_failure_times()
+        return oproxy_response
+
+    @staticmethod
+    def _cache_failure_times(integration_context: dict) -> dict:
+        """ Updates the failure times in case of an error with 400 status code.
+
+        Args:
+            integration_context: The integration context
+
+        Returns:
+            The updated integration context
+
+        """
+        current_time = datetime.utcnow().isoformat()
+        times_dict = {LAST_FAILURE_TIME_CONST: current_time}
+        if not integration_context.get(FIRST_FAILURE_TIME_CONST):
+            # first failure
+            times_dict[FIRST_FAILURE_TIME_CONST] = current_time
+        integration_context.update(times_dict)
+        return integration_context
+
+    @staticmethod
+    def reset_failure_times():
+        """ Resets the time failure counters: FIRST_FAILURE_TIME_CONST & LAST_FAILURE_TIME_CONST
+
+        """
+        integration_context = demisto.getIntegrationContext()
+
+        for failure_time_key in (FIRST_FAILURE_TIME_CONST, LAST_FAILURE_TIME_CONST):
+            if failure_time_key in integration_context:
+                del integration_context[failure_time_key]
+
+        demisto.setIntegrationContext(integration_context)
 
     def query_loggings(self, query: str) -> Tuple[List[dict], list]:
         """
@@ -787,6 +895,7 @@ def query_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[
     """
     query = args.get('query', '')
     limit = args.get('limit', '')
+    transform_results = argToBoolean(args.get('transform_results', 'true'))
 
     if 'limit' not in query.lower():
         query += f' LIMIT {limit}'
@@ -794,10 +903,10 @@ def query_logs_command(args: dict, client: Client) -> Tuple[str, Dict[str, List[
     records, raw_results = client.query_loggings(query)
 
     table_name = get_table_name(query)
-    transformed_results = [common_context_transformer(record) for record in records]
-    human_readable = tableToMarkdown('Logs ' + table_name + ' table', transformed_results, removeNull=True)
+    output_results = records if not transform_results else [common_context_transformer(record) for record in records]
+    human_readable = tableToMarkdown('Logs ' + table_name + ' table', output_results, removeNull=True)
     ec = {
-        'CDL.Logging': transformed_results
+        'CDL.Logging': output_results
     }
     return human_readable, ec, raw_results
 
@@ -1024,13 +1133,19 @@ def main():
     enc_key = params.get(ENCRYPTION_KEY_CONST)
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
     args = demisto.args()
     fetch_table = params.get('fetch_table')
     fetch_fields = params.get('fetch_fields') or '*'
-
     command = demisto.command()
     LOG(f'command is {command}')
+    # needs to be executed before creating a Client
+    if command == 'cdl-reset-authentication-timeout':
+        Client.reset_failure_times()
+        return_outputs(readable_output="Caching mechanism failure time counters have been successfully reset.")
+        return
+
+    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key)
+
     try:
         if command == 'test-module':
             test_module(client, fetch_table, fetch_fields, params.get('isFetch'))

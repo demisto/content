@@ -1,5 +1,5 @@
 The RSA Archer GRC Platform provides a common foundation for managing policies, controls, risks, assessments and deficiencies across lines of business.
-This integration was integrated and tested with version xx of RSA Archer v2
+
 ## Configure RSA Archer v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -21,7 +21,6 @@ This integration was integrated and tested with version xx of RSA Archer v2
 | fetch_limit | How many incidents to fetch each time | False |
 | fetch_time | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year\) | False |
 | fields_to_fetch | List of fields from the application to gets into the incident | False |
-| time_zone | Timezone offset in minutes of the RSA Archer server machine \(\+60, \-60, in minutes\) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -800,7 +799,8 @@ Returns a list of values for a specified field, e.g., fieldID=16114. This comman
 
 ### archer-upload-file
 ***
-Uploads a file to Archer
+Uploads a file to Archer. Can associate the file to a record.
+To associate to a record, must provide all of the following arguments: applicationId, contentId, associatedField.
 
 
 #### Base Command
@@ -811,8 +811,9 @@ Uploads a file to Archer
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entryId | The entry id of the file in Demisto's context | Required | 
-
-
+| contentId | The Content (record) ID to update.| Optional | 
+| applicationId | ID of the application which we want to upload the file to. | Optional | 
+| associatedField | Archer field name to associate the file with. | Optional
 #### Context Output
 
 There is no context output for this command.

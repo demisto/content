@@ -7,9 +7,19 @@ from unittest.mock import mock_open
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from distutils.version import LooseVersion
+from freezegun import freeze_time
 
 from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list, get_valid_bool, convert_price, \
-    get_higher_server_version, GCPConfig
+    get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
+    store_successful_and_failed_packs_in_ci_artifacts
+
+CHANGELOG_DATA = {
+    "1.0.0": {
+        "releaseNotes": "Sample description",
+        "displayName": "1.0.0 - 62492",
+        "released": "2020-12-21T12:10:55Z"
+    }
+}
 
 
 @pytest.fixture(scope="module")
@@ -28,15 +38,21 @@ class TestMetadataParsing:
     """ Class for validating parsing of pack_metadata.json (metadata.json will be created from parsed result).
     """
 
-    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack_metadata):
-        """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
-
+    @pytest.fixture(scope="class", autouse=True)
+    def dummy_pack(self):
+        """ dummy pack fixture
         """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
-                                                    downloads_count=10)
+        return Pack(pack_name="Test Pack Name", pack_path="dummy_path")
+
+    def test_validate_all_fields_of_parsed_metadata(self, dummy_pack, dummy_pack_metadata):
+        """ Test function for existence of all fields in metadata. Important to maintain it according to #19786 issue.
+        """
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={}, server_min_version="5.5.0",
+                                                          build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                          downloads_count=10)
         assert parsed_metadata['name'] == 'Test Pack Name'
         assert parsed_metadata['id'] == 'test_pack_id'
         assert parsed_metadata['description'] == 'Description of test pack'
@@ -54,7 +70,7 @@ class TestMetadataParsing:
         assert parsed_metadata['currentVersion'] == '2.3.0'
         assert parsed_metadata['versionInfo'] == "dummy_build_number"
         assert parsed_metadata['commit'] == "dummy_commit"
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two"]
+        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", "Use Case"]
         assert parsed_metadata['categories'] == ["Messaging"]
         assert parsed_metadata['contentItems'] == {}
         assert 'integrations' in parsed_metadata
@@ -63,15 +79,17 @@ class TestMetadataParsing:
         assert parsed_metadata['downloads'] == 10
         assert 'dependencies' in parsed_metadata
 
-    def test_parsed_metadata_empty_input(self):
+    def test_parsed_metadata_empty_input(self, dummy_pack):
         """ Test for empty pack_metadata.json and validating that support, support details and author are set correctly
             to XSOAR defaults value of Metadata class.
         """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
-                                                    downloads_count=10)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata={}, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={},
+                                                          server_min_version="dummy_server_version",
+                                                          build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                          downloads_count=10)
 
         assert parsed_metadata['name'] == "test_pack_id"
         assert parsed_metadata['id'] == "test_pack_id"
@@ -86,32 +104,55 @@ class TestMetadataParsing:
 
     @pytest.mark.parametrize("pack_metadata_input,expected",
                              [({"price": "120"}, 120), ({"price": 120}, 120), ({"price": "FF"}, 0)])
-    def test_parsed_metadata_with_price(self, pack_metadata_input, expected, mocker):
+    def test_parsed_metadata_with_price(self, pack_metadata_input, expected, mocker, dummy_pack):
         """ Price field is not mandatory field and needs to be set to integer value.
 
         """
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
-                                                    pack_id="test_pack_id", integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="dummy_server_version",
-                                                    build_number="dummy_build_number", commit_hash="dummy_hash",
-                                                    downloads_count=10)
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=pack_metadata_input, pack_content_items={},
+                                                          pack_id="test_pack_id", integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={},
+                                                          server_min_version="dummy_server_version",
+                                                          build_number="dummy_build_number", commit_hash="dummy_hash",
+                                                          downloads_count=10)
 
         assert parsed_metadata['price'] == expected
+
+    def test_use_case_tag_added_to_metadata(self, dummy_pack_metadata, dummy_pack):
+        """
+           Given:
+               - Pack metadata file with use case.
+           When:
+               - Running parse_pack_metadada
+           Then:
+               - Ensure the `Use Case` tag was added to tags.
+
+       """
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={}, server_min_version="5.5.0",
+                                                          build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                          downloads_count=10, is_feed_pack=False)
+
+        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'Use Case']
 
     @pytest.mark.parametrize('is_feed_pack, tags',
                              [(True, ["tag number one", "Tag number two", 'TIM']),
                               (False, ["tag number one", "Tag number two"])
                               ])
-    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, is_feed_pack, tags):
+    def test_tim_tag_added_to_feed_pack(self, dummy_pack_metadata, dummy_pack, is_feed_pack, tags):
         """ Test 'TIM' tag is added if is_feed_pack is True
         """
-        parsed_metadata = Pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
-                                                    pack_id='test_pack_id', integration_images=[], author_image="",
-                                                    dependencies_data={}, server_min_version="5.5.0",
-                                                    build_number="dummy_build_number", commit_hash="dummy_commit",
-                                                    downloads_count=10, is_feed_pack=True)
-        assert parsed_metadata['tags'] == ["tag number one", "Tag number two", 'TIM']
+        parsed_metadata = dummy_pack._parse_pack_metadata(user_metadata=dummy_pack_metadata, pack_content_items={},
+                                                          pack_id='test_pack_id', integration_images=[],
+                                                          author_image="",
+                                                          dependencies_data={}, server_min_version="5.5.0",
+                                                          build_number="dummy_build_number", commit_hash="dummy_commit",
+                                                          downloads_count=10, is_feed_pack=True)
+
+        assert sorted(parsed_metadata['tags']) == sorted(["tag number one", "Tag number two", 'Use Case', 'TIM'])
 
 
 class TestParsingInternalFunctions:
@@ -175,7 +216,7 @@ class TestParsingInternalFunctions:
 
         assert result_certification == Metadata.CERTIFIED
 
-    @pytest.mark.parametrize("support_type, certification", [("partner", None), ("developer", "")])
+    @pytest.mark.parametrize("support_type, certification", [("community", None), ("developer", "")])
     def test_get_certification_non_xsoar_support_empty(self, support_type, certification):
         """ Tests case when support is set to non xsoar. Expected result should empty certification string.
         """
@@ -355,7 +396,6 @@ class TestChangelogCreation:
     """ Test class for changelog.json creation step.
 
     """
-
     @pytest.fixture(scope="class")
     def dummy_pack(self):
         """ dummy pack fixture
@@ -551,7 +591,7 @@ This is visible
         clean_rn = Pack._clean_release_notes(original_rn)
         assert expected_rn == clean_rn
 
-    def test_create_changelog_entry_new(self):
+    def test_create_changelog_entry_new(self, dummy_pack):
         """
            Given:
                - release notes, display version and build number
@@ -563,14 +603,14 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.2.3"
         build_number = "5555"
-        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
-                                                         version_display_name=version_display_name,
-                                                         build_number=build_number, new_version=True)
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=True)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
 
-    def test_create_changelog_entry_existing(self):
+    def test_create_changelog_entry_existing(self, dummy_pack):
         """
            Given:
                - release notes, display version and build number
@@ -582,12 +622,78 @@ This is visible
         release_notes = "dummy release notes"
         version_display_name = "1.2.3"
         build_number = "5555"
-        version_changelog = Pack._create_changelog_entry(release_notes=release_notes,
-                                                         version_display_name=version_display_name,
-                                                         build_number=build_number, new_version=False)
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=False)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
+
+    def test_create_changelog_entry_initial(self, dummy_pack):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - initial changelog entry must created
+           Then:
+               - return changelog entry with release notes and without R letter in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=False,
+                                                               initial_release=True)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
+
+    @staticmethod
+    def dummy_pack_changelog():
+        temp_changelog_file = os.path.join(os.getcwd(), 'dummy_changelog.json')
+        with open(temp_changelog_file, 'w',) as changelog_file:
+            changelog_file.write(json.dumps(CHANGELOG_DATA))
+        return str(temp_changelog_file)
+
+    @staticmethod
+    def mock_os_path_join(path, *paths):
+        if not str(path).startswith('changelog'):
+            if paths:
+                return path + '/' + '/'.join(paths)
+            return path
+
+        path_to_non_existing_changelog = 'dummy_path'
+
+        if path == 'changelog_exist':
+            return TestChangelogCreation.dummy_pack_changelog()
+        if path == 'changelog_not_exist':
+            return path_to_non_existing_changelog
+
+    @freeze_time("2020-11-04T13:34:14.75Z")
+    @pytest.mark.parametrize('is_changelog_exist, expected_date', [
+        ('changelog_exist', '2020-12-21T12:10:55Z'),
+        ('changelog_not_exist', '2020-11-04T13:34:14Z')
+    ])
+    def test_handle_pack_create_date_changelog_exist(self, mocker, dummy_pack, is_changelog_exist, expected_date):
+        """
+           Given:
+               - existing 1.0.0 changelog, pack created_date
+               - not existing 1.0.0 changelog, datetime.utcnow
+           When:
+               - changelog entry already exists
+               - changelog entry not exists
+
+           Then:
+           - return the released field from the changelog file
+           - return datetime.utcnow
+       """
+        from Tests.Marketplace.marketplace_services import os
+        mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
+        pack_created_date = dummy_pack._get_pack_creation_date(is_changelog_exist)
+        if is_changelog_exist == 'changelog_exist':
+            os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
+        assert pack_created_date == expected_date
 
 
 class TestImagesUpload:
@@ -1220,3 +1326,240 @@ class TestReleaseNotes:
         task_stat, pack_stat = dummy_pack.is_failed_to_upload(failed_packs_dict)
         assert task_stat == task_status
         assert pack_stat == status
+
+
+class TestStoreInCircleCIArtifacts:
+    """ Test the store_successful_and_failed_packs_in_ci_artifacts function
+
+    """
+    FAILED_PACK_DICT = {
+        f'{BucketUploadFlow.STATUS}': PackStatus.FAILED_UPLOADING_PACK.name,
+        f'{BucketUploadFlow.AGGREGATED}': 'False'
+    }
+    SUCCESSFUL_PACK_DICT = {
+        f'{BucketUploadFlow.STATUS}': PackStatus.SUCCESS.name,
+        f'{BucketUploadFlow.AGGREGATED}': '[1.0.0, 1.0.1] => 1.0.1'
+    }
+
+    @staticmethod
+    def get_successful_packs():
+        successful_packs = [Pack(pack_name='TestPack1', pack_path='.'), Pack(pack_name='TestPack2', pack_path='.')]
+        for pack in successful_packs:
+            pack._status = PackStatus.SUCCESS.name
+            pack._aggregated = True
+            pack._aggregation_str = '[1.0.0, 1.0.1] => 1.0.1'
+        return successful_packs
+
+    @staticmethod
+    def get_failed_packs():
+        failed_packs = [Pack(pack_name='TestPack3', pack_path='.'), Pack(pack_name='TestPack4', pack_path='.')]
+        for pack in failed_packs:
+            pack._status = PackStatus.FAILED_UPLOADING_PACK.name
+            pack._aggregated = False
+        return failed_packs
+
+    @staticmethod
+    def get_updated_private_packs():
+        return ['TestPack5', 'TestPack6']
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_both(self, tmp_path):
+        """
+           Given:
+               - Successful packs list - TestPack1 , TestPack2
+               - Failed packs list - TestPack3 , TestPack4
+               - Private updated packs list - TestPack5 , TestPack6
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content contains the successful, failed and private
+                packs TestPack1, TestPack2 & TestPack3, TestPack4, TestPack5 & TestPack6 respectively.
+       """
+        successful_packs = self.get_successful_packs()
+        failed_packs = self.get_failed_packs()
+        updated_private_packs = self.get_updated_private_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, failed_packs,
+            updated_private_packs
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.FAILED_PACKS}': {
+                    'TestPack3': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
+                    'TestPack4': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
+                },
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
+                    'TestPack1': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'TestPack2': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                },
+                f'{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}': {
+                    'TestPack5': {},
+                    'TestPack6': {}
+                },
+            }
+        }
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_successful_only(self, tmp_path):
+        """
+           Given:
+               - Successful packs list - TestPack1, TestPack2
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content contains the successful packs TestPack1 & TestPack2.
+       """
+        successful_packs = self.get_successful_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs, list(), list()
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.SUCCESSFUL_PACKS}': {
+                    'TestPack1': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT,
+                    'TestPack2': TestStoreInCircleCIArtifacts.SUCCESSFUL_PACK_DICT
+                }
+            }
+        }
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_failed_only(self, tmp_path):
+        """
+           Given:
+               - Failed packs list - TestPack3 , TestPack4
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content contains the failed packs TestPack & TestPack4.
+       """
+        failed_packs = self.get_failed_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), failed_packs, list()
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.FAILED_PACKS}': {
+                    'TestPack3': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT,
+                    'TestPack4': TestStoreInCircleCIArtifacts.FAILED_PACK_DICT
+                }
+            }
+        }
+
+    def test_store_successful_and_failed_packs_in_ci_artifacts_updated_private_packs_only(self, tmp_path):
+        """
+           Given:
+               - Updated private packs list - TestPack5 , TestPack6
+               - A path to the circle ci artifacts dir
+           When:
+               - Storing the packs results in the $CIRCLE_ARTIFACTS/packs_results.json file
+           Then:
+               - Verify that the file content contains the successful packs TestPack5 & TestPack6.
+       """
+        updated_private_packs = self.get_updated_private_packs()
+        packs_results_file_path = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+        store_successful_and_failed_packs_in_ci_artifacts(
+            packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, list(), list(), updated_private_packs
+        )
+        packs_results_file = load_json(packs_results_file_path)
+        assert packs_results_file == {
+            f'{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}': {
+                f'{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}': {
+                    'TestPack5': {},
+                    'TestPack6': {}
+                }
+            }
+        }
+
+
+class TestGetSuccessfulAndFailedPacks:
+    """ Test the get_successful_and_failed_packs function
+
+    """
+
+    def test_get_successful_and_failed_packs(self, tmp_path):
+        """
+           Given:
+               - File that doesn't exist
+               - Empty JSON file
+               - Valid JSON file
+           When:
+               - Loading the file of all failed packs from Prepare Content step in Create Instances job
+           Then:
+               - Verify that we get an empty dictionary
+               - Verify that we get an empty dictionary
+               - Verify that we get the expected dictionary
+       """
+        from Tests.Marketplace.marketplace_services import get_successful_and_failed_packs
+        file = os.path.join(tmp_path, BucketUploadFlow.PACKS_RESULTS_FILE)
+
+        # Case 1: assert file does not exist
+        successful, failed, private_packs = get_successful_and_failed_packs(file,
+                                                                            BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        assert successful == {}
+        assert failed == {}
+        assert private_packs == {}
+
+        # Case 2: assert empty file
+        with open(file, "w") as f:
+            f.write('')
+        successful, failed, private_packs = get_successful_and_failed_packs(file,
+                                                                            BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        assert successful == {}
+        assert failed == {}
+        assert private_packs == {}
+
+        # Case 3: assert valid file
+        with open(file, "w") as f:
+            f.write(json.dumps({
+                f"{BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING}": {
+                    f"{BucketUploadFlow.FAILED_PACKS}": {
+                        "TestPack2": {
+                            f"{BucketUploadFlow.STATUS}": "status2",
+                            f"{BucketUploadFlow.AGGREGATED}": False
+                        }
+                    },
+                    f"{BucketUploadFlow.SUCCESSFUL_PACKS}": {
+                        "TestPack1": {
+                            f"{BucketUploadFlow.STATUS}": "status1",
+                            f"{BucketUploadFlow.AGGREGATED}": True
+                        }
+                    },
+                    f"{BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS}": {
+                        "TestPack3": {
+                            f"{BucketUploadFlow.STATUS}": "status3",
+                            f"{BucketUploadFlow.AGGREGATED}": True
+                        }
+                    }
+                }
+            }))
+        successful, failed, private_packs = get_successful_and_failed_packs(file,
+                                                                            BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
+        assert successful == {"TestPack1": {
+            f"{BucketUploadFlow.STATUS}": "status1",
+            f"{BucketUploadFlow.AGGREGATED}": True
+        }}
+        successful_list = [*successful]
+        ans = 'TestPack1' in successful_list
+        assert ans
+
+        assert failed == {"TestPack2": {
+            f"{BucketUploadFlow.STATUS}": "status2",
+            f"{BucketUploadFlow.AGGREGATED}": False}
+        }
+        failed_list = [*failed]
+        ans = 'TestPack2' in failed_list
+        assert ans
+
+        assert private_packs == {"TestPack3": {
+            f"{BucketUploadFlow.STATUS}": "status3",
+            f"{BucketUploadFlow.AGGREGATED}": True
+        }}
+        private_successful_list = [*private_packs]
+        ans = 'TestPack3' in private_successful_list
+        assert ans

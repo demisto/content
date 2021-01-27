@@ -1,0 +1,549 @@
+category: Network Security
+commonfields:
+  id: Azure Network Security Groups
+  version: -1
+configuration:
+- defaultvalue: d4736600-e3d5-4c97-8e65-57abd2b979fe
+  display: Application ID
+  hidden: false
+  name: app_id
+  required: true
+  type: 0
+- display: Subscription ID
+  hidden: false
+  name: subscription_id
+  required: true
+  type: 0
+- display: Resource Group Name
+  hidden: false
+  name: resource_group_name
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Azure network security groups are used to filter network traffic to and
+  from Azure resources in an Azure virtual network.
+display: Azure Network Security Groups
+name: Azure Network Security Groups
+script:
+  commands:
+  - deprecated: false
+    description: List all network security groups.
+    execution: false
+    name: azure-nsg-security-groups-list
+    outputs:
+    - contextPath: AzureNSG.SecurityGroup.name
+      description: The security group's name.
+      type: String
+    - contextPath: AzureNSG.SecurityGroup.id
+      description: The security group's ID.
+      type: String
+    - contextPath: AzureNSG.SecurityGroup.etag
+      description: The security group's ETag.
+      type: String
+    - contextPath: AzureNSG.SecurityGroup.type
+      description: The security group's type.
+      type: String
+    - contextPath: AzureNSG.SecurityGroup.location
+      description: The security group's location.
+      type: String
+    - contextPath: AzureNSG.SecurityGroup.tags
+      description: The security group's tags.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of the names of the security groups.
+      isArray: true
+      name: security_group_name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of rules to display.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The index of the first rule to display. Used for pagination.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: List all rules of the specified security groups.
+    execution: false
+    name: azure-nsg-security-rules-list
+    outputs:
+    - contextPath: AzureNSG.Rule.name
+      description: The rule's name.
+      type: String
+    - contextPath: AzureNSG.Rule.id
+      description: The rule's ID.
+      type: String
+    - contextPath: AzureNSG.Rule.etag
+      description: The rule's ETag.
+      type: String
+    - contextPath: AzureNSG.Rule.type
+      description: The rule's type.
+      type: String
+    - contextPath: AzureNSG.Rule.provisioningState
+      description: The rule's provisioning state.
+      type: String
+    - contextPath: AzureNSG.Rule.protocol
+      description: The protocol. Can be "TCP", "UDP", "ICMP", or "*"".
+      type: String
+    - contextPath: AzureNSG.Rule.sourcePortRange
+      description: For a single port, the source port or range of ports. Note that
+        for multiple ports, `sourcePortRanges` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.sourcePortRanges
+      description: For multiple ports, a list of source ports. Note that for single
+        ports, `sourcePortRange` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationPortRange
+      description: For a single port, the destination port or range of ports. Note
+        that for multiple ports, `destinationPortRanges` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationPortRanges
+      description: For multiple ports, a list of destination ports. Note that for
+        single ports, `destinationPortRange` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.sourceAddressPrefix
+      description: The source address.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationAddressPrefix
+      description: The destination address.
+      type: String
+    - contextPath: AzureNSG.Rule.access
+      description: The rule's access. Can be either "Allow" or "Deny".
+      type: String
+    - contextPath: AzureNSG.Rule.priority
+      description: The rule's priority. Can be from 100 to 4096.
+      type: Number
+    - contextPath: AzureNSG.Rule.direction
+      description: The rule's direction. Can be either "Inbound" or "Outbound".
+      type: String
+  - deprecated: false
+    description: Tests the connectivity to the Azure Network Security Groups.
+    execution: false
+    name: azure-nsg-auth-test
+  - arguments:
+    - default: false
+      description: The name of the security group.
+      isArray: false
+      name: security_group_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the rule to be deleted.
+      isArray: false
+      name: security_rule_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete a security rule.
+    execution: false
+    name: azure-nsg-security-rule-delete
+  - arguments:
+    - default: false
+      description: The name of the security group.
+      isArray: false
+      name: security_group_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the rule to be created.
+      isArray: false
+      name: security_rule_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The direction of the rule. Possible values are: "Inbound" and
+        "Outbound".'
+      isArray: false
+      name: direction
+      predefined:
+      - Inbound
+      - Outbound
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to allow the traffic. Possible values are: "Allow" and
+        "Deny".'
+      isArray: false
+      name: action
+      predefined:
+      - Allow
+      - Deny
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The protocol on which to apply the rule. Possible values are:
+        "Any", "TCP", "UDP" and "ICMP".'
+      isArray: false
+      name: protocol
+      predefined:
+      - Any
+      - TCP
+      - UDP
+      - ICMP
+      required: false
+      secret: false
+    - default: false
+      description: The source IP address range from which incoming traffic will be
+        allowed or denied by this rule. Possible values are "Any", an IP address range,
+        an application security group, or a default tag.
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: The priority by which the rules will be processed. The lower the
+        number, the higher the priority. We recommend leaving gaps between rules -
+        100, 200, 300, etc. - so that it is easier to add new rules without having
+        to edit existing rules.
+      isArray: false
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      description: The source ports from which traffic will be allowed or denied by
+        this rule. Provide a single port, such as 80; a port range, such as 1024-65535;
+        or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535.
+        Use an asterisk (*) to allow traffic on any port.
+      isArray: false
+      name: source_ports
+      required: false
+      secret: false
+    - default: false
+      description: The specific destination IP address range for outgoing traffic
+        that will be allowed or denied by this rule. The destination filter can be
+        "Any", an IP address range, an application security group, or a default tag.
+      isArray: false
+      name: destination
+      required: false
+      secret: false
+    - default: false
+      description: The destination ports for which traffic will be allowed or denied
+        by this rule. Provide a single port, such as 80; a port range, such as 1024-65535;
+        or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535.
+        Use an asterisk (*) to allow traffic on any port.
+      isArray: false
+      name: destination_ports
+      required: false
+      secret: false
+    - default: false
+      description: A description to add to the rule.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a security rule.
+    execution: false
+    name: azure-nsg-security-rule-create
+    outputs:
+    - contextPath: AzureNSG.Rule.name
+      description: The rule's name.
+      type: String
+    - contextPath: AzureNSG.Rule.id
+      description: The rule's ID.
+      type: String
+    - contextPath: AzureNSG.Rule.etag
+      description: The rule's ETag.
+      type: String
+    - contextPath: AzureNSG.Rule.type
+      description: The rule's type.
+      type: String
+    - contextPath: AzureNSG.Rule.provisioningState
+      description: The rule's provisioning state.
+      type: String
+    - contextPath: AzureNSG.Rule.protocol
+      description: The protocol. Can be "TCP", "UDP", "ICMP", or "*".
+      type: String
+    - contextPath: AzureNSG.Rule.sourcePortRange
+      description: For a single port, the source port or a range of ports. Note that
+        for multiple ports, `sourcePortRanges` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.sourcePortRanges
+      description: For multiple ports, a list of these ports. Note that for single
+        ports, `sourcePortRange` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationPortRange
+      description: For a single port, the destination port or range of ports. Note
+        that for multiple ports, `destinationPortRanges` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationPortRanges
+      description: For multiple ports, a list of destination ports. Note that for
+        single ports, `destinationPortRange` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.sourceAddressPrefix
+      description: The source address.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationAddressPrefix
+      description: The destination address.
+      type: String
+    - contextPath: AzureNSG.Rule.access
+      description: The rule's access. Can be "Allow" or "Deny".
+      type: String
+    - contextPath: AzureNSG.Rule.priority
+      description: The rule's priority. Can be from 100 to 4096.
+      type: Number
+    - contextPath: AzureNSG.Rule.direction
+      description: The rule's direction. Can be "Inbound" or "Outbound".
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the security group.
+      isArray: false
+      name: security_group_name
+      required: true
+      secret: false
+    - default: false
+      description: The name of the rule to be updated.
+      isArray: false
+      name: security_rule_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The direction of the rule. Possible values are: "Inbound" and
+        "Outbound".'
+      isArray: false
+      name: direction
+      predefined:
+      - Inbound
+      - Outbound
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to allow the traffic. Possible values are "Allow" and "Deny".
+      isArray: false
+      name: action
+      predefined:
+      - Allow
+      - Deny
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The protocol on which to apply the rule. Possible values are:
+        "Any", "TCP", "UDP", and "ICMP".'
+      isArray: false
+      name: protocol
+      predefined:
+      - Any
+      - TCP
+      - UDP
+      - ICMP
+      required: false
+      secret: false
+    - default: false
+      description: The source IP address range from which incoming traffic will be
+        allowed or denied by this rule. Possible values are "Any", an IP address range,
+        an application security group, or a default tag.
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    - default: false
+      description: The priority by which the rules will be processed. The lower the
+        number, the higher the priority. We recommend leaving gaps between rules -
+        100, 200, 300, etc. - so that it is easier to add new rules without having
+        to edit existing rules.
+      isArray: false
+      name: priority
+      required: false
+      secret: false
+    - default: false
+      description: The source ports from which traffic will be allowed or denied by
+        this rule. Provide a single port, such as 80; a port range, such as 1024-65535;
+        or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535.
+        Use an asterisk (*) to allow traffic on any port.
+      isArray: false
+      name: source_ports
+      required: false
+      secret: false
+    - default: false
+      description: The specific destination IP address range for outgoing traffic
+        that will be allowed or denied by this rule. The destination filter can be
+        "Any", an IP address range, an application security group, or a default tag.
+      isArray: false
+      name: destination
+      required: false
+      secret: false
+    - default: false
+      description: The destination ports for which traffic will be allowed or denied
+        by this rule. Provide a single port, such as 80; a port range, such as 1024-65535;
+        or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535.
+        Use an asterisk (*) to allow traffic on any port.
+      isArray: false
+      name: destination_ports
+      required: false
+      secret: false
+    - default: false
+      description: A description to add to the rule.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Update a security rule. If one does not exist, it will be created.
+    execution: false
+    name: azure-nsg-security-rule-update
+    outputs:
+    - contextPath: AzureNSG.Rule.name
+      description: The rule's name.
+      type: String
+    - contextPath: AzureNSG.Rule.id
+      description: The rule's ID.
+      type: String
+    - contextPath: AzureNSG.Rule.etag
+      description: The rule's ETag.
+      type: String
+    - contextPath: AzureNSG.Rule.type
+      description: The rule's type.
+      type: String
+    - contextPath: AzureNSG.Rule.provisioningState
+      description: The rule's provisioning state.
+      type: String
+    - contextPath: AzureNSG.Rule.protocol
+      description: The protocol. Can be "TCP", "UDP", "ICMP", "*".
+      type: String
+    - contextPath: AzureNSG.Rule.sourcePortRange
+      description: For a single port, the source port or a range of ports. Note that
+        for multiple ports, `sourcePortRanges` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.sourcePortRanges
+      description: For multiple ports, a list of these ports. Note that for single
+        ports, `sourcePortRange` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationPortRange
+      description: For a single port, the destination port or range of ports. Note
+        that for multiple ports, `destinationPortRanges` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationPortRanges
+      description: For multiple ports, a list of destination ports. Note that for
+        single ports, `destinationPortRange` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.sourceAddressPrefix
+      description: The source address.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationAddressPrefix
+      description: The destination address.
+      type: String
+    - contextPath: AzureNSG.Rule.access
+      description: The rule's access. Can be "Allow" or "Deny".
+      type: String
+    - contextPath: AzureNSG.Rule.priority
+      description: The rule's priority. Can be from 100 to 4096.
+      type: Number
+    - contextPath: AzureNSG.Rule.direction
+      description: The rule's direction. Can be "Inbound" or "Outbound".
+      type: String
+  - arguments:
+    - default: false
+      description: The name of the security group.
+      isArray: false
+      name: security_group_name
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the names of the rules to get.
+      isArray: true
+      name: security_rule_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a specific rule.
+    execution: false
+    name: azure-nsg-security-rule-get
+    outputs:
+    - contextPath: AzureNSG.Rule.name
+      description: The rule's name.
+      type: String
+    - contextPath: AzureNSG.Rule.id
+      description: The rule's ID.
+      type: String
+    - contextPath: AzureNSG.Rule.etag
+      description: The rule's ETag.
+      type: String
+    - contextPath: AzureNSG.Rule.type
+      description: The rule's type.
+      type: String
+    - contextPath: AzureNSG.Rule.provisioningState
+      description: The rule's provisioning state.
+      type: String
+    - contextPath: AzureNSG.Rule.protocol
+      description: The protocol. Can be "TCP", "UDP", "ICMP", "*".
+      type: String
+    - contextPath: AzureNSG.Rule.sourcePortRange
+      description: For a single port, the source port or a range of ports. Note that
+        for multiple ports, `sourcePortRanges` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.sourcePortRanges
+      description: For multiple ports, a list of these ports. Note that for single
+        ports, `sourcePortRange` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationPortRange
+      description: For a single port, the destination port or range of ports. Note
+        that for multiple ports, `destinationPortRanges` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationPortRanges
+      description: For multiple ports, a list of destination ports. Note that for
+        single ports, `destinationPortRange` will appear instead.
+      type: String
+    - contextPath: AzureNSG.Rule.sourceAddressPrefix
+      description: The source address.
+      type: String
+    - contextPath: AzureNSG.Rule.destinationAddressPrefix
+      description: The destination address.
+      type: String
+    - contextPath: AzureNSG.Rule.access
+      description: The rule's access. Can be "Allow" or "Deny".
+      type: String
+    - contextPath: AzureNSG.Rule.priority
+      description: The rule's priority. Can be from 100 to 4096.
+      type: Number
+    - contextPath: AzureNSG.Rule.direction
+      description: The rule's direction. Can be "Inbound" or "Outbound".
+      type: String
+  - deprecated: false
+    description: Run this command to start the authorization process and follow the
+      instructions in the command results.
+    execution: false
+    name: azure-nsg-auth-start
+  - deprecated: false
+    description: Run this command to complete the authorization process. Should be
+      used after running the azure-nsg-auth-start command.
+    execution: false
+    name: azure-nsg-auth-complete
+  - deprecated: false
+    description: Run this command if for some reason you need to rerun the authentication
+      process.
+    execution: false
+    name: azure-nsg-auth-reset
+  dockerimage: demisto/crypto:1.0.0.14297
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- Azure NSG - Test
+fromversion: 5.0.0

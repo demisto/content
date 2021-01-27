@@ -73,7 +73,7 @@ def main():
         else:
             uri = f'investigation/{str(incident["id"])}/workplan/tasks'
 
-        tasks = demisto.executeCommand(
+        response = demisto.executeCommand(
             "demisto-api-post",
             {
                 "uri": uri,
@@ -83,7 +83,11 @@ def main():
                 },
                 "using": rest_api_instance_to_use
             }
-        )[0]["Contents"]["response"]
+        )
+        if is_error(response):
+            raise Exception(get_error(response))
+
+        tasks = response[0]["Contents"]["response"]
 
         if tasks:
             for task in tasks:

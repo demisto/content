@@ -291,11 +291,7 @@ def aggregate_release_notes(pack_name: str, pack_versions_dict: dict, pack_metad
 
     """
     pack_release_notes, latest_version = merge_version_blocks(pack_versions_dict)
-    pack_version_title = latest_version
-    if is_partner_supported_in_metadata(pack_metadata):
-        pack_version_title += ' (Partner Supported)'
-    elif is_community_supported_in_metadata(pack_metadata):
-        pack_version_title += ' (Community Contributed)'
+    pack_version_title = latest_version + get_pack_version_suffix(pack_metadata)
     return (f'### {pack_name} Pack v{pack_version_title}\n'
             f'{pack_release_notes}')
 
@@ -369,9 +365,8 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
     pack_rn_blocks = []
     for pack_name, pack_summary in sorted(new_packs_release_notes.items()):
         pack_metadata = packs_metadata_dict[pack_name]
-        partner = ' (Partner Supported)' if is_partner_supported_in_metadata(pack_metadata) else ''
-        pack_rn_blocks.append(f'### New: {pack_name} Pack v1.0.0{partner}\n'
-                              f'{pack_summary}')
+        pack_version_title = f"### New: {pack_name} Pack v1.0.0{get_pack_version_suffix(pack_metadata)}"
+        pack_rn_blocks.append(f'{pack_version_title}\n{pack_summary}')
 
     for pack_name, pack_versions_dict in sorted(modified_release_notes_dict.items()):
         pack_metadata = packs_metadata_dict[pack_name]
@@ -387,6 +382,23 @@ def generate_release_notes_summary(new_packs_release_notes, modified_release_not
         outfile.write(release_notes)
 
     return release_notes
+
+
+def get_pack_version_suffix(pack_metadata):
+    """ Returns pack suffix when applicable.
+
+    Args:
+        pack_metadata (dict): Metadata dict of the pack
+
+    Returns:
+        str: Suffix of the pack version.
+    """
+    suffix = ''
+    if is_partner_supported_in_metadata(pack_metadata):
+        suffix = ' (Partner Supported)'
+    elif is_community_supported_in_metadata(pack_metadata):
+        suffix = ' (Community Contributed)'
+    return suffix
 
 
 def get_release_notes_draft(github_token, asset_id):
@@ -456,7 +468,7 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
 
 
 def main():
-    install_logging('Build Content Descriptor.log')
+    install_logging('Build_Content_Descriptor.log')
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('version', help='Release version')
     arg_parser.add_argument('git_sha1', help='commit sha1 to compare changes with')

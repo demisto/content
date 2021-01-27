@@ -1,0 +1,45 @@
+{
+ "id": "indicator_chronicleassetsummary",
+ "version": -1,
+ "modified": "2020-09-22T17:04:57.566588552+05:30",
+ "name": "ChronicleAsset Summary",
+ "ownerOnly": false,
+ "description": "Summary of the event types of the events fetched for all the possible asset identifiers.",
+ "cliName": "chronicleassetsummary",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 2,
+ "hidden": false,
+ "associatedTypes": [
+  "ChronicleAsset"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "eventtype",
+   "displayName": "Event Type",
+   "type": "shortText",
+   "required": true,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.5.0"
+}

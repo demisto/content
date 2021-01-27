@@ -46,6 +46,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
     scriptarguments:
       file-name:
         simple: ${inputs.File Name}
@@ -93,12 +96,41 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "6":
+    id: "6"
+    taskid: 928228d5-fe19-479a-8245-fa911efee32f
+    type: regular
+    task:
+      id: 928228d5-fe19-479a-8245-fa911efee32f
+      version: -1
+      name: ConcentricAI - get file sharing details
+      description: Get's file sharing details
+      script: '|||concentricai-get-file-sharing-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      cid:
+        simple: ${ConcentricAI.FileInfo.cid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 305,
+        "height": 485,
         "width": 880,
         "x": 220,
         "y": 170

@@ -22,9 +22,11 @@ Enable sftp on your server Check Point guide to walk you through: https://suppor
 | --- | --- | --- |
 | server | Server URL \(e.g. example.net or 8.8.8.8\) | True |
 | port | Server Port \(e.g. 4434\) | True |
+| domain | Domain (used in Multi Domain Server) | False |
 | username | username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -2233,6 +2235,7 @@ Login to CheckPoint and get the session id
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | session_timeout | Session expiration timeout in seconds. Default 600 seconds. Session timeout range is between 600 to 3600 seconds. | Optional | 
+| domain | Name of domain to log in to, for use with MDS. | Optional | 
 
 
 #### Context Output
@@ -2243,7 +2246,10 @@ Login to CheckPoint and get the session id
 
 
 #### Command Example
-```!checkpoint-login-and-get-session-id```
+```
+!checkpoint-login-and-get-session-id
+!checkpoint-login-and-get-session-id domain='Corp'
+```
 
 #### Context Example
 ```
@@ -2754,14 +2760,14 @@ Get checkpoint-packages details.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CheckPoint.Packages.name | String | The name of the package. |
-| CheckPoint.Packages.target-name | String | The name of the targe. |
-| CheckPoint.Packages.target-uid | String | The UID of the target. |
-| CheckPoint.Packages.revision.domain.domain-type | String | The type of the domain. |
-| CheckPoint.Packages.revision.domain.name | String | The name of the domain. |
-| CheckPoint.Packages.revision.domain.uid | String | The UID of the domain. |
-| CheckPoint.Packages.revision.type | String | The type of the revision. |
-| CheckPoint.Packages.revision.uid | String | The UID of the revision. |
+| CheckPoint.Package.name | String | The name of the package. |
+| CheckPoint.Package.target-name | String | The name of the targe. |
+| CheckPoint.Package.target-uid | String | The UID of the target. |
+| CheckPoint.Package.revision.domain.domain-type | String | The type of the domain. |
+| CheckPoint.Package.revision.domain.name | String | The name of the domain. |
+| CheckPoint.Package.revision.domain.uid | String | The UID of the domain. |
+| CheckPoint.Package.revision.type | String | The type of the revision. |
+| CheckPoint.Package.revision.uid | String | The UID of the revision. |
 
 
 #### Command Example
@@ -2772,7 +2778,7 @@ Get checkpoint-packages details.
 ```
 {
     "CheckPoint": {
-        "Packages": {
+        "Package": {
             "name": "Standard",
             "target-name": "Host1",
             "target-uid": "41e821a0-3720-11e3-aa6e-0800200c9fde"

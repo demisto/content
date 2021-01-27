@@ -2242,7 +2242,7 @@ script:
       description: A name that appears in the "From:" header for email sent using
         this alias.
       type: String
-  dockerimage: demisto/google-api:1.0.0.13775
+  dockerimage: demisto/google-api:1.0.0.14589
   isfetch: true
   longRunning: false
   longRunningPort: false

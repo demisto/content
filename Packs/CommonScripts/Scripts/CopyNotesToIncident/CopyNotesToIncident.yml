@@ -1,0 +1,25 @@
+args:
+- description: Incident ID to copy notes to.
+  name: target_incident
+  required: true
+- description: Replicate only notes with these tags (array or comma separated).
+  isArray: true
+  name: tags
+comment: Copy all entries marked as notes from current incident to another incident.
+commonfields:
+  id: CopyNotesToIncident
+  version: -1
+dockerimage: demisto/python3:3.8.6.13358
+enabled: true
+name: CopyNotesToIncident
+runas: DBotWeakRole
+outputs: []
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

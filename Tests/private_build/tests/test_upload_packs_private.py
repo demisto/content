@@ -54,7 +54,8 @@ class TestPrivatePacks:
         assert private_packs == [{'id': 'ImpossibleTraveler',
                                   'price': 100,
                                   'vendorId': None,
-                                  'vendorName': None
+                                  'vendorName': None,
+                                  'contentCommitHash': "",
                                   }]
 
     def test_get_private_packs_empty(self, mocker):

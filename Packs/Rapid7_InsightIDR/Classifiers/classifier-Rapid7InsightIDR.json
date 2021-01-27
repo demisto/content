@@ -1,0 +1,11 @@
+{
+	"id": "Rapid7 InsightIDR",
+	"name": "Rapid7 InsightIDR - Classifier",
+	"type": "classification",
+	"description": "Classifies Rapid7 InsightIDR incidents",
+	"defaultIncidentType": "Rapid7 InsightIDR Alert",
+	"keyTypeMap": {},
+	"transformer": {},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
