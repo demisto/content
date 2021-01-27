@@ -194,7 +194,7 @@ class RemotingClient
     }
 
 
-    [string]InvokeCommandInSession([string]$remote_command)
+    [System.Array]InvokeCommandInSession([string]$remote_command)
     {
         if (!$this.session)
         {
@@ -486,7 +486,17 @@ function InvokeCommandCommand([RemotingClient]$client, [string]$command)
     $client.CloseSession()
     $context_result = @{
         Command = $command
-        Result = $raw_result
+        Result = @{}
+    }
+    # create result dictionary with the computer as a key
+    For ($i=0; $i -lt $raw_result.Length; $i++) {
+        $computer_name = [string]($raw_result[$i] | Select-Object -ExpandProperty PSComputerName)
+        if ([bool]($context_result["Result"].Keys -match $computer_name)) {
+            $context_result["Result"][$computer_name] += $raw_result[$i]
+        }
+        else {
+            $context_result["Result"][$computer_name] = @($raw_result[$i])
+        }
     }
     $entry_context = @{
         $script:INTEGRATION_ENTRY_CONTEX = @{ Command = $context_result }
