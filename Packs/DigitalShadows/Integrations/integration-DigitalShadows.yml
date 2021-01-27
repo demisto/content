@@ -764,8 +764,8 @@ script:
             parsed_res.content.forEach(function(inc){
                 inc['origin'] = name;
                 incidents.push({
-                name: name,
-                rawJSON: JSON.stringify(inc)
+                    name: name,
+                    rawJSON: JSON.stringify(inc)
                 });
             });
         }
