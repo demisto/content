@@ -215,10 +215,11 @@ def format_results(uuid):
     if 'urls' in scan_lists:
         url_cont['Data'] = demisto.args().get('url')
         cont['URL'] = demisto.args().get('url')
+        if isinstance(scan_lists.get('urls'), list):
+            feed_related_indicators += scan_lists['urls']
     # effective url of the submitted url
     human_readable['Effective URL'] = scan_page.get('url')
     cont['EffectiveURL'] = scan_page.get('url')
-    feed_related_indicators.append(scan_page.get('url'))
     if 'uuid' in scan_tasks:
         ec['URLScan']['UUID'] = scan_tasks['uuid']
     if 'ips' in scan_lists:
@@ -243,8 +244,8 @@ def format_results(uuid):
             ip_asn_MD.append(ip_info)
             i = i + 1
         cont['RelatedIPs'] = ip_ec_info
-        url_cont['RelatedASNs'] = asn_list
-        feed_related_indicators += ip_list
+        if isinstance(scan_lists.get('ips'), list):
+            feed_related_indicators += scan_lists.get('ips')
         IP_HEADERS = ['Count', 'IP', 'ASN']
     # add redirected URLs
     if 'requests' in scan_data:
@@ -255,25 +256,36 @@ def format_results(uuid):
                     url = o['request']['redirectResponse']['url']
                     redirected_urls.append(url)
         cont['RedirectedURLs'] = redirected_urls
-        feed_related_indicators += redirected_urls
     if 'countries' in scan_lists:
         countries = scan_lists['countries']
         human_readable['Associated Countries'] = countries
         cont['Country'] = countries
-        url_cont['Geo'] = {'Country': ', '.join(countries)}
     if None not in scan_lists.get('hashes', []):
         hashes = scan_lists.get('hashes', [])
         cont['RelatedHash'] = hashes
         human_readable['Related Hashes'] = hashes
         feed_related_indicators += hashes
     if 'domains' in scan_lists:
-        subdomains = scan_lists['domains']
+        subdomains = scan_lists.get('domains', [])
         cont['Subdomains'] = subdomains
         human_readable['Subdomains'] = subdomains
         feed_related_indicators += subdomains
+    if 'linkDomains' in scan_lists:
+        link_domains = scan_lists.get('domains', [])
+        feed_related_indicators += link_domains
     if 'asn' in scan_page:
         cont['ASN'] = scan_page['asn']
-        url_cont['ASN'] = scan_page['asn']
+        url_cont['ASN'] = scan_page.get('asn')
+    if 'asnname' in scan_page:
+        url_cont['ASOwner'] = scan_page['asnname']
+    if 'country' in scan_page:
+        url_cont['Geo']['Country'] = scan_page['country']
+    if 'domain' in scan_page:
+        feed_related_indicators.append(scan_page['domain'])
+    if 'ip' in scan_page:
+        feed_related_indicators.append(scan_page['ip'])
+    if 'url' in scan_page:
+        feed_related_indicators.append(scan_page['url'])
     if 'overall' in scan_verdicts:
         human_readable['Malicious URLs Found'] = scan_stats['malicious']
         if scan_verdicts['overall'].get('malicious'):
@@ -294,6 +306,9 @@ def format_results(uuid):
             dbot_score['Score'] = 0
             dbot_score['Type'] = 'url'
             human_readable['Malicious'] = 'Benign'
+        if 'urlscan' in scan_verdicts:
+            if 'tags' in scan_verdicts['urlscan']:
+                url_cont['Tags'] = scan_verdicts['urlscan']['tags']
     processors_data = scan_meta['processors']
     if 'download' in processors_data and len(scan_meta['processors']['download']['data']) > 0:
         meta_data = processors_data['download']['data'][0]
@@ -346,6 +361,8 @@ def format_results(uuid):
             'HumanReadable': tableToMarkdown('Certificates', cert_md, CERT_HEADERS)
         })
     if 'ips' in scan_lists:
+        if isinstance(scan_lists.get('ips'), list):
+            url_cont += scan_lists.get('ips')
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
