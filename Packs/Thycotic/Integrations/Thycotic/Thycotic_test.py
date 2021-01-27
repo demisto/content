@@ -1,13 +1,13 @@
 import pytest
 
-from .Thycotic import Client, \
+from Thycotic import Client, \
     secret_password_get_command, secret_username_get_command, \
     secret_get_command, secret_password_update_command, secret_checkout_command, secret_checkin_command, \
     secret_delete_command, folder_create_command, folder_delete_command, folder_update_command
-from .test_data.context import GET_PASSWORD_BY_ID_CONTEXT, GET_USERNAME_BY_ID_CONTENT, \
+from test_data.context import GET_PASSWORD_BY_ID_CONTEXT, GET_USERNAME_BY_ID_CONTENT, \
     SECRET_GET_CONTENT, SECRET_PASSWORD_UPDATE_CONTEXT, SECRET_CHECKOUT_CONTEXT, SECRET_CHECKIN_CONTEXT, \
     SECRET_DELETE_CONTEXT, FOLDER_CREATE_CONTEXT, FOLDER_DELETE_CONTEXT, FOLDER_UPDATE_CONTEXT
-from .test_data.http_responses import GET_PASSWORD_BY_ID_RAW_RESPONSE, GET_USERNAME_BY_ID_RAW_RESPONSE, \
+from test_data.http_responses import GET_PASSWORD_BY_ID_RAW_RESPONSE, GET_USERNAME_BY_ID_RAW_RESPONSE, \
     SECRET_GET_RAW_RESPONSE, SECRET_PASSWORD_UPDATE_RAW_RESPONSE, SECRET_CHECKOUT_RAW_RESPONSE, \
     SECRET_CHECKIN_RAW_RESPONSE, SECRET_DELETE_RAW_RESPONSE, FOLDER_CREATE_RAW_RESPONSE, FOLDER_DELETE_RAW_RESPONSE, \
     FOLDER_UPDATE_RAW_RESPONSE
