@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: urlscan.io
+  id: urlscan.io copy
   version: -1
 configuration:
 - display: API Key (only required for scanning URLs)
@@ -27,8 +27,8 @@ configuration:
   required: false
   type: 8
 description: Urlscan.io reputation
-display: urlscan.io
-name: urlscan.io
+display: urlscan.io copy
+name: urlscan.io copy
 script:
   commands:
   - arguments:

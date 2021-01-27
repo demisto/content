@@ -362,7 +362,7 @@ def format_results(uuid):
         })
     if 'ips' in scan_lists:
         if isinstance(scan_lists.get('ips'), list):
-            url_cont += scan_lists.get('ips')
+            feed_related_indicators += scan_lists.get('ips')
         demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['markdown'],
