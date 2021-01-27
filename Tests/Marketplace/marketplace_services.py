@@ -1471,8 +1471,7 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df,
-                        packs_latest_release_notes):
+                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df, pack_was_modified):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1512,7 +1511,7 @@ class Pack(object):
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
             self._create_date = self._get_pack_creation_date(index_folder_path)
-            self._update_date = self._get_pack_update_date(index_folder_path, packs_latest_release_notes)
+            self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
             formatted_metadata = self._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
@@ -1570,18 +1569,22 @@ class Pack(object):
                                                                      datetime.utcnow().strftime(Metadata.DATE_FORMAT))
         return init_changelog_released_date
 
-    def _get_pack_update_date(self, index_folder_path, packs_latest_release_notes):
+    def _get_pack_update_date(self, index_folder_path, pack_was_modified):
         """ Gets the pack update date.
         Args:
             index_folder_path (str): downloaded index folder directory path.
-            packs_latest_release_notes (str): the latest release notes version.
+            pack_was_modified (bool): whether the pack was modified or not.
         Returns:
             datetime: Pack update date.
         """
         changelog = self._get_changelog(index_folder_path)
-        latest_changelog_version = changelog.get(packs_latest_release_notes, {})
-        latest_changelog_released_date = latest_changelog_version.get('released',
-                                                                      datetime.utcnow().strftime(Metadata.DATE_FORMAT))
+        latest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+
+        if changelog.keys() and not pack_was_modified:
+            packs_latest_release_notes = (list(reversed(sorted(changelog.keys()))))[0]
+            latest_changelog_version = changelog.get(packs_latest_release_notes, {})
+            latest_changelog_released_date = latest_changelog_version.get('released')
+
         return latest_changelog_released_date
 
     def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
