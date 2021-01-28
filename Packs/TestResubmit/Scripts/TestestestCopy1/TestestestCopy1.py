@@ -28,6 +28,7 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
 
     return {"dummy": dummy}
 # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+# testtttttttt
 
 
 ''' COMMAND FUNCTION '''

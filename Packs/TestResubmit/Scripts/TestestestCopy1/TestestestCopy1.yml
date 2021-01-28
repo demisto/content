@@ -1,18 +1,15 @@
 args:
-- name: field_old
+- name: field1
   required: true
-- defaultValue: "1"
-  name: field
-  required: true
-- name: another_field_updated
+- name: field333
   required: true
 comment: test description
 commonfields:
-  id: testestest
+  id: testestest_1
   version: -1
 dockerimage: demisto/python3:3.9.1.15759
 enabled: true
-name: testestest
+name: testestest_1
 runas: DBotWeakRole
 runonce: false
 script: ''
