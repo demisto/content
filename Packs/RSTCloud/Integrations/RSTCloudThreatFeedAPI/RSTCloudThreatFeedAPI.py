@@ -250,7 +250,8 @@ def parse_indicator_response(res, indicator_type):
     Returns:
       (Dict[str, str]): a result to return into XSOAR's context.
     """
-    indicator = {'IndicatorValue': res.get('ioc_value', ''), 'IndicatorType': indicator_type}
+    name = {'IP': 'Address', 'Domain': 'Name', 'URL': 'Data'}
+    indicator = {name[indicator_type]: res.get('ioc_value', ''), 'Type': indicator_type}
     if 'error' not in res:
         first_seen = str(int(res.get('fseen', '')) * 1000)
         last_seen = str(int(res.get('lseen', '')) * 1000)
@@ -262,7 +263,8 @@ def parse_indicator_response(res, indicator_type):
         if 'tags' in res:
             indicator['Tags'] = res.get('tags').get('str', '')
         if 'fp' in res:
-            indicator['FalsePositive'] = res.get('fp', '')
+            indicator['FalsePositive'] = res.get('fp').get('alarm', '')
+            indicator['FalsePositiveDesc'] = res.get('fp').get('descr', '')
         if 'id' in res:
             indicator['UUID'] = res.get('id', '')
             indicator['RSTReference'] = "https://rstcloud.net/uuid?id=" + res.get('id', '')
@@ -308,7 +310,7 @@ def test_module(client: Client) -> str:
     for param in params:
         result += check_arg_type(param, demisto.params().get(param))
     if result == '':
-        if client.get_indicator('1.1.1.1'):
+        if 'ioc_value' in client.get_indicator('1.1.1.1'):
             result += 'ok'
         else:
             result += 'Connection failed.'
@@ -630,7 +632,7 @@ def main():
                 output = CommandResults(
                     readable_output=markdown[i],
                     outputs_prefix='RST.IP',
-                    outputs_key_field='IndicatorValue',
+                    outputs_key_field='Address',
                     outputs=raw_results[i],
                     indicator=indicators[i]
                 )
@@ -641,7 +643,7 @@ def main():
                 output = CommandResults(
                     readable_output=markdown[i],
                     outputs_prefix='RST.Domain',
-                    outputs_key_field='IndicatorValue',
+                    outputs_key_field='Name',
                     outputs=raw_results[i],
                     indicator=indicators[i]
                 )
@@ -652,7 +654,7 @@ def main():
                 output = CommandResults(
                     readable_output=markdown[i],
                     outputs_prefix='RST.URL',
-                    outputs_key_field='IndicatorValue',
+                    outputs_key_field='Data',
                     outputs=raw_results[i],
                     indicator=indicators[i]
                 )

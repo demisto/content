@@ -84,7 +84,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Return IP information and reputation
+    description: Returns IP information and reputation.
     execution: false
     name: ip
     outputs:
@@ -125,15 +125,6 @@ script:
       description: A description explaining why the IP address was reported as malicious.
       type: String
     - contextPath: IP.Malicious.Score
-      description: The score calculated for the indicator by the vendor
-      type: String
-    - contextPath: IP.Suspicious.Vendor
-      description: The vendor reporting the IP address as suspicious.
-      type: String
-    - contextPath: IP.Suspicious.Description
-      description: A description explaining why the IP address was reported as suspicious
-      type: String
-    - contextPath: IP.Suspicious.Score
       description: The score calculated for the indicator by the vendor
       type: String
     - contextPath: RST.IP.IndicatorValue
@@ -255,15 +246,6 @@ script:
     - contextPath: Domain.Malicious.Score
       description: The score calculated for the indicator by the vendor
       type: String
-    - contextPath: Domain.Suspicious.Vendor
-      description: The vendor reporting the domain as suspicious.
-      type: String
-    - contextPath: Domain.Suspicious.Description
-      description: A description explaining why the domain was reported as suspicious.
-      type: String
-    - contextPath: Domain.Suspicious.Score
-      description: The score calculated for the indicator by the vendor
-      type: String
     - contextPath: RST.Domain.Name
       description: The domain name.
       type: String
@@ -369,15 +351,6 @@ script:
     - contextPath: URL.Malicious.Score
       description: The score calculated for the URL indicator by the vendor
       type: String
-    - contextPath: URL.Suspicious.Vendor
-      description: The vendor reporting the URL as suspicious.
-      type: String
-    - contextPath: URL.Suspicious.Description
-      description: A description explaining why the URL was reported as suspicious.
-      type: String
-    - contextPath: URL.Suspicious.Score
-      description: The score calculated for the URL indicator by the vendor
-      type: String
     - contextPath: RST.URL.Data
       description: The URL
       type: String
@@ -425,7 +398,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Submits an indicator to RST Threat Feed
+    description: Submits an indicator to RST Threat Feed.
     execution: false
     name: rst-submit-new
   - arguments:
@@ -442,7 +415,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Submits a potential False Positive to RST Threat Feed
+    description: Submits a potential False Positive to RST Threat Feed.
     execution: false
     name: rst-submit-fp
   dockerimage: demisto/python3:3.8.6.13358
