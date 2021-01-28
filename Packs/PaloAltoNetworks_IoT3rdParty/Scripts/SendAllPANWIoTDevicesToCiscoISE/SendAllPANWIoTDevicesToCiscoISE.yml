@@ -1,14 +1,13 @@
 args:
-- description: Active Cisco ISE Instance.
+- description: Name of the active Cisco ISE integration instance.
   name: active_ise_instance
   required: true
 - default: true
   defaultValue: PANW IoT 3rd Party Integration Instance
-  description: Name of the configured PANW Iot 3rd Party instance.
+  description: Name of the configured PANW IoT 3rd Party integration instance.
   name: panw_iot_3rd_party_instance
   required: true
-comment: Gets all available devices from the IoT cloud and updates or creates them
-  if necessary. new endpoint with custom attributes on Cisco ISE.
+comment: Gets all available devices from the IoT cloud and updates or creates them on Cisco ISE using the custom attributes.
 commonfields:
   id: SendAllPANWIoTDevicesToCiscoISE
   version: -1
