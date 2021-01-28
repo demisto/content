@@ -262,6 +262,7 @@ def parse_indicator_response(res, indicator_type):
     if 'error' not in res:
         first_seen = str(int(res.get('fseen', '')) * 1000)
         last_seen = str(int(res.get('lseen', '')) * 1000)
+        indicator['Score'] = res.get('score').get('total')
 
         if first_seen:
             indicator['FirstSeen'] = timestamp_to_datestring(first_seen)
@@ -269,6 +270,8 @@ def parse_indicator_response(res, indicator_type):
             indicator['LastSeen'] = timestamp_to_datestring(last_seen)
         if 'tags' in res:
             indicator['Tags'] = res.get('tags').get('str', '')
+        if 'threat' in res:
+            indicator['Threat'] = res.get('threat', '')
         if 'fp' in res:
             indicator['FalsePositive'] = res.get('fp').get('alarm', '')
             indicator['FalsePositiveDesc'] = res.get('fp').get('descr', '')
@@ -284,6 +287,7 @@ def parse_indicator_response(res, indicator_type):
             indicator['WhoisAge'] = res.get('whois', {}).get('age', '')
             indicator['Related'] = res.get('resolved').get('ip', '')
         if indicator_type == 'IP':
+            indicator['ASN'] = res.get('asn', {}).get('num', '')
             indicator['CloudHosting'] = res.get('asn', {}).get('cloud', '')
             indicator['NumberOfDomainInASN'] = res.get('asn', {}).get('domains', '')
             indicator['Organization'] = res.get('asn', {}).get('org', '')
