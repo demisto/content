@@ -112,12 +112,6 @@ class NetscoutClient(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def flatten_dict(obj: dict, key: str):
-    if value := obj.get(key):
-        obj = obj.update(value)
-        del obj[key]
-
-
 ''' COMMAND FUNCTIONS '''
 
 
