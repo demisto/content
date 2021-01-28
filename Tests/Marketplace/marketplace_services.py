@@ -22,7 +22,6 @@ from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from typing import Tuple, Any, Union
-import collections
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
@@ -1157,7 +1156,6 @@ class Pack(object):
         """
         task_status = False
         not_updated_build = False
-        packs_latest_release_notes_version = Pack.PACK_INITIAL_VERSION
 
         try:
             # load changelog from downloaded index
@@ -1170,7 +1168,6 @@ class Pack(object):
                     release_notes_lines, latest_release_notes = self.get_release_notes_lines(
                         release_notes_dir, changelog_latest_rn_version
                     )
-                    packs_latest_release_notes_version = latest_release_notes
                     self.assert_upload_bucket_version_matches_release_notes_version(changelog, latest_release_notes)
 
                     if self._current_version != latest_release_notes:
