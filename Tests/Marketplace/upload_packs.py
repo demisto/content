@@ -893,8 +893,7 @@ def main():
             pack.cleanup()
             continue
 
-        task_status, not_updated_build, packs_latest_release_notes = \
-            pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()

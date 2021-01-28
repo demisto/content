@@ -1560,10 +1560,7 @@ class Pack(object):
 
         if not initial_changelog_version:
             # if the changelog exists but the first version isn't PACK_INITIAL_VERSION
-            sorted_changelog = collections.OrderedDict(sorted(changelog.items()))
-            for version, _ in sorted_changelog.items():
-                initial_changelog_version = changelog.get(version, {})
-                break
+            initial_changelog_version = min(LooseVersion(ver) for ver in changelog)
 
         init_changelog_released_date = initial_changelog_version.get('released',
                                                                      datetime.utcnow().strftime(Metadata.DATE_FORMAT))
@@ -1580,8 +1577,8 @@ class Pack(object):
         changelog = self._get_changelog(index_folder_path)
         latest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
 
-        if changelog.keys() and not pack_was_modified:
-            packs_latest_release_notes = (list(reversed(sorted(changelog.keys()))))[0]
+        if changelog and not pack_was_modified:
+            packs_latest_release_notes = max(LooseVersion(ver) for ver in changelog)
             latest_changelog_version = changelog.get(packs_latest_release_notes, {})
             latest_changelog_released_date = latest_changelog_version.get('released')
 
