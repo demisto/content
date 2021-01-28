@@ -557,7 +557,7 @@ def get_closing_fields_from_incident(row):
         if isinstance(close_notes, str):
             close_notes = close_notes.strip().lower()
             close_notes_tokenized = word_tokenize(close_notes)
-            close_notes_tokenized = [token if token in EMBEDDING_DICT_FASTTEXT else hash_value(token)
+            close_notes_tokenized = [token if token in EMBEDDING_DICT_FASTTEXT else hash_value(token)  # type: ignore
                                      for token in close_notes_tokenized]  # type: ignore
             close_notes = ' '.join(close_notes_tokenized)
 
