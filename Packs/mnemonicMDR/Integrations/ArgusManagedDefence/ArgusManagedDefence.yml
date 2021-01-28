@@ -6809,6 +6809,12 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
+  - name: argus-print-case-comments
+    arguments:
+    - name: case_id
+      required: true
+      description: Case ID
+    description: Print case comments as notes
   dockerimage: demisto/argus-toolbelt:1.0.0.15350
   feed: false
   isfetch: true

@@ -811,7 +811,7 @@ def print_case_comments_command(args: Dict[str, Any]) -> List[Dict]:
             {
                 "ContentsFormat": formats["html"],
                 "Type": entryTypes["note"],
-                "Contents": pretty_print_comments(comment),
+                "Contents": pretty_print_comment_html(comment),
                 "Note": True,
             }
         )
@@ -1345,7 +1345,7 @@ def main() -> None:
         elif demisto.command() == "argus-fetch-observations-for-ip":
             return_results(fetch_observations_for_i_p_command(demisto.args()))
 
-        elif demisto.command() == "print_case_comments":
+        elif demisto.command() == "argus-print-case-comments":
             return_results(print_case_comments_command(demisto.args()))
 
     # Log exceptions and return errors
