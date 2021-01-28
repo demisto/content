@@ -64,7 +64,7 @@ class Client(BaseClient):
                     'correct by looking in the description of filter argument in the command')
 
             if 'Unrecognized field' in str(e):
-                raise DemistoException(f'Filter criteria given is invalid.')
+                raise DemistoException('Filter criteria given is invalid.')
 
             if 'General error parsing FIQL expression' in str(e):
                 raise DemistoException(
@@ -99,6 +99,8 @@ class Client(BaseClient):
                                                 impact_types=impact_types, entity_types=None, page=None, limit=None)
 
         alerts = response.get('entities')
+
+        add_iso_entries_to_dict(alerts)
 
         if not alerts:
             raise DemistoException('Unexpected returned results from Nutanix service.')
@@ -374,12 +376,14 @@ def get_human_readable_headers(outputs: List[Dict]) -> List[Any]:
 
     def contains_dict(entry: Any) -> bool:
         if isinstance(entry, dict):
-            return False
+            return True
         elif isinstance(entry, list):
-            return all(contains_dict(item) for item in entry)
-        return True
+            return any(contains_dict(item) for item in entry)
+        return False
 
     human_readable_keys: List[Set] = [{k for k, v in output.items() if not contains_dict(v)} for output in outputs]
+    if not human_readable_keys:
+        return []
     return list(set.intersection(*human_readable_keys))
 
 
@@ -446,6 +450,7 @@ def fetch_incidents_command(client: Client, params: Dict):
         Fetches incidents to Demisto.
     """
     last_run = demisto.getLastRun()
+    last_run = {'last_fetch_epoch_time': 1610360118147914}
     incidents, next_run = client.fetch_incidents(params, last_run)
     demisto.setLastRun(next_run)
     demisto.incidents(incidents)
@@ -570,12 +575,10 @@ def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict
 
     raw_response = client.nutanix_hypervisor_vm_power_status_change(vm_uuid, host_uuid, transition)
 
-    outputs = [remove_empty_elements(copy.deepcopy(output)) for output in raw_response]
-
     return CommandResults(
         outputs_prefix='NutanixHypervisor.VMPowerStatus',
         outputs_key_field='task_uuid',
-        outputs=outputs,
+        outputs=raw_response,
         raw_response=raw_response
     )
 
@@ -734,12 +737,10 @@ def nutanix_alert_acknowledge_command(client: Client, args: Dict):
 
     raw_response = client.post_nutanix_alert_acknowledge(alert_id)
 
-    outputs = [remove_empty_elements(copy.deepcopy(output)) for output in raw_response]
-
     return CommandResults(
         outputs_prefix='NutanixHypervisor.AcknowledgedAlerts',
         outputs_key_field='id',
-        outputs=outputs,
+        outputs=raw_response,
         raw_response=raw_response
     )
 
@@ -764,12 +765,10 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
 
     raw_response = client.post_nutanix_alert_resolve(alert_id)
 
-    outputs = [remove_empty_elements(copy.deepcopy(output)) for output in raw_response]
-
     return CommandResults(
         outputs_prefix='NutanixHypervisor.ResolvedAlerts',
         outputs_key_field='id',
-        outputs=outputs,
+        outputs=raw_response,
         raw_response=raw_response
     )
 
@@ -814,14 +813,12 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
                                                                     entity_types,
                                                                     limit)
 
-    outputs = [
-        {
-            'num_successful_updates': output.get('num_successful_updates', 0),
-            'num_failed_updates': output.get('num_failed_updates', 0),
-        } for output in raw_response]
+    outputs = {'num_successful_updates': raw_response.get('num_successful_updates', 0),
+               'num_failed_updates': raw_response.get('num_failed_updates', 0)
+               }
 
     return CommandResults(
-        outputs_prefix='NutanixHypervisor.Alert',
+        outputs_prefix='NutanixHypervisor.AcknowledgedFilterAlerts',
         outputs=outputs,
         raw_response=raw_response
     )
@@ -866,7 +863,9 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
     raw_response = client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity, impact_types,
                                                                 entity_types, limit)
 
-    outputs = [remove_empty_elements(copy.deepcopy(output)) for output in raw_response]
+    outputs = {'num_successful_updates': raw_response.get('num_successful_updates', 0),
+               'num_failed_updates': raw_response.get('num_failed_updates', 0)
+               }
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.ResolvedFilterAlerts',

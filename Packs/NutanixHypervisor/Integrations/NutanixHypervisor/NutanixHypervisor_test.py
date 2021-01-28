@@ -4,6 +4,7 @@ import io
 import json
 from typing import *
 
+from datetime import datetime
 import pytest
 
 from CommonServerPython import DemistoException, CommandResults
@@ -81,7 +82,7 @@ def test_get_optional_boolean_arg_invalid_argument(args, argument_name, expected
 
 
 @pytest.mark.parametrize('arg, expected',
-                         [('2020-11-22T16:31:14', 1606062674000),
+                         [('2020-11-22T16:31:14', 1606062674000000),
                           (None, None),
                           ])
 def test_get_optional_time_parameter_valid_time_argument(arg, expected):
@@ -222,14 +223,7 @@ def test_commands_post_methods(requests_mock, command_function: Callable[[Client
     assert returned_command_results.outputs == expected_command_results.outputs
 
 
-@pytest.mark.parametrize('params, last_run, expected_incidents_raw_json',
-                         [({}, {'last_fetch_epoch_time': 1610360118147914},
-                           command_tests_data['nutanix-fetch-incidents']['expected']['outputs']),
-
-                          ({}, {'last_fetch_epoch_time': 1610560118147914},
-                           [command_tests_data['nutanix-fetch-incidents']['expected']['outputs'][0]])
-                          ])
-def test_fetch_incidents(requests_mock, params, last_run, expected_incidents_raw_json):
+def test_fetch_incidents(requests_mock):
     """
     Given:
      - Demisto parameters.
@@ -237,29 +231,25 @@ def test_fetch_incidents(requests_mock, params, last_run, expected_incidents_raw
      - Last run of fetch-incidents
 
     When:
-     - Case a: Fetching incidents, not first run. last run fetch time is before both alerts.
-
-     - Case b: Fetching incidents, not first run. last run fetch time is after one alert and before the second alert.
+     - Fetching incidents, not first run. last run fetch time is before both alerts.
 
     Then:
-     - Case a: Ensure that both alerts are returned as incidents.
-               Ensure that last run is set with latest alert time stamp.
-
-     - Case b: Ensure that only latest alert is returned as incident.
-               Ensure that last run is set with latest alert time stamp.
+     Ensure that alerts are returned as incidents.
+     Ensure that last run is set with latest alert time stamp.
     """
+    last_run = {'last_fetch_epoch_time': 1610360118147914}
     requests_mock.get(
-        f'{MOCKED_BASE_URL}/alerts',
+        f'{MOCKED_BASE_URL}/alerts?start_time_in_usecs=1610360118147914',
         json=command_tests_data['nutanix-fetch-incidents']['response']
     )
-
+    current_time = int(datetime.utcnow().timestamp() * 1000000)
     incidents, next_run = client.fetch_incidents(
-        params=params,
+        params={},
         last_run=last_run
     )
     incidents_raw_json = [json.loads(incident['rawJSON']) for incident in incidents]
-    assert next_run.get('last_fetch_epoch_time') == 1610718924821136
-    assert incidents_raw_json == expected_incidents_raw_json
+    assert next_run.get('last_fetch_epoch_time') >= current_time
+    assert incidents_raw_json == command_tests_data['nutanix-fetch-incidents']['expected']['outputs']
 
 
 @pytest.mark.parametrize('true_value, false_value, alert_status_filters, expected',
@@ -319,7 +309,7 @@ def test_get_alert_status_filter_invalid_case(true_value, false_value, alert_sta
 @pytest.mark.parametrize('epoch_time, expected',
                          [(0, None),
                           (None, None),
-                          (1600000000000000, '2020-09-13T12:26:40.000000Z')
+                          (1600000000000000, '2020-09-13T12:26:40+00:00')
                           ])
 def test_convert_epoch_time_to_datetime_valid_cases(epoch_time, expected):
     """
@@ -355,7 +345,7 @@ def test_add_iso_entries_to_dict():
     add_iso_entries_to_dict([tested_dict])
     assert tested_dict['host_name'] == 'Nutanix Host'
     assert all(
-        tested_dict.get(iso_entry) == '2020-09-13T12:26:40.000000Z' for iso_entry in USECS_ENTRIES_MAPPING.values())
+        tested_dict.get(iso_entry) == '2020-09-13T12:26:40+00:00' for iso_entry in USECS_ENTRIES_MAPPING.values())
     assert len(tested_dict) == (1 + (len(USECS_ENTRIES_MAPPING) * 2))
 
 
@@ -377,7 +367,9 @@ def test_get_human_readable_headers(outputs, expected_outputs):
     Then:
      - All keys that don't contains inner dicts are returned.
     """
-    assert get_human_readable_headers(outputs) == expected_outputs
+    readable_headers = get_human_readable_headers(outputs)
+    assert all(readable_header in expected_outputs for readable_header in readable_headers)
+    assert len(readable_headers) == len(expected_outputs)
 
 
 def test_task_id_exists_task_exists(requests_mock):

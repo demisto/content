@@ -5,9 +5,9 @@
       "metadata": "a few rows containing meta data about the request",
       "entities": [
         {
-          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
           "alert_type_uuid": "A140001",
-          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
           "resolved": true,
           "auto_resolved": false,
           "acknowledged": true,
@@ -16,9 +16,9 @@
           "created_time_stamp_in_usecs": 1610718924821136
         },
         {
-          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
           "alert_type_uuid": "A140002",
-          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
           "resolved": true,
           "auto_resolved": false,
           "acknowledged": true,
@@ -33,26 +33,30 @@
       "outputs_key_field": "id",
       "outputs": [
         {
-          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
           "alert_type_uuid": "A140001",
-          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
           "resolved": true,
           "auto_resolved": false,
           "acknowledged": true,
           "details": "many details about the alert",
           "last_occurrence_time_stamp_in_usecs": 1610718924821136,
-          "created_time_stamp_in_usecs": 1610718924821136
+          "created_time_stamp_in_usecs": 1610718924821136,
+          "last_occurrence": "2021-01-15T13:55:24.821136+00:00",
+          "created_time": "2021-01-15T13:55:24.821136+00:00"
         },
         {
-          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
           "alert_type_uuid": "A140002",
-          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
           "resolved": true,
           "auto_resolved": false,
           "acknowledged": true,
           "details": "many details about the alert",
           "last_occurrence_time_stamp_in_usecs": 1610460118147914,
-          "created_time_stamp_in_usecs": 1610460118147914
+          "created_time_stamp_in_usecs": 1610460118147914,
+          "last_occurrence": "2021-01-12T14:01:58.147914+00:00",
+          "created_time": "2021-01-12T14:01:58.147914+00:00"
         }
       ]
     },
@@ -67,8 +71,8 @@
           "disk_hardware_configs": {
             "1": {
               "serial_number": "drive-scsi0-0-0-0",
-              "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xx",
-              "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+              "disk_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1z",
+              "disk_uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
               "location": 1,
               "bad": false,
               "mounted": true,
@@ -86,8 +90,8 @@
             },
             "2": {
               "serial_number": "drive-scsi0-0-0-1",
-              "disk_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xx",
-              "disk_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+              "disk_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1z",
+              "disk_uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
               "location": 2,
               "bad": false,
               "mounted": true,
@@ -128,8 +132,8 @@
             "25": null,
             "26": null
           },
-          "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+          "service_vmid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "uuid": "16a3d311-zx12-4fu8-bja8-6273xz230174",
           "num_cpu_cores": 8,
           "num_cpu_threads": 8,
           "num_cpu_sockets": 2,
@@ -145,11 +149,11 @@
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Host",
       "outputs_key_field": "uuid",
-      "readable_output": "### Nutanix Hosts List\n|cpu_capacity_in_hz|cpu_frequency_in_hz|details|memory_capacity_in_bytes|num_cpu_cores|num_cpu_sockets|num_cpu_threads|service_vmid|uuid|\n|---|---|---|---|---|---|---|---|---|\n| 16760000000 | 2095000000 | many details about the host | 33722204160 | 8 | 2 | 8 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy |\n",
+      "readable_output": "### Nutanix Hosts List\n|cpu_capacity_in_hz|cpu_frequency_in_hz|details|memory_capacity_in_bytes|num_cpu_cores|num_cpu_sockets|num_cpu_threads|service_vmid|uuid|\n|---|---|---|---|---|---|---|---|---|\n| 16760000000 | 2095000000 | many details about the host | 33722204160 | 8 | 2 | 8 | z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | 16a3d311-zx12-4fu8-bja8-6273xz230174 |\n",
       "outputs": [
         {
-          "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+          "service_vmid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "uuid": "16a3d311-zx12-4fu8-bja8-6273xz230174",
           "num_cpu_cores": 8,
           "num_cpu_threads": 8,
           "num_cpu_sockets": 2,
@@ -165,8 +169,8 @@
       "metadata": "a few rows containing meta data about the request",
       "entities": [
         {
-          "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+          "service_vmid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "uuid": "16a3d311-zx12-4fu8-bja8-6273xz230174",
           "num_cores_per_vcpu": 2,
           "num_vcpus": 2,
           "power_state": "on",
@@ -178,11 +182,11 @@
     "expected": {
       "outputs_prefix": "NutanixHypervisor.VM",
       "outputs_key_field": "uuid",
-      "readable_output": "### Nutanix Virtual Machines List\n|allow_live_migrate|gpus_assigned|ha_priority|host_uuid|machine_type|memory_mb|name|num_cores_per_vcpu|num_vcpus|power_state|timezone|uuid|vm_logical_timestamp|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| false | false | 0 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 156 |\n",
+      "readable_output": "### Nutanix Virtual Machines List\n|allow_live_migrate|gpus_assigned|ha_priority|host_uuid|machine_type|memory_mb|name|num_cores_per_vcpu|num_vcpus|power_state|timezone|uuid|vm_logical_timestamp|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| false | false | 0 | z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | pc | 4096 | CentOS7_Test | 2 | 2 | on | UTC | z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | 156 |\n",
       "outputs": [
         {
-          "service_vmid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-          "uuid": "yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy",
+          "service_vmid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
+          "uuid": "16a3d311-zx12-4fu8-bja8-6273xz230174",
           "num_cores_per_vcpu": 2,
           "num_vcpus": 2,
           "power_state": "on",
@@ -195,7 +199,7 @@
     }
   },
   "nutanix-hypervisor-vm-powerstatus-change": {
-    "suffix": "vms/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/set_power_state",
+    "suffix": "vms/z4b8bfa5-bb52-4d09-924e-6c436aa333c7/set_power_state",
     "response": {
       "task_uuid": 123123
     },
@@ -208,7 +212,7 @@
       }
     },
     "args": {
-      "vm_uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      "vm_uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7"
     }
   },
   "nutanix-hypervisor-task-poll": {
@@ -216,7 +220,7 @@
     "response": {
       "completed_tasks_info": [
         {
-          "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
           "meta_request": {
             "method_name": "VmChangePowerState"
           },
@@ -232,10 +236,10 @@
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Task",
       "outputs_key_field": "uuid",
-      "readable_output": "### Nutanix Hypervisor Tasks Status\n|Task ID|Progress Status|\n|---|---|\n| xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | Succeeded |\n",
+      "readable_output": "### Nutanix Hypervisor Tasks Status\n|Task ID|Progress Status|\n|---|---|\n| z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | Succeeded |\n",
       "outputs": [
         {
-          "uuid": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
           "meta_request": {
             "method_name": "VmChangePowerState"
           },
@@ -249,7 +253,7 @@
       ]
     },
     "args": {
-      "task_ids": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      "task_ids": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7"
     }
   },
   "nutanix-alerts-list": {
@@ -258,9 +262,9 @@
       "metadata": "a few rows containing meta data about the request",
       "entities": [
         {
-          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
           "alert_type_uuid": "A140001",
-          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
           "resolved": true,
           "auto_resolved": false,
           "acknowledged": true,
@@ -269,9 +273,9 @@
           "created_time_stamp_in_usecs": 1610718924821136
         },
         {
-          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
           "alert_type_uuid": "A140002",
-          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
           "resolved": true,
           "auto_resolved": false,
           "acknowledged": true,
@@ -284,29 +288,33 @@
     "expected": {
       "outputs_prefix": "NutanixHypervisor.Alerts",
       "outputs_key_field": "id",
-      "readable_output": "### Nutanix Alert List\n|acknowledged|alert_type_uuid|auto_resolved|check_id|created_time_stamp_in_usecs|details|id|last_occurrence_time_stamp_in_usecs|resolved|\n|---|---|---|---|---|---|---|---|---|\n| true | A140001 | false | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx | 1610718924821136 | many details about the alert | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 1610718924821136 | true |\n| true | A140002 | false | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx | 1610460118147914 | many details about the alert | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | 1610460118147914 | true |\n",
+      "readable_output": "### Nutanix Alert List\n|acknowledged|alert_type_uuid|auto_resolved|check_id|created_time_stamp_in_usecs|details|id|last_occurrence_time_stamp_in_usecs|resolved|\n|---|---|---|---|---|---|---|---|---|\n| true | A140001 | false | z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds | 1610718924821136 | many details about the alert | z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | 1610718924821136 | true |\n| true | A140002 | false | z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds | 1610460118147914 | many details about the alert | z4b8bfa5-bb52-4d09-924e-6c436aa333c7 | 1610460118147914 | true |\n",
       "outputs": [
         {
-          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
           "alert_type_uuid": "A140001",
-          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
           "resolved": true,
           "auto_resolved": false,
           "acknowledged": true,
           "details": "many details about the alert",
-          "last_occurrence": "2021-01-15T13:55:24.821136Z",
-          "created_time": "2021-01-15T13:55:24.821136Z"
+          "last_occurrence_time_stamp_in_usecs": 1610718924821136,
+          "created_time_stamp_in_usecs": 1610718924821136,
+          "last_occurrence": "2021-01-15T13:55:24.821136+00:00",
+          "created_time": "2021-01-15T13:55:24.821136+00:00"
         },
         {
-          "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7",
           "alert_type_uuid": "A140002",
-          "check_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx::xxxxxx",
+          "check_id": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7::1za3ds",
           "resolved": true,
           "auto_resolved": false,
           "acknowledged": true,
           "details": "many details about the alert",
-          "last_occurrence": "2021-01-12T14:01:58.147914Z",
-          "created_time": "2021-01-12T14:01:58.147914Z"
+          "last_occurrence_time_stamp_in_usecs": 1610460118147914,
+          "created_time_stamp_in_usecs": 1610460118147914,
+          "last_occurrence": "2021-01-12T14:01:58.147914+00:00",
+          "created_time": "2021-01-12T14:01:58.147914+00:00"
         }
       ]
     },
@@ -366,16 +374,11 @@
       }
     },
     "expected": {
-      "outputs_prefix": "NutanixHypervisor.Alert",
+      "outputs_prefix": "NutanixHypervisor.AcknowledgedFilterAlerts",
       "readable_output": null,
       "outputs": {
         "num_successful_updates": 1,
-        "num_failed_updates": 0,
-        "alert_status_list": {
-          "id": "123123",
-          "message": "",
-          "successful": true
-        }
+        "num_failed_updates": 0
       }
     },
     "args": {}
@@ -392,16 +395,11 @@
       }
     },
     "expected": {
-      "outputs_prefix": "NutanixHypervisor.Alert",
+      "outputs_prefix": "NutanixHypervisor.ResolvedFilterAlerts",
       "readable_output": null,
       "outputs": {
         "num_successful_updates": 1,
-        "num_failed_updates": 0,
-        "alert_status_list": {
-          "id": "123123",
-          "message": "",
-          "successful": true
-        }
+        "num_failed_updates": 0
       }
     },
     "args": {}
