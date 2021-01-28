@@ -43,15 +43,79 @@ Required Permissions
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### microsoft-teams-auth-test
+***
+Tests the connectivity to Microsoft.
 
-### microsoft-teams-create-team
+
+#### Base Command
+
+`microsoft-teams-auth-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Human Readable Output
+>✅ Success!
+
+### microsoft-teams-auth-start
+***
+Run this command to start the authorization process and follow the instructions in the command results.
+
+
+#### Base Command
+
+`microsoft-teams-auth-start`
+#### Input
+
+There are no input arguments for this command.
+
+#### Human Readable Output
+>### Authorization instructions
+>        1. To sign in, use a web browser to open the page:
+>            [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin)
+>           and enter the code **XXXXXXXX** to authenticate.
+>        2. Run the ***!microsoft-teams-auth-complete*** command in the War Room.
+
+
+### microsoft-teams-auth-complete
+***
+Run this command to complete the authorization process. Should be used after running the ***microsoft-teams-auth-start*** command.
+
+
+#### Base Command
+
+`microsoft-teams-auth-complete`
+#### Input
+
+There are no input arguments for this command.
+
+#### Human Readable Output
+>✅ Authorization completed successfully.
+
+### microsoft-teams-auth-reset
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+
+#### Base Command
+
+`microsoft-teams-auth-reset`
+#### Input
+
+There are no input arguments for this command.
+
+#### Human Readable Output
+
+>Authorization was reset successfully. You can now run ***!microsoft-teams-auth-start*** and ***!microsoft-teams-auth-complete***.
+### microsoft-teams-team-create
 ***
 Creates a new team.
 
 
 #### Base Command
 
-`microsoft-teams-create-team`
+`microsoft-teams-team-create`
 
 ##### Required Permissions
 
@@ -85,20 +149,20 @@ Creates a new team.
 There is no context output for this command.
 
 #### Command Example
-```!microsoft-teams-create-team display_name="Sample Engineering Team" owner=3fa9f28b-eb0e-463a-ba7b-8089fe9991e2```
+```!microsoft-teams-team-create display_name="Sample Engineering Team" owner=3fa9f28b-eb0e-463a-ba7b-8089fe9991e2```
 
 #### Human Readable Output
 
 >Team Sample Engineering Team was created successfully.
 
-### microsoft-teams-create-team-from-group
+### microsoft-teams-team-create-from-group
 ***
 Create a new team under a group. In order to create a team, the group must have a least one owner and the group cannot be of type Security.
 
 
 #### Base Command
 
-`microsoft-teams-create-team-from-group`
+`microsoft-teams-team-create-from-group`
 
 ##### Required Permissions
 
@@ -132,20 +196,20 @@ Create a new team under a group. In order to create a team, the group must have 
 There is no context output for this command.
 
 #### Command Example
-```!microsoft-teams-create-team-from-group group_id=7bc73bf4-c88e-4e0c-a927-6b52d19ca3e6```
+```!microsoft-teams-team-create-from-group group_id=7bc73bf4-c88e-4e0c-a927-6b52d19ca3e6```
 
 #### Human Readable Output
 
 >The team was created from group 7bc73bf4-c88e-4e0c-a927-6b52d19ca3e6 successfully.
 
-### microsoft-teams-list-teams
+### microsoft-teams-teams-list
 ***
 Returns all the groups that have teams in an organization.
 
 
 #### Base Command
 
-`microsoft-teams-list-teams`
+`microsoft-teams-teams-list`
 
 ##### Required Permissions
 
@@ -175,7 +239,7 @@ There are no input arguments for this command.
 
 
 #### Command Example
-```!microsoft-teams-list-teams```
+```!microsoft-teams-teams-list```
 
 #### Context Example
 ```json
@@ -227,14 +291,14 @@ There are no input arguments for this command.
 >| 02bd9fd6-8f93-4758-87c3-1fb73740a315 | HR Taskforce | 2014-01-01T00:00:00Z | Welcome to the HR Taskforce team. |
 >| 8090c93e-ba7c-433e-9f39-08c7ba07c0b3 | X1050 Launch Team | 2014-01-01T00:00:00Z | Welcome to the team that we've assembled to launch our product. |
 
-### microsoft-teams-get-team
+### microsoft-teams-team-get
 ***
 Retrieve the properties and relationships of the specified team.
 
 
 #### Base Command
 
-`microsoft-teams-get-team`
+`microsoft-teams-team-get`
 
 ##### Required Permissions
 
@@ -244,7 +308,7 @@ Retrieve the properties and relationships of the specified team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | ID of team to get. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
+| team_id | ID of team to get. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
 
 
 #### Context Output
@@ -261,7 +325,7 @@ Retrieve the properties and relationships of the specified team.
 
 
 #### Command Example
-```!microsoft-teams-get-team team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
+```!microsoft-teams-team-get team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
 
 #### Context Example
 ```json
@@ -311,14 +375,14 @@ Retrieve the properties and relationships of the specified team.
 >|---|---|---|---|---|---|
 >| showInTeamsSearchAndSuggestions: true | allowGiphy: true\<br/\>giphyContentRating: strict\<br/\>allowStickersAndMemes: true\<br/\>allowCustomMemes: true | allowCreateUpdateChannels: true\<br/\>allowDeleteChannels: true | false | allowCreateUpdateChannels: true\<br/\>allowDeleteChannels: true\<br/\>allowAddRemoveApps: true\<br/\>allowCreateUpdateRemoveTabs: true\<br/\>allowCreateUpdateRemoveConnectors: true | allowUserEditMessages: true\<br/\>allowUserDeleteMessages: true\<br/\>allowOwnerDeleteMessages: true\<br/\>allowTeamMentions: true\<br/\>allowChannelMentions: true |
 
-### microsoft-teams-update-team
+### microsoft-teams-team-update
 ***
 Update the properties of the specified team.
 
 
 #### Base Command
 
-`microsoft-teams-update-team`
+`microsoft-teams-team-update`
 
 ##### Required Permissions
 
@@ -328,7 +392,7 @@ Update the properties of the specified team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | ID of the team to update. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
+| team_id | ID of the team to update. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
 | display_name | The name of the team. | Optional | 
 | description | Description of the team. | Optional | 
 | visibility | The visibility of the group and team. Possible values are: "public" and "private". Possible values are: public, private. | Optional | 
@@ -352,20 +416,20 @@ Update the properties of the specified team.
 There is no context output for this command.
 
 #### Command Example
-```!microsoft-teams-update-team team_id=489080f2-98c3-4993-84ec-fa0aac622b2e description=NewDescription```
+```!microsoft-teams-team-update team_id=489080f2-98c3-4993-84ec-fa0aac622b2e description=NewDescription```
 
 #### Human Readable Output
 
 >Team 489080f2-98c3-4993-84ec-fa0aac622b2e was updated successfully.
 
-### microsoft-teams-delete-team
+### microsoft-teams-team-delete
 ***
 Deletes a group. Note: it might take time for the team to disappear from the teams list.
 
 
 #### Base Command
 
-`microsoft-teams-delete-team`
+`microsoft-teams-team-delete`
 
 ##### Required Permissions
 
@@ -375,7 +439,7 @@ Deletes a group. Note: it might take time for the team to disappear from the tea
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | ID of the team to delete. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
+| team_id | ID of the team to delete. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
 
 
 #### Context Output
@@ -383,20 +447,20 @@ Deletes a group. Note: it might take time for the team to disappear from the tea
 There is no context output for this command.
 
 #### Command Example
-```!microsoft-teams-delete-team team_id=8d64be1b-590f-4afd-9bac-0b31b3703300```
+```!microsoft-teams-team-delete team_id=8d64be1b-590f-4afd-9bac-0b31b3703300```
 
 #### Human Readable Output
 
 >Team 8d64be1b-590f-4afd-9bac-0b31b3703300 was deleted successfully.
 
-### microsoft-teams-list-members
+### microsoft-teams-members-list
 ***
 Returns the members of the specified team.
 
 
 #### Base Command
 
-`microsoft-teams-list-members`
+`microsoft-teams-members-list`
 
 ##### Required Permissions
 
@@ -406,7 +470,7 @@ Returns the members of the specified team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | ID of the team to get the member of. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
+| team_id | ID of the team to get the member of. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
 
 
 #### Context Output
@@ -421,7 +485,7 @@ Returns the members of the specified team.
 
 
 #### Command Example
-```!microsoft-teams-list-members team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
+```!microsoft-teams-members-list team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
 
 #### Context Example
 ```json
@@ -468,14 +532,14 @@ Returns the members of the specified team.
 >| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM1OThlZmNkNC1lNTQ5LTQwMmEtOTYwMi0wYjUwMjAxZmFlYmU= | MOD Administrator | admin@M365x987948.OnMicrosoft.com | owner |
 >| MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyM3NTJmNTBiNy0yNTZmLTQ1MzktYjc3NS1jNGQxMmYyZTQ3MjI= | Harry Johnson | harry@M365x987948.OnMicrosoft.com |  |
 
-### microsoft-teams-get-member
+### microsoft-teams-member-get
 ***
 Gets a member of a team.
 
 
 #### Base Command
 
-`microsoft-teams-get-member`
+`microsoft-teams-member-get`
 
 ##### Required Permissions
 
@@ -485,8 +549,8 @@ Gets a member of a team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| membership_id | ID of member to get. Can be retrieved by running the microsoft-teams-list-members command. | Required | 
-| team_id | ID of the team to get the member of. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
+| membership_id | ID of member to get. Can be retrieved by running the microsoft-teams-members-list command. | Required | 
+| team_id | ID of the team to get the member of. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
 
 
 #### Context Output
@@ -501,7 +565,7 @@ Gets a member of a team.
 
 
 #### Command Example
-```!microsoft-teams-get-member membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMzZmE5ZjI4Yi1lYjBlLTQ2M2EtYmE3Yi04MDg5ZmU5OTkxZTI= team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
+```!microsoft-teams-member-get membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMzZmE5ZjI4Yi1lYjBlLTQ2M2EtYmE3Yi04MDg5ZmU5OTkxZTI= team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
 
 #### Context Example
 ```json
@@ -531,14 +595,14 @@ Gets a member of a team.
 >|---|---|---|---|
 >| /ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk= | John Doe |  | owner |
 
-### microsoft-teams-add-member
+### microsoft-teams-member-add
 ***
 Add a user to be a team member.
 
 
 #### Base Command
 
-`microsoft-teams-add-member`
+`microsoft-teams-member-add`
 
 ##### Required Permissions
 
@@ -548,8 +612,8 @@ Add a user to be a team member.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | ID of the team to add the user to. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
-| user_id | ID of the user to add to the team. Can be retrieved by running the microsoft-teams-list-members command. | Required | 
+| team_id | ID of the team to add the user to. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
+| user_id | ID of the user to add to the team. Can be retrieved by running the microsoft-teams-members-list command. | Required | 
 | is_owner | Whether to add the member with the owner role. Possible values are: "false" and "true". Default is "false". Possible values are: false, true. Default is false. | Optional | 
 
 
@@ -564,7 +628,7 @@ Add a user to be a team member.
 
 
 #### Command Example
-```!microsoft-teams-add-member user_id=2827c1e7-edb6-4529-b50d-25984e968637 team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
+```!microsoft-teams-member-add user_id=2827c1e7-edb6-4529-b50d-25984e968637 team_id=489080f2-98c3-4993-84ec-fa0aac622b2e```
 
 #### Context Example
 ```json
@@ -592,14 +656,14 @@ Add a user to be a team member.
 >| ZWUwZjVhZTItOGJjNi00YWU1LTg0NjYtN2RhZWViYmZhMDYyIyM3Mzc2MWYwNi0yYWM5LTQ2OWMtOWYxMC0yNzlhOGNjMjY3Zjk= | Cameron White | CameronW@M365x987948.OnMicrosoft.com | owner |
 
 
-### microsoft-teams-remove-member
+### microsoft-teams-member-remove
 ***
 Remove a member from the team.
 
 
 #### Base Command
 
-`microsoft-teams-remove-member`
+`microsoft-teams-member-remove`
 
 ##### Required Permissions
 
@@ -609,8 +673,8 @@ Remove a member from the team.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | ID of the team to remove the user from. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
-| membership_id | ID of the member to remove from the team. Can be retrieved by running the microsoft-teams-list-members command. | Required | 
+| team_id | ID of the team to remove the user from. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
+| membership_id | ID of the member to remove from the team. Can be retrieved by running the microsoft-teams-members-list command. | Required | 
 
 
 #### Context Output
@@ -618,20 +682,20 @@ Remove a member from the team.
 There is no context output for this command.
 
 #### Command Example
-```!microsoft-teams-remove-member team_id=489080f2-98c3-4993-84ec-fa0aac622b2e membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMxZTc2NTVhNC02ZThmLTQ2NjUtYWMxNS03ZWJhMmJmOGQ4ODY=```
+```!microsoft-teams-member-remove team_id=489080f2-98c3-4993-84ec-fa0aac622b2e membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMxZTc2NTVhNC02ZThmLTQ2NjUtYWMxNS03ZWJhMmJmOGQ4ODY=```
 
 #### Human Readable Output
 
 >Team member NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyMxZTc2NTVhNC02ZThmLTQ2NjUtYWMxNS03ZWJhMmJmOGQ4ODY= was removed from the team 489080f2-98c3-4993-84ec-fa0aac622b2e successfully.
 
-### microsoft-teams-update-member
+### microsoft-teams-member-update
 ***
 Updates a team member.
 
 
 #### Base Command
 
-`microsoft-teams-update-member`
+`microsoft-teams-member-update`
 
 ##### Required Permissions
 
@@ -641,8 +705,8 @@ Updates a team member.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | ID of the team to update the member in. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
-| membership_id | ID of the team member to update. Can be retrieved by running the microsoft-teams-list-members command. | Required | 
+| team_id | ID of the team to update the member in. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
+| membership_id | ID of the team member to update. Can be retrieved by running the microsoft-teams-members-list command. | Required | 
 | is_owner | Whether to set the member with the owner role. Possible values are: "false" and "true". Default is "false". Possible values are: false, true. Default is false. | Optional | 
 
 
@@ -657,7 +721,7 @@ Updates a team member.
 
 
 #### Command Example
-```!microsoft-teams-update-member membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyM4OTE4YzM5MC0zNWI4LTQyYzMtODNmMS04MzUyZTBlOWRmNjU= team_id=489080f2-98c3-4993-84ec-fa0aac622b2e is_owner=true```
+```!microsoft-teams-member-update membership_id=NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyM4OTE4YzM5MC0zNWI4LTQyYzMtODNmMS04MzUyZTBlOWRmNjU= team_id=489080f2-98c3-4993-84ec-fa0aac622b2e is_owner=true```
 
 #### Context Example
 ```json
@@ -685,14 +749,14 @@ Updates a team member.
 >|---|---|---|---|
 >| NDg5MDgwZjItOThjMy00OTkzLTg0ZWMtZmEwYWFjNjIyYjJlIyM4OTE4YzM5MC0zNWI4LTQyYzMtODNmMS04MzUyZTBlOWRmNjU= | John Doe |  | owner |
 
-### microsoft-teams-archive-team
+### microsoft-teams-team-archive
 ***
 Archive the specified team. When a team is archived, users can no longer send or like messages on any channel in the team, edit the team's name, description, or other settings, or in general make most changes to the team. Membership changes to the team continue to be allowed. Archiving is an async operation. A team is archived once the async operation completes successfully, which may occur subsequent to a response from this command. In order to archive a team, the team and group must have an owner.
 
 
 #### Base Command
 
-`microsoft-teams-archive-team`
+`microsoft-teams-team-archive`
 
 ##### Required Permissions
 
@@ -702,7 +766,7 @@ Archive the specified team. When a team is archived, users can no longer send or
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | ID of the team to archive. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
+| team_id | ID of the team to archive. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
 
 
 #### Context Output
@@ -710,20 +774,20 @@ Archive the specified team. When a team is archived, users can no longer send or
 There is no context output for this command.
 
 #### Command Example
-```!microsoft-teams-archive-team team_id=d74944a4-8dca-4cc5-9892-b1f73b4a4419```
+```!microsoft-teams-team-archive team_id=d74944a4-8dca-4cc5-9892-b1f73b4a4419```
 
 #### Human Readable Output
 
 >Team d74944a4-8dca-4cc5-9892-b1f73b4a4419 was archived successfully.
 
-### microsoft-teams-unarchive-team
+### microsoft-teams-team-unarchive
 ***
 Restore an archived team. This restores the users' ability to send messages and edit the team, abiding by tenant and team settings. Unarchiving is an async operation. A team is unarchived once the async operation completes successfully, which may occur subsequent to a response from this command.
 
 
 #### Base Command
 
-`microsoft-teams-unarchive-team`
+`microsoft-teams-team-unarchive`
 
 ##### Required Permissions
 
@@ -733,7 +797,7 @@ Restore an archived team. This restores the users' ability to send messages and 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | ID of the team to unarchive. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
+| team_id | ID of the team to unarchive. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
 
 
 #### Context Output
@@ -741,20 +805,20 @@ Restore an archived team. This restores the users' ability to send messages and 
 There is no context output for this command.
 
 #### Command Example
-```!microsoft-teams-unarchive-team team_id=d74944a4-8dca-4cc5-9892-b1f73b4a4419```
+```!microsoft-teams-team-unarchive team_id=d74944a4-8dca-4cc5-9892-b1f73b4a4419```
 
 #### Human Readable Output
 
 >Team d74944a4-8dca-4cc5-9892-b1f73b4a4419 was unarchived successfully.
 
-### microsoft-teams-clone-team
+### microsoft-teams-team-clone
 ***
 Create a copy of a team. This operation also creates a copy of the corresponding group. Cloning is a long-running operation.
 
 
 #### Base Command
 
-`microsoft-teams-clone-team`
+`microsoft-teams-team-clone`
 
 ##### Required Permissions
 
@@ -764,7 +828,7 @@ Create a copy of a team. This operation also creates a copy of the corresponding
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| team_id | ID of the team to clone. Can be retrieved by running the microsoft-teams-list-teams command. | Required | 
+| team_id | ID of the team to clone. Can be retrieved by running the microsoft-teams-teams-list command. | Required | 
 | display_name | The name of the team. | Required | 
 | description | Description of the team. | Optional | 
 | visibility | The visibility of the group and team. Possible values are: "public" and "private". Default is "public". Possible values are: public, private. Default is public. | Optional | 
@@ -779,20 +843,20 @@ Create a copy of a team. This operation also creates a copy of the corresponding
 There is no context output for this command.
 
 #### Command Example
-```!microsoft-teams-clone-team team_id=6e0d7429-4736-4373-bfb7-a1b59e3c463a display_name=Cloned```
+```!microsoft-teams-team-clone team_id=6e0d7429-4736-4373-bfb7-a1b59e3c463a display_name=Cloned```
 
 #### Human Readable Output
 
 >Team 6e0d7429-4736-4373-bfb7-a1b59e3c463a was cloned successfully.
 
-### microsoft-teams-list-joined-teams
+### microsoft-teams-teams-list-joined
 ***
 Get the teams in Microsoft Teams that the user is a direct member of.
 
 
 #### Base Command
 
-`microsoft-teams-list-joined-teams`
+`microsoft-teams-teams-list-joined`
 
 ##### Required Permissions
 
@@ -819,7 +883,7 @@ Get the teams in Microsoft Teams that the user is a direct member of.
 
 
 #### Command Example
-```!microsoft-teams-list-joined-teams user_id=3fa9f28b-eb0e-463a-ba7b-8089fe9991e2```
+```!microsoft-teams-teams-list-joined user_id=3fa9f28b-eb0e-463a-ba7b-8089fe9991e2```
 
 #### Context Example
 ```json
