@@ -6,6 +6,7 @@ from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT,
                                                    PACKS_PACK_META_FILE_NAME)
 
 from Tests.scripts.utils.content_packs_util import (is_pack_xsoar_supported,
+                                                    is_pack_deprecated,
                                                     should_test_content_pack)
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -37,6 +38,28 @@ def test_is_pack_xsoar_supported(tmp_path, pack_metadata_content, expected):
     assert is_pack_xsoar_supported(str(tmp_path)) == expected
 
 
+@pytest.mark.parametrize("pack_metadata_content, expected", [
+    ({'hidden': False}, False),
+    ({'hidden': True}, True),
+])
+def test_is_pack_deprecated(tmp_path, pack_metadata_content, expected):
+    """
+    Given:
+        - Case A: Pack is not deprecated
+        - Case B: Pack is deprecated
+
+    When:
+        - Checking if pack is deprecated
+
+    Then:
+        - Case A: Verify pack is not deprecated, since the 'hidden' flag is set to 'false'
+        - Case B: Verify pack is deprecated, since the 'hidden' flag is set to 'true'
+    """
+    pack_metadata_file = tmp_path / PACKS_PACK_META_FILE_NAME
+    pack_metadata_file.write_text(json.dumps(pack_metadata_content))
+    assert is_pack_deprecated(str(tmp_path)) == expected
+
+
 def test_is_pack_certified_pack_metadata_does_not_exist(tmp_path):
     """
     Given:
@@ -52,14 +75,17 @@ def test_is_pack_certified_pack_metadata_does_not_exist(tmp_path):
 
 
 @pytest.mark.parametrize("pack_metadata_content, pack_name, expected", [
-    ({PACK_METADATA_SUPPORT: 'xsoar'}, 'CortexXDR', True),
-    ({PACK_METADATA_SUPPORT: 'xsoar'}, 'NonSupported', False)
+    ({PACK_METADATA_SUPPORT: 'xsoar'}, 'CortexXDR', (True, '')),
+    ({PACK_METADATA_SUPPORT: 'xsoar'}, 'NonSupported', (False, 'Pack is either the "NonSupported" pack or the '
+                                                               '"DeprecatedContent" pack.')),
+    ({'hidden': True, PACK_METADATA_SUPPORT: 'xsoar'}, 'CortexXDR', (False, 'Pack is Deprecated'))
 ])
 def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_name, expected):
     """
     Given:
         - Case A: CortexXDR content pack
         - Case B: NonSupported content pack
+        - Case C: Deprecated CortexXDR content pack
 
     When:
         - Checking if pack should be tested
@@ -67,6 +93,7 @@ def test_should_test_content_pack(mocker, tmp_path, pack_metadata_content, pack_
     Then:
         - Case A: Verify pack should be tested
         - Case B: Verify pack should not be tested
+        - Case C: Verify pack should not be tested
     """
     # Creating temp dirs
     pack = tmp_path / PACKS_DIR / pack_name
