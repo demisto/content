@@ -9,8 +9,10 @@ from typing import Optional
 def apply_variation(original_datetime: Optional[datetime] = None, variation: str = None) -> Optional[datetime]:
     try:
         new_time = dateparser.parse(variation, settings={'RELATIVE_BASE': original_datetime})
+        new_time = new_time.replace(tzinfo=original_datetime.tzinfo)
     except Exception as err:
         return_error(f"Error adding variation to the date / time - {err}")
+
     return new_time
 
 
