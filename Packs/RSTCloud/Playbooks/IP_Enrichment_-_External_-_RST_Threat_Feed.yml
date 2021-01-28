@@ -405,7 +405,7 @@ tasks:
       version: -1
       name: Get IP report from RST Threat Feed API
       description: Return IP information and reputation
-      script: '|||rst-threat-feed-ip'
+      script: 'RST Cloud - Threat Feed API|||ip'
       type: regular
       iscommand: true
       brand: ""

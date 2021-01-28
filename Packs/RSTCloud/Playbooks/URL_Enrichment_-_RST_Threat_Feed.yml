@@ -479,7 +479,7 @@ tasks:
       version: -1
       name: Get URL report from RST Threat Feed API
       description: Returns URL information and reputation.
-      script: '|||rst-threat-feed-url'
+      script: 'RST Cloud - Threat Feed API|||url'
       type: regular
       iscommand: true
       brand: ""

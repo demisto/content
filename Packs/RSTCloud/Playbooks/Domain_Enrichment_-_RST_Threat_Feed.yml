@@ -170,7 +170,7 @@ tasks:
       version: -1
       name: Get RST Threat Feed report for domains
       description: Returns Domain information and reputation.
-      script: '|||rst-threat-feed-domain'
+      script: 'RST Cloud - Threat Feed API|||domain'
       type: regular
       iscommand: true
       brand: ""
