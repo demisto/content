@@ -1,6 +1,6 @@
 args:
 - auto: PREDEFINED
-  description: Type of asset.
+  description: Type of asset. Can be "device", "alert", or "vulnerability".
   name: asset_type
   predefined:
   - device
@@ -8,16 +8,16 @@ args:
   - vulnerability
   required: true
 - defaultValue: PANW IoT 3rd Party SIEM Integration Instance
-  description: Name of the configured syslog sender instance
+  description: Name of the configured syslog sender integration instance.
   name: syslog_sender_instance
   required: true
 - default: true
   defaultValue: PANW IoT 3rd Party Integration Instance
-  description: Name of the configured PANW Iot 3rd Party instance.
+  description: Name of the configured PANW Iot 3rd Party integration instance.
   name: panw_iot_3rd_party_instance
   required: true
-comment: This automation retrieves all specified assets from the PANW IoT cloud and
-  send them to the SIEM server.
+comment: Retrieves all specified assets from the PANW IoT cloud and
+  sends them to the SIEM server.
 commonfields:
   id: SendAllPANWIoTAssetsToSIEM
   version: -1
