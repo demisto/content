@@ -2,7 +2,7 @@
     "name": "Skyformation",
     "description": "SkyFormation provides cloud application security for business organizations. SkyFormation Universal connector forwards security events to the organization security tools and enables them to cover their cloud activity.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Skyformation",
     "url": "https://support.skyformation.com/hc/en-us",
     "email": "",
