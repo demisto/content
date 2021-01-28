@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 """Base Script for Cortex XSOAR (aka Demisto)
 This is an empty script with some basic structure according
 to the code conventions.
+
 MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
