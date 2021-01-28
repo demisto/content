@@ -359,7 +359,7 @@ script:
     - contextPath: RST.URL.Parsed
       description: Parsed URL components
       type: String
-    - contextPath: RST.URL.CSE
+    - contextPath: RST.URL.CVE
       description: Related CVE (vulnerabilities)
       type: String
   - arguments:
