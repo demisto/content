@@ -401,12 +401,12 @@ def generate_body(fields: dict = {}, custom_fields: dict = {}) -> dict:
     return body
 
 
-def split_fields(fields: str = '') -> dict:
+def split_fields(fields: str = '', delimiter: str = ';') -> dict:
     """Split str fields of Demisto arguments to SNOW request fields by the char ';'.
 
     Args:
         fields: fields in a string representation.
-
+        delimiter: the delimiter to use to separate the fields.
     Returns:
         dic_fields object for SNOW requests.
     """
@@ -416,7 +416,7 @@ def split_fields(fields: str = '') -> dict:
         if '=' not in fields:
             raise Exception(
                 f"The argument: {fields}.\nmust contain a '=' to specify the keys and values. e.g: key=val.")
-        arr_fields = fields.split(';')
+        arr_fields = fields.split(delimiter)
         for f in arr_fields:
             field = f.split('=', 1)  # a field might include a '=' sign in the value. thus, splitting only once.
             if len(field) > 1:
@@ -899,7 +899,8 @@ def get_ticket_command(client: Client, args: dict):
     ticket_id = str(args.get('id', ''))
     number = str(args.get('number', ''))
     get_attachments = args.get('get_attachments', 'false')
-    custom_fields = split_fields(str(args.get('custom_fields', '')))
+    fields_delimiter = args.get('fields_delimiter', ';')
+    custom_fields = split_fields(str(args.get('custom_fields', '')), fields_delimiter)
     additional_fields = argToList(str(args.get('additional_fields', '')))
 
     result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
@@ -953,10 +954,11 @@ def update_ticket_command(client: Client, args: dict) -> Tuple[Any, Dict, Dict, 
     Returns:
         Demisto Outputs.
     """
-    custom_fields = split_fields(str(args.get('custom_fields', '')))
+    fields_delimiter = args.get('fields_delimiter', ';')
+    custom_fields = split_fields(str(args.get('custom_fields', '')), fields_delimiter)
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
     ticket_id = str(args.get('id', ''))
-    additional_fields = split_fields(str(args.get('additional_fields', '')))
+    additional_fields = split_fields(str(args.get('additional_fields', '')), fields_delimiter)
     additional_fields_keys = list(additional_fields.keys())
     fields = get_ticket_fields(args, ticket_type=ticket_type)
     fields.update(additional_fields)
@@ -992,10 +994,11 @@ def create_ticket_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, 
     Returns:
         Demisto Outputs.
     """
-    custom_fields = split_fields(str(args.get('custom_fields', '')))
+    fields_delimiter = args.get('fields_delimiter', ';')
+    custom_fields = split_fields(str(args.get('custom_fields', '')), fields_delimiter)
     template = args.get('template')
     ticket_type = client.get_table_name(str(args.get('ticket_type', '')))
-    additional_fields = split_fields(str(args.get('additional_fields', '')))
+    additional_fields = split_fields(str(args.get('additional_fields', '')), fields_delimiter)
     additional_fields_keys = list(additional_fields.keys())
     input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
@@ -1349,13 +1352,14 @@ def create_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
     input_display_value = argToBoolean(args.get('input_display_value', 'false'))
+    fields_delimiter = args.get('fields_delimiter', ';')
 
     fields = {}
     if fields_str:
-        fields = split_fields(fields_str)
+        fields = split_fields(fields_str, fields_delimiter)
     custom_fields = {}
     if custom_fields_str:
-        custom_fields = split_fields(custom_fields_str)
+        custom_fields = split_fields(custom_fields_str, fields_delimiter)
 
     result = client.create(table_name, fields, custom_fields, input_display_value)
 
@@ -1386,13 +1390,14 @@ def update_record_command(client: Client, args: dict) -> Tuple[Any, Dict[Any, An
     fields_str = str(args.get('fields', ''))
     custom_fields_str = str(args.get('custom_fields', ''))
     input_display_value = argToBoolean(args.get('input_display_value', 'false'))
+    fields_delimiter = args.get('fields_delimiter', ';')
 
     fields = {}
     if fields_str:
-        fields = split_fields(fields_str)
+        fields = split_fields(fields_str, fields_delimiter)
     custom_fields = {}
     if custom_fields_str:
-        custom_fields = split_fields(custom_fields_str)
+        custom_fields = split_fields(custom_fields_str, fields_delimiter)
 
     result = client.update(table_name, record_id, fields, custom_fields, input_display_value)
 
