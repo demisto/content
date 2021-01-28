@@ -381,7 +381,7 @@ class Pack(object):
 
         """
         changelog_path = os.path.join(self._pack_path, Pack.CHANGELOG_JSON)
-
+        # adding a comment
         if not os.path.exists(changelog_path):
             return self.PACK_INITIAL_VERSION
 
