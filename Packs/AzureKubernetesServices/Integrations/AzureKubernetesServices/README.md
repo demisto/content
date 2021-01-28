@@ -7,7 +7,7 @@ Note: The integration is in beta as it uses a preview version of the AKS API. Th
 ## Authorization
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.
 
-In order to connect to the Azure Network Security Group using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
+In order to connect to the Azure Kubernetes Services using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
 1. Fill in the required parameters.
 2. Run the ***!azure-ks-auth-start*** command. 
 3. Follow the instructions that appear.
