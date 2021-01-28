@@ -278,7 +278,7 @@ def test_get_member(requests_mock, client):
         'membership_id': membership_id
     }
     result = get_member(client, args)
-    expected_outputs = {'teamId': team_id} | api_response
+    expected_outputs = {**{'teamId': team_id}, **api_response}
     assert result.outputs == expected_outputs
 
 
