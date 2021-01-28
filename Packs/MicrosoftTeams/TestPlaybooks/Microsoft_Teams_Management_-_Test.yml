@@ -352,7 +352,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "33"
     scriptarguments:
       clone_apps: {}
       clone_channels: {}
@@ -464,7 +464,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2295
         }
       }
     note: false
@@ -518,7 +518,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 3870
         }
       }
     note: false
@@ -566,7 +566,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 4045
         }
       }
     note: false
@@ -613,7 +613,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4220
         }
       }
     note: false
@@ -664,7 +664,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 4570
         }
       }
     note: false
@@ -712,7 +712,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 4745
         }
       }
     note: false
@@ -759,7 +759,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4920
         }
       }
     note: false
@@ -808,7 +808,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 5095
         }
       }
     note: false
@@ -898,7 +898,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 4395
         }
       }
     note: false
@@ -947,7 +947,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 5270
         }
       }
     note: false
@@ -972,7 +972,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 5270
+          "y": 5445
         }
       }
     note: false
@@ -1020,7 +1020,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2820
         }
       }
     note: false
@@ -1071,7 +1071,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2645
         }
       }
     note: false
@@ -1109,7 +1109,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 2995
         }
       }
     note: false
@@ -1177,7 +1177,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3170
         }
       }
     note: false
@@ -1243,7 +1243,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3345
         }
       }
     note: false
@@ -1292,7 +1292,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3520
         }
       }
     note: false
@@ -1325,7 +1325,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3695
         }
       }
     note: false
@@ -1375,7 +1375,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2470
         }
       }
     note: false
@@ -1383,12 +1383,45 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "33":
+    id: "33"
+    taskid: 28f0bd76-defb-4d80-8c42-6dffc768342f
+    type: regular
+    task:
+      id: 28f0bd76-defb-4d80-8c42-6dffc768342f
+      version: -1
+      name: Sleep to wait for the team to get cloned
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5285,
+        "height": 5460,
         "width": 380,
         "x": 50,
         "y": 50
