@@ -120,11 +120,10 @@ tasks:
       id: e7a96984-095a-44f7-8af4-53bb394d9f9b
       version: -1
       name: Nutanix Get Completed Task Info
-      description: Poll tasks given by task_ids to check if they are ready. Returns
+      description: Poll tasks provided by task_ids to check if they are ready. Returns
         all the tasks from 'task_ids' list that are ready at the moment Nutanix service
-        was polled. In case no task is ready, waits until at least one task is ready,
-        unless given argument 'timeout_interval' which waits time_interval seconds
-        and in case no task had finished, returns a time out response.
+        was polled. If no task is ready, it waits until at least one task is ready.
+        If the 'timeout_interval' period ends and no task has finished, it returns a timeout response.
       script: '|||nutanix-hypervisor-task-poll'
       type: regular
       iscommand: true
@@ -201,14 +200,14 @@ tasks:
       id: 74cf718c-c55d-4761-87a0-6e7ad42c0e9a
       version: -1
       name: Print Error Message
-      description: Prints an error entry with a given message
+      description: Prints an error entry with a given message.
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
       brand: ""
     scriptarguments:
       message:
-        simple: Task Was Expected to exist.
+        simple: Task was expected to exist.
     separatecontext: false
     view: |-
       {
@@ -230,14 +229,14 @@ tasks:
       id: 06564bca-e761-41c9-89f0-cea20d01e4a6
       version: -1
       name: Nutanix Virtual Machine Power Status Change
-      description: Set power state of a virtual machine.  If the virtual machine is
-        being powered on and no host is specified, the scheduler will pick the one
-        with the most available CPU and memory that can support the Virtual Machine.
-        Note that no such host may not be available. If the virtual machine is being
-        power cycled, a different host can be specified to start it on. This is also
+      description: Set the power state of a virtual machine. If the virtual machine is
+        being powered on and no host is specified, the scheduler will pick the host
+        with the most available CPU and memory that can support the virtual machine.
+        Note a host must be available. If the virtual machine is being
+        power cycled, a different host can be specified to start it on. This is
         an asynchronous operation that results in the creation of a task object. The
         UUID of this task object is returned as the response of this operation. With
-        this task uuid, this task status can be monitored by using the nutanix-hypervisor-task-poll
+        this task UUID, the task status can be monitored by using the nutanix-hypervisor-task-poll
         command.
       script: '|||nutanix-hypervisor-vm-powerstatus-change'
       type: regular
@@ -282,24 +281,25 @@ inputs:
 - key: vm_uuid
   value: {}
   required: true
-  description: Id of the virtual machine to change its power status.
+  description: ID of the virtual machine to change its power status.
   playbookInputQuery:
 - key: transition
   value: {}
   required: true
   description: |-
-    The new power state to which you want to transfer the virtual machine to.
+    The new power state to transfer the virtual machine to.
     Possible values are:
     ON, OFF, POWERCYCLE, RESET, PAUSE, SUSPEND, RESUME, SAVE, ACPI_SHUTDOWN, ACPI_REBOOT
   playbookInputQuery:
 - key: host_uuid
   value: {}
   required: false
-  description: If virtual machine is being transitioned with 'ON' or 'POWERCYCLE',
-    this host will be chosen to run the virtual machine, if host_uuid is not given,
+  description: If the virtual machine is being transitioned with 'ON' or 'POWERCYCLE',
+    this host will be used to run the virtual machine. If host_uuid is not given,
     then Nutanix will chose the host with the most available CPU.
   playbookInputQuery:
 fromversion: 5.0.0
-description: "Use this playbook to perform power status change for virtual machine, and wait until power status change task is completed. This playbook receives the desired power status, calls Nutanix service to perform the power status change, and polls continuously running the 'nutanix-hypervisor-task-poll' command of the task id given as output from Nutanix to power status change operation."
+description: Use this playbook to perform a power status change for a virtual machine,
+    and wait until the power status change task is completed. This playbook receives the desired power status, calls the Nutanix service to perform the power status change, and continuously polls by running the nutanix-hypervisor-task-poll command on the task ID provided as an output from Nutanix to power the status change operation.
 tests:
 - No test
