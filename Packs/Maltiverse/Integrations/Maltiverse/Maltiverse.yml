@@ -33,7 +33,7 @@ script:
       name: ip
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '5'
       description: If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
       isArray: false
@@ -103,7 +103,7 @@ script:
       name: domain
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '5'
       description: If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
       isArray: false
@@ -191,7 +191,7 @@ script:
       name: url
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '5'
       description: If the number of positives is higher than the threshold, the URL address will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
       isArray: false
@@ -276,7 +276,7 @@ script:
       name: file
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: '5'
       description: If the number of positives AV detection is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
       isArray: false
@@ -381,7 +381,7 @@ script:
     - contextPath: File.Tags
       description: Attribute to label an IoC.
       type: String
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false
