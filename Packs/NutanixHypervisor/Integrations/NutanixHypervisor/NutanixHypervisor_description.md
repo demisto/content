@@ -11,25 +11,15 @@ The following commands requires cluster admin or higher permissions.
 ##### nutanix-alerts-acknowledge-by-filter
 ##### nutanix-alerts-resolve-by-filter
 
-###Available Alert Type Ids, Impact Types And Entity Types
-In order to check the options for the mentioned above:
-* Go inside Nutanix UI and click on the second tab on top left corner(where it says Alerts in the picture below).
-* When dropdown opens, click on alerts.
-* Click on Alert Policies tab on your left side.
-
-After those steps, your screen should look like this image
+### Available Alert Type IDs, Impact Types and Entity Types
+In order to check the optional values for the mentioned above:
+* Go to your Nutanix UI and navigate to the `Alerts` screen. (Can be found under the second tab on the top left corner, see image below)
+* Navigate to the Alert Policies tab on the left sidebar.
+You should see the following screen:
 ![Nutanix Alert Policy](../../doc_files/Alert_Policy.png)
 
 Alert Policies contains the list of all possible alerts in the system,
 and their ID, Impact Type and Entity Type. 
 
-* ID stands for Alert Type ID filter parameter for fetching alerts, or argument for command nutanix-alerts-list
-* Impact Type stands for Impact Type filter parameter for fetching alerts, or argument for command nutanix-alerts-list
-* Entity Type stands for Entity Type filter parameter for fetching alerts, or argument for command nutanix-alerts-list 
-
-#### Some Entity Types are not supported. See the [Nutanix Hypervisor Documentation](https://github.com/demisto/content/blob/master/Packs/Nutanix/Integrations/Nutanix/README.md)
-
-
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/nutanix-hypervisor)
+* An alert policy `ID` can be used as an `Alert Type ID` filter for fetching alerts, or for the **nutanix-alerts-list** command.
+* An alert policy `Impact Type` can be used as `Impact Type` filter  for fetching alerts, or for the **nutanix-alerts-list** command.

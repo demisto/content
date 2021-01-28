@@ -2,7 +2,7 @@
     "id": "incident_checkid",
     "version": -1,
     "modified": "2021-01-13T12:52:07.599117Z",
-    "name": "Check Id",
+    "name": "Check ID",
     "ownerOnly": false,
     "cliName": "checkid",
     "type": "shortText",

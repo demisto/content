@@ -13,18 +13,5 @@
   "tags": [],
   "useCases": [],
   "keywords": [],
-  "dependencies": {
-    "CommonPlaybooks": {
-      "mandatory": true,
-      "display_name": "Common Playbooks"
-    },
-    "CommonTypes": {
-      "mandatory": true,
-      "display_name": "Common Types"
-    }
-  },
-  "displayedImages": [
-    "CommonPlaybooks",
-    "CommonTypes"
-  ]
+  "dependencies": {}
 }

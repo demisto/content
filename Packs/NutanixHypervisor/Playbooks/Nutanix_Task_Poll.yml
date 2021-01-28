@@ -300,6 +300,6 @@ inputs:
     then Nutanix will chose the host with the most available CPU.
   playbookInputQuery:
 fromversion: 5.0.0
-description: TODO ADD DESCRIPTION
+description: "Use this playbook to perform power status change for virtual machine, and wait until power status change task is completed. This playbook receives the desired power status, calls Nutanix service to perform the power status change, and polls continuously running the 'nutanix-hypervisor-task-poll' command of the task id given as output from Nutanix to power status change operation."
 tests:
 - No test
