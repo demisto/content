@@ -11,7 +11,7 @@ configuration:
   name: bot_password
   required: true
   type: 4
-- display: Default Team
+- display: Default team
   name: team
   required: true
   type: 0
@@ -39,7 +39,7 @@ configuration:
   - Critical
   required: false
   type: 15
-- display: Allow external users to create incidents via a direct message
+- display: Allow external users to create incidents via direct message
   name: allow_external_incidents_creation
   required: false
   type: 8
@@ -55,7 +55,7 @@ configuration:
   name: longRunning
   required: false
   type: 8
-- display: Listen port, e.g., 7000 (Required for investigation mirroring and direct
+- display: Listen port, e.g. 7000 (Required for investigation mirroring and direct
     messages)
   name: longRunningPort
   required: false
@@ -71,7 +71,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: The channel to send messages to.
+      description: The channel to which to send messages.
       isArray: false
       name: channel
       required: false
@@ -83,14 +83,14 @@ script:
       required: false
       secret: false
     - default: false
-      description: The team member to send the message to.
+      description: The team member to which to send the message.
       isArray: false
       name: team_member
       required: false
       secret: false
     - default: false
       description: The team in which the specified channel exists. The team must already
-        exist. This value will override the default channel configured in the
+        exist, and this value will override the default channel configured in the
         integration parameters.
       isArray: false
       name: team
@@ -103,7 +103,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The team member to send the message to.
+      description: The team member to which to send the message.
       isArray: false
       name: to
       required: false
@@ -119,7 +119,7 @@ script:
       default: true
       defaultValue: all
       description: The mirroring type. Can be "all", which mirrors everything, "chat",
-        which mirrors only chats (not commands), or "none", which stops all mirroring. Default is "all".
+        which mirrors only chats (not commands), or "none", which stops all mirroring.
       isArray: false
       name: mirror_type
       predefined:
@@ -132,7 +132,7 @@ script:
       default: false
       defaultValue: 'true'
       description: Whether to auto-close the channel when the incident is closed in
-        Cortex XSOAR. If "true", the channel will be auto-closed. Default is "true".
+        Demisto. If "true", the channel will be auto-closed. Default is "true".
       isArray: false
       name: autoclose
       predefined:
@@ -142,9 +142,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: Both
+      defaultValue: both
       description: The mirroring direction. Can be "FromDemisto", "ToDemisto", or
-        "Both". Default is "Both".
+        "Both".
       isArray: false
       name: direction
       predefined:
@@ -154,7 +154,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The team in which to mirror the Cortex XSOAR investigation. If not specified,
+      description: The team in which to mirror the Demisto investigation. If not specified,
         the default team configured in the integration parameters will be used.
       isArray: false
       name: team
@@ -167,7 +167,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Mirrors the Cortex XSOAR investigation to the specified Microsoft Teams
+    description: Mirrors the Demisto investigation to the specified Microsoft Teams
       channel.
     execution: false
     name: mirror-investigation
@@ -211,7 +211,7 @@ script:
     name: create-channel
   - arguments:
     - default: false
-      description: The channel to add the member to.
+      description: The channel to which to add the add the member to this channel
       isArray: false
       name: channel
       required: true
@@ -240,14 +240,14 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: 'Ring a user''s Team''s account. Note: This is a ring only! No media
-      will play in case the generated call is answered. To use this, make sure your
-      Bot has the following permissions - Calls.Initiate.All and Calls.InitiateGroupCall.All'
+    description: 'Ring a user''s Teams account. Note: This is a ring only! no media
+      will play in case the generated call is answered. To use this make sure your
+      Bot has the following premissions - Calls.Initiate.All and Calls.InitiateGroupCall.All'
     execution: false
     name: microsoft-teams-ring-user
   - arguments:
     - default: false
-      description: The channel to add the member to.
+      description: The channel to which to add the add the member to this channel
       isArray: false
       name: channel
       required: true
@@ -291,946 +291,7 @@ script:
     description: Creates a new channel in a Microsoft Teams team.
     execution: false
     name: microsoft-teams-create-channel
-  - arguments:
-    - default: false
-      description: The name of the team.
-      isArray: false
-      name: display_name
-      required: true
-      secret: false
-    - default: false
-      description: Description of the team.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: public
-      description: 'The visibility of the group and team. Possible values are: "public" and "private". Default is "public".'
-      isArray: false
-      name: visibility
-      predefined:
-      - public
-      - private
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether guests can add and update channels. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_guests_create_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether guests can delete channels. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_guests_delete_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can add and update private channels. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_create_private_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can add and update channels. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_create_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can delete channels. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_delete_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can add and remove apps. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_add_remove_apps
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can add, update, and remove tabs. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_add_remove_tabs
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can add, update, and remove connectors. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_add_remove_connectors
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether users can edit their messages. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_user_edit_messages
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether users can delete their messages. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_user_delete_messages
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether owners can delete any message. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_owner_delete_messages
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether @team mentions are allowed. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_team_mentions
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether @channel mentions are allowed. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_channel_mentions
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - default: false
-      description: ID of the user to be the team owner (e.g., 0040b377-61d8-43db-94f5-81374122dc7e).
-      isArray: false
-      name: owner
-      required: true
-      secret: false
-    deprecated: false
-    description: Creates a new team.
-    execution: false
-    name: microsoft-teams-create-team
-  - arguments:
-    - default: false
-      description: ID of group to create team from. Can be retrieved by running the
-        msgraph-groups-list-groups command.
-      isArray: false
-      name: group_id
-      required: true
-      secret: false
-    - default: false
-      description: The name of the team.
-      isArray: false
-      name: display_name
-      required: false
-      secret: false
-    - default: false
-      description: Description of the team.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: public
-      description: 'The visibility of the group and team. Possible values are: "public" and "private". Default is "public".'
-      isArray: false
-      name: visibility
-      predefined:
-      - public
-      - private
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether guests can add and update channels. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_guests_create_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether guests can delete channels. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_guests_delete_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can add and update private channels. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_create_private_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can add and update channels. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_create_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can delete channels. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_delete_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can add and remove apps. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_add_remove_apps
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can add, update, and remove tabs. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_add_remove_tabs
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether members can add, update, and remove connectors. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_members_add_remove_connectors
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether users can edit their messages. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_user_edit_messages
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether users can delete their messages. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_user_delete_messages
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether owners can delete any message. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_owner_delete_messages
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether @team mentions are allowed. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_team_mentions
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether @channel mentions are allowed. Possible values are: "true" and "false". Default is "false".'
-      isArray: false
-      name: allow_channel_mentions
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    deprecated: false
-    description: Create a new team under a group. In order to create a team, the group
-      must have a least one owner and the group cannot be of type Security.
-    execution: false
-    name: microsoft-teams-create-team-from-group
-  - deprecated: false
-    description: Returns all the groups that have teams in an organization.
-    execution: false
-    name: microsoft-teams-list-teams
-    outputs:
-    - contextPath: MicrosoftTeams.Team.securityEnabled
-      description: Specifies whether the group is a security group.
-      type: Boolean
-    - contextPath: MicrosoftTeams.Team.preferredDataLocation
-      description: The preferred data location for the group.
-      type: String
-    - contextPath: MicrosoftTeams.Team.resourceProvisioningOptions
-      description: Specifies the group resources that are provisioned as part of Microsoft
-        365 group creation, that are not normally part of default group creation.
-        Possible value is Team.
-      type: String
-    - contextPath: MicrosoftTeams.Team.createdDateTime
-      description: 'Timestamp of when the group was created. The value cannot be modified
-        and is automatically populated when the group is created. The Timestamp type
-        represents date and time information using ISO 8601 format and is always in
-        UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
-      type: String
-    - contextPath: MicrosoftTeams.Team.mailNickname
-      description: The alias of the group in an Exchange organization.
-      type: String
-    - contextPath: MicrosoftTeams.Team.securityIdentifier
-      description: Security identifier of the group, used in Windows scenarios.
-      type: String
-    - contextPath: MicrosoftTeams.Team.mailEnabled
-      description: Specifies whether the group is mail-enabled.
-      type: Boolean
-    - contextPath: MicrosoftTeams.Team.displayName
-      description: The display name for the group.
-      type: String
-    - contextPath: MicrosoftTeams.Team.visibility
-      description: 'Specifies the visibility of a Microsoft 365 group. Possible values
-        are: Private, Public, or Hiddenmembership. Blank values are treated as public.'
-      type: String
-    - contextPath: MicrosoftTeams.Team.proxyAddresses
-      description: 'Email addresses for the group that direct to the same group mailbox.
-        For example: ["SMTP: bob@demisto.com", "smtp: bob@sales.demisto.com"]'
-      type: String
-    - contextPath: MicrosoftTeams.Team.mail
-      description: The SMTP address for the group, for example, "serviceadmins@contoso.onmicrosoft.com".
-      type: String
-    - contextPath: MicrosoftTeams.Team.id
-      description: The unique identifier for the group.
-      type: String
-    - contextPath: MicrosoftTeams.Team.description
-      description: An optional description for the group.
-      type: String
-  - arguments:
-    - default: false
-      description: ID of the team to update. Can be retrieved by running the microsoft-teams-list-teams
-        command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    - default: false
-      description: The name of the team.
-      isArray: false
-      name: display_name
-      required: false
-      secret: false
-    - default: false
-      description: Description of the team.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'The visibility of the group and team. Possible values are: "public" and "private".'
-      isArray: false
-      name: visibility
-      predefined:
-      - public
-      - private
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether guests can add and update channels. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_guests_create_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether guests can delete channels. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_guests_delete_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether members can add and update private channels. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_members_create_private_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether members can add and update channels. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_members_create_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether members can delete channels. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_members_delete_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether members can add and remove apps. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_members_add_remove_apps
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether members can add, update, and remove tabs. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_members_add_remove_tabs
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether members can add, update, and remove connectors. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_members_add_remove_connectors
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether users can edit their messages. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_user_edit_messages
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether users can delete their messages. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_user_delete_messages
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether owners can delete any message. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_owner_delete_messages
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether @team mentions are allowed. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_team_mentions
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: 'Whether @channel mentions are allowed. Possible values are: "true" and "false".'
-      isArray: false
-      name: allow_channel_mentions
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    deprecated: false
-    description: Update the properties of the specified team.
-    execution: false
-    name: microsoft-teams-update-team
-  - arguments:
-    - default: false
-      description: ID of the team to delete. Can be retrieved by running the microsoft-teams-list-teams
-        command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    deprecated: false
-    description: 'Deletes a group. Note: it might take time for the team to disappear
-      from the teams list.'
-    execution: false
-    name: microsoft-teams-delete-team
-  - arguments:
-    - default: false
-      description: ID of team to get. Can be retrieved by running the microsoft-teams-list-teams
-        command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Retrieve the properties and relationships of the specified team.
-    execution: false
-    name: microsoft-teams-get-team
-    outputs:
-    - contextPath: MicrosoftTeams.Team.createdDateTime
-      description: 'Timestamp of when the group was created. The value cannot be modified
-        and is automatically populated when the group is created. The Timestamp type
-        represents date and time information using ISO 8601 format and is always in
-        UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
-      type: Date
-    - contextPath: MicrosoftTeams.Team.classification
-      description: Typically describes the data or business sensitivity of the team.
-      type: String
-    - contextPath: MicrosoftTeams.Team.isArchived
-      description: Whether this team is in read-only mode.
-      type: Boolean
-    - contextPath: MicrosoftTeams.Team.displayName
-      description: The display name for the group.
-      type: String
-    - contextPath: MicrosoftTeams.Team.visibility
-      description: 'Specifies the visibility of a Microsoft 365 group. Possible values
-        are: Private, Public, or Hiddenmembership; blank values are treated as public.'
-      type: String
-    - contextPath: MicrosoftTeams.Team.id
-      description: The unique identifier for the group.
-      type: String
-    - contextPath: MicrosoftTeams.Team.description
-      description: An optional description for the group.
-      type: String
-  - arguments:
-    - default: false
-      description: ID of the team to get the member of. Can be retrieved by running the microsoft-teams-list-teams
-        command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Returns the members of the specified team.
-    execution: false
-    name: microsoft-teams-list-members
-    outputs:
-    - contextPath: MicrosoftTeams.TeamMember.displayName
-      description: The display name of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.email
-      description: The email of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.id
-      description: Unique ID of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.roles
-      description: The roles for that user.
-      type: String
-  - arguments:
-    - default: false
-      description: ID of member to get. Can be retrieved by running the microsoft-teams-list-members
-        command.
-      isArray: false
-      name: membership_id
-      required: true
-      secret: false
-    - default: false
-      description: ID of the team to get the member of. Can be retrieved by running the microsoft-teams-list-teams
-        command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Gets a member of a team.
-    execution: false
-    name: microsoft-teams-get-member
-    outputs:
-    - contextPath: MicrosoftTeams.TeamMember.displayName
-      description: The display name of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.email
-      description: The email of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.id
-      description: Unique ID of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.roles
-      description: The roles for that user.
-      type: String
-  - arguments:
-    - default: false
-      description: ID of the team to add the user to. Can be retrieved by running the
-        microsoft-teams-list-teams command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    - default: false
-      description: ID of the user to add to the team. Can be retrieved by running
-        the microsoft-teams-list-members command.
-      isArray: false
-      name: user_id
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether to add the member with the owner role. Possible values are: "false" and "true". Default is "false".'
-      isArray: false
-      name: is_owner
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    deprecated: false
-    description: Add a user to be a team member.
-    execution: false
-    name: microsoft-teams-add-member
-    outputs:
-    - contextPath: MicrosoftTeams.TeamMember.displayName
-      description: The display name of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.email
-      description: The email of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.id
-      description: Unique ID of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.roles
-      description: The roles for that user.
-      type: String
-  - arguments:
-    - default: false
-      description: ID of the team to remove the user from. Can be retrieved by running
-        the microsoft-teams-list-teams command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    - default: false
-      description: ID of the member to remove from the team. Can be retrieved by running
-        the microsoft-teams-list-members command.
-      isArray: false
-      name: membership_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Remove a member from the team.
-    execution: false
-    name: microsoft-teams-remove-member
-  - arguments:
-    - default: false
-      description: ID of the team to update the member in. Can be retrieved by running
-        the microsoft-teams-list-teams command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    - default: false
-      description: ID of the team member to update. Can be retrieved by running the
-        microsoft-teams-list-members command.
-      isArray: false
-      name: membership_id
-      required: true
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      description: 'Whether to set the member with the owner role. Possible values are: "false" and "true". Default is "false".'
-      isArray: false
-      name: is_owner
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    deprecated: false
-    description: Updates a team member.
-    execution: false
-    name: microsoft-teams-update-member
-    outputs:
-    - contextPath: MicrosoftTeams.TeamMember.displayName
-      description: The display name of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.email
-      description: The email of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.id
-      description: Unique ID of the user.
-      type: String
-    - contextPath: MicrosoftTeams.TeamMember.roles
-      description: The roles for that user.
-      type: String
-  - arguments:
-    - default: false
-      description: ID of the team to archive. Can be retrieved by running the microsoft-teams-list-teams
-        command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Archive the specified team. When a team is archived, users can no
-      longer send or like messages on any channel in the team, edit the team's name,
-      description, or other settings, or in general make most changes to the team.
-      Membership changes to the team continue to be allowed. Archiving is an async
-      operation. A team is archived once the async operation completes successfully,
-      which may occur subsequent to a response from this command. In order to archive
-      a team, the team and group must have an owner.
-    execution: false
-    name: microsoft-teams-archive-team
-  - arguments:
-    - default: false
-      description: ID of the team to unarchive. Can be retrieved by running the microsoft-teams-list-teams
-        command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Restore an archived team. This restores the users' ability to send messages
-      and edit the team, abiding by tenant and team settings. Unarchiving is an async
-      operation. A team is unarchived once the async operation completes successfully,
-      which may occur subsequent to a response from this command.
-    execution: false
-    name: microsoft-teams-unarchive-team
-  - arguments:
-    - default: false
-      description: ID of the team to clone. Can be retrieved by running the microsoft-teams-list-teams
-        command.
-      isArray: false
-      name: team_id
-      required: true
-      secret: false
-    - default: false
-      description: The name of the team.
-      isArray: false
-      name: display_name
-      required: true
-      secret: false
-    - default: false
-      description: Description of the team.
-      isArray: false
-      name: description
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: public
-      description: 'The visibility of the group and team. Possible values are: "public" and "private". Default is "public".'
-      isArray: false
-      name: visibility
-      predefined:
-      - public
-      - private
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: 'Whether to copy Microsoft Teams apps that are installed in the
-        team. Possible values are: "false" and "true". Default is "true".'
-      isArray: false
-      name: clone_apps
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: 'Whether to copy the tabs within channels. Possible values are: "false" and "true". Default is "true".'
-      isArray: false
-      name: clone_tabs
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: 'Whether to copy all settings within the team, along with key group
-        settings. Possible values are: "false" and "true". Default is "true".'
-      isArray: false
-      name: clone_settings
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'true'
-      description: 'Whether to copy the channel structure (but not the messages in
-        the channel). Possible values are: "false" and "true". Default is "true".'
-      isArray: false
-      name: clone_channels
-      predefined:
-      - 'false'
-      - 'true'
-      required: false
-      secret: false
-    deprecated: false
-    description: Create a copy of a team. This operation also creates a copy of the
-      corresponding group. Cloning is a long-running operation.
-    execution: false
-    name: microsoft-teams-clone-team
-  - arguments:
-    - default: false
-      description: ID of the user (e.g., 2827c1e7-edb6-4529-b50d-25984e968637). Can
-        be retrieved by running the msgraph-user-list command.
-      isArray: false
-      name: user_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Get the teams in Microsoft Teams that the user is a direct member
-      of.
-    execution: false
-    name: microsoft-teams-list-joined-teams
-    outputs:
-    - contextPath: MicrosoftTeams.Team.createdDateTime
-      description: 'Timestamp of when the group was created. The value cannot be modified
-        and is automatically populated when the group is created. The Timestamp type
-        represents date and time information using ISO 8601 format and is always in
-        UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
-      type: Date
-    - contextPath: MicrosoftTeams.Team.classification
-      description: Typically describes the data or business sensitivity of the team.
-      type: String
-    - contextPath: MicrosoftTeams.Team.isArchived
-      description: Whether this team is in read-only mode.
-      type: Boolean
-    - contextPath: MicrosoftTeams.Team.displayName
-      description: The display name for the group.
-      type: String
-    - contextPath: MicrosoftTeams.Team.visibility
-      description: 'Specifies the visibility of a Microsoft 365 group. Possible values
-        are: Private, Public, or Hiddenmembership; blank values are treated as public.'
-      type: String
-    - contextPath: MicrosoftTeams.Team.id
-      description: The unique identifier for the group.
-      type: String
-    - contextPath: MicrosoftTeams.Team.description
-      description: An optional description for the group.
-      type: String
-  dockerimage: demisto/teams:1.0.0.15528
+  dockerimage: demisto/teams:1.0.0.13080
   feed: false
   isfetch: false
   longRunning: true
