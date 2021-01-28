@@ -424,12 +424,11 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build, packs_latest_release_notes =\
+        task_status, not_updated_build = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
         assert not_updated_build is False
-        assert packs_latest_release_notes == "1.0.0"
 
     def test_prepare_release_notes_upgrade_version(self, mocker, dummy_pack):
         """
@@ -460,12 +459,11 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build, packs_latest_release_notes = \
+        task_status, not_updated_build = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
         assert not_updated_build is False
-        assert packs_latest_release_notes == "2.0.2"
 
     def test_prepare_release_notes_upgrade_version_mismatch(self, mocker, dummy_pack):
         """
@@ -496,12 +494,11 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build, packs_latest_release_notes = \
+        task_status, not_updated_build = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is False
         assert not_updated_build is False
-        assert packs_latest_release_notes == "2.0.2"
 
     def test_prepare_release_notes_upgrade_version_dup(self, mocker, dummy_pack):
         """
@@ -532,12 +529,11 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build, packs_latest_release_notes = \
+        task_status, not_updated_build = \
             Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
 
         assert task_status is True
         assert not_updated_build is False
-        assert packs_latest_release_notes == "2.0.0"
 
     def test_assert_production_bucket_version_matches_release_notes_version_positive(self, dummy_pack):
         """
@@ -774,7 +770,7 @@ This is visible
        """
         from Tests.Marketplace.marketplace_services import os
         mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
-        pack_update_date = dummy_pack._get_pack_update_date(is_changelog_exist, '1.1.0')
+        pack_update_date = dummy_pack._get_pack_update_date(is_changelog_exist, False)
         if is_changelog_exist == 'changelog_new_exist':
             os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
         assert pack_update_date == expected_date
