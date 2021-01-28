@@ -3258,7 +3258,10 @@
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
-        "Tenable.io Scan Test": "Issue 26728"
+        "Tenable.io Scan Test": "Issue 26728",
+        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
+        "PAN-OS DAG Configuration Test": "Issue 19205",
+        "palo_alto_firewall_test_pb": "Issue 27501"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -3355,9 +3358,7 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774",
-        "CrowdStrike Falcon Intel v2": "License issues #32473",
-        "CrowdStrikeMalquery": "License issues #32473"
+        "AttackIQFireDrill": "License issues #29774"
     },
     "nightly_integrations": [
         "Lastline v2",
