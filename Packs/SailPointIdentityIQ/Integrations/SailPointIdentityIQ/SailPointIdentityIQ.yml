@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Identity and Access Management
 commonfields:
   id: SailPointIdentityIQ
   version: -1
