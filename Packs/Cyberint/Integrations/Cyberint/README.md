@@ -37,7 +37,7 @@ List alerts according to parameters
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page | Page number to return. Default is 1. | Optional | 
-| page_size | Number of results in a page. Must be between 10 and 100. Default is 10. | Optional | 
+| page_size | Number of results in a page. Default is 10. Must be between 10 and 100. Default is 10. | Optional | 
 | created_date_from | ISO-Formatted creation date. Get alerts created since this date (YYYY-MM-DDTHH:MM:SSZ). | Optional | 
 | created_date_to | ISO-Formatted creation date. Get alerts created before this date (YYYY-MM-DDTHH:MM:SSZ). | Optional | 
 | created_date_range | You can specify a date range to search for from the current time. (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) instead of a start/end time. created_date_range will overwrite created_date. | Optional | 
