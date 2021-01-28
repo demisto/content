@@ -57,8 +57,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns
+        'no'.
       id: 966561a7-320b-423a-8a50-64e26585f1c3
       iscommand: false
       name: Is Cisco ISE enabled?
@@ -88,8 +88,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This scripts determines which configured Cisco ISE instance is
-        in active/primary state and returns the name of this instance.
+      description: Determines which configured Cisco ISE instance is
+        in active/primary state and returns the name of the instance.
       id: 2e50c91a-77be-4bec-8265-a35b5ed8a587
       iscommand: false
       name: Get active Cisco ISE instance
@@ -132,7 +132,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 9412ebaf-a1c9-4c8c-8889-ca7511901348
       iscommand: true
       name: Send disabled status to PANW IoT cloud
@@ -167,8 +167,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Checks if there's an active integration instance of Cisco ISE.
       id: dec16e0d-3a3d-4957-8ee2-52d723196b41
       iscommand: false
       name: Is active instance available?
@@ -281,8 +280,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return 'yes'
         if one of the entries returned an error.
       id: e8bc01b6-c54c-4b84-8531-7bdca9e10102
       iscommand: false
@@ -326,7 +325,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 4245bc18-f98a-4006-87b5-5217c023aff0
       iscommand: true
       name: Send error status to PANW IoT cloud
@@ -367,7 +366,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Updates the custom attributes of an endpoint.
+      description: Updates an endpoint's custom attributes.
       id: 256125a9-ce58-4bab-8283-59ec4bfb4e5b
       iscommand: true
       name: Create AlertType and AlertSeverity Custom Attributes for endpoint
@@ -402,8 +401,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return 'yes'
         if one of the entries returned an error.
       id: ed1de104-899f-439d-850a-6fc691b682c8
       iscommand: false
@@ -447,7 +446,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: d0cb7121-6a05-4585-869c-cadf50e11e09
       iscommand: true
       name: Send error status to PANW IoT cloud
@@ -490,7 +489,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 273b5426-9f51-4356-8975-1ff5a772a161
       iscommand: true
       name: Send success status to PANW IoT cloud
@@ -524,7 +523,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Closes the current incident.
       id: db3e784e-b17d-4a95-8b5a-7f9d1b087df4
       iscommand: true
       name: closeInvestigation
