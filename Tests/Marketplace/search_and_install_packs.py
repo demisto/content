@@ -15,6 +15,8 @@ from distutils.version import LooseVersion
 from typing import List
 
 from Tests.Marketplace.marketplace_services import PACKS_FULL_PATH, IGNORED_FILES, GCPConfig, init_storage_client
+from Tests.scripts.utils.content_packs_util import is_pack_deprecated
+from demisto_sdk.commands.common.constants import PACKS_DIR
 
 PACK_METADATA_FILE = 'pack_metadata.json'
 PACK_PATH_VERSION_REGEX = re.compile(fr'^{GCPConfig.STORAGE_BASE_PATH}/[A-Za-z0-9-_.]+/(\d+\.\d+\.\d+)/[A-Za-z0-9-_.]'
@@ -372,7 +374,16 @@ def search_pack_and_its_dependencies(client: demisto_client,
 
         current_packs_to_install = [pack_data]
         if dependencies:
-            current_packs_to_install.extend(dependencies)
+            # Check that the dependencies don't include a deprecated pack:
+            for dependency in dependencies:
+                pack_path = os.path.join(PACKS_DIR, dependency.get('id'))
+                if is_pack_deprecated(pack_path):
+                    logging.critical(f'Pack {pack_id} depends on pack {dependency.get("id")} which is a deprecated '
+                                     f'pack.')
+                    global SUCCESS_FLAG
+                    SUCCESS_FLAG = False
+                else:
+                    current_packs_to_install.extend(dependencies)
 
         lock.acquire()
         for pack in current_packs_to_install:
