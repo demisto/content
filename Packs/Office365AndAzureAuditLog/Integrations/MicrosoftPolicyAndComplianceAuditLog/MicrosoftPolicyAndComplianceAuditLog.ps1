@@ -566,9 +566,14 @@ function SearchAuditLogCommand{
     try
     {
         $client.CreateSession()
+        if ($kwargs.end_date){
+            $end_date = $kwargs.end_date
+        } else {
+            $end_date = Get-Date -AsUTC
+        }
         $raw_response = $client.SearchUnifiedAuditLog(
                 $kwargs.start_date,
-                $kwargs.end_date,
+                $end_date,
                 $kwargs.free_text,
                 $kwargs.record_type,
                 (ArgToList $kwargs.ip_addresses),
