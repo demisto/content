@@ -208,7 +208,7 @@ tasks:
       asset_type:
         simple: vulnerability
       increment_time:
-        simple: "1500"
+        simple: "15"
       offset: {}
       page_length: {}
       using:
