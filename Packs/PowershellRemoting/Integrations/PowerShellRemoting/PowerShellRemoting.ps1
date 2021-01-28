@@ -484,31 +484,57 @@ function InvokeCommandCommand([RemotingClient]$client, [string]$command)
     $title = "Result for PowerShell Remote Command: $command `n"
     $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
-    $context_result = @{
-        Command = $command
-        Result = [System.Collections.ArrayList]::new()
-    }
-    $tmp_context = @{}
-    # create result dictionary with the computer as a key
+    $results_map = @{}
+    # create result map with the computer as a key
     For ($i=0; $i -lt $raw_result.Length; $i++) {
-        # TODO: cut the computer name after first dot
-        $computer_name = [string]($raw_result[$i] | Select-Object -ExpandProperty PSComputerName)
-        if ([bool]($tmp_context.Keys -match $computer_name)) {
-            $tmp_context[$computer_name] += $raw_result[$i]
+        # base name
+        $fqdn = [string]($raw_result[$i] | Select-Object -ExpandProperty PSComputerName)
+        $computer_name = $fqdn -match "[^\.]*"  # load basename to $matches
+        $computer_name = $matches[0]
+        if($raw_result[$i].GetType().Fullname -eq 'System.Management.Automation.PSObject') {
+                $item = ($raw_result[$i] | select-object -ExcludeProperty PSComputerName,PSShowComputerName,RunspaceId)
         }
+        elseif ($raw_result[$i].GetType().Fullname -eq 'System.String') {
+            if ([string]::IsNullOrEmpty($raw_result[$i])) {
+                continue
+            }
+            $item = ($raw_result[$i] | out-string)
+        }
+        # existing key
+        if ([bool]($results_map.Keys -match $computer_name)) {
+            $results_map[$computer_name]['Command']['Result'] += $item
+        }
+        # new key
         else {
-            $tmp_context[$computer_name] = @($raw_result[$i])
+            $results_map[$computer_name] = @{
+                Fqdn = $fqdn
+                Host = $computer_name
+                Command = @{
+                    Name = $command
+                    Result = [System.Collections.ArrayList]::new()}
+            }
+            $tmp = $results_map[$computer_name]['Command']['Result'].Add($item)
         }
     }
-    foreach ($h in $tmp_context.GetEnumerator()) {
-        $tmp = $context_result['Result'].Add($h.value)
-    }
-    $entry_context = @{
-        $script:INTEGRATION_ENTRY_CONTEX = @{ Command = $context_result }
-    }
-    $human_readable = $title + $raw_result
+    # extract command results per computer
+    if ($results_map) {
+        $context_key = 'PSRemoteCommand'
+        $context_result = @{
+            $context_key = [System.Collections.ArrayList]::new()
+        }
+        foreach ($computer_result in $results_map.GetEnumerator()) {
+            $tmp = $context_result[$context_key].Add($computer_result.value)
+        }
+        $entry_context = @{
+            $script:INTEGRATION_ENTRY_CONTEX = $context_result
+        }
+        $human_readable = $title + $raw_result
 
-    return $human_readable, $entry_context, $raw_result
+        return $human_readable, $entry_context, $raw_result
+    }
+    else {
+        return $title + 'No results'
+    }
     <#
         .DESCRIPTION
         Runs invoke-command on existing session.
@@ -523,7 +549,7 @@ function DownloadFileCommand([RemotingClient]$client, [string]$path, [string]$zi
     # assert file exists in the system
     $command = '[System.IO.File]::Exists("' + $path + '")'
     $raw_result = $client.InvokeCommandInSession($command)
-    if (-Not $raw_result -or ($raw_result -eq 'False'))
+    if (-Not $raw_result -or ($raw_result -eq $False))
     {
         $client.CloseSession()
         throw "$path was not found on the remote host."

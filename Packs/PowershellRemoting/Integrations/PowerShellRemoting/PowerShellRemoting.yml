@@ -67,10 +67,16 @@ script:
     execution: true
     name: ps-remote-command
     outputs:
-    - contextPath: PsRemote.Command.Result
-      description: The result of the command run from target machine
+    - contextPath: PsRemote.PSRemoteCommand.Host
+      description: The Host the command was invoked on.
       type: string
-    - contextPath: PsRemote.Command.CommandName
+    - contextPath: PsRemote.PSRemoteCommand.Fqdn
+      description: The Fully Qualified Domain Name of the host the command was invoked on.
+      type: string
+    - contextPath: PsRemote.PSRemoteCommand.Command.Result
+      description: The result of the command run from target machine
+      type: list
+    - contextPath: PsRemote.PSRemoteCommand.Command.Name
       description: The command sent to target machine, used as ID of that query.
       type: string
   - arguments:
