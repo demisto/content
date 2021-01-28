@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Recorded Future c
+  id: Recorded Future
   version: -1
 configuration:
 - defaultvalue: https://api.recordedfuture.com
@@ -76,8 +76,8 @@ configuration:
   type: 13
 description: Unique threat intel technology that automatically serves up relevant
   insights in real time.
-display: Recorded Future c
-name: Recorded Future c
+display: Recorded Future
+name: Recorded Future
 script:
   commands:
   - arguments:
