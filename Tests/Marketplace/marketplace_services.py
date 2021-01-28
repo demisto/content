@@ -1154,7 +1154,6 @@ class Pack(object):
         Returns:
             bool: whether the operation succeeded.
             bool: whether running build has not updated pack release notes.
-            str: packs latest release notes
         """
         task_status = False
         not_updated_build = False
@@ -1179,7 +1178,7 @@ class Pack(object):
                         logging.error(f"Version mismatch detected between current version: {self._current_version} "
                                       f"and latest release notes version: {latest_release_notes}")
                         task_status = False
-                        return task_status, not_updated_build, packs_latest_release_notes_version
+                        return task_status, not_updated_build
                     else:
                         if latest_release_notes in changelog:
                             logging.info(f"Found existing release notes for version: {latest_release_notes}")
@@ -1203,7 +1202,7 @@ class Pack(object):
                         logging.warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
                         task_status, not_updated_build = True, True
-                        return task_status, not_updated_build, packs_latest_release_notes_version
+                        return task_status, not_updated_build
 
                     changelog[Pack.PACK_INITIAL_VERSION] = self._create_changelog_entry(
                         release_notes=self.description,
@@ -1229,7 +1228,7 @@ class Pack(object):
             else:
                 logging.error(f"No release notes found for: {self._pack_name}")
                 task_status = False
-                return task_status, not_updated_build, packs_latest_release_notes_version
+                return task_status, not_updated_build
 
             # write back changelog with changes to pack folder
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
@@ -1241,7 +1240,7 @@ class Pack(object):
             logging.error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
                           f"Additional info: {e}")
         finally:
-            return task_status, not_updated_build, packs_latest_release_notes_version
+            return task_status, not_updated_build
 
     def create_local_changelog(self, build_index_folder_path):
         """ Copies the pack index changelog.json file to the pack path
@@ -1554,35 +1553,30 @@ class Pack(object):
         Returns:
             datetime: Pack created date.
         """
-
+        earliest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
         changelog = self._get_changelog(index_folder_path)
-        initial_changelog_version = changelog.get(Pack.PACK_INITIAL_VERSION, {})
 
-        if not initial_changelog_version:
-            # if the changelog exists but the first version isn't PACK_INITIAL_VERSION
-            sorted_changelog = collections.OrderedDict(sorted(changelog.items()))
-            for version, _ in sorted_changelog.items():
-                initial_changelog_version = changelog.get(version, {})
-                break
+        if changelog:
+            packs_earliest_release_notes = min(LooseVersion(ver) for ver in changelog)
+            initial_changelog_version = changelog.get(packs_earliest_release_notes.vstring, {})
+            earliest_changelog_released_date = initial_changelog_version.get('released')
 
-        init_changelog_released_date = initial_changelog_version.get('released',
-                                                                     datetime.utcnow().strftime(Metadata.DATE_FORMAT))
-        return init_changelog_released_date
+        return earliest_changelog_released_date
 
     def _get_pack_update_date(self, index_folder_path, pack_was_modified):
         """ Gets the pack update date.
         Args:
             index_folder_path (str): downloaded index folder directory path.
+            pack_was_modified (bool): whether the pack was modified or not.
         Returns:
             datetime: Pack update date.
         """
-
-        changelog = self._get_changelog(index_folder_path)
         latest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+        changelog = self._get_changelog(index_folder_path)
 
-        if changelog.keys() and not pack_was_modified:
-            packs_latest_release_notes = (list(reversed(sorted(changelog.keys()))))[0]
-            latest_changelog_version = changelog.get(packs_latest_release_notes, {})
+        if changelog and not pack_was_modified:
+            packs_latest_release_notes = max(LooseVersion(ver) for ver in changelog)
+            latest_changelog_version = changelog.get(packs_latest_release_notes.vstring, {})
             latest_changelog_released_date = latest_changelog_version.get('released')
 
         return latest_changelog_released_date
