@@ -1,5 +1,4 @@
-comment: Determines which configured Cisco ISE instance is in active/primary state.
-  state and returns the name of this instance.
+comment: Determines which configured Cisco ISE instance is in active/primary state and returns the name of the instance.
 commonfields:
   id: GetCiscoISEActiveInstance
   version: -1
@@ -8,9 +7,9 @@ enabled: true
 name: GetCiscoISEActiveInstance
 outputs:
 - contextPath: PaloAltoIoTIntegrationBase.ActiveNodeInstance
-  description: Returns instance name of the active Cisco ISE node
+  description: Returns the instance name of the active Cisco ISE node.
 - contextPath: PaloAltoIoTIntegrationBase.NodeErrorStatus
-  description: Returns the nodes error status if no active Cisco ISE nodes are found
+  description: Returns the node's error status if no active Cisco ISE nodes are found.
 runas: DBotWeakRole
 runonce: false
 script: ''
