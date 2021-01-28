@@ -1,5 +1,5 @@
-description: Playbook to handle incident triggered from PANW Iot (Zingbox) UI to un-quarantine
-  a device in ISE.
+description: Handles incidents triggered from PANW Iot (Zingbox) UI to un-quarantine
+  a device in Cisco ISE.
 id: Un-quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
 inputs: []
 name: Un-quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
@@ -59,7 +59,7 @@ tasks:
     task:
       brand: ""
       description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+        'no'.
       id: 44244701-b701-4741-8566-5cb38d0cc9ce
       iscommand: false
       name: Is Cisco ISE enabled?
@@ -89,8 +89,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This scripts determines which configured Cisco ISE instance is
-        in active/primary state and returns the name of this instance.
+      description: Determines which configured Cisco ISE instance is
+        in active/primary state and returns the name of the instance.
       id: 7c797c73-7bc0-421c-8139-ba40214c1d0e
       iscommand: false
       name: Get active Cisco ISE instance
@@ -122,7 +122,7 @@ tasks:
       integration_name:
         simple: ise
       message:
-        simple: Cisco ISE instance is not enabled
+        simple: Cisco ISE instance is not enabled.
       playbook_name:
         simple: Un-quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
       status:
@@ -133,7 +133,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: decf49a9-82ab-4777-8a41-8b2414bed1c9
       iscommand: true
       name: Send disabled status to PANW IoT cloud
@@ -168,8 +168,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Checks if there's an active integration instance of Cisco ISE.
       id: 54334d82-70a0-4816-888b-b444d0d0cc32
       iscommand: false
       name: Is active instance available?
@@ -282,8 +281,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: c6d8bd3f-dc98-4877-85e0-9491d1afeee5
       iscommand: false
@@ -403,8 +402,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: 31241ad8-711f-412f-8955-5d5422fce4e9
       iscommand: false
@@ -437,7 +436,7 @@ tasks:
       integration_name:
         simple: ise
       message:
-        simple: Failed to Un-quarantine Endpoint ${Endpoint.MACAddress} on ISE
+        simple: Failed to Un-quarantine Endpoint ${Endpoint.MACAddress} on Cisco ISE
       playbook_name:
         simple: Un-quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
       status:
@@ -525,7 +524,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Closes the current incident.
       id: 968fa0a9-ad10-4a7b-8930-c964e083f7b9
       iscommand: true
       name: closeInvestigation
