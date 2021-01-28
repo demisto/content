@@ -940,6 +940,7 @@ tasks:
       brand: ""
       id: 4ad64efc-9fc0-4502-84e8-cd12a542a0f9
       iscommand: false
+      description: ""
       name: Enable github SSO
       type: collection
       version: -1
