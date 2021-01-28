@@ -304,7 +304,7 @@ def parse_response(response: Runner, human_readable_name: str, installed_softwar
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: TidyClient, **_) -> DemistoResult:
+def test_module(client: TidyClient, **_) -> str:
     """Check endpoint configuration is right, Could detect the following:
         1. Hostname isn't accessible from network.
         2. User or password isn't right.
@@ -314,7 +314,7 @@ def test_module(client: TidyClient, **_) -> DemistoResult:
             client: TidyClient.
 
         Raises:
-            DemistoException: If test isn't finished succesfully.
+            DemistoException: If test isn't finished successfully.
     """
     client.test()
 
@@ -436,7 +436,7 @@ def tidy_github_ssh_key_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    runner: Runner = client.github_ssh_key(github_access_token=kwargs.get("access_token"))
+    runner: Runner = client.github_ssh_key(github_access_token=kwargs.get("access_token", ""))
 
     return parse_response(response=runner,
                           human_readable_name="Github SSH Key Creation Results",
@@ -454,10 +454,10 @@ def tidy_git_clone_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    repo = kwargs.get("repo")
-    dest = kwargs.get("dest")
-    force = kwargs.get("force")
-    update = kwargs.get("update")
+    repo = kwargs.get("repo", "")
+    dest = kwargs.get("dest", "")
+    force = kwargs.get("force", "")
+    update = kwargs.get("update", "")
     runner: Runner = client.git_clone(repo=repo,
                                       dest=dest,
                                       force=force,
@@ -479,9 +479,9 @@ def tidy_git_config_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    key = kwargs.get("key")
-    value = kwargs.get("value")
-    scope = kwargs.get("scope")
+    key = kwargs.get("key", "")
+    value = kwargs.get("value", "")
+    scope = kwargs.get("scope", "")
     runner: Runner = client.git_config(key=key,
                                        value=value,
                                        scope=scope)
@@ -521,10 +521,10 @@ def tidy_block_in_file_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    path = kwargs.get("path")
-    block = kwargs.get("block")
-    marker = kwargs.get("marker")
-    create = kwargs.get("create")
+    path = kwargs.get("path", "")
+    block = kwargs.get("block", "")
+    marker = kwargs.get("marker", "")
+    create = kwargs.get("create", "")
     runner: Runner = client.block_in_file(path=path,
                                           block=block,
                                           marker=marker,
@@ -546,8 +546,8 @@ def tidy_exec_command(client: TidyClient, **kwargs) -> DemistoResult:
     Returns:
         DemistoResults: Demisto structured response.
     """
-    command = kwargs.get("command")
-    working_dir = kwargs.get("chdir")
+    command = kwargs.get("command", "")
+    working_dir = kwargs.get("chdir", "")
     runner: Runner = client.exec(command=command,
                                  working_dir=working_dir)
 
