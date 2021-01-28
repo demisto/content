@@ -647,7 +647,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'.
+      description: Indicates the search is local only, and does not include peers. The default value for this parameter is 'true'. If the local search is configured to 'False' in your instance, make sure to add this argument with the 'false' value to the command.
     - name: query
       description: The search query string to filter/process the events.
     - name: timeout
