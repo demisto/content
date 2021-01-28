@@ -1558,7 +1558,7 @@ class Pack(object):
 
         if changelog:
             packs_earliest_release_notes = min(LooseVersion(ver) for ver in changelog)
-            initial_changelog_version = changelog.get(str(packs_earliest_release_notes), {})
+            initial_changelog_version = changelog.get(packs_earliest_release_notes.vstring, {})
             earliest_changelog_released_date = initial_changelog_version.get('released')
 
         return earliest_changelog_released_date
@@ -1576,7 +1576,7 @@ class Pack(object):
 
         if changelog and not pack_was_modified:
             packs_latest_release_notes = max(LooseVersion(ver) for ver in changelog)
-            latest_changelog_version = changelog.get(str(packs_latest_release_notes), {})
+            latest_changelog_version = changelog.get(packs_latest_release_notes.vstring, {})
             latest_changelog_released_date = latest_changelog_version.get('released')
 
         return latest_changelog_released_date
