@@ -168,6 +168,7 @@ def update_index_folder(index_folder_path: str, pack_name: str, pack_path: str, 
             if os.path.exists(index_pack_path):
                 shutil.rmtree(index_pack_path)  # remove pack folder inside index in case that it exists
             logging.warning(f"Skipping updating {pack_name} pack files to index")
+            task_status = True
             return True
 
         # Copy new files and add metadata for latest version
@@ -937,12 +938,6 @@ def main():
             pack.cleanup()
             continue
 
-        # in case that pack already exist at cloud storage path and in index, skipped further steps
-        if skipped_pack_uploading and exists_in_index:
-            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
-            pack.cleanup()
-            continue
-
         task_status = pack.prepare_for_index_upload()
         if not task_status:
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
@@ -953,6 +948,12 @@ def main():
                                           pack_version=pack.latest_version, hidden_pack=pack.hidden)
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+            pack.cleanup()
+            continue
+
+        # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
+        if skipped_pack_uploading and exists_in_index:
+            pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
             continue
 

@@ -494,15 +494,6 @@
         "startCol": 0
        },
        {
-        "endCol": 2,
-        "fieldId": "apdmessagedetailsdate",
-        "height": 53,
-        "id": "2a006c60-30a5-11eb-abb4-0dbd4dcfaa9a",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
         "dropEffect": "move",
         "endCol": 2,
         "fieldId": "apdmessagefrom",
@@ -524,33 +515,6 @@
        },
        {
         "endCol": 2,
-        "fieldId": "apdmessagedetailsfrom",
-        "height": 53,
-        "id": "2f326120-30a5-11eb-abb4-0dbd4dcfaa9a",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "apdmessagedetailsto",
-        "height": 53,
-        "id": "35c349a0-30a5-11eb-abb4-0dbd4dcfaa9a",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "apdmessagedetailssubject",
-        "height": 53,
-        "id": "3be96260-30a5-11eb-abb4-0dbd4dcfaa9a",
-        "index": 3,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "apdmessagesenderipaddress",
         "height": 53,
         "id": "cef59470-30a5-11eb-abb4-0dbd4dcfaa9a",
@@ -558,15 +522,7 @@
         "sectionItemType": "field",
         "startCol": 0
        },
-       {
-        "endCol": 2,
-        "fieldId": "apdenforcementstatus",
-        "height": 53,
-        "id": "58b0d3a0-30a6-11eb-abb4-0dbd4dcfaa9a",
-        "index": 4,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
+
        {
         "endCol": 2,
         "fieldId": "apdmessagemailfrom",
@@ -591,24 +547,6 @@
         "height": 53,
         "id": "71678410-3638-11eb-b72f-6de9f7cee477",
         "index": 7,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "apdmessagesbrs",
-        "height": 53,
-        "id": "5edc91b0-30a6-11eb-abb4-0dbd4dcfaa9a",
-        "index": 8,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "apdmessagetimestampms",
-        "height": 53,
-        "id": "64971760-30a6-11eb-abb4-0dbd4dcfaa9a",
-        "index": 8,
         "sectionItemType": "field",
         "startCol": 0
        },
@@ -720,40 +658,11 @@
        {
         "dropEffect": "move",
         "endCol": 2,
-        "fieldId": "apdmessagedetailstrustscore",
-        "height": 53,
-        "id": "202f4d00-30a5-11eb-abb4-0dbd4dcfaa9a",
-        "index": 0,
-        "listId": "sr1qhs9ev9-9e5b9030-30a5-11eb-abb4-0dbd4dcfaa9a",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
         "fieldId": "apdmessagetrustscore",
         "height": 53,
         "id": "eab84c60-3637-11eb-b72f-6de9f7cee477",
         "index": 0,
         "listId": "sr1qhs9ev9-9e5b9030-30a5-11eb-abb4-0dbd4dcfaa9a",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "apdmessagetrustscoremax",
-        "height": 53,
-        "id": "6d28a750-30a5-11eb-abb4-0dbd4dcfaa9a",
-        "index": 1,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "apdmessagetrustscoremin",
-        "height": 53,
-        "id": "753448f0-30a5-11eb-abb4-0dbd4dcfaa9a",
-        "index": 2,
         "sectionItemType": "field",
         "startCol": 0
        },
