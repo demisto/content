@@ -1,0 +1,17 @@
+{
+    "name": "TestResubmit",
+    "description": "description_updated",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "author_test2",
+    "url": "",
+    "email": "",
+    "created": "2021-01-28T14:32:29Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "dantavori"
+    ]
+}
