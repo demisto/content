@@ -62,6 +62,13 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 PRETTY_DATE_FORMAT = "%b %d, %Y, %H:%M:%S"
 FETCH_TAG = demisto.params().get("fetch_tag")
 
+MIRROR_DIRECTION = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
+
 
 """ HELPER FUNCTIONS """
 
@@ -184,8 +191,10 @@ def pretty_print_comment_html(comment: dict, title: str = None) -> str:
         else ""
     )
     string += f"{comment['comment']}"
+    string += "<small>"
     string += f"<br><em>id: {comment['id']}</em><br>"
     string += f"<em>Flags: {str(comment['flags'])}</em><br>" if comment["flags"] else ""
+    string += "</small>"
     return string
 
 
@@ -226,7 +235,11 @@ def test_module_command() -> str:
 
 
 def fetch_incidents(
-    last_run: dict, first_fetch_period: str, limit: int = 25, min_severity: str = "low"
+    last_run: dict,
+    first_fetch_period: str,
+    limit: int = 25,
+    min_severity: str = "low",
+    mirror_direction: str = "None",
 ):
     demisto.debug("foobar " + str(last_run), demisto.getLastRun(), first_fetch_period)
     start_timestamp = last_run.get("start_time", None) if last_run else None
@@ -261,6 +274,10 @@ def fetch_incidents(
             },
             "details": json.dumps(case),
             "rawJSON": json.dumps(case),
+            "dbotMirrorDirection": MIRROR_DIRECTION[mirror_direction],
+            "dbotMirrorInstance": demisto.integrationInstance(),
+            "dbotMirrorId": str(case["id"]),
+            # "dbotMirrorTags": TODO
         }
 
         # Attach files
@@ -276,7 +293,12 @@ def fetch_incidents(
                 }
             )
             incident_attachments.append(
-                {"path": file.get("FileID", ""), "name": file.get("File", "")}
+                {
+                    "path": file.get("FileID", ""),
+                    "name": file.get("File", ""),
+                    # "type": file.get("Type", ""),
+                    "description": "File downloaded from Argus",
+                }
             )
         incident["attachment"] = incident_attachments
 
@@ -333,17 +355,20 @@ def fetch_incidents_old(
 
 
 def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
-    demisto.debug(str(args))
+    demisto.debug(f"##### get-remote-data args: {json.dumps(args, indent=4)}")
     # demisto.results(str(args))
     remote_args = GetRemoteDataArgs(args)
-    demisto.debug("foobar" + str(remote_args))
-    case_id = args.get("remote_incident_id", "")
+    demisto.debug(f"Getting update for remote [{remote_args.remote_incident_id}]")
+    case_id = remote_args.remote_incident_id
+    # case_id = args.get("remote_incident_id", "")
     if not case_id:
         case_id = args.get("id", "")
     if not case_id:
         raise ValueError("case id not found")
-
-    last_mirror_update = dateparser.parse(args.get("lastUpdate", ""))
+    demisto.debug(f"Getting update with last update [{remote_args.last_update}]")
+    last_mirror_update = dateparser.parse(remote_args.last_update)
+    if not last_mirror_update:
+        last_mirror_update = dateparser.parse(args.get("lastUpdate", ""))
     if not last_mirror_update:
         raise ValueError("last update not found")
 
@@ -373,6 +398,7 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
     # Attach comments as notes
     case_comments = list_case_comments(caseID=int(case_id)).get("data", [])
     for comment in case_comments:
+        # New comment
         if last_update_timestamp < comment.get("addedTimestamp", 0):
             entries.append(
                 {
@@ -382,6 +408,7 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
                     "Contents": pretty_print_comment_html(comment),
                 }
             )
+        # Existing comment has been updated
         elif (
             comment.get("addedTimestamp", 0)
             < last_update_timestamp
@@ -396,8 +423,11 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
                 }
             )
 
+    case["id"] = remote_args.remote_incident_id
+    case["dbotMirrorInstance"] = demisto.integrationInstance()
     return GetRemoteDataResponse(case, entries)
     # Attach case tags
+    # Close case
 
 
 def get_modified_remote_data_command(args: Dict[str, Any]) -> CommandResults:
@@ -617,7 +647,7 @@ def delete_comment_command(args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def download_attachment_by_filename_command(args: Dict[str, Any]) -> Any:
+def download_attachment_by_filename_command(args: Dict[str, Any]) -> fileResult:
     case_id = args.get("case_id", None)
     file_name = args.get("file_name", None)
     if case_id is None:
@@ -639,7 +669,7 @@ def download_attachment_by_filename_command(args: Dict[str, Any]) -> Any:
     return fileResult(file_name, result.content)
 
 
-def download_attachment_command(args: Dict[str, Any]) -> Any:
+def download_attachment_command(args: Dict[str, Any]) -> fileResult:
     case_id = args.get("case_id", None)
     attachment_id = args.get("attachment_id", None)
     file_name = args.get("file_name", attachment_id)
@@ -757,6 +787,35 @@ def list_case_tags_command(args: Dict[str, Any]) -> CommandResults:
         outputs=result,
         raw_response=result,
     )
+
+
+def print_case_comments_command(args: Dict[str, Any]) -> List[Dict]:
+    case_id = args.get("case_id", None)
+    sort_by = args.get("sort_by", None)
+    if not case_id:
+        raise ValueError("case_id not specified")
+    if sort_by:
+        sort_by = ["addedTimestamp"] if sort_by == "ascending" else ["-addedTimestamp"]
+
+    result = list_case_comments(
+        caseID=case_id,
+        beforeComment=args.get("before_comment", None),
+        afterComment=args.get("after_comment", None),
+        offset=args.get("offset", None),
+        limit=args.get("limit", None),
+        sortBy=sort_by,
+    )
+    notes = []
+    for comment in result.get("data", []):
+        notes.append(
+            {
+                "ContentsFormat": formats["html"],
+                "Type": entryTypes["note"],
+                "Contents": pretty_print_comments(comment),
+                "Note": True,
+            }
+        )
+    return notes
 
 
 def list_case_comments_command(args: Dict[str, Any]) -> CommandResults:
@@ -1176,6 +1235,9 @@ def main() -> None:
                 first_fetch_period=first_fetch_period,
                 limit=demisto.params().get("max_fetch", 25),
                 min_severity=demisto.params().get("min_severity", "low").lower(),
+                mirror_direction=demisto.params().get("mirror_direction", "None"),
+                # exclude_tag=demisto.params().get('exclude_tag') TODO implement
+                # mirror_tag
             )
 
             demisto.setLastRun(next_run)
@@ -1282,6 +1344,9 @@ def main() -> None:
 
         elif demisto.command() == "argus-fetch-observations-for-ip":
             return_results(fetch_observations_for_i_p_command(demisto.args()))
+
+        elif demisto.command() == "print_case_comments":
+            return_results(print_case_comments_command(demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

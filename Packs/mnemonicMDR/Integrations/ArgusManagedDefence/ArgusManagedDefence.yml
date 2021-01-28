@@ -6711,7 +6711,7 @@ script:
       description: Argus Case ID
       isArray: false
       name: id
-      required: true
+      required: false
       secret: false
     - default: false
       description: Time or timestamp case was last updated.
