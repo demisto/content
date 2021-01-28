@@ -1047,7 +1047,7 @@ def get_incidents():
 
 
 def internalHttpRequest(method, uri, body=None):
-    """Run an internal HTTP request to the XSOAR server. The request runs with the permissions of the 
+    """Run an internal HTTP request to the XSOAR server. The request runs with the permissions of the
     executing user, when a command is being executed manually (such as via the War Room or when browsing a widget).
     When run via a playbook, will run with a readonly user with limited permissions isolated to the current incident only.
     Available for both Integrations and Scripts starting from Server version 6.1.
@@ -1062,7 +1062,7 @@ def internalHttpRequest(method, uri, body=None):
         * statusCode (int): HTTP status code such as 200
         * status (str): HTTP status line such as: "200 OK"
         * body (str): response body
-        * headers (dict): dict of headers. Each key is a header name with an array of values. 
+        * headers (dict): dict of headers. Each key is a header name with an array of values.
           For example: `"headers": {"Content-Type": ["text/plain; charset=utf-8"]}`
     """
     return {
