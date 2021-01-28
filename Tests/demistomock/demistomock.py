@@ -1055,7 +1055,7 @@ def internalHttpRequest(method, uri, body=None):
     Args:
         method (str): HTTP method such as: GET or POST
         uri (str): Server uri to request. For example: "/contentpacks/marketplace/HelloWorld".
-        body (str, optional): Optional body for a POST request. Defaults to None.
+        body Optional[str]: Optional body for a POST request. Defaults to None.
 
     Returns:
         dict: dict cotainnig the following fields:
