@@ -125,16 +125,16 @@ name: cyberint
 script:
   commands:
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '1'
-      description: Page number to return.
+      description: Page number to return. Default is 1.
       isArray: false
       name: page
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '10'
-      description: Number of results in a page. Must be between 10 and 100.
+      description: Number of results in a page. Default is 10. Must be between 10 and 100.
       isArray: false
       name: page_size
       required: false
@@ -476,7 +476,7 @@ script:
     - contextPath: Cyberint.Alert.closure_reason
       description: Reason for updating the alert to closed if closed.
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false
