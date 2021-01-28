@@ -11,6 +11,13 @@ RST_URL = 'https://rstcloud.net/'
 DEFAULT_THRESHOLD = 50
 DEFAULT_EXPIRATION = 180
 DBOT_SCORE_KEY = 'DBotScore(val.Indicator == obj.Indicator && val.Vendor == obj.Vendor)'
+IPV4REGEX = r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+DOMAINREGEX = r"(((?=[a-z0-9\-_]{1,63}\.)(xn--)?[a-z0-9_\-]+(-[a-z0-9_]+)*\.)+[a-z-0-9]{2,63})(:\d+)?"
+URLREGEX = r"^(?:(?:(?:https?|ftps?):)?\/\/)?((?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)" + \
+    r"(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])" + \
+    r"(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|" + \
+    r"(?:(?:[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62})?" + \
+    r"[a-z0-9\\u00a1-\\uffff]\.)+(?:[a-z\\u00a1-\\uffff]{2,}|xn--[a-z0-9]+\.?))(?::\d{2,5})?(?:[\/?#]\S*)?)$"
 
 ''' CLIENT CLASS '''
 
@@ -339,7 +346,7 @@ def ip_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]:
 
     for ip in addresses:
         markdown_item = ''
-        ipv4regex = re.compile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$")
+        ipv4regex = re.compile(IPV4REGEX)
         ipv4match = ipv4regex.fullmatch(ip)
         if ipv4match:
             indicator = client.get_indicator(ip)
@@ -422,7 +429,7 @@ def domain_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, li
 
     for domain in domains:
         markdown_item = ''
-        domainregex = re.compile("(((?=[a-z0-9\-_]{1,63}\.)(xn--)?[a-z0-9_\-]+(-[a-z0-9_]+)*\.)+[a-z-0-9]{2,63})(:\d+)?")
+        domainregex = re.compile(DOMAINREGEX)
         domainmatch = domainregex.fullmatch(domain)
         if domainmatch:
             indicator = client.get_indicator(domain)
@@ -508,8 +515,7 @@ def url_command(client: Client, args: Dict[str, str]) -> Tuple[list, list, list]
 
     for url in urls:
         markdown_item = ''
-        urlregex = re.compile(
-            "^(?:(?:(?:https?|ftps?):)?\/\/)?((?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62})?[a-z0-9\\u00a1-\\uffff]\.)+(?:[a-z\\u00a1-\\uffff]{2,}|xn--[a-z0-9]+\.?))(?::\d{2,5})?(?:[\/?#]\S*)?)$")
+        urlregex = re.compile(URLREGEX)
         urlmatch = urlregex.fullmatch(url)
         if urlmatch:
             indicator = client.get_indicator(url)

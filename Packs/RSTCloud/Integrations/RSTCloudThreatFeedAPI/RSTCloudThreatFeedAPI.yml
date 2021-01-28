@@ -72,7 +72,7 @@ script:
       description: List of IPs.
       isArray: true
       name: ip
-      required: false
+      required: true
       secret: false
     - default: false
       defaultValue: '45'
@@ -418,7 +418,7 @@ script:
     description: Submits a potential False Positive to RST Threat Feed.
     execution: false
     name: rst-submit-fp
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
   longRunning: false
