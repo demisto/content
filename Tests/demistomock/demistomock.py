@@ -1062,7 +1062,7 @@ def internalHttpRequest(method, uri, body=None):
         * statusCode (int): HTTP status code such as 200
         * status (str): HTTP status line such as: "200 OK"
         * body (str): response body
-        * headers (dict): dict of headers. Each key is a the header name with an array of values. 
+        * headers (dict): dict of headers. Each key is a header name with an array of values. 
           For example: `"headers": {"Content-Type": ["text/plain; charset=utf-8"]}`
     """
     return {
