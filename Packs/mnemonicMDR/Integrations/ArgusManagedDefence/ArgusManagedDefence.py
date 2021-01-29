@@ -258,26 +258,21 @@ def fetch_incidents(
     incidents = []
     for case in result.get("data", []):
         # Get base incident
+        xsoar_mirroring = {}
+        xsoar_mirroring["dbotMirrorDirection"] = MIRROR_DIRECTION[mirror_direction]
+        xsoar_mirroring["dbotMirrorInstance"] = demisto.integrationInstance()
+        xsoar_mirroring["dbotMirrorId"] = str(case["id"])
+        case["xsoar_mirroring"] = xsoar_mirroring
+        # "dbotMirrorTags": TODO
         incident = {
             "name": f"#{case['id']}: {case['subject']}",
             "occurred": case["createdTime"],
             "severity": argus_priority_to_demisto_severity(case["priority"]),
             "status": argus_status_to_demisto_status(case["status"]),
-            "customFields": {  # In case mapper is not present?
-                "argus_id": str(case["id"]),
-                "type": case["type"],
-                "category": case["category"]["name"] if case["category"] else None,
-                "service": case["service"]["name"],
-                "lastUpdatedTime": case["lastUpdatedTime"],
-                "createdTimestamp": case["createdTimestamp"],
-                "customer": case["customer"]["shortName"],
-            },
+
             "details": json.dumps(case),
             "rawJSON": json.dumps(case),
-            "dbotMirrorDirection": MIRROR_DIRECTION[mirror_direction],
-            "dbotMirrorInstance": demisto.integrationInstance(),
-            "dbotMirrorId": str(case["id"]),
-            # "dbotMirrorTags": TODO
+
         }
 
         # Attach files
@@ -360,6 +355,7 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
     remote_args = GetRemoteDataArgs(args)
     demisto.debug(f"Getting update for remote [{remote_args.remote_incident_id}]")
     case_id = remote_args.remote_incident_id
+    demisto.debug(f"remoteargs {str(remote_args)}")
     # case_id = args.get("remote_incident_id", "")
     if not case_id:
         case_id = args.get("id", "")
@@ -383,17 +379,27 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
 
     # Add new attachments
     case_attachments = list_case_attachments(caseID=int(case_id)).get("data", [])
+    incident_attachments = []
     for attachment in case_attachments:
         if last_update_timestamp < attachment.get("addedTimestamp", 0):
-            entries.append(
-                download_attachment_command(
-                    {
-                        "case_id": case_id,
-                        "attachment_id": attachment["id"],
-                        "file_name": attachment["name"],
-                    }
-                )
+            file = download_attachment_command(
+                {
+                    "case_id": case_id,
+                    "attachment_id": attachment["id"],
+                    "file_name": attachment["name"],
+                }
             )
+            entries.append(file)
+            incident_attachments.append(
+                {
+                    "path": file.get("FileID", ""),
+                    "name": file.get("File", ""),
+                    # "type": file.get("Type", ""),
+                    "description": "File downloaded from Argus",
+                }
+            )
+    if incident_attachments:
+        entries.append({"attachment": incident_attachments})
 
     # Attach comments as notes
     case_comments = list_case_comments(caseID=int(case_id)).get("data", [])
@@ -422,9 +428,14 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
                     "Contents": (pretty_print_comment_html(comment, "Comment updated")),
                 }
             )
+    case["xsoar_mirroring"] = {
+        "dbotMirrorId": remote_args.remote_incident_id,
+        "dbotMirrorInstance": demisto.integrationInstance(),
+        "dbotMirrorDirection": MIRROR_DIRECTION[demisto.params().get(
+            "mirror_direction", "None"
+        )]
+    }
 
-    case["id"] = remote_args.remote_incident_id
-    case["dbotMirrorInstance"] = demisto.integrationInstance()
     return GetRemoteDataResponse(case, entries)
     # Attach case tags
     # Close case
@@ -813,6 +824,7 @@ def print_case_comments_command(args: Dict[str, Any]) -> List[Dict]:
                 "Type": entryTypes["note"],
                 "Contents": pretty_print_comment_html(comment),
                 "Note": True,
+
             }
         )
     return notes
