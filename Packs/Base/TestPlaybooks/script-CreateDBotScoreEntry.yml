@@ -1,0 +1,82 @@
+commonfields:
+  id: CreateDBotScoreEntry
+  version: -1
+name: CreateDBotScoreEntry
+script: |+
+  def create_dbotscore_entry(args: dict):
+      dbot_score = Common.DBotScore(
+              indicator=args['value'],
+              indicator_type=args['indicator_type'],
+              integration_name=args.get('integration_name') or 'Test_Integration',
+              score=int(args.get('score', 0)),
+              reliability=args.get('reliability'),
+              malicious_description=args.get('malicious_description')
+          )
+
+      return CommandResults(
+          indicator=dbot_score,
+          )
+
+  def main():
+      try:
+          return_results(create_dbotscore_entry(demisto.args()))
+      except Exception as e:
+          return_error(f'Failed to create the indicator.\nError:\n{str(e)}')
+
+  if __name__ in ('__main__', 'builtin', 'builtins'):
+      main()
+
+type: python
+tags: [ ]
+comment: |-
+  Creates a DBotScore entry.
+  The script is being used by the test playbook `Test-CreateDBotScore-With-Reliability`.
+enabled: true
+args:
+  - name: indicator_type
+    required: true
+    auto: PREDEFINED
+    predefined:
+      - ip
+      - file
+      - domain
+      - url
+      - cve
+      - account
+      - cider
+      - domainglob
+      - certificate
+      - cryptocurrency
+    description: The Indicator type.
+  - name: value
+    required: true
+    description: The Indicator value.
+  - name: score
+    auto: PREDEFINED
+    predefined:
+      - "0"
+      - "1"
+      - "2"
+      - "3"
+    description: The Indicator actual score.
+  - name: reliability
+    auto: PREDEFINED
+    predefined:
+      - A+ - 3rd party enrichment
+      - A - Completely reliable
+      - B - Usually reliable
+      - C - Fairly reliable
+      - D - Not usually reliable
+      - E - Unreliable
+      - F - Reliability cannot be judged
+    description: The reliability of the source providing the intelligence data.
+  - name: malicious_description
+    description: if the indicator is malicious and have explanation for it then set.
+      it to this field
+  - name: integration_name
+    description: The vendor name.
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.1.14969
+fromversion: 5.5.0

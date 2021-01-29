@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: "0"
+    taskid: 07943b67-bb89-4236-8fe2-3197b7ec483a
     type: start
     task:
-      id: "0"
+      id: 07943b67-bb89-4236-8fe2-3197b7ec483a
       version: -1
       name: ""
       iscommand: false
@@ -392,10 +392,10 @@ tasks:
     quietmode: 0
   "14":
     id: "14"
-    taskid: "14"
+    taskid: 92d8aa90-8583-4f9e-bec8-8e5c60187a18
     type: title
     task:
-      id: "14"
+      id: 92d8aa90-8583-4f9e-bec8-8e5c60187a18
       version: -1
       name: Test Done
       type: title
