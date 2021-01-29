@@ -749,7 +749,7 @@ class MsClient:
 
     def update_indicator(
             self, indicator_id: str, expiration_date_time: str,
-            description: Optional[str], severity: Optional[str]
+            description: Optional[str], severity: Optional[int]
     ) -> Dict:
         """Updates a given indicator
 
