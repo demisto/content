@@ -1,0 +1,33 @@
+{
+    "id": "JARM",
+    "version": -1,
+    "modified": "2021-01-29T16:26:21.096529686Z",
+    "shouldCommit": false,
+    "regex": "\\b[a-fA-F\\d]{62}\\b",
+    "details": "JARM",
+    "prevDetails": "JARM",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "manualMapping": {
+        "jarmhosts": {
+            "simple": "",
+            "complex": {
+                "root": "DBotScore",
+                "filters": [
+
+                ],
+                "accessor": "Host",
+                "transformers": [
+
+                ]
+            }
+        }
+    },
+    "expiration": 0,
+    "layout": "eec8aca2-0f45-4e4f-8162-c38b5099d98c",
+    "fromVersion": "6.0.0"
+}
