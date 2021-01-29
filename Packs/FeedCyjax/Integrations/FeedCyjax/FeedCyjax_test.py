@@ -11,6 +11,7 @@ from FeedCyjax import INDICATORS_LAST_FETCH_KEY, DATE_FORMAT, Client, main, cyja
      convert_cyjax_indicator, fetch_indicators_command, get_indicators_command, indicator_sighting_command, \
      arg_to_datetime
 from test_data.indicators import mocked_indicators
+from test_data.enrichment import mocked_enrichment
 
 
 client_for_testing = Client(None, 'test-xsoar-api-token')
@@ -266,6 +267,54 @@ def test_get_indicators_command_response(mocker):
         convert_cyjax_indicator(cyjax_indicator[3])
     ]
     assert expected_indicators == result.get('Contents')
+
+
+def test_indicator_sighting_command_response(mocker):
+    mocker.patch.object(demisto, 'args', return_value={
+        'value': '236.516.247.352',
+    })
+
+    mocked_response = mocked_enrichment
+    mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.enrichment', return_value=mocked_response)
+
+    result = indicator_sighting_command(client_for_testing, demisto.args())
+
+    assert isinstance(result, dict)
+    assert 'Type' in result
+    assert 'ContentsFormat' in result
+    assert 'Contents' in result
+    assert 'ReadableContentsFormat' in result
+    assert 'HumanReadable' in result
+    assert 'EntryContext' in result
+    assert EntryType.NOTE == result.get('Type')
+    assert EntryFormat.JSON == result.get('ContentsFormat')
+    assert EntryFormat.MARKDOWN == result.get('ReadableContentsFormat')
+
+    expected_contents = mocked_response.get('sightings')
+    assert expected_contents == result.get('Contents')
+
+
+def test_indicator_sighting_command_response_not_found(mocker):
+    mocker.patch.object(demisto, 'args', return_value={
+        'value': '236.516.247.352',
+    })
+
+    mocked_response = mocked_enrichment
+    mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.enrichment', side_effect=Exception('Invalid indicator'))
+
+    result = indicator_sighting_command(client_for_testing, demisto.args())
+
+    assert isinstance(result, dict)
+    assert 'Type' in result
+    assert 'ContentsFormat' in result
+    assert 'Contents' in result
+    assert 'ReadableContentsFormat' in result
+    assert 'HumanReadable' in result
+    assert 'EntryContext' in result
+    assert EntryType.NOTE == result.get('Type')
+    assert EntryFormat.JSON == result.get('ContentsFormat')
+    assert EntryFormat.MARKDOWN == result.get('ReadableContentsFormat')
+    assert result.get('Contents') == []
 
 
 ''' MAIN COMMAND FUNCTIONS TEST'''
@@ -549,3 +598,37 @@ def test_unset_indicators_last_fetch_date_main_command_call(mocker):
     assert demisto.getIntegrationContext() == {
         'Something': 'Else'
     }
+
+def test_indicators_sigthing_main_command_call(mocker):
+    mocker.patch.object(demisto, 'params', return_value={
+        'apikey': 'test-api-key',
+        'url': 'https://cyjax-api-for-testing.com'
+    })
+    mocker.patch.object(demisto, 'args', return_value={
+        'value': '236.516.247.352',
+    })
+
+    mocked_response = mocked_enrichment
+    mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.enrichment', return_value=mocked_response)
+    mocker.patch.object(demisto, 'command', return_value='cyjax-indicator-sighting')
+    mocker.patch.object(demisto, 'results')
+
+    main()
+
+    assert demisto.results.call_count == 1
+    result = demisto.results.call_args[0][0]
+
+    assert isinstance(result, dict)
+    assert 'Type' in result
+    assert 'ContentsFormat' in result
+    assert 'Contents' in result
+    assert 'ReadableContentsFormat' in result
+    assert 'HumanReadable' in result
+    assert 'EntryContext' in result
+    assert EntryType.NOTE == result.get('Type')
+    assert EntryFormat.JSON == result.get('ContentsFormat')
+    assert EntryFormat.MARKDOWN == result.get('ReadableContentsFormat')
+
+    expected_sightings = mocked_response.get('sightings')
+
+    assert expected_sightings == result.get('Contents')

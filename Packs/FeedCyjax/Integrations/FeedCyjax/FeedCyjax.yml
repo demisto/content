@@ -144,14 +144,14 @@ script:
     name: cyjax-indicator-sighting
     description: Get sighting of a indicator
   - name: cyjax-unset-indicators-last-fetch-date
-    description: Unset the indicators last fetch date. Next feed will use date set in first_fetch.
+    description: Unset the indicators feed last fetch date. Next feed will use date set in first_fetch.
   isfetch: false
   feed: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/cyjax:1.0.0.15389
+  dockerimage: demisto/cyjax:1.0.0.15977
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

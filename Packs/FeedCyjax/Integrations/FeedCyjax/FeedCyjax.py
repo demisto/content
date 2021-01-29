@@ -102,6 +102,30 @@ class Client(object):
 
         return indicators
 
+    def sighting(self, value: str) -> Optional[dict]:
+        """
+        Get the sighting for an indicator
+
+        :type value: ``str``
+        :param value:  The indicator value
+
+        :return: The dict with sighting metadata
+        :rtype: Optional[dict]
+        """
+        try:
+            enrichment = cyjax_sdk.IndicatorOfCompromise().enrichment(value)
+            enrichment['value'] = value
+
+            # Do not expose geoip enrichment data in sighting method
+            if 'geoip' in enrichment:
+                del enrichment['geoip']
+            if 'asn' in enrichment:
+                del enrichment['asn']
+        except Exception as e:
+            enrichment = None
+
+        return enrichment
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -485,17 +509,28 @@ def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional
     if not value:
         raise ValueError('Value not specified')
 
-    indicator_sighting = {'id': 1234, 'name': 'tester', 'abba': 'babba', 'value': value}
+    indicator_sighting = client.sighting(value)
+
+    if indicator_sighting is not None:
+        sightings_list = indicator_sighting.get('sightings')
+        sighting_for_context = sightings_list
+        # Set the indicator value for each sighting object
+        for sighting in sighting_for_context:
+            sighting['value'] = value
+        description = 'Indicator "{}" sightings. Last seen at: {}'.format(value,
+                                                                          indicator_sighting.get('last_seen_timestamp'))
+    else:
+        sightings_list = []
+        description = 'No events found for indicator "{}"'.format(value)
 
     return {
         'Type': EntryType.NOTE,
         'ContentsFormat': EntryFormat.JSON,
-        'Contents': indicator_sighting,
+        'Contents': sightings_list,
         'ReadableContentsFormat': EntryFormat.MARKDOWN,
-        'HumanReadable': tableToMarkdown('Indicator "{}" sighting'.format(value), indicator_sighting,
-                                         headerTransform=pascalToSpace),
+        'HumanReadable': tableToMarkdown(description, sightings_list, headerTransform=pascalToSpace),
         'EntryContext': {
-            'Cyjax.IndicatorSighting(val.value && val.value === obj.value)': createContext(indicator_sighting,
+            'Cyjax.IndicatorSighting(val.value && val.value === obj.value)': createContext(sightings_list,
                                                                                            removeNull=True),
         }
     }
