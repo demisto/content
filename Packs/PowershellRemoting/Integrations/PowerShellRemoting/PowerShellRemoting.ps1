@@ -484,8 +484,31 @@ function InvokeCommandCommand([RemotingClient]$client, [string]$command)
     $title = "Result for PowerShell Remote Command: $command `n"
     $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
+    $results_map = CreatResultsMap $raw_result $command
+    # extract command results per computer
+    if ($results_map) {
+        $context_result = [System.Collections.ArrayList]::new()
+        foreach ($computer_result in $results_map.GetEnumerator()) {
+            $tmp = $context_result.Add($computer_result.value)
+        }
+        $entry_context = @{
+            $script:INTEGRATION_ENTRY_CONTEX = $context_result
+        }
+        $human_readable = $title + $raw_result
+
+        return $human_readable, $entry_context, $raw_result
+    }
+    else {
+        return $title + 'No results', $null, $null
+    }
+    <#
+        .DESCRIPTION
+        Runs invoke-command on existing session.
+    #>
+}
+
+function CreatResultsMap([System.Array]$raw_result, [string]$command) {
     $results_map = @{}
-    # create result map with the computer as a key
     For ($i=0; $i -lt $raw_result.Length; $i++) {
         # base name
         $fqdn = [string]($raw_result[$i] | Select-Object -ExpandProperty PSComputerName)
@@ -516,28 +539,11 @@ function InvokeCommandCommand([RemotingClient]$client, [string]$command)
             $tmp = $results_map[$computer_name]['Command']['Result'].Add($item)
         }
     }
-    # extract command results per computer
-    if ($results_map) {
-        $context_key = 'PSRemoteCommand'
-        $context_result = @{
-            $context_key = [System.Collections.ArrayList]::new()
-        }
-        foreach ($computer_result in $results_map.GetEnumerator()) {
-            $tmp = $context_result[$context_key].Add($computer_result.value)
-        }
-        $entry_context = @{
-            $script:INTEGRATION_ENTRY_CONTEX = $context_result
-        }
-        $human_readable = $title + $raw_result
-
-        return $human_readable, $entry_context, $raw_result
-    }
-    else {
-        return $title + 'No results'
-    }
+    return $results_map
+        # existing key
     <#
         .DESCRIPTION
-        Runs invoke-command on existing session.
+        Create result map from singlie/multi computer result with the computer as a key
     #>
 }
 
@@ -622,17 +628,25 @@ function StartETLCommand([RemotingClient]$client, [string]$etl_path, [string]$et
     $command = "netsh trace start capture=yes traceFile=$etl_path maxsize=$etl_max_size overwrite=$overwrite $etl_filter"
     $raw_result = $client.InvokeCommandInSession($command)
     $client.CloseSession()
-    $entry_context = @{
-        $script:INTEGRATION_ENTRY_CONTEX = @{
-            CommandResult = $raw_result
-            EtlFilePath = $etl_path
-            EtlFileName = Split-Path $etl_path -leaf
+    $results_map = CreatResultsMap $raw_result $command
+    # extract command results per computer
+    if ($results_map) {
+        $context_result = [System.Collections.ArrayList]::new()
+        foreach ($computer_result in $results_map.GetEnumerator()) {
+            $computer_result.value['Command']['EtlFilePath'] = $etl_path
+            $computer_result.value['Command']['EtlFileName'] = Split-Path $etl_path -leaf
+            $tmp = $context_result.Add($computer_result)
         }
+        $entry_context = @{
+            $script:INTEGRATION_ENTRY_CONTEX = $context_result
+        }
+        $human_readable = $title + $raw_result
+
+        return $human_readable, $entry_context, $raw_result
     }
-
-    $human_readable = $raw_result
-
-    return $human_readable, $entry_context, $raw_result
+    else {
+        return $title + 'No results', $null, $null
+    }
 }
 
 function StopETLCommand([RemotingClient]$client)
@@ -657,9 +671,13 @@ function StopETLCommand([RemotingClient]$client)
     }
     $entry_context = @{
         $script:INTEGRATION_ENTRY_CONTEX = @{
-            CommandResult = $raw_results
-            EtlFilePath = $etl_path
-            EtlFileName = if ($etl_path) {Split-Path $etl_path -leaf} else {""}}
+            Fqdn = $client.fqdn_list
+            Command = @{
+                Name = $command
+                Result = $raw_results
+                EtlFilePath = $etl_path
+                EtlFileName = if ($etl_path) {Split-Path $etl_path -leaf} else {""}}
+            }
     }
 
     $human_readable = $raw_results
@@ -674,11 +692,16 @@ function ExportRegistryCommand([RemotingClient]$client, [string]$reg_key_hive, [
     Start-Sleep -Seconds 30
     $client.CloseSession()
     $title = "Ran Export Registry. `n"
+
     $entry_context = @{
         $script:INTEGRATION_ENTRY_CONTEX = @{
-            CommandResult = $raw_results
-            RegistryFilePath = $output_file_path
-            RegistryFileName = Split-Path $output_file_path -leaf
+            Fqdn = $client.fqdn_list
+            Command = @{
+                Name = $command
+                Result = $raw_results
+                RegistryFilePath = $output_file_path
+                RegistryFileName = Split-Path $output_file_path -leaf
+            }
         }
     }
 
