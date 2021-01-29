@@ -13,11 +13,23 @@ from Tests.Marketplace.marketplace_services import Pack, Metadata, input_to_list
     get_higher_server_version, GCPConfig, BucketUploadFlow, PackStatus, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts
 
-CHANGELOG_DATA = {
+CHANGELOG_DATA_INITIAL_VERSION = {
     "1.0.0": {
         "releaseNotes": "Sample description",
         "displayName": "1.0.0 - 62492",
         "released": "2020-12-21T12:10:55Z"
+    }
+}
+CHANGELOG_DATA_MULTIPLE_VERSIONS = {
+    "1.0.0": {
+        "releaseNotes": "Sample description",
+        "displayName": "1.0.0 - 62492",
+        "released": "2020-12-21T12:10:55Z"
+    },
+    "1.1.0": {
+        "releaseNotes": "Sample description2",
+        "displayName": "1.1.0 - 64321",
+        "released": "2021-01-20T12:10:55Z"
     }
 }
 
@@ -412,8 +424,9 @@ class TestChangelogCreation:
         mocker.patch("os.path.exists", return_value=False)
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build = \
+            Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
+
         assert task_status is True
         assert not_updated_build is False
 
@@ -446,8 +459,9 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build = \
+            Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
+
         assert task_status is True
         assert not_updated_build is False
 
@@ -480,8 +494,9 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build = \
+            Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
+
         assert task_status is False
         assert not_updated_build is False
 
@@ -514,8 +529,9 @@ class TestChangelogCreation:
         mocker.patch('builtins.open', mock_open(read_data=original_changelog))
         dummy_path = 'Irrelevant/Test/Path'
         build_number = random.randint(0, 100000)
-        task_status, not_updated_build = Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path,
-                                                                    build_number=build_number)
+        task_status, not_updated_build = \
+            Pack.prepare_release_notes(self=dummy_pack, index_folder_path=dummy_path, build_number=build_number)
+
         assert task_status is True
         assert not_updated_build is False
 
@@ -624,7 +640,8 @@ This is visible
         build_number = "5555"
         version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                version_display_name=version_display_name,
-                                                               build_number=build_number, new_version=False)
+                                                               build_number=build_number, new_version=False,
+                                                               pack_was_modified=True)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
         assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
@@ -647,13 +664,51 @@ This is visible
                                                                initial_release=True)
 
         assert version_changelog['releaseNotes'] == "dummy release notes"
-        assert version_changelog['displayName'] == f'{version_display_name} - {build_number}'
+
+    def test_create_changelog_entry_modified_pack(self, dummy_pack):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - pack was modified but a new version wasn't created
+           Then:
+               - return changelog entry with release notes and with R letter in display name
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=False,
+                                                               pack_was_modified=True)
+
+        assert version_changelog['releaseNotes'] == "dummy release notes"
+        assert version_changelog['displayName'] == f'{version_display_name} - R{build_number}'
+
+    def test_create_changelog_entry_pack_wasnt_modified(self, dummy_pack):
+        """
+           Given:
+               - release notes, display version and build number
+           When:
+               - pack wasn't modified
+           Then:
+               - return an empty dict
+       """
+        release_notes = "dummy release notes"
+        version_display_name = "1.0.0"
+        build_number = "5555"
+        version_changelog = dummy_pack._create_changelog_entry(release_notes=release_notes,
+                                                               version_display_name=version_display_name,
+                                                               build_number=build_number, new_version=False,
+                                                               pack_was_modified=False)
+
+        assert not version_changelog
 
     @staticmethod
-    def dummy_pack_changelog():
+    def dummy_pack_changelog(changelog_data):
         temp_changelog_file = os.path.join(os.getcwd(), 'dummy_changelog.json')
-        with open(temp_changelog_file, 'w',) as changelog_file:
-            changelog_file.write(json.dumps(CHANGELOG_DATA))
+        with open(temp_changelog_file, 'w', ) as changelog_file:
+            changelog_file.write(json.dumps(changelog_data))
         return str(temp_changelog_file)
 
     @staticmethod
@@ -664,15 +719,16 @@ This is visible
             return path
 
         path_to_non_existing_changelog = 'dummy_path'
-
-        if path == 'changelog_exist':
-            return TestChangelogCreation.dummy_pack_changelog()
+        if path == 'changelog_init_exist':
+            return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_INITIAL_VERSION)
+        if path == 'changelog_new_exist':
+            return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_MULTIPLE_VERSIONS)
         if path == 'changelog_not_exist':
             return path_to_non_existing_changelog
 
     @freeze_time("2020-11-04T13:34:14.75Z")
     @pytest.mark.parametrize('is_changelog_exist, expected_date', [
-        ('changelog_exist', '2020-12-21T12:10:55Z'),
+        ('changelog_init_exist', '2020-12-21T12:10:55Z'),
         ('changelog_not_exist', '2020-11-04T13:34:14Z')
     ])
     def test_handle_pack_create_date_changelog_exist(self, mocker, dummy_pack, is_changelog_exist, expected_date):
@@ -691,9 +747,33 @@ This is visible
         from Tests.Marketplace.marketplace_services import os
         mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
         pack_created_date = dummy_pack._get_pack_creation_date(is_changelog_exist)
-        if is_changelog_exist == 'changelog_exist':
+        if is_changelog_exist == 'changelog_init_exist':
             os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
         assert pack_created_date == expected_date
+
+    @freeze_time("2020-11-04T13:34:14.75Z")
+    @pytest.mark.parametrize('is_changelog_exist, expected_date', [
+        ('changelog_new_exist', '2021-01-20T12:10:55Z'),
+        ('changelog_not_exist', '2020-11-04T13:34:14Z')
+    ])
+    def test_handle_pack_update_date_changelog_exist(self, mocker, dummy_pack, is_changelog_exist, expected_date):
+        """
+           Given:
+               - existing changelog with 2 versions
+               - not existing changelog, datetime.utcnow
+           When:
+               - changelog entry already exists
+               - changelog entry not exists
+           Then:
+           - return the released field from the changelog file
+           - return datetime.utcnow
+       """
+        from Tests.Marketplace.marketplace_services import os
+        mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
+        pack_update_date = dummy_pack._get_pack_update_date(is_changelog_exist, False)
+        if is_changelog_exist == 'changelog_new_exist':
+            os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
+        assert pack_update_date == expected_date
 
 
 class TestImagesUpload:

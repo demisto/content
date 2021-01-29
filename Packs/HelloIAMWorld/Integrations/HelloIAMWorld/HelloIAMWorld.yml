@@ -50,7 +50,7 @@ configuration:
   required: true
   type: 0
 description: An Identity and Access Management integration template.
-display: Hello IAM World
+display: Hello World IAM
 name: Hello IAM World
 script:
   commands:
@@ -252,7 +252,7 @@ script:
       Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.15759
   isfetch: false
   longRunning: false
   longRunningPort: false
