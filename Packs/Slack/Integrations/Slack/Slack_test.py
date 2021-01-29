@@ -4257,3 +4257,98 @@ def test_fail_connect_threads(mocker):
         time.sleep(0.5)
     assert return_error_mock.call_count == 8
     assert threading.active_count() < 6  # we shouldn't have more than 5 threads (1 + 4 max size of executor)
+
+
+def test_slack_send_filter_one_mirro_tag(mocker):
+    # When filtered_tags parameter contains the same tag as the entry tag - slack_send method should send the message
+    import Slack
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(Slack, 'slack_send_request', return_value={'cool': 'cool'})
+
+    mocker.patch.object(demisto, 'args', return_value={'to': 'demisto', 'messageType': 'mirrorEntry',
+                                                       'entryObject': {'tags': ['tag1']}})
+
+    mocker.patch.object(demisto, 'params', return_value={'filtered_tags': 'tag1'})
+    Slack.slack_send()
+    assert demisto.results.mock_calls[0][1][0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: None'
+
+
+def test_slack_send_filter_no_mirror_tags(mocker):
+    # When filtered_tags parameter is empty slack_send method should send the message
+    import Slack
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(Slack, 'slack_send_request', return_value={'cool': 'cool'})
+
+    mocker.patch.object(demisto, 'args', return_value={'to': 'demisto', 'messageType': 'mirrorEntry',
+                                                       'entryObject': {'tags': ['tag1']}})
+
+    mocker.patch.object(demisto, 'params', return_value={'filtered_tags': ''})
+    Slack.slack_send()
+    assert demisto.results.mock_calls[0][1][0]['Contents'] == 'Message sent to Slack successfully.\nThread ID is: None'
+
+
+def test_slack_send_filter_no_entry_tags(mocker):
+    # When filtered_tags parameter contains one tag to filter messages and the entry have no tags -
+    # slack_send method should exit and demisto.results.mock_calls should be empty
+    import Slack
+
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(Slack, 'slack_send_request', return_value={'cool': 'cool'})
+
+    mocker.patch.object(demisto, 'args', return_value={'to': 'demisto', 'messageType': 'mirrorEntry',
+                                                       'entryObject': {'tags': []}})
+
+    mocker.patch.object(demisto, 'params', return_value={'filtered_tags': 'tag1'})
+    Slack.slack_send()
+    assert demisto.results.mock_calls == []
+
+
+def test_send_message_to_destinations_non_strict():
+    """
+    Given:
+        Blocks with non-strict json
+
+    When:
+        Sending message
+
+    Then:
+        No error is raised
+    """
+    from Slack import send_message_to_destinations
+    blocks = """[
+                  {
+                      "type": "section",
+                      "text": {
+                          "type": "mrkdwn",
+                          "text": "*<${incident.siemlink}|${incident.name}>*\n${incident.details}"
+                      }
+                  },
+                  {
+                      "type": "section",
+                      "fields": [
+                          {
+                              "type": "mrkdwn",
+                              "text": "*Account ID:*\n${incident.accountid} "
+                          }
+                      ]
+                  },
+                  {
+                      "type": "actions",
+                      "elements": [
+                          {
+                              "type": "button",
+                              "text": {
+                                  "type": "plain_text",
+                                  "text": "Acknowledge"
+                              },
+                              "value": "ack"
+                          }
+                      ]
+                  }
+              ]"""
+    send_message_to_destinations([], "", "", blocks=blocks)  # No destinations, no response

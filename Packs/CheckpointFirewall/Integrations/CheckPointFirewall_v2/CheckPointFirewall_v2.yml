@@ -12,6 +12,10 @@ configuration:
   name: port
   required: true
   type: 0
+- display: Domain (used in Multi Domain Server)
+  name: domain
+  required: false
+  type: 0
 - display: username
   name: username
   required: true
@@ -220,7 +224,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
+      description: Whether to ignore warnings when applying the updates. Can be "True"
+        or "False". Default is "True".
       isArray: false
       name: ignore_warnings
       predefined:
@@ -469,7 +474,8 @@ script:
       secret: false
     - default: false
       defaultValue: 'True'
-      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
+      description: Whether to ignore warnings when applying the updates. Can be "True"
+        or "False". Default is "True".
       isArray: false
       name: ignore_warnings
       predefined:
@@ -614,7 +620,8 @@ script:
       secret: false
     - default: false
       defaultValue: 'false'
-      description: Whether to update objects with the same identifier. Can be "true" or "false". Default is "false".
+      description: Whether to update objects with the same identifier. Can be "true"
+        or "false". Default is "false".
       isArray: false
       name: set_if_exists
       predefined:
@@ -624,7 +631,8 @@ script:
       secret: false
     - default: false
       defaultValue: 'true'
-      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
+      description: Whether to ignore warnings when applying the updates. Can be "True"
+        or "False". Default is "True".
       isArray: false
       name: ignore_warnings
       predefined:
@@ -738,7 +746,8 @@ script:
       secret: false
     - default: false
       defaultValue: 'True'
-      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
+      description: Whether to ignore warnings when applying the updates. Can be "True"
+        or "False". Default is "True".
       isArray: false
       name: ignore_warnings
       predefined:
@@ -1220,7 +1229,8 @@ script:
       description: Indicates if the rule is enabled or disabled.
       type: Boolean
     - contextPath: CheckPoint.AccessRule.layer
-      description: Layer to which the rule was assigned, identified by the name or UID.
+      description: Layer to which the rule was assigned, identified by the name or
+        UID.
       type: String
     - contextPath: CheckPoint.AccessRule.creator
       description: The object creator.
@@ -1281,7 +1291,8 @@ script:
       secret: false
     - default: false
       defaultValue: 'true'
-      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
+      description: Whether to ignore warnings when applying the updates. Can be "True"
+        or "False". Default is "True".
       isArray: false
       name: ignore_warnings
       predefined:
@@ -1535,7 +1546,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: If "True", the URL is defined as a Regular Expression. Default is "True".
+      description: If "True", the URL is defined as a Regular Expression. Default
+        is "True".
       isArray: false
       name: urls_defined_as_regular_expression
       predefined:
@@ -1576,9 +1588,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: "Edits an existing application using the object name or UID. \nIt's impossible\
-      \ to set 'application-signature' when the application was initialized with 'url-list'\
-      \ and vice-versa."
+    description: "Edits an existing application using the object name or UID. \nIt's\
+      \ impossible to set 'application-signature' when the application was initialized\
+      \ with 'url-list' and vice-versa."
     execution: false
     name: checkpoint-application-site-update
     outputs:
@@ -1630,7 +1642,8 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes an existing application site object using the object name or UID.
+    description: Deletes an existing application site object using the object name
+      or UID.
     execution: false
     name: checkpoint-application-site-delete
     outputs:
@@ -1752,10 +1765,17 @@ script:
   - arguments:
     - default: false
       defaultValue: '600'
-      description: Session expiration timeout in seconds. Default is 600 seconds. Session
-        timeout range is between 600 to 3600 seconds.
+      description: Session expiration timeout in seconds. Default is 600 seconds.
+        Session timeout range is between 600 to 3600 seconds.
       isArray: false
       name: session_timeout
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ''
+      description: Optional domain to start session in, for use with MDS login only.
+      isArray: false
+      name: domain
       required: false
       secret: false
     deprecated: false
@@ -2122,7 +2142,7 @@ script:
       description: The UID of the revision.
       type: String
     description: Retrieve the details of Checkpoint packages.
-  dockerimage: demisto/python3:3.8.6.13358
+  dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
   longRunning: false

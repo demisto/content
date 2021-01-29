@@ -142,6 +142,8 @@ def get_update_incident_request_data(client, args):
     description = args.get('description')
     severity = args.get('severity')
     status = args.get('status')
+    classification = args.get('classification')
+    classification_reason = args.get('classification_reason')
 
     if not title:
         title = result.get('properties', {}).get('title')
@@ -158,7 +160,9 @@ def get_update_incident_request_data(client, args):
             'title': title,
             'description': description,
             'severity': severity,
-            'status': status
+            'status': status,
+            'classification': classification,
+            'classificationReason': classification_reason
         }
     }
     remove_nulls_from_dictionary(inc_data['properties'])

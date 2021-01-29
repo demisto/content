@@ -2,7 +2,6 @@
 ---
 
 Use the Cisco Firepower integration for unified management of firewalls, application control, intrusion prevention, URL filtering, and advanced malware protection.
-This integration was integrated and tested with version xx of Cisco Firepower
 
 Supports FMC 6.2.3 and above
 
@@ -1945,7 +1944,7 @@ Retrieves a list of all ISE security group tag objects.
 
 
 ##### Command Example
-```!ciscofp-list-ise-security-group-tags```
+```!ciscofp-list-ise-security-group-tag```
 
 ##### Context Example
 ```

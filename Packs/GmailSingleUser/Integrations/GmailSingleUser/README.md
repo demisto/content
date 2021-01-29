@@ -1,4 +1,6 @@
-Use the Gmail Single User integration to send emails and fetch emails as incidents to Cortex XSOAR.
+Use the Gmail Single User integration to send emails and fetch emails as incidents to Cortex XSOAR. 
+
+**Note:** We recommend using this integration if you only want to fetch and send emails from a single user's mailbox. If you require accessing multiple users' mailboxes, use the [GMail Integration](https://xsoar.pan.dev/docs/reference/integrations/gmail).
 
 ## Application Authorization Flow
 
@@ -10,9 +12,29 @@ To allow Cortex XSOAR to access Gmail, the user has to approve the Demisto App u
 4. Save the instance.
 5. To verify that authentication was configured correctly, run the ***!gmail-auth-test***.
 
-**NOTE:** The Demisto App is verified through the Google verification process. During the verification process the app is not fully verified, and you may receive from Google an "unverified app" warning in the authorization flow.
+**NOTE:** The Demisto App is going through the Google verification process. During the verification process the app is not fully verified, and you may receive from Google an "unverified app" warning in the authorization flow.
 
-**Optional:** You can use your own Google App instead of the default Demisto App. To create your own app, follow the [Google instructions for Desktop Apps](https://developers.google.com/identity/protocols/OAuth2InstalledApp#prerequisites). When creating the OAuth client ID, select **iOS** as the type (this is the type used for Desktop Apps). After you create the app, copy the *client id* to the integration configuration. Proceed with the OAuth 2.0 authorization flow detailed above.
+**GSuite Admins:** You can choose to trust the Demisto App so your users can configure the App. Instructions:
+* Go to [App Access Control](https://admin.google.com/ac/owl/list?tab=apps)
+* Choose: `Configure new app` -> `OAuth App Name Or Client ID`. 
+  ![GSuite App Configurations](doc_imgs/gsuite-configure-app.png)
+* Enter the following Client ID: `391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com`
+* You will see the `Demisto App` in the results page.
+  ![Demisto App](doc_imgs/demisto-app-result.png)
+* Select the App and grant the App access as `Trusted`. 
+
+Additional info available at: https://support.google.com/a/answer/7281227
+
+**Optional:** You can use your own Google App instead of the default Demisto App. To create your own app, follow the [Google instructions for Desktop Apps](https://developers.google.com/identity/protocols/OAuth2InstalledApp#prerequisites). 
+* Go to the developers credentials page: https://console.developers.google.com/apis/credentials (you may need to setup a new project if you haven't done so in the past).
+* If needed, configure the Consent Screen. Fill in the Consent Screen information you would like to display to your users.
+* In the credentials page choose: `Create Credentials` -> `OAuth client ID`.
+  ![Create Credentials](doc_imgs/create-credentials.png)
+* When creating the OAuth client ID, select **iOS** as the type (this type allows Apps to work only with a client id).
+* Name the App and Bundle. You can choose a dummy bundle id such as: `com.demisto.app`.
+  ![OAuth App](doc_imgs/oauth-app.png)
+* Make sure to enable the GMail API at: https://console.developers.google.com/apis/api/gmail.googleapis.com/overview
+* After you create the app, copy the *client id* to the integration configuration. Proceed with the OAuth 2.0 authorization flow detailed above.
 
 
 ## Configure Gmail Single User on Cortex XSOAR
@@ -28,6 +50,7 @@ To allow Cortex XSOAR to access Gmail, the user has to approve the Demisto App u
     * __Fetch incidents__
     * __First fetch timestamp, in days.__
     * __Events query (e.g. "from:example@demisto.com")__
+    * __Maximum number of emails to pull per fetch__
     * __Trust any certificate (not secure)__
     * __Use system proxy settings__
 4. Click __Test__ to validate the URLs, token, and connection.

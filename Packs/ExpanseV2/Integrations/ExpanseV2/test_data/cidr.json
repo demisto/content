@@ -1,0 +1,31 @@
+{
+    "data": [
+        {
+            "businessUnits": [
+                {
+                    "id": "6b46ffe9-55ac-47ac-95af-395445846e4d",
+                    "name": "BU 1 Dev"
+                }
+            ],
+            "startAddress": "203.0.112.0",
+            "endAddress": "203.0.115.255",
+            "cidr": "203.0.112.0/22",
+            "created": "2020-09-28",
+            "customChildRanges": [],
+            "id": "ce72f73f-14d8-492f-a5a0-af6c82cdcea6",
+            "ipVersion": "4",
+            "modified": "2020-11-24",
+            "rangeIntroduced": "2020-09-28",
+            "rangeSize": 1024,
+            "rangeType": "parent",
+            "responsiveIpCount": 60
+        }
+    ],
+    "pagination": {
+        "next": null,
+        "pref": null
+    },
+    "meta": {
+        "totalCount": 1
+    }
+}

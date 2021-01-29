@@ -22,9 +22,11 @@ Enable sftp on your server Check Point guide to walk you through: https://suppor
 | --- | --- | --- |
 | server | Server URL \(e.g. example.net or 8.8.8.8\) | True |
 | port | Server Port \(e.g. 4434\) | True |
+| domain | Domain (used in Multi Domain Server) | False |
 | username | username | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | proxy | Use system proxy settings | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -2233,6 +2235,7 @@ Login to CheckPoint and get the session id
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | session_timeout | Session expiration timeout in seconds. Default 600 seconds. Session timeout range is between 600 to 3600 seconds. | Optional | 
+| domain | Name of domain to log in to, for use with MDS. | Optional | 
 
 
 #### Context Output
@@ -2243,7 +2246,10 @@ Login to CheckPoint and get the session id
 
 
 #### Command Example
-```!checkpoint-login-and-get-session-id```
+```
+!checkpoint-login-and-get-session-id
+!checkpoint-login-and-get-session-id domain='Corp'
+```
 
 #### Context Example
 ```

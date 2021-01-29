@@ -21,6 +21,32 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 
 import demistomock as demisto
+import warnings
+
+
+class WarningsHandler(object):
+    #    Wrapper to handle warnings. We use a class to cleanup after execution
+
+    @staticmethod
+    def handle_warning(message, category, filename, lineno, file=None, line=None):
+        try:
+            msg = warnings.formatwarning(message, category, filename, lineno, line)
+            demisto.info("python warning: " + msg)
+        except Exception:
+            # ignore the warning if it can't be handled for some reason
+            pass
+
+    def __init__(self):
+        self.org_handler = warnings.showwarning
+        warnings.showwarning = WarningsHandler.handle_warning
+
+    def __del__(self):
+        warnings.showwarning = self.org_handler
+
+
+_warnings_handler = WarningsHandler()
+# ignore warnings from logging as a result of not being setup
+logging.raiseExceptions = False
 
 # imports something that can be missed from docker image
 try:
@@ -28,6 +54,9 @@ try:
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set
+
+    import dateparser
+    from datetime import timezone  # type: ignore
 except Exception:
     if sys.version_info[0] < 3:
         # in python 2 an exception in the imports might still be raised even though it is caught.
@@ -39,14 +68,19 @@ CONTENT_BRANCH_NAME = 'master'
 IS_PY3 = sys.version_info[0] == 3
 
 # pylint: disable=undefined-variable
+
+ZERO = timedelta(0)
+HOUR = timedelta(hours=1)
+
+
 if IS_PY3:
     STRING_TYPES = (str, bytes)  # type: ignore
     STRING_OBJ_TYPES = (str,)
+
 else:
     STRING_TYPES = (str, unicode)  # type: ignore # noqa: F821
     STRING_OBJ_TYPES = STRING_TYPES  # type: ignore
 # pylint: enable=undefined-variable
-
 
 # DEPRECATED - use EntryType enum instead
 entryTypes = {
@@ -95,6 +129,20 @@ class IncidentStatus(object):
     ACTIVE = 1
     DONE = 2
     ARCHIVE = 3
+
+
+class IncidentSeverity(object):
+    """
+    Enum: contains all the incident severity types
+    :return: None
+    :rtype: ``None``
+    """
+    UNKNOWN = 0
+    INFO = 0.5
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+    CRITICAL = 4
 
 
 # DEPRECATED - use EntryFormat enum instead
@@ -162,6 +210,7 @@ class DBotScoreType(object):
     DBotScoreType.URL
     DBotScoreType.CVE
     DBotScoreType.ACCOUNT
+    DBotScoreType.CRYPTOCURRENCY
     :return: None
     :rtype: ``None``
     """
@@ -174,6 +223,7 @@ class DBotScoreType(object):
     CIDR = 'cidr',
     DOMAINGLOB = 'domainglob'
     CERTIFICATE = 'certificate'
+    CRYPTOCURRENCY = 'cryptocurrency'
 
     def __init__(self):
         # required to create __init__ for create_server_docs.py purpose
@@ -192,7 +242,44 @@ class DBotScoreType(object):
             DBotScoreType.ACCOUNT,
             DBotScoreType.CIDR,
             DBotScoreType.DOMAINGLOB,
-            DBotScoreType.CERTIFICATE
+            DBotScoreType.CERTIFICATE,
+            DBotScoreType.CRYPTOCURRENCY,
+        )
+
+
+class DBotScoreReliability(object):
+    """
+    Enum: Source reliability levels
+    Values are case sensitive
+
+    :return: None
+    :rtype: ``None``
+    """
+
+    A_PLUS = 'A+ - 3rd party enrichment'
+    A = 'A - Completely reliable'
+    B = 'B - Usually reliable'
+    C = 'C - Fairly reliable'
+    D = 'D - Not usually reliable'
+    E = 'E - Unreliable'
+    F = 'F - Reliability cannot be judged'
+
+    def __init__(self):
+        # required to create __init__ for create_server_docs.py purpose
+        pass
+
+    @staticmethod
+    def is_valid_type(_type):
+        # type: (str) -> bool
+
+        return _type in (
+            DBotScoreReliability.A_PLUS,
+            DBotScoreReliability.A,
+            DBotScoreReliability.B,
+            DBotScoreReliability.C,
+            DBotScoreReliability.D,
+            DBotScoreReliability.E,
+            DBotScoreReliability.F,
         )
 
 
@@ -281,6 +368,16 @@ class FeedIndicatorType(object):
 
         else:
             return None
+
+
+def is_debug_mode():
+    """Return if this script/command was passed debug-mode=true option
+
+    :return: true if debug-mode is enabled
+    :rtype: ``bool``
+    """
+    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
+    return hasattr(demisto, 'is_debug') and demisto.is_debug
 
 
 def auto_detect_indicator_type(indicator_value):
@@ -940,7 +1037,9 @@ def aws_table_to_markdown(response, table_header):
                     response[list(response.keys())[0]], list):
                 if isinstance(response[list(response.keys())[0]], list):
                     list_response = response[list(response.keys())[0]]
-                    if isinstance(list_response[0], str):
+                    if not list_response:
+                        human_readable = tableToMarkdown(table_header, list_response)
+                    elif isinstance(list_response[0], str):
                         human_readable = tableToMarkdown(
                             table_header, response)
                     else:
@@ -998,11 +1097,13 @@ class IntegrationLogger(object):
       :rtype: ``None``
     """
 
-    def __init__(self):
+    def __init__(self, debug_logging=False):
         self.messages = []  # type: list
         self.write_buf = []  # type: list
         self.replace_strs = []  # type: list
+        self.curl = []  # type: list
         self.buffering = True
+        self.debug_logging = debug_logging
         # if for some reason you don't want to auto add credentials.password to replace strings
         # set the os env COMMON_SERVER_NO_AUTO_REPLACE_STRS. Either in CommonServerUserPython, or docker env
         if (not os.getenv('COMMON_SERVER_NO_AUTO_REPLACE_STRS') and hasattr(demisto, 'getParam')):
@@ -1042,8 +1143,11 @@ class IntegrationLogger(object):
         text = self.encode(message)
         if self.buffering:
             self.messages.append(text)
+            if self.debug_logging:
+                demisto.debug(text)
         else:
             demisto.info(text)
+        return text
 
     def add_replace_strs(self, *args):
         '''
@@ -1074,8 +1178,57 @@ class IntegrationLogger(object):
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
                 demisto.log(text)
-            demisto.info(text)
+            if not self.debug_logging:  # we don't print out if in debug_logging as already all message where printed
+                demisto.info(text)
             self.messages = []
+
+    def build_curl(self, text):
+        """
+        Parses the HTTP client "send" log messages and generates cURL queries out of them.
+
+        :type text: ``str``
+        :param text: The HTTP client log message.
+
+        :return: No data returned
+        :rtype: ``None``
+        """
+        http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+        data = text.split("send: b'")[1]
+        if data and data[0] in {'{', '<'}:
+            # it is the request url query params/post body - will always come after we already have the url and headers
+            # `<` is for xml body
+            self.curl[-1] += "-d '{}".format(data)
+        elif any(http_method in data for http_method in http_methods):
+            method = ''
+            url = ''
+            headers = []
+            headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
+            request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
+            for line, part in enumerate(request_parts):
+                if line == 0:
+                    method, url, _ = part[1:].split()  # ignoring " at first char
+                elif line != len(request_parts) - 1:  # ignoring the last line which is empty
+                    if part.startswith('Host:'):
+                        _, host = part.split('Host: ')
+                        url = 'https://{}{}'.format(host, url)
+                    else:
+                        if any(header_to_skip in part for header_to_skip in headers_to_skip):
+                            continue
+                        headers.append(part)
+            curl_headers = ''
+            for header in headers:
+                if header:
+                    curl_headers += '-H "{}" '.format(header)
+            curl = 'curl -X {} {} {}'.format(method, url, curl_headers)
+            if demisto.params().get('proxy'):
+                proxy_address = os.environ.get('https_proxy')
+                if proxy_address:
+                    curl += '--proxy {} '.format(proxy_address)
+            else:
+                curl += '--noproxy "*" '
+            if demisto.params().get('insecure'):
+                curl += '-k '
+            self.curl.append(curl)
 
     def write(self, msg):
         # same as __call__ but allows IntegrationLogger to act as a File like object.
@@ -1093,6 +1246,11 @@ class IntegrationLogger(object):
                 self.messages.append(text)
             else:
                 demisto.info(text)
+                if is_debug_mode() and text.startswith('send:'):
+                    try:
+                        self.build_curl(text)
+                    except Exception as e:  # should fail silently
+                        demisto.debug('Failed generating curl - {}'.format(str(e)))
             self.write_buf = []
 
     def print_override(self, *args, **kwargs):
@@ -1114,7 +1272,7 @@ a logger for python integrations:
 use LOG(<message>) to add a record to the logger (message can be any object with __str__)
 use LOG.print_log() to display all records in War-Room and server log.
 """
-LOG = IntegrationLogger()
+LOG = IntegrationLogger(debug_logging=is_debug_mode())
 
 
 def formatAllArgs(args, kwds):
@@ -1147,7 +1305,10 @@ def logger(func):
 
     def func_wrapper(*args, **kwargs):
         LOG('calling {}({})'.format(func.__name__, formatAllArgs(args, kwargs)))
-        return func(*args, **kwargs)
+        ret_val = func(*args, **kwargs)
+        if is_debug_mode():
+            LOG('Return value [{}]: {}'.format(func.__name__, str(ret_val)))
+        return ret_val
 
     return func_wrapper
 
@@ -1318,7 +1479,49 @@ def appendContext(key, data, dedup=False):
         demisto.setContext(key, data)
 
 
-def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None):
+def url_to_clickable_markdown(data, url_keys):
+    """
+    Turn the given urls fields in to clickable url, used for the markdown table.
+
+    :type data: ``[Union[str, List[Any], Dict[str, Any]]]``
+    :param data: a dictionary or a list containing data with some values that are urls
+
+    :type url_keys: ``List[str]``
+    :param url_keys: the keys of the url's wished to turn clickable
+
+    :return: markdown format for clickable url
+    :rtype: ``[Union[str, List[Any], Dict[str, Any]]]``
+    """
+
+    if isinstance(data, list):
+        data = [url_to_clickable_markdown(item, url_keys) for item in data]
+
+    elif isinstance(data, dict):
+        data = {key: create_clickable_url(value) if key in url_keys else url_to_clickable_markdown(data[key], url_keys)
+                for key, value in data.items()}
+
+    return data
+
+
+def create_clickable_url(url):
+    """
+    Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
+
+    :type url: ``Union[List[str], str]``
+    :param url: the url of interest or a list of urls
+
+    :return: markdown format for clickable url
+    :rtype: ``str``
+
+    """
+    if not url:
+        return None
+    elif isinstance(url, list):
+        return ['[{}]({})'.format(item, item) for item in url]
+    return '[{}]({})'.format(url, url)
+
+
+def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=False, metadata=None, url_keys=None):
     """
        Converts a demisto table in JSON form to a Markdown table
 
@@ -1341,9 +1544,15 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
        :type metadata: ``str``
        :param metadata: Metadata about the table contents
 
+       :type url_keys: ``list``
+       :param url_keys: a list of keys in the given JSON table that should be turned in to clickable
+
        :return: A string representation of the markdown table
        :rtype: ``str``
     """
+    # Turning the urls in the table to clickable
+    if url_keys:
+        t = url_to_clickable_markdown(t, url_keys)
 
     mdResult = ''
     if name:
@@ -1363,7 +1572,7 @@ def tableToMarkdown(name, t, headers=None, headerTransform=None, removeNull=Fals
         headers = [headers]
 
     if not isinstance(t[0], dict):
-        # the table cotains only simple objects (strings, numbers)
+        # the table contains only simple objects (strings, numbers)
         # should be only one header
         if headers and len(headers) > 0:
             header = headers[0]
@@ -1949,6 +2158,9 @@ class Common(object):
         :type malicious_description: ``str``
         :param malicious_description: if the indicator is malicious and have explanation for it then set it to this field
 
+        :type reliability: ``DBotScoreReliability``
+        :param reliability: use DBotScoreReliability class
+
         :return: None
         :rtype: ``None``
         """
@@ -1962,7 +2174,8 @@ class Common(object):
 
         CONTEXT_PATH_PRIOR_V5_5 = 'DBotScore'
 
-        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None):
+        def __init__(self, indicator, indicator_type, integration_name, score, malicious_description=None,
+                     reliability=None):
 
             if not DBotScoreType.is_valid_type(indicator_type):
                 raise TypeError('indicator_type must be of type DBotScoreType enum')
@@ -1970,11 +2183,15 @@ class Common(object):
             if not Common.DBotScore.is_valid_score(score):
                 raise TypeError('indicator_type must be of type DBotScore enum')
 
+            if reliability and not DBotScoreReliability.is_valid_type(reliability):
+                raise TypeError('reliability must be of type DBotScoreReliability enum')
+
             self.indicator = indicator
             self.indicator_type = indicator_type
             self.integration_name = integration_name or get_integration_name()
             self.score = score
             self.malicious_description = malicious_description
+            self.reliability = reliability
 
         @staticmethod
         def is_valid_score(score):
@@ -1993,18 +2210,24 @@ class Common(object):
                 return Common.DBotScore.CONTEXT_PATH_PRIOR_V5_5
 
         def to_context(self):
-            return {
-                Common.DBotScore.get_context_path(): {
-                    'Indicator': self.indicator,
-                    'Type': self.indicator_type,
-                    'Vendor': self.integration_name,
-                    'Score': self.score
-                }
+            dbot_context = {
+                'Indicator': self.indicator,
+                'Type': self.indicator_type,
+                'Vendor': self.integration_name,
+                'Score': self.score
             }
+
+            if self.reliability:
+                dbot_context['Reliability'] = self.reliability
+
+            ret_value = {
+                Common.DBotScore.get_context_path(): dbot_context
+            }
+            return ret_value
 
     class IP(Indicator):
         """
-        IP indicator class - https://xsoar.pan.dev/docs/context-standards-mandatory#ip
+        IP indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#ip
 
         :type ip: ``str``
         :param ip: IP address
@@ -2141,7 +2364,7 @@ class Common(object):
 
     class File(Indicator):
         """
-        File indicator class - https://xsoar.pan.dev/docs/context-standards-mandatory#file
+        File indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#file
         :type name: ``str``
         :param name: The full file name (including file extension).
 
@@ -2291,7 +2514,7 @@ class Common(object):
 
     class CVE(Indicator):
         """
-        CVE indicator class - https://xsoar.pan.dev/docs/context-standards-mandatory#cve
+        CVE indicator class - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cve
         :type id: ``str``
         :param id: The ID of the CVE, for example: "CVE-2015-1653".
         :type cvss: ``str``
@@ -2350,7 +2573,7 @@ class Common(object):
 
     class URL(Indicator):
         """
-        URL indicator - https://xsoar.pan.dev/docs/context-standards-mandatory#url
+        URL indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#url
         :type url: ``str``
         :param url: The URL
 
@@ -2410,7 +2633,7 @@ class Common(object):
 
     class Domain(Indicator):
         """ ignore docstring
-        Domain indicator - https://xsoar.pan.dev/docs/context-standards-mandatory#domain
+        Domain indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#domain
         """
         CONTEXT_PATH = 'Domain(val.Name && val.Name == obj.Name)'
 
@@ -2419,7 +2642,7 @@ class Common(object):
                      domain_status=None, name_servers=None,
                      registrar_name=None, registrar_abuse_email=None, registrar_abuse_phone=None,
                      registrant_name=None, registrant_email=None, registrant_phone=None, registrant_country=None,
-                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None):
+                     admin_name=None, admin_email=None, admin_phone=None, admin_country=None, tags=None):
             self.domain = domain
             self.dns = dns
             self.detection_engines = detection_engines
@@ -2443,6 +2666,7 @@ class Common(object):
             self.admin_email = admin_email
             self.admin_phone = admin_phone
             self.admin_country = admin_country
+            self.tags = tags
 
             self.domain_status = domain_status
             self.name_servers = name_servers
@@ -2515,6 +2739,9 @@ class Common(object):
             if self.name_servers:
                 domain_context['NameServers'] = self.name_servers
                 whois_context['NameServers'] = domain_context['NameServers']
+
+            if self.tags:
+                domain_context['Tags'] = self.tags
 
             if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
                 domain_context['Malicious'] = {
@@ -2670,6 +2897,50 @@ class Common(object):
 
             ret_value = {
                 Common.Account.CONTEXT_PATH: account_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
+    class Cryptocurrency(Indicator):
+        """
+        Cryptocurrency indicator - https://xsoar.pan.dev/docs/integrations/context-standards-mandatory#cryptocurrency
+        :type address: ``str``
+        :param address: The Cryptocurrency address
+
+        :type address_type: ``str``
+        :param address_type: The Cryptocurrency type - e.g. `bitcoin`.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Cryptocurrency(val.Address && val.Address == obj.Address)'
+
+        def __init__(self, address, address_type, dbot_score):
+            self.address = address
+            self.address_type = address_type
+
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            crypto_context = {
+                'Address': self.address,
+                'AddressType': self.address_type
+            }
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                crypto_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.Cryptocurrency.CONTEXT_PATH: crypto_context
             }
 
             if self.dbot_score:
@@ -3229,8 +3500,8 @@ class Common(object):
             CERTIFICATEPOLICIES = "CertificatePolicies"
             AUTHORITYINFORMATIONACCESS = "AuthorityInformationAccess"
             BASICCONSTRAINTS = "BasicConstraints"
-            SIGNEDCERTIFICATETIMESTAMPS = "SignedCertificateTimestamps",
-            PRESIGNEDCERTIFICATETIMESTAMPS = "PreCertSignedCertificateTimestamps",
+            SIGNEDCERTIFICATETIMESTAMPS = "SignedCertificateTimestamps"
+            PRESIGNEDCERTIFICATETIMESTAMPS = "PreCertSignedCertificateTimestamps"
             OTHER = "Other"
 
             @staticmethod
@@ -3782,6 +4053,137 @@ class IndicatorsTimeline:
         self.indicators_timeline = timelines
 
 
+def arg_to_number(arg, arg_name=None, required=False):
+    # type: (Any, Optional[str], bool) -> Optional[int]
+
+    """Converts an XSOAR argument to a Python int
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``int`` type. It will throw a ValueError
+    if the input is invalid. If the input is None, it will throw a ValueError
+    if required is ``True``, or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :return:
+        returns an ``int`` if arg can be converted
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[int]``
+    """
+
+    if arg is None or arg == '':
+        if required is True:
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
+
+        return None
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+
+        try:
+            return int(float(arg))
+        except Exception:
+            if arg_name:
+                raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid number'.format(arg))
+    if isinstance(arg, int):
+        return arg
+
+    if arg_name:
+        raise ValueError('Invalid number: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid number'.format(arg))
+
+
+def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
+    # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
+
+    """Converts an XSOAR argument to a datetime
+
+    This function is used to quickly validate an argument provided to XSOAR
+    via ``demisto.args()`` into an ``datetime``. It will throw a ValueError if the input is invalid.
+    If the input is None, it will throw a ValueError if required is ``True``,
+    or ``None`` if required is ``False.
+
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type is_utc: ``bool``
+    :param is_utc: if True then date converted as utc timezone, otherwise will convert with local timezone.
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :type settings: ``dict``
+    :param settings: If provided, passed to dateparser.parse function.
+
+    :return:
+        returns an ``datetime`` if conversion works
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[datetime]``
+    """
+
+    if arg is None:
+        if required is True:
+            if arg_name:
+                raise ValueError('Missing "{}"'.format(arg_name))
+            else:
+                raise ValueError('Missing required argument')
+        return None
+
+    if isinstance(arg, str) and arg.isdigit() or isinstance(arg, (int, float)):
+        # timestamp is a str containing digits - we just convert it to int
+        ms = float(arg)
+        if ms > 2000000000.0:
+            # in case timestamp was provided as unix time (in milliseconds)
+            ms = ms / 1000.0
+
+        if is_utc:
+            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
+        else:
+            return datetime.fromtimestamp(ms)
+    if isinstance(arg, str):
+        # we use dateparser to handle strings either in ISO8601 format, or
+        # relative time stamps.
+        # For example: format 2019-10-23T00:00:00 or "3 days", etc
+        if settings:
+            date = dateparser.parse(arg, settings=settings)
+        else:
+            date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+
+        if date is None:
+            # if d is None it means dateparser failed to parse it
+            if arg_name:
+                raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+            else:
+                raise ValueError('"{}" is not a valid date'.format(arg))
+
+        return date
+
+    if arg_name:
+        raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
+    else:
+        raise ValueError('"{}" is not a valid date'.format(arg))
+
+
 class CommandResults:
     """
     CommandResults class - use to return results to warroom
@@ -3818,13 +4220,16 @@ class CommandResults:
     :type ignore_auto_extract: ``bool``
     :param ignore_auto_extract: must be a boolean, default value is False. Used to prevent AutoExtract on output.
 
+    :type mark_as_note: ``bool``
+    :param mark_as_note: must be a boolean, default value is False. Used to mark entry as note.
+
     :return: None
     :rtype: ``None``
     """
 
     def __init__(self, outputs_prefix=None, outputs_key_field=None, outputs=None, indicators=None, readable_output=None,
-                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool) -> None
+                 raw_response=None, indicators_timeline=None, indicator=None, ignore_auto_extract=False, mark_as_note=False):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool) -> None
         if raw_response is None:
             raw_response = outputs
 
@@ -3854,6 +4259,7 @@ class CommandResults:
         self.readable_output = readable_output
         self.indicators_timeline = indicators_timeline
         self.ignore_auto_extract = ignore_auto_extract
+        self.mark_as_note = mark_as_note
 
     def to_context(self):
         outputs = {}  # type: dict
@@ -3864,6 +4270,7 @@ class CommandResults:
         raw_response = None  # type: ignore[assignment]
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
+        mark_as_note = False  # type: bool
 
         indicators = [self.indicator] if self.indicator else self.indicators
 
@@ -3883,10 +4290,13 @@ class CommandResults:
         if self.ignore_auto_extract:
             ignore_auto_extract = True
 
+        if self.mark_as_note:
+            mark_as_note = True
+
         if self.indicators_timeline:
             indicators_timeline = self.indicators_timeline.indicators_timeline
 
-        if self.outputs is not None:
+        if self.outputs is not None and self.outputs != []:
             if not self.readable_output:
                 # if markdown is not provided then create table by default
                 human_readable = tableToMarkdown('Results', self.outputs)
@@ -3913,7 +4323,8 @@ class CommandResults:
             'HumanReadable': human_readable,
             'EntryContext': outputs,
             'IndicatorTimeline': indicators_timeline,
-            'IgnoreAutoExtract': True if ignore_auto_extract else False
+            'IgnoreAutoExtract': True if ignore_auto_extract else False,
+            'Note': mark_as_note
         }
 
         return return_entry
@@ -3923,7 +4334,7 @@ def return_results(results):
     """
     This function wraps the demisto.results(), supports.
 
-    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``IAMUserProfile`` or ``list``
+    :type results: ``CommandResults`` or ``str`` or ``dict`` or ``BaseWidget`` or ``list``
     :param results: A result object to return as a War-Room entry.
 
     :return: None
@@ -3955,11 +4366,11 @@ def return_results(results):
         demisto.results(results.extract_for_local())
         return
 
-    if isinstance(results, IAMUserProfile):
+    if isinstance(results, GetModifiedRemoteDataResponse):
         demisto.results(results.to_entry())
         return
 
-    if isinstance(results, GetModifiedRemoteDataResponse):
+    if hasattr(results, 'to_entry'):
         demisto.results(results.to_entry())
         return
 
@@ -4042,7 +4453,7 @@ def return_error(message, error='', outputs=None):
     if is_debug_mode() and not is_server_handled and any(sys.exc_info()):  # Checking that an exception occurred
         message = "{}\n\n{}".format(message, traceback.format_exc())
 
-    LOG(message)
+    message = LOG(message)
     if error:
         LOG(str(error))
 
@@ -4295,6 +4706,8 @@ def string_to_context_key(string):
 
 def parse_date_range(date_range, date_format=None, to_timestamp=False, timezone=0, utc=True):
     """
+        THIS FUNCTTION IS DEPRECATED - USE dateparser.parse instead
+
       Parses date_range string to a tuple date strings (start, end). Input must be in format 'number date_range_unit')
       Examples: (2 hours, 4 minutes, 6 month, 1 day, etc.)
 
@@ -4529,16 +4942,6 @@ def is_demisto_version_ge(version, build_number=''):
         raise
 
 
-def is_debug_mode():
-    """Return if this script/command was passed debug-mode=true option
-
-    :return: true if debug-mode is enabled
-    :rtype: ``bool``
-    """
-    # use `hasattr(demisto, 'is_debug')` to ensure compatibility with server version <= 4.5
-    return hasattr(demisto, 'is_debug') and demisto.is_debug
-
-
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
@@ -4552,7 +4955,7 @@ class DemistoHandler(logging.Handler):
         msg = self.format(record)
         try:
             if self.int_logger:
-                self.int_logger.write(msg)
+                self.int_logger(msg)
             else:
                 demisto.debug(msg)
         except Exception:
@@ -4566,7 +4969,6 @@ class DebugLogger(object):
     """
 
     def __init__(self):
-        logging.raiseExceptions = False
         self.handler = None  # just in case our http_client code throws an exception. so we don't error in the __del__
         self.int_logger = IntegrationLogger()
         self.int_logger.set_buffering(False)
@@ -4580,8 +4982,8 @@ class DebugLogger(object):
             self.http_client.HTTPConnection.debuglevel = 1
             self.http_client_print = getattr(http_client, 'print', None)  # save in case someone else patched it already
             setattr(http_client, 'print', self.int_logger.print_override)
-        self.handler = DemistoHandler()
-        demisto_formatter = logging.Formatter(fmt='%(asctime)s - %(message)s', datefmt=None)
+        self.handler = DemistoHandler(self.int_logger)
+        demisto_formatter = logging.Formatter(fmt='python logging: %(levelname)s [%(name)s] - %(message)s', datefmt=None)
         self.handler.setFormatter(demisto_formatter)
         self.root_logger = logging.getLogger()
         self.prev_log_level = self.root_logger.getEffectiveLevel()
@@ -4608,6 +5010,9 @@ class DebugLogger(object):
                 setattr(self.http_client, 'print', self.http_client_print)
             else:
                 delattr(self.http_client, 'print')
+            if self.int_logger.curl:
+                for curl in self.int_logger.curl:
+                    demisto.info('cURL:\n' + curl)
 
     def log_start_debug(self):
         """
@@ -4929,7 +5334,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -5020,6 +5425,11 @@ if 'requests' in sys.modules:
             :type error_handler ``callable``
             :param error_handler: Given an error entery, the error handler outputs the
                 new formatted error message.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
             """
             try:
                 # Replace params if supplied
@@ -5057,7 +5467,9 @@ if 'requests' in sys.modules:
                             err_msg += '\n{}'.format(res.text)
                             raise DemistoException(err_msg, res=res)
 
-                is_response_empty_and_successful = (res.status_code == 204)
+                if not empty_valid_codes:
+                    empty_valid_codes = [204]
+                is_response_empty_and_successful = (res.status_code in empty_valid_codes)
                 if is_response_empty_and_successful and return_empty_response:
                     return res
 
@@ -5576,9 +5988,9 @@ class GetMappingFieldsResponse:
         :return: the mapping object for the current field.
         :rtype: ``dict``
         """
-        all_mappings = []
+        all_mappings = {}
         for scheme_types_mapping in self.scheme_types_mappings:
-            all_mappings.append(scheme_types_mapping.extract_mapping())
+            all_mappings.update(scheme_types_mapping.extract_mapping())
 
         return all_mappings
 
@@ -5803,232 +6215,3 @@ class TableOrListWidget(BaseWidget):
             'total': len(self.data),
             'data': self.data
         })
-
-
-class IAMErrors(object):
-    """
-    An enum class to manually handle errors in IAM integrations
-    :return: None
-    :rtype: ``None``
-    """
-    USER_DOES_NOT_EXIST = 404, 'User does not exist'
-    USER_ALREADY_EXISTS = 409, 'User already exists'
-
-
-class IAMActions(object):
-    """
-    Enum: contains all the IAM actions (e.g. get, update, create, etc.)
-    :return: None
-    :rtype: ``None``
-    """
-    GET_USER = 'get'
-    UPDATE_USER = 'update'
-    CREATE_USER = 'create'
-    DISABLE_USER = 'disable'
-    ENABLE_USER = 'enable'
-
-
-class IAMVendorActionResult:
-    """ This class is used in IAMUserProfile class to represent actions data.
-    :return: None
-    :rtype: ``None``
-    """
-
-    def __init__(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
-                 error_message=None, details=None, skip=False, skip_reason=None, action=None, return_error=False):
-        """ Sets the outputs and readable outputs attributes according to the given arguments.
-
-        :param success: (bool) whether or not the command succeeded.
-        :param active:  (bool) whether or not the user status is active.
-        :param iden: (str) the user ID.
-        :param username: (str) the username of the user.
-        :param email:  (str) the email of the user.
-        :param error_code: (str or int) the error code of the response, if exists.
-        :param error_message: (str) the error details of the response, if exists.
-        :param details: (dict) the full response.
-        :param skip: (bool) whether or not the command is skipped.
-        :param skip_reason: (str) If the command is skipped, describes the reason.
-        :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
-        :param return_error: (bool) Whether or not to return an error entry.
-        """
-        self._brand = demisto.callingContext.get('context', {}).get('IntegrationBrand')
-        self._instance_name = demisto.callingContext.get('context', {}).get('IntegrationInstance')
-        self._success = success
-        self._active = active
-        self._iden = iden
-        self._username = username
-        self._email = email
-        self._error_code = error_code
-        self._error_message = error_message
-        self._details = details
-        self._skip = skip
-        self._skip_reason = skip_reason
-        self._action = action
-        self._return_error = return_error
-
-    def should_return_error(self):
-        return self._return_error
-
-    def create_outputs(self):
-        """ Sets the outputs in `_outputs` attribute.
-        """
-        outputs = {
-            'brand': self._brand,
-            'instanceName': self._instance_name,
-            'action': self._action,
-            'success': self._success,
-            'active': self._active,
-            'id': self._iden,
-            'username': self._username,
-            'email': self._email,
-            'errorCode': self._error_code,
-            'errorMessage': self._error_message,
-            'details': self._details,
-            'skipped': self._skip,
-            'reason': self._skip_reason
-        }
-        return outputs
-
-    def create_readable_outputs(self, outputs):
-        """ Sets the human readable output in `_readable_output` attribute.
-
-        :param outputs: (dict) the command outputs.
-        """
-        title = self._action.title() + ' User Results ({})'.format(self._brand)
-
-        if not self._skip:
-            headers = ["brand", "instanceName", "success", "active", "id", "username",
-                       "email", "errorCode", "errorMessage", "details"]
-        else:
-            headers = ["brand", "instanceName", "skipped", "reason"]
-
-        readable_output = tableToMarkdown(
-            name=title,
-            t=outputs,
-            headers=headers,
-            removeNull=True
-        )
-
-        return readable_output
-
-
-class IAMUserProfile:
-    """
-        A User Profile object class for IAM integrations.
-
-        Attributes:
-            _user_profile (str): The user profile information.
-            _user_profile_delta (str): The user profile delta.
-            _vendor_action_results (list): A List of data returned from the vendor.
-    :return: None
-    :rtype: ``None``
-    """
-
-    INDICATOR_TYPE = 'User Profile'
-
-    def __init__(self, user_profile, user_profile_delta=None):
-        """ IAMUserProfile c'tor.
-
-        :param user_profile: (dict) the user-profile argument.
-        :param user_profile_delta: (dict) the user-profile argument.
-        """
-        self._user_profile = safe_load_json(user_profile)
-        self._user_profile_delta = safe_load_json(user_profile_delta) if user_profile_delta else {}
-        self._vendor_action_results = []
-
-    def get_attribute(self, item):
-        return self._user_profile.get(item)
-
-    def to_entry(self):
-        """ Generates a XSOAR IAM entry from the data in _vendor_action_results.
-        Note: Currently we are using only the first element of the list, in the future we will support multiple results.
-
-        :return: (dict) A XSOAR entry.
-        """
-
-        outputs = self._vendor_action_results[0].create_outputs()
-        readable_output = self._vendor_action_results[0].create_readable_outputs(outputs)
-
-        entry_context = {
-            'IAM.UserProfile(val.email && val.email == obj.email)': self._user_profile,
-            'IAM.Vendor(val.instanceName && val.instanceName == obj.instanceName && '
-            'val.email && val.email == obj.email)': outputs
-        }
-
-        return_entry = {
-            'ContentsFormat': EntryFormat.JSON,
-            'Contents': outputs,
-            'EntryContext': entry_context
-        }
-
-        if self._vendor_action_results[0].should_return_error():
-            return_entry['Type'] = EntryType.ERROR
-        else:
-            return_entry['Type'] = EntryType.NOTE
-            return_entry['HumanReadable'] = readable_output
-
-        return return_entry
-
-    def set_result(self, success=True, active=None, iden=None, username=None, email=None, error_code=None,
-                   error_message=None, details=None, skip=False, skip_reason=None, action=None, return_error=False):
-        """ Sets the outputs and readable outputs attributes according to the given arguments.
-
-        :param success: (bool) whether or not the command succeeded.
-        :param active:  (bool) whether or not the user status is active.
-        :param iden: (str) the user ID.
-        :param username: (str) the username of the user.
-        :param email:  (str) the email of the user.
-        :param error_code: (str or int) the error code of the response, if exists.
-        :param error_message: (str) the error details of the response, if exists.
-        :param details: (dict) the full response.
-        :param skip: (bool) whether or not the command is skipped.
-        :param skip_reason: (str) If the command is skipped, describes the reason.
-        :param action: (IAMActions) An enum object represents the action taken (get, update, create, etc).
-        :param return_error: (bool) Whether or not to return an error entry.
-        """
-        if not email:
-            email = self.get_attribute('email')
-
-        vendor_action_result = IAMVendorActionResult(
-            success=success,
-            active=active,
-            iden=iden,
-            username=username,
-            email=email,
-            error_code=error_code,
-            error_message=error_message if error_message else '',
-            details=details,
-            skip=skip,
-            skip_reason=skip_reason if skip_reason else '',
-            action=action,
-            return_error=return_error
-        )
-
-        self._vendor_action_results.append(vendor_action_result)
-
-    def map_object(self, mapper_name, mapping_type=None):
-        """ Returns the user data, in an application data format.
-
-        :param mapper_name: (str) The outgoing mapper from XSOAR to the application.
-        :param mapping_type: (str) The mapping type of the mapper (optional).
-        :return: (dict) the user data, in the app data format.
-        """
-        if not mapping_type:
-            mapping_type = IAMUserProfile.INDICATOR_TYPE
-        if not self._user_profile:
-            raise DemistoException('You must provide the user profile data.')
-        app_data = demisto.mapObject(self._user_profile, mapper_name, mapping_type)
-        return app_data
-
-    def update_with_app_data(self, app_data, mapper_name, mapping_type=None):
-        """ updates the user_profile attribute according to the given app_data
-
-        :param app_data: (dict) The user data in app
-        :param mapper_name: (str) incoming mapper name
-        :param mapping_type: (str) Optional - mapping type
-        """
-        if not mapping_type:
-            mapping_type = IAMUserProfile.INDICATOR_TYPE
-        if not isinstance(app_data, dict):
-            app_data = safe_load_json(app_data)
-        self._user_profile = demisto.mapObject(app_data, mapper_name, mapping_type)

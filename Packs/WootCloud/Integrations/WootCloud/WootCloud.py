@@ -234,7 +234,7 @@ def main():
         elif demisto.command() == 'wootcloud-fetch-packet-alert':
             alert = fetch_single_alert(client, demisto.args().get('alert_id'), 'packet')
             return_results(alert)
-        elif demisto.command() == 'wootcloud-fetch-bt-alert':
+        elif demisto.command() == 'wootcloud-fetch-bluetooth-alert':
             alert = fetch_single_alert(client, demisto.args().get('alert_id'), 'bluetooth')
             return_results(alert)
         elif demisto.command() == 'wootcloud-fetch-anomaly-alert':

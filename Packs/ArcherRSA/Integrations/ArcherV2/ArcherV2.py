@@ -1,5 +1,5 @@
 from datetime import timezone
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 
 import dateparser
 import urllib3
@@ -11,6 +11,8 @@ from CommonServerPython import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+FETCH_PARAM_ID_KEY = 'field_time_id'
+LAST_FETCH_TIME_KEY = 'last_fetch'
 OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 REQUEST_HEADERS = {
@@ -31,37 +33,6 @@ FIELD_TYPE_DICT = {
 ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
 
-def format_time(datetime_object: datetime, use_european_time: bool) -> str:
-    """Transform datetime to string, handles european time.
-
-    Arguments:
-        datetime_object: object to transform
-        use_european_time: Whatever the day position should be first or second
-
-    Returns:
-        A string formatted:
-        7/22/2017 3:58 PM (American) or 22/7/2017 3:58 PM (European)
-    """
-    time_format = '%d/%m/%Y %I:%M %p' if use_european_time else '%m/%d/%Y %I:%M %p'
-    return datetime_object.strftime(time_format)
-
-
-def parse_date_to_datetime(date: str, day_first: bool = False) -> datetime:
-    """Return a datetime object from given date.
-    Format of "1/1/2020 04:00 PM".
-
-    Arguments:
-        date: a date string
-        day_first: is the day first in the string (European)
-
-    Returns:
-        a datetime object
-    """
-    date_order = {'DATE_ORDER': 'DMY' if day_first else 'MDY'}
-    date_obj = parser(date, settings=date_order)
-    return date_obj
-
-
 def parser(date_str, date_formats=None, languages=None, locales=None, region=None, settings=None) -> datetime:
     """Wrapper of dateparser.parse to support return type value
     """
@@ -69,7 +40,7 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
         date_str, date_formats=date_formats, languages=languages, locales=locales, region=region, settings=settings
     )
     assert isinstance(date_obj, datetime), f'Could not parse date {date_str}'  # MYPY Fix
-    return date_obj
+    return date_obj.replace(tzinfo=timezone.utc)
 
 
 def get_token_soap_request(user, password, instance):
@@ -251,6 +222,33 @@ SOAP_COMMANDS = {
 }
 
 
+def get_occurred_time(fields: Union[List[dict], dict], field_id: str) -> str:
+    """
+    Occurred time is part of the raw 'Field' key in the response.
+    It should be under @xmlConvertedValue, but field can be both a list or a dict.
+
+    Arguments:
+        fields: Field to find the occurred utc time on
+        field_id: The @id in the response the time should be on
+
+    Returns:
+         Time of occurrence according to the field ID.
+    """
+    try:
+        field_id = str(field_id)  # In case it passed as a integer
+        if isinstance(fields, dict):
+            return fields['@xmlConvertedValue']
+        else:
+            for field in fields:
+                if str(field['@id']) == field_id:  # In a rare case @id is an integer
+                    return str(field['@xmlConvertedValue'])
+        raise KeyError('Could not find @xmlConvertedValue in record.')  # No xmlConvertedValue
+    except KeyError as exc:
+        raise DemistoException(
+            f'Could not find the property @xmlConvertedValue in field id {field_id}. Is that a date field?'
+        ) from exc
+
+
 class Client(BaseClient):
     def __init__(self, base_url, username, password, instance_name, domain, **kwargs):
         self.username = username
@@ -385,20 +383,29 @@ class Client(BaseClient):
             record['Id'] = content_obj.get('Id')
         return record, res, errors
 
+    @staticmethod
     def record_to_incident(
-            self, record_item, app_id, date_field, day_first: bool = False, offset: int = 0
+            record_item, app_id, fetch_param_id
     ) -> Tuple[dict, datetime]:
+        """Transform a record to incident
+
+        Args:
+            record_item: The record item dict
+            app_id: ID of the app
+            fetch_param_id: ID of the fetch param.
+
+        Returns:
+            incident, incident created time (UTC Time)
+        """
         labels = []
         raw_record = record_item['raw']
         record_item = record_item['record']
-        incident_created_time = datetime(1, 1, 1)
-        if record_item.get(date_field):
-            incident_created_time = parse_date_to_datetime(
-                record_item[date_field], day_first=day_first
-            ).replace(tzinfo=None)
-            # fix occurred by offset
-            incident_created_time = incident_created_time + timedelta(minutes=offset)
-
+        try:
+            occurred_time = get_occurred_time(raw_record['Field'], fetch_param_id)
+        except KeyError as exc:
+            raise DemistoException(
+                f'Could not find occurred time in record {record_item.get("Id")=}'
+            ) from exc
         # Will convert value to strs
         for k, v in record_item.items():
             if isinstance(v, str):
@@ -415,16 +422,14 @@ class Client(BaseClient):
         labels.append({'type': 'ModuleId', 'value': app_id})
         labels.append({'type': 'ContentId', 'value': record_item.get("Id")})
         labels.append({'type': 'rawJSON', 'value': json.dumps(raw_record)})
-
         incident = {
             'name': f'RSA Archer Incident: {record_item.get("Id")}',
             'details': json.dumps(record_item),
-            'occurred': incident_created_time.strftime(OCCURRED_FORMAT),
+            'occurred': occurred_time,
             'labels': labels,
             'rawJSON': json.dumps(raw_record)
         }
-        demisto.debug(f'Going out with a new incident. occurred={incident["occurred"]}')
-        return incident, incident_created_time
+        return incident, parser(occurred_time)
 
     def search_records(
             self, app_id, fields_to_display=None, field_to_search='', search_value='',
@@ -527,6 +532,56 @@ class Client(BaseClient):
                 demisto.setIntegrationContext(cache)
                 return field_data
         return {}
+
+    def get_field_id(self, app_id: str, field_name: str) -> str:
+        """Get field ID by field name
+
+        Args:
+            app_id: app id to search on
+            field_name: field name to search on
+
+        Raises:
+            DemistoException: If could not find field ID
+
+        Returns:
+            The ID of the field
+        """
+        fields, _ = self.get_application_fields(app_id)
+        for field in fields:
+            if field_name == field.get('FieldName'):
+                try:
+                    return str(field['FieldId'])
+                except KeyError:
+                    raise DemistoException(f'Could not find FieldId for {field_name=}')
+        raise DemistoException(f'Could not find field ID {field_name}')
+
+    def get_application_fields(self, app_id: str) -> Tuple[list, list]:
+        """Getting all fields in the application
+
+        Args:
+            app_id: Application to find the fields on
+
+        Returns:
+            fields, raw response
+        """
+        res = self.do_request('GET', f'/api/core/system/fielddefinition/application/{app_id}')
+
+        fields = []
+        for field in res:
+            if field.get('RequestedObject') and field.get('IsSuccessful'):
+                field_obj = field['RequestedObject']
+                field_type = field_obj.get('Type')
+                fields.append({
+                    'FieldId': field_obj.get('Id'),
+                    'FieldType': FIELD_TYPE_DICT.get(field_type, 'Unknown'),
+                    'FieldName': field_obj.get('Name'),
+                    'LevelID': field_obj.get('LevelId')
+                })
+            else:
+                errors = get_errors_from_res(field)
+                if errors:
+                    raise DemistoException(errors)
+        return fields, res
 
 
 def extract_from_xml(xml, path):
@@ -646,12 +701,11 @@ def get_file(entry_id):
 
 def test_module(client: Client, params: dict) -> str:
     if params.get('isFetch', False):
-        offset_in_minutes = int(params['time_zone'])
-        last_fetch = get_fetch_time(
-            {}, params.get('fetch_time', '3 days'),
-            offset_in_minutes
-        )
-        fetch_incidents(client, params, last_fetch)
+        last_run = {
+            FETCH_PARAM_ID_KEY: get_fetch_param_id(
+                client, {}, params['applicationId'], params['applicationDateField']
+            )}
+        fetch_incidents_command(client, params, last_run)
 
         return 'ok'
 
@@ -694,23 +748,8 @@ def search_applications_command(client: Client, args: Dict[str, str]):
 
 
 def get_application_fields_command(client: Client, args: Dict[str, str]):
-    app_id = args.get('applicationId')
-
-    res = client.do_request('GET', f'/api/core/system/fielddefinition/application/{app_id}')
-
-    fields = []
-    for field in res:
-        if field.get('RequestedObject') and field.get('IsSuccessful'):
-            field_obj = field['RequestedObject']
-            field_type = field_obj.get('Type')
-            fields.append({'FieldId': field_obj.get('Id'),
-                           'FieldType': FIELD_TYPE_DICT.get(field_type, 'Unknown'),
-                           'FieldName': field_obj.get('Name'),
-                           'LevelID': field_obj.get('LevelId')})
-        else:
-            errors = get_errors_from_res(field)
-            if errors:
-                return_error(errors)
+    app_id = args['applicationId']
+    fields, res = client.get_application_fields(app_id)
 
     markdown = tableToMarkdown('Application fields', fields)
     context: dict = {'Archer.ApplicationField(val.FieldId && val.FieldId == obj.FieldId)': fields}
@@ -995,7 +1034,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
     search_value = args.get('searchValue')
     max_results = args.get('maxResults', 10)
     date_operator = args.get('dateOperator')
-    numeric_operator = args.get('numeric-operator')
+    numeric_operator = args.get('numericOperator')
     fields_to_display = argToList(args.get('fieldsToDisplay'))
     fields_to_get = argToList(args.get('fieldsToGet'))
     full_data = args.get('fullData', 'true') == 'true'
@@ -1078,71 +1117,109 @@ def print_cache_command(client: Client, args: Dict[str, str]):
 
 
 def fetch_incidents(
-        client: Client, params: dict, from_time: str
-) -> Tuple[list, str]:
+        client: Client, params: dict, from_time: datetime, fetch_param_id: str
+) -> Tuple[list, datetime]:
     """Fetches incidents.
 
     Args:
         client: Client derived from BaseClient
         params: demisto.params dict.
         from_time: Time to start the fetch from
+        fetch_param_id: Param ID to find occurred time. can be acquired by get_fetch_param_id
 
     Returns:
-        next_run object, incidents
+        incidents, next_run datetime in archer's local time
     """
     # Not using get method as those params are a must
     app_id = params['applicationId']
     date_field = params['applicationDateField']
     max_results = params.get('fetch_limit', 10)
-    offset = int(params.get('time_zone', '0'))
     fields_to_display = argToList(params.get('fields_to_fetch'))
     fields_to_display.append(date_field)
-    day_first = argToBoolean(params.get('useEuropeanTime', False))
-
-    from_time_utc_obj = parser(from_time).replace(tzinfo=timezone.utc)
-    from_time_utc = format_time(from_time_utc_obj, day_first)
     # API Call
     records, raw_res = client.search_records(
         app_id, fields_to_display, date_field,
-        from_time_utc,
+        from_time.strftime(OCCURRED_FORMAT),
         date_operator='GreaterThan',
         max_results=max_results
     )
-
+    demisto.debug(f'Found {len(records)=}.')
     # Build incidents
     incidents = list()
-    next_fetch = from_time_utc_obj
+    # Encountered that sometimes, somehow, on of next_fetch is not UTC.
+    last_fetch_time = from_time.replace(tzinfo=timezone.utc)
+    next_fetch = last_fetch_time
     for record in records:
-        incident, incident_created_time = client.record_to_incident(
-            record, app_id, date_field, day_first=day_first, offset=offset
-        )
-        if incident_created_time > next_fetch:
-            next_fetch = incident_created_time
-        incidents.append(incident)
+        incident, incident_created_time = client.record_to_incident(record, app_id, fetch_param_id)
+        # Encountered that sometimes, somehow, incident_created_time is not UTC.
+        incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
+        if last_fetch_time < incident_created_time:
+            incidents.append(incident)
+            if next_fetch < incident_created_time:
+                next_fetch = incident_created_time
+        else:
+            demisto.debug(
+                f'The newly fetched incident is older than last fetch. {incident_created_time=} {next_fetch=}'
+            )
+    demisto.debug(f'Going out fetch incidents with {next_fetch=}, {len(incidents)=}')
+    return incidents, next_fetch
 
-    return incidents, next_fetch.strftime(OCCURRED_FORMAT)
 
-
-def get_fetch_time(last_fetch: dict, first_fetch_time: str, offset: int = 0) -> str:
+def get_fetch_time(last_fetch: dict, first_fetch_time: str) -> datetime:
     """Gets lastRun object and first fetch time (str, 3 days) and returns
     a datetime object of the last run if exists, else datetime of the first fetch time
 
     Args:
         last_fetch: a dict that may contain 'last_fetch'
         first_fetch_time: time back in simple format (3 days)
-        offset: time difference between CortexXSOAR machine and Archer, in minutes.
 
     Returns:
-        Time to start fetch from
+        Time to start fetch from. UTC timezone.
     """
-    if next_run := last_fetch.get('last_fetch'):
+    if next_run := last_fetch.get(LAST_FETCH_TIME_KEY):
         start_fetch = parser(next_run)
     else:
         start_fetch, _ = parse_date_range(first_fetch_time)
-        if offset:
-            start_fetch = start_fetch - timedelta(minutes=offset)
-    start_fetch = start_fetch.replace(tzinfo=None)
-    return start_fetch.strftime(OCCURRED_FORMAT)
+    start_fetch.replace(tzinfo=timezone.utc)
+    return start_fetch
+
+
+def get_fetch_param_id(client: Client, last_run: dict, app_id: str, app_date_field: str) -> str:
+    """ Get the from lastRun if available. Else ask the instance for the ID
+    Args:
+        client: Archer's client
+        last_run: Last run object
+        app_id: app id to search on
+        app_date_field: the name of the date_field
+    Returns:
+        ID of the field
+    """
+    try:  # If exists
+        fetch_param_id = last_run[FETCH_PARAM_ID_KEY]
+    except KeyError:  # If not, search for it
+        fetch_param_id = client.get_field_id(app_id, app_date_field)
+    demisto.debug(f'Found a field ID {fetch_param_id=}')
+    return fetch_param_id
+
+
+def fetch_incidents_command(client: Client, params: dict, last_run: dict) -> Tuple[list, datetime]:
+    """Fetches incidents
+    Arguments:
+        client: Archer's client
+        params: demisto.params()
+        last_run: demisto.getLastRun()
+    Returns:
+        incidents, next fetch
+    """
+    from_time = get_fetch_time(last_run, params.get('fetch_time', '3 days'))
+    fetch_param_id = last_run[FETCH_PARAM_ID_KEY]
+    demisto.debug(f'Starting fetch incidents with {from_time=} and {fetch_param_id=}')
+    return fetch_incidents(
+        client=client,
+        params=params,
+        from_time=from_time,
+        fetch_param_id=fetch_param_id
+    )
 
 
 def main():
@@ -1189,18 +1266,14 @@ def main():
     LOG(f'Command being called is {command}')
     try:
         if command == 'fetch-incidents':
-            offset = int(params['time_zone'])
-            from_time = get_fetch_time(
-                demisto.getLastRun(), params.get('fetch_time', '3 days'), offset
+            last_run = demisto.getLastRun()
+            last_run[FETCH_PARAM_ID_KEY] = get_fetch_param_id(
+                client, last_run, params['applicationId'], params['applicationDateField']
             )
-
-            incidents, next_fetch = fetch_incidents(
-                client=client,
-                params=params,
-                from_time=from_time
-            )
+            incidents, next_fetch = fetch_incidents_command(client, params, last_run)
             demisto.debug(f'Setting next run to {next_fetch}')
-            demisto.setLastRun({'last_fetch': next_fetch})
+            last_run[LAST_FETCH_TIME_KEY] = next_fetch.strftime(OCCURRED_FORMAT)
+            demisto.setLastRun(last_run)
             demisto.incidents(incidents)
         elif command == 'test-module':
             demisto.results(test_module(client, params))

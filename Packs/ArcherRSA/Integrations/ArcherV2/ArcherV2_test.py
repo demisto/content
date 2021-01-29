@@ -1,7 +1,11 @@
+import copy
+from datetime import datetime, timezone
+
 import pytest
 
 import demistomock as demisto
-from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value
+from ArcherV2 import Client, extract_from_xml, generate_field_contents, get_errors_from_res, generate_field_value, \
+    fetch_incidents, get_fetch_time, parser
 
 BASE_URL = 'https://test.com/'
 
@@ -243,10 +247,12 @@ class TestArcherV2:
 
     def test_record_to_incident(self):
         client = Client(BASE_URL, '', '', '', '')
-        incident, incident_created_time = client.record_to_incident(INCIDENT_RECORD, 75, 'Date/Time Reported')
-        assert incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ') == '2018-03-26T10:03:32Z'
+        record = copy.deepcopy(INCIDENT_RECORD)
+        record['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
+        incident, incident_created_time = client.record_to_incident(record, 75, '305')
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
         assert incident['name'] == 'RSA Archer Incident: 227602'
-        assert incident['occurred'] == '2018-03-26T10:03:32Z'
+        assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
     def test_search_records(self, requests_mock):
         requests_mock.post(BASE_URL + 'api/core/security/login',
@@ -367,11 +373,10 @@ class TestArcherV2:
         """
         client = Client(BASE_URL, '', '', '', '')
         incident = INCIDENT_RECORD.copy()
+        incident['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
         incident['record']['Date/Time Reported'] = "26/03/2018 10:03 AM"
-        incident, incident_created_time = client.record_to_incident(
-            INCIDENT_RECORD, 75, 'Date/Time Reported', day_first=True
-        )
-        assert incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ') == '2018-03-26T10:03:00Z'
+        incident, incident_created_time = client.record_to_incident(INCIDENT_RECORD, 75, '305')
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
         assert incident['occurred'] == '2018-03-26T10:03:00Z'
 
     def test_record_to_incident_american_time(self):
@@ -388,9 +393,139 @@ class TestArcherV2:
         """
         client = Client(BASE_URL, '', '', '', '')
         incident = INCIDENT_RECORD.copy()
-        incident['record']['Date/Time Reported'] = "03/26/2018 10:03 AM"
+        incident['record']['Date/Time Reported'] = '03/26/2018 10:03 AM'
+        incident['raw']['Field'][1]['@xmlConvertedValue'] = '2018-03-26T10:03:00Z'
         incident, incident_created_time = client.record_to_incident(
-            INCIDENT_RECORD, 75, 'Date/Time Reported', day_first=False
+            INCIDENT_RECORD, 75, '305'
         )
-        assert incident_created_time.strftime('%Y-%m-%dT%H:%M:%SZ') == '2018-03-26T10:03:00Z'
+        assert incident_created_time == datetime(2018, 3, 26, 10, 3, tzinfo=timezone.utc)
         assert incident['occurred'] == '2018-03-26T10:03:00Z'
+
+    def test_fetch_time_change(self, mocker):
+        """
+        Given:
+            incident with date/time reported
+            european time (day first) - True or false
+
+        When:
+            Fetching incidents
+
+        Then:
+            Check that the new next fetch is greater than last_fetch
+            Check the wanted next_fetch is true
+            Assert occurred time
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        date_time_reported = '2018-04-03T10:03:00.000Z'
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported'
+        }
+        record = copy.deepcopy(INCIDENT_RECORD)
+        record['record']['Date/Time Reported'] = date_time_reported
+        record['raw']['Field'][1]['@xmlConvertedValue'] = date_time_reported
+        last_fetch = get_fetch_time(
+            {'last_fetch': '2018-03-01T10:03:00Z'}, params.get('fetch_time', '3 days')
+        )
+        mocker.patch.object(client, 'search_records', return_value=([record], {}))
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
+        assert last_fetch < next_fetch
+        assert next_fetch == datetime(2018, 4, 3, 10, 3, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == date_time_reported
+
+    def test_two_fetches(self, mocker):
+        """
+        Given:
+            2 incident with date/time reported
+            running two fetches.
+        When:
+            Fetching incidents
+
+        Then:
+            Check that the new next fetch is greater than last_fetch on both calls.
+            Check the wanted next_fetch is equals to the date in the incident in both calls.
+            Assert occurred time
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported'
+        }
+        record1, record2 = copy.deepcopy(INCIDENT_RECORD), copy.deepcopy(INCIDENT_RECORD)
+        record1['record']['Date/Time Reported'] = '18/03/2020 10:30 AM'
+        record2['record']['Date/Time Reported'] = '18/03/2020 03:30 PM'
+        record1['raw']['Field'][1]['@xmlConvertedValue'] = '2020-03-18T10:30:00.000Z'
+        record2['raw']['Field'][1]['@xmlConvertedValue'] = '2020-03-18T15:30:00.000Z'
+        last_fetch = parser('2020-18-03T09:00:00Z')
+        mocker.patch.object(
+            client, 'search_records', side_effect=[
+                ([record1], {}),
+                ([record2], {})
+            ]
+        )
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
+        assert last_fetch < next_fetch
+        assert next_fetch == datetime(2020, 3, 18, 10, 30, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == '2020-03-18T10:30:00.000Z'
+        incidents, next_fetch = fetch_incidents(client, params, next_fetch, '305')
+        assert last_fetch < next_fetch
+        assert next_fetch == datetime(2020, 3, 18, 15, 30, tzinfo=timezone.utc)
+        assert incidents[0]['occurred'] == '2020-03-18T15:30:00.000Z'
+
+    def test_fetch_got_old_incident(self, mocker):
+        """
+        Given:
+            last_fetch is newer than new incident
+
+        When:
+            Fetching incidents
+
+        Then:
+            Check that the next fetch is equals last fetch (no new incident)
+            Check that no incidents brought back
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        date_time_reported = '2018-03-01T10:02:00.000Z'
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported'
+        }
+        record = copy.deepcopy(INCIDENT_RECORD)
+        record['record']['Date/Time Reported'] = date_time_reported
+        record['raw']['Field'][1]['@xmlConvertedValue'] = date_time_reported
+        last_fetch = get_fetch_time(
+            {'last_fetch': '2018-03-01T10:03:00Z'}, params.get('fetch_time', '3 days')
+        )
+        mocker.patch.object(client, 'search_records', return_value=([record], {}))
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
+        assert last_fetch == next_fetch
+        assert not incidents, 'Should not get new incidents.'
+
+    def test_fetch_got_exact_same_time(self, mocker):
+        """
+        Given:
+            last_fetch is in the exact same time as the incident
+
+        When:
+            Fetching incidents
+
+        Then:
+            Check that the next fetch is equals last fetch (no new incident)
+            Check that no incidents brought back
+        """
+        client = Client(BASE_URL, '', '', '', '')
+        date_time_reported = '2018-03-01T10:02:00.000Z'
+        params = {
+            'applicationId': '75',
+            'applicationDateField': 'Date/Time Reported'
+        }
+        record = copy.deepcopy(INCIDENT_RECORD)
+        record['record']['Date/Time Reported'] = date_time_reported
+        record['raw']['Field'][1]['@xmlConvertedValue'] = date_time_reported
+        last_fetch = get_fetch_time(
+            {'last_fetch': date_time_reported}, params.get('fetch_time', '3 days')
+        )
+        mocker.patch.object(client, 'search_records', return_value=([record], {}))
+        incidents, next_fetch = fetch_incidents(client, params, last_fetch, '305')
+        assert last_fetch == next_fetch
+        assert not incidents, 'Should not get new incidents.'

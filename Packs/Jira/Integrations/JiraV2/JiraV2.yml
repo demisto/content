@@ -15,7 +15,7 @@ configuration:
   type: 0
   required: true
 - display: |-
-    _____________ Basic Authentication ____________
+    ______________ Basic Authentication _____________
 
     Username
   name: username
@@ -45,7 +45,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: false
-- display: PrivateKey
+- display: PrivateKey (PKCS8 format)
   name: privateKey
   defaultvalue: ""
   type: 14
@@ -193,7 +193,7 @@ script:
     - name: dueDate
       description: 'The due date for the issue (in the format: 2018-03-11).'
     - name: assignee
-      description: The name of the assignee.
+      description: The account ID of the assignee.
     - name: reporter
       description: The account ID of the reporter.
     - name: parentIssueKey
@@ -272,7 +272,7 @@ script:
     - name: dueDate
       description: The due date for the issue (in the format 2018-03-11).
     - name: assignee
-      description: The name of the assignee.
+      description: The account ID of the assignee.
     - name: status
       description: The name of the status.
     outputs:
@@ -337,7 +337,7 @@ script:
       will not update the current incident, it's here for debugging purposes.
     execution: false
     name: get-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.13983
+  dockerimage: demisto/oauthlib:1.0.0.15507
   isfetch: true
   isremotesyncin: true
   runonce: false

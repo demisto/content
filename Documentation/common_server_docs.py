@@ -26,7 +26,7 @@ PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeCo
                     "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
                     "IndicatorType", "EntryType", "EntryFormat", "abstractmethod",
                     "HTTPAdapter", "Retry", "Common", "randint", "GetDemistoVersion", "get_demisto_version",
-                    "BaseWidget"]
+                    "BaseWidget", "UTC", "WarningsHandler"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 
@@ -240,7 +240,7 @@ def create_ps_documentation(path, origin, language):
 
 
 def main():
-    install_logging('Common_Server_Documentation.log')
+    install_logging('Common Server Documentation.log')
     js_doc, is_error_js = create_js_documentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs',
                                                   'javascript')
     py_doc, is_error_py = create_py_documentation('./Packs/Base/Scripts/CommonServerPython/CommonServerPython.py',
