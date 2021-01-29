@@ -135,6 +135,10 @@ script:
       - name: source_id
         description: The indicators source ID
         required: false
+      - name: limit
+        description: The maximum number of indicators to get. The default value is 50.
+        defaultValue: '50'
+        required: false
     name: cyjax-get-indicators
     description: Get sighting of indicator
   - arguments:

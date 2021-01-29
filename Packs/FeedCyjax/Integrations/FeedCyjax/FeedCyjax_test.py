@@ -6,10 +6,10 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from FeedCyjax import INDICATORS_LAST_FETCH_KEY, DATE_FORMAT, Client, main, cyjax_sdk, test_module as module_test, \
-     get_indicators_last_fetch_date, set_indicators_last_fetch_date, map_indicator_type, map_reputation_to_score, \
-     convert_cyjax_indicator, fetch_indicators_command, get_indicators_command, indicator_sighting_command, \
-     arg_to_datetime
+from FeedCyjax import INDICATORS_LAST_FETCH_KEY, DATE_FORMAT, INDICATORS_LIMIT, Client, main, cyjax_sdk, \
+     test_module as module_test, get_indicators_last_fetch_date, set_indicators_last_fetch_date, map_indicator_type, \
+     map_reputation_to_score, convert_cyjax_indicator, fetch_indicators_command, get_indicators_command, \
+     indicator_sighting_command, arg_to_datetime
 from test_data.indicators import mocked_indicators
 from test_data.enrichment import mocked_enrichment
 
@@ -21,6 +21,7 @@ default_reputation = 'Suspicious'
 def test_constants():
     assert 'last_fetch' == INDICATORS_LAST_FETCH_KEY
     assert '%Y-%m-%dT%H:%M:%SZ' == DATE_FORMAT
+    assert 50 == INDICATORS_LIMIT
 
 
 def test_map_reputation_to_score():
@@ -213,7 +214,8 @@ def test_get_indicators_command_arguments_specified(mocker):
         'until': '2021-01-15',
         'type': 'URL',
         'source_type': 'incident-report',
-        'source_id': '50000'
+        'source_id': '50000',
+        'limit': '12'
     })
 
     result = get_indicators_command(client_for_testing, demisto.args())
@@ -221,7 +223,8 @@ def test_get_indicators_command_arguments_specified(mocker):
                                      until='2021-01-15T00:00:00Z',
                                      indicator_type='URL',
                                      source_type='incident-report',
-                                     source_id=50000)
+                                     source_id=50000,
+                                     limit=12)
 
 
 def test_get_indicators_command_without_arguments_specified(mocker):
@@ -232,16 +235,15 @@ def test_get_indicators_command_without_arguments_specified(mocker):
     list_mock = mocker.MagicMock()
     list_mock.list.return_value = cyjax_indicator
 
-    month_ago = datetime.now() - timedelta(30)
-
     mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise', return_value=list_mock)
 
     result = get_indicators_command(client_for_testing, demisto.args())
-    list_call_spy.assert_called_with(since=month_ago.strftime(DATE_FORMAT),
+    list_call_spy.assert_called_with(since=None,
                                      until=None,
                                      indicator_type=None,
                                      source_type=None,
-                                     source_id=None)
+                                     source_id=None,
+                                     limit=50)
 
 
 def test_get_indicators_command_response(mocker):

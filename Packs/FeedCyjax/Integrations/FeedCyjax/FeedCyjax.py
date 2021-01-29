@@ -20,6 +20,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 INDICATORS_LAST_FETCH_KEY = 'last_fetch'
+INDICATORS_LIMIT = 50
 
 
 ''' CLIENT CLASS '''
@@ -68,7 +69,8 @@ class Client(object):
 
         return result, error_msg
 
-    def fetch_indicators(self, since=None, until=None, indicator_type=None, source_type=None, source_id=None) -> list:
+    def fetch_indicators(self, since=None, until=None, indicator_type=None, source_type=None, source_id=None,
+                         limit=None) -> list:
         """
         Fetch indicators from Cyjax SDK.
 
@@ -87,6 +89,9 @@ class Client(object):
         :type source_id: ``int``
         :param source_id:  The indicators source ID
 
+        :type limit: ``int``
+        :param limit: The indicators count limit
+
         :return: The list of indicators
         :rtype: list
         """
@@ -95,7 +100,8 @@ class Client(object):
                                                                 until=until,
                                                                 type=indicator_type,
                                                                 source_type=source_type,
-                                                                source_id=source_id)
+                                                                source_id=source_id,
+                                                                limit=limit)
         except Exception as e:
             indicators = []
             demisto.debug('Error when fetching Indicators from Cyjax SDK {}'.format(str(e)))
@@ -454,6 +460,7 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> Optional[Dic
     indicator_type = args.get('type', None)
     source_type = args.get('source_type', None)
     source_id = args.get('source_id', None)
+    limit = int(args.get('limit', INDICATORS_LIMIT))
 
     if since is not None:
         since_date = arg_to_datetime(since, 'since')
@@ -466,16 +473,12 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> Optional[Dic
     if source_id is not None:
         source_id = int(source_id)
 
-    # Check if any filter is set, if not set since to 30 days ago to prevent to many indicators load
-    if not any([since, until, indicator_type, source_type, source_id]):
-        month_ago = datetime.now() - timedelta(30)
-        since = month_ago.strftime(DATE_FORMAT)
-
     cyjax_indicators = client.fetch_indicators(since=since,
                                                until=until,
                                                indicator_type=indicator_type,
                                                source_type=source_type,
-                                               source_id=source_id)
+                                               source_id=source_id,
+                                               limit=limit)
 
     indicators = [convert_cyjax_indicator(indicator) for indicator in cyjax_indicators]  # type:List
 
