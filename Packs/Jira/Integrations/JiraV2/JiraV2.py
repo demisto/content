@@ -209,7 +209,7 @@ def search_user(query: str, max_results: str = '50'):
         max_results (str): The maximum number of items to return. default by the server: 50
 
     Returns:
-        List of users
+        List of users.
     """
     url = f"rest/api/latest/users/search?query={query}&maxResults={max_results}"
     res = jira_req('GET', url, resp_type='json')
@@ -223,12 +223,12 @@ def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Un
     Args:
         attribute (str): Username or Email address of a user.
         max_results (str): The maximum number of items to return. default by the server: 50
-
-    Returns:
-
     """
     users = search_user(attribute, max_results)
-    account_ids = {user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(), user.get('emailAddress', '').lower()])}
+    account_ids = {
+        user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                          user.get('emailAddress', '').lower()])}
+
     if not account_ids:
         return f'No Account ID was found for attribute: {attribute}.'
     if len(account_ids) > 1:
