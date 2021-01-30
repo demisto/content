@@ -122,4 +122,4 @@ ignore=IN126
 ignore=IN126
 
 [file:integration-VirusTotal.yml]
-ignore=IN134
+ignore=IN135
