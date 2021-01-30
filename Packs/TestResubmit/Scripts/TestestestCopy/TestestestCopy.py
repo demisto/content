@@ -16,7 +16,7 @@ from typing import Any, Dict
 ''' STANDALONE FUNCTION '''
 
 
-# TODO: REMOVE the following dummy function:
+# TODO: REMOVE the following function:
 def basescript_dummy(dummy: str) -> Dict[str, str]:
     """Returns a simple python dict with the information provided
     in the input (dummy).
@@ -28,7 +28,6 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
 
     return {"dummy": dummy}
 # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-# testttttt
 
 
 ''' COMMAND FUNCTION '''
