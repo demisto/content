@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#F06292",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "XSOAR Dev to Prod",
+    "layout": "c74e5c5c-00ed-4db8-816a-5a0d99805a3c",
+    "locked": false,
+    "name": "XSOAR Dev to Prod",
+    "playbookId": "e2374936-a457-40cf-8c17-c27210cdcfff",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

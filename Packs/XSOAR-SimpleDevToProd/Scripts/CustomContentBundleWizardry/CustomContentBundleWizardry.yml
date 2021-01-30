@@ -1,0 +1,37 @@
+args:
+- description: The EntryID of the custom content bundle from the war room.
+  name: entry_id
+  required: true
+- auto: PREDEFINED
+  defaultValue: listfiles
+  description: Whether to list the files in the bundle, or return the selected files
+    to the war room.
+  name: action
+  predefined:
+  - listfiles
+  - exportfiles
+- description: Array of file names to export, generated from the listfiles action.
+  isArray: true
+  name: file_names
+comment: This automation accepts an XSOAR custom content bundle, and either returns
+  a list of file names, or the files you want to the war room.
+commonfields:
+  id: CustomContentBundleWizardry
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: CustomContentBundleWizardry
+outputs:
+- contextPath: CustomContent
+  description: List of files in the custom content bundle
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

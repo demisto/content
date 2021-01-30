@@ -1,0 +1,17 @@
+{
+    "name": "XSOAR - Simple Dev to Prod",
+    "description": "Simple Dev to Prod workflow for XSOAR custom content.\n\n\nIntended to be run as a Job to either select custom content to zip and manually import into production, or you can use the Demisto REST API to automate the whole thing. \n\nSetup Instructions:\nIf using the JOB - XSOAR - Simple Dev to Prod playbook, setup an integration instance of the Demisto REST API for both your Dev and Prod server on the Dev server.  \n\nSet the inputs for the JOB - XSOAR - Simple Dev to Prod playbook for the instance names for the dev and production Demisto REST API instances.\n\nIf using the simpler JOB - XSOAR - Export Selected Custom Content playbook, then you only need an instance of the Demisto REST API for your Dev server.  \n\n\nTo use this:\n1. Create a Job, with Type \"XSOAR - Dev to Prod\", this ensures you get the proper layout.\n2. Select either the JOB - XSOAR - Export Selected Custom Content or JOB - XSOAR - Simple Dev to Prod playbooks.\n3. Run the Job and follow the instructions in the playbook.\n\n\n\n\n",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "beauchompers",
+    "url": "",
+    "email": "",
+    "created": "2021-01-30T19:15:18Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "beauchompers"
+    ]
+}
