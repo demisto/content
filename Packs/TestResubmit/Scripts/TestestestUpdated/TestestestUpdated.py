@@ -13,6 +13,9 @@ Linting: https://xsoar.pan.dev/docs/integrations/linting
 import traceback
 from typing import Any, Dict
 
+# test_updated
+
+
 ''' STANDALONE FUNCTION '''
 
 
@@ -28,7 +31,7 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
 
     return {"dummy": dummy}
 # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-# testttttt
+# testestets
 
 
 ''' COMMAND FUNCTION '''
@@ -38,7 +41,6 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
 def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
     dummy = args.get('dummy', 'example dummy')
-
     if not dummy:
         raise ValueError('dummy not specified')
 
@@ -54,6 +56,8 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
 
 ''' MAIN FUNCTION '''
+
+# test
 
 
 def main():
