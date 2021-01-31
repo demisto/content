@@ -41,6 +41,12 @@ script:
       name: user_email
       required: false
       secret: false
+    - default: false
+      description: 'The user full name. For example: "Jon Smith"'
+      isArray: false
+      name: name
+      required: false
+      secret: false
     deprecated: false
     description: Generate workday event.
     execution: false
