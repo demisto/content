@@ -211,7 +211,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 78e5d898-bbf1-4743-883f-075cdb420713
       iscommand: true
       name: Send error status to PANW IoT cloud
