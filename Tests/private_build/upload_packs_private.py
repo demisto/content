@@ -410,8 +410,7 @@ def main():
     id_set_path = upload_config.id_set_path
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
-    is_private_build = upload_config.is_private
-
+    is_private_build = upload_config.encryption_key and upload_config.encryption_key != ''
 
     print(f"Packs artifact path is: {packs_artifacts_path}")
 
