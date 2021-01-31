@@ -320,8 +320,8 @@ script:
         \ VMs](https://www.nutanix.dev/reference/prism_element/v2/api/vms/get-vms-getvms/)\
         \ API call. Some of the fields in the response are not supported. Known filters\
         \ Nutanix service supports are: *machine_type*, *power_state*, *ha_priority*,\
-        \ *uefi_boot*. If you wish to try any other filter, you can try to enter your\
-        \ own, and in case Nutanix does not support the filter, error will be thrown\
+        \ *uefi_boot*. You can try to enter your own filter,\
+        \  but if Nutanix does not support the filter, an error will be thrown\
         \ specifying the filter is invalid. Each filter is written in the following\
         \ way: filter_name==filter_value or filter_name!=filter_value. Possible combinations\
         \ of OR (using comma ',') and AND (using semicolon ';'), for Example: machine_type==pc;power_state!=off,ha_priority==0\
@@ -415,7 +415,7 @@ script:
       required: true
     description: Set power state of a virtual machine.  If the virtual machine is
       being powered on and no host is specified, the host with the most available
-      CPU and memory will be chosen. Note that such host may not be available. If
+      CPU and memory will be chosen. Note that such a host may not be available. If
       the virtual machine is being power cycled, a different host can be specified
       to start it on. The command returns a task UUID that can be monitored by the
       nutanix-hypervisor-task-poll command.
@@ -495,7 +495,7 @@ script:
       description: Completion percentage of the task.
       type: Number
     - contextPath: NutanixHypervisor.Task.progress_status
-      description: Progress status of the task, for example, Succeeded, Failed, ....
+      description: Progress status of the task, for example, Succeeded, Failed, etc.
       type: String
     - contextPath: NutanixHypervisor.Task.subtask_uuid_list
       description: The list of the UUIDs of the subtasks for this task.
@@ -504,13 +504,13 @@ script:
       description: The UUID of the cluster.
       type: String
   - arguments:
-    - description: A date in iso format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days).. Only alerts that were created on or after the specified
-        date/time will be retrieved. If no time zone used, UTC time zone will be used.
+    - description: The start date in ISO date format, epoch time or time range(<number> <time unit>',
+        e.g., 12 hours, 7 days). Only alerts that were created on or after the specified
+        date/time will be retrieved. If no time zone is specified, UTC time zone will be used.
       name: start_time
-    - description: A date in iso format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days).. Only alerts that were created on or before the specified
-        date/time will be retrieved. If no time zone used, UTC time zone will be used.
+    - description: The end date in ISO date format, epoch time or time range(<number> <time unit>',
+        e.g., 12 hours, 7 days). Only alerts that were created on or before the specified
+        date/time will be retrieved. If no time zone is specified, UTC time zone will be used.
       name: end_time
     - auto: PREDEFINED
       description: If true, retrieves alerts that have been resolved.
@@ -570,7 +570,7 @@ script:
     - description: Maximum number of physical hosts to retrieve. Possible values are 1-1000.
       name: limit
       defaultValue: '50'
-    description: Gets the list of alerts generated in the cluster which matches the
+    description: Gets the list of alerts generated in the cluster that matches the
       filters. Nutanix fetches the latest alerts created if there are
       more than the defined maximum number of alerts.
     name: nutanix-alerts-list
@@ -737,14 +737,14 @@ script:
       description: The message returned by the resolve task.
       type: String
   - arguments:
-    - description: A date in iso format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days).. Only alerts that were created on or after the specified
-        date/time will be acknowledged. If no time zone used, UTC time zone will be
+    - description: The start date in ISO date format, epoch time or time range(<number> <time unit>',
+        e.g., 12 hours, 7 days). Only alerts that were created on or after the specified
+        date/time will be acknowledged. If no time zone is specified, UTC time zone will be
         used.
       name: start_time
-    - description: A date in iso format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days).. Only alerts that were created on or before the specified
-        date/time will be acknowledged. If no time zone used, UTC time zone will be
+    - description: The end date in ISO date format, epoch time or time range(<number> <time unit>',
+        e.g., 12 hours, 7 days). Only alerts that were created on or before the specified
+        date/time will be acknowledged. If no time zone is specified, UTC time zone will be
         used.
       name: end_time
     - auto: PREDEFINED
@@ -789,13 +789,13 @@ script:
       description: Message returned by the acknowledge operation.
       type: String
   - arguments:
-    - description: A date in iso format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days).. Only alerts that were created on or after the specified
-        date/time will be resolved. If no time zone used, UTC time zone will be used.
+    - description: The start date in ISO date format, epoch time or time range(<number> <time unit>',
+        e.g., 12 hours, 7 days). Only alerts that were created on or after the specified
+        date/time will be resolved. If no time zone is specified, UTC time zone will be used.
       name: start_time
-    - description: A date in iso format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days).. Only alerts that were created on or before the specified
-        date/time will be resolved. If no time zone used, UTC time zone will be used.
+    - description: The end date in ISO date format, epoch time or time range(<number> <time unit>',
+        e.g., 12 hours, 7 days). Only alerts that were created on or before the specified
+        date/time will be resolved. If no time zone is specified, UTC time zone will be used.
       name: end_time
     - auto: PREDEFINED
       description: Comma-separated list of the severity levels of the alerts to resolve.
