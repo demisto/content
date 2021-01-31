@@ -3,7 +3,7 @@
     "description": "This community non-official integration will allow you to automate the generation of Palo Alto Networks Security Lifecycle Reviews (SLR's) using XSOAR.",
     "support": "community",
     "currentVersion": "1.0.0",
-    "author": "Matt Smithq",
+    "author": "Matt Smith",
     "url": "",
     "email": "",
     "created": "2020-11-25T15:05:50Z",
