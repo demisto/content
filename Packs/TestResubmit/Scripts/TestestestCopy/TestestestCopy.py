@@ -16,10 +16,10 @@ from typing import Any, Dict
 ''' STANDALONE FUNCTION '''
 
 
-# TODO: REMOVE the following dummy function:
+# TODO: REMOVE the following function:
 def basescript_dummy(dummy: str) -> Dict[str, str]:
     """Returns a simple python dict with the information provided
-    in the input (dummy).
+    in the input.
     :type dummy: ``str``
     :param dummy: string to add in the dummy dict that is returned
     :return: dict as {"dummy": dummy}
@@ -58,7 +58,7 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
 def main():
     try:
-        # TODO: replace the invoked command function with yours
+        # TODO: replace invoked command function with yours
         return_results(basescript_dummy_command(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
