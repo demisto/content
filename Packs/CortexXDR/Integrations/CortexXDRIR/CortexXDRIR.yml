@@ -2232,7 +2232,313 @@ script:
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.action_id
       description: The specified action ID.
       type: number
-  dockerimage: demisto/python3:3.9.1.14969
+  - arguments:
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by
+        running the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier of the script. Can be retrieved by
+        running the xdr-get-scripts command.
+      isArray: false
+      name: script_uid
+      required: true
+      secret: false
+    - default: false
+      description: 'Dictionary contains the parameter name as key and its value for this execution as the value.
+        For example, {"param1":"param1_value","param2":"param2_value"}'
+      isArray: false
+      name: parameters
+      required: true
+      secret: false
+    - default: false
+      description: Integer represents the timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      defaultValue: 600
+      secret: false
+    deprecated: false
+    description: Initiate a new endpoint script execution action using a script from the script library.
+    execution: false
+    name: xdr-run-script
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  - arguments:
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by
+        running the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Section of a script you want to initiate on an endpoint (e.g. print("7")).
+      isArray: false
+      name: snippet_code
+      required: true
+      secret: false
+    - default: false
+      description: Integer represents the timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      defaultValue: 600
+      secret: false
+    deprecated: false
+    description: Initiate a new endpoint script execution action using provided snippet code.
+    execution: false
+    name: xdr-run-snippet-code-script
+  - arguments:
+    - default: false
+      description: Action ID retrieved from the xdr-run-script command.
+      isArray: true
+      name: action_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the status of a script execution action.
+    execution: false
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.general_status
+      description: General status of the action, considering the status of all the endpoints.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.error_message
+      description: Error message regarding permissions for running APIs or the action doesn’t exist.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_timeout
+      description: Number of endpoints in "timeout" status.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_pending_abort
+      description: Number of endpoints in "pending abort" status.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_pending
+      description: Number of endpoints in "pending" status.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_in_progress
+      description: Number of endpoints in "in progess" status.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_failed
+      description: Number of endpoints in "failed" status.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_expired
+      description: Number of endpoints in "expired" status.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_completed_successfully
+      description: Number of endpoints in "completed successfully" status.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_canceled
+      description: Number of endpoints in "canceled" status.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_aborted
+      description: Number of endpoints in "aborted" status.
+      type: Number
+    name: xdr-get-script-execution-status
+  - arguments:
+    - default: false
+      description: Action ID retrieved from the xdr-run-script command.
+      isArray: true
+      name: action_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the results of a script execution action.
+    execution: false
+    name: xdr-get-script-execution-results
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.retrieved_files
+      description: Number of successfully retrieved files.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address
+      description: Endpoint IP address.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_name
+      description: Number of successfully retrieved files.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.failed_files
+      description: Number of files failed to retrieve.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_status
+      description: Endpoint status.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.domain
+      description: Domain to which the endpoint belongs.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_id
+      description: Endpoint ID.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.execution_status
+      description: Execution status of this endpoint.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.return_value
+      description: Value returned by the script in case the type is not a dictionary.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.standard_output
+      description: The STDOUT and the STDERR logged by the script during the execution.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.retention_date
+      description: Timestamp in which the retrieved files will be deleted from the server.
+      type: Date
+  - arguments:
+    - default: false
+      description: Action ID retrieved from the xdr-run-script command.
+      isArray: true
+      name: action_id
+      required: true
+      secret: false
+    - default: false
+      description: Endpoint ID. Can be retrieved by running the xdr-get-endpoints command.
+      isArray: true
+      name: endpoint_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the files retrieved from a specific endpoint during a script execution.
+    execution: false
+    name: xdr-get-script-execution-result-files
+  - arguments:
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by
+        running the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of shell commands to execute.
+      isArray: false
+      name: commands
+      required: true
+      secret: false
+    - default: false
+      description: Integer represents the timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      defaultValue: 600
+      secret: false
+    deprecated: false
+    description: Initiate a new endpoint script execution of shell commands.
+    execution: false
+    name: xdr-run-script-execute-commands
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  - arguments:
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by
+        running the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Path of file to delete.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: Integer represents the timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      defaultValue: 600
+      secret: false
+    deprecated: false
+    description: Initiate a new endpoint script execution to delete the specified file.
+    execution: false
+    name: xdr-run-script-delete-file
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  - arguments:
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by
+        running the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Path of file to check for existance.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: Integer represents the timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      defaultValue: 600
+      secret: false
+    deprecated: false
+    description: Initiate a new endpoint script execution to check if file exists.
+    execution: false
+    name: xdr-run-script-file-exists
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  - arguments:
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by
+        running the xdr-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Name of process to kill.
+      isArray: false
+      name: process_name
+      required: true
+      secret: false
+    - default: false
+      description: Integer represents the timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      defaultValue: 600
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate a new endpoint script execution kill process.
+    execution: false
+    name: xdr-run-script-kill-process
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false
