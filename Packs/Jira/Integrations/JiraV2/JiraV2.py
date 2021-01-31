@@ -233,7 +233,7 @@ def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Un
         return f'No Account ID was found for attribute: {attribute}.'
     if len(account_ids) > 1:
         return f'Multiple account IDs were found for attribute: {attribute}.\n' \
-               f'Please try provide the other attribute available - Email or DisplayName'
+               f'Please try to provide the other attribute available - Email or DisplayName.'
 
     account_id = next(iter(account_ids))
     outputs = {
