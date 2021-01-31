@@ -1,5 +1,4 @@
-description: Playbook to handle incident triggered from PANW Iot (Zingbox) UI to send
-  Alert to ServiceNow.
+description: This playbook handles incidents triggered in the PANW IoT (Zingbox) UI by sending the alert to ServiceNow.
 id: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
 inputs: []
 name: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
@@ -51,8 +50,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if an active ServiceNow v2 integration instance is configured. Otherwise returns
+        'no'.
       id: a2bc5618-1f8e-4180-8217-2e3c88fc43ae
       iscommand: false
       name: Is ServiceNow enabled?
@@ -96,8 +95,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Palo Alto Networks IoT 3rd Party
-      description: For a given a asset ID (alert-id, vulnerability-id or mac-address)
-        returns the asset details.
+      description: Returns details for tje given asset ID (alert-id, vulnerability-id, or mac-address).
       id: 4189234a-d7bd-4953-87a6-13e589904f40
       iscommand: true
       name: Get single alert instance
@@ -139,7 +137,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Palo Alto Networks IoT 3rd Party
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 6881997d-8930-4a4d-8c91-12d6674ff8a9
       iscommand: true
       name: Send disabled status back to PANW IoT cloud
@@ -173,7 +171,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Closes the current incident.
       id: 93756937-5f48-49ee-8d7d-f280a3a1a081
       iscommand: true
       name: closeInvestigation
@@ -208,8 +206,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Checks if the given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
       id: 804ed7f3-93b2-4077-8f86-cdbbaf7cc7c4
       iscommand: false
       name: Does alert instance exist?
@@ -261,8 +259,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Palo Alto Networks IoT 3rd Party
-      description: For a given asset (alert, device, vuln) converts it to 3rd party
-        format.
+      description: Converts the given asset (alert, device, or vuln) to a 3rd party.
       id: 7af08954-6164-4349-8061-c4192a00e31b
       iscommand: true
       name: Convert alert to ServiceNow format
@@ -304,7 +301,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Palo Alto Networks IoT 3rd Party
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 5868038e-a0f7-40f0-8d3c-d34dde3a6c6c
       iscommand: true
       name: Send error status back to PANW IoT cloud
@@ -338,7 +335,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Closes the current incident.
       id: ae2b9a00-1137-4539-8659-063e8ac79a5c
       iscommand: true
       name: closeInvestigation
@@ -373,12 +370,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: 880952f2-bf21-4c5e-8599-24536ccbd585
       iscommand: false
-      name: Was there an error when converting alert to Servicenow format?
+      name: Was there an error when converting the alert to ServiceNow format?
       script: isError
       type: condition
       version: -1
@@ -406,7 +403,7 @@ tasks:
       integration_name:
         simple: servicenow
       message:
-        simple: Failed to convert alert to servicenow format
+        simple: Failed to convert the alert to ServiceNow format
       playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
@@ -417,7 +414,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Palo Alto Networks IoT 3rd Party
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 720b4f33-ac95-4dfc-8273-398b8748adc5
       iscommand: true
       name: Send error status back to PANW IoT cloud
@@ -451,7 +448,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Closes the current incident.
       id: 53e77fa9-2248-416a-801e-f4fcc5801078
       iscommand: true
       name: closeInvestigation
@@ -567,7 +564,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Closes the current incident.
       id: 0feae20e-dee7-498b-85d1-47bea84683bc
       iscommand: true
       name: closeInvestigation
@@ -602,12 +599,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: 7259e2ad-773f-4e94-8943-27f1114ed8f5
       iscommand: false
-      name: Was there an error when creating Servicenow record?
+      name: Was there an error when creating the ServiceNow record?
       script: isError
       type: condition
       version: -1
@@ -635,7 +632,7 @@ tasks:
       integration_name:
         simple: servicenow
       message:
-        simple: Failed to create record in servicenow table
+        simple: Failed to create the record in the ServiceNow table
       playbook_name:
         simple: Export Single Alert to ServiceNow - PANW IoT 3rd Party Integration
       status:
@@ -646,7 +643,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Palo Alto Networks IoT 3rd Party
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 747a2477-9dbf-40f9-8f19-123a8f58d57d
       iscommand: true
       name: Send error status back to PANW IoT cloud
@@ -680,7 +677,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Closes the current incident.
       id: 93e9b5c5-1abb-4828-845f-2e76efcfed17
       iscommand: true
       name: closeInvestigation
