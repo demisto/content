@@ -8,4 +8,4 @@ ignore=BA101
 ignore=IN126
 
 [file:EWSv2.yml]
-ignore=IN126
+ignore=IN126,IN135
