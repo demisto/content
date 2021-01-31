@@ -13,8 +13,6 @@ Linting: https://xsoar.pan.dev/docs/integrations/linting
 import traceback
 from typing import Any, Dict
 
-# test_updated2
-
 
 ''' STANDALONE FUNCTION '''
 
@@ -52,6 +50,7 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
         outputs_key_field='',
         outputs=result,
     )
+# TODO: ADD additional command functions that translate XSOAR inputs/outputs
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs
 
 
