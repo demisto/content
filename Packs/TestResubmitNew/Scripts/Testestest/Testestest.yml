@@ -1,0 +1,23 @@
+args:
+- name: field
+  required: true
+- defaultValue: "7"
+  name: hey
+  required: true
+comment: test description
+commonfields:
+  id: testestest
+  version: -1
+dockerimage: demisto/python3:3.9.1.15759
+enabled: true
+name: testestest
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
