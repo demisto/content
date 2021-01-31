@@ -172,7 +172,12 @@ def set_tag_field(data, tag_fields):
         found_field = False
         for field in tag_fields:
             if d.get(field) is not None:
-                d[DBOT_TAG_FIELD] = str(d[field])
+                label = d[field]
+                if isinstance(label, list) and len(label) > 0:
+                    label = label[0]
+                elif isinstance(label, list) and len(label) == 0:
+                    continue
+                d[DBOT_TAG_FIELD] = str(label)
                 found_field = True
                 break
         if not found_field:
