@@ -28,7 +28,6 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
 
     return {"dummy": dummy}
 # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-# testttttt
 
 
 ''' COMMAND FUNCTION '''
@@ -42,6 +41,7 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
     if not dummy:
         raise ValueError('dummy not specified')
 
+    # Call the standalone function and get the raw response
     # Call the standalone function and get the raw response
     result = basescript_dummy(dummy)
 
