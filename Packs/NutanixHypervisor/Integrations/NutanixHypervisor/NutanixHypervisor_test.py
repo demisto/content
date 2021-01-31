@@ -94,7 +94,6 @@ def test_get_optional_time_parameter_valid_time_argument(arg, expected):
     When:
      - Case a: Argument exists, and has the expected date format.
      - Case b: Argument does not exist.
-# TODO ADD CASES
 
     Then:
      - Case a: Ensure that the corresponding epoch time is returned.
