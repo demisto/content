@@ -128,7 +128,7 @@ script:
     - name: attribute
       required: true
       description: The user's attribute value. Can be Username or Email address.
-    - name: maxResults
+    - name: max_results
       defaultValue: 50
       description: The maximum number of users to pull when searching for a matching user (default is 50). The maximum
         allowed value is dictated by the JIRA property 'jira.search.views.default.max'.
