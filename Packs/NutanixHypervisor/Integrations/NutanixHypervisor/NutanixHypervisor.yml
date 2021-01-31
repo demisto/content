@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
-    additionalinfo: (e.g., https://example.net)
+  additionalinfo: (e.g., https://example.net)
   name: base_url
   required: true
   type: 0
@@ -51,21 +51,21 @@ configuration:
   - Auto Resolved
   - Not Auto Resolved
   additionalinfo: Fetches incidents by the status filters given. For example, if acknowledged
-    is true, then only alerts that have been acknowledged will be fetched. If
-    'Auto Resolved' or 'Not Auto Resolved' is selected, then by default also 'Resolved'
+    is true, then only alerts that have been acknowledged will be fetched. If 'Auto
+    Resolved' or 'Not Auto Resolved' is selected, then by default also 'Resolved'
     will be set.
-- additionalinfo: Comma-separated list of alert type IDs. Fetches alerts whose type ID matches
-    an alert_type_id in the alert_type_ids list. For example, alert 'Alert E-mail Failure'
-    has type ID A111066. If alert_type_ids = 'A111066', only alerts of 'Alert
-    E-mail Failure' will be displayed.
+- additionalinfo: Comma-separated list of alert type IDs. Fetches alerts whose type
+    ID matches an alert_type_id in the alert_type_ids list. For example, alert 'Alert
+    E-mail Failure' has type ID A111066. If alert_type_ids = 'A111066', only alerts
+    of 'Alert E-mail Failure' will be displayed.
   display: Alert type IDs
   name: alert_type_ids
   required: false
   type: 0
-- additionalinfo: Comma-separated list  of impact types. Fetch alerts whose impact type matches
-    an impact type in Impact Types list. For example, alert 'Incorrect NTP Configuration'
-    has impact type 'SystemIndicator'. If Impact Types = 'SystemIndicator', only
-    alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration'
+- additionalinfo: Comma-separated list  of impact types. Fetch alerts whose impact
+    type matches an impact type in Impact Types list. For example, alert 'Incorrect
+    NTP Configuration' has impact type 'SystemIndicator'. If Impact Types = 'SystemIndicator',
+    only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration'
     will be displayed.
   display: Impact Types
   name: impact_types
@@ -91,8 +91,8 @@ name: Nutanix Hypervisor
 script:
   commands:
   - arguments:
-    - description: " The filters used to retrieve hosts.. Each filter is\
-        \ written in the following way: filter_name==filter_value or filter_name!=filter_value.\
+    - description: " The filters used to retrieve hosts.. Each filter is written in\
+        \ the following way: filter_name==filter_value or filter_name!=filter_value.\
         \ Here is a possible combination of OR (using comma ',') and AND (using semicolon\
         \ ';') filters: storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x. Nutanix\
         \ will parse the filter in the following way: Return all hosts s.t (storage.capacity_bytes\
@@ -103,7 +103,8 @@ script:
         is required.
       name: page
     - defaultValue: "50"
-      description: Maximum number of physical hosts to retrieve. Possible values are 1-1000.
+      description: Maximum number of physical hosts to retrieve. Possible values are
+        1-1000.
       name: limit
     description: Gets the list of physical hosts configured in the cluster.
     name: nutanix-hypervisor-hosts-list
@@ -320,11 +321,11 @@ script:
         \ VMs](https://www.nutanix.dev/reference/prism_element/v2/api/vms/get-vms-getvms/)\
         \ API call. Some of the fields in the response are not supported. Known filters\
         \ Nutanix service supports are: *machine_type*, *power_state*, *ha_priority*,\
-        \ *uefi_boot*. You can try to enter your own filter,\
-        \  but if Nutanix does not support the filter, an error will be thrown\
-        \ specifying the filter is invalid. Each filter is written in the following\
-        \ way: filter_name==filter_value or filter_name!=filter_value. Possible combinations\
-        \ of OR (using comma ',') and AND (using semicolon ';'), for Example: machine_type==pc;power_state!=off,ha_priority==0\
+        \ *uefi_boot*. You can try to enter your own filter,  but if Nutanix does\
+        \ not support the filter, an error will be thrown specifying the filter is\
+        \ invalid. Each filter is written in the following way: filter_name==filter_value\
+        \ or filter_name!=filter_value. Possible combinations of OR (using comma ',')\
+        \ and AND (using semicolon ';'), for Example: machine_type==pc;power_state!=off,ha_priority==0\
         \ is parsed by Nutanix the following way: Return all virtual machines s.t\
         \ (machine type == pc AND power_state != off) OR ha_priority == 0."
       name: filter
@@ -431,14 +432,13 @@ script:
       name: task_ids
       required: true
       isArray: true
-    description: Polls the given tasks to check if they are ready. Returns
-      all the tasks from the task_ids list that are ready at the moment the Nutanix service
+    description: Polls the given tasks to check if they are ready. Returns all the
+      tasks from the task_ids list that are ready at the moment the Nutanix service
       was polled. If no task is ready, returns a timeout response.
     name: nutanix-hypervisor-task-poll
     outputs:
     - contextPath: NutanixHypervisor.Task.timed_out
-      description: Indicates if a timeout occurred during the poll request from
-        Nutanix.
+      description: Indicates if a timeout occurred during the poll request from Nutanix.
       type: Boolean
     - contextPath: NutanixHypervisor.Task.uuid
       description: The task UUID.
@@ -504,31 +504,33 @@ script:
       description: The UUID of the cluster.
       type: String
   - arguments:
-    - description: The start date in ISO date format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days). Only alerts that were created on or after the specified
-        date/time will be retrieved. If no time zone is specified, UTC time zone will be used.
+    - description: The start date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        after the specified date/time will be retrieved. If no time zone is specified,
+        UTC time zone will be used.
       name: start_time
-    - description: The end date in ISO date format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days). Only alerts that were created on or before the specified
-        date/time will be retrieved. If no time zone is specified, UTC time zone will be used.
+    - description: The end date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        before the specified date/time will be retrieved. If no time zone is specified,
+        UTC time zone will be used.
       name: end_time
     - auto: PREDEFINED
-      description: If true, retrieves alerts that have been resolved.
-        If false, retrieves alerts that have not been resolved.
+      description: If true, retrieves alerts that have been resolved. If false, retrieves
+        alerts that have not been resolved.
       name: resolved
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
-      description: If true, retrieves alerts that have been resolved,
-        and were auto_resolved. If false, retrieves alerts that have
-        been resolved, and were not auto_resolved.
+      description: If true, retrieves alerts that have been resolved, and were auto_resolved.
+        If false, retrieves alerts that have been resolved, and were not auto_resolved.
       name: auto_resolved
       predefined:
       - "true"
       - "false"
     - auto: PREDEFINED
-      description: If true, retrieves alerts that have been acknowledged. If false, retrieves alerts that have not been acknowledged.
+      description: If true, retrieves alerts that have been acknowledged. If false,
+        retrieves alerts that have not been acknowledged.
       name: acknowledged
       predefined:
       - "true"
@@ -541,15 +543,19 @@ script:
       - WARNING
       - INFO
       - AUDIT
-    - description: Comma-separated list of alert type IDs. Will retrieve alerts whose type ID matches
-        an alert_type_id in the alert_type_ids list. For example, alert 'Alert E-mail
-        Failure' has type id of A111066. Given alert_type_ids= 'A111066', only alerts
-        of 'Alert E-mail Failure' will be retrieved.
+    - description: Comma-separated list of alert type IDs. Will retrieve alerts whose
+        type ID matches an alert_type_id in the alert_type_ids list. For example,
+        alert 'Alert E-mail Failure' has type id of A111066. Given alert_type_ids=
+        'A111066', only alerts of 'Alert E-mail Failure' will be retrieved.
       isArray: true
       name: alert_type_ids
     - auto: PREDEFINED
-      description: "Comma-separated list of impact types. Possible values: Availability, Capacity, Configuration, Performance, and System Indicator. Will retrieve alerts whose impact type matches
-                               an impact types in the impact_types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given impact_types ='SystemIndicator',only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be retrieved."
+      description: "Comma-separated list of impact types. Possible values: Availability,\
+        \ Capacity, Configuration, Performance, and System Indicator. Will retrieve\
+        \ alerts whose impact type matches an impact types in the impact_types list.\
+        \ For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'.\
+        \ Given impact_types ='SystemIndicator',only alerts with impact type 'SystemIndicator',\
+        \ such as 'Incorrect NTP Configuration' will be retrieved."
       isArray: true
       name: impact_types
       predefined:
@@ -558,21 +564,22 @@ script:
       - Configuration
       - Performance
       - System Indicator
-    - description: Comma-separated list of entity types. Will retrieve alerts whose entity_type matches
-        an entity_type in the entity_types list. For details, see the Nutanix
-        README. If the Nutanix service cannot recognize the entity type, it returns a 404
-        error.
+    - description: Comma-separated list of entity types. Will retrieve alerts whose
+        entity_type matches an entity_type in the entity_types list. For details,
+        see the Nutanix README. If the Nutanix service cannot recognize the entity
+        type, it returns a 404 error.
       isArray: true
       name: entity_types
     - description: Page number in the query response. Default is 1. limit argument
         is required.
       name: page
-    - description: Maximum number of physical hosts to retrieve. Possible values are 1-1000.
+    - description: Maximum number of physical hosts to retrieve. Possible values are
+        1-1000.
       name: limit
       defaultValue: '50'
     description: Gets the list of alerts generated in the cluster that matches the
-      filters. Nutanix fetches the latest alerts created if there are
-      more than the defined maximum number of alerts.
+      filters. Nutanix fetches the latest alerts created if there are more than the
+      defined maximum number of alerts.
     name: nutanix-alerts-list
     outputs:
     - contextPath: NutanixHypervisor.Alerts.id
@@ -737,15 +744,15 @@ script:
       description: The message returned by the resolve task.
       type: String
   - arguments:
-    - description: The start date in ISO date format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days). Only alerts that were created on or after the specified
-        date/time will be acknowledged. If no time zone is specified, UTC time zone will be
-        used.
+    - description: The start date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        after the specified date/time will be acknowledged. If no time zone is specified,
+        UTC time zone will be used.
       name: start_time
-    - description: The end date in ISO date format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days). Only alerts that were created on or before the specified
-        date/time will be acknowledged. If no time zone is specified, UTC time zone will be
-        used.
+    - description: The end date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        before the specified date/time will be acknowledged. If no time zone is specified,
+        UTC time zone will be used.
       name: end_time
     - auto: PREDEFINED
       description: Comma-separated list of the severity levels of the alerts to resolve.
@@ -755,19 +762,21 @@ script:
       - WARNING
       - INFO
       - AUDIT
-    - description: Comma-separated list of impact types. Will acknowledge alerts whose impact type
-        matches an impact types in the impact_types list. For example, alert 'Incorrect
-        NTP Configuration' has impact type 'SystemIndicator'. Given impact_types ='SystemIndicator', only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be acknowledged.
+    - description: Comma-separated list of impact types. Will acknowledge alerts whose
+        impact type matches an impact types in the impact_types list. For example,
+        alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given
+        impact_types ='SystemIndicator', only alerts with impact type 'SystemIndicator',
+        such as 'Incorrect NTP Configuration' will be acknowledged.
       isArray: true
       name: impact_types
-    - description: Comma-separated list of entity types. Will retrieve alerts whose entity_type matches
-        an entity_type in the entity_types list. For more details see Nutanix
-        README. If Nutanix service cannot recognize the entity type, it returns a 404
-        error.
+    - description: Comma-separated list of entity types. Will retrieve alerts whose
+        entity_type matches an entity_type in the entity_types list. For more details
+        see Nutanix README. If Nutanix service cannot recognize the entity type, it
+        returns a 404 error.
       isArray: true
       name: entity_types
-    - description: Maximum number of alerts to acknowledge. Nutanix does not have a
-        maximum for the limit, but a very high limit will cause a read timeout exception.
+    - description: Maximum number of alerts to acknowledge. Nutanix does not have
+        a maximum for the limit, but a very high limit will cause a read timeout exception.
       name: limit
       defaultValue: '50'
     description: Acknowledges alerts using a filter.
@@ -789,13 +798,15 @@ script:
       description: Message returned by the acknowledge operation.
       type: String
   - arguments:
-    - description: The start date in ISO date format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days). Only alerts that were created on or after the specified
-        date/time will be resolved. If no time zone is specified, UTC time zone will be used.
+    - description: The start date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        after the specified date/time will be resolved. If no time zone is specified,
+        UTC time zone will be used.
       name: start_time
-    - description: The end date in ISO date format, epoch time or time range(<number> <time unit>',
-        e.g., 12 hours, 7 days). Only alerts that were created on or before the specified
-        date/time will be resolved. If no time zone is specified, UTC time zone will be used.
+    - description: The end date in ISO date format, epoch time or time range(<number>
+        <time unit>', e.g., 12 hours, 7 days). Only alerts that were created on or
+        before the specified date/time will be resolved. If no time zone is specified,
+        UTC time zone will be used.
       name: end_time
     - auto: PREDEFINED
       description: Comma-separated list of the severity levels of the alerts to resolve.
@@ -805,19 +816,20 @@ script:
       - WARNING
       - INFO
       - AUDIT
-    - description: "Comma-separated list of impact types. Will resolve alerts whose impact type matches
-                               an impact types in the impact_types list. For example, alert 'Incorrect
-                     NTP Configuration' has impact type 'SystemIndicator'. Given impact_types = 'SystemIndicator', only alerts with impact type 'SystemIndicator', such as
-                     'Incorrect NTP Configuration' will be resolved."
+    - description: "Comma-separated list of impact types. Will resolve alerts whose\
+        \ impact type matches an impact types in the impact_types list. For example,\
+        \ alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given\
+        \ impact_types = 'SystemIndicator', only alerts with impact type 'SystemIndicator',\
+        \ such as 'Incorrect NTP Configuration' will be resolved."
       isArray: true
       name: impact_types
-    - description: Comma-separated list of entity types. Will resolve alerts whose entity_type matches
-        an entity_type in the entity_types list. For more details see Nutanix
-        README. If Nutanix service cannot recognize the entity type, it returns a 404
-        error.
+    - description: Comma-separated list of entity types. Will resolve alerts whose
+        entity_type matches an entity_type in the entity_types list. For more details
+        see Nutanix README. If Nutanix service cannot recognize the entity type, it
+        returns a 404 error.
       name: entity_types
-    - description: Maximum number of alerts to resolve. Nutanix does not have a maximum for the
-        limit, but a very high limit value will cause a read timeout exception.
+    - description: Maximum number of alerts to resolve. Nutanix does not have a maximum
+        for the limit, but a very high limit value will cause a read timeout exception.
       name: limit
       defaultValue: '50'
     description: Resolves alerts using a filter.
@@ -846,5 +858,5 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-  - Nutanix-test
+- Nutanix-test
 defaultmapperin: NutanixHypervisor-mapper

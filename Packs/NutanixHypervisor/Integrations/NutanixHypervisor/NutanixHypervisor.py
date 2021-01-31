@@ -102,9 +102,6 @@ class Client(BaseClient):
 
         add_iso_entries_to_dict(alerts)
 
-        if not alerts:
-            raise DemistoException('Unexpected returned results from Nutanix service.')
-
         incidents: List[Dict[str, Any]] = []
 
         for alert in alerts:
@@ -450,7 +447,6 @@ def fetch_incidents_command(client: Client, params: Dict):
         Fetches incidents to Demisto.
     """
     last_run = demisto.getLastRun()
-    last_run = {'last_fetch_epoch_time': 1610360118147914}
     incidents, next_run = client.fetch_incidents(params, last_run)
     demisto.setLastRun(next_run)
     demisto.incidents(incidents)
@@ -484,9 +480,6 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     page = arg_to_number(args.get('page'))
 
     raw_response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
-
-    if not raw_response.get('entities'):
-        raise DemistoException('Unexpected response for nutanix-hypervisor-hosts-list command')
 
     outputs = [{k: v for k, v in copy.deepcopy(raw_output).items()
                 if k not in NUTANIX_HOST_FIELDS_TO_REMOVE}
@@ -533,9 +526,6 @@ def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
     raw_response = client.get_nutanix_hypervisor_vms_list(filter_, offset, limit)
 
     outputs = raw_response.get('entities')
-
-    if outputs is None:
-        raise DemistoException('Unexpected response returned by Nutanix for nutanix-hypervisor-vms-list command')
 
     final_outputs = [remove_empty_elements(output) for output in outputs]
 
