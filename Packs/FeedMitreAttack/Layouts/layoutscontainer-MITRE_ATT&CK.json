@@ -566,7 +566,52 @@
      }
     ],
     "type": "custom"
-   }
+   },
+    {
+      "hidden": false,
+      "id": "3imssxp6xl",
+      "name": "Additional Details",
+      "sections": [
+        {
+          "displayType": "ROW",
+          "h": 4,
+          "hideName": false,
+          "i": "3imssxp6xl-ba3ef4f0-6178-11eb-92c1-c920954136b1",
+          "items": [
+            {
+              "endCol": 6,
+              "fieldId": "mitrecourseofaction",
+              "height": 106,
+              "id": "48ffd2a0-6182-11eb-9fda-f1855309c3ee",
+              "index": 0,
+              "sectionItemType": "field",
+              "startCol": 0
+            },
+            {
+              "dropEffect": "move",
+              "endCol": 6,
+              "fieldId": "a",
+              "height": 22,
+              "id": "bc0c3ae0-6178-11eb-92c1-c920954136b1",
+              "index": 2,
+              "listId": "3imssxp6xl-ba3ef4f0-6178-11eb-92c1-c920954136b1",
+              "sectionItemType": "field",
+              "startCol": 0
+            }
+          ],
+          "maxW": 3,
+          "minH": 1,
+          "minW": 1,
+          "moved": false,
+          "name": "Course of action",
+          "static": false,
+          "w": 3,
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "type": "custom"
+    }
   ]
  },
  "indicatorsQuickView": {

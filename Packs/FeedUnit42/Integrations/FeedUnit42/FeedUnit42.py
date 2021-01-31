@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from taxii2client.common import TokenAuth
 from taxii2client.v20 import Server, as_pages
@@ -230,7 +230,7 @@ def parse_reports(report_objects: list, feed_tags: list = [], tlp_color: Optiona
 
 
 def parse_reports_relationships(reports: List, sub_reports: List, matched_relationships: Dict,
-                                id_to_object: Dict) -> list:
+                                id_to_object: Dict) -> Tuple[list, list]:
     """Parse the relationships between reports' malware to attack-patterns and indicators.
 
     Args:
@@ -242,6 +242,7 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
     Returns:
         A list of processed reports.
     """
+    indicators = []
     for report in reports:
         related_ids = []  # Since main reports dont hold their own relationships theres a need to collect them.
 
@@ -304,6 +305,7 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                     'value': relation_value_field,
                     'description': ', '.join(relation_object.get('labels', ['No description provided.']))
                 }])
+                indicator_val = relation_value_field
 
             else:
                 all_urls = []
@@ -321,8 +323,40 @@ def parse_reports_relationships(reports: List, sub_reports: List, matched_relati
                     'value': external_id,
                     'description': ','.join(all_urls)
                 }])
+                indicator_val = external_id
 
-    return reports
+            # create MITRE ATT&CK indicator
+            if indicator_val and type_name == 'MITRE ATT&CK':
+                indicator = {
+                    "value": indicator_val,
+                    "type": 'MITRE ATT&CK',
+                    "score": 1,
+                    "fields": {
+                        "firstseenbysource": relation_object.get('created'),
+                        "indicatoridentification": relation_object.get('id'),
+                        "tags": [],
+                        "modified": relation_object.get('modified'),
+                        "reportedby": 'Unit42',
+                        "mitrecourseofaction": []
+                    }
+                }
+
+                # populate mitre course of action data from the relevant relationships
+                relationship = relation_object.get('id')
+                if matched_relationships.get(relationship):
+                    for source in matched_relationships[relationship]:
+                        if source.startswith('course-of-action') and id_to_object.get(source):
+
+                            indicator['fields']['mitrecourseofaction'].append(
+                                {'title': id_to_object[source].get('x_panw_coa_bp_title'),
+                                 'description': id_to_object[source].get('x_panw_coa_bp_description'),
+                                 'recommendation_number': id_to_object[source].get('x_panw_coa_bp_recommendation_number'),
+                                 'remediation_procedure': id_to_object[source].get('x_panw_coa_bp_remediation_procedure'),
+                                 'impact_statement': id_to_object[source].get('x_panw_coa_bp_impact_statement')})
+
+                indicators.append(indicator)
+
+    return reports, indicators
 
 
 def match_relationships(relationships: List):
@@ -378,7 +412,8 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     Returns:
         List. Processed indicators and reports from feed.
     """
-    item_types_to_fetch_from_api = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern', 'relationship']
+    item_types_to_fetch_from_api = ['report', 'indicator', 'malware', 'campaign',
+                                    'attack-pattern', 'relationship', 'course-of-action']
     client.get_stix_objects(items_types=item_types_to_fetch_from_api)
 
     for type_, objects in client.objects_data.items():
@@ -387,7 +422,7 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
     id_to_object = {
         obj.get('id'): obj for obj in
         client.objects_data['report'] + client.objects_data['indicator'] + client.objects_data['malware']
-        + client.objects_data['campaign'] + client.objects_data['attack-pattern']
+        + client.objects_data['campaign'] + client.objects_data['attack-pattern'] + client.objects_data['course-of-action']
     }
 
     matched_relationships = match_relationships(client.objects_data['relationship'])
@@ -397,12 +432,13 @@ def fetch_indicators(client: Client, feed_tags: list = [], tlp_color: Optional[s
 
     main_report_objects, sub_report_objects = sort_report_objects_by_type(client.objects_data['report'])
     reports = parse_reports(main_report_objects, feed_tags, tlp_color)
-    reports = parse_reports_relationships(reports, sub_report_objects, matched_relationships, id_to_object)
+    reports, mitre_indicators = parse_reports_relationships(reports, sub_report_objects, matched_relationships, id_to_object)
 
     demisto.debug(f'{len(indicators)} XSOAR Indicators were created.')
     demisto.debug(f'{len(reports)} XSOAR STIX Report Indicators were created.')
+    demisto.debug(f'{len(mitre_indicators)} MITRE ATT&CK Indicators were created.')
 
-    return indicators + reports
+    return mitre_indicators + indicators + reports
 
 
 def get_indicators_command(client: Client, args: Dict[str, str], feed_tags: list = [],
