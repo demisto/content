@@ -11,12 +11,14 @@ def test_normalized_string(phrase: str, norm_phrase: str):
     assert norm_phrase == normalized_string(phrase)
 
 
-@pytest.mark.parametrize(argnames="before_dict, keys, max_keys, after_dict",
-                         argvalues=[
-                             ({'a': 1, 'b': 2}, ['a'], None, {'a': 1}),
-                             ({'a': 1, 'b': 2}, ['*'], 1, {'a': 1}),
-                             ({'a': 1, 'b': 2}, ['*'], 2, {'a': 1, 'b': 2})
-                         ])
+@pytest.mark.parametrize(
+    argnames="before_dict, keys, max_keys, after_dict",
+    argvalues=[
+        ({'a': 1, 'b': 2}, ['a'], None, {'a': 1}),
+        ({'a': 1, 'b': 2}, ['*'], 1, {'a': 1}),
+        ({'a': 1, 'b': 2}, ['*'], 2, {'a': 1, 'b': 2}),
+        ({'a': 1, 'b': [1, 2, 3]}, ['a'], None, {'a': 1}),
+    ])
 def test_filter_the_dict(before_dict: dict, keys: dict, max_keys: int, after_dict: dict):
     from SetGridField import filter_dict
     assert after_dict == filter_dict(dict_obj=before_dict,
