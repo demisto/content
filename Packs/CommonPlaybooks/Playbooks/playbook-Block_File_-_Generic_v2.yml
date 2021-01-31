@@ -4,8 +4,9 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Block File - Generic v2
 description: "This playbook is used to block files from running on endpoints. \nThis\
-  \ playbook supports the following integrations:\n- Palo Alto Networks Cortex XDR\n- Palo Alto Networks Traps\n- Cybereason\n\
-  - Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+  \ playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo\
+  \ Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n-\
+  \ Cylance Protect v2\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -204,20 +205,25 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: addad4f9-6d3d-425d-8689-1950f159edcc
+    taskid: de27dee3-4496-4589-8514-94db4642810f
     type: playbook
     task:
-      id: addad4f9-6d3d-425d-8689-1950f159edcc
+      id: de27dee3-4496-4589-8514-94db4642810f
       version: -1
       name: Traps Quarantine Event
+      description: This playbook accepts a file hash and quarantines this file using
+        Traps.
       playbookName: Traps Quarantine Event
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "3"
+    scriptarguments:
+      EventId:
+        complex:
+          root: inputs.EventId
     separatecontext: true
     loop:
       iscommand: false
@@ -363,13 +369,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "15"
       - "16"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2420,
+          "x": 2240,
           "y": 195
         }
       }
@@ -378,15 +383,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
-    taskid: e4f4f290-75c8-4164-8b97-1c1bdddec3b1
+  "16":
+    id: "16"
+    taskid: 38993eeb-59c8-44ee-8b55-6d2e6199c52b
     type: playbook
     task:
-      id: e4f4f290-75c8-4164-8b97-1c1bdddec3b1
+      id: 38993eeb-59c8-44ee-8b55-6d2e6199c52b
       version: -1
-      name: Cortex XDR - quarantine file
-      playbookName: Cortex XDR - quarantine file
+      name: Cortex XDR - Block File
+      playbookName: Cortex XDR - Block File
       type: playbook
       iscommand: false
       brand: ""
@@ -395,15 +400,9 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      endpoint_id:
-        complex:
-          root: inputs.EndpointID
-      file_hash:
+      HashList:
         complex:
           root: inputs.SHA256
-      file_path:
-        complex:
-          root: inputs.FilePath
     separatecontext: true
     loop:
       iscommand: false
@@ -413,36 +412,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: a2bb94ec-07d3-41db-8316-9d565a137673
-    type: playbook
-    task:
-      id: a2bb94ec-07d3-41db-8316-9d565a137673
-      version: -1
-      name: Cortex XDR Blacklist File
-      playbookName: Cortex XDR Blacklist File
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 2210,
+          "x": 2240,
           "y": 340
         }
       }
@@ -458,7 +428,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 530,
-        "width": 2960,
+        "width": 2570,
         "x": 50,
         "y": 50
       }
@@ -486,16 +456,6 @@ inputs:
   required: false
   description: Traps event ID that contains the malicious file to block.
   playbookInputQuery:
-- key: FilePath
-  value: {}
-  required: false
-  description: A path to the file for quarantine.
-  playbookInputQuery:
-- key: EndpointID
-  value: {}
-  required: false
-  description: Endpoint ID list to quarantine files on
-  playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
   description: Last block time
@@ -503,6 +463,6 @@ outputs:
   description: Last block hostname
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
   description: Last block sensor ID
-fromversion: 5.0.0
 tests:
-- No tests
+- No tests (auto formatted)
+fromversion: 5.0.0
