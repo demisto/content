@@ -48,34 +48,8 @@
                     "simple": "cluster_uuid"
                 },
                 "Last Seen": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "last_occurrence_time_stamp_in_usecs",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "by": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1000"
-                                        }
-                                    }
-                                },
-                                "operator": "division"
-                            },
-                            {
-                                "args": {
-
-                                },
-                                "operator": "TimeStampToDate"
-                            }
-                        ]
-                    },
-                    "simple": ""
+                    "complex": null,
+                    "simple": "last_occurrence"
                 },
                 "Message": {
                     "complex": null,
@@ -90,94 +64,16 @@
                     "simple": "resolved"
                 },
                 "Ticket Acknowledged Date": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "acknowledged_time_stamp_in_usecs",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "by": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1000"
-                                        }
-                                    }
-                                },
-                                "operator": "division"
-                            },
-                            {
-                                "args": {
-
-                                },
-                                "operator": "TimeStampToDate"
-                            }
-                        ]
-                    },
-                    "simple": ""
+                    "complex": null,
+                    "simple": "acknowledged_time"
                 },
                 "Ticket Closed Date": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "resolved_time_stamp_in_usecs",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "by": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1000"
-                                        }
-                                    }
-                                },
-                                "operator": "division"
-                            },
-                            {
-                                "args": {
-
-                                },
-                                "operator": "TimeStampToDate"
-                            }
-                        ]
-                    },
-                    "simple": ""
+                    "complex": null,
+                    "simple": "resolved_time"
                 },
                 "Ticket Opened Date": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "created_time_stamp_in_usecs",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "by": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1000"
-                                        }
-                                    }
-                                },
-                                "operator": "division"
-                            },
-                            {
-                                "args": {
-
-                                },
-                                "operator": "TimeStampToDate"
-                            }
-                        ]
-                    },
-                    "simple": ""
+                    "complex": null,
+                    "simple": "created_time"
                 },
                 "severity": {
                     "complex": {
