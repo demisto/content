@@ -529,16 +529,14 @@ def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
 
     final_outputs = [remove_empty_elements(output) for output in outputs]
 
-    raise DemistoException('TESTING')
-
-    # return CommandResults(
-    #     outputs_prefix='NutanixHypervisor.VM',
-    #     outputs_key_field='uuid',
-    #     outputs=final_outputs,
-    #     readable_output=tableToMarkdown('Nutanix Virtual Machines List', final_outputs,
-    #                                     get_human_readable_headers(final_outputs)),
-    #     raw_response=raw_response
-    # )
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.VM',
+        outputs_key_field='uuid',
+        outputs=final_outputs,
+        readable_output=tableToMarkdown('Nutanix Virtual Machines List', final_outputs,
+                                        get_human_readable_headers(final_outputs)),
+        raw_response=raw_response
+    )
 
 
 def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict):
