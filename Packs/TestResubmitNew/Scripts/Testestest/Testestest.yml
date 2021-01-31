@@ -4,7 +4,7 @@ args:
 - defaultValue: "7"
   name: hey2
   required: true
-comment: test description new
+comment: test description updated
 commonfields:
   id: testestest
   version: -1
