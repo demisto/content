@@ -52,4 +52,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Get File Sample From Path - Generic V2](Insert the link to your image here)
+![Get File Sample From Path - Generic V2](https://raw.githubusercontent.com/demisto/content/87ae85d647e42b9a2e19dea405b5576e9ddd8412/Packs/CommonPlaybooks/doc_files/Get_File_Sample_From_Path_-_Generic_V2.png)
