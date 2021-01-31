@@ -13,7 +13,7 @@ jobs:
       - name: Get project manager
         run: |
           pip install --upgrade pip
-          pip install https://github.com/demisto/github-automation/archive/AddPRSupport.zip\#egg\=github-automation
+          pip install https://github.com/demisto/github-automation/archive/ContentFeatureBranch.zip\#egg\=github-automation
       - name: Manage project
         run: |
           github-automation webhook-manage -c .github/project_conf/contributions.ini -e "$EVENT"
