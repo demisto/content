@@ -202,6 +202,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     packs_artifacts_dir = upload_config.artifacts_path
     private_artifacts_dir = upload_config.private_artifacts
     is_infra_run = upload_config.is_infra_run
+    secondary_enc_key = upload_config.secondary_enc_key
 
     pack_was_modified = not is_infra_run
 
@@ -265,7 +266,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key, private_artifacts_dir)
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key, private_artifacts_dir, secondary_enc_key)
 
     if not task_status:
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
@@ -373,6 +374,8 @@ def option_handler():
     parser.add_argument('-pa', '--private_artifacts', type=str,
                         help='The name of the pack in which the private artifacts should be saved',
                         default='private_artifacts')
+    parser.add_argument('-nek', '--secondary_encryption_key', type=str,
+                        help='A second encryption key for the pack, if it should be encrypted.', default='')
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -408,6 +411,7 @@ def main():
     packs_dependencies_mapping = load_json(upload_config.pack_dependencies) if upload_config.pack_dependencies else {}
     storage_base_path = upload_config.storage_base_path
     is_private_build = upload_config.is_private
+
 
     print(f"Packs artifact path is: {packs_artifacts_path}")
 
