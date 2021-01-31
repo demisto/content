@@ -6,7 +6,7 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-		"Nutanix Hypervisor Alert"
+        "Nutanix Hypervisor Alert"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
