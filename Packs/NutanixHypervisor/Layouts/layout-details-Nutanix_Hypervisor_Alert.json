@@ -5,7 +5,7 @@
     "TypeName": "",
     "id": "Nutanix Hypervisor Alert",
     "kind": "details",
-    "modified": "2021-01-18T09:27:07.313293246Z",
+    "modified": "2021-01-31T12:55:07.480309006Z",
     "name": "",
     "system": false,
     "tabs": [
@@ -29,7 +29,7 @@
                 "fieldId": "type",
                 "height": 22,
                 "id": "incident-type-field",
-                "index": 0,
+                "index": 1,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -38,7 +38,7 @@
                 "fieldId": "severity",
                 "height": 22,
                 "id": "incident-severity-field",
-                "index": 1,
+                "index": 2,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -47,7 +47,7 @@
                 "fieldId": "owner",
                 "height": 22,
                 "id": "incident-owner-field",
-                "index": 2,
+                "index": 3,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -56,7 +56,7 @@
                 "fieldId": "sourcebrand",
                 "height": 22,
                 "id": "incident-sourceBrand-field",
-                "index": 3,
+                "index": 4,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -65,7 +65,7 @@
                 "fieldId": "sourceinstance",
                 "height": 22,
                 "id": "incident-sourceInstance-field",
-                "index": 4,
+                "index": 5,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -74,7 +74,7 @@
                 "fieldId": "playbookid",
                 "height": 22,
                 "id": "incident-playbookId-field",
-                "index": 5,
+                "index": 6,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -83,7 +83,7 @@
                 "fieldId": "dbotsource",
                 "height": 22,
                 "id": "incident-source-field",
-                "index": 6,
+                "index": 7,
                 "sectionItemType": "field",
                 "startCol": 0
               }
@@ -328,11 +328,22 @@
             "i": "caseinfoid-59b363c0-58ac-11eb-8a3e-f3dc5749d27e",
             "items": [
               {
+                "dropEffect": "move",
+                "endCol": 2,
+                "fieldId": "alertname",
+                "height": 22,
+                "id": "8173e200-63c3-11eb-8fe9-975f6bf312b2",
+                "index": 0,
+                "listId": "caseinfoid-59b363c0-58ac-11eb-8a3e-f3dc5749d27e",
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
                 "endCol": 2,
                 "fieldId": "alerttypeuuid",
                 "height": 22,
                 "id": "7f5ccee0-58ac-11eb-8a3e-f3dc5749d27e",
-                "index": 0,
+                "index": 1,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -341,7 +352,7 @@
                 "fieldId": "clusteruuid",
                 "height": 22,
                 "id": "82332060-58ac-11eb-8a3e-f3dc5749d27e",
-                "index": 1,
+                "index": 2,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -350,7 +361,7 @@
                 "fieldId": "checkid",
                 "height": 22,
                 "id": "853b7e60-58ac-11eb-8a3e-f3dc5749d27e",
-                "index": 2,
+                "index": 3,
                 "sectionItemType": "field",
                 "startCol": 0
               },
@@ -359,15 +370,6 @@
                 "fieldId": "acknowledged",
                 "height": 22,
                 "id": "8830a280-58ac-11eb-8a3e-f3dc5749d27e",
-                "index": 3,
-                "sectionItemType": "field",
-                "startCol": 0
-              },
-              {
-                "endCol": 2,
-                "fieldId": "acknowledgedbyusername",
-                "height": 22,
-                "id": "8a2398e0-58ac-11eb-8a3e-f3dc5749d27e",
                 "index": 4,
                 "sectionItemType": "field",
                 "startCol": 0
@@ -378,6 +380,15 @@
                 "height": 22,
                 "id": "8ec1b210-58ac-11eb-8a3e-f3dc5749d27e",
                 "index": 5,
+                "sectionItemType": "field",
+                "startCol": 0
+              },
+              {
+                "endCol": 2,
+                "fieldId": "acknowledgedbyusername",
+                "height": 22,
+                "id": "8a2398e0-58ac-11eb-8a3e-f3dc5749d27e",
+                "index": 6,
                 "sectionItemType": "field",
                 "startCol": 0
               },
