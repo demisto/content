@@ -202,7 +202,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     packs_artifacts_dir = upload_config.artifacts_path
     private_artifacts_dir = upload_config.private_artifacts
     is_infra_run = upload_config.is_infra_run
-    secondary_enc_key = upload_config.secondary_enc_key
+    secondary_enc_key = upload_config.secondary_encryption_key
 
     pack_was_modified = not is_infra_run
 
