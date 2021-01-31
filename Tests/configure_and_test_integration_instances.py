@@ -41,10 +41,12 @@ DOCKER_HARDENING_CONFIGURATION = {
     'docker.cpu.limit': '1.0',
     'docker.run.internal.asuser': 'true',
     'limit.docker.cpu': 'true',
+    'python.docker.registry': 'xsoar-registry.pan.dev',
     'python.pass.extra.keys': '--memory=1g##--memory-swap=-1##--pids-limit=256##--ulimit=nofile=1024:8192'
 }
 DOCKER_HARDENING_CONFIGURATION_FOR_PODMAN = {
-    'docker.run.internal.asuser': 'true'
+    'docker.run.internal.asuser': 'true',
+    'python.docker.registry': 'xsoar-registry.pan.dev'
 }
 MARKET_PLACE_CONFIGURATION = {
     'content.pack.verify': 'false',

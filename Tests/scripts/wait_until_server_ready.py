@@ -66,14 +66,15 @@ def docker_login(ip: str) -> None:
     Args:
         ip: The ip of the server that should be logged in
     """
-    docker_username = os.environ.get('DOCKERHUB_USER')
-    docker_password = os.environ.get('DOCKERHUB_PASSWORD')
+    docker_username = 'Demisto test'
+    docker_password = 'CUIDd888a5a5dbae18b878cd69189d7e05263a520e68b75517f5c0e819e2114b2b0fCUID'
     container_engine_type = 'podman' if is_redhat_instance(ip) else 'docker'
     try:
         check_output(
             f'ssh -o StrictHostKeyChecking=no ec2-user@{ip} '
-            f'cd /home/demisto && '
-            f'sudo -u demisto {container_engine_type} login --username {docker_username} --password-stdin'.split(),
+            'cd /home/demisto && '
+            f'sudo -u demisto {container_engine_type} login --username "{docker_username}" --password-stdin '
+            'xsoar-registry.pan.dev'.split(),
             input=docker_password.encode())
     except Exception:
         logging.exception(f'Could not login to {container_engine_type} on server {ip}')
