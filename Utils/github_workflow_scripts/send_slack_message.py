@@ -140,7 +140,7 @@ def create_pull_request_segment(pr: PullRequest) -> List[dict]:
         ('Changed Files', number_of_changed_changed_files),
         ('Labels', labels),
     ])
-    return [pr_info_segment]
+    return [pr_info_segment, {'text': create_slack_markdown(f'*URL:* `{pr.html_url}`'), 'type': 'section'}]
 
 
 def create_pr_title(pr: PullRequest) -> List[dict]:
@@ -163,13 +163,12 @@ def create_pr_title(pr: PullRequest) -> List[dict]:
     return header
 
 
-def slack_post_message(client: WebClient, message_blocks: List, pr: PullRequest):
+def slack_post_message(client: WebClient, message_blocks: List):
     """Post a message to a slack channel
 
         Args:
             client (WebClient): Slack web-client object.
             message_blocks (List): List of blocks representing the message blocks.
-            pr (PullRequest): object that represents the pull request.
 
         Returns:
             (List): List containing a dictionary which represents the message title
@@ -180,8 +179,7 @@ def slack_post_message(client: WebClient, message_blocks: List, pr: PullRequest)
             {
                 "color": GREEN_COLOR,
                 "blocks": message_blocks
-            }],
-        text=f"<{pr.html_url}|*New Contribution:* {pr.title}>")
+            }])
 
 
 def main():
@@ -200,18 +198,23 @@ def main():
     pr = content_repo.get_pull(pr_number)
     metadata_files = [file for file in pr.get_files() if file.filename.endswith('_metadata.json')]
 
-    # Build all blocks of the message
-    header = create_pr_title(pr)
-    pull_request_segment = create_pull_request_segment(pr)
-    packs_segment = create_packs_segment(metadata_files)
-    blocks = header + pull_request_segment + packs_segment
-    print(f'{t.yellow}Finished preparing message: \n{pformat(blocks)}{t.normal}')
+    # We don't want to notify about community PRs made through the UI
+    if pr.user.login == 'xsoar-bot':
+        print(f'{t.cyan}PR was created using the XSOAR-UI, support will be community. Not sending a slack message ')
 
-    # Send message
-    slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
-    client = WebClient(token=slack_token)
-    slack_post_message(client, blocks, pr)
-    print(f'{t.cyan}Slack message sent successfully{t.normal}')
+    else:
+        # Build all blocks of the message
+        header = create_pr_title(pr)
+        pull_request_segment = create_pull_request_segment(pr)
+        packs_segment = create_packs_segment(metadata_files)
+        blocks = header + pull_request_segment + packs_segment
+        print(f'{t.yellow}Finished preparing message: \n{pformat(blocks)}{t.normal}')
+
+        # Send message
+        slack_token = get_env_var('CORTEX_XSOAR_SLACK_TOKEN')
+        client = WebClient(token=slack_token)
+        slack_post_message(client, blocks)
+        print(f'{t.cyan}Slack message sent successfully{t.normal}')
 
 
 if __name__ == "__main__":
