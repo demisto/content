@@ -1,5 +1,5 @@
-description: Playbook to be run every 15 minutes via a job. Each run will get incremental
-  updates for devices, alerts and vulnerabilities and send CEF syslogs to the configured
+description: This playbook should be run as a job at an interval of every 15 minutes. Each run will get incremental
+  updates for devices, alerts, and vulnerabilities and send CEF syslogs to the configured
   SIEM server.
 id: Incremental Export to SIEM - PANW IoT 3rd Party Integration
 inputs: []
@@ -56,11 +56,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if there is an active instance of a SIEM integration configured. Otherwise returns
+        'no'.
       id: de4da0ad-6d3e-4068-8e32-bde287fc68fa
       iscommand: false
-      name: Is Syslog Sender(SIEM) Enabled?
+      name: Is Syslog Sender (SIEM) Enabled?
       script: IsIntegrationAvailable
       type: condition
       version: -1
@@ -100,7 +100,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: c7537de0-3367-41cc-82ad-57574d3cd775
       iscommand: true
       name: Send disabled status to PANW IoT cloud
@@ -252,8 +252,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: beed198d-0952-4645-8811-425d0d3732fd
       iscommand: false
@@ -289,8 +289,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: 98773f0d-079c-4dee-8a5d-93d017835d6c
       iscommand: false
@@ -326,8 +326,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: c02d47be-928a-4d2a-83ae-83053b4a43a1
       iscommand: false
@@ -371,7 +371,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 4ba58cd9-a8e9-4c19-8be6-e66635be228e
       iscommand: true
       name: Send error status to PANW IoT cloud
@@ -414,7 +414,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: a8a61a19-27f8-4d7a-8901-5fbbc3a2060a
       iscommand: true
       name: Send error status to PANW IoT cloud
@@ -459,7 +459,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: a9010896-bab4-4805-8b4c-df5d8c20c0be
       iscommand: true
       name: Send error status to PANW IoT cloud
@@ -494,8 +494,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Checks if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
       id: 89c21720-f1d5-44af-8169-f327519ac58d
       iscommand: false
       name: Are there any updates available?
@@ -530,8 +530,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Checks if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
       id: 29000236-737e-41f1-8b5e-791444c9fa66
       iscommand: false
       name: Are there any updates available?
@@ -566,8 +566,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Checks if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
       id: 9567a91f-2975-4cb7-86b3-7ba42b281387
       iscommand: false
       name: Are there any updates available?
@@ -599,7 +599,7 @@ tasks:
       integration_name:
         simple: siem
       message:
-        simple: No new devices available for sending to SIEM
+        simple: No new devices available to send to the SIEM
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
@@ -610,7 +610,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 519a4b67-6047-4531-89f8-2e59baafbea2
       iscommand: true
       name: Send status to PANW IoT cloud
@@ -642,7 +642,7 @@ tasks:
       integration_name:
         simple: siem
       message:
-        simple: No new alerts available for sending to SIEM
+        simple: No new alerts available to send to the SIEM
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
@@ -685,7 +685,7 @@ tasks:
       integration_name:
         simple: siem
       message:
-        simple: No new vulnerabilities available for sending to SIEM
+        simple: No new vulnerabilities available to send to the SIEM
       playbook_name:
         simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
       status:
@@ -696,7 +696,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 9bb8226c-93f6-421a-82da-8ec42fa5bb95
       iscommand: true
       name: Send status to PANW IoT cloud
@@ -737,7 +737,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: For a given asset (alert, device, vuln) converts it to 3rd party
+      description: Converts the given asset (alert, device, or vuln) to the 3rd party
         format.
       id: 824b565d-33db-44bc-88da-6dcee3d270e0
       iscommand: true
@@ -779,7 +779,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: For a given asset (alert, device, vuln) converts it to 3rd party
+      description: Converts the given asset (alert, device, or vuln) to the 3rd party
         format.
       id: f6019a87-b38c-466f-8c7a-952d9b549dc4
       iscommand: true
@@ -821,7 +821,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: For a given asset (alert, device, vuln) converts it to 3rd party
+      description: Coinverts the given asset (alert, device, or vuln) to the 3rd party
         format.
       id: e4f841f5-fb89-4e55-871c-c1f7c6575225
       iscommand: true
@@ -857,8 +857,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whetherthe given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: f4ee5e29-5f6f-47c6-8df6-d6e1ac382832
       iscommand: false
@@ -894,8 +894,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: cecf89af-24eb-48a2-879d-183b9136705a
       iscommand: false
@@ -931,8 +931,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: c359314a-19d7-463a-8670-90052c403550
       iscommand: false
@@ -976,7 +976,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 893732ba-793f-44c9-8a25-ad601fc25ca7
       iscommand: true
       name: Send error status to PANW IoT cloud
@@ -1019,7 +1019,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 3fb39bde-e7c2-49bd-8422-0e668bd6c7c3
       iscommand: true
       name: Send error status to PANW IoT cloud
@@ -1062,7 +1062,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 748e77a4-22fd-4c25-8b15-eacc3bb06b23
       iscommand: true
       name: Send error status to PANW IoT cloud
@@ -1216,7 +1216,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
+      description: Closes the current incident.
       id: 6ba73a5c-f55b-46c0-8eb3-5e5ef988a353
       iscommand: true
       name: closeInvestigation
