@@ -10,6 +10,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 * Get File Sample From Path - D2
 * Get File Sample From Path - VMware Carbon Black EDR - Live Response API
+* Cortex XDR - Retrieve File Playbook
 
 ### Integrations
 This playbook does not use any integrations.
@@ -28,7 +29,9 @@ This playbook does not use any commands.
 | UseD2 | Determines whether a D2 agent will be used to retrieve the file.<br/>Options:<br/>no \(default\)<br/>yes |  | Optional |
 | Hostname | Hostname of the machine on which the file is located. |  | Optional |
 | Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt<br/> |  | Optional |
-| Agent_ID | The ID of the agent in the relevant integration \(such as EDR\). |  | Optional |
+| Agent_ID | The ID of the agent, or of the endpoint, in the relevant integration \(such as EDR\).<br/>In Cortex XDR - this should be the Endpoint ID \(NOT the hostname\). A comma-separated list of Endpoint IDs is supported. |  | Optional |
+| LinuxPath | The full path of the file in Linux operating systems. |  | Optional |
+| MacPath | The full path of the file in MacOS systems. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -37,7 +40,7 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | File.Size | The size of the file. | number |
 | File.Type | The type of the file. | string |
-| File.Info | General information of the file.  | string |
+| File.Info | General information of the file. | string |
 | File.MD5 | The MD5 hash of the file. | string |
 | File.SHA1 | The SHA1 hash of the file. | string |
 | File.SHA256 | The SHA256 hash of the file. | string |
@@ -49,4 +52,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Get File Sample From Path - Generic V2](https://raw.githubusercontent.com/demisto/content/8eb0c6e3e592d9eedbcf72b025c403d44a5ba395/Packs/CommonPlaybooks/doc_files/Get_File_Sample_From_Path_-_Generic_V2.png)
+![Get File Sample From Path - Generic V2](Insert the link to your image here)

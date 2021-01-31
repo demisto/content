@@ -50,6 +50,7 @@ tasks:
     nexttasks:
       '#default#':
       - "11"
+      - "14"
       "yes":
       - "10"
     scriptarguments:
@@ -144,8 +145,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1,
-          "y": 355
+          "x": -9,
+          "y": 370
         }
       }
     note: false
@@ -225,14 +226,94 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "13":
+    id: "13"
+    taskid: dcc8f303-2285-4fcf-8b28-264f6be9f930
+    type: playbook
+    task:
+      id: dcc8f303-2285-4fcf-8b28-264f6be9f930
+      version: -1
+      name: Cortex XDR - Retrieve File Playbook
+      description: |-
+        Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints.
+        Inputs for this playbook are:
+        - A comma-separated list of endpoint IDs.
+        - A comma-separated list of file paths for your operating system, either Windows, Linux, or Mac. At least one file path is required.
+      playbookName: Cortex XDR - Retrieve File Playbook
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: inputs.Agent_ID
+      linux_file_paths:
+        complex:
+          root: inputs.LinuxPath
+      mac_file_paths:
+        complex:
+          root: inputs.MacPath
+      windows_file_paths:
+        complex:
+          root: inputs.Path
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 4ee35cdb-9c40-4211-8103-a4b7df8d5676
+    type: title
+    task:
+      id: 4ee35cdb-9c40-4211-8103-a4b7df8d5676
+      version: -1
+      name: Palo Alto Networks Cortex XDR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 705,
-        "width": 859,
-        "x": 1,
+        "width": 1329,
+        "x": -9,
         "y": 50
       }
     }
@@ -263,7 +344,19 @@ inputs:
 - key: Agent_ID
   value: {}
   required: false
-  description: The ID of the agent in the relevant integration (such as EDR).
+  description: |-
+    The ID of the agent, or of the endpoint, in the relevant integration (such as EDR).
+    In Cortex XDR - this should be the Endpoint ID (NOT the hostname). A comma-separated list of Endpoint IDs is supported.
+  playbookInputQuery:
+- key: LinuxPath
+  value: {}
+  required: false
+  description: The full path of the file in Linux operating systems.
+  playbookInputQuery:
+- key: MacPath
+  value: {}
+  required: false
+  description: The full path of the file in MacOS systems.
   playbookInputQuery:
 outputs:
 - contextPath: File.Size
@@ -300,23 +393,25 @@ outputs:
   description: File SSDeep.
   type: string
 tests:
-- Account Enrichment - Generic v2.1 - Test
 - Calculate Severity - Generic v2 - Test
-- Calculate Severity - Standard - Test
 - Test Convert file hash to corresponding hashes
-- Dedup - Generic v2 - Test
-- Detonate File - Generic Test
-- Detonate File - No Files test
 - Detonate URL - Generic Test
-- Domain Enrichment - Generic v2 - Test
-- Email Address Enrichment - Generic v2.1 - Test
+- Detonate File - Generic Test
+- test-domain-indicator
+- Account Enrichment - Generic v2.1 - Test
+- Dedup - Generic v2 - Test
+- Generic Polling Test
+- URL Enrichment - Generic v2 - Test
+- Send Investigation Summary Reports - Test
 - Endpoint Enrichment - Generic v2.1 - Test
+- Wait Until Datetime - Test
+- Detonate File - No Files test
+- Domain Enrichment - Generic v2 - Test
+- Calculate Severity - Standard - Test
+- Retrieve File from Endpoint - Generic V2 Test
 - Extract Indicators From File - Generic v2 - Test
 - Field polling test
+- Email Address Enrichment - Generic v2.1 - Test
 - File Enrichment - Generic v2 - Test
 - IP Enrichment - Generic v2 - Test
-- Send Investigation Summary Reports - Test
-- test-domain-indicator
-- URL Enrichment - Generic v2 - Test
-- Wait Until Datetime - Test
 fromversion: 5.0.0

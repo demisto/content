@@ -1,4 +1,4 @@
-This playbook retrieves a file sample from an endpoint using the following playbooks:
+'This playbook retrieves a file sample from an endpoint using the following playbooks:'
 - Get File Sample From Path - Generic v2.
 - Get File Sample By Hash - Generic v3.
 
@@ -26,9 +26,11 @@ This playbook does not use any commands.
 | MD5 | The MD5 hash value for the file to retrieve. |  | Optional |
 | SHA256 | The SHA256 hash value for the file to retrieve. |  | Optional |
 | Hostname | Hostname of the machine on which the file is located. |  | Optional |
-| Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt. |  | Optional |
+| Path | The path of the file to retrieve.<br/>For example:<br/>C:\\users\\folder\\file.txt |  | Optional |
 | UseD2 | Determines whether a D2 agent will be used to retrieve the file.<br/>Options:<br/>no \(default\)<br/>yes | no | Optional |
-| Agent_ID | The ID of the agent in the relevant integration \(such as EDR\). |  | Optional |
+| Agent_ID | The ID of the agent, or of the endpoint, in the relevant integration \(such as EDR\).<br/>In Cortex XDR - this should be the Endpoint ID \(NOT the hostname\). A comma-separated list of Endpoint IDs is supported. |  | Optional |
+| LinuxPath | The full path of the file in Linux operating systems. |  | Optional |
+| MacPath | The full path of the file in MacOS systems. |  | Optional |
 
 ## Playbook Outputs
 ---

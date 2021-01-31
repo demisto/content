@@ -106,14 +106,14 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 9f97e611-7310-4635-88ca-f80e9342e0fa
+    taskid: 3e810098-1f89-4c94-822a-942a19bb6ecc
     type: playbook
     task:
-      id: 9f97e611-7310-4635-88ca-f80e9342e0fa
+      id: 3e810098-1f89-4c94-822a-942a19bb6ecc
       version: -1
       name: Get File Sample From Path - Generic V2
       description: |
-        This playbook returns a file sample correlating to a path into the War Rom using the following sub-playbooks:
+        This playbook returns a file sample correlating to a path into the War Room using the following sub-playbooks:
         inputs:
         1) Get File Sample From Path - D2.
         2) Get File Sample From Path - VMware Carbon Black EDR (Live Response API).
@@ -131,6 +131,12 @@ tasks:
       Hostname:
         complex:
           root: inputs.Hostname
+      LinuxPath:
+        complex:
+          root: inputs.LinuxPath
+      MacPath:
+        complex:
+          root: inputs.MacPath
       Path:
         complex:
           root: inputs.Path
@@ -155,6 +161,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -204,7 +211,19 @@ inputs:
 - key: Agent_ID
   value: {}
   required: false
-  description: The ID of the agent in the relevant integration (such as EDR).
+  description: |-
+    The ID of the agent, or of the endpoint, in the relevant integration (such as EDR).
+    In Cortex XDR - this should be the Endpoint ID (NOT the hostname). A comma-separated list of Endpoint IDs is supported.
+  playbookInputQuery:
+- key: LinuxPath
+  value: {}
+  required: false
+  description: The full path of the file in Linux operating systems.
+  playbookInputQuery:
+- key: MacPath
+  value: {}
+  required: false
+  description: The full path of the file in MacOS systems.
   playbookInputQuery:
 outputs:
 - contextPath: File.Size
@@ -240,6 +259,26 @@ outputs:
 - contextPath: File.SSDeep
   description: The file SSDeep.
   type: string
-fromversion: 5.0.0
 tests:
+- Calculate Severity - Generic v2 - Test
+- Test Convert file hash to corresponding hashes
+- Detonate URL - Generic Test
+- Detonate File - Generic Test
+- test-domain-indicator
+- Account Enrichment - Generic v2.1 - Test
+- Dedup - Generic v2 - Test
+- Generic Polling Test
+- URL Enrichment - Generic v2 - Test
+- Send Investigation Summary Reports - Test
+- Endpoint Enrichment - Generic v2.1 - Test
+- Wait Until Datetime - Test
+- Detonate File - No Files test
+- Domain Enrichment - Generic v2 - Test
+- Calculate Severity - Standard - Test
 - Retrieve File from Endpoint - Generic V2 Test
+- Extract Indicators From File - Generic v2 - Test
+- Field polling test
+- Email Address Enrichment - Generic v2.1 - Test
+- File Enrichment - Generic v2 - Test
+- IP Enrichment - Generic v2 - Test
+fromversion: 5.0.0
