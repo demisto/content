@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 This is an empty script with some basic structure according
 to the code conventions.
 MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
+
 Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
@@ -16,7 +17,7 @@ from typing import Any, Dict
 ''' STANDALONE FUNCTION '''
 
 
-# TODO: REMOVE the following dummy function:
+# TODO: REMOVE the following function:
 def basescript_dummy(dummy: str) -> Dict[str, str]:
     """Returns a simple python dict with the information provided
     in the input (dummy).
@@ -27,7 +28,7 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
     """
 
     return {"dummy": dummy}
-# TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+# TODO: ADD HERE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
 
 ''' COMMAND FUNCTION '''
