@@ -187,20 +187,6 @@ def expand_urls(data, depth=0):
                     return expand_urls(value, depth + 1)
 
 
-def get_account_id_from_username_EXPERIMENTAL(username: str) -> str:
-    """
-        Get the Account ID for a given username.
-    Args:
-        username (str): Username of a user. To specify multiple users, pass multiple copies of this parameter.
-                        For example,username=fred&username=barney
-    Returns:
-        Account ID (str)
-    """
-    url = f"rest/api/latest/user/bulk/migration?username={username}"
-    res = jira_req('GET', url, resp_type='json')
-    return res
-
-
 def search_user(query: str, max_results: str = '50'):
     """
         Search for user by name or email address.
