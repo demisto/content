@@ -1,2 +1,5 @@
 [file:epo]
 ignore=PA116
+
+[file:integration-epo.yml]
+ignore=IN135
