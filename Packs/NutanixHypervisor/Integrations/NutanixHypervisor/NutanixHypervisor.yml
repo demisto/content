@@ -682,7 +682,7 @@ script:
     - contextPath: NutanixHypervisor.Alerts.context_values
       description: Alert context values.
       type: String
-    - contextPath: NutanixHypervisor.Alerts.alert_details.metric_details.comparision_operator
+    - contextPath: NutanixHypervisor.Alerts.alert_details.metric_details.comparison_operator
       description: Comparison operator used in the metric.
       type: String
     - contextPath: NutanixHypervisor.Alerts.alert_details.metric_details.condition_type

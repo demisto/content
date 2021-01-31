@@ -6,7 +6,7 @@ integrated and tested with version v2 of Nutanix
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Nutanix Hypervisor.
-3. Click **Add instance** to create and configure a new integration instance.
+3. Click **Add an instance** to create and configure a new integration instance.
 
    | **Parameter** | **Description** | **Required** |
        | --- | --- | --- |
@@ -46,7 +46,7 @@ Gets the list of physical hosts configured in the cluster.
 | filter | Retrieve hosts that matches the filters given. Nutanix filters can be one of the field returned in the response by nutanix [GET hosts](https://www.nutanix.dev/reference/prism_element/v2/api/hosts/get-hosts-gethosts) API call. Some of the fields in the response are not supported. Known filters Nutanix service supports are: *
 host_nic_ids*, *host_gpus*, *storage_tier*, *das-sata.usage_bytes*, *storage.capacity_bytes*, *
 storage.logical_usage_bytes*, *storage_tier.das-sata.capacity_bytes*, *
-storage.usage_bytes*. If you wish to try any other filter, you can try to enter your own, and in case Nutanix does not support the filter, error will be thrown specifying the filter is invalid. Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value. Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for Example: storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x is parsed by Nutanix the following way: Return all hosts s.t (storage.capacity_bytes == 2 AND host_nic_ids != 35) OR host_gpus == x. | Optional | 
+storage.usage_bytes*. If you wish to try any other filter, you can try to enter your own, and in case Nutanix does not support the filter, error will be thrown specifying the filter is invalid. Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value. Possible combinations of OR (using comma ',') and (using semicolon ';'), for Example: storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x is parsed by Nutanix the following way: Return all hosts s.t (storage.capacity_bytes == 2 AND host_nic_ids != 35) OR host_gpus == x. | Optional | 
 | page | Page number in the query response. Default is 1. limit argument is required. | Optional | 
 | limit | Maximum number of physical hosts to retrieve. Possible values are 1-1000. Default is 50. | Optional | 
 
@@ -204,7 +204,7 @@ Gets a list of virtual machines.
 | --- | --- | --- |
 | filter | Retrieve virtual machines that matches the filters given. . Nutanix filters can be one of the field returned in the response by nutanix [GET VMs](https://www.nutanix.dev/reference/prism_element/v2/api/vms/get-vms-getvms/) API call. Some of the fields in the response are not supported. Known filters Nutanix service supports are: *
 machine_type*, *power_state*, *ha_priority*, *
-uefi_boot*. If you wish to try any other filter, you can try to enter your own, and in case Nutanix does not support the filter, error will be thrown specifying the filter is invalid. Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value. Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for Example: machine_type==pc;power_state!=off,ha_priority==0 is parsed by Nutanix the following way: Return all virtual machines s.t (machine type == pc AND power_state != off) OR ha_priority == 0. | Optional | 
+uefi_boot*. If you wish to try any other filter, you can try to enter your own, and in case Nutanix does not support the filter, error will be thrown specifying the filter is invalid. Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value. Possible combinations of OR (using comma ',') and (using semicolon ';'), for Example: machine_type==pc;power_state!=off,ha_priority==0 is parsed by Nutanix the following way: Return all virtual machines s.t (machine type == pc AND power_state != off) OR ha_priority == 0. | Optional | 
 | limit | Maximum number of virtual machines to retrieve. Default is 50. | Optional | 
 | offset | The offset to start retrieving virtual machines. | Optional | 
 
@@ -290,7 +290,7 @@ monitored by the nutanix-hypervisor-task-poll command.
 ### Important
 
 The following command requires cluster admin or higher permissions, in case you want to use this command, make sure the
-usern you are using have at least cluster admin permissions
+username you are using have at least cluster admin permissions
 (Found in Nutanix Settings in "Users And Roles" Category)
 
 #### Base Command
@@ -392,7 +392,7 @@ moment the Nutanix service was polled. If no task is ready, returns a timeout re
       "create_time": "2021-01-10T14:16:00.827398Z",
       "entity_list": [
         {
-          "entity_id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+          "entity_id": "1zs412a-zxdc-324a-xcgws123df54",
           "entity_type": "VM"
         }
       ],
@@ -489,7 +489,7 @@ there are more than the defined maximum number of alerts.
 | NutanixHypervisor.Alerts.affected_entities.id | String | The affected entity ID. | 
 | NutanixHypervisor.Alerts.context_types | String | Alert context types. | 
 | NutanixHypervisor.Alerts.context_values | String | Alert context values. | 
-| NutanixHypervisor.Alerts.alert_details.metric_details.comparision_operator | String | Comparison operator used in the metric. | 
+| NutanixHypervisor.Alerts.alert_details.metric_details.comparison_operator | String | Comparison operator used in the metric. | 
 | NutanixHypervisor.Alerts.alert_details.metric_details.condition_type | String | Condition type of the alert by metric. Can be: STATIC, THRESHOLD, ANOMALY, SAFETY_ZONE. | 
 | NutanixHypervisor.Alerts.alert_details.metric_details.data_type | String | Data type used in the metric. Can be: LONG, DOUBLE, BOOLEAN, STRING. | 
 | NutanixHypervisor.Alerts.alert_details.metric_details.metric_category | String | Metric category. | 
@@ -751,7 +751,7 @@ Acknowledges alerts using a filter.
 | end_time | A date in iso format, epoch time or time range(&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days).. Only alerts that were created on or before the specified date/time will be acknowledged. If no time zone used, UTC time zone will be used. | Optional | 
 | severity | Comma-separated list of the severity levels of the alerts to resolve. Possible values are: CRITICAL, WARNING, INFO, AUDIT. | Optional | 
 | impact_types | Comma-separated list of impact types. Will acknowledge alerts whose impact type matches an impact types in the impact_types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given impact_types ='SystemIndicator', only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be acknowledged. | Optional | 
-| entity_types | Comma-separated list of entity types. Will retrieve alerts whose entity_type matches an entity_type in the entity_types list. For more details see Nutanix README. If Nutanix service cannot recognize the entity type, it returns a 404 error. | Optional | 
+| entity_types | Comma-separated list of entity types. Will retrieve alerts whose entity_type matches an entity_type in the entity_types list. If Nutanix service cannot recognize the entity type, it returns a 404 error. | Optional | 
 | limit | Maximum number of alerts to acknowledge. Nutanix does not have a maximum for the limit, but a very high limit will cause a read timeout exception. Default is 50. | Optional | 
 
 #### Context Output
@@ -774,7 +774,7 @@ Acknowledges alerts using a filter.
   "NutanixHypervisor": {
     "AcknowledgedFilteredAlert": {
       "num_successful_updates": 1,
-      "num_successful_updates": 0
+      "num_failed_updates": 0
     }
   }
 }
