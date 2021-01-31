@@ -9,7 +9,4 @@ The pack includes:
 2) Playbooks:
  - RST Threat IP enrichment playbook
  - RST Threat Domain enrichment playbook 
- - RST Threat URL enrichment playbook 
- 
- 
-![Playbook Image](https://github.com/demisto/content/raw/master/Packs/RSTCloud/doc_files/rst_threat_feed_api_warroom.png)
+ - RST Threat URL enrichment playbook
