@@ -523,7 +523,7 @@ Gets the Account ID for a given user's attribute.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | attribute | The user's attribute value. Can be Username or Email address. | Required | 
-| maxResults | The maximum number of users to pull when searching for a matching user (default is 50). The maximum allowed value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional | 
+| max_results | The maximum number of users to pull when searching for a matching user (default is 50). The maximum allowed value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional | 
 
 
 #### Context Output
