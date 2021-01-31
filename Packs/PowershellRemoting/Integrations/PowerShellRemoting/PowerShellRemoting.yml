@@ -67,16 +67,16 @@ script:
     execution: true
     name: ps-remote-command
     outputs:
-    - contextPath: PsRemote.PSRemoteCommand.Host
+    - contextPath: PsRemote.Host
       description: The Host the command was invoked on.
       type: string
-    - contextPath: PsRemote.PSRemoteCommand.Fqdn
+    - contextPath: PsRemote.FQDN
       description: The Fully Qualified Domain Name of the host the command was invoked on.
       type: string
-    - contextPath: PsRemote.PSRemoteCommand.Command.Result
+    - contextPath: PsRemote.Command.Result
       description: The result of the command run from target machine
       type: list
-    - contextPath: PsRemote.PSRemoteCommand.Command.Name
+    - contextPath: PsRemote.Command.Name
       description: The command sent to target machine, used as ID of that query.
       type: string
   - arguments:
@@ -107,9 +107,22 @@ script:
       predefined:
       - "true"
       - "false"
+    - auto: PREDFINED
+      description: "Use the host as a prefix for the name of the downloaded version of the file."
+      name: host_prefix
+      defaultValue: "false"
+      predefined:
+      - "true"
+      - "false"
     description: Download a file from the remote endpoint.
     name: ps-remote-download-file
     outputs:
+    - contextPath: PsRemoteDownloadedFile.Host
+      description: The Host the file was downloaded from.
+      type: string
+    - contextPath: PsRemoteDownloadedFile.FQDN
+      description: The Fully Qualified Domain Name of the host the file was downloaded from.
+      type: string
     - contextPath: PsRemoteDownloadedFile.FileName
       description: File name.
       type: String
@@ -162,12 +175,11 @@ script:
       description: 'The file extension, for example: ''txt''.'
       type: String
   - arguments:
-    - description: The hostname on which to create the ETL file. For example myhost.
+    - description: The hostname on which to upload the file. For example myhost.
         The user can provide a comma delimited list of values.
       name: host
-    - description: The IP of the host on which to run the command. For example 1.1.1.1.
+    - description: The IP of the host on which to upload the file. For example 1.1.1.1.
         The user can provide a comma delimited list of values.
-      isArray: true
       name: ip
     - description: The expected path of the file to upload.
       name: path
@@ -191,7 +203,7 @@ script:
       predefined:
       - "true"
       - "false"
-    description: Download a file from the remote endpoint.
+    description: Upload a file to the remote endpoint.
     name: ps-remote-upload-file
     outputs:
     - contextPath: PsRemoteUploadedFile.FileName
@@ -215,6 +227,12 @@ script:
     - contextPath: PsRemoteUploadedFile.FileExtension
       description: The extension of the file.
       type: String
+    - contextPath: PsRemoteUploadedFile.Host
+      description: The Host the file was uploaded to.
+      type: string
+    - contextPath: PsRemote.FQDN
+      description: The Fully Qualified Domain Name of the host the file was uploaded to.
+      type: string
   - arguments:
     - description: The hostname on which to create the ETL file. For example myhost.
         The user can provide a comma delimited list of values.
@@ -266,6 +284,12 @@ script:
     - contextPath: PsRemote.Fqdn
       description: The Full Qualified Domain Name of the host.
       type: string
+    - contextPath: PsRemote.FQDN
+      description: The Full Qualified Domain Name of the host.
+      type: string
+    - contextPath: PsRemote.Host
+      description: The name of the host.
+      type: string
   - arguments:
     - description: The hostname on which to create the ETL file. For example myhost.
         The user can provide a comma delimited list of values.
@@ -286,6 +310,12 @@ script:
         type: string
       - contextPath: PsRemote.EtlFilePath
         description: The file path and name for the ETL
+      - contextPath: PsRemote.Host
+        description: The Host the command was invoked on.
+        type: string
+      - contextPath: PsRemote.FQDN
+        description: The Fully Qualified Domain Name of the host the command was invoked on.
+        type: string
   - arguments:
     - description: The hostname on which to create the ETL file. For example myhost.
         The user can provide a comma delimited list of values.
@@ -322,6 +352,12 @@ script:
     - contextPath: PsRemote.Fqdn
       description: The Full Qualified Domain Name of the host.
       type: string
+    - contextPath: PsRemote.Host
+      description: The Host the command was invoked on.
+      type: string
+    - contextPath: PsRemote.FQDN
+      description: The Fully Qualified Domain Name of the host the command was invoked on.
+      type: string
   - arguments:
     - description: Specify host(s) to retrieve data from.
       isArray: false
@@ -341,6 +377,12 @@ script:
     outputs:
       - contextPath: PsRemote.ExportMFT
         description: The command result for
+      - contextPath: PsRemote.Host
+        description: The Host the command was invoked on.
+        type: string
+      - contextPath: PsRemote.FQDN
+        description: The Fully Qualified Domain Name of the host the command was invoked on.
+        type: string
   dockerimage: demisto/powershell-ubuntu:7.0.3.12001
   runonce: false
   script: ''
