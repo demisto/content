@@ -12,8 +12,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- defaultvalue: 'false'
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -287,7 +286,7 @@ script:
     execution: false
     name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
-  dockerimage: demisto/elasticsearch:1.0.0.12410
+  dockerimage: demisto/elasticsearch:1.0.0.14274
   feed: false
   isfetch: true
   longRunning: false
