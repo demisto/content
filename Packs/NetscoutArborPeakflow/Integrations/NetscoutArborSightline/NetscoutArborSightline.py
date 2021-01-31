@@ -1,5 +1,5 @@
 import demistomock as demisto
-# from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import requests
@@ -54,11 +54,7 @@ class NetscoutClient(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    def get_annotations(self, alert_id):
-        return self._http_request(
-            method='GET',
-            url_suffix=f'alerts/{alert_id}/annotations'
-        )
+    # def create_mitigation(self, **kwargs):
 
     def build_data_attribute_filter(self, **kwargs):
         """
@@ -86,20 +82,9 @@ class NetscoutClient(BaseClient):
 
         return ' AND '.join(param_list)
 
-    def get_alerts(self, **kwargs):
-        filter_value = self.build_data_attribute_filter(kwargs)
-
-        return self._http_request(
-            method='GET',
-            url='alerts',
-            params={'filter': filter_value}
-        )
-
-        # incidents
-
     def fetch_incidents(self):
         demisto.getLastRun()
-        self.get_alerts(
+        return self.list_alerts(
             alert_class=self.alert_class,
             alert_type=self.alert_type,
             classification=self.classification,
@@ -108,9 +93,35 @@ class NetscoutClient(BaseClient):
             ongoing=self.ongoing,
         )
 
+    def list_alerts(self, **kwargs):
+        filter_value = self.build_data_attribute_filter(kwargs)
+
+        return self._http_request(
+            method='GET',
+            url='alerts',
+            params={'filter': filter_value}
+        )
+
+    def get_alert(self, alert_id: str):
+        return self._http_request(
+            method='GET',
+            url=f'alerts/{alert_id}'
+        )
+
+    def get_annotations(self, alert_id: str):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'alerts/{alert_id}/annotations'
+        )
+
+    def list_mitigations(self, mitigation_id: str):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'mitigations/{mitigation_id}' if mitigation_id else 'mitigations'
+        )
+
 
 ''' HELPER FUNCTIONS '''
-
 
 ''' COMMAND FUNCTIONS '''
 
@@ -142,8 +153,31 @@ def test_module(client: NetscoutClient) -> str:
     return message
 
 
-def alert_annotations_command(client: NetscoutClient, args: dict):
+def list_alerts_commands(client: NetscoutClient, args: dict):
+    alert_id = args.get('alert_id')
+    alert_class = args.get('alert_class')
+    alert_type = args.get('alert_type')
+    classification = args.get('classification')
+    importance = args.get('importance')
+    ongoing = args.get('ongoing')
+    start_time = args.get('start_time')
+    stop_time = args.get('stop_time')
+    managed_object = args.get('managed_object')
+    if alert_id:
+        raw_result = client.get_alert(alert_id)
+    else:
+        raw_result = client.list_alerts(alert_class, alert_type, classification, importance, ongoing, start_time,
+                                        stop_time, managed_object)
+    data = raw_result.get('data')
+    data = data if isinstance(data, list) else [data]
+    return CommandResults(outputs_prefix='NASightline.AlertAnnotations',
+                          outputs_key_field='AlertID',
+                          outputs=data,
+                          readable_output=tableToMarkdown(f'Alerts', data),
+                          raw_response=raw_result)
 
+
+def alert_annotations_command(client: NetscoutClient, args: dict):
     alert_id = args.get('alert_id')
     raw_result = client.get_annotations(alert_id)
     data = raw_result.get('data')
@@ -151,9 +185,20 @@ def alert_annotations_command(client: NetscoutClient, args: dict):
     return CommandResults(outputs_prefix='NASightline.AlertAnnotations',
                           outputs_key_field='AlertID',
                           outputs=context,
-                          readable_output=tableToMarkdown(f'Alert {alert_id} annotations', data, []),
+                          readable_output=tableToMarkdown(f'Alert {alert_id} annotations', data),
                           raw_response=raw_result)
 
+
+def mitigations_list_command(client: NetscoutClient, args: dict):
+    mitigation_id = args.get('mitigation_id')
+    raw_result = client.list_mitigations(mitigation_id)
+    data = raw_result.get('data')
+    return CommandResults(outputs_prefix='NASightline.Mitigation',
+                          outputs_key_field='id',
+                          outputs=data,
+                          readable_output=tableToMarkdown(f'Mitigation list', data,
+                                                          ['id', 'links', 'type']),
+                          raw_response=raw_result)
 
 
 ''' MAIN FUNCTION '''
@@ -196,11 +241,14 @@ def main() -> None:
         args = demisto.args()
         if demisto.command() == 'test-module':
             result = test_module(client)
-        elif demisto.command() == 'netscout-arbor-sightline-alert-annotations':
+        elif demisto.command() == 'na-sightline-alerts-list':
+            result = list_alerts_commands(client, args)
+        elif demisto.command() == 'na-sightline-alert-annotations':
             result = alert_annotations_command(client, args)
+        elif demisto.command() == 'na-mitigations-list':
+            result = mitigations_list_command(client, args)
 
         return_results(result)
-
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback

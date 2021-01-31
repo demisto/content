@@ -108,9 +108,9 @@ configuration:
   - High
   required: false
   type: 15
-- additionalinfo: 'The chosen operator will be applied on the ''Importance'' parameter.
-    For example: if the chosen operator is ''>'' and the importance is ''1'', only
-    alerts with importance grater to 1 wil be fetched. Default is ''='''
+- additionalinfo: 'The operator to apply on the ''Importance'' parameter. For example:
+    if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
+    with importance grater to 1 will be fetched. Default is ''=''.'
   defaultvalue: =
   display: Importance Operator
   hidden: false
@@ -139,7 +139,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: The alert ID to list the connections. (a)[https://google.com]
+      description: The alert ID to list the connections.
       isArray: false
       name: alert_id
       required: true
@@ -147,11 +147,150 @@ script:
     deprecated: false
     description: Lists the collection of annotations for a given alert.
     execution: false
-    name: netscout-arbor-sightline-alert-annotations
+    name: na-sightline-alert-annotations
     outputs:
     - contextPath: BaseIntegration.Output
       description: NASightline.AlertAnnotations
       type: Unknown
+  - arguments:
+    - default: true
+      description: The mitigation ID to get.
+      isArray: false
+      name: mitigation_id
+      required: false
+      secret: false
+    deprecated: false
+    description: List all mitigations, when a mitigation ID is given the only the
+      relevant mitigation will be fetched.
+    execution: false
+    name: na-mitigations-list
+    outputs:
+    - contextPath: BaseIntegration.Output
+      description: NASightline.AlertAnnotations
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Alert ID
+      isArray: false
+      name: alert_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert class
+      isArray: false
+      name: alert_class
+      predefined:
+      - bgp
+      - cloudsignal
+      - data
+      - dos
+      - smart
+      - system_error
+      - system_event
+      - tms
+      - traffic
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert type
+      isArray: false
+      name: alert_type
+      predefined:
+      - autoclassify_restart
+      - bgp_down
+      - bgp_hijack
+      - bgp_instability
+      - bgp_trap
+      - blob_thresh
+      - cloud_mit_request
+      - cloudsignal_fault
+      - collector_down
+      - collector_start
+      - config_change
+      - device_system_error
+      - dns_baseline
+      - dos
+      - dos_host_detection
+      - dos_mo_profiled
+      - dos_profiled_network
+      - dos_profiled_router
+      - fingerprint_thresh
+      - flexible_license_error
+      - flow_down
+      - flow_missing
+      - gre_down
+      - hw_failure
+      - smart_thresh
+      - interface_usage
+      - nucleus_fault
+      - routing_failover
+      - routing_interface_failover
+      - service_thresh
+      - smart_thresh
+      - snmp_down
+      - spcomm_failure
+      - tms_fault
+      - traffic_auto_mitigation
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert classification
+      isArray: false
+      name: classification
+      predefined:
+      - Possible Attack
+      - False Positive
+      - Verified Attack
+      - Network Failure
+      - Flash Crowd
+      - Trivial
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Alert importance to filter by. For more complex operators use the
+        'importance_operator' argument.
+      isArray: false
+      name: importance
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+      secret: false
+    - default: false
+      description: 'The operator to apply on the importance  argument. For example:
+        if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
+        with importance grater to 1 will be fetched.'
+      isArray: false
+      defaultvalue: =
+      name: importance_operator
+      required: false
+      secret: false
+      predefined:
+      - =
+      - <
+      - >
+    - default: false
+      description: 'The operator to apply on the importance  argument. For example:
+        if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
+        with importance grater to 1 will be fetched.'
+      isArray: false
+      name: ongoing
+      required: false
+      secret: false
+      predefined:
+        - true
+        - false
+    deprecated: false
+    description: List all alerts, when a alert ID is given only the relevant alert
+      will be fetched.
+    execution: false
+    name: na-sightline-alerts-list
+
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: false
