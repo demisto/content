@@ -7,11 +7,11 @@ configuration:
   name: baseUrl
   required: true
   type: 0
-- display: username
+- display: Username
   name: username
   required: true
   type: 0
-- display: password
+- display: Password
   name: password
   required: true
   type: 4
