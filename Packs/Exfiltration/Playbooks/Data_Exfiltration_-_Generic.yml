@@ -1,5 +1,5 @@
-id: 285d3eba-2cd7-40f2-801c-10a1a321a4e2
-version: 46
+id: Data Exfiltration - Generic
+version: -1
 name: Data Exfiltration - Generic
 description: This playbook provides a response for endpoint exfiltration incidents
   by retrieving data about the source and destination of the alert, assessing the
@@ -17,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -105,6 +106,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "56"
@@ -135,6 +137,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -162,6 +165,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -542,57 +546,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "34":
-    id: "34"
-    taskid: cb7fce21-e650-4e4b-80b4-1bfa9df4ef7f
-    type: playbook
-    task:
-      id: cb7fce21-e650-4e4b-80b4-1bfa9df4ef7f
-      version: -1
-      name: Code42 File Download
-      description: This playbook downloads a file via Code42 by either MD5 or SHA256
-        hash.
-      playbookName: Code42 File Download
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "65"
-    scriptarguments:
-      Filename:
-        complex:
-          root: inputs.FileName
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          root: inputs.FileMD5
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: inputs.FileSHA256
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1215,
-          "y": 1300
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
   "36":
     id: "36"
     taskid: 2cf87329-4842-40ca-8658-49fb8c37d3ff
@@ -715,6 +668,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "57"
@@ -742,6 +696,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -887,11 +842,10 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "25"
-      - "34"
-      - "71"
       - "72"
     separatecontext: false
     view: |-
@@ -1308,6 +1262,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -1335,6 +1290,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "44"
@@ -1362,6 +1318,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "59"
@@ -1684,6 +1641,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
@@ -1779,6 +1737,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -1855,10 +1814,10 @@ tasks:
     quietmode: 0
   "68":
     id: "68"
-    taskid: df933cea-c581-4bef-80af-3cbcfcdb2309
+    taskid: 820075ef-abdb-4971-8358-3bed8b3b9846
     type: regular
     task:
-      id: df933cea-c581-4bef-80af-3cbcfcdb2309
+      id: 820075ef-abdb-4971-8358-3bed8b3b9846
       version: -1
       name: Display details in Layout
       description: Displays information from the alert in the incident layout.
@@ -2122,6 +2081,7 @@ tasks:
       extrahopapplianceid: {}
       extrahophostname: {}
       faeredescription: {}
+      fileblocked: {}
       filehash: {}
       filehashblocked: {}
       filename: {}
@@ -2625,6 +2585,10 @@ tasks:
           root: inputs.FilePath
           transformers:
           - operator: uniq
+    - incidentfield: Agent ID
+      output:
+        complex:
+          root: inputs.AgentID
     skipunavailable: false
     quietmode: 0
   "69":
@@ -2638,6 +2602,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "68"
@@ -2647,52 +2612,6 @@ tasks:
         "position": {
           "x": 520,
           "y": 710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "71":
-    id: "71"
-    taskid: 15437fd0-a744-4ac1-8d2d-1ce03d443867
-    type: playbook
-    task:
-      id: 15437fd0-a744-4ac1-8d2d-1ce03d443867
-      version: -1
-      name: Cortex XDR - Retrieve File Playbook
-      playbookName: Cortex XDR - Retrieve File Playbook
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "65"
-    scriptarguments:
-      endpoint_ids:
-        complex:
-          root: inputs.EndpointID
-          transformers:
-          - operator: uniq
-      linux_file_paths: {}
-      mac_file_paths: {}
-      windows_file_paths:
-        complex:
-          root: inputs.FilePath
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1630,
-          "y": 1300
         }
       }
     note: false
@@ -2712,6 +2631,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "65"
@@ -4974,6 +4894,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "77"
@@ -5178,6 +5099,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "83"
@@ -6049,6 +5971,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "87"
@@ -6868,6 +6791,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "57"
@@ -6895,6 +6819,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "57"
@@ -6952,71 +6877,73 @@ inputs:
   value: {}
   required: false
   description: The MD5 hash of the file that was exfiltrated.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Hostname
   value: {}
   required: false
   description: The name of the endpoint from which the exfiltration originated.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: FilePath
   value: {}
   required: false
   description: The path on the endpoint to the file that was associated with the exfiltration
     (the tool used for exfiltration).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: AgentID
   value: {}
   required: false
-  description: The ID of the agent/sensor that detected the file exfiltration.
-  playbookInputQuery: null
+  description: |-
+    The ID of the agent/sensor that detected the file exfiltration, or the ID of the endpoint.
+    In Palo Alto Networks Cortex XDR, the Endpoint ID is used instead of an Agent ID to retrieve the file that made the exfiltration from the endpoint.
+  playbookInputQuery:
 - key: Username
   value: {}
   required: false
   description: The username of the user that executed the exfiltration.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: UserEmail
   value: {}
   required: false
   description: The email of the user that executed the exfiltration.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: FileSHA256
   value: {}
   required: false
   description: The SHA256 hash of the file that was associated with the exfiltration
     (the tool used for exfiltration).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: FileName
   value: {}
   required: false
   description: The name of the file that was associated with the exfiltration (the
     tool used for exfiltration).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: IsolateHostsAutomatically
   value:
     simple: "False"
   required: false
   description: Determines whether endpoints where alerts occurred will be isolated
     automatically. Can be either "True" or "False".
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SourceIP
   value: {}
   required: false
   description: The IP address of the endpoint from which the exfiltration originated.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: BreachRegulation
   value: {}
   required: false
   description: |-
     The regulation to which the company is subject. Can be GDPR, HIPAA or US.
     If no value is specified, the user will be asked to notify about the breach using the method practiced in your organization.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ExfiltrationDestination
   value: {}
   required: false
   description: The destination of the exfiltration of data. This could be for example
     a domain to which DNS tunneling was executed, or a URLto which an HTTP POST request
     was sent to exfiltrate data.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: BlockDestinationAutomatically
   value:
     simple: "False"
@@ -7025,18 +6952,12 @@ inputs:
     automatically. If set to "True" - the destination will be blocked automatically
     if found to be malicious. Otherwise, an analyst review will be required to block
     the destination.
-  playbookInputQuery: null
-- key: EndpointID
-  value: {}
-  required: false
-  description: The Cortex XDR endpoint ID. Used to retrieve the file that made the
-    exfiltration from the endpoint.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: DestinationPort
   value: {}
   required: false
   description: The destination port through which data was exfiltrated.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: BlockFileAutomatically
   value:
     simple: "False"
@@ -7044,11 +6965,13 @@ inputs:
   description: Whether to block the file used for exfiltration automatically. If set
     to true - the file will be blocked automatically. Otherwise, an analyst review
     will be required to block the file.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: NotifyManager
   value: {}
   required: false
   description: Whether to notify the offensive user's manager about the exfiltration.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: Code42 Exfiltration Playbook
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
