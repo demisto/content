@@ -1,6 +1,6 @@
 Nutanix Hypervisor abstracts and isolates the VMs and their programs from the underlying server hardware, enabling a
 more efficient use of physical resources, simpler maintenance and operations, and reduced costs. This integration was
-integrated and tested with version v2 of Nutanix
+integrated and tested with version v2 of Nutanix.
 
 ## Configure Nutanix on Cortex XSOAR
 
@@ -18,7 +18,7 @@ integrated and tested with version v2 of Nutanix
    | Username |  | True |
    | Incidents Fetch Interval |  | False |
    | Maximum number of incidents per fetch | The maximum number of incidents to fetch each time. | False |
-   | Alert Status Filters | Fetches incidents by the status filters given. For example, if acknowledged is true, then only alerts that have been acknowledged will be fetched. If 'Auto Resolved' or 'Not Auto Resolved' is selected, then by default also 'Resolved' will be set. | False |
+   | Alert Status Filters | Fetches incidents by the status filters given. For example, if acknowledged is true, then only alerts that have been acknowledged will be fetched. If 'Auto Resolved' or 'Not Auto Resolved' is selected, then by default 'Resolved' will also be set. | False |
    | Alert type IDs | Comma-separated list of alert type IDs. Fetches alerts whose type ID matches an alert_type_id in the alert_type_ids list. For example, alert 'Alert E-mail Failure' has type ID A111066. If alert_type_ids = 'A111066', only alerts of 'Alert E-mail Failure' will be displayed. | False |
    | Impact Types | Comma-separated list  of impact types. Fetch alerts whose impact type matches an impact type in Impact Types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. If Impact Types = 'SystemIndicator', only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be displayed. | False |
    | First fetch timestamp | format: &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;', e.g., 12 hours, 7 days. | False |
@@ -43,11 +43,11 @@ Gets the list of physical hosts configured in the cluster.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Retrieve hosts that matches the filters given. Nutanix filters can be one of the field returned in the response by nutanix [GET hosts](https://www.nutanix.dev/reference/prism_element/v2/api/hosts/get-hosts-gethosts) API call. Some of the fields in the response are not supported. Known filters Nutanix service supports are: *
+| filter | The filter used to define the hosts to retrieve. Nutanix filters can be one of the fields returned in the response by the Nutanix [GET hosts](https://www.nutanix.dev/reference/prism_element/v2/api/hosts/get-hosts-gethosts) API call. Some of the fields in the response are not supported. Known filters that the Nutanix service supports are: *
 host_nic_ids*, *host_gpus*, *storage_tier*, *das-sata.usage_bytes*, *storage.capacity_bytes*, *
 storage.logical_usage_bytes*, *storage_tier.das-sata.capacity_bytes*, *
-storage.usage_bytes*. If you wish to try any other filter, you can try to enter your own, and in case Nutanix does not support the filter, error will be thrown specifying the filter is invalid. Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value. Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for Example: storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x is parsed by Nutanix the following way: Return all hosts s.t (storage.capacity_bytes == 2 AND host_nic_ids != 35) OR host_gpus == x. | Optional | 
-| page | Page number in the query response. Default is 1. limit argument is required. | Optional | 
+storage.usage_bytes*. You can try to enter your own filters, but if Nutanix does not support the filter, an error will be thrown specifying that the filter is invalid. Each filter is written in the following format: filter_name==filter_value or filter_name!=filter_value. Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for example, storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x, are parsed by Nutanix as follows: Return all hosts s.t (storage.capacity_bytes == 2 AND host_nic_ids != 35) OR host_gpus == x. | Optional | 
+| page | Page number in the query response. Default is 1. When page is specified, the limit argument is required. | Optional | 
 | limit | Maximum number of physical hosts to retrieve. Possible values are 1-1000. Default is 50. | Optional | 
 
 #### Context Output
@@ -202,9 +202,9 @@ Gets a list of virtual machines.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Retrieve virtual machines that matches the filters given. . Nutanix filters can be one of the field returned in the response by nutanix [GET VMs](https://www.nutanix.dev/reference/prism_element/v2/api/vms/get-vms-getvms/) API call. Some of the fields in the response are not supported. Known filters Nutanix service supports are: *
+| filter | The filter used to define the hosts to retrieve. Nutanix filters can be one of the fields returned in the response by the Nutanix [GET hosts](https://www.nutanix.dev/reference/prism_element/v2/api/hosts/get-hosts-gethosts) API call. Some of the fields in the response are not supported. Known filters that the Nutanix service supports are: *
 machine_type*, *power_state*, *ha_priority*, *
-uefi_boot*. If you wish to try any other filter, you can try to enter your own, and in case Nutanix does not support the filter, error will be thrown specifying the filter is invalid. Each filter is written in the following way: filter_name==filter_value or filter_name!=filter_value. Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for Example: machine_type==pc;power_state!=off,ha_priority==0 is parsed by Nutanix the following way: Return all virtual machines s.t (machine type == pc AND power_state != off) OR ha_priority == 0. | Optional | 
+uefi_boot*. You can try to enter your own filters, but if Nutanix does not support the filter, an error will be thrown specifying that the filter is invalid. Each filter is written in the following format: filter_name==filter_value or filter_name!=filter_value. Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for example, machine_type==pc;power_state!=off,ha_priority==0 are parsed by Nutanix as follows: Return all virtual machines s.t (machine type == pc AND power_state != off) OR ha_priority == 0. | Optional | 
 | limit | Maximum number of virtual machines to retrieve. Default is 50. | Optional | 
 | offset | The offset to start retrieving virtual machines. | Optional | 
 
@@ -282,16 +282,16 @@ uefi_boot*. If you wish to try any other filter, you can try to enter your own, 
 ### nutanix-hypervisor-vm-powerstatus-change
 
 ***
-Set power state of a virtual machine. If the virtual machine is being powered on and no host is specified, the host with
-the most available CPU and memory will be chosen. Note that such host may not be available. If the virtual machine is
+Sets the power state of a virtual machine. If the virtual machine is being powered on and no host is specified, the host with
+the most available CPU and memory will be chosen. Note that such a host may not be available. If the virtual machine is
 being power cycled, a different host can be specified to start it on. The command returns a task UUID that can be
 monitored by the nutanix-hypervisor-task-poll command.
 
 ### Important
 
-The following command requires cluster admin or higher permissions, in case you want to use this command, make sure the
-usern you are using have at least cluster admin permissions
-(Found in Nutanix Settings in "Users And Roles" Category)
+The following command requires cluster admin or higher permissions. If you want to use this command, make sure the
+username you are using have at least cluster admin permissions.
+(Found in Nutanix Settings in the "Users And Roles" Category.)
 
 #### Base Command
 
@@ -309,7 +309,7 @@ usern you are using have at least cluster admin permissions
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NutanixHypervisor.VMPowerStatus.task_uuid | String | The task UUID returned by Nutanix service for the power status change request. With this task UUID the task status can be monitored by using the nutanix-hypervisor-task-poll command. | 
+| NutanixHypervisor.VMPowerStatus.task_uuid | String | The task UUID returned by the Nutanix service for the power status change request. With this task UUID, the task status can be monitored by using the nutanix-hypervisor-task-poll command. | 
 
 #### Command Example
 
@@ -373,7 +373,7 @@ moment the Nutanix service was polled. If no task is ready, returns a timeout re
 | NutanixHypervisor.Task.operation_type | String | Operation type of the task. | 
 | NutanixHypervisor.Task.message | String | Task message. | 
 | NutanixHypervisor.Task.percentage_complete | Number | Completion percentage of the task. | 
-| NutanixHypervisor.Task.progress_status | String | Progress status of the task, for example, Succeeded, Failed, .... | 
+| NutanixHypervisor.Task.progress_status | String | Progress status of the task, for example, Succeeded, Failed, etc. | 
 | NutanixHypervisor.Task.subtask_uuid_list | String | The list of the UUIDs of the subtasks for this task. | 
 | NutanixHypervisor.Task.cluster_uuid | String | The UUID of the cluster. | 
 
@@ -427,7 +427,7 @@ moment the Nutanix service was polled. If no task is ready, returns a timeout re
 ### nutanix-alerts-list
 
 ***
-Gets the list of alerts generated in the cluster which matches the filters. Nutanix fetches the latest alerts created if
+Gets the list of alerts generated in the cluster that matches the filters. Nutanix fetches the latest alerts created if
 there are more than the defined maximum number of alerts.
 
 #### Base Command
@@ -438,16 +438,16 @@ there are more than the defined maximum number of alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | A date in iso format, epoch time or time range(&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days).. Only alerts that were created on or after the specified date/time will be retrieved. If no time zone used, UTC time zone will be used. | Optional | 
-| end_time | A date in iso format, epoch time or time range(&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days).. Only alerts that were created on or before the specified date/time will be retrieved. If no time zone used, UTC time zone will be used. | Optional | 
+| start_time | The start date in ISO date format, epoch time or time range (&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days). Only alerts that were created on or after the specified date/time will be retrieved. If no time zone is specified, UTC time zone will be used. | Optional | 
+| end_time | The end date in ISO date format, epoch time or time range (&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days). Only alerts that were created on or before the specified date/time will be retrieved. If no time zone is specified, UTC time zone will be used. | Optional | 
 | resolved | If true, retrieves alerts that have been resolved. If false, retrieves alerts that have not been resolved. Possible values are: true, false. | Optional | 
 | auto_resolved | If true, retrieves alerts that have been resolved, and were auto_resolved. If false, retrieves alerts that have been resolved, and were not auto_resolved. Possible values are: true, false. | Optional | 
 | acknowledged | If true, retrieves alerts that have been acknowledged. If false, retrieves alerts that have not been acknowledged. Possible values are: true, false. | Optional | 
 | severity | Comma-separated list of the severity levels of the alerts to retrieve. Possible values are: CRITICAL, WARNING, INFO, AUDIT. | Optional | 
 | alert_type_ids | Comma-separated list of alert type IDs. Will retrieve alerts whose type ID matches an alert_type_id in the alert_type_ids list. For example, alert 'Alert E-mail Failure' has type id of A111066. Given alert_type_ids= 'A111066', only alerts of 'Alert E-mail Failure' will be retrieved. | Optional | 
 | impact_types | Comma-separated list of impact types. Possible values: Availability, Capacity, Configuration, Performance, and System Indicator. Will retrieve alerts whose impact type matches an impact types in the impact_types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given impact_types ='SystemIndicator',only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be retrieved. Possible values are: Availability, Capacity, Configuration, Performance, System Indicator. | Optional | 
-| entity_types | Comma-separated list of entity types. Will retrieve alerts whose entity_type matches an entity_type in the entity_types list. For details, see the Nutanix README. If the Nutanix service cannot recognize the entity type, it returns a 404 error. | Optional | 
-| page | Page number in the query response. Default is 1. limit argument is required. | Optional | 
+| entity_types | Comma-separated list of entity types. Will retrieve alerts whose entity_type matches an entity_type in the entity_types list. If the Nutanix service cannot recognize the entity type, it returns a 404 error. | Optional | 
+| page | Page number in the query response. Default is 1. When page is specified, the limit argument is required. | Optional | 
 | limit | Maximum number of physical hosts to retrieve. Possible values are 1-1000. Default is 50. | Optional | 
 
 #### Context Output
@@ -489,7 +489,7 @@ there are more than the defined maximum number of alerts.
 | NutanixHypervisor.Alerts.affected_entities.id | String | The affected entity ID. | 
 | NutanixHypervisor.Alerts.context_types | String | Alert context types. | 
 | NutanixHypervisor.Alerts.context_values | String | Alert context values. | 
-| NutanixHypervisor.Alerts.alert_details.metric_details.comparision_operator | String | Comparison operator used in the metric. | 
+| NutanixHypervisor.Alerts.alert_details.metric_details.comparison_operator | String | Comparison operator used in the metric. | 
 | NutanixHypervisor.Alerts.alert_details.metric_details.condition_type | String | Condition type of the alert by metric. Can be: STATIC, THRESHOLD, ANOMALY, SAFETY_ZONE. | 
 | NutanixHypervisor.Alerts.alert_details.metric_details.data_type | String | Data type used in the metric. Can be: LONG, DOUBLE, BOOLEAN, STRING. | 
 | NutanixHypervisor.Alerts.alert_details.metric_details.metric_category | String | Metric category. | 
@@ -747,8 +747,8 @@ Acknowledges alerts using a filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | A date in iso format, epoch time or time range(&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days).. Only alerts that were created on or after the specified date/time will be acknowledged. If no time zone used, UTC time zone will be used. | Optional | 
-| end_time | A date in iso format, epoch time or time range(&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days).. Only alerts that were created on or before the specified date/time will be acknowledged. If no time zone used, UTC time zone will be used. | Optional | 
+| start_time | The start date in ISO date format, epoch time or time range (&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days). Only alerts that were created on or after the specified date/time will be retrieved. If no time zone is specified, UTC time zone will be used. | Optional | 
+| end_time | The end date in ISO date format, epoch time or time range (&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days). Only alerts that were created on or before the specified date/time will be retrieved. If no time zone is specified, UTC time zone will be used. | Optional | 
 | severity | Comma-separated list of the severity levels of the alerts to resolve. Possible values are: CRITICAL, WARNING, INFO, AUDIT. | Optional | 
 | impact_types | Comma-separated list of impact types. Will acknowledge alerts whose impact type matches an impact types in the impact_types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given impact_types ='SystemIndicator', only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be acknowledged. | Optional | 
 | entity_types | Comma-separated list of entity types. Will retrieve alerts whose entity_type matches an entity_type in the entity_types list. For more details see Nutanix README. If Nutanix service cannot recognize the entity type, it returns a 404 error. | Optional | 
@@ -800,8 +800,8 @@ Resolves alerts using a filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | A date in iso format, epoch time or time range(&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days).. Only alerts that were created on or after the specified date/time will be resolved. If no time zone used, UTC time zone will be used. | Optional | 
-| end_time | A date in iso format, epoch time or time range(&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days).. Only alerts that were created on or before the specified date/time will be resolved. If no time zone used, UTC time zone will be used. | Optional | 
+| start_time | The start date in ISO date format, epoch time or time range(&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days). Only alerts that were created on or after the specified date/time will be resolved. If no time zone is specified, UTC time zone will be used. | Optional | 
+| end_time | The end date in ISO date format, epoch time or time range(&lt;number&gt; &lt;time unit&gt;', e.g., 12 hours, 7 days). Only alerts that were created on or before the specified date/time will be resolved. If no time zone is specified, UTC time zone will be used. | Optional | 
 | severity | Comma-separated list of the severity levels of the alerts to resolve. Possible values are: CRITICAL, WARNING, INFO, AUDIT. | Optional | 
 | impact_types | Comma-separated list of impact types. Will resolve alerts whose impact type matches an impact types in the impact_types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given impact_types = 'SystemIndicator', only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be resolved. | Optional | 
 | entity_types | Comma-separated list of entity types. Will resolve alerts whose entity_type matches an entity_type in the entity_types list. For more details see Nutanix README. If Nutanix service cannot recognize the entity type, it returns a 404 error. | Optional | 
