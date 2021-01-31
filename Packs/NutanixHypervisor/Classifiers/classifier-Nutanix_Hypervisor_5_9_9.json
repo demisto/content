@@ -27,7 +27,7 @@
                     "complex": null,
                     "simple": "alert_type_uuid"
                 },
-                "Check Id": {
+                "Check ID": {
                     "complex": null,
                     "simple": "check_id"
                 },
