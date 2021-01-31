@@ -199,9 +199,11 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     extract_destination_path = upload_config.extract_path
     override_all_packs = upload_config.override_all_packs
     enc_key = upload_config.encryption_key
-    is_private_build = upload_config.is_private
     packs_artifacts_dir = upload_config.artifacts_path
     private_artifacts_dir = upload_config.private_artifacts
+    is_infra_run = upload_config.is_infra_run
+
+    pack_was_modified = not is_infra_run
 
     task_status, user_metadata = pack.load_user_metadata()
     if not task_status:
@@ -232,7 +234,8 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                        index_folder_path=index_folder_path,
                                        packs_dependencies_mapping=packs_dependencies_mapping,
                                        build_number=build_number, commit_hash=current_commit_hash,
-                                       packs_statistic_df=packs_statistic_df)
+                                       packs_statistic_df=packs_statistic_df,
+                                       pack_was_modified=pack_was_modified)
 
     if not task_status:
         pack.status = PackStatus.FAILED_METADATA_PARSING.name
@@ -268,16 +271,6 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
         pack.cleanup()
         return
-
-    if not is_private_build:
-        task_status, pack_was_modified = pack.detect_modified(content_repo, index_folder_path, current_commit_hash,
-                                                              remote_previous_commit_hash)
-        if not task_status:
-            pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
-            pack.cleanup()
-            return
-    else:
-        pack_was_modified = False
 
     task_status = pack.is_pack_encrypted(zip_pack_path, enc_key)
     if not task_status:
@@ -362,6 +355,9 @@ def option_handler():
     parser.add_argument('-n', '--ci_build_number',
                         help="CircleCi build number (will be used as hash revision at index file)", required=False,
                         default=str(uuid.uuid4()))
+    parser.add_argument('-inf', '--is_infra_run',
+                        help="Whether the upload run is an infrastructure one / nightly, or there are actual changes", required=False,
+                        type=str2bool, default=False)
     parser.add_argument('-bn', '--branch_name', help="Name of the branch CI is being ran on.", default='unknown')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         default=False, action='store_true', required=False)
@@ -374,8 +370,6 @@ def option_handler():
                         help='Should remove test playbooks from content packs or not.', default=True)
     parser.add_argument('-ek', '--encryption_key', type=str,
                         help='The encryption key for the pack, if it should be encrypted.', default='')
-    parser.add_argument('-pr', '--is_private', type=str2bool,
-                        help='The encryption key for the pack, if it should be encrypted.', default=False)
     parser.add_argument('-pa', '--private_artifacts', type=str,
                         help='The name of the pack in which the private artifacts should be saved',
                         default='private_artifacts')
