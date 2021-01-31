@@ -206,7 +206,7 @@ script:
     - name: dueDate
       description: 'The due date for the issue (in the format: 2018-03-11).'
     - name: assignee
-      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud please provide the assignee_id argument instead.
+      description: The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud, please provide the assignee_id argument instead.
     - name: assignee_id
       description: The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's Account ID.
     - name: reporter
