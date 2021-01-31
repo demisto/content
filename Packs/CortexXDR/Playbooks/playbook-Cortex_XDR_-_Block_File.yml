@@ -1,6 +1,8 @@
-id: Cortex XDR Blacklist File
+id: Cortex XDR - Block File
 version: -1
-name: Cortex XDR Blacklist File
+name: Cortex XDR - Block File
+description: Use this playbook to add files to Cortex XDR block list with a given
+  file SHA256 playbook input.
 starttaskid: "0"
 tasks:
   "0":
@@ -32,12 +34,12 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: dc370960-ba6f-4c92-8eb3-177450fd48bb
+    taskid: 1aa731f4-ad09-4978-8271-2160c2ffde04
     type: regular
     task:
-      id: dc370960-ba6f-4c92-8eb3-177450fd48bb
+      id: 1aa731f4-ad09-4978-8271-2160c2ffde04
       version: -1
-      name: Cortex XDR Blacklist file
+      name: Cortex XDR add a file SHA256 to blocklist
       description: Blacklists requested files which have not already been blacklisted
         or whitelisted.
       script: '|||xdr-blacklist-files'
@@ -63,20 +65,20 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
   "2":
     id: "2"
-    taskid: 43dd04b5-88b2-46e3-89f2-736c237aa9d8
+    taskid: e318e098-905f-4d7a-8c8c-857c5cd58729
     type: condition
     task:
-      id: 43dd04b5-88b2-46e3-89f2-736c237aa9d8
+      id: e318e098-905f-4d7a-8c8c-857c5cd58729
       version: -1
-      name: Is there a file to blacklist?
+      name: Is there a file to block?
+      description: ''''''
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -148,12 +150,10 @@ inputs:
 - key: HashList
   value: {}
   required: false
-  description: t represents a list of hashed files you want to blacklist. Must be
-    a valid SHA256 hash.
+  description: List of hashed files you want to blacklist. Must be a valid SHA256
+    hash.
   playbookInputQuery:
 outputs: []
-fromversion: 5.0.0
-description: Use this playbook to blacklist files with a given file SHA256 playbook
-  input.
 tests:
- -  No tests
+- No tests (auto formatted)
+fromversion: 5.0.0

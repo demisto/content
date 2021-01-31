@@ -1,4 +1,4 @@
-Use this playbook to blacklist files with a given file SHA256 playbook input.
+Use this playbook to add files to Cortex XDR block list with a given file SHA256 playbook input.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -20,7 +20,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| HashList | t represents a list of hashed files you want to blacklist. Must be a valid SHA256 hash. |  | Optional |
+| HashList | List of hashed files you want to blacklist. Must be a valid SHA256 hash. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR Blacklist File](Insert the link to your image here)
+![Cortex XDR - Block File](Insert the link to your image here)
