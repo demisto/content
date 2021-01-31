@@ -1473,6 +1473,87 @@ tasks:
     nexttasks:
       '#none#':
       - "23"
+    scriptarguments:
+      IPAddresses:
+        complex:
+          root: IP
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: IP.Malicious
+                iscontext: true
+          accessor: Address
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
+          - operator: uniq
+      InternalDomainName:
+        complex:
+          root: inputs.InternalDomainName
+      InternalHostRegex:
+        complex:
+          root: inputs.InternalHostRegexc
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      MD5:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
+          - operator: uniq
+      URLDomain:
+        complex:
+          root: Domain
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Malicious
+                iscontext: true
+          accessor: Name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false

@@ -8,26 +8,26 @@ After the remediation, if there are no new alerts, the playbook stops the alert 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block Indicators - Generic v2
+* Calculate Severity - Generic v2
 * Cortex XDR Alerts Handling
 * Cortex XDR device control violations
+* Block Indicators - Generic v2
 * Entity Enrichment - Generic v3
 * Palo Alto Networks - Hunting And Threat Detection
-* Calculate Severity - Generic v2
 
 ### Integrations
 * Cortex XDR - IR
 * CortexXDRIR
 
 ### Scripts
-* Set
 * FindSimilarIncidents
+* Set
 
 ### Commands
-* linkIncidents
-* closeInvestigation
-* xdr-update-incident
 * xdr-get-incident-extra-data
+* linkIncidents
+* xdr-update-incident
+* closeInvestigation
 
 ## Playbook Inputs
 ---
