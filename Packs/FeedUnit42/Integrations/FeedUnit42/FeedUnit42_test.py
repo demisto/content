@@ -35,7 +35,8 @@ TYPE_TO_RESPONSE = {
     'attack-pattern': ATTACK_PATTERN_DATA,
     'malware': MALWARE_DATA,
     'campaign': [],
-    'relationship': RELATIONSHIP_DATA
+    'relationship': RELATIONSHIP_DATA,
+    'course-of-action': []
 }
 
 
