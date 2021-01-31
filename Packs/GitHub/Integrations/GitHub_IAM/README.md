@@ -12,7 +12,7 @@ For more information, please refer to the [Identity Lifecycle Management article
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | GitHub URL https://&lt;domain&gt;.github.com/ | True |
-| token | token | True |
+| token | Token | True |
 | insecure | Trust any certificate \(not secure\) | False |
 | create-user-enabled | Create User Command Enabled | False |
 | update-user-enabled | Update User Command Enabled | False |
