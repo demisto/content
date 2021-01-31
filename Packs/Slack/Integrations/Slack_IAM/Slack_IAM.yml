@@ -18,17 +18,17 @@ configuration:
 - additionalinfo: If set to false, iam-create-user command will be skipped, and user
     will not be created.
   defaultvalue: 'true'
-  display: iam-create-user Command Enabled.
+  display: Enabled The Command iam-create-user
   name: create_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-update-user Command Enabled
+  display: Enabled The Command iam-update-user
   name: update_user_enabled
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: iam-disable-user Command Enabled
+  display: Enabled The Command iam-disable-user
   name: disable_user_enabled
   required: false
   type: 8
