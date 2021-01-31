@@ -965,14 +965,11 @@ class Pack(object):
                 blob.upload_from_file(pack_zip)
 
             if private_content:
-                print('entering private content')
                 new_encryption_key_pack_name = f"{self._pack_name}.enc2.zip"
                 new_encryption_key_path = os.path.join(version_pack_path, new_encryption_key_pack_name)
 
                 blob = storage_bucket.blob(new_encryption_key_path)
                 blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-                print(f'zip_pack_path is: {zip_pack_path}, blob is: {blob}, '
-                      f'new_encryption_key_path: {new_encryption_key_path}')
                 with open(zip_pack_path, "rb") as pack_zip:
                     blob.upload_from_file(pack_zip)
 
