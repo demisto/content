@@ -1,8 +1,8 @@
 {
     "name": "Anomali Enterprise",
-    "description": "Use Anomali Enterprise to query IOCs and conduct forensic searches.",
+    "description": "Use Anomali Match to query IOCs and conduct forensic searches.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

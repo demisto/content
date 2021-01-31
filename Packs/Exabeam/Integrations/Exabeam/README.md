@@ -1,7 +1,6 @@
 <p>
 The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
 
-This integration was integrated and tested with version xx of Exabeam11
 </p>
 
 <h2>Configure Exabeam on Demisto</h2>

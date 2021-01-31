@@ -1,5 +1,5 @@
 Use the Google Cloud Platform whitelist integration to get indicators from the feed.
-This integration was integrated and tested with version xx of GCP Whitelist Feed
+
 ## Configure GCP Whitelist Feed on Demisto
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

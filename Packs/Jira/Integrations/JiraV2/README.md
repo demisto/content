@@ -14,21 +14,25 @@ For more information about manage syntax, see the https://support.atlassian.com/
 
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Jira v2.
-3. Click __Add instance__ to create and configure a new integration instance.
+3. __Authentiction__: As of June 2019, Basic authentication using passwords for Jira is no longer supported, please use an API Token or OAuth 1.0.
+4. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Jira URL, for example: https://demisto.atlassian.net/__
-    * _______________ Basic Authentication ____________
-
-Username__
-    * __Password (Deprecated - Use API token)__
-    * __API token__
+    *  ______________ Basic Authentication ________________
+    
+        To use basic authentication, follow [this tutorial](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) to get the API token. Authorizing using basic authentication requires:
+    
+        * __Username__
+        * __Password (Deprecated)__
+        * __API token__
+        
     * ____________________ OAuth 1.0 __________________
+           
+      To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access Token. Authorizing using OAuth1.0 requires:
 
-For OAuth: See the https://developer.atlassian.com/server/jira/platform/oauth/
-
-ConsumerKey__
-    * __AccessToken__
-    * __PrivateKey__
+        * __ConsumerKey__
+        * __AccessToken__
+        * __PrivateKey__
     * __Query (in JQL) for fetching incidents__
     * __Issue index to start fetching incidents from__
     * __Trust any certificate (not secure)__
@@ -195,15 +199,16 @@ Creates a new issue in Jira.
 | --- | --- | --- |
 | issueJson | The issue object (in JSON format). | Optional | 
 | summary | The summary of the issue. | Required | 
-| projectKey | The project key with which to associate the issue. | Required | 
+| projectKey | The project key with which to associate the issue. | Optional | 
 | issueTypeName |  Select an issue type by name, for example: "Problem".  | Optional | 
-| issueTypeId | Select an issue type by its numeric ID. | Required | 
+| issueTypeId | Select an issue type by its numeric ID. | Optional | 
 | projectName | The project name with which to associate the issue. | Optional | 
 | description | A description of the issue. | Optional | 
 | labels | A CSV list of labels.  | Optional | 
 | priority | The priority name, for example: "High" or "Medium". | Optional | 
 | dueDate | The due date for the issue (in the format: 2018-03-11). | Optional | 
-| assignee | The name of the assignee. | Optional | 
+| assignee | The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud please provide the assignee_id argument instead. | Optional | 
+| assignee_id | The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's Account ID. | Optional | 
 | reporter | The account ID of the reporter. | Optional | 
 | parentIssueKey | The parent issue key (if you create a sub-task). | Optional | 
 | parentIssueId | The parent issue ID (if you create a sub-task). | Optional | 
@@ -357,7 +362,8 @@ Modifies an issue in JIRA.
 | labels |  A CSV list of labels.  | Optional | 
 | priority |  A priority name, for example "High" or "Medium".  | Optional | 
 | dueDate | The due date for the issue (in the format 2018-03-11). | Optional | 
-| assignee | The name of the assignee. | Optional | 
+| assignee | The name of the assignee. Relevant for Jira Server only. If you are using Jira Cloud please provide the assignee_id argument instead. | Optional | 
+| assignee_id | The account ID of the assignee. Use the jira-get-id-by-attribute command to get the user's Account ID. | Optional | 
 | status | The name of the status. | Optional | 
 
 
@@ -503,3 +509,46 @@ There are no input arguments for this command.
 
 ##### Human Readable Output
 ID Offset: 10161
+
+### jira-get-id-by-attribute
+***
+Gets the Account ID for a given user's attribute.
+
+
+#### Base Command
+
+`jira-get-id-by-attribute`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attribute | The user's attribute value. Can be Username or Email address. | Required | 
+| max_results | The maximum number of users to pull when searching for a matching user (default is 50). The maximum allowed value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.User.Attribute | String | The user's attribute. | 
+| Jira.User.AccountID | String | The user's Account ID. | 
+
+
+#### Command Example
+```!jira-get-id-by-attribute attribute="XSOAR User"```
+
+#### Context Example
+```json
+{
+    "Jira": {
+        "User": {
+            "AccountID": "5e4ds952052b790c97509a7c",
+            "Attribute": "XSOAR User"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Account ID for attribute: XSOAR User is: 5e4ds952052b790c97509a7c

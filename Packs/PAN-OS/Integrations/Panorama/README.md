@@ -2999,6 +2999,7 @@ enforce the policy. |
 | Panorama.Monitor.Logs.Bytes | String | Total log bytes. | 
 | Panorama.Monitor.Logs.BytesReceived | String | Log bytes received. | 
 | Panorama.Monitor.Logs.BytesSent | String | Log bytes sent. | 
+| Panorama.Monitor.Logs.Vsys | String | Vsys on the firewall that generated the log. | 
 
 
 #### Command Example

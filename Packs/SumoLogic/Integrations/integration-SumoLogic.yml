@@ -217,7 +217,7 @@ script:
                 }
             }
 
-            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), true,
+            var s = search(params.fetchQuery, lastRun.time, now, a2i(params.limit, defaultLimit), 0, params.timeZone, a2i(params.maxTimeout, 180), !params.fetchRecords,
                 a2i(params.sleepBetweenChecks, defaultSleep), params.fetchRecords);
             var incidents = [];
             var currentFetch = lastRun.time;
@@ -238,17 +238,33 @@ script:
                 }
             }
 
-            if (params.fetchRecords && s.records) {
-                for (var i=0; i<s.records.length; i++) {
-                    var incident = {name: 'Incident from SumoLogic',
-                        details: JSON.stringify(s.records[i]), labels: [], rawJSON: JSON.stringify(s.records[i])};
-                    var props = Object.getOwnPropertyNames(s.records[i]);
-                    for (var j=0; j<props.length; j++) {
-                        if (props[j] !== '_raw') {
-                            incident.labels.push({type: props[j], value: s.records[i][props[j]]});
+            if (params.fetchRecords) {
+                var updatedCurrentFetch = currentFetch;
+                if (s.records) {
+                    for (var i=0; i<s.records.length; i++) {
+                        var incident = {name: 'Incident from SumoLogic',
+                            details: JSON.stringify(s.records[i]), labels: [], rawJSON: JSON.stringify(s.records[i])};
+                        var props = Object.getOwnPropertyNames(s.records[i]);
+                        for (var j=0; j<props.length; j++) {
+                            if (props[j] !== '_raw') {
+                                incident.labels.push({type: props[j], value: s.records[i][props[j]]});
+                            }
                         }
+                        var recordDate = new Date("{0}T{1}".format(s.records[i].date, s.records[i].time));
+                        var recordDateEpoch = Math.ceil(recordDate);
+                        if (recordDateEpoch >= updatedCurrentFetch){
+                            updatedCurrentFetch = recordDateEpoch + 1
+                        }
+                        incidents.push(incident);
                     }
-                    incidents.push(incident);
+                }
+
+                // if no records were fetched, then we set the currentFetch to now time as in later runs we could send
+                // a big query with old timestamp that could cause a timeout
+                if (updatedCurrentFetch === currentFetch) {
+                    currentFetch = now;
+                } else {
+                    currentFetch = updatedCurrentFetch;
                 }
             }
             setLastRun({time: currentFetch});

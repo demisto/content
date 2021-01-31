@@ -141,6 +141,38 @@ class TestGenerateReleaseNotesSummary:
         assert '## New: FakePack4 Pack v1.0.0' in rn_summary
         assert '## New: FakePack4 Pack v1.0.0 (Partner Supported)' not in rn_summary
 
+    def test_added_contribution_pack(self):
+        """
+        Given
+        - A repository of two new packs:
+          - FakePack3 version 1.0.0, metadata "supports" field has value "contribution"
+          - FakePack4 version 1.0.0
+
+        When
+        - Generating a release notes summary file.
+
+        Then
+        - Ensure release notes generator creates a valid summary, by checking:
+          - the release notes summary contains two packs:
+            - FakePack3 with version 1.0.0 and has the string "(Community Contributed)" after the version
+            - FakePack4 with version 1.0.0 dose not have the string "(Community Contributed)" after the version
+        """
+        new_packs_rn = {
+            'FakePack3': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack3')),
+            'FakePack4': get_pack_entities(os.path.join(TEST_DATA_PATH, 'FakePack4')),
+        }
+        packs_metadta_dict = {
+            'FakePack3': {'support': 'community'},
+            'FakePack4': {'support': 'xsoar'}
+        }
+
+        rn_summary = generate_release_notes_summary(
+            new_packs_rn, {}, packs_metadta_dict, self._version, self._asset_id, 'temp.md')
+
+        assert '## New: FakePack3 Pack v1.0.0 (Community Contributed)' in rn_summary
+        assert '## New: FakePack4 Pack v1.0.0' in rn_summary
+        assert '## New: FakePack4 Pack v1.0.0 (Community Contributed)' not in rn_summary
+
     def test_two_packs(self):
         """
         Given
@@ -262,9 +294,9 @@ class TestGenerateReleaseNotesSummary:
         rn_summary = generate_release_notes_summary({}, rn_dict, packs_metadta_dict, self._version, self._asset_id, self._outfile)
 
         assert VERSION in rn_summary and ASSET_ID in rn_summary  # summary title
-        assert '### FakePack1 Pack v2.0.0 (Community Supported)' in rn_summary
+        assert '### FakePack1 Pack v2.0.0 (Community Contributed)' in rn_summary
         assert '### FakePack2 Pack v1.1.0' in rn_summary
-        assert '### FakePack2 Pack v1.1.0 (Community Supported)' not in rn_summary
+        assert '### FakePack2 Pack v1.1.0 (Community Contributed)' not in rn_summary
 
     def test_release_notes_summary_with_empty_lines_in_rn(self):
         """

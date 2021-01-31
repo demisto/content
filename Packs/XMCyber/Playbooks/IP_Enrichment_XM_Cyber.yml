@@ -135,7 +135,7 @@ tasks:
       version: -1
       name: Enrich IP
       description: Return data on Entity by IP from XM Cyber
-      script: '|||ip'
+      script: 'XMCyber|||ip'
       type: regular
       iscommand: true
       brand: ""
@@ -201,7 +201,7 @@ tasks:
     - incidentfield: Entity Report
       output:
         simple: ${XMCyber.Entity.report}
-    - incidentField: Compromising Techniques
+    - incidentfield: Compromising Techniques
       output:
         simple: ${XMCyber.Entity.compromisingTechniques}
   "41":

@@ -26,7 +26,7 @@ class Incident(BaseModel):
     raw_json: Optional[Dict] = None
 
 
-app = FastAPI(logger=DebugLogger(), docs_url=None, redoc_url=None, openapi_url=None)
+app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
@@ -57,8 +57,7 @@ async def handle_post(
         token: APIKey = Depends(token_auth)
 ):
     credentials_param = demisto.params().get('credentials')
-    if credentials_param:
-        username = credentials_param.get('identifier', '')
+    if credentials_param and (username := credentials_param.get('identifier')):
         password = credentials_param.get('password', '')
         auth_failed = False
         header_name = None
@@ -67,7 +66,8 @@ async def handle_post(
             token_auth.model.name = header_name
             if not token or not compare_digest(token, password):
                 auth_failed = True
-        elif not (compare_digest(credentials.username, username) and compare_digest(credentials.password, password)):
+        elif (not credentials) or (not (compare_digest(credentials.username, username)
+                                   and compare_digest(credentials.password, password))):
             auth_failed = True
         if auth_failed:
             request_headers = dict(request.headers)

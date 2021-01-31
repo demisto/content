@@ -154,7 +154,7 @@ class MicrosoftClient(BaseClient):
         Returns:
             str: Access token that will be added to authorization header.
         """
-        integration_context = demisto.getIntegrationContext()
+        integration_context = get_integration_context()
         refresh_token = integration_context.get('current_refresh_token', '')
         # Set keywords. Default without the scope prefix.
         access_token_keyword = f'{scope}_access_token' if scope else 'access_token'
@@ -200,7 +200,7 @@ class MicrosoftClient(BaseClient):
         if self.multi_resource:
             integration_context.update(self.resource_to_access_token)
 
-        demisto.setIntegrationContext(integration_context)
+        set_integration_context(integration_context)
 
         if self.multi_resource:
             return self.resource_to_access_token[resource]
@@ -529,5 +529,5 @@ class MicrosoftClient(BaseClient):
             response_json = response.json()
         except Exception as e:
             return_error(f'Error in Microsoft authorization: {str(e)}')
-        demisto.setIntegrationContext({'device_code': response_json.get('device_code')})
+        set_integration_context({'device_code': response_json.get('device_code')})
         return response_json.get('user_code', '')

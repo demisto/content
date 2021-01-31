@@ -19,7 +19,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- display: 2FA token
+- display: The 2FA token
   name: token
   required: false
   type: 0

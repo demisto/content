@@ -1,5 +1,5 @@
 OpenPhish uses proprietary Artificial Intelligence algorithms to automatically identify zero-day phishing sites and provide comprehensive, actionable, real-time threat intelligence.
-This integration was integrated and tested with version xx of OpenPhish_v2
+
 ## Configure OpenPhish v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

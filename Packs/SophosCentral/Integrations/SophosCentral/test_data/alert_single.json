@@ -1,0 +1,24 @@
+{
+   "id":"70e3781d-c0f6-4e72-b6aa-3c3ef21f3dbb",
+   "allowedActions":[
+      "clearThreat"
+   ],
+   "category":"malware",
+   "description":"Manual cleanup required: 'EICAR-AV-Test' at 'C:\\Users\\Lior\\Downloads\\eicarcom2 (8).zip'",
+   "groupKey":"MSxFdmVudDo6RW5kcG9pbnQ6OlRocmVhdDo6Q2xlYW51cEZhaWxlZCwxNixFSUNBUi1BVi1UZXN0",
+   "managedAgent":{
+      "id":"6e9567ea-bb50-40c5-9f12-42eb308e4c9b",
+      "type":"computer"
+   },
+   "person":{
+      "id":"5d407889-8659-46ab-86c5-4f227302df78"
+   },
+   "product":"endpoint",
+   "raisedAt":"2020-11-04T09:31:19.894Z",
+   "severity":"high",
+   "tenant":{
+      "id":"11f104c5-cc4a-4a9f-bb9c-632c936dfb9f",
+      "name":"Qnasters"
+   },
+   "type":"Event::Endpoint::Threat::CleanupFailed"
+}

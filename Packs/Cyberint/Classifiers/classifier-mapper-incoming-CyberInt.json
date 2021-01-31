@@ -1,0 +1,57 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "abcd-5678",
+    "mapping": {
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "ref_id"
+                },
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "status"
+                },
+                "Sub Category": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "name": {
+                    "complex": null,
+                    "simple": "title"
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "created_date",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "severity"
+                },
+                "source": {
+                    "complex": null,
+                    "simple": "source"
+                }
+            }
+        }
+    },
+    "name": "CyberInt (mapper)",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -2,7 +2,7 @@
     "name": "Generic Webhook",
     "description": "The Generic Webhook integration is used to create incidents on event triggers.",
     "support": "xsoar",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

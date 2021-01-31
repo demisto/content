@@ -486,14 +486,14 @@ class McAfeeESMClient(BaseClient):
                                 f'AlarmEvent(val.ID && val.ID == obj.ID)': context_entry}, result
 
     def complete_search(self):
-        time_out = self.args.get('timeOut', 30)
+        time_out = int(self.args.get('timeOut', 30))
         interval = min(10, time_out)
         search_id = self.__search()
         i = 0
         while not self.__generic_polling(search_id):
             i += 1
             time.sleep(interval)  # pylint: disable=sleep-exists
-            if i * interval == time_out:
+            if i * interval >= time_out:
                 raise DemistoException(f'Search: {search_id} time out.')
 
         return self.__search_fetch_result(search_id)
@@ -563,7 +563,9 @@ class McAfeeESMClient(BaseClient):
 
             except DemistoException as error:
                 if not expected_errors(error):
-                    raise error
+                    raise
+                else:
+                    result_ready = True
         result = table_times_set(result, self.difference)
         entry: List = [{}] * len(result['rows'])
         headers = [str(field.get('name')).replace('.', '') for field in result['columns']]
