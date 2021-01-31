@@ -1,9 +1,9 @@
-comment: Data output script for populating the dashboard line graph widget with the creation
-  date of failing incidents.
+comment: Data output script for populating the dashboard line graph widget with the
+  creation date of failing incidents.
 commonfields:
   id: IncidentsCheck-Widget-CreationDate
   version: -1
-dockerimage: demisto/python3:3.8.6.12176
+dockerimage: demisto/python3:3.9.1.15759
 enabled: true
 name: IncidentsCheck-Widget-CreationDate
 runas: DBotWeakRole

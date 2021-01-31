@@ -14,10 +14,7 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: |-
-    ______________ Basic Authentication _____________
-
-    Username
+- display: Username (Basich Authentication)
   name: username
   defaultvalue: ""
   type: 0
@@ -32,10 +29,7 @@ configuration:
   defaultvalue: ""
   type: 4
   required: false
-- display: |-
-    __________________ OAuth 1.0 __________________
-
-    ConsumerKey
+- display: Consumer Key (OAuth 1.0)
   name: consumerKey
   defaultvalue: OauthKey
   type: 0
