@@ -210,7 +210,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 54d1ea3a-a888-4a78-8590-73edf2aaede5
       iscommand: true
       name: Send error status to PANW IoT cloud
@@ -435,7 +435,7 @@ tasks:
       integration_name:
         simple: ise
       message:
-        simple: Failed to Quarantine Endpoint ${Endpoint.MACAddress} on ISE
+        simple: Failed to Quarantine Endpoint ${Endpoint.MACAddress} on Cisco ISE
       playbook_name:
         simple: Quarantine Device in Cisco ISE - PANW IoT 3rd Party Integration
       status:
