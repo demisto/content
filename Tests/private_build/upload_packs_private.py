@@ -9,8 +9,8 @@ from typing import Any, Tuple, Union
 from Tests.Marketplace.marketplace_services import init_storage_client, init_bigquery_client, Pack, PackStatus, \
     GCPConfig, CONTENT_ROOT_PATH, get_packs_statistics_dataframe, load_json, get_content_git_client, \
     get_recent_commits_data
-from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index,\
-    update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config,\
+from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
+    update_index_folder, clean_non_existing_packs, upload_index_to_storage, upload_core_packs_config, \
     upload_id_set, check_if_index_is_updated, print_packs_summary, get_packs_summary
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -101,6 +101,7 @@ def get_private_packs(private_index_path: str, pack_names: set = set(),
                     'price': metadata.get('price'),
                     'vendorId': metadata.get('vendorId'),
                     'vendorName': metadata.get('vendorName'),
+                    'contentCommitHash': metadata.get('contentCommitHash', "")
                 })
         except ValueError:
             logging.exception(f'Invalid JSON in the metadata file [{metadata_file_path}].')
@@ -174,7 +175,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                        packs_dependencies_mapping: dict, private_bucket_name: str,
                                        private_storage_bucket: bool = None,
                                        content_repo: bool = None, current_commit_hash: str = '',
-                                       remote_previous_commit_hash: str = '', packs_statistic_df: Any = None)\
+                                       remote_previous_commit_hash: str = '', packs_statistic_df: Any = None) \
         -> Any:
     """
     The main logic flow for the create and upload process. Acts as a decision tree while consistently
@@ -200,6 +201,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
     enc_key = upload_config.encryption_key
     is_private_build = upload_config.is_private
     packs_artifacts_dir = upload_config.artifacts_path
+    private_artifacts_dir = upload_config.private_artifacts
 
     task_status, user_metadata = pack.load_user_metadata()
     if not task_status:
@@ -260,7 +262,7 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key)
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key, private_artifacts_dir)
 
     if not task_status:
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
@@ -276,6 +278,12 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
             return
     else:
         pack_was_modified = False
+
+    task_status = pack.is_pack_encrypted(zip_pack_path, enc_key)
+    if not task_status:
+        pack.status = PackStatus.FAILED_DECRYPT_PACK.name
+        pack.cleanup()
+        return
 
     bucket_for_uploading = private_storage_bucket if private_storage_bucket else storage_bucket
     (task_status, skipped_pack_uploading, full_pack_path) = \
@@ -301,12 +309,6 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    # in case that pack already exist at cloud storage path and in index, skipped further steps
-    if skipped_pack_uploading and exists_in_index:
-        pack.status = PackStatus.PACK_ALREADY_EXISTS.name
-        pack.cleanup()
-        return
-
     task_status = pack.prepare_for_index_upload()
     if not task_status:
         pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
@@ -318,6 +320,12 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
                                       hidden_pack=pack.hidden)
     if not task_status:
         pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
+        pack.cleanup()
+        return
+
+    # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
+    if skipped_pack_uploading and exists_in_index:
+        pack.status = PackStatus.PACK_ALREADY_EXISTS.name
         pack.cleanup()
         return
 
@@ -368,6 +376,9 @@ def option_handler():
                         help='The encryption key for the pack, if it should be encrypted.', default='')
     parser.add_argument('-pr', '--is_private', type=str2bool,
                         help='The encryption key for the pack, if it should be encrypted.', default=False)
+    parser.add_argument('-pa', '--private_artifacts', type=str,
+                        help='The name of the pack in which the private artifacts should be saved',
+                        default='private_artifacts')
     # disable-secrets-detection-end
     return parser.parse_args()
 

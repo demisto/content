@@ -23,34 +23,92 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
+description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama
+  configurations and compares them to the best practices.
 display: Palo Alto Networks BPA
 name: BPA
 script:
   commands:
-  - deprecated: false
+  - arguments:
+    - default: false
+      description: A comma-separated list of IDs of the documents to return.
+      isArray: false
+      name: doc_ids
+      required: false
+      secret: false
+    deprecated: false
     description: Gets the documentation of all BPA checks.
     execution: false
     name: pan-os-get-documentation
     outputs:
+    - contextPath: PAN-OS-BPA.Documentation.Document.DocId
+      description: The ID of the document.
+      type: Number
+    - contextPath: PAN-OS-BPA.Documentation.Document.TopNav
+      description: The TopNav field of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.LeftNav
+      description: The LeftNav field of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.Title
+      description: The title of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.DocType
+      description: The type of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.Description
+      description: The description of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.Rationale
+      description: The rationale of the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.References
+      description: The references for the document.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.Active
+      description: Whether the document is active or not.
+      type: Boolean
+    - contextPath: PAN-OS-BPA.Documentation.Document.LastUpdatedDate
+      description: The date the document was last updated.
+      type: String
+    - contextPath: PAN-OS-BPA.Documentation.Document.CapabilityLabel
+      description: The capability label of the document.
+      type: Unknown
+    - contextPath: PAN-OS-BPA.Documentation.Document.ClassLabel
+      description: The class label of the document.
+      type: Unknown
+    - contextPath: PAN-OS-BPA.Documentation.Document.ControlCategory
+      description: The control category of the document.
+      type: Unknown
+    - contextPath: PAN-OS-BPA.Documentation.Document.Cscv6Control
+      description: The CSCv6 control of the document.
+      type: Unknown
+    - contextPath: PAN-OS-BPA.Documentation.Document.Cscv7Control
+      description: The CSCv7 control of the document.
+      type: Unknown
     - contextPath: PAN-OS-BPA.Documentation
       description: The list of BPA checks.
       type: Unknown
-  - deprecated: false
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to download the Panorama report. Can be "true" or "false".
+        Default is "false".
+      isArray: false
+      name: generate_zip_bundle
+      predefined:
+      - 'false'
+      - 'true'
+      required: false
+      secret: false
+    deprecated: false
     description: Submits a job to the BPA job queue.
     execution: false
     name: pan-os-bpa-submit-job
-    arguments:
-    - name: generate_zip_bundle
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Whether to download the Panorama report. Can be "true" or "false". Default is "false".
-      defaultValue: "false"
     outputs:
     - contextPath: PAN-OS-BPA.SubmittedJob.JobID
-      description: Submitted Job ID, used to query results when job is done.
+      description: Submitted job ID, used to query results when the job is done.
       type: String
   - arguments:
     - default: false
@@ -59,16 +117,32 @@ script:
       name: task_id
       required: true
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to exclude passed checks. Can be "true" or "false". Default
+        is "false".
+      isArray: false
       name: exclude_passed_checks
-      description: Whether to exclude passed checks. Can be "true" or "false". Default is "false".
-      auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
-      defaultValue: "false"
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the BPA IDs of the results to return.
+      isArray: false
+      name: check_id
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the name of the results to return.
+      isArray: false
+      name: check_name
+      required: false
+      secret: false
     deprecated: false
-    description: Returns results of BPA job.
+    description: Returns the results of the BPA job.
     execution: false
     name: pan-os-bpa-get-job-results
     outputs:
@@ -82,24 +156,24 @@ script:
       description: The list of checks.
       type: Unknown
     - contextPath: InfoFile.Name
-      description: File name
+      description: File name.
       type: string
     - contextPath: InfoFile.EntryID
-      description: File entry ID
+      description: File entry ID.
       type: string
     - contextPath: InfoFile.Size
-      description: File size
+      description: File size.
       type: number
     - contextPath: InfoFile.Type
-      description: File type, e.g., "PE"
+      description: File type, e.g., "PE".
       type: string
     - contextPath: InfoFile.Info
-      description: Basic information of the file
+      description: Basic information of the file.
       type: string
     - contextPath: InfoFile.Extension
-      description: File extension
+      description: File extension.
       type: string
-  dockerimage: demisto/python3:3.8.3.9324
+  dockerimage: demisto/python3:3.9.1.14969
   feed: false
   isfetch: false
   longRunning: false

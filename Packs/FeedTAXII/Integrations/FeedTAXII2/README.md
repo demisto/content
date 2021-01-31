@@ -20,7 +20,6 @@ Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 | Full Feed Fetch | False |
 | Max Indicators Per Fetch \(disabled for Full Feed Fetch\) | False |
 | First Fetch Time | False |
-| Filter Arguments | False |
 | Max STIX Objects Per Poll | False |
 | Complex Observation Mode | False |
 | Trust any certificate \(not secure\) | False |
@@ -59,7 +58,6 @@ Allows you to test your feed and to make sure you can fetch indicators successfu
 | raw | Will return only the rawJSON of the indicator object. | Optional | 
 | limit | Maximum number of indicators to fetch. | Optional | 
 | added_after | Fetch only indicators that were added to the server after the given time. Please provide a &lt;number&gt; and &lt;time unit&gt; of type minute/hour/day. For example, 1 minute, 12 hour, 24 days. | Optional | 
-| filter_args | TAXII filter arguments. Comma-separated values e.g.: "added_after=&lt;date&gt;,revoked=true". | Optional | 
 
 
 #### Context Output

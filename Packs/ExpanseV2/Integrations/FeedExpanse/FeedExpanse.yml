@@ -4,7 +4,8 @@ commonfields:
 display: Expanse Expander Feed
 name: FeedExpanse
 category: Data Enrichment & Threat Intelligence
-description: Use this feed to retrieve the discovered IPs/Domains/Certificates from Expanse Expander asset database.
+description: Use this feed to retrieve the discovered IPs/Domains/Certificates from
+  Expanse Expander asset database.
 configuration:
 - defaultvalue: https://expander.expanse.co
   display: Your server URL
@@ -110,35 +111,35 @@ script:
   commands:
   - name: feedexpanse-get-indicators
     arguments:
-    - default: true
+    - default: false
       defaultValue: '10'
       description: The maximum number of results to return per type
       isArray: false
       name: max_indicators
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 'yes'
       description: Retrieve discovered IPs
       isArray: false
       name: ip
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 'yes'
       description: Retrieve discovered Domains
       isArray: false
       name: domain
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 'yes'
       description: Retrieve discovered certificates
       isArray: false
       name: certificate
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 'yes'
       description: Retrieve IP Ranges
       isArray: false
@@ -156,7 +157,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.14516
+  dockerimage: demisto/python3:3.9.1.14969
 fromversion: 6.0.0
 tests:
 - Feed Expanse Test
