@@ -1,5 +1,4 @@
-description: Playbook to handle incident triggered from PANW Iot (Zingbox) UI to send
-  Alert to SIEM.
+description: This playbook handles incidents triggered in the PANW IoT (Zingbox) UI by sending the alert to your SIEM.
 id: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
 inputs: []
 name: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
@@ -57,11 +56,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
+      description: Returns 'yes' if there is an active Syslog Sender (SIEM) integration instance configured. Otherwise returns
         'no'
       id: 998117e5-5eaa-454b-8bb8-86182919c9e2
       iscommand: false
-      name: Is Syslog Sender(SIEM) Enabled?
+      name: Is Syslog Sender (SIEM) Enabled?
       script: IsIntegrationAvailable
       type: condition
       version: -1
@@ -101,7 +100,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: af9e1216-2008-443e-894a-62829cf4ac24
       iscommand: true
       name: Send disabled status back to PANW IoT cloud
@@ -138,8 +137,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: For a given a asset ID (alert-id, vulnerability-id or mac-address)
-        returns the asset details.
+      description: Returns details for the given a asset ID (alert-id, vulnerability-id, or mac-address).
       id: 86e2624e-b72d-4027-8834-a95d58d8b9f0
       iscommand: true
       name: Get PANW IoT Asset details
@@ -173,8 +171,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If array is provided, will return yes
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
         if one of the entries returned an error.
       id: 202077a2-7c70-46b8-8677-9b3a5cdd5c4a
       iscommand: false
@@ -210,8 +208,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Checks if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
       id: 22eb6e67-0183-4a3a-82c5-881be378eb6c
       iscommand: false
       name: Does the asset exist?
@@ -254,7 +252,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 5583a9a4-6e77-4800-89c4-fcb3664717ad
       iscommand: true
       name: Send error status to PANW IoT cloud
@@ -295,7 +293,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: For a given asset (alert, device, vuln) converts it to 3rd party
+      description: Converts the given asset (alert, device, or vuln) to a 3rd party
         format.
       id: 18a496b5-3f63-45db-86fa-885c0065710c
       iscommand: true
@@ -339,7 +337,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 90990799-9b6d-486f-89ed-385c65cfcadd
       iscommand: true
       name: send status to PANW IoT cloud
@@ -373,8 +371,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check if a given value exists in the context. Will return 'no'
-        for empty empty arrays. To be used mostly with DQ and selectors.
+      description: Checks if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
       id: 4fe3af39-b60c-47e5-81b4-2c711cb7a46f
       iscommand: false
       name: Is there any syslog (CEF) available?
@@ -446,7 +444,7 @@ tasks:
       integration_name:
         simple: siem
       message:
-        simple: Alert ID  (${incident.zb_ticketid}) not valid for CEF conversion.
+        simple: Alert ID (${incident.zb_ticketid}) is not valid for CEF conversion.
       playbook_name:
         simple: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
       status:
@@ -489,7 +487,7 @@ tasks:
       integration_name:
         simple: siem
       message:
-        simple: Successfully sent Alert (${incident.zb_ticketid}) to SIEM
+        simple: Successfully sent Alert (${incident.zb_ticketid}) to SIEM.
       playbook_name:
         simple: Export Single Asset to SIEM - PANW IoT 3rd Party Integration
       status:
@@ -500,7 +498,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Sends a status message back to PANW IOT cloud.
+      description: Sends a status message back to PANW IoT cloud.
       id: 9bae37bc-40a3-4ace-8867-9d6086cccb1d
       iscommand: true
       name: Send success status to PANW IoT cloud
