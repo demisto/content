@@ -582,7 +582,6 @@ def main() -> None:
     tags = params.get('feedTags')
 
     demisto.debug(f'Command being called is {demisto.command()}')
-    demisto.info(f' --------- !!±!!!!!!!! ----------- CYJAX ----- Command being called is {demisto.command()}')
 
     try:
 
@@ -602,7 +601,6 @@ def main() -> None:
             next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation, tlp_to_use, tags)
 
             if indicators:
-                demisto.info('------------------ CYJAX FOUND INDICATORS count={}'.format(len(indicators)))
                 for b in batch(indicators, batch_size=2000):
                     demisto.createIndicators(b)
 
