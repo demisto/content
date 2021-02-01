@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "03f81ad1-58f2-43a3-8b64-b4792ee76e3d",
+    "isPredefined": true,
+    "name": "Cortex XDR Top 10 Files",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "XDRIncidentTop10Files",
+    "size": 0,
+    "version": -1,
+    "widgetType": "column",
+    "fromVersion": "5.0.0",
+    "description": ""
+}

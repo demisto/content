@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "294591d6-35ca-4244-8c31-72c7318fda98",
+    "isPredefined": true,
+    "name": "Cortex XDR Top 10 Hosts",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "XDRIncidentTop10Hosts",
+    "size": 0,
+    "version": -1,
+    "widgetType": "column",
+    "fromVersion": "5.0.0",
+    "description": ""
+}

@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "342cd98d-33f1-4cd4-8300-4f82293130b9",
+    "isPredefined": true,
+    "name": "Cortex XDR Top 10 Users",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "XDRIncidentTop10Users",
+    "size": 0,
+    "version": -1,
+    "widgetType": "column",
+    "fromVersion": "5.0.0",
+    "description": ""
+}

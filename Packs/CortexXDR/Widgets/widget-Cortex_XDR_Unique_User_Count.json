@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": null,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "9e85d49e-a870-4d78-882d-ddb8ea9c0f5f",
+    "isPredefined": true,
+    "name": "Cortex XDR Unique User Count",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "XDRIncidentUserCount",
+    "size": 0,
+    "version": -1,
+    "widgetType": "number",
+    "fromVersion": "5.0.0",
+    "description": ""
+}
