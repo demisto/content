@@ -1,7 +1,7 @@
 commonfields:
-  id: DeleteContext
+  id: DeleteContext-test
   version: -1
-name: DeleteContext
+name: DeleteContext-test
 script: >
   function errorEntry(text) {
       return  {
@@ -34,13 +34,7 @@ script: >
                       Type: entryTypes.error};
   }
 
-  function hasDuplicates(arr) {
-      return arr.some( function(item) {
-          return arr.indexOf(item) !== arr.lastIndexOf(item);
-      });
-  }
-
-  if (shouldDeleteAll) {
+  function getKeysToKeep(args) {
       var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(function(item) { return item.trim(); }) : [];
       var keysToKeepObj = {};
       var value;
@@ -54,6 +48,42 @@ script: >
               keysToKeepObj[keysToKeep[i]] = value;
           }
       }
+      return keysToKeepObj;
+  }
+
+  function createContext(keysToKeepObj) {
+      context = {};
+      for (key in keysToKeepObj) {
+          newKey = key.replace(/.\[\d+\]/g, '');
+
+          while(newKey != newKey.replace(/.\[\d+\]/g, '')){
+              newKey = newKey.replace(/.\[\d+\]/g, '')
+          }
+
+          if (context[newKey]) {
+              if (!Array.isArray(context[newKey])) {
+                  context[newKey] = [context[newKey]]
+              }
+              context[newKey].push(keysToKeepObj[key])
+          }
+          else {
+              context[newKey] = keysToKeepObj[key]
+          }
+      }
+      return context;
+  }
+
+
+
+
+  function hasDuplicates(arr) {
+      return arr.some( function(item) {
+          return arr.indexOf(item) !== arr.lastIndexOf(item);
+      });
+  }
+
+  if (shouldDeleteAll) {
+      var keysToKeepObj = getKeysToKeep(args)
       fieldsToDelete = Object.keys(invContext);
 
       // delete each field in context
@@ -74,13 +104,16 @@ script: >
       } else {
           message = "Context cleared";
       }
+
+      context = createContext(keysToKeepObj);
+
       return {
           Type: entryTypes.note,
           Contents: message,
           ContentsFormat: formats.json,
           HumanReadable: message,
           ReadableContentsFormat: formats.markdown,
-          EntryContext: keysToKeepObj
+          EntryContext: context
       };
   } else if (args.index !== undefined) {
       // delete key in a specific index
@@ -124,7 +157,31 @@ script: >
       if (isSubPlaybookKey) {
         key = 'subplaybook-${currentPlaybookID}.' + key;
       }
-      return executeCommand('delContext', {key: key});
+
+      var result = executeCommand('delContext', {key: key});
+
+      if(!result || result.type === entryTypes.error) {
+          errorsStr = errorsStr + "\n" + result.Contents;
+      }
+
+      var message;
+      if (errorsStr) {
+          message = "Context cleared with the following errors:" + errorsStr;
+      } else {
+          message = "Context cleared";
+      }
+
+      var keysToKeepObj = getKeysToKeep(args)
+      context = createContext(keysToKeepObj);
+
+      return {
+          Type: entryTypes.note,
+          Contents: message,
+          ContentsFormat: formats.json,
+          HumanReadable: message,
+          ReadableContentsFormat: formats.markdown,
+          EntryContext: context
+      };
   }
 type: javascript
 tags:
