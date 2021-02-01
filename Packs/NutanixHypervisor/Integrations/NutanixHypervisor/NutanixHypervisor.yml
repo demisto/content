@@ -430,23 +430,21 @@ script:
       CPU and memory will be chosen. Note that such a host may not be available. If
       the virtual machine is being power cycled, a different host can be specified
       to start it on. The command returns a task UUID that can be monitored by the
-      nutanix-hypervisor-task-poll command.
+      nutanix-hypervisor-task-results-get command.
     name: nutanix-hypervisor-vm-powerstatus-change
     outputs:
     - contextPath: NutanixHypervisor.VMPowerStatus.task_uuid
       description: The task UUID returned by Nutanix service for the power status
         change request. With this task UUID the task status can be monitored by using
-        the nutanix-hypervisor-task-poll command.
+        the nutanix-hypervisor-task-results-get command.
       type: String
   - arguments:
     - description: Comma-separated list of the task IDs to poll.
       name: task_ids
       required: true
       isArray: true
-    description: Polls the given tasks to check if they are ready. Returns all the
-      tasks from the task_ids list that are ready at the moment the Nutanix service
-      was polled. If no task is ready, returns a timeout response.
-    name: nutanix-hypervisor-task-poll
+    description: Returns all the results of the tasks from the task_ids list that are ready at the moment the Nutanix service was polled. If no task is ready, returns a timeout response.
+    name: nutanix-hypervisor-task-results-get
     outputs:
     - contextPath: NutanixHypervisor.Task.timed_out
       description: Indicates if a timeout occurred during the poll request from Nutanix.
@@ -602,7 +600,7 @@ script:
     description: Gets the list of alerts generated in the cluster that matches the
       filters. Nutanix fetches the latest alerts created if there are more than the
       defined maximum number of alerts.
-    name: nutanix-alerts-list
+    name: nutanix-hypervisor-alerts-list
     outputs:
     - contextPath: NutanixHypervisor.Alerts.id
       description: ID of the alert.
@@ -738,7 +736,7 @@ script:
       name: alert_id
       required: true
     description: Acknowledges the alert with the specified alert_id.
-    name: nutanix-alert-acknowledge
+    name: nutanix-hypervisor-alerts-list
     outputs:
     - contextPath: NutanixHypervisor.AcknowledgedAlerts.id
       description: ID of the alert to be acknowledged.
@@ -754,7 +752,7 @@ script:
       name: alert_id
       required: true
     description: Resolves the alert with the specified alert_id.
-    name: nutanix-alert-resolve
+    name: nutanix-hypervisor-alert-resolve
     outputs:
     - contextPath: NutanixHypervisor.ResolvedAlerts.id
       description: ID of the alert to be resolved.
@@ -802,7 +800,7 @@ script:
       name: limit
       defaultValue: '50'
     description: Acknowledges alerts using a filter.
-    name: nutanix-alerts-acknowledge-by-filter
+    name: nutanix-hypervisor-alerts-acknowledge-by-filter
     outputs:
     - contextPath: NutanixHypervisor.AcknowledgedFilterAlerts.num_successful_updates
       description: The number of the successful alerts acknowledged.
@@ -855,7 +853,7 @@ script:
       name: limit
       defaultValue: '50'
     description: Resolves alerts using a filter.
-    name: nutanix-alerts-resolve-by-filter
+    name: nutanix-hypervisor-alerts-resolve-by-filter
     outputs:
     - contextPath: NutanixHypervisor.ResolvedFilterAlerts.num_successful_updates
       description: The number of successful alerts resolved.

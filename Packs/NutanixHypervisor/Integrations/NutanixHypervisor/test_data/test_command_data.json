@@ -217,7 +217,7 @@
       "vm_uuid": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7"
     }
   },
-  "nutanix-hypervisor-task-poll": {
+  "nutanix-hypervisor-task-results-get": {
     "suffix": "tasks/poll",
     "response": {
       "completed_tasks_info": [
@@ -258,7 +258,7 @@
       "task_ids": "z4b8bfa5-bb52-4d09-924e-6c436aa333c7"
     }
   },
-  "nutanix-alerts-list": {
+  "nutanix-hypervisor-alerts-list": {
     "suffix": "alerts",
     "response": {
       "metadata": "a few rows containing meta data about the request",
@@ -324,7 +324,7 @@
       "verbose": "true"
     }
   },
-  "nutanix-alert-acknowledge": {
+  "nutanix-hypervisor-alerts-list": {
     "suffix": "alerts/123123/acknowledge",
     "response": {
       "id": 123123,
@@ -345,7 +345,7 @@
       "alert_id": 123123
     }
   },
-  "nutanix-alert-resolve": {
+  "nutanix-hypervisor-alert-resolve": {
     "suffix": "alerts/123123/resolve",
     "response": {
       "id": 123123,
@@ -366,7 +366,7 @@
       "alert_id": 123123
     }
   },
-  "nutanix-alerts-acknowledge-by-filter": {
+  "nutanix-hypervisor-alerts-acknowledge-by-filter": {
     "suffix": "alerts/acknowledge",
     "response": {
       "num_successful_updates": 1,
@@ -387,7 +387,7 @@
     },
     "args": {}
   },
-  "nutanix-alerts-resolve-by-filter": {
+  "nutanix-hypervisor-alerts-resolve-by-filter": {
     "suffix": "alerts/resolve",
     "response": {
       "num_successful_updates": 1,

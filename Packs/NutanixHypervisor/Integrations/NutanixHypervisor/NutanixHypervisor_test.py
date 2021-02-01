@@ -2,9 +2,9 @@
 
 import io
 import json
+from datetime import datetime
 from typing import *
 
-from datetime import datetime
 import pytest
 
 from CommonServerPython import DemistoException, CommandResults
@@ -12,9 +12,10 @@ from NutanixHypervisor import Client
 from NutanixHypervisor import USECS_ENTRIES_MAPPING
 from NutanixHypervisor import nutanix_hypervisor_hosts_list_command, \
     nutanix_hypervisor_vms_list_command, nutanix_hypervisor_vm_power_status_change_command, \
-    nutanix_hypervisor_task_poll_command, nutanix_alerts_list_command, nutanix_alert_acknowledge_command, \
-    nutanix_alert_resolve_command, nutanix_alerts_acknowledge_by_filter_command, \
-    nutanix_alerts_resolve_by_filter_command, get_alert_status_filter, \
+    nutanix_hypervisor_task_results_get_command, nutanix_hpyervisor_alerts_list_command, \
+    nutanix_hypervisor_alert_acknowledge_command, nutanix_hypervisor_alert_resolve_command, \
+    nutanix_hypervisor_alerts_acknowledge_by_filter_command, \
+    nutanix_hypervisor_alerts_resolve_by_filter_command, get_alert_status_filter, \
     get_optional_boolean_arg, convert_epoch_time_to_datetime, \
     get_optional_time_parameter_as_epoch, add_iso_entries_to_dict, \
     get_human_readable_headers, task_exists
@@ -115,11 +116,11 @@ def test_get_optional_time_parameter_valid_time_argument(arg, expected):
                            command_tests_data['nutanix-hypervisor-vms-list']['response'],
                            command_tests_data['nutanix-hypervisor-vms-list']['expected']),
 
-                          (nutanix_alerts_list_command,
-                           command_tests_data['nutanix-alerts-list']['args'],
-                           command_tests_data['nutanix-alerts-list']['suffix'],
-                           command_tests_data['nutanix-alerts-list']['response'],
-                           command_tests_data['nutanix-alerts-list']['expected'])
+                          (nutanix_hpyervisor_alerts_list_command,
+                           command_tests_data['nutanix-hypervisor-alerts-list']['args'],
+                           command_tests_data['nutanix-hypervisor-alerts-list']['suffix'],
+                           command_tests_data['nutanix-hypervisor-alerts-list']['response'],
+                           command_tests_data['nutanix-hypervisor-alerts-list']['expected'])
                           ])
 def test_commands_get_methods(requests_mock, command_function: Callable[[Client, Dict], CommandResults], args: Dict,
                               url_suffix: str, response: Dict, expected: Dict):
@@ -160,35 +161,35 @@ def test_commands_get_methods(requests_mock, command_function: Callable[[Client,
                            command_tests_data['nutanix-hypervisor-vm-powerstatus-change']['response'],
                            command_tests_data['nutanix-hypervisor-vm-powerstatus-change']['expected']),
 
-                          (nutanix_hypervisor_task_poll_command,
-                           command_tests_data['nutanix-hypervisor-task-poll']['args'],
-                           command_tests_data['nutanix-hypervisor-task-poll']['suffix'],
-                           command_tests_data['nutanix-hypervisor-task-poll']['response'],
-                           command_tests_data['nutanix-hypervisor-task-poll']['expected']),
+                          (nutanix_hypervisor_task_results_get_command,
+                           command_tests_data['nutanix-hypervisor-task-results-get']['args'],
+                           command_tests_data['nutanix-hypervisor-task-results-get']['suffix'],
+                           command_tests_data['nutanix-hypervisor-task-results-get']['response'],
+                           command_tests_data['nutanix-hypervisor-task-results-get']['expected']),
 
-                          (nutanix_alert_acknowledge_command,
-                           command_tests_data['nutanix-alert-acknowledge']['args'],
-                           command_tests_data['nutanix-alert-acknowledge']['suffix'],
-                           command_tests_data['nutanix-alert-acknowledge']['response'],
-                           command_tests_data['nutanix-alert-acknowledge']['expected']),
+                          (nutanix_hypervisor_alert_acknowledge_command,
+                           command_tests_data['nutanix-hypervisor-alerts-list']['args'],
+                           command_tests_data['nutanix-hypervisor-alerts-list']['suffix'],
+                           command_tests_data['nutanix-hypervisor-alerts-list']['response'],
+                           command_tests_data['nutanix-hypervisor-alerts-list']['expected']),
 
-                          (nutanix_alert_resolve_command,
-                           command_tests_data['nutanix-alert-resolve']['args'],
-                           command_tests_data['nutanix-alert-resolve']['suffix'],
-                           command_tests_data['nutanix-alert-resolve']['response'],
-                           command_tests_data['nutanix-alert-resolve']['expected']),
+                          (nutanix_hypervisor_alert_resolve_command,
+                           command_tests_data['nutanix-hypervisor-alert-resolve']['args'],
+                           command_tests_data['nutanix-hypervisor-alert-resolve']['suffix'],
+                           command_tests_data['nutanix-hypervisor-alert-resolve']['response'],
+                           command_tests_data['nutanix-hypervisor-alert-resolve']['expected']),
 
-                          (nutanix_alerts_acknowledge_by_filter_command,
-                           command_tests_data['nutanix-alerts-acknowledge-by-filter']['args'],
-                           command_tests_data['nutanix-alerts-acknowledge-by-filter']['suffix'],
-                           command_tests_data['nutanix-alerts-acknowledge-by-filter']['response'],
-                           command_tests_data['nutanix-alerts-acknowledge-by-filter']['expected']),
+                          (nutanix_hypervisor_alerts_acknowledge_by_filter_command,
+                           command_tests_data['nutanix-hypervisor-alerts-acknowledge-by-filter']['args'],
+                           command_tests_data['nutanix-hypervisor-alerts-acknowledge-by-filter']['suffix'],
+                           command_tests_data['nutanix-hypervisor-alerts-acknowledge-by-filter']['response'],
+                           command_tests_data['nutanix-hypervisor-alerts-acknowledge-by-filter']['expected']),
 
-                          (nutanix_alerts_resolve_by_filter_command,
-                           command_tests_data['nutanix-alerts-resolve-by-filter']['args'],
-                           command_tests_data['nutanix-alerts-resolve-by-filter']['suffix'],
-                           command_tests_data['nutanix-alerts-resolve-by-filter']['response'],
-                           command_tests_data['nutanix-alerts-resolve-by-filter']['expected']),
+                          (nutanix_hypervisor_alerts_resolve_by_filter_command,
+                           command_tests_data['nutanix-hypervisor-alerts-resolve-by-filter']['args'],
+                           command_tests_data['nutanix-hypervisor-alerts-resolve-by-filter']['suffix'],
+                           command_tests_data['nutanix-hypervisor-alerts-resolve-by-filter']['response'],
+                           command_tests_data['nutanix-hypervisor-alerts-resolve-by-filter']['expected']),
                           ])
 def test_commands_post_methods(requests_mock, command_function: Callable[[Client, Dict], CommandResults], args: Dict,
                                url_suffix: str, response: Dict, expected: Dict):

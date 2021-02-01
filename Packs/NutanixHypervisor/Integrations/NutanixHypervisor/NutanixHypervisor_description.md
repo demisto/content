@@ -10,10 +10,10 @@ The following commands require cluster admin or higher permissions.
 (Found in Nutanix Settings in the *Users And Roles* category.)
 
 - ***nutanix-hypervisor-vm-powerstatus-change***
-- ***nutanix-alert-acknowledge***
-- ***nutanix-alert-resolve***
-- ***nutanix-alerts-acknowledge-by-filter***
-- ***nutanix-alerts-resolve-by-filter***
+- ***nutanix-hypervisor-alerts-list***
+- ***nutanix-hypervisor-alert-resolve***
+- ***nutanix-hypervisor-alerts-acknowledge-by-filter***
+- ***nutanix-hypervisor-alerts-resolve-by-filter***
 
 After completing those steps, your screen should look like this image
 ![Nutanix Alert Policy](../../doc_files/Alert_Policy.png)
@@ -21,7 +21,7 @@ After completing those steps, your screen should look like this image
 Alert Policies contains the list of all possible alerts in the system,
 and their ID, impact type, and entity type. 
 
-* *ID* is the alert type ID filter parameter for fetching alerts, or the argument for the ***nutanix-alerts-list*** command.
-* *Impact Type* is the impact type filter parameter for fetching alerts, or the argument for the ***nutanix-alerts-list*** command. 
+* *ID* is the alert type ID filter parameter for fetching alerts, or the argument for the ***nutanix-hypervisor-alerts-list*** command.
+* *Impact Type* is the impact type filter parameter for fetching alerts, or the argument for the ***nutanix-hypervisor-alerts-list*** command. 
 
 

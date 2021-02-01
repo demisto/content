@@ -2,7 +2,7 @@
     "id": "incident_clusteruuid",
     "version": -1,
     "modified": "2021-01-13T12:55:38.186174Z",
-    "name": "Cluster_UUID",
+    "name": "Cluster UUID",
     "ownerOnly": false,
     "cliName": "clusteruuid",
     "type": "shortText",

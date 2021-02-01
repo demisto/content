@@ -63,7 +63,7 @@ tasks:
       PollingCommandArgName:
         simple: task_ids
       PollingCommandName:
-        simple: nutanix-hypervisor-task-poll
+        simple: nutanix-hypervisor-task-results-get
       Timeout:
         simple: "10"
       dt:
@@ -124,7 +124,7 @@ tasks:
         all the tasks from 'task_ids' list that are ready at the moment Nutanix service
         was polled. If no task is ready, it waits until at least one task is ready.
         If the 'timeout_interval' period ends and no task has finished, it returns a timeout response.
-      script: '|||nutanix-hypervisor-task-poll'
+      script: '|||nutanix-hypervisor-task-results-get'
       type: regular
       iscommand: true
       brand: ""
@@ -236,7 +236,7 @@ tasks:
         power cycled, a different host can be specified to start it on. This is
         an asynchronous operation that results in the creation of a task object. The
         UUID of this task object is returned as the response of this operation. With
-        this task UUID, the task status can be monitored by using the nutanix-hypervisor-task-poll
+        this task UUID, the task status can be monitored by using the nutanix-hypervisor-task-results-get
         command.
       script: '|||nutanix-hypervisor-vm-powerstatus-change'
       type: regular
@@ -300,6 +300,6 @@ inputs:
   playbookInputQuery:
 fromversion: 5.0.0
 description: Use this playbook to perform a power status change for a virtual machine,
-    and wait until the power status change task is completed. This playbook receives the desired power status, calls the Nutanix service to perform the power status change, and continuously polls by running the nutanix-hypervisor-task-poll command on the task ID provided as an output from Nutanix to power the status change operation.
+    and wait until the power status change task is completed. This playbook receives the desired power status, calls the Nutanix service to perform the power status change, and continuously polls by running the nutanix-hypervisor-task-results-get command on the task ID provided as an output from Nutanix to power the status change operation.
 tests:
 - No test

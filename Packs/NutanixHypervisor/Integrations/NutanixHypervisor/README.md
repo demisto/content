@@ -285,7 +285,7 @@ uefi_boot*. You can try to enter your own filters, but if Nutanix does not suppo
 Sets the power state of a virtual machine. If the virtual machine is being powered on and no host is specified, the host with
 the most available CPU and memory will be chosen. Note that such a host may not be available. If the virtual machine is
 being power cycled, a different host can be specified to start it on. The command returns a task UUID that can be
-monitored by the nutanix-hypervisor-task-poll command.
+monitored by the nutanix-hypervisor-task-results-get command.
 
 ### Important
 
@@ -309,7 +309,7 @@ username you are using have at least cluster admin permissions.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NutanixHypervisor.VMPowerStatus.task_uuid | String | The task UUID returned by the Nutanix service for the power status change request. With this task UUID, the task status can be monitored by using the nutanix-hypervisor-task-poll command. | 
+| NutanixHypervisor.VMPowerStatus.task_uuid | String | The task UUID returned by the Nutanix service for the power status change request. With this task UUID, the task status can be monitored by using the nutanix-hypervisor-task-results-get command. | 
 
 #### Command Example
 
@@ -334,7 +334,7 @@ username you are using have at least cluster admin permissions.
 >|---|
 >| 514ba79f-302a-4bff-9d21-013e79956135 |
 
-### nutanix-hypervisor-task-poll
+### nutanix-hypervisor-task-results-get
 
 ***
 Polls the given tasks to check if they are ready. Returns all the tasks from the task_ids list that are ready at the
@@ -342,7 +342,7 @@ moment the Nutanix service was polled. If no task is ready, returns a timeout re
 
 #### Base Command
 
-`nutanix-hypervisor-task-poll`
+`nutanix-hypervisor-task-results-get`
 
 #### Input
 
@@ -379,7 +379,7 @@ moment the Nutanix service was polled. If no task is ready, returns a timeout re
 
 #### Command Example
 
-```!nutanix-hypervisor-task-poll task_ids=z4b8bfa5-bb52-4d09-924e-6c436aa333c6```
+```!nutanix-hypervisor-task-results-get task_ids=z4b8bfa5-bb52-4d09-924e-6c436aa333c6```
 
 #### Context Example
 
@@ -424,7 +424,7 @@ moment the Nutanix service was polled. If no task is ready, returns a timeout re
 >|---|---|
 >| z4b8bfa5-bb52-4d09-924e-6c436aa333c6 | Succeeded |
 
-### nutanix-alerts-list
+### nutanix-hypervisor-alerts-list
 
 ***
 Gets the list of alerts generated in the cluster that matches the filters. Nutanix fetches the latest alerts created if
@@ -432,7 +432,7 @@ there are more than the defined maximum number of alerts.
 
 #### Base Command
 
-`nutanix-alerts-list`
+`nutanix-hypervisor-alerts-list`
 
 #### Input
 
@@ -499,7 +499,7 @@ there are more than the defined maximum number of alerts.
 
 #### Command Example
 
-```!nutanix-alerts-list acknowledged=true auto_resolved=true resolved=true start_time=2018-12-31T21:34:54 limit=4```
+```!nutanix-hypervisor-alerts-list acknowledged=true auto_resolved=true resolved=true start_time=2018-12-31T21:34:54 limit=4```
 
 #### Context Example
 
@@ -640,14 +640,14 @@ there are more than the defined maximum number of alerts.
 >| true | N/A | 2020-11-25T15:28:02.804764Z | {vm_type} time not synchronized with any external servers. | A3026 | true | f941261q-13sd-4qq2-aas1-ffdyza1jft12::3026 | ControllerVM | f941261q-13sd-4qq2-aas1-ffdyza1jft12 | alert_msg,<br/>vm_type,<br/>arithmos_id,<br/>service_vm_id,<br/>ncc_version,<br/>nos_version,<br/>node_uuid,<br/>node_serial,<br/>block_serial | NTP leader is not synchronizing to an external NTP server,<br/>CVM,<br/>2,<br/>2,<br/>1.12.1.1-ase30b9b,<br/>2020.09.16,<br/>23zt035e-n41d-32ab-9ce2-a96789255e8d,<br/>23zt035e-n41d-32ab-9ce2-a96789255e8d,<br/>931q5xs7 | 2020-11-22T14:31:14.675609Z |  | 4b12dc84-2a77-4b3a-a40a-2dc47c919caa | Configuration | 2020-11-22T14:31:14.675609Z | The {vm_type} is not synchronizing time with any external servers. {alert_msg} | 23zt035e-n41d-32ab-9ce2-a96789255e8d | kCreate | f941261q-13sd-4qq2-aas1-ffdyza1jft12 | true | N/A | 2020-11-25T15:28:02.804758Z | f941261q-13sd-4qq2-aas1-ffdyza1jft12::2 | kWarning | false |
 >| true | N/A | 2020-11-25T15:28:02.851718Z | Incorrect NTP Configuration | A103076 | true | f941261q-13sd-4qq2-aas1-ffdyza1jft12::103076 | Cluster | f941261q-13sd-4qq2-aas1-ffdyza1jft12 | alert_msg,<br/>vm_type,<br/>arithmos_id,<br/>cvm_ip,<br/>service_vm_id,<br/>ncc_version,<br/>nos_version,<br/>node_uuid,<br/>node_serial,<br/>block_serial | This CVM is the NTP leader but it is not syncing time with any external NTP server. NTP configuration on CVM is not yet updated with the NTP servers configured in the cluster. The NTP configuration on the CVM will not be updated if the cluster time is in the future relative to the NTP servers.<br/>,<br/>CVM,<br/>2,<br/>192.168.1.111,<br/>2,<br/>1.12.1.1-ase30b9b,<br/>2020.09.16,<br/>23zt035e-n41d-32ab-9ce2-a96789255e8d,<br/>23zt035e-n41d-32ab-9ce2-a96789255e8d,<br/>931q5xs7 | 2020-11-22T14:31:14.619018Z |  | 1c63dcd9-3b36-45a6-8991-d28cc661c861 | SystemIndicator | 2020-11-22T14:31:14.619018Z | {alert_msg} | 23zt035e-n41d-32ab-9ce2-a96789255e8d | kCreate | f941261q-13sd-4qq2-aas1-ffdyza1jft12 | true | N/A | 2020-11-25T15:28:02.851706Z | f941261q-13sd-4qq2-aas1-ffdyza1jft12::2 | kWarning | false |
 
-### nutanix-alert-acknowledge
+### nutanix-hypervisor-alerts-list
 
 ***
 Acknowledges the alert with the specified alert_id.
 
 #### Base Command
 
-`nutanix-alert-acknowledge`
+`nutanix-hypervisor-alerts-list`
 
 #### Input
 
@@ -665,7 +665,7 @@ Acknowledges the alert with the specified alert_id.
 
 #### Command Example
 
-```!nutanix-alert-acknowledge alert_id=f945361q-134d-4qq2-abb1-fcfycc1baq23```
+```!nutanix-hypervisor-alerts-list alert_id=f945361q-134d-4qq2-abb1-fcfycc1baq23```
 
 #### Context Example
 
@@ -687,14 +687,14 @@ Acknowledges the alert with the specified alert_id.
 >|---|---|
 >| f945361q-134d-4qq2-abb1-fcfycc1baq23 | true |
 
-### nutanix-alert-resolve
+### nutanix-hypervisor-alert-resolve
 
 ***
 Resolves the alert with the specified alert_id.
 
 #### Base Command
 
-`nutanix-alert-resolve`
+`nutanix-hypervisor-alert-resolve`
 
 #### Input
 
@@ -712,7 +712,7 @@ Resolves the alert with the specified alert_id.
 
 #### Command Example
 
-```!nutanix-alert-resolve alert_id=f945361q-134d-4qq2-abb1-fcfycc1baq23```
+```!nutanix-hypervisor-alert-resolve alert_id=f945361q-134d-4qq2-abb1-fcfycc1baq23```
 
 #### Context Example
 
@@ -734,14 +734,14 @@ Resolves the alert with the specified alert_id.
 >|---|---|
 >| f945361q-134d-4qq2-abb1-fcfycc1baq23 | true |
 
-### nutanix-alerts-acknowledge-by-filter
+### nutanix-hypervisor-alerts-acknowledge-by-filter
 
 ***
 Acknowledges alerts using a filter.
 
 #### Base Command
 
-`nutanix-alerts-acknowledge-by-filter`
+`nutanix-hypervisor-alerts-acknowledge-by-filter`
 
 #### Input
 
@@ -766,7 +766,7 @@ Acknowledges alerts using a filter.
 
 #### Command Example
 
-```!nutanix-alerts-acknowledge-by-filter end_time=2021-12-22T13:14:15 entity_types=Host severity=WARNING```
+```!nutanix-hypervisor-alerts-acknowledge-by-filter end_time=2021-12-22T13:14:15 entity_types=Host severity=WARNING```
 
 #### Context Example
 ```json
@@ -788,14 +788,14 @@ Acknowledges alerts using a filter.
 >| 0 | 0 |
 
 
-### nutanix-alerts-resolve-by-filter
+### nutanix-hypervisor-alerts-resolve-by-filter
 
 ***
 Resolves alerts using a filter.
 
 #### Base Command
 
-`nutanix-alerts-resolve-by-filter`
+`nutanix-hypervisor-alerts-resolve-by-filter`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -818,7 +818,7 @@ Resolves alerts using a filter.
 | NutanixHypervisor.ResolvedFilterAlerts.alert_status_list.message | String | Message returned by the resolve operation. | 
 
 #### Command Example
-```!nutanix-alerts-resolve-by-filter limit=2 impact_types=SystemIndicator entity_types=VM```
+```!nutanix-hypervisor-alerts-resolve-by-filter limit=2 impact_types=SystemIndicator entity_types=VM```
 
 #### Context Example
 ```json

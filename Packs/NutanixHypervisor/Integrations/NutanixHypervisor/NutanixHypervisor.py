@@ -155,10 +155,12 @@ class Client(BaseClient):
         first_fetch_time = get_optional_time_parameter_as_epoch(fetch_time)
         last_fetch_epoch_time = last_run.get('last_fetch_epoch_time', first_fetch_time)
 
-        response = self.get_nutanix_alerts_list(start_time=last_fetch_epoch_time, end_time=None, resolved=resolved,
-                                                auto_resolved=auto_resolved, acknowledged=acknowledged,
-                                                severity=severity, alert_type_ids=alert_type_ids,
-                                                impact_types=impact_types, entity_types=None, page=None, limit=None)
+        response = self.get_nutanix_hypervisor_alerts_list(start_time=last_fetch_epoch_time, end_time=None,
+                                                           resolved=resolved,
+                                                           auto_resolved=auto_resolved, acknowledged=acknowledged,
+                                                           severity=severity, alert_type_ids=alert_type_ids,
+                                                           impact_types=impact_types, entity_types=None, page=None,
+                                                           limit=None)
 
         alerts = response.get('entities')
 
@@ -220,7 +222,7 @@ class Client(BaseClient):
             )
         )
 
-    def nutanix_hypervisor_task_poll(self, completed_tasks: List[str]):
+    def nutanix_hypervisor_task_results(self, completed_tasks: List[str]):
         return self.http_request(
             method='POST',
             url_suffix='tasks/poll',
@@ -236,11 +238,13 @@ class Client(BaseClient):
             url_suffix=f'tasks/{task_id}'
         )
 
-    def get_nutanix_alerts_list(self, start_time: Optional[int], end_time: Optional[int], resolved: Optional[bool],
-                                auto_resolved: Optional[bool], acknowledged: Optional[bool], severity: Optional[str],
-                                alert_type_ids: Optional[str], impact_types: Optional[str],
-                                entity_types: Optional[str], page: Optional[int],
-                                limit: Optional[int]):
+    def get_nutanix_hypervisor_alerts_list(self, start_time: Optional[int], end_time: Optional[int],
+                                           resolved: Optional[bool],
+                                           auto_resolved: Optional[bool], acknowledged: Optional[bool],
+                                           severity: Optional[str],
+                                           alert_type_ids: Optional[str], impact_types: Optional[str],
+                                           entity_types: Optional[str], page: Optional[int],
+                                           limit: Optional[int]):
         return self.http_request(
             method='GET',
             url_suffix='alerts',
@@ -259,22 +263,22 @@ class Client(BaseClient):
             )
         )
 
-    def post_nutanix_alert_acknowledge(self, alert_id: Optional[str]):
+    def post_nutanix_hypervisor_alert_acknowledge(self, alert_id: Optional[str]):
         return self.http_request(
             method='POST',
             url_suffix=f'alerts/{alert_id}/acknowledge',
         )
 
-    def post_nutanix_alert_resolve(self, alert_id: Optional[str]):
+    def post_nutanix_hypervisor_alert_resolve(self, alert_id: Optional[str]):
         return self.http_request(
             method='POST',
             url_suffix=f'alerts/{alert_id}/resolve',
         )
 
-    def post_nutanix_alerts_acknowledge_by_filter(self, start_time: Optional[int], end_time: Optional[int],
-                                                  severity: Optional[str], impact_types: Optional[str],
-                                                  entity_types: Optional[str],
-                                                  limit: Optional[int]):
+    def post_nutanix_hypervisor_alerts_acknowledge_by_filter(self, start_time: Optional[int], end_time: Optional[int],
+                                                             severity: Optional[str], impact_types: Optional[str],
+                                                             entity_types: Optional[str],
+                                                             limit: Optional[int]):
         return self.http_request(
             method='POST',
             url_suffix='alerts/acknowledge',
@@ -288,10 +292,10 @@ class Client(BaseClient):
             )
         )
 
-    def post_nutanix_alerts_resolve_by_filter(self, start_time: Optional[int], end_time: Optional[int],
-                                              severity: Optional[str], impact_types: Optional[str],
-                                              entity_types: Optional[str],
-                                              limit: Optional[int]):
+    def post_nutanix_hypervisor_alerts_resolve_by_filter(self, start_time: Optional[int], end_time: Optional[int],
+                                                         severity: Optional[str], impact_types: Optional[str],
+                                                         entity_types: Optional[str],
+                                                         limit: Optional[int]):
         return self.http_request(
             method='POST',
             url_suffix='alerts/resolve',
@@ -617,7 +621,7 @@ def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict
 
     This is also an asynchronous operation that results in the creation of a task object.
     The UUID of this task object is returned as the response of this operation.
-    This task can be monitored by using the nutanix-hypervisor-task-poll command
+    This task can be monitored by using the nutanix-hypervisor-task-results-get command
 
     In case response was successful, response will be a dict {'task_uuid': int}.
 
@@ -642,7 +646,7 @@ def nutanix_hypervisor_vm_power_status_change_command(client: Client, args: Dict
     )
 
 
-def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
+def nutanix_hypervisor_task_results_get_command(client: Client, args: Dict):
     """
     Poll tasks given by task_ids to check if they are ready.
     Returns all the tasks from 'task_ids' list that are ready at the moment
@@ -663,7 +667,7 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     """
     task_ids_list: List[str] = argToList(args.get('task_ids'))
 
-    raw_response = client.nutanix_hypervisor_task_poll(task_ids_list)
+    raw_response = client.nutanix_hypervisor_task_results(task_ids_list)
     outputs = copy.deepcopy(raw_response.get('completed_tasks_info', []))
 
     readable_task_details_output: List[Dict] = []
@@ -694,7 +698,7 @@ def nutanix_hypervisor_task_poll_command(client: Client, args: Dict):
     )
 
 
-def nutanix_alerts_list_command(client: Client, args: Dict):
+def nutanix_hpyervisor_alerts_list_command(client: Client, args: Dict):
     """
     Get the list of Alerts generated in the cluster which matches the filters if given.
     Possible filters:
@@ -755,9 +759,10 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     limit = arg_to_number(args.get('limit', 50))
     verbose = get_optional_boolean_arg(args, 'verbose')
 
-    raw_response = client.get_nutanix_alerts_list(start_time, end_time, resolved, auto_resolved, acknowledged, severity,
-                                                  alert_type_ids, impact_types, entity_types,
-                                                  page, limit)
+    raw_response = client.get_nutanix_hypervisor_alerts_list(start_time, end_time, resolved, auto_resolved,
+                                                             acknowledged, severity,
+                                                             alert_type_ids, impact_types, entity_types,
+                                                             page, limit)
     raw_outputs = raw_response.get('entities')
 
     if verbose:
@@ -780,7 +785,7 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     )
 
 
-def nutanix_alert_acknowledge_command(client: Client, args: Dict):
+def nutanix_hypervisor_alert_acknowledge_command(client: Client, args: Dict):
     """
     Acknowledge alert with the specified alert_id.
 
@@ -798,7 +803,7 @@ def nutanix_alert_acknowledge_command(client: Client, args: Dict):
     """
     alert_id = args.get('alert_id')
 
-    raw_response = client.post_nutanix_alert_acknowledge(alert_id)
+    raw_response = client.post_nutanix_hypervisor_alert_acknowledge(alert_id)
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.AcknowledgedAlerts',
@@ -808,7 +813,7 @@ def nutanix_alert_acknowledge_command(client: Client, args: Dict):
     )
 
 
-def nutanix_alert_resolve_command(client: Client, args: Dict):
+def nutanix_hypervisor_alert_resolve_command(client: Client, args: Dict):
     """
     Resolve alert with the specified alert_id.
 
@@ -826,7 +831,7 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
     """
     alert_id = args.get('alert_id')
 
-    raw_response = client.post_nutanix_alert_resolve(alert_id)
+    raw_response = client.post_nutanix_hypervisor_alert_resolve(alert_id)
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.ResolvedAlerts',
@@ -836,7 +841,7 @@ def nutanix_alert_resolve_command(client: Client, args: Dict):
     )
 
 
-def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
+def nutanix_hypervisor_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     """
     Acknowledges all of the Alerts which matches the filters if given.
     - start_time: Acknowledge alerts that their creation time have been after 'start_time'.
@@ -872,9 +877,10 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     entity_types = args.get('entity_types')
     limit = arg_to_number(args.get('limit', 50))
 
-    raw_response = client.post_nutanix_alerts_acknowledge_by_filter(start_time, end_time, severity, impact_types,
-                                                                    entity_types,
-                                                                    limit)
+    raw_response = client.post_nutanix_hypervisor_alerts_acknowledge_by_filter(start_time, end_time, severity,
+                                                                               impact_types,
+                                                                               entity_types,
+                                                                               limit)
 
     outputs = {'num_successful_updates': raw_response.get('num_successful_updates', 0),
                'num_failed_updates': raw_response.get('num_failed_updates', 0)
@@ -887,7 +893,7 @@ def nutanix_alerts_acknowledge_by_filter_command(client: Client, args: Dict):
     )
 
 
-def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
+def nutanix_hypervisor_alerts_resolve_by_filter_command(client: Client, args: Dict):
     """
     Resolves all of the Alerts which matches the filters if given.
     Possible filters:
@@ -923,8 +929,8 @@ def nutanix_alerts_resolve_by_filter_command(client: Client, args: Dict):
     entity_types = args.get('entity_types')
     limit = arg_to_number(args.get('limit', 50))
 
-    raw_response = client.post_nutanix_alerts_resolve_by_filter(start_time, end_time, severity, impact_types,
-                                                                entity_types, limit)
+    raw_response = client.post_nutanix_hypervisor_alerts_resolve_by_filter(start_time, end_time, severity, impact_types,
+                                                                           entity_types, limit)
 
     outputs = {'num_successful_updates': raw_response.get('num_successful_updates', 0),
                'num_failed_updates': raw_response.get('num_failed_updates', 0)
@@ -978,23 +984,23 @@ def main() -> None:
         elif command == 'nutanix-hypervisor-vm-powerstatus-change':
             return_results(nutanix_hypervisor_vm_power_status_change_command(client, args))
 
-        elif command == 'nutanix-hypervisor-task-poll':
-            return_results(nutanix_hypervisor_task_poll_command(client, args))
+        elif command == 'nutanix-hypervisor-task-results-get':
+            return_results(nutanix_hypervisor_task_results_get_command(client, args))
 
-        elif command == 'nutanix-alerts-list':
-            return_results(nutanix_alerts_list_command(client, args))
+        elif command == 'nutanix-hypervisor-alerts-list':
+            return_results(nutanix_hpyervisor_alerts_list_command(client, args))
 
-        elif command == 'nutanix-alert-acknowledge':
-            return_results(nutanix_alert_acknowledge_command(client, args))
+        elif command == 'nutanix-hypervisor-alerts-list':
+            return_results(nutanix_hypervisor_alert_acknowledge_command(client, args))
 
-        elif command == 'nutanix-alert-resolve':
-            return_results(nutanix_alert_resolve_command(client, args))
+        elif command == 'nutanix-hypervisor-alert-resolve':
+            return_results(nutanix_hypervisor_alert_resolve_command(client, args))
 
-        elif command == 'nutanix-alerts-acknowledge-by-filter':
-            return_results(nutanix_alerts_acknowledge_by_filter_command(client, args))
+        elif command == 'nutanix-hypervisor-alerts-acknowledge-by-filter':
+            return_results(nutanix_hypervisor_alerts_acknowledge_by_filter_command(client, args))
 
-        elif command == 'nutanix-alerts-resolve-by-filter':
-            return_results(nutanix_alerts_resolve_by_filter_command(client, args))
+        elif command == 'nutanix-hypervisor-alerts-resolve-by-filter':
+            return_results(nutanix_hypervisor_alerts_resolve_by_filter_command(client, args))
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
