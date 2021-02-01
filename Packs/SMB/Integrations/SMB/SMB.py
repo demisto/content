@@ -166,22 +166,23 @@ def smb_list_files():
 
     connection = connect(hostname=hostname, domain=domain, user=USER, password=PASSWORD, nb_name=nb_name, port=PORT)
     try:
-        files_list = connection.listPath(file_share, file_path)
-        for file in files_list:
+        files_list_from_server = connection.listPath(file_share, file_path)
+        files_details = []
+        for file in files_list_from_server:
             if file.filename not in ['.', '..']:
-                files_list.append({'Name': str(file.filename),
-                                   'Size': str(file.file_size),
-                                   'Path': '{} / {} / {}'.format(file_share, file_path, file.filename),
-                                   })
-        human_readable = tableToMarkdown('Files List', files_list)
+                files_details.append({'Name': str(file.filename),
+                                      'Size': str(file.file_size),
+                                      'Path': '{}/{}/{}'.format(file_share, file_path, file.filename),
+                                      })
+        human_readable = tableToMarkdown('Files List', files_details)
         demisto.results({
             'Type': entryTypes['note'],
-            'Contents': files_list,
+            'Contents': files_details,
             'ContentsFormat': formats['json'],
             'HumanReadable': human_readable,
             'ReadableContentsFormat': formats['markdown'],
             'EntryContext': {
-                "SMB.File(val.Name == obj.Name || val.Path == obj.Path)": files_list
+                "SMB.File(val.Name == obj.Name || val.Path == obj.Path)": files_details
             }
         })
     except Exception:
