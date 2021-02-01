@@ -24,7 +24,6 @@ configuration:
   required: false
 description: >
   Farsight Security DNSDB
-
   DNSDB is a Passive DNS (pDNS) historical database that provides a unique, fact-based,
   multifaceted view of the
   configuration of the global Internet infrastructure DNSDB leverages the richness

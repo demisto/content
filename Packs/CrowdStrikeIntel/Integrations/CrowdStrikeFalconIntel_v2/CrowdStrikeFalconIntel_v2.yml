@@ -577,7 +577,7 @@ script:
     - contextPath: File.KillChains
       description: For malicious files, the associated kill chain.
       type: String
-    - contextPath: URL.Data.
+    - contextPath: URL.Data
       description: The URL
       type: String
     - contextPath: URL.Malicious.Vendor
