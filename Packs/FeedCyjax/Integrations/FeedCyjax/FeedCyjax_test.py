@@ -313,7 +313,7 @@ def test_indicator_sighting_command_response_not_found(mocker):
     assert 'Contents' in result
     assert 'ReadableContentsFormat' in result
     assert 'HumanReadable' in result
-    assert 'EntryContext' in result
+    assert 'EntryContext' not in result
     assert EntryType.NOTE == result.get('Type')
     assert EntryFormat.JSON == result.get('ContentsFormat')
     assert EntryFormat.MARKDOWN == result.get('ReadableContentsFormat')

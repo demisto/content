@@ -521,27 +521,27 @@ def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional
 
     if indicator_sighting is not None:
         sightings_list = indicator_sighting.get('sightings', [])
-        sighting_for_context = sightings_list
-        # Set the indicator value for each sighting object
-        for sighting in sighting_for_context:
-            sighting['value'] = value
         description = 'Indicator "{}" sightings. Last seen at: {}'.format(value,
                                                                           indicator_sighting.get('last_seen_timestamp'))
     else:
-        sightings_list = sighting_for_context = []
+        sightings_list = []
         description = 'No events found for indicator "{}"'.format(value)
 
-    return {
+    return_object = {
         'Type': EntryType.NOTE,
         'ContentsFormat': EntryFormat.JSON,
         'Contents': sightings_list,
         'ReadableContentsFormat': EntryFormat.MARKDOWN,
-        'HumanReadable': tableToMarkdown(description, sightings_list, headerTransform=pascalToSpace),
-        'EntryContext': {
-            'Cyjax.IndicatorSighting(val.value && val.value === obj.value)': createContext(sighting_for_context,
-                                                                                           removeNull=True),
-        }
+        'HumanReadable': tableToMarkdown(description, sightings_list, headerTransform=pascalToSpace)
     }
+
+    if indicator_sighting is not None:
+        return_object['EntryContext'] = {
+            'Cyjax.IndicatorSighting(val.value && val.value === obj.value)':
+                createContext(indicator_sighting, removeNull=True),
+        }
+
+    return return_object
 
 
 def unset_indicators_last_fetch_date_command() -> Optional[Dict[str, Any]]:
