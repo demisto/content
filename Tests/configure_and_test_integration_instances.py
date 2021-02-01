@@ -169,6 +169,7 @@ class Build:
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
         self.service_account = options.service_account
+        self.private_pack = options.private_pack
 
     @property
     def proxy(self) -> MITMProxy:
