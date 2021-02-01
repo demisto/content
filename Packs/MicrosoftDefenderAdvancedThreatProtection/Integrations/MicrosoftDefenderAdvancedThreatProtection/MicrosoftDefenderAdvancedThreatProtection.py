@@ -749,7 +749,7 @@ class MsClient:
 
     def update_indicator(
             self, indicator_id: str, expiration_date_time: str,
-            description: Optional[str], severity: Optional[str]
+            description: Optional[str], severity: Optional[int]
     ) -> Dict:
         """Updates a given indicator
 
@@ -2094,7 +2094,7 @@ def create_indicator_command(client: MsClient, args: Dict, specific_args: Dict) 
             assert 0 <= confidence <= 100, 'The confidence argument must be between 0 and 100'
     except ValueError:
         raise DemistoException('The confidence argument must be an integer.')
-    severity = NUMBER_TO_SEVERITY.get(args.get('severity', 'Informational'))
+    severity = SEVERITY_TO_NUMBER.get(args.get('severity', 'Informational'))
     tags = argToList(args.get('tags'))
     body = assign_params(
         action=action,
@@ -2237,7 +2237,7 @@ def update_indicator_command(client: MsClient, args: dict) -> Tuple[str, Dict, D
         human readable, outputs
     """
     indicator_id = args.get('indicator_id', '')
-    severity = NUMBER_TO_SEVERITY.get(args.get('severity', 'Informational'))
+    severity = SEVERITY_TO_NUMBER.get(args.get('severity', 'Informational'))
     expiration_time = get_future_time(args.get('expiration_time', ''))
     description = args.get('description')
     if description is not None:
