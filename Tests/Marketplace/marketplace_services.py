@@ -1148,7 +1148,8 @@ class Pack(object):
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False):
+    def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False, pack_version= None,
+                              released_date=None):
         """
         Handles the creation and update of the changelog.json files.
 
@@ -1235,6 +1236,12 @@ class Pack(object):
                 return task_status, not_updated_build
 
             # write back changelog with changes to pack folder
+            # update the fix id needed
+            if pack_version and released_date:
+                section = changelog.get(pack_version)
+                section["released"] = released_date
+                changelog[released_date] = section
+
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
                 json.dump(changelog, pack_changelog, indent=4)
 
@@ -1474,7 +1481,8 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df, pack_was_modified):
+                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df, pack_was_modified,
+                        released_date = None):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1514,7 +1522,12 @@ class Pack(object):
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
             self._create_date = self._get_pack_creation_date(index_folder_path)
-            self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
+
+            if released_date:
+                self._update_date = released_date
+            else:
+                self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
+
             formatted_metadata = self._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,

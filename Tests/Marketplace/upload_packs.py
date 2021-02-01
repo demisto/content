@@ -4,6 +4,7 @@ import sys
 import argparse
 import shutil
 import uuid
+from distutils.version import LooseVersion
 import prettytable
 import glob
 import requests
@@ -789,6 +790,34 @@ def get_packs_summary(packs_list):
     return successful_packs, skipped_packs, failed_packs
 
 
+def compare_rn_and_get_updated_date(pack_name, index_folder_path_fix, index_folder_path):
+    # older version
+    old_latest_changelog_released_date = ""
+    old_pack_version = ""
+    changelog_index_path = os.path.join(index_folder_path_fix, pack_name, Pack.CHANGELOG_JSON)
+    if os.path.exists(changelog_index_path):
+        with open(changelog_index_path, "r") as changelog_file:
+            changelog = json.load(changelog_file)
+            if changelog:
+                old_pack_version = max(LooseVersion(ver) for ver in changelog)
+                latest_changelog_version = changelog.get(old_pack_version.vstring, {})
+                old_latest_changelog_released_date = latest_changelog_version.get('released')
+
+    # current version
+    new_pack_version = ""
+    changelog_index_path = os.path.join(index_folder_path, pack_name, Pack.CHANGELOG_JSON)
+    if os.path.exists(changelog_index_path):
+        with open(changelog_index_path, "r") as changelog_file:
+            changelog = json.load(changelog_file)
+            if changelog:
+                new_pack_version = max(LooseVersion(ver) for ver in changelog)
+
+    if old_pack_version.vstring == new_pack_version.vstring and old_pack_version:
+        return old_pack_version.vstring, old_latest_changelog_released_date
+
+    return None, None
+
+
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
@@ -822,21 +851,11 @@ def main():
                                                                                  extract_destination_path)
     # DATES FIX
     # download and extract index OLDER index
-    logging.info("\n\n\n#############################\n\n\n")
     storage_bucket_name_dates_fix = "marketplace-ci-build" # change bucket
 
     storage_bucket_dates_fix = storage_client.bucket(storage_bucket_name_dates_fix)
-    index_folder_path_fix, index_blob_fix, index_generation_fix = \
+    index_folder_path_fix, _, _ = \
         download_and_extract_index(storage_bucket_dates_fix, extract_destination_path_fix, True)
-
-    #Test it
-    changelog_index_path = os.path.join(index_folder_path_fix, "AbuseDB", Pack.CHANGELOG_JSON)
-    if os.path.exists(changelog_index_path):
-        with open(changelog_index_path, "r") as changelog_file:
-            changelog = json.load(changelog_file)
-            logging.info("Printing log: \n")
-            logging.info(str(changelog.get("1.0.1")))
-    logging.info("\n\n\n#############################\n\n\n")
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
@@ -902,6 +921,11 @@ def main():
             pack.cleanup()
             continue
 
+        # Adding the fix
+        pack_name = pack.name
+        pack_version, released_date = compare_rn_and_get_updated_date(pack_name, index_folder_path_fix,
+                                                                      index_folder_path)
+
         # change the update - this function writes back the metadata
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
@@ -909,13 +933,15 @@ def main():
                                            packs_dependencies_mapping=packs_dependencies_mapping,
                                            build_number=build_number, commit_hash=current_commit_hash,
                                            packs_statistic_df=packs_statistic_df,
-                                           pack_was_modified=pack_was_modified)
+                                           pack_was_modified=pack_was_modified,
+                                           released_date=released_date)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified,
+                                                                    pack_version, released_date)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
@@ -925,23 +951,7 @@ def main():
             pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
             pack.cleanup()
             continue
-        """
-                # fix dates in RN
-        old_changelog = ?
 
-        # pack metadata
-        with open(metadata_path, "w") as metadata_file:
-            metadata_file['updated'] = ????
-            json.dump(formatted_metadata, metadata_file, indent=4)
-
-        # changelog - compare and change
-            # same version - take the old one
-            # different version - keep the new one
-
-
-        # end of fix dates
-        
-        """
         task_status = pack.remove_unwanted_files(remove_test_playbooks)
         if not task_status:
             pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
