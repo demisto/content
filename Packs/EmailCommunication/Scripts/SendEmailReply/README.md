@@ -1,7 +1,6 @@
-The script sends email massages with the configured mail sender integration.
-The script sends the email to the recipient's list, including the following information:
+The script sends the email to the recipient's list, with the following information:
 - the original email 
-- the sender
+- the name of the sender
 - the person to reply to
 - CC addresses, if they exist
 - attachments, if they exist
@@ -24,9 +23,9 @@ The script is a part of the Email Communication pack.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| files | The context path for files |
-| attachment | The context path for attachments |
-| service_mail | The email address the emails are sent from |
+| files | The context path for files. |
+| attachment | The context path for attachments. |
+| service_mail | The email address the emails are sent from. |
 
 ## Outputs
 ---
