@@ -16,8 +16,9 @@ from Tests.Marketplace.marketplace_services import init_storage_client, init_big
     get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, get_recent_commits_data, \
     store_successful_and_failed_packs_in_ci_artifacts
 from demisto_sdk.commands.common.tools import run_command, str2bool
-from Tests.Marketplace.zip_packs import download_packs_from_gcp, get_latest_pack_zip_from_blob
 from Tests.scripts.utils.log_util import install_logging
+from tempfile import gettempdir
+
 
 
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
@@ -795,7 +796,7 @@ def main():
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
-    extract_destination_path_fix = option.extract_path_fix
+    extract_destination_path_fix = gettempdir()
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
     target_packs = option.pack_names if option.pack_names else ""
@@ -943,8 +944,6 @@ def main():
         # end of fix dates
         
         """
-        download_packs_from_gcp("marketplace-ci-build", "content/builds")
-
         task_status = pack.remove_unwanted_files(remove_test_playbooks)
         if not task_status:
             pack.status = PackStatus.FAILED_REMOVING_PACK_SKIPPED_FOLDERS
