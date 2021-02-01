@@ -422,11 +422,13 @@ def fetch_indicators_command(client: Client, last_fetch_date: datetime, reputati
             indicators (``List[dict]``): List of indicators that will be added to XSOAR
     :rtype: ``Tuple[int, List[dict]]``
     """
-    since = last_fetch_date.isoformat()
     last_run_timestamp = int(last_fetch_date.timestamp())
 
+    # Add one second from last_fetch_timestamp to avoid fetching the same indicators
+    since = last_fetch_date + timedelta(seconds=1)
+
     indicators = []  # type:List
-    cyjax_indicators = client.fetch_indicators(since=since)   # type:List
+    cyjax_indicators = client.fetch_indicators(since=since.isoformat())   # type:List
 
     indicators_score = map_reputation_to_score(reputation)  # type: int
 
@@ -596,8 +598,6 @@ def main() -> None:
         elif demisto.command() == 'fetch-indicators':
 
             last_fetch_date = get_indicators_last_fetch_date()  # type:datetime
-            demisto.info('-------------- CYJAX fetch-indicators called at {}, use date: {}'.
-                         format(datetime.now().isoformat(), last_fetch_date.isoformat()))
 
             next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation, tlp_to_use, tags)
 

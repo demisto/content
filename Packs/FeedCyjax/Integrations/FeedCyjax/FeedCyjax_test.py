@@ -523,6 +523,41 @@ def test_get_indicators_main_command_call_with_one_new_indicator(mocker):
     assert expected_indicators == result.get('Contents')
 
 
+def test_since_date_in_get_indicators_command_no_new_indicators_found(mocker):
+    client = client_for_testing
+    fetch_indicators_spy = mocker.spy(client, 'fetch_indicators')
+
+    last_fetch = datetime(2020, 12, 27, 15, 0, 0, 0)
+    last_fetch_timestamp = int(last_fetch.timestamp())
+    expected_since = datetime(2020, 12, 27, 15, 0, 1, 0)
+
+    mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.list', return_value=[])
+
+    next_run, indicators = fetch_indicators_command(client_for_testing, last_fetch, 'good')
+
+    fetch_indicators_spy.assert_called_with(since=expected_since.isoformat())
+    assert [] == indicators
+    assert last_fetch_timestamp == next_run
+
+
+def test_since_date_in_get_indicators_command_new_indicators_found(mocker):
+    client = client_for_testing
+    fetch_indicators_spy = mocker.spy(client, 'fetch_indicators')
+
+    last_fetch = datetime(2020, 12, 31, 15, 0, 0, 0)
+    last_fetch_timestamp = int(last_fetch.timestamp())
+    expected_since = datetime(2020, 12, 31, 15, 0, 1, 0)
+
+    cyjax_indicator = mocked_indicators
+
+    mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.list', return_value=cyjax_indicator)
+
+    next_run, indicators = fetch_indicators_command(client_for_testing, last_fetch, 'good')
+
+    fetch_indicators_spy.assert_called_with(since=expected_since.isoformat())
+    assert 1640988032 == next_run
+
+
 def test_get_indicators_main_command_call_no_new_indicators(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'apikey': 'test-api-key',
