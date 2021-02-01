@@ -1177,6 +1177,9 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     if not file_name:  # in case of info file
         file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
     if not file_name:
+        file_data = demisto.getFilePath(file_id)
+        file_name = file_data.get('name')
+    if not file_name:
         raise Exception('Could not find the file. Please add a file to the incident.')
     file_name = file_name[0] if isinstance(file_name, list) else file_name
 
