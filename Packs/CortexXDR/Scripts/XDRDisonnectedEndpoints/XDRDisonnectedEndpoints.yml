@@ -1,0 +1,20 @@
+args:
+- name: from
+- name: to
+- defaultValue: "100"
+  name: limit
+commonfields:
+  id: 1f3c6dab-43fa-4cf7-8605-4211f9ab1a84
+  version: -1
+dockerimage: demisto/python3:3.9.1.14969
+enabled: true
+name: XDRDisonnectedEndpoints
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+type: python

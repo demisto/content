@@ -1,0 +1,35 @@
+args:
+- defaultValue: "3000"
+  description: The maximum number of incidents to fetch. The default value is 3000.
+  name: limit
+- auto: PREDEFINED
+  name: reultType
+  predefined:
+  - Top10
+  - DistinctCount
+  required: true
+- name: to
+- name: from
+- auto: PREDEFINED
+  name: queryType
+  predefined:
+  - Categories
+  - Users
+  - Hosts
+  - Alerts
+  - MitreTactic
+  required: true
+commonfields:
+  id: XDRIncidentWidgetBase
+  version: -1
+dockerimage: demisto/python3:3.9.1.14969
+enabled: true
+name: XDRIncidentWidgetBase
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

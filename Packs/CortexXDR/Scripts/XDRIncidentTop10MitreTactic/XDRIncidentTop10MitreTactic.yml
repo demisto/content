@@ -1,0 +1,18 @@
+args:
+- name: from
+- name: to
+commonfields:
+  id: 83b69430-e445-41d2-83bd-d2ec4aee79ea
+  version: -1
+dockerimage: demisto/python3:3.9.1.14969
+enabled: true
+name: XDRIncidentTop10MitreTactic
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+type: python

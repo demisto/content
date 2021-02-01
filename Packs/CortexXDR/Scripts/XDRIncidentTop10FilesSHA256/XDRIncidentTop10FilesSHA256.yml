@@ -1,0 +1,18 @@
+args:
+- name: from
+- name: to
+commonfields:
+  id: 7468ec9b-1fe2-4051-8b9e-5ae8f9c7e99c
+  version: -1
+dockerimage: demisto/python3:3.9.1.14969
+enabled: true
+name: XDRIncidentTop10FilesSHA256
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+type: python
