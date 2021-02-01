@@ -1,16 +1,14 @@
 args:
-- name: field
+- name: field1
   required: true
-- defaultValue: "7"
-  name: hey2
-  required: true
-comment: test description new
+- name: field2
+comment: test description
 commonfields:
-  id: testestest
+  id: testestest_updated
   version: -1
 dockerimage: demisto/python3:3.9.1.15759
 enabled: true
-name: testestest
+name: testestest_updated
 runas: DBotWeakRole
 runonce: false
 script: ''
