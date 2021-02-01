@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Cortex XDR - IR - retrieve file
+  id: Cortex XDR - IR
   version: -1
 configuration:
 - display: Fetch incidents
@@ -74,8 +74,8 @@ configuration:
   type: 8
 description: Cortex XDR is the world's first detection and response app that natively
   integrates network, endpoint, and cloud data to stop sophisticated attacks.
-display: Palo Alto Networks Cortex XDR - retrieve file
-name: Cortex XDR - IR - retrieve file
+display: Palo Alto Networks Cortex XDR
+name: Cortex XDR - IR
 script:
   commands:
   - arguments:
@@ -2232,7 +2232,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.action_id
       description: The specified action ID.
       type: number
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false
