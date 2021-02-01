@@ -4,7 +4,6 @@ and create a threat hunting incident for you.
 The main query parameters for the resulting, internal indicator query are:
 
 * seen for the first time by the feed source within the last 7 days
-* last seen by feed source in the last 7 days
 * no investigation on it yet
 * must have relationships to other indicators
 

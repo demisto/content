@@ -10,7 +10,16 @@ args:
 - defaultValue: Hunt
   description: Specify the incident type you want to have created (optional, default is Hunt)
   name: incident_type
-comment: Creates a threat hunting incident from a random Cyren Threat InDepth indicator
+- description: Specify the user you want to assign the new incident (optional, default is current user)
+  name: assignee
+comment: |-
+  This script will take a random Cyren Threat InDepth feed indicator and its relationships and create a threat hunting incident for you.
+
+  The main query parameters for the resulting, internal indicator query are:
+
+  1. seen for the first time by the feed source within the last 7 days
+  2. no investigation on it yet
+  3. must have relationships to other indicators
 commonfields:
   id: CyrenThreatInDepthRandomHunt
   version: -1

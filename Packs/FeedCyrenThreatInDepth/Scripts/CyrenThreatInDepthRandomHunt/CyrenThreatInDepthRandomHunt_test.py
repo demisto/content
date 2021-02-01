@@ -74,13 +74,39 @@ def executeCommand(findIndicatorsResult=FIND_INDICATORS_NORMAL,
     return inner
 
 
-@pytest.mark.parametrize("args", [
-    dict(),
-    dict(indicator_type="ip_reputation"),
-    dict(incident_type="My Type"),
-    dict(indicator_type="ip_reputation", incident_type="My Type"),
+@pytest.mark.parametrize("args, expected_incident", [
+    (
+        dict(),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="Hunt",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="admin")
+    ),
+    (
+        dict(assignee="other.user"),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="Hunt",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="other.user")
+    ),
+    (
+        dict(assignee="other.user", incident_type="My Type"),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="My Type",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="other.user")
+    ),
+    (
+        dict(indicator_type="ip_reputation"),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="Hunt",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="admin")
+    ),
+    (
+        dict(incident_type="My Type"),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="My Type",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="admin")
+    ),
+    (
+        dict(indicator_type="ip_reputation", incident_type="My Type"),
+        dict(name="Cyren Threat InDepth Threat Hunt", type="My Type",
+             details="indicator_type: URL\nvalue: http://google.de\n", owner="admin")
+    ),
 ])
-def test_create_random_hunt_incident(mocker, args):
+def test_create_random_hunt_incident(mocker, args, expected_incident):
     """
     Given: Different arg input
     When: Running create_random_hunt_incident command.
@@ -91,6 +117,7 @@ def test_create_random_hunt_incident(mocker, args):
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand())
     result = create_random_hunt_incident(args)
 
+    demisto.executeCommand.assert_any_call("createNewIncident", expected_incident)
     assert result.readable_output == ("Successfully created incident Cyren Threat InDepth Threat Hunt.\n"
                                       "Click here to investigate: [1234](#/incident/1234).")
 

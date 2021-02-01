@@ -22,6 +22,7 @@ def simple_result(text):
 def create_random_hunt_incident(args):
     indicator_type = args.get("indicator_type")
     incident_type = args.get("incident_type", "Hunt")
+    assignee = args.get("assignee")
 
     query_parts = [
         "lastseenbysource:>=\"7 days ago\"",
@@ -59,11 +60,14 @@ def create_random_hunt_incident(args):
                     type=incident_type,
                     details=yaml.dump(indicators[0]))
 
-    res = demisto.executeCommand("getUsers", dict(current=True))
-    if not isError(res[0]):
-        current_user = res[0]["Contents"][0]
-        current_user_id = current_user.get("id")
-        incident["owner"] = current_user_id
+    if assignee:
+        incident["owner"] = assignee
+    else:
+        res = demisto.executeCommand("getUsers", dict(current=True))
+        if not isError(res[0]):
+            current_user = res[0]["Contents"][0]
+            current_user_id = current_user.get("id")
+            incident["owner"] = current_user_id
 
     res = demisto.executeCommand("createNewIncident", incident)
     if isError(res[0]):
