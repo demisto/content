@@ -1,6 +1,7 @@
-On-premise firewall by Sophos
+On-Premise firewall by Sophos enables you to manage your firewall, respond to threats, and monitor what’s
+happening on your network.
 This integration was integrated and tested with version xx of sophos_firewall
-## Configure sophos_firewall on Cortex XSOAR
+## Configure Sophos Firewall on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for sophos_firewall.
