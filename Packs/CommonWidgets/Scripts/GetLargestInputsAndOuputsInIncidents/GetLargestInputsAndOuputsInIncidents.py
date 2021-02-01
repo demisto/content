@@ -33,7 +33,7 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
                         'TaskID': f"[{task_id}]({task_url})",
                         'TaskName': task.get('name'),
                         'Name': output.get('name'),
-                        'Size(MB)': int(output.get('size', 0)) / 1024,
+                        'Size(MB)': float(output.get('size', 0)) / 1024,
                         "InputOrOutput": 'Output',
                     })
 
@@ -45,7 +45,7 @@ def get_largest_inputs_and_outputs(inputs_and_outputs, largest_inputs_and_output
                         'TaskID': f"[{task_id}]({task_url})",
                         'TaskName': task.get('name'),
                         'Name': arg.get('name'),
-                        'Size(MB)': int(output.get('size', 0)) / 1024,
+                        'Size(MB)': float(arg.get('size', 0)) / 1024,
                         'InputOrOutput': "Input",
                     })
     if inputs:
