@@ -324,7 +324,7 @@
       "verbose": "true"
     }
   },
-  "nutanix-hypervisor-alerts-list": {
+  "nutanix-hypervisor-alert-acknowledge": {
     "suffix": "alerts/123123/acknowledge",
     "response": {
       "id": 123123,

@@ -990,7 +990,7 @@ def main() -> None:
         elif command == 'nutanix-hypervisor-alerts-list':
             return_results(nutanix_hpyervisor_alerts_list_command(client, args))
 
-        elif command == 'nutanix-hypervisor-alerts-list':
+        elif command == 'nutanix-hypervisor-alert-acknowledge':
             return_results(nutanix_hypervisor_alert_acknowledge_command(client, args))
 
         elif command == 'nutanix-hypervisor-alert-resolve':

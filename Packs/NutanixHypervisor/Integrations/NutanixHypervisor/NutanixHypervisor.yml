@@ -736,7 +736,7 @@ script:
       name: alert_id
       required: true
     description: Acknowledges the alert with the specified alert_id.
-    name: nutanix-hypervisor-alerts-list
+    name: nutanix-hypervisor-alert-acknowledge
     outputs:
     - contextPath: NutanixHypervisor.AcknowledgedAlerts.id
       description: ID of the alert to be acknowledged.

@@ -10,7 +10,7 @@ The following commands require cluster admin or higher permissions.
 (Found in Nutanix Settings in the *Users And Roles* category.)
 
 - ***nutanix-hypervisor-vm-powerstatus-change***
-- ***nutanix-hypervisor-alerts-list***
+- ***nutanix-hypervisor-alert-acknowledge***
 - ***nutanix-hypervisor-alert-resolve***
 - ***nutanix-hypervisor-alerts-acknowledge-by-filter***
 - ***nutanix-hypervisor-alerts-resolve-by-filter***

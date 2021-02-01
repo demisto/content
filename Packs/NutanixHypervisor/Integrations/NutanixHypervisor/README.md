@@ -640,14 +640,14 @@ there are more than the defined maximum number of alerts.
 >| true | N/A | 2020-11-25T15:28:02.804764Z | {vm_type} time not synchronized with any external servers. | A3026 | true | f941261q-13sd-4qq2-aas1-ffdyza1jft12::3026 | ControllerVM | f941261q-13sd-4qq2-aas1-ffdyza1jft12 | alert_msg,<br/>vm_type,<br/>arithmos_id,<br/>service_vm_id,<br/>ncc_version,<br/>nos_version,<br/>node_uuid,<br/>node_serial,<br/>block_serial | NTP leader is not synchronizing to an external NTP server,<br/>CVM,<br/>2,<br/>2,<br/>1.12.1.1-ase30b9b,<br/>2020.09.16,<br/>23zt035e-n41d-32ab-9ce2-a96789255e8d,<br/>23zt035e-n41d-32ab-9ce2-a96789255e8d,<br/>931q5xs7 | 2020-11-22T14:31:14.675609Z |  | 4b12dc84-2a77-4b3a-a40a-2dc47c919caa | Configuration | 2020-11-22T14:31:14.675609Z | The {vm_type} is not synchronizing time with any external servers. {alert_msg} | 23zt035e-n41d-32ab-9ce2-a96789255e8d | kCreate | f941261q-13sd-4qq2-aas1-ffdyza1jft12 | true | N/A | 2020-11-25T15:28:02.804758Z | f941261q-13sd-4qq2-aas1-ffdyza1jft12::2 | kWarning | false |
 >| true | N/A | 2020-11-25T15:28:02.851718Z | Incorrect NTP Configuration | A103076 | true | f941261q-13sd-4qq2-aas1-ffdyza1jft12::103076 | Cluster | f941261q-13sd-4qq2-aas1-ffdyza1jft12 | alert_msg,<br/>vm_type,<br/>arithmos_id,<br/>cvm_ip,<br/>service_vm_id,<br/>ncc_version,<br/>nos_version,<br/>node_uuid,<br/>node_serial,<br/>block_serial | This CVM is the NTP leader but it is not syncing time with any external NTP server. NTP configuration on CVM is not yet updated with the NTP servers configured in the cluster. The NTP configuration on the CVM will not be updated if the cluster time is in the future relative to the NTP servers.<br/>,<br/>CVM,<br/>2,<br/>192.168.1.111,<br/>2,<br/>1.12.1.1-ase30b9b,<br/>2020.09.16,<br/>23zt035e-n41d-32ab-9ce2-a96789255e8d,<br/>23zt035e-n41d-32ab-9ce2-a96789255e8d,<br/>931q5xs7 | 2020-11-22T14:31:14.619018Z |  | 1c63dcd9-3b36-45a6-8991-d28cc661c861 | SystemIndicator | 2020-11-22T14:31:14.619018Z | {alert_msg} | 23zt035e-n41d-32ab-9ce2-a96789255e8d | kCreate | f941261q-13sd-4qq2-aas1-ffdyza1jft12 | true | N/A | 2020-11-25T15:28:02.851706Z | f941261q-13sd-4qq2-aas1-ffdyza1jft12::2 | kWarning | false |
 
-### nutanix-hypervisor-alerts-list
+### nutanix-hypervisor-alert-acknowledge
 
 ***
 Acknowledges the alert with the specified alert_id.
 
 #### Base Command
 
-`nutanix-hypervisor-alerts-list`
+`nutanix-hypervisor-alert-acknowledge`
 
 #### Input
 
@@ -665,7 +665,7 @@ Acknowledges the alert with the specified alert_id.
 
 #### Command Example
 
-```!nutanix-hypervisor-alerts-list alert_id=f945361q-134d-4qq2-abb1-fcfycc1baq23```
+```!nutanix-hypervisor-alert-acknowledge alert_id=f945361q-134d-4qq2-abb1-fcfycc1baq23```
 
 #### Context Example
 
