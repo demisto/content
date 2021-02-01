@@ -1173,9 +1173,7 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
     ticket_id = str(args.get('id', ''))
     file_id = str(args.get('file_id', ''))
 
-    file_name = args.get('file_name', demisto.dt(demisto.context(), "File(val.EntryID=='" + file_id + "').Name"))
-    if not file_name:  # in case of info file
-        file_name = demisto.dt(demisto.context(), "InfoFile(val.EntryID=='" + file_id + "').Name")
+    file_name = args.get('file_name')
     if not file_name:
         file_data = demisto.getFilePath(file_id)
         file_name = file_data.get('name')
