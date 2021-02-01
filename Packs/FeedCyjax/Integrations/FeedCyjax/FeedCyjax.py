@@ -257,14 +257,14 @@ def set_indicators_last_fetch_date(timestamp: int) -> None:
     demisto.setIntegrationContext(integration_context)
 
 
-def map_indicator_type(cyjax_type: str) -> str:
+def map_indicator_type(cyjax_type: str) -> Optional[str]:
     """Map Cyjax indicator type to XSOAR indicator type
 
     :param cyjax_type: The Cyjax indicator type
     :type cyjax_type: ``str``
 
     :return: XSOAR indicator type
-    :rtype: ``str``
+    :rtype: ``Optional[str]``
     """
     indicator_map = {
         'IPv4': FeedIndicatorType.IP,
@@ -325,16 +325,16 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, 
         score = map_reputation_to_score('Suspicious')
 
     if tlp is None and 'handling_condition' in cyjax_indicator:
-        tlp = cyjax_indicator.get('handling_condition')
+        tlp = cyjax_indicator['handling_condition']
 
     if tags is None:
         tags = []
 
-    indicator_date = dateparser.parse(cyjax_indicator.get('discovered_at'))
+    indicator_date = dateparser.parse(cyjax_indicator['discovered_at'])
 
     indicator = {
-        'value': cyjax_indicator.get('value'),
-        'type': map_indicator_type(cyjax_indicator.get('type')),
+        'value': cyjax_indicator['value'],
+        'type': map_indicator_type(cyjax_indicator['type']),
         'rawJSON': cyjax_indicator,
         'score': score
     }
@@ -351,29 +351,29 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, 
         fields['tags'] = tags
 
     if 'description' in cyjax_indicator:
-        fields['description'] = cyjax_indicator.get('description')
+        fields['description'] = cyjax_indicator['description']
 
     if 'source' in cyjax_indicator:
-        fields['source'] = cyjax_indicator.get('source')
+        fields['source'] = cyjax_indicator['source']
 
     if 'industry_type' in cyjax_indicator:
-        fields['industrytypes'] = cyjax_indicator.get('industry_type')
+        fields['industrytypes'] = cyjax_indicator['industry_type']
 
     if 'ttp' in cyjax_indicator:
-        fields['techniquestacticsprocedures'] = cyjax_indicator.get('ttp')
+        fields['techniquestacticsprocedures'] = cyjax_indicator['ttp']
 
-    if 'asn' in cyjax_indicator and 'asn' in cyjax_indicator.get('asn'):
-        fields['ASN'] = cyjax_indicator.get('asn').get('asn')
+    if 'asn' in cyjax_indicator and 'asn' in cyjax_indicator['asn']:
+        fields['ASN'] = cyjax_indicator['asn']['asn']
 
     if 'geoip' in cyjax_indicator:
-        if 'city_name' in cyjax_indicator.get('geoip'):
-            fields['city'] = cyjax_indicator.get('geoip').get('city_name')
-        if 'country_name' in cyjax_indicator.get('geoip'):
-            fields['geocountry'] = cyjax_indicator.get('geoip').get('country_name')
-        if 'location' in cyjax_indicator.get('geoip'):
+        if 'city_name' in cyjax_indicator['geoip']:
+            fields['city'] = cyjax_indicator['geoip']['city_name']
+        if 'country_name' in cyjax_indicator['geoip']:
+            fields['geocountry'] = cyjax_indicator['geoip']['country_name']
+        if 'location' in cyjax_indicator['geoip']:
             fields['geolocation'] = "Lon: {}, Lat: {}".format(
-                cyjax_indicator.get('geoip').get('location').get('lon'),
-                cyjax_indicator.get('geoip').get('location').get('lat'))
+                cyjax_indicator['geoip']['location']['lon'],
+                cyjax_indicator['geoip']['location']['lat'])
 
     indicator['fields'] = fields
 
@@ -520,7 +520,7 @@ def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional
     indicator_sighting = client.sighting(value)
 
     if indicator_sighting is not None:
-        sightings_list = indicator_sighting.get('sightings')
+        sightings_list = indicator_sighting.get('sightings', [])
         sighting_for_context = sightings_list
         # Set the indicator value for each sighting object
         for sighting in sighting_for_context:
@@ -528,7 +528,7 @@ def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional
         description = 'Indicator "{}" sightings. Last seen at: {}'.format(value,
                                                                           indicator_sighting.get('last_seen_timestamp'))
     else:
-        sightings_list = []
+        sightings_list = sighting_for_context = []
         description = 'No events found for indicator "{}"'.format(value)
 
     return {
@@ -538,7 +538,7 @@ def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional
         'ReadableContentsFormat': EntryFormat.MARKDOWN,
         'HumanReadable': tableToMarkdown(description, sightings_list, headerTransform=pascalToSpace),
         'EntryContext': {
-            'Cyjax.IndicatorSighting(val.value && val.value === obj.value)': createContext(sightings_list,
+            'Cyjax.IndicatorSighting(val.value && val.value === obj.value)': createContext(sighting_for_context,
                                                                                            removeNull=True),
         }
     }
