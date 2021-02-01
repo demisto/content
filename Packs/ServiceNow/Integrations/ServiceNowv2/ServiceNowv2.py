@@ -1178,8 +1178,6 @@ def upload_file_command(client: Client, args: dict) -> Tuple[str, Dict, Dict, bo
         file_data = demisto.getFilePath(file_id)
         file_name = file_data.get('name')
 
-    file_name = file_name[0] if isinstance(file_name, list) else file_name
-
     result = client.upload_file(ticket_id, file_id, file_name, ticket_type)
 
     if not result or 'result' not in result or not result['result']:
