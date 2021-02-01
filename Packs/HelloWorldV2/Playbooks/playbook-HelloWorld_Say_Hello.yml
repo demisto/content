@@ -293,7 +293,7 @@ tasks:
       description: Prints an error entry with a given message
       id: 9bb9d3c8-81bb-460b-8219-bf93a46d6c21
       iscommand: false
-      name: Print Error New
+      name: Print Error Updated
       scriptName: PrintErrorEntry
       type: regular
       version: -1
