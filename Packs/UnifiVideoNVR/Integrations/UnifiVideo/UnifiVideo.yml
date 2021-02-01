@@ -11,7 +11,7 @@ configuration:
   name: addr
   required: true
   type: 0
-- defaultvalue: "7080"
+- defaultvalue: '7080'
   display: Port number
   name: port
   required: false
@@ -24,7 +24,7 @@ configuration:
   - https
   required: false
   type: 15
-- defaultvalue: "true"
+- defaultvalue: 'true'
   display: Verify CA cert
   name: verify_cert
   required: false
@@ -41,83 +41,131 @@ display: UnifiVideo
 name: UnifiVideo
 script:
   commands:
-  - arguments: []
+  - deprecated: false
     description: Gets the list of cameras bound with the NVR
-    name: get_camera_list
+    execution: false
+    name: unifivideo-get-camera-list
   - arguments:
-    - description: The name of the camera
+    - default: false
+      description: The name of the camera
+      isArray: false
       name: camera_name
       required: true
+      secret: false
+    deprecated: false
     description: The name of the camera to take the snapshot from. If empty then all
       camera snapshots will be taken
-    name: get_snapshot
+    execution: false
+    name: unifivideo-get-snapshot
   - arguments:
-    - name: recording_id
+    - default: false
+      isArray: false
+      name: recording_id
       required: true
-    - description: Get snapshot of frame. Put frame number here
+      secret: false
+    - default: false
+      description: Get snapshot of frame. Put frame number here
+      isArray: false
       name: frame
+      required: false
+      secret: false
+    deprecated: false
     description: Download a recording to file
-    name: get_recording
+    execution: false
+    name: unifivideo-get-recording
   - arguments:
-    - description: The camera name
+    - default: false
+      description: The camera name
+      isArray: false
       name: camera_name
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: motion
       description: Recording setting, motion, always or disabled
+      isArray: false
       name: rec_set
       predefined:
       - fulltime
       - motion
       - disabled
       required: true
-    description: Set
+      secret: false
+    deprecated: false
+    description: Set the recording settings
     execution: true
-    name: set_recording_settings
+    name: unifivideo-set-recording-settings
   - arguments:
-    - description: The camera name
+    - default: false
+      description: The camera name
+      isArray: false
       name: camera_name
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: auto
+      isArray: false
       name: ir_leds
       predefined:
       - auto
-      - "on"
-      - "off"
+      - 'on'
+      - 'off'
       required: true
+      secret: false
+    deprecated: false
+    description: Turn ON or OFF the camera Infra-Red LED
     execution: true
-    name: ir_leds
-  - arguments: []
-    name: create_inc
-  - arguments: []
+    name: unifivideo-ir-leds
+  - deprecated: false
+    description: Get the list of all recordings
     execution: true
-    name: get_recording_list
+    name: unifivideo-get-recording-list
   - arguments:
-    - description: File entryID of the video file
+    - default: false
+      description: File entryID of the video file
+      isArray: false
       name: entryid
       required: true
-    - description: Frame to take from the video.
+      secret: false
+    - default: false
+      description: Frame to take from the video.
+      isArray: false
       name: frame
       required: true
+      secret: false
+    deprecated: false
     description: Get a snapshot from video file based on the frame number
-    name: get_snapshot_at_frame
+    execution: false
+    name: unifivideo-get-snapshot-at-frame
   - arguments:
-    - defaultValue: "150"
+    - default: false
+      defaultValue: '150'
       description: The frame to snapshot
+      isArray: false
       name: frame
       required: true
-    - description: the ubnt_id of the recording
+      secret: false
+    - default: false
+      description: the ubnt_id of the recording
+      isArray: false
       name: recording_id
       required: true
+      secret: false
+    deprecated: false
     description: Get the recording snapshot (at frame) based on the recording id
-    name: get_recording_snapshot
+    execution: false
+    name: unifivideo-get-recording-snapshot
   dockerimage: magicpl/unifi-video:latest
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: true
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.0.0

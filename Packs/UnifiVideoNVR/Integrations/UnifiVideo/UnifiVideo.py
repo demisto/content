@@ -5,28 +5,30 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from unifi_video import UnifiVideoAPI
 
-#import dateutil.parser
-# The command demisto.command() holds the command sent from the user.
+params = demisto.params()
+args = demisto.args()
+api_key = params.get('api_key')
+address = params.get('addr')
+port = params.get('port')
+schema = params.get('schema')
+verify_cert = params.get('verify_cert')
+
 if demisto.command() == 'test-module':
     # This is the call made when pressing the integration test button.
-    uva = UnifiVideoAPI(api_key=demisto.params()["api_key"], addr=demisto.params()["addr"], port=demisto.params()[
-                        "port"], schema=demisto.params()["schema"], verify_cert=demisto.params()["verify_cert"])
+    uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     demisto.results('ok')
-    sys.exit(0)
 
-if demisto.command() == 'get_camera_list':
-    uva = UnifiVideoAPI(api_key=demisto.params()["api_key"], addr=demisto.params()["addr"], port=demisto.params()[
-                        "port"], schema=demisto.params()["schema"], verify_cert=demisto.params()["verify_cert"])
+if demisto.command() == 'unifivideo-get-camera-list':
+    uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     output = ''
     for camera in uva.cameras:
         output = output + ' - ' + camera.name + '\n'
     demisto.results({"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": output})
-    sys.exit(0)
 
-if demisto.command() == 'get_snapshot':
-    uva = UnifiVideoAPI(api_key=demisto.params()["api_key"], addr=demisto.params()["addr"], port=demisto.params()[
-                        "port"], schema=demisto.params()["schema"], verify_cert=demisto.params()["verify_cert"])
-    uva.get_camera(demisto.args()["camera_name"]).snapshot("/tmp/snapshot.png")
+if demisto.command() == 'unifivideo-get-snapshot':
+    camera_name = args['camera_name']
+    uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
+    uva.get_camera(camera_name).snapshot("/tmp/snapshot.png")
     r_type = demisto.args().get('type', 'png')
     f = open("/tmp/snapshot.png", "r")
     output = f.read()
@@ -35,25 +37,23 @@ if demisto.command() == 'get_snapshot':
     if r_type == 'png':
         file['Type'] = entryTypes['image']
     demisto.results(file)
-    sys.exit(0)
 
-if demisto.command() == 'set_recording_settings':
-    uva = UnifiVideoAPI(api_key=demisto.params()["api_key"], addr=demisto.params()["addr"], port=demisto.params()[
-                        "port"], schema=demisto.params()["schema"], verify_cert=demisto.params()["verify_cert"])
-    uva.get_camera(demisto.args()["camera_name"]).set_recording_settings(demisto.args()["rec_set"])
-    sys.exit(0)
+if demisto.command() == 'unifivideo-set-recording-settings':
+    camera_name = args['camera_name']
+    rec_set = args['rec_set']
+    uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
+    uva.get_camera(camera_name).set_recording_settings(rec_set)
 
-if demisto.command() == 'ir_leds':
-    uva = UnifiVideoAPI(api_key=demisto.params()["api_key"], addr=demisto.params()["addr"], port=demisto.params()[
-                        "port"], schema=demisto.params()["schema"], verify_cert=demisto.params()["verify_cert"])
-    uva.get_camera(demisto.args()["camera_name"]).ir_leds(demisto.args()["ir_leds"])
-    sys.exit(0)
+if demisto.command() == 'unifivideo-ir-leds':
+    camera_name = args['camera_name']
+    ir_leds = args['ir_leds']
+    uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
+    uva.get_camera(camera_name).ir_leds(ir_leds)
 
-if demisto.command() == 'get_recording':
-    uva = UnifiVideoAPI(api_key=demisto.params()["api_key"], addr=demisto.params()["addr"],
-                        port=demisto.params()["port"], schema=demisto.params()["schema"],
-                        verify_cert=demisto.params()["verify_cert"])
-    uva.recordings[demisto.args()["recording_id"]].download('/tmp/recording.mp4')
+if demisto.command() == 'unifivideo-get-recording':
+    recording_id = args['recording_id']
+    uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
+    uva.recordings[recording_id].download('/tmp/recording.mp4')
     r_type = demisto.args().get('type', 'png')
     f = open("/tmp/recording.mp4", "r")
     output = f.read()
@@ -85,15 +85,13 @@ if demisto.command() == 'get_recording':
         if r_type == 'jpg':
             file['Type'] = entryTypes['image']
         demisto.results(file)
-    sys.exit(0)
 
-if demisto.command() == 'get_recording_snapshot':
-    uva = UnifiVideoAPI(api_key=demisto.params()["api_key"], addr=demisto.params()["addr"],
-                        port=demisto.params()["port"], schema=demisto.params()["schema"],
-                        verify_cert=demisto.params()["verify_cert"])
-    uva.recordings[demisto.args()["recording_id"]].download('/tmp/recording.mp4')
-    r_type = demisto.args().get('type', 'png')
-    if "frame" in demisto.args():
+if demisto.command() == 'unifivideo-get-recording-snapshot':
+    recording_id = args['recording_id']
+    snapshot_file_name = 'snapshot-'+recording_id+'-'+args['frame']+'.jpg'
+    uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
+    uva.recordings[recording_id].download('/tmp/recording.mp4')
+    if "frame" in args:
         vc = cv2.VideoCapture('/tmp/recording.mp4')
         c = 1
 
@@ -105,33 +103,23 @@ if demisto.command() == 'get_recording_snapshot':
         while rval:
             rval, frame = vc.read()
             c = c + 1
-            if c == int(demisto.args()['frame']):
-                cv2.imwrite('/tmp/snapshot.jpg', frame)
+            if c == int(args['frame']):
+                cv2.imwrite("/tmp/"+snapshot_file_name, frame)
                 break
         vc.release()
-        f = open("/tmp/snapshot.jpg", "r")
+        f = open("/tmp/"+snapshot_file_name, "r")
         output = f.read()
-        filename = "snapshot.jpg"
+        filename = snapshot_file_name
         file = fileResult(filename=filename, data=output)
-        if r_type == 'jpg':
-            file['Type'] = entryTypes['image']
+        file['Type'] = entryTypes['image']
         demisto.results(file)
-    sys.exit(0)
 
-if demisto.command() == 'get_recording_list':
-    uva = UnifiVideoAPI(api_key=demisto.params()["api_key"], addr=demisto.params()["addr"],
-                        port=demisto.params()["port"], schema=demisto.params()["schema"],
-                        verify_cert=demisto.params()["verify_cert"])
+if demisto.command() == 'unifi-video-get-recording-list':
+    uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
     for rec in uva.recordings:
         print(rec)
-    sys.exit(0)
 
-if demisto.command() == 'create_inc':
-    lastRun = demisto.getLastRun()
-    print(lastRun)
-    sys.exit(0)
-
-if demisto.command() == 'get_snapshot_at_frame':
+if demisto.command() == 'unifivideo-get-snapshot-at-frame':
     vc = cv2.VideoCapture('recording.mp4')
     c = 1
 
@@ -147,12 +135,10 @@ if demisto.command() == 'get_snapshot_at_frame':
             cv2.imwrite(str(c) + '.jpg', frame)
             break
     vc.release()
-    sys.exit(0)
 
 if demisto.command() == 'fetch-incidents':
     start_time_of_int = str(datetime.now())
-    uva = UnifiVideoAPI(api_key=demisto.params()["api_key"], addr=demisto.params()["addr"], port=demisto.params()[
-                        "port"], schema=demisto.params()["schema"], verify_cert=demisto.params()["verify_cert"])
+    uva = UnifiVideoAPI(api_key=api_key, addr=address, port=port, schema=schema, verify_cert=verify_cert)
 
     # And retrieve it for use later:
     last_run = demisto.getLastRun()
@@ -163,6 +149,8 @@ if demisto.command() == 'fetch-incidents':
     start_time = day_ago
     if last_run and last_run.has_key('start_time'):
         start_time = last_run.get('start_time')
+    if not isinstance(start_time, datetime):
+        start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S.%f')
     for rec in uva.recordings:
         incident = {}
         datetime_object = datetime.strptime(str(rec.start_time), '%Y-%m-%d %H:%M:%S')
@@ -170,25 +158,17 @@ if demisto.command() == 'fetch-incidents':
             cam_id = uva.get_camera(camera.name)
             if cam_id._id in rec.cameras:
                 camera_name = camera.name
-
-        incident = {
-            'name': rec.rec_type,
-            'occurred': datetime_object.isoformat() + "Z",
-            'rawJSON': json.dumps({"event": rec.rec_type, "ubnt_id": rec._id, "camera_name": camera_name, "integration_lastrun": str(start_time), "start_time": str(rec.start_time), "stop_time": str(rec.end_time)})
-        }
         try:
-            if not isinstance(start_time, datetime):
-                start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S.%f')
             if datetime_object > start_time:
+                incident = {
+                    'name': rec.rec_type,
+                    'occurred': datetime_object.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                    'rawJSON': json.dumps({"event": rec.rec_type, "ubnt_id": rec._id, "camera_name": camera_name,
+                                           "integration_lastrun": str(start_time), "start_time": str(rec.start_time),
+                                           "stop_time": str(rec.end_time)})
+                }
                 inc.append(incident)
         except Exception as e:
             raise Exception("Problem comparing: " + str(datetime_object) + ' ' + str(start_time) + " Exception: " + str(e))
     demisto.incidents(inc)
     demisto.setLastRun({'start_time': start_time_of_int})
-    sys.exit(0)
-# You can use demisto.args()[argName] to get a specific arg. args are strings.
-# You can use demisto.params()[paramName] to get a specific params.
-# Params are of the type given in the integration page creation.
-
-# if demisto.command() == 'long-running-execution':
-#  # Should have here an endless loop
