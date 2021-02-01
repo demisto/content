@@ -38,10 +38,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: b537d057-7719-4573-8db8-99b3e120bfa7
+    taskid: 7e939403-872f-44be-8ab0-77c5b1f4596d
     type: playbook
     task:
-      id: b537d057-7719-4573-8db8-99b3e120bfa7
+      id: 7e939403-872f-44be-8ab0-77c5b1f4596d
       version: -1
       name: GenericPolling
       description: |-
@@ -69,7 +69,7 @@ tasks:
       PollingCommandArgName:
         simple: task_ids
       PollingCommandName:
-        simple: nutanix-hypervisor-task-poll
+        simple: nutanix-hypervisor-task-results-get
       Timeout:
         simple: ${inputs.timeout}
       dt:
@@ -119,18 +119,16 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 7cd4600c-7f71-436f-870d-f8c208100974
+    taskid: ccd66a1e-e508-4732-8d1b-7f2b61f01c14
     type: regular
     task:
-      id: 7cd4600c-7f71-436f-870d-f8c208100974
+      id: ccd66a1e-e508-4732-8d1b-7f2b61f01c14
       version: -1
       name: Nutanix Get Completed Task Info
-      description: Poll tasks provided by task_ids to check if they are ready. Returns
-        all the tasks from 'task_ids' list that are ready at the moment Nutanix service
-        was polled. If no task is ready, it waits until at least one task is ready.
-        If the 'timeout_interval' period ends and no task has finished, it returns
-        a timeout response.
-      script: '|||nutanix-hypervisor-task-poll'
+      description: Returns all the results of the tasks from the task_ids list that
+        are ready at the moment the Nutanix service was polled. If no task is ready,
+        returns a timeout response.
+      script: '|||nutanix-hypervisor-task-results-get'
       type: regular
       iscommand: true
       brand: ""
@@ -140,7 +138,6 @@ tasks:
     scriptarguments:
       task_ids:
         simple: ${NutanixHypervisor.VMPowerStatus.task_uuid}
-      timeout_interval: {}
     separatecontext: false
     view: |-
       {
@@ -165,7 +162,8 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: Performs a check to see if task was indeed returned, or the polling timed out.
+      description: Performs a check to see if task was indeed returned, or the polling
+        timed out.
     nexttasks:
       '#default#':
       - "5"
@@ -241,7 +239,7 @@ tasks:
         a different host can be specified to start it on. This is an asynchronous
         operation that results in the creation of a task object. The UUID of this
         task object is returned as the response of this operation. With this task
-        UUID, the task status can be monitored by using the nutanix-hypervisor-task-poll
+        UUID, the task status can be monitored by using the nutanix-hypervisor-task-results-get
         command.
       script: '|||nutanix-hypervisor-vm-powerstatus-change'
       type: regular
