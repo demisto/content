@@ -1097,7 +1097,7 @@ class Client(BaseClient):
         )
 
     @logger
-    def run_snippet_code_script(self, snippet_code: str, endpoint_ids: list, timeout: int) -> Dict[str, Any]:
+    def run_snippet_code_script(self, snippet_code: str, endpoint_ids: list) -> Dict[str, Any]:
         return self._http_request(
             method='POST',
             url_suffix='/scripts/run_snippet_code_script',
@@ -1108,7 +1108,6 @@ class Client(BaseClient):
                         'operator': 'in',
                         'value': endpoint_ids
                     }],
-                    # 'timeout': timeout,  # TODO: api fails with 500
                     'snippet_code': snippet_code
                 }
             },
@@ -2811,11 +2810,7 @@ def run_script_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
 def run_snippet_code_script_command(client: Client, args: Dict) -> Tuple[str, Any, Any]:
     snippet_code = args.get('snippet_code')
     endpoint_ids = argToList(args.get('endpoint_ids'))
-    try:
-        timeout = int(args.get('timeout', 600))
-    except ValueError:
-        raise ValueError('The timeout argument need to be an integer.')
-    response = client.run_snippet_code_script(snippet_code, endpoint_ids, timeout)
+    response = client.run_snippet_code_script(snippet_code, endpoint_ids)
     reply = response.get('reply')
     return (
         tableToMarkdown('Run Snippet Code Script', reply),

@@ -2286,13 +2286,6 @@ script:
       name: snippet_code
       required: true
       secret: false
-    - default: false
-      description: Integer represents the timeout in seconds for this execution.
-      isArray: false
-      name: timeout
-      required: false
-      defaultValue: 600
-      secret: false
     deprecated: false
     description: Initiate a new endpoint script execution action using provided snippet code.
     execution: false
