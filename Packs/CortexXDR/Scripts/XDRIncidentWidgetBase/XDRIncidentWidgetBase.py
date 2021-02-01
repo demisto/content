@@ -62,7 +62,7 @@ def main():
         incidents = json.loads(incidents_res[0].get('Contents'))
         incidents_ids = [inc.get('id') for inc in incidents]
 
-        res_dict = {}
+        res_dict = {}  # type:dict
         for incident in incidents_ids:
             context = get_context(incident, QUERY_TYPE_TO_PATH[query_type])
 
@@ -89,10 +89,10 @@ def main():
                     res_dict[val] = 1
 
         if res_type == 'Top10':
-            res_dict = sorted(res_dict.items(), key=lambda x: x[1], reverse=True)[:10]
+            res = sorted(res_dict.items(), key=lambda x: x[1], reverse=True)[:10]
 
             data = []
-            for item in res_dict:
+            for item in res:
                 data.append({'name': item[0], 'data': [item[1]]})
 
             demisto.results(json.dumps(data))
