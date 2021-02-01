@@ -341,7 +341,7 @@ references:
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
         echo "successfully downloaded private ID set"
-        gcloud auth revoke --all
+        gcloud auth revoke --all &> /dev/null
         rm $GCS_PATH
 
         # Merge public and private ID sets
