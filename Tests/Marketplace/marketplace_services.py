@@ -1240,7 +1240,6 @@ class Pack(object):
             if pack_version and released_date:
                 section = changelog.get(pack_version)
                 section["released"] = released_date
-                changelog[released_date] = section
 
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
                 json.dump(changelog, pack_changelog, indent=4)
