@@ -1,4 +1,4 @@
-Randomly assigns the active incidents to on call analysts (requires shift management). This automation works with the other out-of-office automations to ensure only available analysts are assigned to the active incidents. 
+Randomly assigns the active incidents to on-call analysts (requires shift management). This automation works with the other out-of-office automations to ensure only available analysts are assigned to the active incidents. 
 
 ## Script Data
 ---
@@ -12,7 +12,7 @@ Randomly assigns the active incidents to on call analysts (requires shift manage
 ## Used In
 ---
 This script is used in the following playbooks and scripts.
-* Assign Active Incidents to Next Shift V2
+Assign Active Incidents to Next Shift V2
 
 ## Inputs
 ---
