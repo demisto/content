@@ -1,0 +1,72 @@
+category: Utilities
+commonfields:
+  id: HelloWorld V2
+  version: -1
+configuration:
+- defaultvalue: https://soar.monstersofhack.com
+  display: Server URL (e.g. https://soar.monstersofhack.com)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: This is the Hello World integration for getting started.
+display: HelloWorld V2
+name: HelloWorld V2
+script:
+  commands:
+  - arguments:
+    - description: The name of whom you want to say hello to.
+      name: name
+    description: Hello command - prints hello to anyone.
+    name: helloworld-say-hello-new
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here.
+      type: String
+  - arguments:
+    - description: Alert ID.
+      name: alert_id
+      required: true
+    description: Retrieve alert extra data by ID.
+    name: helloworld-get-alert-new
+    outputs:
+    - contextPath: HelloWorld.Alert.alert_id
+      description: Alert ID.
+      type: String
+    - contextPath: HelloWorld.Alert.created
+      description: Alert created time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      type: Date
+    - contextPath: HelloWorld.Alert.description
+      description: Alert description.
+      type: String
+    - contextPath: HelloWorld.Alert.device_id
+      description: ID of the device involved in the alert.
+      type: String
+    - contextPath: HelloWorld.Alert.device_ip
+      description: IP Address of the device involved in the alert.
+      type: String
+    - contextPath: HelloWorld.Alert.location
+      description: Location of the device involved in the alert.
+      type: String
+    - contextPath: HelloWorld.Alert.user
+      description: User involved in the alert.
+      type: String
+  dockerimage: demisto/python3:3.9.1.15759
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
