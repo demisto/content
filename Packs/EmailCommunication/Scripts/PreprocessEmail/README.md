@@ -1,4 +1,4 @@
-This script checks incoming emails from the incident type. If the emails contain an 8-digit hash in the email subject, the script will add the email response to the existing incident War Room with the "email-thread" tag. If there is no 8-digit hash in the email subject, the preprocessing will open a new incident for this email.
+This script checks incoming emails from the incident type. If the emails contain an 8-digit hash in the email subject, the script will add the email response to the existing incident in the War Room with the "email-thread" tag. If there is no 8-digit hash in the email subject, the preprocessing will open a new incident for this email.
 
 The script is a part of the Email Communication pack.
 
