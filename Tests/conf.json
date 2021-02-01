@@ -3185,7 +3185,7 @@
         },
         {
             "integrations": "ServiceDeskPlus (On-Premise)",
-            "playbookID": "<TestPlaybook ID>"
+            "playbookID": "Service Desk Plus (On-Premise) Test"
         }
     ],
     "skipped_tests": {

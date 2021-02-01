@@ -60,9 +60,6 @@ class Client(BaseClient):
                                            .format(res.content), exception)
 
             if res.status_code in [401]:
-                if demisto.getIntegrationContext().get('expiry_time', 0) <= date_to_timestamp(datetime.now()):
-                    # self.get_access_token()
-                    return self.http_request(method, url_suffix, full_url=full_url, params=params)
                 try:
                     err_msg = f'Unauthorized request - check domain location and the given credentials \n{str(res.json())}'
                 except ValueError:
