@@ -6,6 +6,7 @@ import ast
 import json
 import glob
 import re
+import subprocess
 import sys
 import demisto_client
 from threading import Thread, Lock
@@ -274,6 +275,14 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
     #         upload_zipped_packs(client=client, host=host, pack_path=local_pack)
 
     logging.info(f'Installing the following pack: {private_pack_name}')
+    print(f'\n\ndoing ls for test_pack_path: {test_pack_path}\n\n')
+    subprocess.check_output(f'ls {test_pack_path}', shell=True)
+    print('did ls')
+    test_pack_path_without_packs = test_pack_path.replace('packs', '')
+    print(f'\n\ndoing ls for test_pack_path_without_packs: {test_pack_path_without_packs}\n\n')
+    subprocess.check_output(f'ls {test_pack_path_without_packs}', shell=True)
+    print('did ls')
+
     private_pack_path = os.path.join(test_pack_path, f'{private_pack_name}.enc2.zip')
     upload_zipped_packs(client=client, host=host, pack_path=private_pack_path)
 
