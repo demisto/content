@@ -3,9 +3,9 @@ and create a threat hunting incident for you.
 
 The main query parameters for the resulting, internal indicator query are:
 
-* seen for the first time by the feed source within the last 7 days
-* no investigation on it yet
-* must have relationships to other indicators
+* Seen for the first time by the feed source within the last 7 days.
+* No investigation on it yet.
+* Must have relationships to other indicators.
 
 ## Script Data
 ---

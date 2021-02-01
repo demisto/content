@@ -17,9 +17,9 @@ comment: |-
 
   The main query parameters for the resulting, internal indicator query are:
 
-  1. seen for the first time by the feed source within the last 7 days
-  2. no investigation on it yet
-  3. must have relationships to other indicators
+  1. Seen for the first time by the feed source within the last 7 days.
+  2. No investigation on it yet.
+  3. Must have relationships to other indicators.
 commonfields:
   id: CyrenThreatInDepthRandomHunt
   version: -1
