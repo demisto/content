@@ -151,7 +151,8 @@ def find_keywords(data, tag_field, text_field, min_score):
     human_readable = "# Keywords per category\n"
     for category, scores in keywords.items():
         sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
-        table_items = [{"Word": word, "Score": score} for word, score in sorted_scores if score >= min_score]
+        table_items = [{"Word": word, "Score": '{:.2f}'.format(score)} for
+                       word, score in sorted_scores if score >= min_score]
         human_readable += tableToMarkdown(category, table_items, ["Word", "Score"])
     demisto.results({
         'Type': entryTypes['note'],
@@ -271,7 +272,6 @@ def validate_data_and_labels(data, exist_labels_counter, labels_mapping, missing
             'HumanReadableFormat': formats['markdown'],
         }
         demisto.results(entry)
-    demisto.results(set([x[DBOT_TAG_FIELD] for x in data]))
     if len(set([x[DBOT_TAG_FIELD] for x in data])) == 1:
         single_label = [x[DBOT_TAG_FIELD] for x in data][0]
         if labels_mapping == ALL_LABELS:
