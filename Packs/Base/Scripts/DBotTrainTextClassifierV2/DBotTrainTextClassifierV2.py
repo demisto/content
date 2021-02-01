@@ -41,7 +41,7 @@ def get_phishing_map_labels(comma_values):
         mapped_value = list(labels_dict.values())[0]
         error = ['Label mapping error: you need to map to at least two labels: {}.'.format(mapped_value)]
         return_error('\n'.join(error))
-    return {k: canonize_label(v) for k, v in labels_dict.items()}
+    return {k.decode('utf-8', 'ignore').encode("utf-8"): canonize_label(v) for k, v in labels_dict.items()}
 
 
 def read_file(input_data, input_type):
@@ -177,6 +177,7 @@ def set_tag_field(data, tag_fields):
                     label = label[0]
                 elif isinstance(label, list) and len(label) == 0:
                     continue
+                label = label.decode('utf-8', 'ignore').encode("utf-8")
                 d[DBOT_TAG_FIELD] = str(label)
                 found_field = True
                 break
