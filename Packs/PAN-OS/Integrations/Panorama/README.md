@@ -2470,7 +2470,8 @@ Returns a list of all PCAP files by PCAP type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pcapType | Type of Packet Capture. | Required | 
+| pcapType | Type of Packet Capture. | Required |
+| serialNumber | The serial number of the firewall to download the PCAP from. | Optional |
 | password | Password for Panorama. Relevant for the 'dlp-pcap' PCAP type. | Optional | 
 
 
