@@ -292,15 +292,15 @@
     "columnPos": 1,
     "tableColumns": [
      "Owner",
-     "Month closed",
+     "Month resolved",
      "Total incidents",
-     "Mean time to close (days)"
+     "Mean time to resolve (days)"
     ],
     "classes": "striped stackable small very compact",
     "readableHeaders": {
      "owner": "Owner",
-     "closed(m)": "Month closed",
-     "avg|openDuration / (3600*24)": "Mean time to close (days)",
+     "closed(m)": "Month resolved",
+     "avg|openDuration / (3600*24)": "Mean time to resolve (days)",
      "count|1": "Total incidents"
     }
    }

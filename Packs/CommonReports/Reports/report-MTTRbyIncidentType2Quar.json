@@ -291,16 +291,16 @@
     "rowPos": 7,
     "columnPos": 1,
     "tableColumns": [
-     "Month closed",
+     "Month resolved",
      "Type",
      "# Incidents",
-     "Mean time to close (days)"
+     "Mean time to resolve (days)"
     ],
     "classes": "striped stackable small very compact",
     "readableHeaders": {
      "type": "Type",
-     "closed(m)": "Month closed",
-     "avg|openDuration / (3600*24)": "Mean time to close (days)",
+     "closed(m)": "Month resolved",
+     "avg|openDuration / (3600*24)": "Mean time to resolve (days)",
      "count|1": "# Incidents"
     }
    }
