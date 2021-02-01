@@ -21,10 +21,6 @@ MIN_INCIDENTS_THRESHOLD = 100
 PREDICTIONS_OUT_FILE_NAME = 'predictions_on_test_set.csv'
 
 
-def canonize_label(label):
-    return label.replace(" ", "_")
-
-
 def get_phishing_map_labels(comma_values):
     if comma_values == ALL_LABELS:
         return comma_values
@@ -41,7 +37,7 @@ def get_phishing_map_labels(comma_values):
         mapped_value = list(labels_dict.values())[0]
         error = ['Label mapping error: you need to map to at least two labels: {}.'.format(mapped_value)]
         return_error('\n'.join(error))
-    return {k.decode('utf-8', 'ignore').encode("utf-8"): canonize_label(v) for k, v in labels_dict.items()}
+    return {k.encode('utf-8', 'ignore').decode("utf-8"): v for k, v in labels_dict.items()}
 
 
 def read_file(input_data, input_type):
@@ -98,7 +94,7 @@ def get_data_with_mapped_label(data, labels_mapping, tag_field):
     for row in data:
         original_label = row[tag_field]
         if labels_mapping == ALL_LABELS:
-            row[tag_field] = canonize_label(original_label)
+            row[tag_field] = original_label
         else:
             if original_label in labels_mapping:
                 row[tag_field] = labels_mapping[original_label]
@@ -177,7 +173,7 @@ def set_tag_field(data, tag_fields):
                     label = label[0]
                 elif isinstance(label, list) and len(label) == 0:
                     continue
-                label = label.decode('utf-8', 'ignore').encode("utf-8")
+                label = label.encode('utf-8', 'ignore').decode("utf-8")
                 d[DBOT_TAG_FIELD] = str(label)
                 found_field = True
                 break
