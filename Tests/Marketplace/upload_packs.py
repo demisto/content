@@ -812,8 +812,9 @@ def compare_rn_and_get_updated_date(pack_name, index_folder_path_fix, index_fold
             if changelog:
                 new_pack_version = max(LooseVersion(ver) for ver in changelog)
 
-    if old_pack_version.vstring == new_pack_version.vstring and old_pack_version:
-        return old_pack_version.vstring, old_latest_changelog_released_date
+    if new_pack_version and old_pack_version:
+        if old_pack_version.vstring == new_pack_version.vstring:
+            return old_pack_version.vstring, old_latest_changelog_released_date
 
     return None, None
 
