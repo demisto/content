@@ -39,9 +39,8 @@ def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
     dummy = args.get('dummy', 'example dummy')
 
     if not dummy:
-        raise ValueError('dummy not specified')
+        raise ValueError('dummy was not specified')
 
-    # Call the standalone function and get the raw response
     result = basescript_dummy(dummy)
 
     return CommandResults(

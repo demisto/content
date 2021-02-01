@@ -6,7 +6,7 @@ description: |-
   This Playbook simulates a vulnerability scan using the "HelloWorld" sample integration. It's used to demonstrate how to use the GenericPolling mechanism to run jobs that take several seconds or minutes to complete. It is designed to be used as a subplaybook, but you can also use it as a standalone playbook, by providing the ${Endpoint.Hostname} input in the Context.
 
   Other inputs include the report output format (JSON context or File attached), and the Interval/Timeouts to use for polling the scan status until it's complete.
-id: HelloWorld Scan v2
+id: HelloWorld Say Hello
 inputs:
 - description: Hostname to run the scan against. By default takes ${Endpoint.Hostname}
     from the context as the input.
@@ -36,7 +36,7 @@ inputs:
   required: true
   value:
     simple: "15"
-name: HelloWorld Scan v2
+name: HelloWorld Say Hello
 outputs:
 - contextPath: HelloWorld.Scan.entity.entity-id
   description: Scanned entity ID.
@@ -100,19 +100,20 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      name: {}
+      name:
+        simple: rsagi
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
       description: Hello command - prints hello to anyone.
-      id: cc168ea7-5c2b-46ce-82d3-05ed19698f88
+      id: 991ad305-af30-49d0-892a-84b980042c44
       iscommand: true
-      name: Start a Hello World Scan
+      name: Say Hello
       script: '|||helloworld-say-hello-new'
       type: regular
       version: -1
-    taskid: cc168ea7-5c2b-46ce-82d3-05ed19698f88
+    taskid: 991ad305-af30-49d0-892a-84b980042c44
     timertriggers: []
     type: regular
     view: |-
@@ -194,13 +195,13 @@ tasks:
     task:
       brand: ""
       description: Retrieve alert extra data by ID.
-      id: ff576bfe-7a82-4d41-872e-345840059eee
+      id: a3aade51-e07f-4d0c-81f8-65345be13211
       iscommand: true
       name: Retrieve HelloWorld Scan Results
       script: '|||helloworld-get-alert-new'
       type: regular
       version: -1
-    taskid: ff576bfe-7a82-4d41-872e-345840059eee
+    taskid: a3aade51-e07f-4d0c-81f8-65345be13211
     timertriggers: []
     type: regular
     view: |-
@@ -290,13 +291,13 @@ tasks:
     task:
       brand: ""
       description: Prints an error entry with a given message
-      id: 491cfd28-41ea-4059-88d0-ce10a193c6f8
+      id: 9bb9d3c8-81bb-460b-8219-bf93a46d6c21
       iscommand: false
-      name: Print Error
+      name: Print Error New
       scriptName: PrintErrorEntry
       type: regular
       version: -1
-    taskid: 491cfd28-41ea-4059-88d0-ce10a193c6f8
+    taskid: 9bb9d3c8-81bb-460b-8219-bf93a46d6c21
     timertriggers: []
     type: regular
     view: |-
