@@ -598,9 +598,7 @@ def main() -> None:
             return_results(test_module(client))
 
         elif demisto.command() == 'fetch-indicators':
-
             last_fetch_date = get_indicators_last_fetch_date()  # type:datetime
-
             next_run, indicators = fetch_indicators_command(client, last_fetch_date, reputation, tlp_to_use, tags)
 
             if indicators:
