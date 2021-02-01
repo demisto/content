@@ -1,4 +1,4 @@
-Retrieves the number of on call hours per user.
+Retrieves the number of on-call hours per user.
 
 ## Script Data
 ---
