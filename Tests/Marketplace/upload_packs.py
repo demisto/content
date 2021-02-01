@@ -75,7 +75,7 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket: Any, extract_destination_path: str) -> Tuple[str, Any, int]:
+def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, fix=False) -> Tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
 
     Args:
@@ -89,6 +89,8 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
     """
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
+    elif fix:
+        index_storage_path = os.path.join('content/builds/master/252889/content/packs', f"{GCPConfig.INDEX_NAME}.zip")
     else:
         index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
@@ -693,7 +695,8 @@ def option_handler():
     parser = argparse.ArgumentParser(description="Store packs in cloud storage.")
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
-    parser.add_argument('-e', '--extract_path', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-e', '--extract_path_', help="Full path of folder to extract wanted packs", required=True)
+    parser.add_argument('-ef', '--extract_path_fix', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-s', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
@@ -792,6 +795,7 @@ def main():
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
+    extract_destination_path_fix = option.extract_path_fix
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
     target_packs = option.pack_names if option.pack_names else ""
@@ -816,25 +820,24 @@ def main():
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
-
                                                                                  extract_destination_path)
     # DATES FIX
     # download and extract index OLDER index
-    logging.debug("\n\n\n#############################\n\n\n")
-    storage_bucket_name_dates_fix = "marketplace-ci-build"
-    extract_destination_path_date_fix = "/content/builds/master/252889/content/packs/"
+    logging.log("\n\n\n#############################\n\n\n")
+    storage_bucket_name_dates_fix = "marketplace-ci-build" # change bucket
 
     storage_bucket_dates_fix = storage_client.bucket(storage_bucket_name_dates_fix)
     index_folder_path_fix, index_blob_fix, index_generation_fix = \
-        download_and_extract_index(storage_bucket_dates_fix, extract_destination_path_date_fix)
+        download_and_extract_index(storage_bucket_dates_fix, extract_destination_path_fix, True)
+
     #Test it
     changelog_index_path = os.path.join(index_folder_path_fix, "AbuseDB", Pack.CHANGELOG_JSON)
     if os.path.exists(changelog_index_path):
         with open(changelog_index_path, "r") as changelog_file:
             changelog = json.load(changelog_file)
-            logging.debug("Printing log: \n")
-            logging.debug(str(changelog.get("1.0.1")))
-    logging.debug("\n\n\n#############################\n\n\n")
+            logging.log("Printing log: \n")
+            logging.log(str(changelog.get("1.0.1")))
+    logging.log("\n\n\n#############################\n\n\n")
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
