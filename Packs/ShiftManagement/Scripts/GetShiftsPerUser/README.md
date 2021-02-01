@@ -14,7 +14,7 @@ Retrieves the number of on-call hours per user.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| userId | The user ID for which to get the number of on-call hours for the shift \(e.g. johndoe\). |
+| userId | The user ID for whom to get the number of on-call hours for the shift \(e.g. johndoe\). |
 
 ## Outputs
 ---
