@@ -16,7 +16,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, init_big
     get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, get_recent_commits_data, \
     store_successful_and_failed_packs_in_ci_artifacts
 from demisto_sdk.commands.common.tools import run_command, str2bool
-
+from Tests.Marketplace.zip_packs import download_packs_from_gcp, get_latest_pack_zip_from_blob
 from Tests.scripts.utils.log_util import install_logging
 
 
@@ -816,7 +816,25 @@ def main():
 
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
+
                                                                                  extract_destination_path)
+    # DATES FIX
+    # download and extract index OLDER index
+    logging.debug("\n\n\n#############################\n\n\n")
+    storage_bucket_name_dates_fix = "marketplace-ci-build"
+    extract_destination_path_date_fix = "/content/builds/master/252889/content/packs/"
+
+    storage_bucket_dates_fix = storage_client.bucket(storage_bucket_name_dates_fix)
+    index_folder_path_fix, index_blob_fix, index_generation_fix = \
+        download_and_extract_index(storage_bucket_dates_fix, extract_destination_path_date_fix)
+    #Test it
+    changelog_index_path = os.path.join(index_folder_path_fix, "AbuseDB", Pack.CHANGELOG_JSON)
+    if os.path.exists(changelog_index_path):
+        with open(changelog_index_path, "r") as changelog_file:
+            changelog = json.load(changelog_file)
+            logging.debug("Printing log: \n")
+            logging.debug(str(changelog.get("1.0.1")))
+    logging.debug("\n\n\n#############################\n\n\n")
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
@@ -882,6 +900,7 @@ def main():
             pack.cleanup()
             continue
 
+        # change the update - this function writes back the metadata
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
@@ -904,6 +923,24 @@ def main():
             pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
             pack.cleanup()
             continue
+        """
+                # fix dates in RN
+        old_changelog = ?
+
+        # pack metadata
+        with open(metadata_path, "w") as metadata_file:
+            metadata_file['updated'] = ????
+            json.dump(formatted_metadata, metadata_file, indent=4)
+
+        # changelog - compare and change
+            # same version - take the old one
+            # different version - keep the new one
+
+
+        # end of fix dates
+        
+        """
+        download_packs_from_gcp("marketplace-ci-build", "content/builds")
 
         task_status = pack.remove_unwanted_files(remove_test_playbooks)
         if not task_status:
