@@ -165,6 +165,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: Performs a check to see if task was indeed returned, or the polling timed out.
     nexttasks:
       '#default#':
       - "5"
