@@ -1850,6 +1850,7 @@ def test_get_script_execution_status_command(requests_mock):
 
     response = get_script_execution_status_command(client, args)
 
+    api_response['reply']['action_id'] = action_id
     assert response[2] == api_response
     assert requests_mock.request_history[0].json() == {
         'request_data': {
