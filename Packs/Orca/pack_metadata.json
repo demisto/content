@@ -2,7 +2,7 @@
     "name": "Orca",
     "description": "Orca Security cloud integration",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Eden Marco",
     "url": "https://orca.security/",
     "email": "support@orca.security",

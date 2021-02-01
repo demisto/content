@@ -1,6 +1,6 @@
 from requests import Response, Session
 from HelloIAMWorld import Client, get_mapping_fields
-from CommonServerPython import IAMCommand, IAMErrors, IAMUserProfile, IAMActions, IAMUserAppData
+from IAMApiModule import *
 
 APP_USER_OUTPUT = {
     "user_id": "mock_id",
@@ -313,7 +313,7 @@ def test_get_mapping_fields_command(mocker):
     mocker.patch.object(client, 'get_app_fields', return_value={'field1': 'desc1', 'field2': 'desc2'})
 
     mapping_response = get_mapping_fields(client)
-    mapping = mapping_response.extract_mapping()[0]
+    mapping = mapping_response.extract_mapping()
 
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field1') == 'desc1'
     assert mapping.get(IAMUserProfile.INDICATOR_TYPE, {}).get('field2') == 'desc2'
