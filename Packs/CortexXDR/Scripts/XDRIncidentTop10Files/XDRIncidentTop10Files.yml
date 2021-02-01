@@ -1,18 +1,27 @@
 args:
 - name: from
+  description: 'The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
 - name: to
+  description: 'The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
 commonfields:
-  id: 6102e160-3cc4-46c8-87f1-3ac0d96f0a3d
+  id: XDRIncidentTop10Files
   version: -1
-dockerimage: demisto/python3:3.9.1.14969
+dockerimage: demisto/python3:3.9.1.15759
 enabled: true
 name: XDRIncidentTop10Files
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
+comment: The widget returns the top 10 files in Cortex XDR open incidents.
 tags:
 - widget
+fromversion: 6.0.0
 type: python
+tests:
+- No tests (auto formatted)

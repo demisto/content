@@ -1,13 +1,18 @@
 args:
 - name: from
+  description: 'The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
 - name: to
+  description: 'The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
 commonfields:
-  id: fb0bc309-8d58-4189-810c-5906a9d7fcbe
+  id: XDRIncidentUserCount
   version: -1
-dockerimage: demisto/python3:3.9.1.14969
+dockerimage: demisto/python3:3.9.1.15759
 enabled: true
 name: XDRIncidentUserCount
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -16,3 +21,7 @@ subtype: python3
 tags:
 - widget
 type: python
+comment: The widget returns the number of users in Cortex XDR open incidents.
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

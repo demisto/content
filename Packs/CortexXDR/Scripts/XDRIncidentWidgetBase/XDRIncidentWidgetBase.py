@@ -66,10 +66,9 @@ def main():
         res_dict = OrderedDict()
         for incident in incidents_ids:
             context = get_context(incident, QUERY_TYPE_TO_PATH[query_type])
-            # print(f'for incident {incident} found: {context}')
 
             for val in context:
-                if val == None:
+                if not val:
                     continue
 
                 if 'This alert from content' in val:
@@ -85,7 +84,7 @@ def main():
 
                 val = val.capitalize()
 
-                if res_dict.get(val) != None:
+                if res_dict.get(val):
                     res_dict[val] = res_dict[val] + 1
                 else:
                     res_dict[val] = 1

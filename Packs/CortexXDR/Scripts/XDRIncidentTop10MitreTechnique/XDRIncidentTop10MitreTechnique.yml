@@ -1,18 +1,27 @@
 args:
 - name: from
+  description: 'The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
 - name: to
+  description: 'The end date by which to filter incidents. Date format will be the
+    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    +0200").'
 commonfields:
-  id: eb22e0dc-7c93-4eb5-87ab-47718ac149f1
+  id: XDRIncidentTop10MitreTechnique
   version: -1
-dockerimage: demisto/python3:3.9.1.14969
+dockerimage: demisto/python3:3.9.1.15759
 enabled: true
 name: XDRIncidentTop10MitreTechnique
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
+comment: The widget returns the top 10 alerts Mitre technique in Cortex XDR open incidents.
 tags:
 - widget
+fromversion: 6.0.0
 type: python
+tests:
+- No tests (auto formatted)
