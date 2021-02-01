@@ -20,7 +20,6 @@ from Tests.scripts.utils.log_util import install_logging
 from tempfile import gettempdir
 
 
-
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
     """Detects and returns packs names to upload.
 
@@ -697,7 +696,6 @@ def option_handler():
     # disable-secrets-detection-start
     parser.add_argument('-a', '--artifacts_path', help="The full path of packs artifacts", required=True)
     parser.add_argument('-e', '--extract_path_', help="Full path of folder to extract wanted packs", required=True)
-    parser.add_argument('-ef', '--extract_path_fix', help="Full path of folder to extract wanted packs", required=True)
     parser.add_argument('-b', '--bucket_name', help="Storage bucket name", required=True)
     parser.add_argument('-s', '--service_account',
                         help=("Path to gcloud service account, is for circleCI usage. "
