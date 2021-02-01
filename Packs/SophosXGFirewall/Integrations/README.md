@@ -1,19 +1,17 @@
-On-Premise firewall by Sophos
-This integration was integrated and tested with version xx of sophos_firewall.
-Supported Cortex XSOAR versions: 5.0.0 and later.
-
+On-premise firewall by Sophos
+This integration was integrated and tested with version xx of sophos_firewall
 ## Configure sophos_firewall on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for sophos_firewall.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | server_url | Server URL | True |
-    | credentials | User Credentials | True |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| server_url | Server URL | True |
+| credentials | User Credentials | True |
+| insecure | Trust any certificate \(not secure\) | False |
+| proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -21,7 +19,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### sophos-firewall-rule-list
 ***
-List all firewall rules. IMPORTANT: listing start at 0 (not 1!)
+Lists all firewall rules. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Base Command
@@ -31,8 +29,8 @@ List all firewall rules. IMPORTANT: listing start at 0 (not 1!)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Provide the start index for the rules you would like to list. e.g: 5. Default is 0. | Optional | 
-| end | Provide the end index for the rules you would like to list. e.g: 20. Default is 50. | Optional | 
+| start | The start index for the rules to list, e.g: 5. Default is "0". | Optional | 
+| end | The end index for the rules to list, e.g: 20. Default is "50". | Optional | 
 
 
 #### Context Output
@@ -43,7 +41,7 @@ List all firewall rules. IMPORTANT: listing start at 0 (not 1!)
 | SophosFirewall.SecurityPolicy.Description | String | Description of the rule. | 
 | SophosFirewall.SecurityPolicy.Status | String | Status of the rule. | 
 | SophosFirewall.SecurityPolicy.PolicyType | String | Policy type of the rule. | 
-| SophosFirewall.SecurityPolicy.IPFamily | String | IPv4/IPv6 | 
+| SophosFirewall.SecurityPolicy.IPFamily | String | IP family of the security policy. Either IPv4 or IPv6. | 
 | SophosFirewall.SecurityPolicy.AttachIdentity | String | Rule attach identity status. | 
 | SophosFirewall.SecurityPolicy.Action | String | Current rule action. | 
 | SophosFirewall.SecurityPolicy.LogTraffic | Number | Rule traffic logging code. | 
@@ -195,7 +193,7 @@ List all firewall rules. IMPORTANT: listing start at 0 (not 1!)
 
 ### sophos-firewall-rule-get
 ***
-Get a single firewall rule by name.
+Gets a single firewall rule by name.
 
 
 #### Base Command
@@ -216,7 +214,7 @@ Get a single firewall rule by name.
 | SophosFirewall.SecurityPolicy.Description | String | Description of the rule. | 
 | SophosFirewall.SecurityPolicy.Status | String | Status of the rule. | 
 | SophosFirewall.SecurityPolicy.PolicyType | String | Policy type of the rule. | 
-| SophosFirewall.SecurityPolicy.IPFamily | String | IPv4/IPv6 | 
+| SophosFirewall.SecurityPolicy.IPFamily | String | IP family of the security policy. Either IPv4 or IPv6. | 
 | SophosFirewall.SecurityPolicy.AttachIdentity | String | Rule attach identity status. | 
 | SophosFirewall.SecurityPolicy.Action | String | Current rule action. | 
 | SophosFirewall.SecurityPolicy.LogTraffic | Number | Rule traffic logging code. | 
@@ -265,7 +263,7 @@ Get a single firewall rule by name.
 
 ### sophos-firewall-rule-add
 ***
-Add a new firewall rule.
+Adds a new firewall rule.
 
 
 #### Base Command
@@ -277,46 +275,46 @@ Add a new firewall rule.
 | --- | --- | --- |
 | name | Name of the new rule. | Required | 
 | description | Description of the new rule. | Optional | 
-| status | Is the rule enabled or disabled. Possible values are: Enable, Disable. Default is Enable. | Optional | 
-| ip_family | Are the IPs v4 or v6. Possible values are: IPv4, IPv6. Default is IPv4. | Optional | 
-| position | Should the rule be at the top or bottom of the list? before or after a specific rule? IMPORTANT: If before/after is chosen - provide the position_policy_name pramater. Possible values are: top, bottom, after, before. | Required | 
-| position_policy_name | The name of the policy that the rule should be created before/after . REQUIRED: When the position is before/after. | Optional | 
-| policy_type | Type of the new rule (policy). Possible values are: User, Network. | Required | 
-| source_zones | Source zones to add to the rule. Possible values are: Any, LAN, WAN, VPN, DMZ, WiFi. | Optional | 
+| status | Whether the rule is enabled. Possible values: "Enable" and "Disable". Default is "Enable". | Optional | 
+| ip_family | The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4". | Optional | 
+| position | Whether the rule should be at the "top" or "bottom" of the list, or "before" or\ \ "after" a specific rule? IMPORTANT: If "before" or "after" is selected, provide the\ \ position_policy_name parameter. | Required | 
+| position_policy_name | The name of the policy that the rule should be created before or after. REQUIRED: When the position is "before" or "after". | Optional | 
+| policy_type | Type of the new rule (policy). Possible values: "User" and "Network". | Required | 
+| source_zones | Source zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", "WiFi". | Optional | 
 | source_networks | Source networks to add to the rule. | Optional | 
-| destination_zones | Destination zones to add to the rule. Possible values are: Any, LAN, WAN, VPN, DMZ, WiFi. | Optional | 
+| destination_zones | Destination zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", "WiFi". | Optional | 
 | destination_networks | Destination networks to add to the rule. | Optional | 
 | services | Destination services to add to the rule. | Optional | 
-| schedule | Select Schedule for the Rule. IMPORTANT: Creating a new schedule is available on web console. Possible values are: All the time, Work hours (5 Day week), Work hours (6 Day week), All Time on Weekdays, All Time on Weekends, All Time on Sunday, All Days 10:00 to 19:00. | Optional | 
-| log_traffic | Enable traffic logging for the policy. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| match_identity | Enable to check whether the specified user/user group from the selected zone is allowed to access the selected service or not. IMPORTANT: when enabling match_identity - members parameter is required. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| show_captive_portal | Select to accept traffic from unknown users. Captive portal page is displayed to the user where the user can login to access the Internet. IMPORTANT: MatchIdentity must be Enabled. PARAMETER OF: UserPolicy. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| members | An existing user(s) or group(s) to add to the rule. REQUIRED: when match_identity is enabled. . | Optional | 
-| action | Specify action for the rule traffic. Possible values are: Accept, Reject, Drop. Default is Drop. | Optional | 
-| dscp_marking | Select DSCP Marking to classify flow of packets based on Traffic Shaping policy. | Optional | 
-| primary_gateway | Specify the Primary Gateway. Applicable only in case of Multiple Gateways. | Optional | 
-| backup_gateway | Specify the Backup Gateway. Applicable only in case of Multiple Gateways. | Optional | 
-| application_control | Select Application Filter Policy for the rule. Default is Allow All. | Optional | 
-| application_based_qos_policy | Select to limit the bandwidth for the applications categorized under the Application Category. this tag is only appliacable only when any application_control is selected. Possible values are: Apply, Revoke. Default is Revoke. | Optional | 
-| web_filter | Select Web Filter Policy for the rule. Default is Allow All. | Optional | 
-| web_category_base_qos_policy | Select to limit bandwidth for the URLs categorized under the Web category. this tag is only appliacable only when any web_filteris selected. Possible values are: Apply, Revoke. Default is Revoke. | Optional | 
-| traffic_shapping_policy | Select Traffic Shaping policy for the rule. Default is None. | Optional | 
-| scan_http | Select to enable virus and spam scanning for HTTP protocol. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| scan_https | Select to enable virus and spam scanning for HTTPS protocol. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| sandstorm | Select to enable sandstorm analysis. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| block_quick_quic | Ensure Google websites user HTTP/s instead of QUICK QUIC. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| scan_ftp | Enable/Disable scanning of FTP traffic. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| data_accounting | Select to exclude user's network traffic from data accounting. This option is available only if the parameter 'Match rule-based on user identity' is enabled. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| rewrite_source_address | Enable to apply NAT Policy. Possible values are: Enable, Disable. Default is Enable. | Optional | 
-| web_filter_internet_scheme | Select internet scheme to apply user based Web Filter Policy for the rule. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| application_control_internet_scheme | Select internet scheme to apply user based Application Filter Policy for the rule. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| override_gateway_default_nat_policy | Enable/Disable overriding gateway of default nat policy. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| source_security_heartbeat | Enable/Disable source security heartbeat. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| destination_security_heartbeat | Enable/Disable destination security heartbeat. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| outbound_address | Select the NAT Policy to be applied. Default is MASQ. | Optional | 
-| minimum_source_hb_permitted | Select minimum source HB permitted. Default is No Restriction. | Optional | 
-| minimum_destination_hb_permitted | Select minimum destination HB permitted. Default is No Restriction. | Optional | 
-| intrusion_prevention | Select IPS policy for the rule. Default is generalpolicy. | Optional | 
+| schedule | The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available from the web console. | Optional | 
+| log_traffic | Whether to enable traffic logging for the policy. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| match_identity | Whether to check if the specified user/user group from the\ \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: When enabling match_identity, the members argument is required. | Optional | 
+| show_captive_portal | Whether to accept traffic from unknown users. Captive portal page\ \ is displayed to the user where the user can login to access the Internet.\ \ Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: MatchIdentity must be Enabled. PARAMETER OF: UserPolicy. | Optional | 
+| members | An existing user(s) or group(s) to add to the rule. REQUIRED when match_identity is enabled.  | Optional | 
+| action | Action for the rule traffic. Possible values: "Accept", "Reject", and "Drop". Default is "Drop". | Optional | 
+| dscp_marking | The DSCP marking level to classify the flow of packets based on the Traffic Shaping policy. | Optional | 
+| primary_gateway | The primary gateway. Applicable only in case of multiple gateways. | Optional | 
+| backup_gateway | The backup gateway. Applicable only in case of multiple gateways. | Optional | 
+| application_control | The Application Filter policy for the rule. Default is "Allow All". | Optional | 
+| application_based_qos_policy | Whether to limit the bandwidth for the applications categorized\ \ under the Application category. This tag is only applicable when\ \ an application_control is selected. Possible values: "Apply" and "Revoke". Default is "Revoke". | Optional | 
+| web_filter | The Web Filter policy for the rule. Default is "Allow All". | Optional | 
+| web_category_base_qos_policy | Whether to limit the bandwidth for the URLs categorized under the Web\ \ category. This tag is only applicable when any web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke". | Optional | 
+| traffic_shaping_policy | The Traffic Shaping policy for the rule. Default is "None". | Optional | 
+| scan_http | Whether to enable virus and spam scanning for HTTP protocol. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| scan_https | Whether to enable virus and spam scanning for HTTPS protocol. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| sandstorm | Whether to enable sandstorm analysis. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| block_quick_quic | Whether to enable Google websites to use HTTP/s instead of QUICK QUIC. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| scan_ftp | Whether to enable scanning of FTP traffic. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| data_accounting | Whether to exclude a user's network traffic from data accounting. This option is available only if the parameter "Match rule-based on user identity" is enabled. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| rewrite_source_address | Whether to enable the NAT policy. Possible values: "Enable" and "Disable". Default is "Enable". | Optional | 
+| web_filter_internet_scheme | Whether to enable the internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| application_control_internet_scheme | Whether to enable the internet scheme to apply user-based Application Filter Policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| override_gateway_default_nat_policy | Whether to override the gateway of the default NAT policy. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| source_security_heartbeat | Whether to enable the source security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| destination_security_heartbeat | Whether to enable the destination security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| outbound_address | The NAT policy to be applied. Default is "MASQ". | Optional | 
+| minimum_source_hb_permitted | The minimum source health status permitted. Default is "No Restriction". | Optional | 
+| minimum_destination_hb_permitted | The minimum destination health status permitted. Default is "No Restriction". | Optional | 
+| intrusion_prevention | The IPS policy for the rule. Default is "generalpolicy". | Optional | 
 
 
 #### Context Output
@@ -327,7 +325,7 @@ Add a new firewall rule.
 | SophosFirewall.SecurityPolicy.Description | String | Description of the rule. | 
 | SophosFirewall.SecurityPolicy.Status | String | Status of the rule. | 
 | SophosFirewall.SecurityPolicy.PolicyType | String | Policy type of the rule. | 
-| SophosFirewall.SecurityPolicy.IPFamily | String | IPv4/IPv6 | 
+| SophosFirewall.SecurityPolicy.IPFamily | String | IP family of the security policy. Either IPv4 or IPv6. | 
 | SophosFirewall.SecurityPolicy.AttachIdentity | String | Rule attach identity status. | 
 | SophosFirewall.SecurityPolicy.Action | String | Current rule action. | 
 | SophosFirewall.SecurityPolicy.LogTraffic | Number | Rule traffic logging code. | 
@@ -398,10 +396,9 @@ Add a new firewall rule.
 >|---|---|---|---|---|---|
 >| user_rule | Enable | User | IPv4 | Accept | Disable |
 
-
 ### sophos-firewall-rule-update
 ***
-Update an existing firewall rule.
+Updates an existing firewall rule.
 
 
 #### Base Command
@@ -413,46 +410,46 @@ Update an existing firewall rule.
 | --- | --- | --- |
 | name | Name of the new rule. | Required | 
 | description | Description of the new rule. | Optional | 
-| status | Is the rule enabled or disabled. Possible values are: Enable, Disable. Default is Enable. | Optional | 
-| ip_family | Are the IPs v4 or v6. Possible values are: IPv4, IPv6. Default is IPv4. | Optional | 
-| position | Should the rule be at the top or bottom of the list? before or after a specific rule? IMPORTANT: If before/after is chosen - provide the position_policy_name pramater. Possible values are: top, bottom, after, before. | Optional | 
-| position_policy_name | The name of the policy that the rule should be created before/after . REQUIRED: When the position is before/after. | Optional | 
-| policy_type | Type of the new rule (policy). Possible values are: User, Network. | Optional | 
-| source_zones | Source zones to add to the rule. Possible values are: Any, LAN, WAN, VPN, DMZ, WiFi. | Optional | 
+| status | Whether the rule is enabled. Possible values: "Enable" and "Disable". Default is "Enable". | Optional | 
+| ip_family | The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4". | Optional | 
+| position | Whether the rule should be at the "top" or "bottom" of the list, or "before" or\ \ "after" a specific rule? IMPORTANT: If "before" or "after" is selected, provide the\ \ position_policy_name parameter. | Optional | 
+| position_policy_name | The name of the policy that the rule should be created before or after. REQUIRED: When the position is "before" or "after". | Optional | 
+| policy_type | Type of the new rule (policy). Possible values: "User" and "Network". | Optional | 
+| source_zones | Source zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", "WiFi". | Optional | 
 | source_networks | Source networks to add to the rule. | Optional | 
-| destination_zones | Destination zones to add to the rule. Possible values are: Any, LAN, WAN, VPN, DMZ, WiFi. | Optional | 
+| destination_zones | Destination zones to add to the rule. Possible values: "Any", "LAN". "WAN", "VPN", "DMZ", "WiFi". | Optional | 
 | destination_networks | Destination networks to add to the rule. | Optional | 
 | services | Destination services to add to the rule. | Optional | 
-| schedule | Select Schedule for the Rule. IMPORTANT: Creating a new schedule is available on web console. Possible values are: All the time, Work hours (5 Day week), Work hours (6 Day week), All Time on Weekdays, All Time on Weekends, All Time on Sunday, All Days 10:00 to 19:00. | Optional | 
-| log_traffic | Enable traffic logging for the policy. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| match_identity | Enable to check whether the specified user/user group from the selected zone is allowed to access the selected service or not. IMPORTANT: when enabling match_identity - members parameter is required. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| show_captive_portal | Select to accept traffic from unknown users. Captive portal page is displayed to the user where the user can login to access the Internet. IMPORTANT: MatchIdentity must be Enabled. PARAMETER OF: UserPolicy. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| members | An existing user(s) or group(s) to add to the rule. REQUIRED: when match_identity is enabled. . | Optional | 
-| action | Specify action for the rule traffic. Possible values are: Accept, Reject, Drop. Default is Drop. | Optional | 
-| dscp_marking | Select DSCP Marking to classify flow of packets based on Traffic Shaping policy. | Optional | 
-| primary_gateway | Specify the Primary Gateway. Applicable only in case of Multiple Gateways. | Optional | 
-| backup_gateway | Specify the Backup Gateway. Applicable only in case of Multiple Gateways. | Optional | 
-| application_control | Select Application Filter Policy for the rule. Default is Allow All. | Optional | 
-| application_based_qos_policy | Select to limit the bandwidth for the applications categorized under the Application Category. this tag is only appliacable only when any application_control is selected. Possible values are: Apply, Revoke. Default is Revoke. | Optional | 
-| web_filter | Select Web Filter Policy for the rule. Default is Allow All. | Optional | 
-| web_category_base_qos_policy | Select to limit bandwidth for the URLs categorized under the Web category. this tag is only appliacable only when any web_filteris selected. Possible values are: Apply, Revoke. Default is Revoke. | Optional | 
-| traffic_shapping_policy | Select Traffic Shaping policy for the rule. Default is None. | Optional | 
-| scan_http | Select to enable virus and spam scanning for HTTP protocol. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| scan_https | Select to enable virus and spam scanning for HTTPS protocol. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| sandstorm | Select to enable sandstorm analysis. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| block_quick_quic | Ensure Google websites user HTTP/s instead of QUICK QUIC. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| scan_ftp | Enable/Disable scanning of FTP traffic. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| data_accounting | Select to exclude user's network traffic from data accounting. This option is available only if the parameter 'Match rule-based on user identity' is enabled. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| rewrite_source_address | Enable to apply NAT Policy. Possible values are: Enable, Disable. Default is Enable. | Optional | 
-| web_filter_internet_scheme | Select internet scheme to apply user based Web Filter Policy for the rule. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| application_control_internet_scheme | Select internet scheme to apply user based Application Filter Policy for the rule. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| override_gateway_default_nat_policy | Enable/Disable overriding gateway of default nat policy. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| source_security_heartbeat | Enable/Disable source security heartbeat. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| destination_security_heartbeat | Enable/Disable destination security heartbeat. Possible values are: Enable, Disable. Default is Disable. | Optional | 
-| outbound_address | Select the NAT Policy to be applied. Default is MASQ. | Optional | 
-| minimum_source_hb_permitted | Select minimum source HB permitted. Default is No Restriction. | Optional | 
-| minimum_destination_hb_permitted | Select minimum destination HB permitted. Default is No Restriction. | Optional | 
-| intrusion_prevention | Select IPS policy for the rule. Default is generalpolicy. | Optional | 
+| schedule | The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console. | Optional | 
+| log_traffic | Whether to enable traffic logging for the policy. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| match_identity | Whether to check if the specified user/user group from the\ \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: When enabling match_identity, the members argument is required. | Optional | 
+| show_captive_portal | Whether to accept traffic from unknown users. Captive portal page\ \ is displayed to the user where the user can login to access the Internet.\ \ Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: MatchIdentity must be Enabled. PARAMETER OF: UserPolicy. | Optional | 
+| members | An existing user(s) or group(s) to add to the rule. REQUIRED  when match_identity is enabled.  | Optional | 
+| action | Action for the rule traffic. Possible values: "Accept", "Reject", and "Drop". Default is "Drop". | Optional | 
+| dscp_marking | The DSCP marking level to classify the flow of packets based on the Traffic Shaping policy. | Optional | 
+| primary_gateway | The primary gateway. Applicable only in case of multiple gateways. | Optional | 
+| backup_gateway | The backup gateway. Applicable only in case of multiple gateways. | Optional | 
+| application_control | The Application Filter policy for the rule. Default is "Allow All". | Optional | 
+| application_based_qos_policy | Whether to limit the bandwidth for the applications categorized\ \ under the Application category. This tag is only applicable when\ \ an application_control is selected. Possible values: "Apply" and "Revoke". Default is "Revoke". | Optional | 
+| web_filter | The Web Filter policy for the rule. Default is "Allow All". | Optional | 
+| web_category_base_qos_policy | Whether to limit the bandwidth for the URLs categorized under the Web\ \ category. This tag is only applicable when any web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke". | Optional | 
+| traffic_shaping_policy | The Traffic Shaping policy for the rule. Default is "None". | Optional | 
+| scan_http | Whether to enable virus and spam scanning for HTTP protocol. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| scan_https | Whether to enable virus and spam scanning for HTTPS protocol. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| sandstorm | Whether to enable sandstorm analysis. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| block_quick_quic | Whether to enable Google websites to use HTTP/s instead of QUICK QUIC. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| scan_ftp | Whether to enable scanning of FTP traffic. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| data_accounting | Whether to exclude a user's network traffic from data accounting. This option is available only if the parameter "Match rule-based on user identity" is enabled. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| rewrite_source_address | Whether to enable the NAT policy. Possible values: "Enable" and "Disable". Default is "Enable". | Optional | 
+| web_filter_internet_scheme | Whether to enable the internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| application_control_internet_scheme | Whether to enable the internet scheme to apply user-based Application Filter Policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| override_gateway_default_nat_policy | Whether to override the gateway of the default NAT policy. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| source_security_heartbeat | Whether to enable the source security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| destination_security_heartbeat | Whether to enable the destination security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable". | Optional | 
+| outbound_address | The NAT policy to be applied. Default is "MASQ". | Optional | 
+| minimum_source_hb_permitted | The minimum source health status permitted. Default is "No Restriction". | Optional | 
+| minimum_destination_hb_permitted | The minimum destination health status permitted. Default is "No Restriction". | Optional | 
+| intrusion_prevention | The IPS policy for the rule. Default is "generalpolicy". | Optional | 
 
 
 #### Context Output
@@ -463,7 +460,7 @@ Update an existing firewall rule.
 | SophosFirewall.SecurityPolicy.Description | String | Description of the rule. | 
 | SophosFirewall.SecurityPolicy.Status | String | Status of the rule. | 
 | SophosFirewall.SecurityPolicy.PolicyType | String | Policy type of the rule. | 
-| SophosFirewall.SecurityPolicy.IPFamily | String | IPv4/IPv6 | 
+| SophosFirewall.SecurityPolicy.IPFamily | String | IP family of the security policy. Either IPv4 or IPv6. | 
 | SophosFirewall.SecurityPolicy.AttachIdentity | String | Rule attach identity status. | 
 | SophosFirewall.SecurityPolicy.Action | String | Current rule action. | 
 | SophosFirewall.SecurityPolicy.LogTraffic | Number | Rule traffic logging code. | 
@@ -510,9 +507,10 @@ Update an existing firewall rule.
 >| user_rule | Enable | Network | IPv4 | Drop | Enable |
 
 
+
 ### sophos-firewall-rule-delete
 ***
-Delete an existing firewall rule.
+Deletes an existing firewall rule.
 
 
 #### Base Command
@@ -530,7 +528,7 @@ Delete an existing firewall rule.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.SecurityPolicy.Name | String | Name of the rule. | 
-| SophosFirewall.SecurityPolicy.IsDeleted | String | Whether or not the rule is deleted. | 
+| SophosFirewall.SecurityPolicy.IsDeleted | Bool | Whether the rule is deleted. | 
 
 
 #### Command Example
@@ -556,9 +554,10 @@ Delete an existing firewall rule.
 >| user_rule | true |
 
 
+
 ### sophos-firewall-rule-group-list
 ***
-List all firewall rule groups. IMPORTANT: listing start at 0 (not 1!)
+Lists all firewall rule groups. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Base Command
@@ -568,8 +567,8 @@ List all firewall rule groups. IMPORTANT: listing start at 0 (not 1!)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Provide the start index for the rules you would like to list. e.g: 5. Default is 0. | Optional | 
-| end | Provide the end index for the rules you would like to list. e.g: 20. Default is 50. | Optional | 
+| start | The start index for the rules to list, e.g: 5. Default is "0". | Optional | 
+| end | The end index for the rules to list, e.g: 20. Default is "50". | Optional | 
 
 
 #### Context Output
@@ -658,9 +657,10 @@ List all firewall rule groups. IMPORTANT: listing start at 0 (not 1!)
 >| unitest2 | For testing only |  |  |
 
 
+
 ### sophos-firewall-rule-group-get
 ***
-Get a single firewall rule group by name.
+Gets a single firewall rule group by name.
 
 
 #### Base Command
@@ -716,9 +716,10 @@ Get a single firewall rule group by name.
 >| rulegroup | rulegroup for user/network rules | SecurityPolicy: network_rule,<br/>user_rule |
 
 
+
 ### sophos-firewall-rule-group-add
 ***
-Add a new firewall rule group.
+Adds a new firewall rule group.
 
 
 #### Base Command
@@ -730,10 +731,10 @@ Add a new firewall rule group.
 | --- | --- | --- |
 | name | Name of the rule group. | Required | 
 | description | Description of the rule group. | Optional | 
-| policy_type | Type of the rules (policies) inside. Possible values are: Any, User/network rule, Network rule, User rule, Business application rule. | Optional | 
-| rules | Rules contained inside the group. | Optional | 
-| source_zones | Source zones contained in the group. Possible values are: Any, LAN, WAN, VPN, DMZ, WiFi. | Optional | 
-| destination_zones | Destination zones contained in the group. Possible values are: Any, LAN, WAN, VPN, DMZ, WiFi. | Optional | 
+| policy_type | Type of the rules (policies) inside the group. Possible values: "Any", "User/network rule", "User rule", "Business application rule". | Optional | 
+| rules | Rules contained in the group. | Optional | 
+| source_zones | Source zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", "WiFi. | Optional | 
+| destination_zones | Destination zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", "WiFi. | Optional | 
 
 
 #### Context Output
@@ -742,7 +743,7 @@ Add a new firewall rule group.
 | --- | --- | --- |
 | SophosFirewall.SecurityPolicyGroup.Name | String | Name of the group. | 
 | SophosFirewall.SecurityPolicyGroup.Description | String | Description of the group. | 
-| SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy | String | Rules contained inside the group. | 
+| SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy | String | Rules contained in the group. | 
 | SophosFirewall.SecurityPolicyGroup.SourceZones.Zone | String | Source zone in the group. | 
 | SophosFirewall.SecurityPolicyGroup.DestinationZones.Zone | String | Destination zone in the group. | 
 | SophosFirewall.SecurityPolicyGroup.PolicyType | Number | Type of the rules in the group. | 
@@ -779,9 +780,10 @@ Add a new firewall rule group.
 >| rulegroup | SecurityPolicy: user_rule,<br/>network_rule |
 
 
+
 ### sophos-firewall-rule-group-update
 ***
-Update an existing firewall rule group.
+Updates an existing firewall rule group.
 
 
 #### Base Command
@@ -793,10 +795,10 @@ Update an existing firewall rule group.
 | --- | --- | --- |
 | name | Name of the rule group. | Required | 
 | description | Description of the rule group. | Optional | 
-| policy_type | Type of the rules (policies) inside. Possible values are: Any, User/network rule, Network rule, User rule, Business application rule. | Optional | 
-| rules | Rules contained inside the group. | Optional | 
-| source_zones | Source zones contained in the group. Possible values are: Any, LAN, WAN, VPN, DMZ, WiFi. | Optional | 
-| destination_zones | Destination zones contained in the group. Possible values are: Any, LAN, WAN, VPN, DMZ, WiFi. | Optional | 
+| policy_type | Type of the rules (policies) inside the group. Possible values: "Any", "User/network rule", "User rule", "Business application rule". | Optional | 
+| rules | Rules contained in the group. | Optional | 
+| source_zones | Source zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", "WiFi. | Optional | 
+| destination_zones | Destination zones contained in the group. Possible values: "Any", "LAN", "WAN", "VPN", "DMZ", "WiFi. | Optional | 
 
 
 #### Context Output
@@ -805,7 +807,7 @@ Update an existing firewall rule group.
 | --- | --- | --- |
 | SophosFirewall.SecurityPolicyGroup.Name | String | Name of the group. | 
 | SophosFirewall.SecurityPolicyGroup.Description | String | Description of the group. | 
-| SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy | String | Rules contained inside the group. | 
+| SophosFirewall.SecurityPolicyGroup.SecurityPolicyList.SecurityPolicy | String | Rules contained in the group. | 
 | SophosFirewall.SecurityPolicyGroup.SourceZones.Zone | String | Source zone in the group. | 
 | SophosFirewall.SecurityPolicyGroup.DestinationZones.Zone | String | Destination zone in the group. | 
 | SophosFirewall.SecurityPolicyGroup.PolicyType | Number | Type of the rules in the group. | 
@@ -844,7 +846,7 @@ Update an existing firewall rule group.
 
 ### sophos-firewall-rule-group-delete
 ***
-Delete an existing firewall group.
+Deletes an existing firewall group.
 
 
 #### Base Command
@@ -862,7 +864,7 @@ Delete an existing firewall group.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.SecurityPolicyGroup.Name | String | Name of the group. | 
-| SophosFirewall.SecurityPolicyGroup.IsDeleted | String | Whether or not the group is deleted. | 
+| SophosFirewall.SecurityPolicyGroup.IsDeleted | Bool | Whether the group is deleted. | 
 
 
 #### Command Example
@@ -888,9 +890,10 @@ Delete an existing firewall group.
 >| rulegroup | true |
 
 
+
 ### sophos-firewall-url-group-list
 ***
-List all URL groups. IMPORTANT: listing start at 0 (not 1!)
+Lists all URL groups. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Base Command
@@ -900,8 +903,8 @@ List all URL groups. IMPORTANT: listing start at 0 (not 1!)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Provide the start index for the rules you would like to list. e.g: 5. Default is 0. | Optional | 
-| end | Provide the end index for the rules you would like to list. e.g: 20. Default is 50. | Optional | 
+| start | The start index for the rules to list, e.g: 5. Default is "0". | Optional | 
+| end | The end index for the rules to list, e.g: 20. Default is "50". | Optional | 
 
 
 #### Context Output
@@ -910,7 +913,7 @@ List all URL groups. IMPORTANT: listing start at 0 (not 1!)
 | --- | --- | --- |
 | SophosFirewall.WebFilterURLGroup.Name | String | Name of the URL group. | 
 | SophosFirewall.WebFilterURLGroup.Description | String | Description of the URL group. | 
-| SophosFirewall.WebFilterURLGroup.URLlist.URL | String | URL contained inside the group. | 
+| SophosFirewall.WebFilterURLGroup.URLlist.URL | String | URL in the group. | 
 
 
 #### Command Example
@@ -990,9 +993,10 @@ List all URL groups. IMPORTANT: listing start at 0 (not 1!)
 >| forunitest2 |  | URL: badwebsite2.com |
 
 
+
 ### sophos-firewall-url-group-get
 ***
-Get a single URL group by name.
+Gets a single URL group by name.
 
 
 #### Base Command
@@ -1011,7 +1015,7 @@ Get a single URL group by name.
 | --- | --- | --- |
 | SophosFirewall.WebFilterURLGroup.Name | String | Name of the URL group. | 
 | SophosFirewall.WebFilterURLGroup.Description | String | Description of the URL group. | 
-| SophosFirewall.WebFilterURLGroup.URLlist.URL | String | URL contained inside the group. | 
+| SophosFirewall.WebFilterURLGroup.URLlist.URL | String | URL contained in the group. | 
 
 
 #### Command Example
@@ -1044,9 +1048,10 @@ Get a single URL group by name.
 >| urlgroup | URL: www.example.com,<br/>www.another-example.com |
 
 
+
 ### sophos-firewall-url-group-add
 ***
-Add a new URL group.
+Adds a new URL group.
 
 
 #### Base Command
@@ -1067,7 +1072,7 @@ Add a new URL group.
 | --- | --- | --- |
 | SophosFirewall.WebFilterURLGroup.Name | String | Name of the URL group. | 
 | SophosFirewall.WebFilterURLGroup.Description | String | Description of the URL group. | 
-| SophosFirewall.WebFilterURLGroup.URLlist.URL | String | URL contained inside the group. | 
+| SophosFirewall.WebFilterURLGroup.URLlist.URL | String | URL contained in the group. | 
 
 
 #### Command Example
@@ -1092,10 +1097,9 @@ Add a new URL group.
 ```
 
 
-
 ### sophos-firewall-url-group-update
 ***
-Update an existing URL group.
+Updates an existing URL group.
 
 
 #### Base Command
@@ -1116,7 +1120,7 @@ Update an existing URL group.
 | --- | --- | --- |
 | SophosFirewall.WebFilterURLGroup.Name | String | Name of the URL group. | 
 | SophosFirewall.WebFilterURLGroup.Description | String | Description of the URL group. | 
-| SophosFirewall.WebFilterURLGroup.URLlist.URL | String | URL contained inside the group. | 
+| SophosFirewall.WebFilterURLGroup.URLlist.URL | String | URL contained in the group. | 
 
 
 #### Command Example
@@ -1149,9 +1153,10 @@ Update an existing URL group.
 >| urlgroup | URL: www.example.com,<br/>www.another-example.com |
 
 
+
 ### sophos-firewall-url-group-delete
 ***
-Delete an existing URL group or groups.
+Deletes an existing URL group or groups.
 
 
 #### Base Command
@@ -1161,7 +1166,7 @@ Delete an existing URL group or groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the group. | Required | 
+| name | Name of the group(s). | Required | 
 
 
 #### Context Output
@@ -1169,8 +1174,7 @@ Delete an existing URL group or groups.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.WebFilterURLGroup.Name | String | Name of the URL group. | 
-| SophosFirewall.WebFilterURLGroup.IsDeleted | String | Whether or not the URL group is deleted. | 
-
+| SophosFirewall.WebFilterURLGroup.IsDeleted | Bool | Whether the URL group is deleted. | 
 
 
 #### Command Example
@@ -1190,11 +1194,16 @@ Delete an existing URL group or groups.
 
 #### Human Readable Output
 
+>### Deleting WebFilterURLGroup Objects Results
+>|Name|IsDeleted|
+>|---|---|
+>| urlgroup | true |
+
 
 
 ### sophos-firewall-ip-host-list
 ***
-List all IP hosts. IMPORTANT: listing start at 0 (not 1!)
+Lists all IP hosts. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Base Command
@@ -1204,8 +1213,8 @@ List all IP hosts. IMPORTANT: listing start at 0 (not 1!)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Provide the start index for the rules you would like to list. e.g: 5. Default is 0. | Optional | 
-| end | Provide the end index for the rules you would like to list. e.g: 20. Default is 50. | Optional | 
+| start | The start index for the rules to list, e.g: 5. Default is "0". | Optional | 
+| end | The end index for the rules to list, e.g: 20. Default is "50". | Optional | 
 
 
 #### Context Output
@@ -1213,7 +1222,7 @@ List all IP hosts. IMPORTANT: listing start at 0 (not 1!)
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.IPHost.Name | String | Name of the IP host. | 
-| SophosFirewall.IPHost.IPFamily | String | is the host in IPv4 or IPv6. | 
+| SophosFirewall.IPHost.IPFamily | String | IP family of the host group. Either IPv4 or IPv6. | 
 | SophosFirewall.IPHost.HostType | String | Type of the host. | 
 
 
@@ -1281,7 +1290,7 @@ List all IP hosts. IMPORTANT: listing start at 0 (not 1!)
 
 ### sophos-firewall-ip-host-get
 ***
-Get a single IP host by name.
+Gets a single IP host by name.
 
 
 #### Base Command
@@ -1299,7 +1308,7 @@ Get a single IP host by name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.IPHost.Name | String | Name of the IP host. | 
-| SophosFirewall.IPHost.IPFamily | String | is the host in IPv4 or IPv6. | 
+| SophosFirewall.IPHost.IPFamily | String | IP family of the host group. Either IPv4 or IPv6. | 
 | SophosFirewall.IPHost.HostType | String | Type of the host. | 
 
 
@@ -1329,9 +1338,10 @@ Get a single IP host by name.
 >| iphost | IPv4 | IP |
 
 
+
 ### sophos-firewall-ip-host-add
 ***
-Add a new IP host.
+Adds a new IP host.
 
 
 #### Base Command
@@ -1342,14 +1352,14 @@ Add a new IP host.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the IP host. | Required | 
-| host_type | Type of the host. Possible values are: IP, Network, IPRange, IPList. | Required | 
-| ip_family | Is the IP in IPv4 or IPv6. Possible values are: IPv4, IPv6. Default is IPv4. | Optional | 
+| host_type | Type of the host. Possible values: "IP", "Network", "IPRange", "IPList". | Required | 
+| ip_family | The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4". | Optional | 
 | ip_address | IP address if IP or network was the chosen type. | Optional | 
 | subnet_mask | Subnet mask if network was the chosen type. | Optional | 
 | start_ip | Start of the IP range if IPRange was chosen. | Optional | 
 | end_ip | End of the IP range if IPRange was chosen. | Optional | 
 | ip_addresses | List of IP addresses if IPList was chosen. | Optional | 
-| host_group | Select the Host Group to which the Host belongs. | Optional | 
+| host_group | Select the host group to which the host belongs. | Optional | 
 
 
 #### Context Output
@@ -1357,7 +1367,7 @@ Add a new IP host.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.IPHost.Name | String | Name of the IP host. | 
-| SophosFirewall.IPHost.IPFamily | String | is the host in IPv4 or IPv6. | 
+| SophosFirewall.IPHost.IPFamily | String | IP family of the host group. Either IPv4 or IPv6. | 
 | SophosFirewall.IPHost.HostType | String | Type of the host. | 
 
 
@@ -1387,9 +1397,10 @@ Add a new IP host.
 >| iphost | IPv4 | IP |
 
 
+
 ### sophos-firewall-ip-host-update
 ***
-Update an existing IP host.
+Updates an existing IP host.
 
 
 #### Base Command
@@ -1400,14 +1411,14 @@ Update an existing IP host.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the IP host. | Required | 
-| host_type | Type of the host. Possible values are: IP, Network, IPRange, IPList. | Optional | 
-| ip_family | Is the IP in IPv4 or IPv6. Possible values are: IPv4, IPv6. Default is IPv4. | Optional | 
+| host_type | Type of the host. Possible values: "IP", "Network", "IPRange", "IPList". | Optional | 
+| ip_family | The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4". | Optional | 
 | ip_address | IP address if IP or network was the chosen type. | Optional | 
 | subnet_mask | Subnet mask if network was the chosen type. | Optional | 
 | start_ip | Start of the IP range if IPRange was chosen. | Optional | 
 | end_ip | End of the IP range if IPRange was chosen. | Optional | 
 | ip_addresses | List of IP addresses if IPList was chosen. | Optional | 
-| host_group | Select the Host Group to which the Host belongs. | Optional | 
+| host_group | Select the host group to which the host belongs. | Optional | 
 
 
 #### Context Output
@@ -1415,7 +1426,7 @@ Update an existing IP host.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.IPHost.Name | String | Name of the IP host. | 
-| SophosFirewall.IPHost.IPFamily | String | is the host in IPv4 or IPv6. | 
+| SophosFirewall.IPHost.IPFamily | String | IP family of the host group. Either IPv4 or IPv6. | 
 | SophosFirewall.IPHost.HostType | String | Type of the host. | 
 
 
@@ -1445,9 +1456,10 @@ Update an existing IP host.
 >| iphost | IPv4 | IP |
 
 
+
 ### sophos-firewall-ip-host-delete
 ***
-Delete an existing IP host.
+Deletes an existing IP host.
 
 
 #### Base Command
@@ -1465,7 +1477,7 @@ Delete an existing IP host.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.IPHost.Name | String | Name of the IP host. | 
-| SophosFirewall.IPHost.IsDeleted | String | Whether or not the IP host is deleted. | 
+| SophosFirewall.IPHost.IsDeleted | Bool | Whether the IP host is deleted. | 
 
 
 #### Command Example
@@ -1493,7 +1505,7 @@ Delete an existing IP host.
 
 ### sophos-firewall-ip-host-group-list
 ***
-List all IP host groups. IMPORTANT: listing start at 0 (not 1!)
+Lists all IP host groups. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Base Command
@@ -1503,8 +1515,8 @@ List all IP host groups. IMPORTANT: listing start at 0 (not 1!)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Provide the start index for the rules you would like to list. e.g: 5. Default is 0. | Optional | 
-| end | Provide the end index for the rules you would like to list. e.g: 20. Default is 50. | Optional | 
+| start | The start index for the rules to list, e.g: 5. Default is "0". | Optional | 
+| end | The end index for the rules to list, e.g: 20. Default is "50". | Optional | 
 
 
 #### Context Output
@@ -1513,9 +1525,8 @@ List all IP host groups. IMPORTANT: listing start at 0 (not 1!)
 | --- | --- | --- |
 | SophosFirewall.IPHostGroup.Name | String | Name of the IP host group. | 
 | SophosFirewall.IPHostGroup.description | String | Description of the IP host group. | 
-| SophosFirewall.IPHostGroup.HostList.Host | String | Host contained inside the host group. | 
-| SophosFirewall.IPHostGroup.IPFamily | String | IP family of the host group \(IPv4 / IPv6\) | 
-
+| SophosFirewall.IPHostGroup.HostList.Host | String | Host contained in the host group. | 
+| SophosFirewall.IPHostGroup.IPFamily | String | IP family of the host group. Either IPv4 or IPv6. | 
 
 #### Command Example
 ```!sophos-firewall-ip-host-group-list start=0 end=6```
@@ -1566,7 +1577,7 @@ List all IP host groups. IMPORTANT: listing start at 0 (not 1!)
 
 ### sophos-firewall-ip-host-group-get
 ***
-Get a single IP host group by name.
+Gets a single IP host group by name.
 
 
 #### Base Command
@@ -1586,7 +1597,7 @@ Get a single IP host group by name.
 | SophosFirewall.IPHostGroup.Name | String | Name of the IP host group. | 
 | SophosFirewall.IPHostGroup.description | String | Description of the IP host group. | 
 | SophosFirewall.IPHostGroup.HostList.Host | String | Host contained inside the host group. | 
-| SophosFirewall.IPHostGroup.IPFamily | String | IP family of the host group \(IPv4 / IPv6\) | 
+| SophosFirewall.IPHostGroup.IPFamily | String | IP family of the host group. Either IPv4 or IPv6. | 
 
 
 #### Command Example
@@ -1617,9 +1628,10 @@ Get a single IP host group by name.
 >| iphostgroup | IPv4 | Host: iphost |
 
 
+
 ### sophos-firewall-ip-host-group-add
 ***
-Add a new IP host group.
+Adds a new IP host group.
 
 
 #### Base Command
@@ -1631,7 +1643,7 @@ Add a new IP host group.
 | --- | --- | --- |
 | name | Name of the IP host group. | Required | 
 | description | Description of the IP host group. | Optional | 
-| ip_family | Is the IP group in IPv4 or IPv6. Possible values are: IPv4, IPv6. | Optional | 
+| ip_family | The IP family. Possible values: "IPv4" and "IPv6". | Optional | 
 | hosts | IP hosts contained in the group. Must be hosts already existing in the system. | Optional | 
 
 
@@ -1641,8 +1653,8 @@ Add a new IP host group.
 | --- | --- | --- |
 | SophosFirewall.IPHostGroup.Name | String | Name of the IP host group. | 
 | SophosFirewall.IPHostGroup.description | String | Description of the IP host group. | 
-| SophosFirewall.IPHostGroup.HostList.Host | String | Host contained inside the host group. | 
-| SophosFirewall.IPHostGroup.IPFamily | String | IP family of the host group \(IPv4 / IPv6\) | 
+| SophosFirewall.IPHostGroup.HostList.Host | String | Host contained in the host group. | 
+| SophosFirewall.IPHostGroup.IPFamily | String | IP family of the host group. Either IPv4 or IPv6. | 
 
 
 #### Command Example
@@ -1670,9 +1682,10 @@ Add a new IP host group.
 >| iphostgroup | IPv4 |
 
 
+
 ### sophos-firewall-ip-host-group-update
 ***
-Update an existing IP host group.
+Updates an existing IP host group.
 
 
 #### Base Command
@@ -1684,7 +1697,7 @@ Update an existing IP host group.
 | --- | --- | --- |
 | name | Name of the IP host group. | Required | 
 | description | Description of the IP host group. | Optional | 
-| ip_family | Is the IP group in IPv4 or IPv6. Possible values are: IPv4, IPv6. | Optional | 
+| ip_family | The IP family. Possible values: "IPv4" and "IPv6". | Optional | 
 | hosts | IP hosts contained in the group. Must be hosts already existing in the system. | Optional | 
 
 
@@ -1695,7 +1708,7 @@ Update an existing IP host group.
 | SophosFirewall.IPHostGroup.Name | String | Name of the IP host group. | 
 | SophosFirewall.IPHostGroup.description | String | Description of the IP host group. | 
 | SophosFirewall.IPHostGroup.HostList.Host | String | Host contained inside the host group. | 
-| SophosFirewall.IPHostGroup.IPFamily | String | IP family of the host group \(IPv4 / IPv6\) | 
+| SophosFirewall.IPHostGroup.IPFamily | String | IP family of the host group. Either IPv4 or IPv6. | 
 
 
 #### Command Example
@@ -1726,9 +1739,10 @@ Update an existing IP host group.
 >| iphostgroup | IPv4 | Host: iphost |
 
 
+
 ### sophos-firewall-ip-host-group-delete
 ***
-Delete an existing IP host group.
+Deletes an existing IP host group.
 
 
 #### Base Command
@@ -1746,7 +1760,7 @@ Delete an existing IP host group.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.IPHostGroup.Name | String | Name of the IP host group. | 
-| SophosFirewall.IPHostGroup.IsDeleted | String | Whether or not the IP host group is deleted. | 
+| SophosFirewall.IPHostGroup.IsDeleted | Bool | Whether the IP host group is deleted. | 
 
 
 #### Command Example
@@ -1772,9 +1786,10 @@ Delete an existing IP host group.
 >| iphostgroup | true |
 
 
+
 ### sophos-firewall-services-list
 ***
-List all firewall services. IMPORTANT: listing start at 0 (not 1!)
+Lists all firewall services. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Base Command
@@ -1784,8 +1799,8 @@ List all firewall services. IMPORTANT: listing start at 0 (not 1!)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Provide the start index for the rules you would like to list. e.g: 5. Default is 0. | Optional | 
-| end | Provide the end index for the rules you would like to list. e.g: 20. Default is 50. | Optional | 
+| start | The start index for the rules to list, e.g: 5. Default is "0". | Optional | 
+| end | The end index for the rules to list, e.g: 20. Default is "50". | Optional | 
 
 
 #### Context Output
@@ -1898,9 +1913,10 @@ List all firewall services. IMPORTANT: listing start at 0 (not 1!)
 >| ESP | IP | ServiceDetail: {"ProtocolName": "ESP"} |
 
 
+
 ### sophos-firewall-services-get
 ***
-Get a single service by name.
+Gets a single service by name.
 
 
 #### Base Command
@@ -1920,6 +1936,7 @@ Get a single service by name.
 | SophosFirewall.Services.Name | String | Name of the firewall service. | 
 | SophosFirewall.Services.Type | String | Type of the firewall service. | 
 | SophosFirewall.Services.ServiceDetails.ServiceDetail | String | Details about the service. | 
+
 
 
 #### Command Example
@@ -1956,9 +1973,12 @@ Get a single service by name.
 >| service | IP | ServiceDetail: {'ProtocolName': 'Compaq-Peer'},<br/>{'ProtocolName': 'AH'} |
 
 
+
+
+
 ### sophos-firewall-services-add
 ***
-Add a new firewall service.
+Adds a new firewall service.
 
 
 #### Base Command
@@ -1969,15 +1989,15 @@ Add a new firewall service.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the firewall service. | Required | 
-| service_type | Type of service. Possible values are: TCPorUDP, IP, ICMP, ICMPv6. | Required | 
-| protocol | Select Protocol for the service if service_type is TCPorUDP. Possible values are: TCP, UDP. | Optional | 
+| service_type | Type of service. Possible values: "TCPorUDP", "IP", "ICMP", "ICMPv6". | Required | 
+| protocol | The protocol for the service if service_type is TCPorUDP. Possible values: "TCP" and "UDP". | Optional | 
 | source_port | Source port if service_type is TCPorUDP. | Optional | 
 | destination_port | Destination port if service_type is TCPorUDP. | Optional | 
-| protocol_name | Protocol name if service_type is IP . Possible values are: HOPOPT, ICMP, IGMPGGP, IP, ST, TCP, CBT, EGP, IGP, BBN-RCC-MON, NVP-II, PUP, ARGUS, EMCON, XNET, CHAOS, UDP, MUX, DCN-MEAS, HMP, PRM, XNS-IDP, TRUNK-1, TRUNK-2, LEAF-1, LEAF-2, RDP, IRTP, ISO-TP4, NETBLT, MFE-NSP, MERIT-INP, DCCP, 3PC, IDPRXTP, DDP, IDPR-CMTP, TP++, IL, IPv6, SDRP, IPv6-Route, IPv6-Frag, IDRP, RSVP, GRE, DSR, BNA, ESP, AH, I-NLSP, SWIPE, NARP, MOBILE, TLSP, SKIP, IPv6-ICMP, IPv6-NoNxt, IPv6-Opts, IPProto61, CFTP, IPProto63, SAT-EXPAK, KRYPTOLAN, RVD, IPPC, IPProto68, SAT-MON, VISA, IPCV, CPNX, CPHB, WSN, PVP, BR-SAT-MON, SUN-ND, WB-MON, WB-EXPAK, ISO-IP, VMTP, SECURE-VMTP, VINES, TTP, NSFNET-IGP, DGP, TCF, EIGRP, OSPFIGP, Sprite-RPC, LARP, MTP, 25, IPIP, MICP, SCC-SP, ETHERIP, ENCAP, IPProto99, GMTP, IFMP, PNNI, PIM, ARIS, SCPS, QNX, A, N, IPComp, SNP, Compaq-Peer, IPX-in-IP, VRRP, PGM, IPProto114, L2TP, DDX, IATP, STP, SRP, UTI, SMP, SM, PTP, ISIS, FIRE, CRTP, CRUDP, SSCOPMCE, IPLT, SPS, PIPE, SCTP, FC, RSVP-E2E-IGNORE, IPProto135, UDPLite, MPLS-in-IP, manet, HIP, Shim6, WESP, ROHC, IPProto143, IPProto144, IPProto145, IPProto146, IPProto147, IPProto148, IPProto149, IPProto150, IPProto151, IPProto152, IPProto153, IPProto154, IPProto155, IPProto156, IPProto157, IPProto158, IPProto159, IPProto160, IPProto161, IPProto162, IPProto163, IPProto164, IPProto165, IPProto166, IPProto167, IPProto168, IPProto169, IPProto170, IPProto171, IPProto172, IPProto173, IPProto174, IPProto175, IPProto176, IPProto177, IPProto178, IPProto179, IPProto180, IPProto181, IPProto182, IPProto183, IPProto184, IPProto185, IPProto186, IPProto187, IPProto188, IPProto189, IPProto190, IPProto191, IPProto192, IPProto193, IPProto194, IPProto195, IPProto196, IPProto197, IPProto198, IPProto199, IPProto200, IPProto201, IPProto202, IPProto203, IPProto204, IPProto205, IPProto206, IPProto207, IPProto208, IPProto209, IPProto210, IPProto211, IPProto212, IPProto213, IPProto214, IPProto215, IPProto216, IPProto217, IPProto218, IPProto219, IPProto220, IPProto221, IPProto222, IPProto223, IPProto224, IPProto225, IPProto226, IPProto227, IPProto228, IPProto229, IPProto230, IPProto231, IPProto232, IPProto233, IPProto234, IPProto235, IPProto236, IPProto237, IPProto238, IPProto239, IPProto240, IPProto241, IPProto242, IPProto243, IPProto244, IPProto245, IPProto246, IPProto247, IPProto248, IPProto249, IPProto250, IPProto251, IPProto252, IPProto253, IPProto254, IPProto255. | Optional | 
-| icmp_type | ICMP type if service_type is ICMP. Possible values are: Echo Reply, Destination Unreachable, Source Quench, Redirect, Alternate Host Address, Echo, Router Advertisement, Router Selection, Time Exceeded, Parameter Problem, Timestamp, Timestamp Reply, Information Request, Information Reply, Address Mask Request, Address Mask Reply, Traceroute, Datagram Conversion Error, Mobile Host Redirect, IPv6 Where-Are-You, IPv6 I-Am-Here, Mobile Registration Request, Mobile Registration Reply, Domain Name Request, Domain Name Reply, SKIP, Photuris, Any Type. | Optional | 
-| icmp_code | ICMP code if service_type is ICMP. Possible values are: 0, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15. | Optional | 
-| icmp_v6_type | ICMPv6 type if service_type is ICMPv6. Possible values are: Destination Unreachable, Packet Too Big, Time Exceeded, Parameter Problem, Private experimentation, Private experimentation, Echo Request, Echo Reply, Multicast Listener Query, Multicast Listener Report, Multicast Listener Done, Router Solicitation, Router Advertisement, Neighbor Solicitation, Neighbor Advertisement, Redirect Message, Router Renumbering, ICMP Node Information Query, ICMP Node Information Response, Inverse Neighbor Discovery Solicitation Message, Inverse Neighbor Discovery Advertisement Message, Version 2 Multicast Listener Report, Home Agent Address Discovery Request Message, Home Agent Address Discovery Reply Message, Mobile Prefix Solicitation, Mobile Prefix Advertisement, Certification Path Solicitation Message, Certification Path Advertisement Message, ICMP messages utilized by experimental mobility protocols such as Seamoby, Multicast Router Advertisement, Multicast Router Solicitation, Multicast Router Termination, FMIPv6 Messages, RPL Control Message, ILNPv6 Locator Update Message, Duplicate Address Request, Duplicate Address Confirmation, Private experimentation, Private experimentation, Any Type. | Optional | 
-| icmp_v6_code | ICMPv6 code if service_type is ICMPv6. Possible values are: 0, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15. | Optional | 
+| protocol_name | Protocol name if service_type is IP. | Optional | 
+| icmp_type | ICMP type if service_type is ICMP. | Optional | 
+| icmp_code | ICMP code if service_type is ICMP. | Optional | 
+| icmp_v6_type | ICMPv6 type if service_type is ICMPv6. | Optional | 
+| icmp_v6_code | ICMPv6 code if service_type is ICMPv6. | Optional | 
 
 
 #### Context Output
@@ -2018,9 +2038,10 @@ Add a new firewall service.
 >| service | IP | ServiceDetail: {"ProtocolName": "Compaq-Peer"} |
 
 
+
 ### sophos-firewall-services-update
 ***
-Update an existing firewall service.
+Updates an existing firewall service.
 
 
 #### Base Command
@@ -2031,15 +2052,15 @@ Update an existing firewall service.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the firewall service. | Required | 
-| service_type | Type of service. Possible values are: TCPorUDP, IP, ICMP, ICMPv6. | Optional | 
-| protocol | Select Protocol for the service if service_type is TCPorUDP. Possible values are: TCP, UDP. | Optional | 
+| service_type | Type of service. Possible values: "TCPorUDP", "IP", "ICMP", "ICMPv6". | Optional | 
+| protocol | The protocol for the service if service_type is TCPorUDP. Possible values: "TCP" and "UDP". | Optional | 
 | source_port | Source port if service_type is TCPorUDP. | Optional | 
 | destination_port | Destination port if service_type is TCPorUDP. | Optional | 
-| protocol_name | Protocol name if service_type is IP . Possible values are: HOPOPT, ICMP, IGMPGGP, IP, ST, TCP, CBT, EGP, IGP, BBN-RCC-MON, NVP-II, PUP, ARGUS, EMCON, XNET, CHAOS, UDP, MUX, DCN-MEAS, HMP, PRM, XNS-IDP, TRUNK-1, TRUNK-2, LEAF-1, LEAF-2, RDP, IRTP, ISO-TP4, NETBLT, MFE-NSP, MERIT-INP, DCCP, 3PC, IDPRXTP, DDP, IDPR-CMTP, TP++, IL, IPv6, SDRP, IPv6-Route, IPv6-Frag, IDRP, RSVP, GRE, DSR, BNA, ESP, AH, I-NLSP, SWIPE, NARP, MOBILE, TLSP, SKIP, IPv6-ICMP, IPv6-NoNxt, IPv6-Opts, IPProto61, CFTP, IPProto63, SAT-EXPAK, KRYPTOLAN, RVD, IPPC, IPProto68, SAT-MON, VISA, IPCV, CPNX, CPHB, WSN, PVP, BR-SAT-MON, SUN-ND, WB-MON, WB-EXPAK, ISO-IP, VMTP, SECURE-VMTP, VINES, TTP, NSFNET-IGP, DGP, TCF, EIGRP, OSPFIGP, Sprite-RPC, LARP, MTP, 25, IPIP, MICP, SCC-SP, ETHERIP, ENCAP, IPProto99, GMTP, IFMP, PNNI, PIM, ARIS, SCPS, QNX, A, N, IPComp, SNP, Compaq-Peer, IPX-in-IP, VRRP, PGM, IPProto114, L2TP, DDX, IATP, STP, SRP, UTI, SMP, SM, PTP, ISIS, FIRE, CRTP, CRUDP, SSCOPMCE, IPLT, SPS, PIPE, SCTP, FC, RSVP-E2E-IGNORE, IPProto135, UDPLite, MPLS-in-IP, manet, HIP, Shim6, WESP, ROHC, IPProto143, IPProto144, IPProto145, IPProto146, IPProto147, IPProto148, IPProto149, IPProto150, IPProto151, IPProto152, IPProto153, IPProto154, IPProto155, IPProto156, IPProto157, IPProto158, IPProto159, IPProto160, IPProto161, IPProto162, IPProto163, IPProto164, IPProto165, IPProto166, IPProto167, IPProto168, IPProto169, IPProto170, IPProto171, IPProto172, IPProto173, IPProto174, IPProto175, IPProto176, IPProto177, IPProto178, IPProto179, IPProto180, IPProto181, IPProto182, IPProto183, IPProto184, IPProto185, IPProto186, IPProto187, IPProto188, IPProto189, IPProto190, IPProto191, IPProto192, IPProto193, IPProto194, IPProto195, IPProto196, IPProto197, IPProto198, IPProto199, IPProto200, IPProto201, IPProto202, IPProto203, IPProto204, IPProto205, IPProto206, IPProto207, IPProto208, IPProto209, IPProto210, IPProto211, IPProto212, IPProto213, IPProto214, IPProto215, IPProto216, IPProto217, IPProto218, IPProto219, IPProto220, IPProto221, IPProto222, IPProto223, IPProto224, IPProto225, IPProto226, IPProto227, IPProto228, IPProto229, IPProto230, IPProto231, IPProto232, IPProto233, IPProto234, IPProto235, IPProto236, IPProto237, IPProto238, IPProto239, IPProto240, IPProto241, IPProto242, IPProto243, IPProto244, IPProto245, IPProto246, IPProto247, IPProto248, IPProto249, IPProto250, IPProto251, IPProto252, IPProto253, IPProto254, IPProto255. | Optional | 
-| icmp_type | ICMP type if service_type is ICMP. Possible values are: Echo Reply, Destination Unreachable, Source Quench, Redirect, Alternate Host Address, Echo, Router Advertisement, Router Selection, Time Exceeded, Parameter Problem, Timestamp, Timestamp Reply, Information Request, Information Reply, Address Mask Request, Address Mask Reply, Traceroute, Datagram Conversion Error, Mobile Host Redirect, IPv6 Where-Are-You, IPv6 I-Am-Here, Mobile Registration Request, Mobile Registration Reply, Domain Name Request, Domain Name Reply, SKIP, Photuris, Any Type. | Optional | 
-| icmp_code | ICMP code if service_type is ICMP. Possible values are: 0, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15. | Optional | 
-| icmp_v6_type | ICMPv6 type if service_type is ICMPv6. Possible values are: Destination Unreachable, Packet Too Big, Time Exceeded, Parameter Problem, Private experimentation, Private experimentation, Echo Request, Echo Reply, Multicast Listener Query, Multicast Listener Report, Multicast Listener Done, Router Solicitation, Router Advertisement, Neighbor Solicitation, Neighbor Advertisement, Redirect Message, Router Renumbering, ICMP Node Information Query, ICMP Node Information Response, Inverse Neighbor Discovery Solicitation Message, Inverse Neighbor Discovery Advertisement Message, Version 2 Multicast Listener Report, Home Agent Address Discovery Request Message, Home Agent Address Discovery Reply Message, Mobile Prefix Solicitation, Mobile Prefix Advertisement, Certification Path Solicitation Message, Certification Path Advertisement Message, ICMP messages utilized by experimental mobility protocols such as Seamoby, Multicast Router Advertisement, Multicast Router Solicitation, Multicast Router Termination, FMIPv6 Messages, RPL Control Message, ILNPv6 Locator Update Message, Duplicate Address Request, Duplicate Address Confirmation, Private experimentation, Private experimentation, Any Type. | Optional | 
-| icmp_v6_code | ICMPv6 code if service_type is ICMPv6. Possible values are: 0, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15. | Optional | 
+| protocol_name | Protocol name if service_type is IP. | Optional | 
+| icmp_type | ICMP type if service_type is ICMP. | Optional | 
+| icmp_code | ICMP code if service_type is ICMP. | Optional | 
+| icmp_v6_type | ICMPv6 type if service_type is ICMPv6. | Optional | 
+| icmp_v6_code | ICMPv6 code if service_type is ICMPv6. | Optional | 
 
 
 #### Context Output
@@ -2085,9 +2106,11 @@ Update an existing firewall service.
 >| service | IP | ServiceDetail: {'ProtocolName': 'Compaq-Peer'},<br/>{'ProtocolName': 'AH'} |
 
 
+
+
 ### sophos-firewall-services-delete
 ***
-Delete an existing firewall service.
+Deletes an existing firewall service.
 
 
 #### Base Command
@@ -2105,7 +2128,7 @@ Delete an existing firewall service.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.Services.Name | String | Name of the firewall service. | 
-| SophosFirewall.Services.IsDeleted | String | Whether or not the firewall service is deleted. | 
+| SophosFirewall.Services.IsDeleted | Bool | Whether the firewall service is deleted. | 
 
 
 #### Command Example
@@ -2131,9 +2154,10 @@ Delete an existing firewall service.
 >| service | true |
 
 
+
 ### sophos-firewall-user-list
 ***
-List all users. IMPORTANT: listing start at 0 (not 1!)
+Lists all users. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Base Command
@@ -2143,8 +2167,8 @@ List all users. IMPORTANT: listing start at 0 (not 1!)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Provide the start index for the rules you would like to list. e.g: 5. Default is 0. | Optional | 
-| end | Provide the end index for the rules you would like to list. e.g: 20. Default is 50. | Optional | 
+| start | The start index for the rules to list, e.g: 5. Default is "0". | Optional | 
+| end | The end index for the rules to list, e.g: 20. Default is "50". | Optional | 
 
 
 #### Context Output
@@ -2344,9 +2368,10 @@ List all users. IMPORTANT: listing start at 0 (not 1!)
 >| unitestuser2 | unitest3 |  | EmailID: test@test.test | Guest Group | User | Active |
 
 
+
 ### sophos-firewall-user-get
 ***
-Get a single user by name.
+Gets a single user by name.
 
 
 #### Base Command
@@ -2356,7 +2381,7 @@ Get a single user by name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | name of the user. | Required | 
+| name | Name of the user. | Required | 
 
 
 #### Context Output
@@ -2420,9 +2445,10 @@ Get a single user by name.
 >| user | user | Description for the user | Guest Group | User | Active |
 
 
+
 ### sophos-firewall-user-add
 ***
-Add a new user.
+Adds a new user.
 
 
 #### Base Command
@@ -2432,23 +2458,23 @@ Add a new user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | username of the user. | Required | 
-| name | name of the user. | Required | 
-| description | description of the user. | Optional | 
-| email | email of the user. | Required | 
-| group | group of the user. . Default is Guest Group. | Optional | 
-| password | the password of the user. | Required | 
-| user_type | the type of the user. Possible values are: Administrator, User. Default is User. | Optional | 
-| profile | profile of the admin if user_type is admin. IMPORTANT: you can add more types on the web console. Possible values are: Administrator, Crypto Admin, Security Admin, Audit Admin, HAProfile. | Optional | 
-| surfing_quota_policy | Select the Surfing Quota Policy. Default is Unlimited Internet Access. | Optional | 
-| access_time_policy | Select the Access Time Policy. Default is Allowed all the time. | Optional | 
-| ssl_vpn_policy | Select SSL VPN policy. Default is No Policy Applied. | Optional | 
-| clientless_policy | Select clientlesspolicy policy. Default is No Policy Applied. | Optional | 
-| data_transfer_policy | Select the Data Transfer Policy. Default is 100 MB Total Data Transfer policy. | Optional | 
-| simultaneous_logins_global | Enable Simultaneous Logins Global. Possible values are: Enable, Disable. Default is Enable. | Optional | 
-| schedule_for_appliance_access | Select Schedule for appliance access. IMPORTANT: This option is available only for Administrators. Default is All The Time. | Optional | 
-| qos_policy | Select the QoS Policy. Default is High Guarantee User. | Optional | 
-| login_restriction | Select login restriction option. Possible values are: AnyNode, UserGroupNode. Default is UserGroupNode. | Optional | 
+| username | Username of the user. | Required | 
+| name | Name of the user. | Required | 
+| description | Description of the user. | Optional | 
+| email | Email of the user. | Required | 
+| group | Group of the user. Default is "Guest Group". | Optional | 
+| password | The password of the user. | Required | 
+| user_type | The type of the user. Possible values: "Administrator" and "User". Default is "User". | Optional | 
+| profile | Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", "HAProfile". IMPORTANT: You can add more types in the web console. | Optional | 
+| surfing_quota_policy | The Surfing Quota policy. Default is "Unlimited Internet Access". | Optional | 
+| access_time_policy | The Access Time policy. Default is "Allowed all the time". | Optional | 
+| ssl_vpn_policy | The SSL VPN policy. Default is "No Policy Applied". | Optional | 
+| clientless_policy | The clientless policy. Default is "No Policy Applied". | Optional | 
+| data_transfer_policy | The Data Transfer policy. Default is: "100 MB Total Data Transfer policy". | Optional | 
+| simultaneous_logins_global | Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Eanble". | Optional | 
+| schedule_for_appliance_access | The schedule for appliance access. Default is "All The Time". IMPORTANT: This option\ \ is available only for Administrators. | Optional | 
+| qos_policy | The QoS policy. Default is "High Guarantee User". | Optional | 
+| login_restriction | The login restriction option. Possible values: "AnyNode" and "UserGroupNode". Default is "UserGroupNode". | Optional | 
 
 
 #### Context Output
@@ -2515,9 +2541,10 @@ Add a new user.
 >| user | user | EmailID: user@mail.com | Guest Group | User | Active |
 
 
+
 ### sophos-firewall-user-update
 ***
-Update a user.
+Updates a user.
 
 
 #### Base Command
@@ -2527,23 +2554,23 @@ Update a user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | username of the user. | Required | 
-| name | name of the user. | Required | 
-| description | description of the user. | Optional | 
-| email | email of the user. | Optional | 
-| group | group of the user. . Default is Guest Group. | Optional | 
-| password | the password of the user. | Optional | 
-| user_type | the type of the user. Possible values are: Administrator, User. Default is User. | Optional | 
-| profile | profile of the admin if user_type is admin. IMPORTANT: you can add more types on the web console. Possible values are: Administrator, Crypto Admin, Security Admin, Audit Admin, HAProfile. | Optional | 
-| surfing_quota_policy | Select the Surfing Quota Policy. Default is Unlimited Internet Access. | Optional | 
-| access_time_policy | Select the Access Time Policy. Default is Allowed all the time. | Optional | 
-| ssl_vpn_policy | Select SSL VPN policy. Default is No Policy Applied. | Optional | 
-| clientless_policy | Select clientlesspolicy policy. Default is No Policy Applied. | Optional | 
-| data_transfer_policy | Select the Data Transfer Policy. Default is 100 MB Total Data Transfer policy. | Optional | 
-| simultaneous_logins_global | Enable Simultaneous Logins Global. Possible values are: Enable, Disable. Default is Enable. | Optional | 
-| schedule_for_appliance_access | Select Schedule for appliance access. IMPORTANT: This option is available only for Administrators. Default is All The Time. | Optional | 
-| qos_policy | Select the QoS Policy. Default is High Guarantee User. | Optional | 
-| login_restriction | Select login restriction option. Possible values are: AnyNode, UserGroupNode. Default is UserGroupNode. | Optional | 
+| username | Username of the user. | Required | 
+| name | Name of the user. | Required | 
+| description | Description of the user. | Optional | 
+| email | Email of the user. | Optional | 
+| group | Group of the user. Default is "Guest Group". | Optional | 
+| password | The password of the user. | Optional | 
+| user_type | The type of the user. Possible values: "Administrator" and "User". Default is "User". | Optional | 
+| profile | Profile of the administrator if user_type is Administrator. Possible values: "Administrator", "Crypto Admin", "Security Admin", "Audit Admin", "HAProfile". IMPORTANT: You can add more types in the web console. | Optional | 
+| surfing_quota_policy | The Surfing Quota policy. Default is "Unlimited Internet Access". | Optional | 
+| access_time_policy | The Access Time policy. Default is "Allowed all the time". | Optional | 
+| ssl_vpn_policy | The SSL VPN policy. Default is "No Policy Applied". | Optional | 
+| clientless_policy | The clientless policy. Default is "No Policy Applied". | Optional | 
+| data_transfer_policy | The Data Transfer policy. Default is: "100 MB Total Data Transfer policy". | Optional | 
+| simultaneous_logins_global | Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Eanble". | Optional | 
+| schedule_for_appliance_access | The schedule for appliance access. Default is "All The Time".IMPORTANT: This option\ \ is available only for Administrators. | Optional | 
+| qos_policy | The QoS policy. Default is "High Guarantee User". | Optional | 
+| login_restriction | The login restriction option. Possible values: "AnyNode" and "UserGroupNode". Default is "UserGroupNode". | Optional | 
 
 
 #### Context Output
@@ -2607,9 +2634,10 @@ Update a user.
 >| user | user | Description for the user | Guest Group | User | Active |
 
 
+
 ### sophos-firewall-user-delete
 ***
-Delete an existing user.
+Deletes an existing user.
 
 
 #### Base Command
@@ -2627,7 +2655,7 @@ Delete an existing user.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.User.Name | String | Name of the user. | 
-| SophosFirewall.User.IsDeleted | String | Whether or not the user is deleted. | 
+| SophosFirewall.User.IsDeleted | Bool | Whether the user is deleted. | 
 
 
 #### Command Example
@@ -2653,9 +2681,10 @@ Delete an existing user.
 >| user | true |
 
 
+
 ### sophos-firewall-app-policy-list
 ***
-List all app policies. IMPORTANT: listing start at 0 (not 1!)
+Lists all app policies. IMPORTANT: Listing starst at 0 (not 1)!
 
 
 #### Base Command
@@ -2665,8 +2694,8 @@ List all app policies. IMPORTANT: listing start at 0 (not 1!)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Provide the start index for the rules you would like to list. e.g: 5. Default is 0. | Optional | 
-| end | Provide the end index for the rules you would like to list. e.g: 20. Default is 50. | Optional | 
+| start | The start index for the rules to list, e.g: 5. Default is "0". | Optional | 
+| end | The end index for the rules to list, e.g: 20. Default is "50". | Optional | 
 
 
 #### Context Output
@@ -2675,9 +2704,10 @@ List all app policies. IMPORTANT: listing start at 0 (not 1!)
 | --- | --- | --- |
 | SophosFirewall.ApplicationFilterPolicy.Name | String | Name of the firewall app policy. | 
 | SophosFirewall.ApplicationFilterPolicy.Description | String | Description of the firewall app policy. | 
-| SophosFirewall.ApplicationFilterPolicy.MicroAppSupport | String | Does the policy support microapps. | 
+| SophosFirewall.ApplicationFilterPolicy.MicroAppSupport | String | Whether the policy support microapps. | 
 | SophosFirewall.ApplicationFilterPolicy.DefaultAction | String | Default action the policy executes. | 
-| SophosFirewall.ApplicationFilterPolicy.RuleList.Rule | String | Rules details | 
+| SophosFirewall.ApplicationFilterPolicy.RuleList.Rule | String | Details of the rule. | 
+
 
 
 #### Command Example
@@ -8266,9 +8296,12 @@ List all app policies. IMPORTANT: listing start at 0 (not 1!)
 >| Block very high risk (Risk Level 5) apps | Drops traffic that are classified under very high risk apps (Risk Level- 5). | True | Allow | Rule: {"SelectAllRule": "Enable", "RiskList": {"Risk": "Very High"}, "SmartFilter": null, "ApplicationList": {"Application": ["Proxyone", "SecureLine VPN", "Just Proxy VPN", "Psiphon Proxy", "ProxyProxy", "SkyVPN", "Amaze VPN", "Stealthnet P2P", "PrivateSurf.us", "NapMX Retrieve P2P", "Proxy Switcher Proxy", "Yoga VPN", "England Proxy", "Gom VPN", "VPN Master", "Just Open VPN", "Hide.Me", "Bypasstunnel.com", "Tiger VPN", "Proxifier Proxy", "FastSecureVPN", "MP3 Rocket Download", "TransferBigFiles Application", "Cyberoam Bypass Chrome Extension", "SkyEye VPN", "ItsHidden Proxy", "Betternet VPN", "CantFindMeProxy", "Shareaza P2P", "DC++ Hub List P2P", "Power VPN", "SoftEther VPN", "Surf-for-free.com", "VPN Robot", "Super VPN Master", "UltraVPN", "X-VPN", "Browsec VPN", "VeePN", "TorrentHunter Proxy", "MoonVPN", "Hot VPN", "Super VPN", "Hoxx Vpn", "OpenInternet", "PHProxy", "VPN Monster", "Cloud VPN", "RusVPN", "Speedify", "Mute P2P", "TransferBigFiles Web Download", "The Pirate Bay Proxy", "VPN 360", "NateMail WebMail", "Securitykiss Proxy", "Websurf", "FreeMyBrowser", "uProxy", "Your-Freedom Proxy", "Chrome Reduce Data Usage", "Unclogger VPN", "Britishproxy.uk Proxy", "ZenVPN", "Freegate Proxy", "VPN over 443", "Zero VPN", "Ants IRC Connect P2P", "WinMX P2P", "Classroom Spy", "Expatshield Proxy", "The Proxy Bay", "OpenDoor", "Snap VPN", "Ultrasurf Proxy", "CyberGhost VPN Proxy", "Simurgh Proxy", "Webproxy", "Unseen Online VPN", "Zalmos SSL Web Proxy for Free", "VyprVPN", "AppVPN", "BypassGeo", "Bearshare P2P", "Asproxy Web Proxy", "Pando P2P", "Easy Proxy", "VPN 365", "Lantern", "Office VPN", "Proton VPN", "Miro P2P", "Morphium.info", "Ants Initialization P2P", "Soulseek Download P2P", "FSecure Freedome VPN", "Tweakware VPN", "QQ VPN", "Redirection Web-Proxy", "Phex P2P", "Hamachi VPN Streaming", "TOR Proxy", "Ares Retrieve Chat Room", "UK-Proxy.org.uk Proxy", "Winny P2P", "MeHide.asia", "Alkasir Proxy", "Windscribe", "Eagle VPN", "eMule P2P", "FastVPN", "Boinc Messenger", "Tableau Public", "DotVPN", "Photon Flash Player & Browser", "Proxysite.com Proxy", "Ares Chat Room", "Private Tunnel", "Ares P2P", "Private VPN", "Epic Browser", "Green VPN", "GoldenKey VPN", "Cyazyproxy", "Hexa Tech VPN", "FinchVPN", "Vuze P2P", "WiFree Proxy", "Ninjaproxy.ninja", "VPN Free", "Hideman VPN", "VPN Lighter", "L2TP VPN", "ShellFire VPN", "ExpressVPN", "Speedy VPN", "Toonel", "Torrent Clients P2P", "EuropeProxy", "Hi VPN", "Freenet P2P", "Reduh Proxy", "Kugoo Playlist P2P", "Frozenway Proxy", "Soulseek Retrieving P2P", "Hide-N-Seek Proxy", "DashVPN", "Phantom VPN", "DNSCrypt", "CrossVPN", "USA IP", "Total VPN", "ZPN VPN", "ISAKMP VPN", "Hammer VPN", "Speed VPN", "Hotspotshield Proxy", "Blockless VPN", "Star VPN", "RemoboVPN Proxy", "SSL Proxy Browser", "TurboVPN", "PP VPN", "VPN Unlimited", "Astrill VPN", "Hello VPN", "SetupVPN", "JAP Proxy", "Heatseek Browser", "ProxyWebsite", "Private Internet Access VPN", "DC++ Download P2P", "Thunder VPN", "skyZIP", "TOR VPN", "Haitun VPN", "Bitcoin Proxy", "Worldcup Proxy", "Privatix VPN", "Ants P2P", "DC++ Connect P2P"]}, "Action": "Deny", "Schedule": "All The Time"} |
 
 
+
+
+
 ### sophos-firewall-app-policy-get
 ***
-Get a single app policy by name.
+Gets a single app policy by name.
 
 
 #### Base Command
@@ -8289,7 +8322,7 @@ Get a single app policy by name.
 | SophosFirewall.ApplicationFilterPolicy.Description | String | Description of the firewall app policy. | 
 | SophosFirewall.ApplicationFilterPolicy.MicroAppSupport | String | Does the policy support microapps. | 
 | SophosFirewall.ApplicationFilterPolicy.DefaultAction | String | Default action the policy executes. | 
-| SophosFirewall.ApplicationFilterPolicy.RuleList.Rule | String | Rules details | 
+| SophosFirewall.ApplicationFilterPolicy.RuleList.Rule | String | Details of the rule. | 
 
 
 #### Command Example
@@ -8318,9 +8351,10 @@ Get a single app policy by name.
 >| apppolicy | Description for app policy object | True | Allow |
 
 
+
 ### sophos-firewall-app-policy-add
 ***
-Add a new app policy.
+Adds a new app policy.
 
 
 #### Base Command
@@ -8332,17 +8366,17 @@ Add a new app policy.
 | --- | --- | --- |
 | name | Name of the policy. | Required | 
 | description | Description of the policy. | Optional | 
-| micro_app_support | Is microapp support enabled. Possible values are: true, false. | Optional | 
-| default_action | Default action for the policy. Possible values are: Allow, Deny. | Optional | 
-| select_all | Is the rule a select all rule. Possible values are: Enable, Disable. | Optional | 
+| micro_app_support | Whether microapp support is enabled. Possible values: "true" and "false". | Optional | 
+| default_action | Default action for the policy. Possible values: "Allow" and "Deny". | Optional | 
+| select_all | Whether to enable the select all rule. Possible values: "Enable" and "Disable". | Optional | 
 | categories | Categories to add to the rule. | Optional | 
 | risks | Risks to add to the rule. | Optional | 
 | applications | Applications to add to the rule. | Optional | 
 | characteristics | Characteristics to add to the rule. | Optional | 
 | technologies | Technologies to add to the rule. | Optional | 
 | classifications | Classifications to add to the rule. | Optional | 
-| action | Action for the rule. Possible values are: Allow, Deny. | Optional | 
-| schedule | Select Schedule for the Rule. IMPORTANT: Creating a new schedule is available on web console. Possible values are: All the time, Work hours (5 Day week), Work hours (6 Day week), All Time on Weekdays, All Time on Weekends, All Time on Sunday, All Days 10:00 to 19:00. | Optional | 
+| action | Action for the rule. Possible values: "Allow" and "Deny". | Optional | 
+| schedule | The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console. | Optional | 
 
 
 #### Context Output
@@ -8351,9 +8385,9 @@ Add a new app policy.
 | --- | --- | --- |
 | SophosFirewall.ApplicationFilterPolicy.Name | String | Name of the firewall app policy. | 
 | SophosFirewall.ApplicationFilterPolicy.Description | String | Description of the firewall app policy. | 
-| SophosFirewall.ApplicationFilterPolicy.MicroAppSupport | String | Does the policy support microapps. | 
+| SophosFirewall.ApplicationFilterPolicy.MicroAppSupport | String | Whether the policy supports microapps. | 
 | SophosFirewall.ApplicationFilterPolicy.DefaultAction | String | Default action the policy executes. | 
-| SophosFirewall.ApplicationFilterPolicy.RuleList.Rule | String | Rules details | 
+| SophosFirewall.ApplicationFilterPolicy.RuleList.Rule | String | Details of the rule. | 
 
 
 #### Command Example
@@ -8382,9 +8416,10 @@ Add a new app policy.
 >| apppolicy | True | Allow |
 
 
+
 ### sophos-firewall-app-policy-update
 ***
-Update an existing app policy.
+Updates an existing app policy.
 
 
 #### Base Command
@@ -8396,17 +8431,17 @@ Update an existing app policy.
 | --- | --- | --- |
 | name | Name of the policy. | Required | 
 | description | Description of the policy. | Optional | 
-| micro_app_support | Is microapp support enabled. Possible values are: true, false. | Optional | 
-| default_action | Default action for the policy. Possible values are: Allow, Deny. | Optional | 
-| select_all | Is the rule a select all rule. Possible values are: Enable, Disable. | Optional | 
+| micro_app_support | Whether microapp support is enabled. Possible values: "true" and "false". | Optional | 
+| default_action | Default action for the policy. Possible values: "Allow" and "Deny". | Optional | 
+| select_all | Whether to enable the select all rule. Possible values: "Enable" and "Disable". | Optional | 
 | categories | Categories to add to the rule. | Optional | 
 | risks | Risks to add to the rule. | Optional | 
 | applications | Applications to add to the rule. | Optional | 
 | characteristics | Characteristics to add to the rule. | Optional | 
 | technologies | Technologies to add to the rule. | Optional | 
 | classifications | Classifications to add to the rule. | Optional | 
-| action | Action for the rule. Possible values are: Allow, Deny. | Optional | 
-| schedule | Select Schedule for the Rule. IMPORTANT: Creating a new schedule is available on web console. Possible values are: All the time, Work hours (5 Day week), Work hours (6 Day week), All Time on Weekdays, All Time on Weekends, All Time on Sunday, All Days 10:00 to 19:00. | Optional | 
+| action | Action for the rule. Possible values: "Allow" and "Deny". | Optional | 
+| schedule | The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console. | Optional | 
 
 
 #### Context Output
@@ -8415,9 +8450,9 @@ Update an existing app policy.
 | --- | --- | --- |
 | SophosFirewall.ApplicationFilterPolicy.Name | String | Name of the firewall app policy. | 
 | SophosFirewall.ApplicationFilterPolicy.Description | String | Description of the firewall app policy. | 
-| SophosFirewall.ApplicationFilterPolicy.MicroAppSupport | String | Does the policy support microapps. | 
+| SophosFirewall.ApplicationFilterPolicy.MicroAppSupport | String | Whether the policy supports microapps. | 
 | SophosFirewall.ApplicationFilterPolicy.DefaultAction | String | Default action the policy executes. | 
-| SophosFirewall.ApplicationFilterPolicy.RuleList.Rule | String | Rules details | 
+| SophosFirewall.ApplicationFilterPolicy.RuleList.Rule | String | Details of the rule. | 
 
 
 #### Command Example
@@ -8446,9 +8481,10 @@ Update an existing app policy.
 >| apppolicy | Description for app policy object | True | Allow |
 
 
+
 ### sophos-firewall-app-policy-delete
 ***
-Delete an existing app policy.
+Deletes an existing app policy.
 
 
 #### Base Command
@@ -8466,7 +8502,7 @@ Delete an existing app policy.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.ApplicationFilterPolicy.Name | String | Name of the firewall app policy. | 
-| SophosFirewall.ApplicationFilterPolicy.IsDeleted | String | Whether or not the firewall app policy is deleted. | 
+| SophosFirewall.ApplicationFilterPolicy.IsDeleted | Bool | Whether the firewall app policy is deleted. | 
 
 
 #### Command Example
@@ -8492,9 +8528,10 @@ Delete an existing app policy.
 >| apppolicy | true |
 
 
+
 ### sophos-firewall-app-category-list
 ***
-List all app filter categories. IMPORTANT: listing start at 0 (not 1!)
+Lists all app filter categories. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Base Command
@@ -8504,8 +8541,8 @@ List all app filter categories. IMPORTANT: listing start at 0 (not 1!)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Provide the start index for the rules you would like to list. e.g: 5. Default is 0. | Optional | 
-| end | Provide the end index for the rules you would like to list. e.g: 20. Default is 50. | Optional | 
+| start | The start index for the rules to list, e.g: 5. Default is "0". | Optional | 
+| end | The end index for the rules to list, e.g: 20. Default is "50". | Optional | 
 
 
 #### Context Output
@@ -8516,6 +8553,7 @@ List all app filter categories. IMPORTANT: listing start at 0 (not 1!)
 | SophosFirewall.ApplicationFilterCategory.Description | String | Description of the app category. | 
 | SophosFirewall.ApplicationFilterCategory.QoSPolicy | String | QoS policy of the category. | 
 | SophosFirewall.ApplicationFilterCategory.BandwidthUsageType | String | Bandwidth usage type of the category. | 
+
 
 
 #### Command Example
@@ -8588,7 +8626,7 @@ List all app filter categories. IMPORTANT: listing start at 0 (not 1!)
 
 ### sophos-firewall-app-category-get
 ***
-Get a single app filter category by name.
+Gets a single app filter category by name.
 
 
 #### Base Command
@@ -8637,9 +8675,10 @@ Get a single app filter category by name.
 >| Gaming | Gaming Sites and Applications | policy | Individual |
 
 
+
 ### sophos-firewall-app-category-update
 ***
-Update an existing app filter category.
+Updates an existing app filter category.
 
 
 #### Base Command
@@ -8690,9 +8729,10 @@ Update an existing app filter category.
 >| Gaming | Gaming Sites and Applications | policy | Individual |
 
 
+
 ### sophos-firewall-web-filter-list
 ***
-List all web filter policies. IMPORTANT: listing start at 0 (not 1!)
+Lists all web filter policies. IMPORTANT: Listing starts at 0 (not 1)!
 
 
 #### Base Command
@@ -8702,8 +8742,8 @@ List all web filter policies. IMPORTANT: listing start at 0 (not 1!)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start | Provide the start index for the rules you would like to list. e.g: 5. Default is 0. | Optional | 
-| end | Provide the end index for the rules you would like to list. e.g: 20. Default is 50. | Optional | 
+| start | The start index for the rules to list, e.g: 5. Default is "0". | Optional | 
+| end | The end index for the rules to list, e.g: 20. Default is "50". | Optional | 
 
 
 #### Context Output
@@ -8713,9 +8753,9 @@ List all web filter policies. IMPORTANT: listing start at 0 (not 1!)
 | SophosFirewall.WebFilterPolicy.Name | String | Name of the policy. | 
 | SophosFirewall.WebFilterPolicy.DefaultAction | String | Default action for the web filter policy. | 
 | SophosFirewall.WebFilterPolicy.Description | String | Description of the rule. | 
-| SophosFirewall.WebFilterPolicy.EnableReporting | String | Does the policy report events. | 
+| SophosFirewall.WebFilterPolicy.EnableReporting | String | Whether the policy reports events. | 
 | SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction | Number | Maximum file size that can be downloaded. | 
-| SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled | String | Is the file size restriction active. | 
+| SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled | String | Whether the file size restriction is active. | 
 | SophosFirewall.WebFilterPolicy.RuleList.Rule | String | Rule list information. | 
 
 
@@ -9208,9 +9248,10 @@ List all web filter policies. IMPORTANT: listing start at 0 (not 1!)
 >| No Explicit Content | Deny access to sexually explicit sites | Allow | Enable | 0 | 0 | Rule: {"CategoryList": {"Category": {"ID": "Sexually Explicit", "type": "WebCategory"}}, "HTTPAction": "Deny", "HTTPSAction": "Deny", "FollowHTTPAction": "1", "ExceptionList": {"FileTypeCategory": null}, "Schedule": "All The Time", "PolicyRuleEnabled": "1", "CCLRuleEnabled": "0"} |
 
 
+
 ### sophos-firewall-web-filter-get
 ***
-Get a single web filter policy by name.
+Gets a single web filter policy by name.
 
 
 #### Base Command
@@ -9230,9 +9271,9 @@ Get a single web filter policy by name.
 | SophosFirewall.WebFilterPolicy.Name | String | Name of the policy. | 
 | SophosFirewall.WebFilterPolicy.DefaultAction | String | Default action for the web filter policy. | 
 | SophosFirewall.WebFilterPolicy.Description | String | Description of the rule. | 
-| SophosFirewall.WebFilterPolicy.EnableReporting | String | Does the policy report events. | 
+| SophosFirewall.WebFilterPolicy.EnableReporting | String | Whether the policy reports events. | 
 | SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction | Number | Maximum file size that can be downloaded. | 
-| SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled | String | Is the file size restriction active. | 
+| SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled | String | Whether the file size restriction is active. | 
 | SophosFirewall.WebFilterPolicy.RuleList.Rule | String | Rule list information. | 
 
 
@@ -9308,9 +9349,10 @@ Get a single web filter policy by name.
 >| webfilter | Description for web filter | Allow | Enable | 1 | 300 | Rule: {'CategoryList': {'Category': {'ID': 'Blocked URLs for Default Policy', 'type': 'URLGroup'}}, 'HTTPAction': 'Allow', 'HTTPSAction': 'Allow', 'FollowHTTPAction': '1', 'ExceptionList': {'FileTypeCategory': None}, 'Schedule': 'All Time on Sunday', 'PolicyRuleEnabled': '0', 'CCLRuleEnabled': '0'},<br/>{'CategoryList': {'Category': {'ID': '1', 'type': 'URLGroup'}}, 'HTTPAction': 'Allow', 'HTTPSAction': 'Allow', 'FollowHTTPAction': '0', 'ExceptionList': {'FileTypeCategory': None}, 'Schedule': 'All Time on Sunday', 'PolicyRuleEnabled': '0', 'CCLRuleEnabled': '0'} |
 
 
+
 ### sophos-firewall-web-filter-add
 ***
-Add a new web filter policy.
+Adds a new web filter policy.
 
 
 #### Base Command
@@ -9320,27 +9362,27 @@ Add a new web filter policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the policy. | Required | 
+| name | Name of the policy | Required | 
 | description | Description of the policy. | Optional | 
-| default_action | Default action for the policy. Possible values are: Allow, Deny. | Required | 
-| download_file_size_restriction_enabled | Should the max download file size be enabled. Possible values are: 0, 1. | Optional | 
-| download_file_size_restriction | Max file size to enable downloading in MB. | Optional | 
-| goog_app_domain_list_enabled | Enable to specify domains allowed to access google service. Possible values are: 0, 1. | Optional | 
-| goog_app_domain_list | Specify domains allowed to access google service. | Optional | 
-| youtube_filter_enabled | Enable YouTube Restricted Mode to restrict the content that is accessible. Possible values are: 0, 1. | Optional | 
-| youtube_filter_is_strict | Adjust the policy used for YouTube Restricted Mode. Possible values are: 0, 1. | Optional | 
-| enforce_safe_search | Enable to block websites containing pornography and explicit sexual content from appearing in the search results of Google, Yahoo, Bing search results. Possible values are: 0, 1. | Optional | 
-| enforce_image_licensing | Further limit inappropriate content by enforcing search engine filters for Creative Commons licensed images. Possible values are: 0, 1. | Optional | 
-| url_group_names | URL Groups to block\allow\warn\log. | Optional | 
-| http_action | Choose action for http. Possible values are: Deny, Allow, Warn, Log. | Optional | 
-| https_action | Choose action for https. Possible values are: Deny, Allow, Warn, Log. | Optional | 
-| schedule | Select Schedule for the Rule. IMPORTANT: Creating a new schedule is available on web console. Possible values are: All the time, Work hours (5 Day week), Work hours (6 Day week), All Time on Weekdays, All Time on Weekends, All Time on Sunday, All Days 10:00 to 19:00. | Optional | 
-| policy_rule_enabled | Enable policy rule. Possible values are: 1, 0. | Optional | 
-| user_names | Choose users which this rule will apply on. | Optional | 
-| ccl_names | CCL names. REQUIRED: when ccl_rule_enabled is ON. | Optional | 
-| ccl_rule_enabled | Enable CCL rule. IMPORTANT: if enabled - ccl_name is requierd. Possible values are: 1, 0. | Optional | 
-| follow_http_action | Enable following HTTP action. Possible values are: 1, 0. | Optional | 
-| enable_reporting | Select to enable reporting of policy. Possible values are: Enable, Disable. Default is Enable. | Optional | 
+| default_action | Default action for the policy. Possible values: "Allow" and "Deny". | Required | 
+| download_file_size_restriction_enabled | Whether the max download file size is enabled. Possible values: "0" and "1". | Optional | 
+| download_file_size_restriction | Maximum file size to enable downloading in MB. | Optional | 
+| goog_app_domain_list_enabled | Enable to specify domains allowed to access google service. Possible values: "0" and "1". | Optional | 
+| goog_app_domain_list | The domains allowed to access google service. | Optional | 
+| youtube_filter_enabled | Whether to enable YouTube Restricted Mode to restrict the content that is accessible. Possible values: "0" and "1". | Optional | 
+| youtube_filter_is_strict | Whether to adjust the policy used for YouTube Restricted Mode. Possible values: "0" and "1". | Optional | 
+| enforce_safe_search | Enable to block websites containing pornography and explicit sexual content from appearing in the search results of Google, Yahoo, Bing search results. Possible values: "0" and "1". | Optional | 
+| enforce_image_licensing | Whether to further limit inappropriate content by enforcing search engine filters for Creative Commons licensed images. Possible values: "0" and "1". | Optional | 
+| url_group_names | Comma-separted list of URL groups to block, allow, warn, or log. | Optional | 
+| http_action | The HTTP action. Possible values: "Deny", "Allow", "Warn", and "Log". | Optional | 
+| https_action | The HTTPs action. Possible values: "Deny", "Allow", "Warn", and "Log". | Optional | 
+| schedule | The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console. | Optional | 
+| policy_rule_enabled | Whether to enable the policy rule. Possible values: "1" and "0". | Optional | 
+| user_names | A comma-separated list of users who this rule will apply to. | Optional | 
+| ccl_names | A comma-separated list of CCL names. REQUIRED: When ccl_rule_enabled is ON. | Optional | 
+| ccl_rule_enabled | Whether to enable the CCL rule. Possible values: "0" and "1". IMPORTANT: If enabled, ccl_name is required. | Optional | 
+| follow_http_action | Whether to enable the HTTP action. Possible values: "0" and "1". | Optional | 
+| enable_reporting | Whether to enable reporting of the policy. Possible values: "Enable" and "Disable". Default is "Enable". | Optional | 
 
 
 #### Context Output
@@ -9350,9 +9392,9 @@ Add a new web filter policy.
 | SophosFirewall.WebFilterPolicy.Name | String | Name of the policy. | 
 | SophosFirewall.WebFilterPolicy.DefaultAction | String | Default action for the web filter policy. | 
 | SophosFirewall.WebFilterPolicy.Description | String | Description of the rule. | 
-| SophosFirewall.WebFilterPolicy.EnableReporting | String | Does the policy report events. | 
+| SophosFirewall.WebFilterPolicy.EnableReporting | String | Whether the policy reports events. | 
 | SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction | Number | Maximum file size that can be downloaded. | 
-| SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled | String | Is the file size restriction active. | 
+| SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled | String | Whether the file size restriction is active. | 
 | SophosFirewall.WebFilterPolicy.RuleList.Rule | String | Rule list information. | 
 
 
@@ -9409,9 +9451,10 @@ Add a new web filter policy.
 >| webfilter | Allow | Enable | 1 | 300 | Rule: {"CategoryList": {"Category": {"ID": "Blocked URLs for Default Policy", "type": "URLGroup"}}, "HTTPAction": "Allow", "HTTPSAction": "Allow", "FollowHTTPAction": "1", "ExceptionList": {"FileTypeCategory": null}, "Schedule": "All Time on Sunday", "PolicyRuleEnabled": "0", "CCLRuleEnabled": "0"} |
 
 
+
 ### sophos-firewall-web-filter-update
 ***
-Update an existing web filter policy.
+Updates an existing web filter policy.
 
 
 #### Base Command
@@ -9423,25 +9466,25 @@ Update an existing web filter policy.
 | --- | --- | --- |
 | name | Name of the policy. | Required | 
 | description | Description of the policy. | Optional | 
-| default_action | Default action for the policy. Possible values are: Allow, Deny. | Required | 
-| download_file_size_restriction_enabled | Should the max download file size be enabled. Possible values are: 0, 1. | Optional | 
-| download_file_size_restriction | Max file size to enable downloading in MB. | Optional | 
-| goog_app_domain_list_enabled | Enable to specify domains allowed to access google service. Possible values are: 0, 1. | Optional | 
-| goog_app_domain_list | Specify domains allowed to access google service. | Optional | 
-| youtube_filter_enabled | Enable YouTube Restricted Mode to restrict the content that is accessible. Possible values are: 0, 1. | Optional | 
-| youtube_filter_is_strict | Adjust the policy used for YouTube Restricted Mode. Possible values are: 0, 1. | Optional | 
-| enforce_safe_search | Enable to block websites containing pornography and explicit sexual content from appearing in the search results of Google, Yahoo, Bing search results. Possible values are: 0, 1. | Optional | 
-| enforce_image_licensing | Further limit inappropriate content by enforcing search engine filters for Creative Commons licensed images. Possible values are: 0, 1. | Optional | 
-| url_group_names | URL Groups to block\allow\warn\log. | Optional | 
-| http_action | Choose action for http. Possible values are: Deny, Allow, Warn, Log. | Optional | 
-| https_action | Choose action for https. Possible values are: Deny, Allow, Warn, Log. | Optional | 
-| schedule | Select Schedule for the Rule. IMPORTANT: Creating a new schedule is available on web console. Possible values are: All the time, Work hours (5 Day week), Work hours (6 Day week), All Time on Weekdays, All Time on Weekends, All Time on Sunday, All Days 10:00 to 19:00. | Optional | 
-| policy_rule_enabled | Enable policy rule. Possible values are: 1, 0. | Optional | 
-| user_names | Choose users which this rule will apply on. | Optional | 
-| ccl_names | CCL names. REQUIRED: when ccl_rule_enabled is ON. | Optional | 
-| ccl_rule_enabled | Enable CCL rule. IMPORTANT: if enabled - ccl_name is requierd. Possible values are: 1, 0. | Optional | 
-| follow_http_action | Enable following HTTP action. Possible values are: 1, 0. | Optional | 
-| enable_reporting | Select to enable reporting of policy. Possible values are: Enable, Disable. Default is Enable. | Optional | 
+| default_action | Default action for the policy. Possible values: "Allow" and "Deny". | Required | 
+| download_file_size_restriction_enabled | Whether the maximum download file size is enabled. Possible values: "0" and "1". | Optional | 
+| download_file_size_restriction | The maximum file size to enable downloading in MB. | Optional | 
+| goog_app_domain_list_enabled | Whether to enable specifying domains allowed to access the Google service. Possible values: "0" and "1". | Optional | 
+| goog_app_domain_list | Comma-separated list of domains allowed to access google service. | Optional | 
+| youtube_filter_enabled | Whether to enable YouTube Restricted Mode to restrict the content that is accessible. Possible values: "0" and "1". | Optional | 
+| youtube_filter_is_strict | Whether to adjust the policy used for YouTube Restricted Mode. Possible values: "0" and "1". | Optional | 
+| enforce_safe_search | Whether to enable blocking websites containing pornography and explicit sexual content from appearing in the search results of Google, Yahoo, and Bing search results. Possible values: "0" and "1". | Optional | 
+| enforce_image_licensing | Whether to further limit inappropriate content by enforcing search engine filters for Creative Commons licensed images. Possible values: "0" and "1". | Optional | 
+| url_group_names | Comma-separated list of URL groups to block, allow, warn, or log. | Optional | 
+| http_action | The HTTP action. Possible values: "Deny", "Allow", "Warn", and "Log". | Optional | 
+| https_action | The HTTPs action. Possible values: "Deny", "Allow", "Warn", and "Log". | Optional | 
+| schedule | The schedule for the rule. Possible values: "All the time", "Work hours (5 Day week)", "Work hours (6 Day week)", "All Time on Weekdays", "All Time on Weekends", "All Time on Sunday", "All Days 10:00 to 19:00". IMPORTANT: Creating a new schedule is available in the web console. | Optional | 
+| policy_rule_enabled | Whether to enable the policy rule. Possible values: "1" and "0". | Optional | 
+| user_names | A comma-separated list of users who this rule will apply to. | Optional | 
+| ccl_names | A comma-separated list of CCL names. REQUIRED: when ccl_rule_enabled is ON | Optional | 
+| ccl_rule_enabled | Whether to enable the CCL rule. Possible values: "0" and "1". IMPORTANT: If enabled, ccl_name is required. | Optional | 
+| follow_http_action | Whether to enable the HTTP action. Possible values: "0" and "1". | Optional | 
+| enable_reporting | Whether to enable reporting of the policy. Possible values: "Enable" and "Disable". Default is "Enable". | Optional | 
 
 
 #### Context Output
@@ -9451,9 +9494,9 @@ Update an existing web filter policy.
 | SophosFirewall.WebFilterPolicy.Name | String | Name of the policy. | 
 | SophosFirewall.WebFilterPolicy.DefaultAction | String | Default action for the web filter policy. | 
 | SophosFirewall.WebFilterPolicy.Description | String | Description of the rule. | 
-| SophosFirewall.WebFilterPolicy.EnableReporting | String | Does the policy report events. | 
+| SophosFirewall.WebFilterPolicy.EnableReporting | String | Whether the policy reports events. | 
 | SophosFirewall.WebFilterPolicy.DownloadFileSizeRestriction | Number | Maximum file size that can be downloaded. | 
-| SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled | String | Is the file size restriction active. | 
+| SophosFirewall.WebFilterPolicy.DownloadFileSizeRestrictionEnabled | String | Whether the file size restriction is active. | 
 | SophosFirewall.WebFilterPolicy.RuleList.Rule | String | Rule list information. | 
 
 
@@ -9529,9 +9572,10 @@ Update an existing web filter policy.
 >| webfilter | Description for web filter | Allow | Enable | 1 | 300 | Rule: {'CategoryList': {'Category': {'ID': 'Blocked URLs for Default Policy', 'type': 'URLGroup'}}, 'HTTPAction': 'Allow', 'HTTPSAction': 'Allow', 'FollowHTTPAction': '1', 'ExceptionList': {'FileTypeCategory': None}, 'Schedule': 'All Time on Sunday', 'PolicyRuleEnabled': '0', 'CCLRuleEnabled': '0'},<br/>{'CategoryList': {'Category': {'ID': '1', 'type': 'URLGroup'}}, 'HTTPAction': 'Allow', 'HTTPSAction': 'Allow', 'FollowHTTPAction': '0', 'ExceptionList': {'FileTypeCategory': None}, 'Schedule': 'All Time on Sunday', 'PolicyRuleEnabled': '0', 'CCLRuleEnabled': '0'} |
 
 
+
 ### sophos-firewall-web-filter-delete
 ***
-Delete an existing web filter policy.
+Deletes an existing web filter policy.
 
 
 #### Base Command
@@ -9549,7 +9593,7 @@ Delete an existing web filter policy.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SophosFirewall.WebFilterPolicy.Name | String | Name of the policy. | 
-| SophosFirewall.WebFilterPolicy.IsDeleted | String | Whether or not the policy was deleted. | 
+| SophosFirewall.WebFilterPolicy.IsDeleted | Bool | Whether the policy is deleted. | 
 
 
 #### Command Example
@@ -9573,4 +9617,5 @@ Delete an existing web filter policy.
 >|Name|IsDeleted|
 >|---|---|
 >| webfilter | true |
+
 
