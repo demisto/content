@@ -106,6 +106,17 @@ script:
       description: Maximum number of physical hosts to retrieve. Possible values are
         1-1000.
       name: limit
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Receive extended information from Nutanix about hosts.
+      isArray: false
+      name: verbose
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     description: Gets the list of physical hosts configured in the cluster.
     name: nutanix-hypervisor-hosts-list
     outputs:
@@ -577,6 +588,17 @@ script:
         1-1000.
       name: limit
       defaultValue: '50'
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Receive extended information from Nutanix about alerts.
+      isArray: false
+      name: verbose
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
     description: Gets the list of alerts generated in the cluster that matches the
       filters. Nutanix fetches the latest alerts created if there are more than the
       defined maximum number of alerts.

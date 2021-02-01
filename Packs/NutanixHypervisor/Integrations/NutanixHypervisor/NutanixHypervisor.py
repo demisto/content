@@ -20,6 +20,68 @@ USECS_ENTRIES_MAPPING = {'boot_time_in_usecs': 'boot_time',
                          'acknowledged_time_stamp_in_usecs': 'acknowledged_time',
                          'resolved_time_stamp_in_usecs': 'resolved_time'}
 
+HOST_FIELDS_NOT_VERBOSE = [
+    "service_vmid",
+    "uuid",
+    "name",
+    "service_vmexternal_ip",
+    "hypervisor_key",
+    "hypervisor_address",
+    "hypervisor_username",
+    "controller_vm_backplane_ip",
+    "management_server_name",
+    "monitored",
+    "serial",
+    "state",
+    "vzone_name",
+    "cpu_model",
+    "num_cpu_cores",
+    "num_cpu_threads",
+    "num_cpu_sockets",
+    "hypervisor_full_name",
+    "hypervisor_type",
+    "num_vms",
+    "boot_time_in_usecs",
+    "is_degraded",
+    "is_secure_booted",
+    "is_hardware_virtualized",
+    "reboot_pending",
+    "cluster_uuid",
+    "has_csr",
+    "host_type",
+    "boot_time"
+]
+
+ALERT_FIELDS_NOT_VERBOSE = [
+    "id",
+    "alert_type_uuid",
+    "check_id",
+    "resolved",
+    "auto_resolved",
+    "acknowledged",
+    "service_vmid",
+    "node_uuid",
+    "created_time_stamp_in_usecs",
+    "last_occurrence_time_stamp_in_usecs",
+    "cluster_uuid",
+    "originating_cluster_uuid",
+    "severity",
+    "impact_types",
+    "classifications",
+    "acknowledged_by_username",
+    "message",
+    "detailed_message",
+    "alert_title",
+    "operation_type",
+    "acknowledged_time_stamp_in_usecs",
+    "resolved_time_stamp_in_usecs",
+    "resolved_by_username",
+    "user_defined",
+    "affected_entities",
+    "created_time",
+    "last_occurrence"
+]
+
 TIMEOUT_INTERVAL = 1
 
 UTC_TIMEZONE = pytz.timezone('utc')
@@ -478,12 +540,19 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     filter_ = args.get('filter')
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page'))
+    verbose = get_optional_boolean_arg(args, 'verbose')
 
     raw_response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
+    raw_outputs = raw_response.get('entities')
 
-    outputs = [{k: v for k, v in copy.deepcopy(raw_output).items()
-                if k not in NUTANIX_HOST_FIELDS_TO_REMOVE}
-               for raw_output in raw_response.get('entities')]
+    if verbose:
+        outputs = [{k: v for k, v in raw_output.items()
+                    if k not in NUTANIX_HOST_FIELDS_TO_REMOVE}
+                   for raw_output in raw_outputs]
+    else:
+        outputs = [{k: v for k, v in raw_output.items()
+                    if k in HOST_FIELDS_NOT_VERBOSE}
+                   for raw_output in raw_outputs]
 
     add_iso_entries_to_dict(outputs)
 
@@ -684,15 +753,19 @@ def nutanix_alerts_list_command(client: Client, args: Dict):
     entity_types = args.get('entity_types')
     page = arg_to_number(args.get('page'))
     limit = arg_to_number(args.get('limit', 50))
+    verbose = get_optional_boolean_arg(args, 'verbose')
 
     raw_response = client.get_nutanix_alerts_list(start_time, end_time, resolved, auto_resolved, acknowledged, severity,
                                                   alert_type_ids, impact_types, entity_types,
                                                   page, limit)
+    raw_outputs = raw_response.get('entities')
 
-    if raw_response.get('entities') is None:
-        raise DemistoException('No entities were found in response for nutanix-alerts-list command')
-
-    outputs = copy.deepcopy(raw_response.get('entities'))
+    if verbose:
+        outputs = copy.deepcopy(raw_outputs)
+    else:
+        outputs = [{k: v for k, v in raw_output.items()
+                    if k in ALERT_FIELDS_NOT_VERBOSE}
+                   for raw_output in raw_outputs]
 
     add_iso_entries_to_dict(outputs)
 
