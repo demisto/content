@@ -12,7 +12,7 @@ Retrieves users who are currently out of the office. The script use the OutOfOff
 ## Used In
 ---
 This script is used in the following playbooks and scripts.
-* Shift handover
+Shift handover
 
 ## Inputs
 ---
