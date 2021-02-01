@@ -43,6 +43,7 @@ Get indicators from Cyjax API
 | type | The indicator type. If not specified all indicators are returned. Allowed values are IPv4, IPv6, Domain, Hostname, Email, FileHash-SHA1, FileHash-SHA256, FileHash-MD5, FileHash-SSDEEP | Optional |
 | source_type | The indicators source type. Allowed values are incidnet-report, my-report | Optional |
 | source_id | The indicators source ID | Optional |
+| limit | The maximum number of indicators to get. The default value is 50. | Optional |
 
 example: `!cyjax-get-indicators since=2020-10-23T00:00:00 type=IPv4`
 
