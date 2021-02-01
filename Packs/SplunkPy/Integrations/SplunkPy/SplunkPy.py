@@ -13,7 +13,6 @@ import requests
 import urllib3
 import io
 import re
-import uuid
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -39,6 +38,7 @@ ASSET_ENRICHMENT = 'Asset'
 IDENTITY_ENRICHMENT = 'Identity'
 ENRICHMENTS = 'enrichments'
 XSOAR_ID = 'xsoar_id'
+EVENT_ID = 'event_id'
 ENRICHMENT_JOBS = 'jobs'
 ENRICHMENT_NOTABLE = 'notable'
 JOB_TYPE = 'type'
@@ -59,7 +59,7 @@ SUCCESSFUL_IDENTITY_ENRICHMENT = 'successful_identity_enrichment'
 INCIDENTS = 'incidents'
 DUMMY = 'dummy'
 MAX_HANDLE_ENRICHMENTS = 20
-MAX_SUBMIT_ENRICHMENTS = 20
+MAX_SUBMIT_ENRICHMENTS = 30
 
 DRILLDOWN_REGEX = r'([^\s\$]+)=(\$[^\$]+\$)|(\$[^\$]+\$)'
 
@@ -501,7 +501,6 @@ def handle_enriched_fetch(reader, last_run_regular_fetch, last_run_over_fetch):
     integration_context = get_integration_context()
     not_yet_enriched_notables = integration_context.get(NOT_YET_ENRICHED_NOTABLES, [])
     for item in reader:
-        item[XSOAR_ID] = uuid.uuid4().hex
         not_yet_enriched_notables.append(item)
     integration_context[NOT_YET_ENRICHED_NOTABLES] = not_yet_enriched_notables  # assignment for fetch fetch
     integration_context[NUM_FETCHED_NOTABLES] = len(not_yet_enriched_notables)
@@ -1090,7 +1089,15 @@ def enrich_fetched_notable(service, notable, enabled_enrichments, num_enrichment
     drilldown_status, asset_status, identity_status = False, False, False
     enriched_notable, created_incident = False, False
     notable.update({enrichment_type: [] for enrichment_type in enabled_enrichments})
-    enrichment = {XSOAR_ID: uuid.uuid4().hex, ENRICHMENT_JOBS: [], ENRICHMENT_NOTABLE: notable}
+    xsoar_id = notable.get(EVENT_ID)
+    if not xsoar_id:
+        raise Exception('When using the enrichment mechanism, one must use a fetch query of the following format:\n'
+                        'search `notable` .......\n'
+                        'As each notable must have the event_id unique identifier being enriched by the `notable` '
+                        'macro. Please re-edit the fetchQuery parameter in the integration configuration, reset '
+                        'the fetch mechanism using the splunk-reset-enriching-fetch-mechanism command and '
+                        'run the fetch again.')
+    enrichment = {XSOAR_ID: xsoar_id, ENRICHMENT_JOBS: [], ENRICHMENT_NOTABLE: notable}
 
     if DRILLDOWN_ENRICHMENT in enabled_enrichments:
         drilldown_status = drilldown_enrichment(service, enrichment, num_enrichment_events)
@@ -1181,31 +1188,27 @@ def drilldown_enrichment(service, enrichment, num_enrichment_events):
     task_status = False
     eid = enrichment[XSOAR_ID]
     notable = enrichment[ENRICHMENT_NOTABLE]
-    rule_name = notable.get("rule_name")
 
     try:
-        if rule_name:
-            saved_search = service.saved_searches[rule_name].content
-            search = saved_search.get("action.notable.param.drilldown_search")
+        search = notable.get("drilldown_search", "")
+        if search:
+            # timeframe_status, earliest_offset, latest_offset = get_drilldown_timeframe(notable, raw)
+            # if timeframe_status:
             raw = raw_to_dict(notable.get("_raw", ""))
-            if search:
-                timeframe_status, earliest_offset, latest_offset = get_drilldown_timeframe(saved_search, raw)
-                if timeframe_status:
-                    search = build_drilldown_search(notable, search, raw)
-                    search += " earliest={} latest={}".format(earliest_offset, latest_offset)
-                    kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
-                    query = build_search_query({"query": search})
-                    demisto.debug("Drilldown query for enrichment {}: {}".format(eid, query))
-                    job = service.jobs.create(query, **kwargs)
-                    add_job_to_enrichment(enrichment, job["sid"], DRILLDOWN_ENRICHMENT)
-                    task_status = True
-                else:
-                    demisto.info("Could not get timeframe for drilldown enrichment {}".format(eid))
-            else:
-                demisto.info("action.notable.param.drilldown_search field not found in saved search for "
-                             "enrichment {}".format(eid))
+            search = build_drilldown_search(notable, search, raw)
+            earliest_offset, latest_offset = notable.get("drilldown_earliest", ""), notable.get("drilldown_latest", "")
+            search += " earliest={} latest={}".format(earliest_offset, latest_offset)
+            kwargs = {"count": num_enrichment_events, "exec_mode": "normal"}
+            query = build_search_query({"query": search})
+            demisto.debug("Drilldown query for enrichment {}: {}".format(eid, query))
+            job = service.jobs.create(query, **kwargs)
+            add_job_to_enrichment(enrichment, job["sid"], DRILLDOWN_ENRICHMENT)
+            task_status = True
+            # else:
+            #     demisto.info("Could not get timeframe for drilldown enrichment {}".format(eid))
         else:
-            demisto.info("Rule name not found for drilldown enrichment {}".format(eid))
+            demisto.info("action.notable.param.drilldown_search field not found in saved search for "
+                         "enrichment {}".format(eid))
 
     except Exception as e:
         demisto.info("Caught an exception in drilldown_enrichment function. Additional Info: {}".format(str(e)))
@@ -1270,11 +1273,11 @@ def get_notable_field_and_value(raw_field, notable, raw=None):
     raise Exception('Failed building drilldown search query. field {} was not found in the notable.'.format(raw_field))
 
 
-def get_drilldown_timeframe(saved_search, raw):
+def get_drilldown_timeframe(notable, raw):
     """ Sets the drilldown search timeframe data.
 
     Args:
-        saved_search (splunklib.client.SavedSearch): The saved search that triggered the notable.
+        notable (dict): The notable
         raw (dict): The raw dict
 
     Returns:
@@ -1284,8 +1287,8 @@ def get_drilldown_timeframe(saved_search, raw):
 
     """
     task_status = True
-    earliest_offset = saved_search.get("action.notable.param.drilldown_earliest_offset", "")
-    latest_offset = saved_search.get("action.notable.param.drilldown_latest_offset", "")
+    earliest_offset = notable.get("drilldown_earliest", "")
+    latest_offset = notable.get("drilldown_latest", "")
     info_min_time = raw.get(INFO_MIN_TIME, "")
     info_max_time = raw.get(INFO_MAX_TIME, "")
 
@@ -1565,7 +1568,7 @@ def remove_notable(notables, notable):
 
     """
     for n in notables:
-        if n[XSOAR_ID] == notable[XSOAR_ID]:
+        if n[EVENT_ID] == notable[EVENT_ID]:
             notables.remove(n)
             break
     return notables

@@ -523,9 +523,9 @@ def test_is_enrichment_exceeding_timeout(enrichment, enrichment_timeout, output)
 
 
 @pytest.mark.parametrize('notables, notable, output', [
-    ([{splunk.XSOAR_ID: '1', 'data': 'data'}], {splunk.XSOAR_ID: '1', 'data': 'different_data'}, []),
-    ([{splunk.XSOAR_ID: '2', 'data': 'data'}], {splunk.XSOAR_ID: '1', 'data': 'different_data'},
-     [{splunk.XSOAR_ID: '2', 'data': 'data'}])
+    ([{splunk.EVENT_ID: '1', 'data': 'data'}], {splunk.EVENT_ID: '1', 'data': 'different_data'}, []),
+    ([{splunk.EVENT_ID: '2', 'data': 'data'}], {splunk.EVENT_ID: '1', 'data': 'different_data'},
+     [{splunk.EVENT_ID: '2', 'data': 'data'}])
 ])
 def test_remove_notable(notables, notable, output):
     assert splunk.remove_notable(notables, notable) == output
