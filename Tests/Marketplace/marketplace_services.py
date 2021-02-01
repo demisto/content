@@ -60,7 +60,7 @@ class GCPConfig(object):
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
-    PRODUCTION_BUCKET = "marketplace-dist-dev"
+    PRODUCTION_BUCKET = "marketplace-dist"
     CI_BUILD_BUCKET = "marketplace-ci-build"
     PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
     CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
@@ -1148,7 +1148,7 @@ class Pack(object):
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False, pack_version= None,
+    def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False, pack_version=None,
                               released_date=None):
         """
         Handles the creation and update of the changelog.json files.
