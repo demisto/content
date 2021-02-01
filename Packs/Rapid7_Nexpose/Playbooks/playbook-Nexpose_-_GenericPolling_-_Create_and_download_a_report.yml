@@ -1,0 +1,436 @@
+id: Nexpose - Create and download a report
+version: -1
+name: Nexpose - Create and download a report
+description: |-
+  Use this playbook as a sub-playbook to configure a report and download it.
+  This playbook implements polling by continuously running the `nexpose-get-report-status` command until the operation completes.
+  The remote action should have the following structure:
+
+  1. Initiate the operation - insert the type of the report (sites, scan, or assets) and it's additional arguments if required.
+  2. Poll to check if the operation completed.
+  3. Get the results of the operation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b9c27ffc-fbfa-4518-868a-5dae75d3878c
+    type: start
+    task:
+      id: b9c27ffc-fbfa-4518-868a-5dae75d3878c
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 91a1eebe-d910-422d-88f5-0bab42ee920a
+    type: condition
+    task:
+      id: 91a1eebe-d910-422d-88f5-0bab42ee920a
+      version: -1
+      name: Check input
+      description: Checks which command to run.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      Assets report:
+      - "9"
+      Scan report:
+      - "10"
+      Sites report:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: Sites report
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.report_type
+            iscontext: true
+          right:
+            value:
+              simple: sites
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.sites
+            iscontext: true
+    - label: Scan report
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.report_type
+            iscontext: true
+          right:
+            value:
+              simple: scan
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.scan
+            iscontext: true
+    - label: Assets report
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.report_type
+            iscontext: true
+          right:
+            value:
+              simple: assets
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.assets
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: fd177fe6-09a8-406b-83a7-1961a42aa4a9
+    type: playbook
+    task:
+      id: fd177fe6-09a8-406b-83a7-1961a42aa4a9
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: report_id
+      AdditionalPollingCommandArgValues:
+        simple: ${Nexpose.Report.ID}
+      Ids:
+        simple: ${Nexpose.Report.InstanceID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: instance_id
+      PollingCommandName:
+        simple: nexpose-get-report-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Nexpose.Report(val.Status == 'running').InstanceID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 429d530a-1c05-4c18-8444-bf6fb3679232
+    type: title
+    task:
+      id: 429d530a-1c05-4c18-8444-bf6fb3679232
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 8ea60f14-0c51-46ba-87ff-e435e1446afb
+    type: regular
+    task:
+      id: 8ea60f14-0c51-46ba-87ff-e435e1446afb
+      version: -1
+      name: Download Report
+      description: Returns the contents of a generated report.
+      script: '|||nexpose-download-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      format:
+        simple: ${Nexpose.Report.Format}
+      instance_id:
+        simple: ${Nexpose.Report.InstanceID}
+      name:
+        simple: ${Nexpose.Report.Name}
+      report_id:
+        simple: ${Nexpose.Report.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: ba286bb7-dc1b-43e6-8292-ba9bb8b2f1ab
+    type: regular
+    task:
+      id: ba286bb7-dc1b-43e6-8292-ba9bb8b2f1ab
+      version: -1
+      name: Create Sites report
+      description: Generates a new report on given sites according to a template and
+        arguments.
+      script: '|||nexpose-create-sites-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      download_immediately:
+        simple: "false"
+      format:
+        simple: ${inputs.format}
+      name:
+        simple: ${inputs.name}
+      sites:
+        simple: ${inputs.sites}
+      template:
+        simple: ${inputs.template}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: b557eb65-3e13-45fb-8c7f-b32b44db2b20
+    type: regular
+    task:
+      id: b557eb65-3e13-45fb-8c7f-b32b44db2b20
+      version: -1
+      name: Create Assets report
+      description: Generates a new report on given assets according to a template
+        and arguments.
+      script: '|||nexpose-create-assets-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      assets:
+        simple: ${inputs.assets}
+      download_immediately:
+        simple: "false"
+      format:
+        simple: ${inputs.format}
+      name:
+        simple: ${inputs.name}
+      template:
+        simple: ${inputs.template}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: aca12254-c863-4f8a-8ff4-23eb288286e5
+    type: regular
+    task:
+      id: aca12254-c863-4f8a-8ff4-23eb288286e5
+      version: -1
+      name: Create Scan report
+      description: Generates a new report for a specified scan.
+      script: '|||nexpose-create-scan-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      download_immediately:
+        simple: "false"
+      format:
+        simple: ${inputs.format}
+      name:
+        simple: ${inputs.name}
+      scan:
+        simple: ${inputs.scan}
+      template:
+        simple: ${inputs.template}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1160,
+        "width": 1230,
+        "x": -160,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: report_type
+  value: {}
+  required: true
+  description: '`sites`, `scan`, or `assets`.'
+  playbookInputQuery: null
+- key: sites
+  value: {}
+  required: false
+  description: Multiple criteria of integer<int32> Site ids to create the report on,
+    comma-separated.
+  playbookInputQuery: null
+- key: assets
+  value: {}
+  required: false
+  description: Multiple criteria of integer<int64> Asset ids to create the report
+    on, comma-separated.
+  playbookInputQuery: null
+- key: scan
+  value: {}
+  required: false
+  description: integer <int64> The identifier of the scan.
+  playbookInputQuery: null
+- key: name
+  value: {}
+  required: false
+  description: ' The report name.'
+  playbookInputQuery: null
+- key: template
+  value: {}
+  required: false
+  description: Report template id to create the report with. If none is provided,
+    the first template available will be used.
+  playbookInputQuery: null
+- key: format
+  value: {}
+  required: false
+  description: The report format. Default is pdf.
+  playbookInputQuery: null
+outputs:
+- contextPath: InfoFile.EntryId
+  description: Entry Id of the report file
+  type: string
+- contextPath: InfoFile.Name
+  description: Name of the report file
+  type: string
+- contextPath: InfoFile.Extension
+  description: File extension of the report file
+  type: string
+- contextPath: InfoFile.Info
+  description: Info about the report file
+  type: string
+- contextPath: InfoFile.Size
+  description: Size of the report file
+  type: number
+- contextPath: InfoFile.Type
+  description: Type of the report file
+  type: string
+fromversion: 5.0.0
+tests:
+- No test

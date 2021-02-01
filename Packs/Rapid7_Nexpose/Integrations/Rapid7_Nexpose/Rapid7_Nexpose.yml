@@ -1010,6 +1010,25 @@ script:
       - text
       description: The report format, default is pdf.
       defaultValue: pdf
+    outputs:
+    - contextPath: InfoFile.EntryId
+      description: Entry Id of the report file
+      type: string
+    - contextPath: InfoFile.Name
+      description: Name of the report file
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension of the report file
+      type: string
+    - contextPath: InfoFile.Info
+      description: Info about the report file
+      type: string
+    - contextPath: InfoFile.Size
+      description: Size of the report file
+      type: number
+    - contextPath: InfoFile.Type
+      description: Type of the report file
+      type: string
     description: Returns the contents of a generated report.
   - name: nexpose-get-report-status
     arguments:

@@ -1039,7 +1039,7 @@ def create_assets_report_command():
     assets = str(demisto.args()['assets']).split(',')
     template = demisto.args().get('template')
     name = demisto.args().get('name', 'report ' + str(datetime.now()))
-    report_format = demisto.args().get('format', 'pdf')
+    report_format = demisto.args().get('format') or 'pdf'
     download_immediately = argToBoolean(demisto.args().get('download_immediately', 'true'))
 
     scope = {
@@ -1062,7 +1062,7 @@ def create_assets_report_command():
         except Exception as err:
             # If we received 404 it could mean that the report generation process has not finished yet. in that case
             # we'll return the report's info to enable users to query for the report's status and download it.
-            if '404' not in err:
+            if '404' not in str(err):
                 raise
 
     return CommandResults(
@@ -1084,7 +1084,7 @@ def create_sites_report_command():
     sites = str(demisto.args()['sites']).split(',')
     template = demisto.args().get('template')
     name = demisto.args().get('name', 'report ' + str(datetime.now()))
-    report_format = demisto.args().get('format', 'pdf')
+    report_format = demisto.args().get('format') or 'pdf'
     download_immediately = argToBoolean(demisto.args().get('download_immediately', 'true'))
     scope = {
         'sites': sites
@@ -1107,7 +1107,7 @@ def create_sites_report_command():
         except Exception as err:
             # If we received 404 it could mean that the report generation process has not finished yet. in that case
             # we'll return the report's info to enable users to query for the report's status and download it.
-            if '404' not in err:
+            if '404' not in str(err):
                 raise
 
     return CommandResults(
@@ -1122,7 +1122,7 @@ def create_scan_report_command():
     scan = demisto.args()['scan']
     template = demisto.args().get('template')
     name = demisto.args().get('name', 'report ' + str(datetime.now()))
-    report_format = demisto.args().get('format', 'pdf')
+    report_format = demisto.args().get('format') or 'pdf'
     download_immediately = argToBoolean(demisto.args().get('download_immediately', 'true'))
     scope = {
         'scan': scan
@@ -1145,7 +1145,7 @@ def create_scan_report_command():
         except Exception as err:
             # If we received 404 it could mean that the report generation process has not finished yet. in that case
             # we'll return the report's info to enable users to query for the report's status and download it.
-            if '404' not in err:
+            if '404' not in str(err):
                 raise
 
     return CommandResults(
@@ -1351,7 +1351,7 @@ def stop_scan_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Succesfully stopped the scan',
+        'HumanReadable': 'Successfully stopped the scan',
     }
 
     return entry
@@ -1366,7 +1366,7 @@ def pause_scan_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Succesfully paused the scan',
+        'HumanReadable': 'Successfully paused the scan',
     }
 
     return entry
@@ -1381,7 +1381,7 @@ def resume_scan_command():
         'Contents': res,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Succesfully resumed the scan',
+        'HumanReadable': 'Successfully resumed the scan',
     }
 
     return entry
