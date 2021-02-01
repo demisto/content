@@ -30,11 +30,10 @@ def get_path_value(context, path):
 
 def get_context(incident_id, path):
     res = demisto.executeCommand("getContext", {'id': incident_id})
-    context = []
     try:
         context = res[0]['Contents'].get('context') or {}
     except Exception:
-        return context
+        return []
 
     return get_path_value(context, path)
 
@@ -63,7 +62,7 @@ def main():
         incidents = json.loads(incidents_res[0].get('Contents'))
         incidents_ids = [inc.get('id') for inc in incidents]
 
-        res_dict = OrderedDict()
+        res_dict = {}
         for incident in incidents_ids:
             context = get_context(incident, QUERY_TYPE_TO_PATH[query_type])
 
