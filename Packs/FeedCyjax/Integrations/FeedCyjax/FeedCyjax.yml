@@ -140,7 +140,7 @@ script:
         defaultValue: '50'
         required: false
     name: cyjax-get-indicators
-    description: Get sighting of indicator
+    description: Get indicators
   - arguments:
       - description: Indicator value
         name: value
