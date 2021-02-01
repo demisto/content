@@ -1,7 +1,7 @@
  
 
-To use GreyNoise on Demisto, ensure your user account has the API key. 
+To use GreyNoise on Demisto, retrieve your user account's API key and enter it in the integration's configuration.
 
 #### Configure an API account on GreyNoise
  - [Login](https://viz.greynoise.io/login) / [Register](https://viz.greynoise.io/signup) at GreyNoise
- - Once Logged-in/Register, Goto [Account Settings](https://viz.greynoise.io/account/) to get the API Key.
+ - Once signed in, go to [Account Settings](https://viz.greynoise.io/account/) to get the API Key.
