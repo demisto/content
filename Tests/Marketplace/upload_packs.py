@@ -822,7 +822,7 @@ def main():
                                                                                  extract_destination_path)
     # DATES FIX
     # download and extract index OLDER index
-    logging.log("\n\n\n#############################\n\n\n")
+    logging.info("\n\n\n#############################\n\n\n")
     storage_bucket_name_dates_fix = "marketplace-ci-build" # change bucket
 
     storage_bucket_dates_fix = storage_client.bucket(storage_bucket_name_dates_fix)
@@ -834,9 +834,9 @@ def main():
     if os.path.exists(changelog_index_path):
         with open(changelog_index_path, "r") as changelog_file:
             changelog = json.load(changelog_file)
-            logging.log("Printing log: \n")
-            logging.log(str(changelog.get("1.0.1")))
-    logging.log("\n\n\n#############################\n\n\n")
+            logging.info("Printing log: \n")
+            logging.info(str(changelog.get("1.0.1")))
+    logging.info("\n\n\n#############################\n\n\n")
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
