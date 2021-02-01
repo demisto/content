@@ -3,11 +3,6 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "GreyNoise",
-            "playbookID": "GreyNoise-Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
@@ -3189,9 +3184,6 @@
             "integrations": "FeedExpanse",
             "playbookID": "Feed Expanse Test",
             "fromversion": "6.0.0"
-        },
-        {
-            "playbookID": "GreyNoise-test"
         }
     ],
     "skipped_tests": {
