@@ -301,8 +301,10 @@ class Client(BaseClient):
         :return: string containing 'Hello {name}'
         :rtype: ``str``
         """
+        
+        hello_str = f'Hello {name}'
 
-        return f'Hello {name}'
+        return hello_str
 
 
 ''' COMMAND FUNCTIONS '''
