@@ -2,12 +2,11 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import pytz
 import urllib3
 import traceback
 import dateparser
 from datetime import datetime, timezone, timedelta
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict, Tuple, List, Optional
 
 import cyjax as cyjax_sdk
 
@@ -62,7 +61,8 @@ class Client(object):
 
         try:
             indicators = list(cyjax_sdk.IndicatorOfCompromise().list(since=timedelta(minutes=5)))
-            result = True
+            if isinstance(indicators, list):
+                result = True
         except Exception as e:
             error_msg = str(e)
             demisto.debug('Error when testing connection to Cyjax API {}'.format(error_msg))
@@ -127,7 +127,7 @@ class Client(object):
                 del enrichment['geoip']
             if 'asn' in enrichment:
                 del enrichment['asn']
-        except Exception as e:
+        except Exception:
             enrichment = None
 
         return enrichment
@@ -230,7 +230,10 @@ def get_indicators_last_fetch_date() -> datetime:
             arg_name='First fetch time',
             required=True
         )
-        last_fetch_timestamp = first_fetch_time.timestamp()
+        if first_fetch_time:
+            last_fetch_timestamp = first_fetch_time.timestamp()
+        else:
+            raise ValueError('Invalid first_fetch date config param')
 
     date = datetime.utcfromtimestamp(int(last_fetch_timestamp)).replace(tzinfo=timezone.utc)
 

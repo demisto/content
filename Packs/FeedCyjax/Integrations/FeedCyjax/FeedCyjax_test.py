@@ -1,4 +1,3 @@
-import pytest
 import dateparser
 from datetime import datetime, timedelta, timezone
 
@@ -6,10 +5,10 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-from FeedCyjax import INDICATORS_LAST_FETCH_KEY, DATE_FORMAT, INDICATORS_LIMIT, Client, main, cyjax_sdk, \
-     test_module as module_test, get_indicators_last_fetch_date, set_indicators_last_fetch_date, map_indicator_type, \
-     map_reputation_to_score, convert_cyjax_indicator, fetch_indicators_command, get_indicators_command, \
-     indicator_sighting_command, arg_to_datetime
+from FeedCyjax import INDICATORS_LAST_FETCH_KEY, DATE_FORMAT, INDICATORS_LIMIT, Client, main, \
+    test_module as module_test, get_indicators_last_fetch_date, set_indicators_last_fetch_date, map_indicator_type, \
+    map_reputation_to_score, convert_cyjax_indicator, fetch_indicators_command, get_indicators_command, \
+    indicator_sighting_command
 from test_data.indicators import mocked_indicators
 from test_data.enrichment import mocked_enrichment
 
@@ -122,6 +121,7 @@ def test_convert_cyjax_indicator_with_default_score():
     assert cyjax_indicator['description'] == xsoar_indicator['fields']['description']
     assert cyjax_indicator['handling_condition'] == xsoar_indicator['fields']['trafficlightprotocol']
 
+
 def test_convert_cyjax_indicator_with_set_score():
     cyjax_indicator = mocked_indicators[1]
 
@@ -225,6 +225,7 @@ def test_get_indicators_command_arguments_specified(mocker):
                                      source_type='incident-report',
                                      source_id=50000,
                                      limit=12)
+    assert isinstance(result, dict)
 
 
 def test_get_indicators_command_without_arguments_specified(mocker):
@@ -244,6 +245,7 @@ def test_get_indicators_command_without_arguments_specified(mocker):
                                      source_type=None,
                                      source_id=None,
                                      limit=50)
+    assert isinstance(result, dict)
 
 
 def test_get_indicators_command_response(mocker):
@@ -301,7 +303,6 @@ def test_indicator_sighting_command_response_not_found(mocker):
         'value': '236.516.247.352',
     })
 
-    mocked_response = mocked_enrichment
     mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise.enrichment', side_effect=Exception('Invalid indicator'))
 
     result = indicator_sighting_command(client_for_testing, demisto.args())
@@ -492,9 +493,9 @@ def test_get_indicators_main_command_call_with_one_new_indicator(mocker):
         'apikey': 'test-api-key',
         'url': 'https://cyjax-api-for-testing.com'
     })
-
-    last_fetch = datetime(2020, 12, 27, 15, 45)
-    last_fetch_timestamp = int(last_fetch.timestamp())
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
+        INDICATORS_LAST_FETCH_KEY: int(datetime(2020, 12, 27, 15, 45).timestamp())
+    })
 
     cyjax_indicator = mocked_indicators
     expected_indicators = [
@@ -545,7 +546,6 @@ def test_since_date_in_get_indicators_command_new_indicators_found(mocker):
     fetch_indicators_spy = mocker.spy(client, 'fetch_indicators')
 
     last_fetch = datetime(2020, 12, 31, 15, 0, 0, 0)
-    last_fetch_timestamp = int(last_fetch.timestamp())
     expected_since = datetime(2020, 12, 31, 15, 0, 1, 0)
 
     cyjax_indicator = mocked_indicators
@@ -563,9 +563,9 @@ def test_get_indicators_main_command_call_no_new_indicators(mocker):
         'apikey': 'test-api-key',
         'url': 'https://cyjax-api-for-testing.com'
     })
-
-    last_fetch = datetime(2020, 12, 27, 15, 45)
-    last_fetch_timestamp = int(last_fetch.timestamp())
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={
+        INDICATORS_LAST_FETCH_KEY: int(datetime(2020, 12, 27, 15, 45).timestamp())
+    })
 
     cyjax_indicator = mocked_indicators
     expected_indicators = [
@@ -635,6 +635,7 @@ def test_unset_indicators_last_fetch_date_main_command_call(mocker):
     assert demisto.getIntegrationContext() == {
         'Something': 'Else'
     }
+
 
 def test_indicators_sigthing_main_command_call(mocker):
     mocker.patch.object(demisto, 'params', return_value={
