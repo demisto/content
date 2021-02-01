@@ -161,7 +161,9 @@
         }
       ]
     },
-    "args": {}
+    "args": {
+      "verbose": "true"
+    }
   },
   "nutanix-hypervisor-vms-list": {
     "suffix": "vms",
@@ -318,7 +320,9 @@
         }
       ]
     },
-    "args": {}
+    "args": {
+      "verbose": "true"
+    }
   },
   "nutanix-alert-acknowledge": {
     "suffix": "alerts/123123/acknowledge",
