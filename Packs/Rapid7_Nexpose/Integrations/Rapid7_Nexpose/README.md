@@ -321,55 +321,16 @@ Returns all assets for which you have access.
             "OS": "Linux 3.10"
         },
         {
-            "HostName": null,
-            "IP": "87.200.229.112",
-            "OS": null
-        },
-        {
-            "HostName": null,
-            "IP": "8.8.8.8",
-            "OS": null
-        },
-        {
-            "HostName": "pool-96-252-18-158.bstnma.fios.verizon.net",
-            "IP": "96.252.18.158",
-            "OS": null
-        },
-        {
-            "HostName": "ec2-52-58-204-23.eu-central-1.compute.amazonaws.com",
-            "IP": "52.58.204.23",
-            "OS": "Microsoft Windows"
-        },
-        {
             "HostName": "angular.testsparker.com",
-            "IP": "52.1.112.43",
+            "IP": "20.20.20.20",
             "OS": "Ubuntu Linux"
         },
         {
             "HostName": "rest.testsparker.com",
-            "IP": "18.215.71.186",
+            "IP": "192.168.1.1",
             "OS": "Debian Linux"
-        },
-        {
-            "HostName": "57.27.185.35.bc.googleusercontent.com",
-            "IP": "35.185.27.57",
-            "OS": "Linux 2.6.18"
-        },
-        {
-            "HostName": "php.testsparker.com",
-            "IP": "107.20.213.223",
-            "OS": "Microsoft Windows"
-        },
-        {
-            "HostName": "aspnet.testsparker.com",
-            "IP": "54.204.37.212",
-            "OS": "Microsoft Windows Server 2012 R2"
-        },
-        {
-            "HostName": "ec2-18-130-16-32.eu-west-2.compute.amazonaws.com",
-            "IP": "18.130.16.32",
-            "OS": "Microsoft Windows"
         }
+
     ],
     "Nexpose": {
         "Asset": [
@@ -388,7 +349,7 @@ Returns all assets for which you have access.
                 "Vulnerabilities": 7
             },
             {
-                "Address": "87.200.229.112",
+                "Address": "10.0.0.2",
                 "Assessed": true,
                 "AssetId": 3,
                 "Exploits": 0,
@@ -414,118 +375,6 @@ Returns all assets for which you have access.
                 "RiskScore": 0,
                 "Site": "",
                 "Vulnerabilities": 0
-            },
-            {
-                "Address": "96.252.18.158",
-                "Assessed": true,
-                "AssetId": 9,
-                "Exploits": 0,
-                "LastScanDate": "2020-10-01T22:37:33.710Z",
-                "LastScanId": 650,
-                "Malware": 0,
-                "Name": "pool-96-252-18-158.bstnma.fios.verizon.net",
-                "OperatingSystem": null,
-                "RiskScore": 0,
-                "Site": "PANW",
-                "Vulnerabilities": 0
-            },
-            {
-                "Address": "52.58.204.23",
-                "Assessed": true,
-                "AssetId": 10,
-                "Exploits": 1,
-                "LastScanDate": "2020-10-01T22:38:06.415Z",
-                "LastScanId": 650,
-                "Malware": 0,
-                "Name": "ec2-52-58-204-23.eu-central-1.compute.amazonaws.com",
-                "OperatingSystem": "Microsoft Windows",
-                "RiskScore": 2938.174072265625,
-                "Site": "PANW",
-                "Vulnerabilities": 7
-            },
-            {
-                "Address": "52.1.112.43",
-                "Assessed": true,
-                "AssetId": 11,
-                "Exploits": 2,
-                "LastScanDate": "2020-10-01T22:40:08.844Z",
-                "LastScanId": 650,
-                "Malware": 0,
-                "Name": "angular.testsparker.com",
-                "OperatingSystem": "Ubuntu Linux",
-                "RiskScore": 6551.52734375,
-                "Site": "PANW",
-                "Vulnerabilities": 26
-            },
-            {
-                "Address": "18.215.71.186",
-                "Assessed": true,
-                "AssetId": 12,
-                "Exploits": 4,
-                "LastScanDate": "2020-10-01T22:40:08.974Z",
-                "LastScanId": 650,
-                "Malware": 0,
-                "Name": "rest.testsparker.com",
-                "OperatingSystem": "Debian Linux",
-                "RiskScore": 16509.810546875,
-                "Site": "PANW",
-                "Vulnerabilities": 45
-            },
-            {
-                "Address": "35.185.27.57",
-                "Assessed": true,
-                "AssetId": 13,
-                "Exploits": 0,
-                "LastScanDate": "2020-10-01T22:40:41.396Z",
-                "LastScanId": 650,
-                "Malware": 0,
-                "Name": "57.27.185.35.bc.googleusercontent.com",
-                "OperatingSystem": "Linux 2.6.18",
-                "RiskScore": 1258.9942626953125,
-                "Site": "PANW",
-                "Vulnerabilities": 2
-            },
-            {
-                "Address": "107.20.213.223",
-                "Assessed": true,
-                "AssetId": 14,
-                "Exploits": 68,
-                "LastScanDate": "2020-10-01T22:40:43.032Z",
-                "LastScanId": 650,
-                "Malware": 0,
-                "Name": "php.testsparker.com",
-                "OperatingSystem": "Microsoft Windows",
-                "RiskScore": 179034.671875,
-                "Site": "PANW",
-                "Vulnerabilities": 385
-            },
-            {
-                "Address": "54.204.37.212",
-                "Assessed": true,
-                "AssetId": 15,
-                "Exploits": 1,
-                "LastScanDate": "2020-10-01T22:40:45.875Z",
-                "LastScanId": 650,
-                "Malware": 0,
-                "Name": "aspnet.testsparker.com",
-                "OperatingSystem": "Microsoft Windows Server 2012 R2",
-                "RiskScore": 1331.62939453125,
-                "Site": "PANW",
-                "Vulnerabilities": 3
-            },
-            {
-                "Address": "18.130.16.32",
-                "Assessed": true,
-                "AssetId": 16,
-                "Exploits": 4,
-                "LastScanDate": "2020-10-01T22:42:58.033Z",
-                "LastScanId": 650,
-                "Malware": 0,
-                "Name": "ec2-18-130-16-32.eu-west-2.compute.amazonaws.com",
-                "OperatingSystem": "Microsoft Windows",
-                "RiskScore": 6341.96240234375,
-                "Site": "PANW",
-                "Vulnerabilities": 16
             }
         ]
     }
@@ -538,16 +387,8 @@ Returns all assets for which you have access.
 >|AssetId|Address|Name|Site|Exploits|Malware|OperatingSystem|Vulnerabilities|RiskScore|Assessed|LastScanDate|LastScanId|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2 | 192.168.1.1 |  | Test | 1 | 0 | Linux 3.10 | 7 | 1605.670654296875 | true | 2020-11-26T17:13:44.124Z | 761 |
->| 3 | 87.200.229.112 |  | Test | 0 | 0 |  | 0 | 0.0 | true | 2020-07-27T12:40:34.550Z | 402 |
+>| 3 | 10.0.0.2 |  | Test | 0 | 0 |  | 0 | 0.0 | true | 2020-07-27T12:40:34.550Z | 402 |
 >| 4 | 8.8.8.8 |  |  | 0 | 0 |  | 0 | 0.0 | false | 2020-07-29T11:11:57.552Z | - |
->| 9 | 96.252.18.158 | pool-96-252-18-158.bstnma.fios.verizon.net | PANW | 0 | 0 |  | 0 | 0.0 | true | 2020-10-01T22:37:33.710Z | 650 |
->| 10 | 52.58.204.23 | ec2-52-58-204-23.eu-central-1.compute.amazonaws.com | PANW | 1 | 0 | Microsoft Windows | 7 | 2938.174072265625 | true | 2020-10-01T22:38:06.415Z | 650 |
->| 11 | 52.1.112.43 | angular.testsparker.com | PANW | 2 | 0 | Ubuntu Linux | 26 | 6551.52734375 | true | 2020-10-01T22:40:08.844Z | 650 |
->| 12 | 18.215.71.186 | rest.testsparker.com | PANW | 4 | 0 | Debian Linux | 45 | 16509.810546875 | true | 2020-10-01T22:40:08.974Z | 650 |
->| 13 | 35.185.27.57 | 57.27.185.35.bc.googleusercontent.com | PANW | 0 | 0 | Linux 2.6.18 | 2 | 1258.9942626953125 | true | 2020-10-01T22:40:41.396Z | 650 |
->| 14 | 107.20.213.223 | php.testsparker.com | PANW | 68 | 0 | Microsoft Windows | 385 | 179034.671875 | true | 2020-10-01T22:40:43.032Z | 650 |
->| 15 | 54.204.37.212 | aspnet.testsparker.com | PANW | 1 | 0 | Microsoft Windows Server 2012 R2 | 3 | 1331.62939453125 | true | 2020-10-01T22:40:45.875Z | 650 |
->| 16 | 18.130.16.32 | ec2-18-130-16-32.eu-west-2.compute.amazonaws.com | PANW | 4 | 0 | Microsoft Windows | 16 | 6341.96240234375 | true | 2020-10-01T22:42:58.033Z | 650 |
 
 
 ### nexpose-search-assets
@@ -787,7 +628,7 @@ Returns the details and possible remediations for an asset's given vulnerability
                                 "Status": "vulnerable-version"
                             }
                         ],
-                        "Id": "apache-httpd-cve-2017-3169",
+                        "Id": "2017-3169",
                         "Modified": "2018-01-08",
                         "Published": "2017-06-20",
                         "RiskScore": 574.63,
