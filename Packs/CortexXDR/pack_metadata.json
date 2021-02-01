@@ -2,7 +2,7 @@
     "name": "Palo Alto Networks Cortex XDR - Investigation and Response",
     "description": "This Content Pack automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
     "support": "xsoar",
-    "currentVersion": "2.8.0",
+    "currentVersion": "2.8.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -22,61 +22,59 @@
         "apt"
     ],
     "dependencies": {
-        "EWSMailSender": {
+        "PANWComprehensiveInvestigation": {
             "mandatory": false,
-            "display_name": "EWS Mail Sender"
-        },
-        "MicrosoftGraphListener": {
-            "mandatory": false,
-            "display_name": "Microsoft Graph Mail Single User"
-        },
-        "MailSenderNew": {
-            "mandatory": false,
-            "display_name": "Mail Sender (New)"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
+            "display_name": "PANW Comprehensive Investigation"
         },
         "CommonPlaybooks": {
             "mandatory": true,
             "display_name": "Common Playbooks"
         },
-        "XDR_iocs": {
-            "mandatory": true,
-            "display_name": "Cortex XDR - IOC"
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
         },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         },
-        "Gmail": {
+        "MicrosoftGraphListener": {
             "mandatory": false,
-            "display_name": "Gmail"
+            "display_name": "Microsoft Graph Mail Single User"
         },
-        "DemistoRESTAPI": {
+        "EWS": {
             "mandatory": false,
-            "display_name": "Demisto REST API"
-        },
-        "PANWComprehensiveInvestigation": {
-            "mandatory": false,
-            "display_name": "PANW Comprehensive Investigation"
-        },
-        "GmailSingleUser": {
-            "mandatory": false,
-            "display_name": "Gmail Single User (Beta)"
-        },
-        "AutoFocus": {
-            "mandatory": false,
-            "display_name": "AutoFocus"
+            "display_name": "EWS"
         },
         "MicrosoftGraphMail": {
             "mandatory": false,
             "display_name": "Microsoft Graph Mail"
         },
-        "PortScan": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "GmailSingleUser": {
             "mandatory": false,
-            "display_name": "Port Scan"
+            "display_name": "Gmail Single User (Beta)"
+        },
+        "Active_Directory_Query": {
+            "mandatory": false,
+            "display_name": "Active Directory Query"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
         }
     }
 }
+
+
