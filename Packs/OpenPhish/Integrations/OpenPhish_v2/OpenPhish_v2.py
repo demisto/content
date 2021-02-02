@@ -189,6 +189,7 @@ def main():
     }
     user_params = demisto.params()
     hours_to_refresh = user_params.get('fetchIntervalHours', '1')
+    base_url = user_params.get('Server URL')
 
     try:
         hours_to_refresh = float(hours_to_refresh)
