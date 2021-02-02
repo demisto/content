@@ -852,7 +852,7 @@ def main():
                                                                                  extract_destination_path)
     # DATES FIX
     # download and extract index OLDER index
-    storage_bucket_name_dates_fix = "marketplace-ci-build" # change bucket
+    storage_bucket_name_dates_fix = "marketplace-ci-build"  # consider changing bucket
 
     storage_bucket_dates_fix = storage_client.bucket(storage_bucket_name_dates_fix)
     index_folder_path_fix, _, _ = \
