@@ -620,11 +620,20 @@ function DemistoVersionGreaterEqualThen([string]$version) {
     return [version]::Parse($demisto_version) -ge  [version]::Parse($version)
 }
 
-function ParseDateRange([string]$date_str){
-    $now = $date = Get-Date -AsUTC
+function ParseDateRange{
+    [CmdletBinding()]
+    [OutputType([System.Object[]])]
+    Param (
+        [parameter(Mandatory=$true)]
+        [ValidateNotNullOrEmpty()]
+        [String]
+        $date_str
+    )
+    $now = $date = Get-Date
     $number, $unit_name = $date_str.Split()
-    $number = -($number -as [int])
-    if ($null -eq $number){
+    try{
+        $number = -([int]$number)
+    } catch [System.Management.Automation.RuntimeException]{
         throw "No number given in $date_str"
     }
     if ($null -eq $unit_name){
