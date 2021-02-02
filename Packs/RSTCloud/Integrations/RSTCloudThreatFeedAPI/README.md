@@ -351,7 +351,7 @@ Returns URL information and reputation.
 
 #### Human Readable Output
 
->### RST Threat Feed URL Reputation for: https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc
+>### RST Threat Feed URL Reputation for: `https://cwa.mx/himalaya/ziqqbxu4f7cwsordfxkihmhwfcc`
 >
 >|Description|Last Seen|Relevance|Score|Tags|Threat|
 >|---|---|---|---|---|---|
