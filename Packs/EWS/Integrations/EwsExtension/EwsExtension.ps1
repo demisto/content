@@ -862,7 +862,27 @@ class ExchangeOnlineClient {
             if ($domain_controller) {
                 $cmd_params.DomainController = $domain_controller
             }
-            return Get-FederationTrust @cmd_params
+            $select_outputs = @(
+                "AdminDisplayName", "ApplicationIdentifier","ApplicationUri", "DistinguishedName",
+                "ExchangeObjectId", "ExchangeVersion", "Guid", "Id", "Identity", "IsValid", "Name"
+            )
+            $response = Get-FederationTrust @cmd_params | Select-Object AdminDisplayName, ApplicationIdentifier,
+                ApplicationUri, DistinguishedName, ExchangeObjectId, ExchangeVersion, Guid, Id, Identity,
+                IsValid, Name, NamespaceProvisioner, ObjectCategory, ObjectClass, ObjectState,
+                @{
+                    Name="OrgCertificate";
+                    Expression={
+                        $_.OrgCertificate | Select-Object Archived, ServerItem, Issuer, NotAfter, NotBefore, PrivateKey,
+                            @{
+                                Name="Extensions";
+                                Expression={
+                                    $_.Extensions | Select-Object Critical, KeyUsages, CertificateAuthorityOrgCertificate, Oid
+                                }
+                            }
+                    }
+                }
+
+            return $response
         }
         finally {
             $this.CloseSession()
