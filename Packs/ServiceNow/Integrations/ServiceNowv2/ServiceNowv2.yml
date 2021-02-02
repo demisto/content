@@ -179,7 +179,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Custom fields on which to query. For example: state_code=AR,time_zone=PST.'
+      description: 'Custom fields on which to query. For example: state_code=AR;time_zone=PST.'
       isArray: false
       name: custom_fields
       required: false
@@ -189,6 +189,14 @@ script:
         context.
       isArray: true
       name: additional_fields
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -761,6 +769,14 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
+      required: false
+      secret: false
     deprecated: false
     description: Creates new ServiceNow ticket.
     execution: false
@@ -1301,6 +1317,14 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
+      required: false
+      secret: false
     deprecated: false
     description: Updates the specified ticket.
     execution: false
@@ -1703,6 +1727,14 @@ script:
       - 'true'
       required: false
       secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new record in the specified ServiceNow table.
     execution: false
@@ -1763,6 +1795,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument
+        for this command. Default is ';'.
+      isArray: false
+      name: fields_delimiter
       required: false
       secret: false
     deprecated: false
@@ -2331,7 +2371,7 @@ script:
     description: Test the instance configuration when using OAuth2 authentication.
     execution: false
     name: servicenow-oauth-test
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
   longRunning: false

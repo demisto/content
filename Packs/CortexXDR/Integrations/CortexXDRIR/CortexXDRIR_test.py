@@ -873,7 +873,7 @@ def test_get_mapping_fields_command():
         - the result fits the expected mapping.
     """
     from CortexXDRIR import get_mapping_fields_command
-    expected_mapping = [{"Cortex XDR Incident": {
+    expected_mapping = {"Cortex XDR Incident": {
         "status": "Current status of the incident: \"new\",\"under_investigation\",\"resolved_threat_handled\","
                   "\"resolved_known_issue\",\"resolved_duplicate\",\"resolved_false_positive\",\"resolved_other\"",
         "assigned_user_mail": "Email address of the assigned user.",
@@ -881,7 +881,7 @@ def test_get_mapping_fields_command():
         "resolve_comment": "Comments entered by the user when the incident was resolved.",
         "manual_severity": "Incident severity assigned by the user. This does not "
                            "affect the calculated severity low medium high"
-    }}]
+    }}
     res = get_mapping_fields_command()
     assert expected_mapping == res.extract_mapping()
 
@@ -1295,7 +1295,7 @@ def test_retrieve_file_details_command(requests_mock):
     }
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
-    requests_mock.post(f'{XDR_URL}', json=data1)
+    requests_mock.get(f'{XDR_URL}', json=data1)
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
