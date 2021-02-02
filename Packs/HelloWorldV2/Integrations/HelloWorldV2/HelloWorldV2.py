@@ -9,7 +9,6 @@ your integration follows the Code Conventions and passes the Linting phase.
 Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
-
 When building a Cortex XSOAR integration that is reusable, a lot of effort
 must be placed in the design. We recommend to fill a Design Document template,
 that allows you to capture Use Cases, Requirements and Inputs/Outputs.
@@ -340,7 +339,7 @@ def test_module(client: Client, name: str) -> str:
         client.say_hello(name)
     except DemistoException as e:
         if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            return 'Authorization Error: make sure your API Key is set correctly'
         else:
             raise e
     return 'ok'
@@ -414,7 +413,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :rtype: ``CommandResults``
     """
 
-    alert_id = args.get('alert_id', None)
+    alert_id = args.get('alert_id')
     if not alert_id:
         raise ValueError('alert_id not specified')
 
