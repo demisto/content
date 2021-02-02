@@ -1,0 +1,286 @@
+{
+    "id": "Shift Management ",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 0,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Shift Management ",
+    "layout": [
+        {
+            "id": "d9611ff0-6567-11eb-8a01-3d3e84b71837",
+            "forceRange": false,
+            "x": 4,
+            "y": 0,
+            "i": "d9611ff0-6567-11eb-8a01-3d3e84b71837",
+            "w": 8,
+            "h": 6,
+            "widget": {
+                "id": "RolesPerShift",
+                "version": 2,
+                "modified": "2021-01-27T15:56:46.896877342Z",
+                "sortValues": null,
+                "packID": "ShiftManagement",
+                "itemVersion": "1.2.0",
+                "fromServerVersion": "5.5.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Roles Per Shift",
+                "prevName": "Roles Per Shift",
+                "dataType": "scripts",
+                "widgetType": "text",
+                "query": "GetRolesPerShift",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Roles per shift 24x7",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": null,
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "01b89410-6568-11eb-8a01-3d3e84b71837",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "01b89410-6568-11eb-8a01-3d3e84b71837",
+            "w": 4,
+            "h": 1,
+            "widget": {
+                "id": "ShiftTimeLeft",
+                "version": 2,
+                "modified": "2021-01-27T15:56:46.896902249Z",
+                "sortValues": null,
+                "packID": "ShiftManagement",
+                "itemVersion": "1.2.0",
+                "fromServerVersion": "5.5.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Shift changes in",
+                "prevName": "Shift changes in",
+                "dataType": "scripts",
+                "widgetType": "duration",
+                "query": "TimeToNextShift",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Shows how much time left for the shift to ends.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": null,
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "0d9784d0-6568-11eb-8a01-3d3e84b71837",
+            "forceRange": false,
+            "x": 0,
+            "y": 1,
+            "i": "0d9784d0-6568-11eb-8a01-3d3e84b71837",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "UsersOnCall",
+                "version": 2,
+                "modified": "2021-01-27T15:56:46.896954285Z",
+                "sortValues": null,
+                "packID": "ShiftManagement",
+                "itemVersion": "1.2.0",
+                "fromServerVersion": "5.5.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Users On-Call",
+                "prevName": "Users On-Call",
+                "dataType": "scripts",
+                "widgetType": "text",
+                "query": "GetUsersOnCall",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Details of the users that are currently on-call",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": null,
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "1eb67410-6568-11eb-8a01-3d3e84b71837",
+            "forceRange": false,
+            "x": 0,
+            "y": 4,
+            "i": "1eb67410-6568-11eb-8a01-3d3e84b71837",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "UsersOOO",
+                "version": 2,
+                "modified": "2021-01-27T15:56:46.896925186Z",
+                "sortValues": null,
+                "packID": "ShiftManagement",
+                "itemVersion": "1.2.0",
+                "fromServerVersion": "5.5.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Out of office users",
+                "prevName": "Out of office users",
+                "dataType": "scripts",
+                "widgetType": "text",
+                "query": "GetUsersOOO",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Details of the users that are currently out of office",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": null,
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "2be64ed0-6568-11eb-8a01-3d3e84b71837",
+            "forceRange": false,
+            "x": 0,
+            "y": 6,
+            "i": "2be64ed0-6568-11eb-8a01-3d3e84b71837",
+            "w": 4,
+            "h": 2,
+            "widget": {
+                "id": "OnCallHoursPerUser",
+                "version": 2,
+                "modified": "2021-01-27T15:56:46.896844451Z",
+                "sortValues": null,
+                "packID": "ShiftManagement",
+                "itemVersion": "1.2.0",
+                "fromServerVersion": "5.5.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "On-Call Hours Per User",
+                "prevName": "On-Call Hours Per User",
+                "dataType": "scripts",
+                "widgetType": "bar",
+                "query": "GetOnCallHoursPerUser",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Displays number of on-call hours per user.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": null,
+                "size": 0,
+                "category": ""
+            }
+        }
+    ],
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}
