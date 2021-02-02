@@ -13,8 +13,6 @@ At end of the process you'll see a message that you've logged in successfully.
 
 In order to use the Cortex XSOAR Azure application, use the default application ID (3307a0ab-612c-47af-b3b5-8208247562db).
 
-You only need to fill in your subscription ID and resource group name. For more details, follow [Azure Integrations Parameters](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
-
 #### Self-Deployed Azure App
 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with mobile and desktop flows enabled.
