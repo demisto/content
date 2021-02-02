@@ -2455,7 +2455,7 @@ class TestBaseClient:
     def test_http_request_ssl_error_insecure(cls, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', exc=requests.exceptions.SSLError('test ssl'))
         client = cls.BaseClient('http://example.com/api/v2/', ok_codes=(200, 201), verify=False)
-        with raises(requests.exceptions.SSLError, match="test ssl"):
+        with raises(requests.exceptions.SSLError, match="^test ssl$"):
             client._http_request('get', 'event', resp_type='response')
 
     def test_http_request_proxy_error(self, requests_mock):
