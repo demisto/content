@@ -1,0 +1,1653 @@
+id: 31ba3023-9127-4464-8cd9-86e4637f4531
+version: 23
+vcShouldKeepItemLegacyProdMachine: false
+name: Powershell Payload Response
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9d1eb647-5680-4cb0-8b24-3b90c9a046d9
+    type: start
+    task:
+      id: 9d1eb647-5680-4cb0-8b24-3b90c9a046d9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d36306cd-80f5-4cfc-8103-d59597bbf032
+    type: playbook
+    task:
+      id: d36306cd-80f5-4cfc-8103-d59597bbf032
+      version: -1
+      name: Dedup - Generic v3
+      playbookName: Dedup - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      CloseAsDuplicate:
+        simple: "true"
+      DuplicateMethod:
+        simple: text
+      DuplicateThreshold:
+        simple: "0.7"
+      IgnoreCloseIncidents:
+        simple: "yes"
+      MaxNumberOfCandidates:
+        simple: "1000"
+      TimeField:
+        simple: created
+      TimeFrameHours:
+        simple: "72"
+      exsitingIncidentsLookback:
+        simple: 7 days ago
+      fromPolicy: {}
+      similarIncidentFields:
+        simple: name,type,details
+      similarLabelsKeys: {}
+      statusScope: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 05329b66-19b1-4be4-8005-bb05ab5d2ac3
+    type: regular
+    task:
+      id: 05329b66-19b1-4be4-8005-bb05ab5d2ac3
+      version: -1
+      name: Assign Analyst to Incident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assignBy:
+        simple: online
+      email: {}
+      onCall: {}
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ad615e64-a913-4c37-8d6b-afe7f76093e9
+    type: title
+    task:
+      id: ad615e64-a913-4c37-8d6b-afe7f76093e9
+      version: -1
+      name: Find originating email?
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "14"
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 65ee166a-f061-4ec5-8747-c6c129ba494d
+    type: playbook
+    task:
+      id: 65ee166a-f061-4ec5-8747-c6c129ba494d
+      version: -1
+      name: Process Email - Generic
+      description: Add email details to the relevant context entities and handle the
+        case where original emails are attached.
+      playbookName: Process Email - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      Email:
+        complex:
+          root: incident
+          accessor: labels.Email
+      Email/cc:
+        complex:
+          root: incident
+          accessor: labels.CC
+      Email/format:
+        complex:
+          root: incident
+          accessor: labels.Email/format
+      Email/from:
+        complex:
+          root: incident
+          accessor: labels.Email/from
+      Email/headers:
+        complex:
+          root: incident
+          accessor: labels.Email/headers
+      Email/html:
+        complex:
+          root: incident
+          accessor: labels.Email/html
+      Email/subject:
+        complex:
+          root: incident
+          accessor: labels.Email/subject
+      Email/text:
+        complex:
+          root: incident
+          accessor: labels.Email/text
+      File:
+        complex:
+          root: File
+      GetOriginalEmail:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: db12e7b0-9054-41d8-8e33-0ac326b66ccd
+    type: regular
+    task:
+      id: db12e7b0-9054-41d8-8e33-0ac326b66ccd
+      version: -1
+      name: Firewall rule to prevent outbound connection to the endpoint
+      description: Create a new Policy on the Cb Defense backend.
+      script: Carbon Black Defense|||cbd-create-policy
+      type: regular
+      iscommand: true
+      brand: Carbon Black Defense
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      description:
+        simple: Blocking Outgoing Connections to Malicious IP/Domain
+      name:
+        simple: MaliciousBlock
+      policy:
+        simple: insertRulePolicyHere
+      priorityLevel:
+        simple: HIGH
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 63852abd-efd7-4bb1-833a-1f8839804206
+    type: regular
+    task:
+      id: 63852abd-efd7-4bb1-833a-1f8839804206
+      version: -1
+      name: Background Scan
+      description: Start a background scan on device.
+      script: Carbon Black Enterprise EDR|||cb-eedr-device-background-scan
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      device_id:
+        simple: ${incident.endpointid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e6dbaa82-d5ba-4f02-8f63-66ff32206e37
+    type: regular
+    task:
+      id: e6dbaa82-d5ba-4f02-8f63-66ff32206e37
+      version: -1
+      name: Splunk Search for Other Machines with Similar Payloads
+      description: Searches Splunk for events.
+      script: SplunkPy|||splunk-search
+      type: regular
+      iscommand: true
+      brand: SplunkPy
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      app: {}
+      batch_limit: {}
+      earliest_time: {}
+      event_limit: {}
+      latest_time: {}
+      query:
+        simple: QueryTemplate
+      update_context: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: b69002ed-c874-4f96-81dc-fbdc292e6bf6
+    type: condition
+    task:
+      id: b69002ed-c874-4f96-81dc-fbdc292e6bf6
+      version: -1
+      name: Any Other Machines Found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+                accessor: Result
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: device
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: e51ac0ec-902b-48aa-89d2-678c603c4fa0
+    type: title
+    task:
+      id: e51ac0ec-902b-48aa-89d2-678c603c4fa0
+      version: -1
+      name: Do Nothing
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: f3a87884-3ffc-42a7-8596-35dbe96208d1
+    type: regular
+    task:
+      id: f3a87884-3ffc-42a7-8596-35dbe96208d1
+      version: -1
+      name: Increase Severity
+      description: Optionally increases the incident severity to the new value if
+        it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      severity:
+        simple: High
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 2361825c-38bd-4df2-868b-62a99e78f630
+    type: regular
+    task:
+      id: 2361825c-38bd-4df2-868b-62a99e78f630
+      version: -1
+      name: Background Scan
+      description: Start a background scan on device.
+      script: Carbon Black Enterprise EDR|||cb-eedr-device-background-scan
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      device_id:
+        complex:
+          root: Splunk
+          accessor: Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: device
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 0447f307-adbf-4deb-887b-9c8862a1b908
+    type: playbook
+    task:
+      id: 0447f307-adbf-4deb-887b-9c8862a1b908
+      version: -1
+      name: Detonate File - Generic
+      playbookName: Detonate File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: f2d4ed9a-f704-4b55-84f7-66bec74e822b
+    type: condition
+    task:
+      id: f2d4ed9a-f704-4b55-84f7-66bec74e822b
+      version: -1
+      name: Analyst Review
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Malicious Files Removed and Traffic Stopped:
+      - "18"
+      Traffic Still Ongoing and Files Not Removed:
+      - "19"
+    separatecontext: false
+    sla:
+      hours: 0
+      days: 0
+      weeks: 1
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 65b0bf13-5222-456f-8be8-3b2f554e09d2
+    type: title
+    task:
+      id: 65b0bf13-5222-456f-8be8-3b2f554e09d2
+      version: -1
+      name: Unquarantine Devices
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 4606ea4b-7bb2-49f2-8a08-d1d751c683e0
+    type: regular
+    task:
+      id: 4606ea4b-7bb2-49f2-8a08-d1d751c683e0
+      version: -1
+      name: Escalate Incident
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 1e268c0f-f974-4426-8ef4-77b2484e169c
+    type: condition
+    task:
+      id: 1e268c0f-f974-4426-8ef4-77b2484e169c
+      version: -1
+      name: More Than Just the Original Endpoint?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+                accessor: Result
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: device
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 0748f71f-729f-4df3-876a-8a0b397ce4ca
+    type: regular
+    task:
+      id: 0748f71f-729f-4df3-876a-8a0b397ce4ca
+      version: -1
+      name: Unquarantine Endpoints
+      description: Removes a device from quarantine.
+      script: Carbon Black Enterprise EDR|||cb-eedr-device-unquarantine
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      device_id:
+        complex:
+          root: Splunk
+          accessor: Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: device
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1060,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: b0f256fc-ffd3-41bc-8bf3-c54d82ed6afc
+    type: regular
+    task:
+      id: b0f256fc-ffd3-41bc-8bf3-c54d82ed6afc
+      version: -1
+      name: Unquarantine Original Endpoint
+      description: Removes a device from quarantine.
+      script: Carbon Black Enterprise EDR|||cb-eedr-device-unquarantine
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      device_id:
+        simple: ${incident.endpointid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 04f05794-7e82-4c3c-802f-421019032cc2
+    type: regular
+    task:
+      id: 04f05794-7e82-4c3c-802f-421019032cc2
+      version: -1
+      name: Create SNOW Ticket
+      description: Creates new ServiceNow ticket.
+      script: ServiceNow v2|||servicenow-create-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      active: {}
+      activity_due: {}
+      additional_assignee_list: {}
+      additional_fields: {}
+      approval: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to:
+        simple: ${incident.owner}
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller: {}
+      caller_id: {}
+      category:
+        simple: Malicious File Execution
+      caused_by: {}
+      change_type: {}
+      close_code: {}
+      close_notes: {}
+      closed_at: {}
+      closed_by: {}
+      cmdb_ci: {}
+      comments: {}
+      comments_and_work_notes: {}
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      custom_fields: {}
+      delivery_plan: {}
+      description:
+        simple: 'Malicious Payload/File Execution Detected on potentially more than
+          one Endpoint. The following Endpoint ${incident.endpointid} was detected
+          to have executed the following package: ${incident.filename} earlier today.
+          Incident will be updated with other devices that have the same file on their
+          system.'
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      impact: {}
+      incident_state: {}
+      input_display_value: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      opened_at: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity:
+        simple: ${incident.severity}
+      short_description:
+        simple: Malicious File Payload Executed/Detected on Endpoint
+      sla_due: {}
+      state: {}
+      subcategory: {}
+      sys_updated_by: {}
+      sys_updated_on: {}
+      template: {}
+      ticket_type: {}
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 7862192d-49d7-42a8-8960-d701e4d498f9
+    type: regular
+    task:
+      id: 7862192d-49d7-42a8-8960-d701e4d498f9
+      version: -1
+      name: Update SNOW Ticket
+      description: Updates the specified ticket.
+      script: ServiceNow v2|||servicenow-update-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      active: {}
+      activity_due: {}
+      additional_assignee_list: {}
+      additional_fields: {}
+      approval: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to: {}
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller: {}
+      caller_id: {}
+      category: {}
+      caused_by: {}
+      change_type: {}
+      close_code: {}
+      close_notes: {}
+      closed_at: {}
+      closed_by: {}
+      cmdb_ci: {}
+      comments:
+        complex:
+          root: Splunk
+          accessor: Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: device
+      comments_and_work_notes:
+        simple: Has been detected on multiple machines. Machine ID's in the comments
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      custom_fields: {}
+      delivery_plan: {}
+      description: {}
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      id:
+        simple: ${ServiceNow.Ticket.ID}
+      impact: {}
+      incident_state: {}
+      input_display_value: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity: {}
+      short_description: {}
+      sla_due: {}
+      state: {}
+      subcategory: {}
+      sys_updated_by: {}
+      sys_updated_on: {}
+      ticket_type: {}
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 9ce39c82-a8e2-4613-8801-4d265c24e5b7
+    type: regular
+    task:
+      id: 9ce39c82-a8e2-4613-8801-4d265c24e5b7
+      version: -1
+      name: Update SNOW Ticket with Results
+      description: Updates the specified ticket.
+      script: ServiceNow v2|||servicenow-update-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      active: {}
+      activity_due: {}
+      additional_assignee_list: {}
+      additional_fields: {}
+      approval: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to: {}
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller: {}
+      caller_id: {}
+      category: {}
+      caused_by: {}
+      change_type: {}
+      close_code: {}
+      close_notes: {}
+      closed_at: {}
+      closed_by: {}
+      cmdb_ci: {}
+      comments: {}
+      comments_and_work_notes:
+        simple: Successfully removed all file(s) from all compromised machine(s),
+          ensured no more traffic to the external IP/Domain, and removed quarantine
+          from the infected machines.
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      custom_fields: {}
+      delivery_plan: {}
+      description: {}
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      id:
+        simple: ${ServiceNow.Ticket.ID}
+      impact: {}
+      incident_state: {}
+      input_display_value: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity: {}
+      short_description: {}
+      sla_due: {}
+      state: {}
+      subcategory: {}
+      sys_updated_by: {}
+      sys_updated_on: {}
+      ticket_type: {}
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: dbe029ad-512e-4060-80fd-b5c8ac7d0f4a
+    type: regular
+    task:
+      id: dbe029ad-512e-4060-80fd-b5c8ac7d0f4a
+      version: -1
+      name: Background Scan
+      description: Start a background scan on device.
+      script: Carbon Black Enterprise EDR|||cb-eedr-device-background-scan
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      device_id:
+        complex:
+          root: Splunk
+          accessor: Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: device
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: c493fbcf-fe01-4cb6-8e53-ca1afc6081ce
+    type: regular
+    task:
+      id: c493fbcf-fe01-4cb6-8e53-ca1afc6081ce
+      version: -1
+      name: Background Scan
+      description: Start a background scan on device.
+      script: Carbon Black Enterprise EDR|||cb-eedr-device-background-scan
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      device_id:
+        simple: ${incident.endpointid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 804dd40f-2d64-4c23-8017-3358562d260d
+    type: regular
+    task:
+      id: 804dd40f-2d64-4c23-8017-3358562d260d
+      version: -1
+      name: Close Out SNOW Ticket
+      description: Updates the specified ticket.
+      script: ServiceNow v2|||servicenow-update-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      active:
+        simple: "false"
+      activity_due: {}
+      additional_assignee_list: {}
+      additional_fields: {}
+      approval: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to: {}
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller: {}
+      caller_id: {}
+      category: {}
+      caused_by: {}
+      change_type: {}
+      close_code:
+        simple: Solved (Permanently)
+      close_notes:
+        simple: Remediation Successful
+      closed_at: {}
+      closed_by:
+        simple: ${incident.owner}
+      cmdb_ci: {}
+      comments: {}
+      comments_and_work_notes: {}
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      custom_fields: {}
+      delivery_plan: {}
+      description: {}
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      id:
+        simple: ${ServiceNow.Ticket.ID}
+      impact: {}
+      incident_state: {}
+      input_display_value: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity: {}
+      short_description: {}
+      sla_due: {}
+      state: {}
+      subcategory: {}
+      sys_updated_by: {}
+      sys_updated_on: {}
+      ticket_type: {}
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 3150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 64b259f0-bc3e-4b67-84fa-803f1ff12c9d
+    type: regular
+    task:
+      id: 64b259f0-bc3e-4b67-84fa-803f1ff12c9d
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Remediated
+      closeReason:
+        simple: Remediated
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 3320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: d95ebf7d-457c-4917-8656-1d726a4ad49d
+    type: title
+    task:
+      id: d95ebf7d-457c-4917-8656-1d726a4ad49d
+      version: -1
+      name: This thread is finished; the quarantine and scan of endpoints continues
+        on the playbook
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 5f71f11f-3c7d-40cf-847c-0227bc0c01bc
+    type: title
+    task:
+      id: 5f71f11f-3c7d-40cf-847c-0227bc0c01bc
+      version: -1
+      name: End of Investigation
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 3480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 93fe719e-2f41-405c-80a8-a504daf1e16c
+    type: title
+    task:
+      id: 93fe719e-2f41-405c-80a8-a504daf1e16c
+      version: -1
+      name: Connector
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -770,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: d42f0df0-5643-474e-84d7-4ec228067a41
+    type: title
+    task:
+      id: d42f0df0-5643-474e-84d7-4ec228067a41
+      version: -1
+      name: Connector
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 8fd54b64-cf05-477b-8ed8-6ddeae4cad11
+    type: playbook
+    task:
+      id: 8fd54b64-cf05-477b-8ed8-6ddeae4cad11
+      version: -1
+      name: Block File - Generic v2
+      playbookName: Block File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      EventId: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: cf436284-aa98-499b-8494-729145c6b9a3
+    type: playbook
+    task:
+      id: cf436284-aa98-499b-8494-729145c6b9a3
+      version: -1
+      name: Isolate Endpoint - Generic
+      playbookName: Isolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      EndpointId:
+        simple: ${incident.deviceid}
+      Hostname:
+        simple: ${incident.hostname}
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+      xdr_endpoint_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Endpoint.endpoint_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 49dccc52-763b-4e4c-8113-1c97af54f3bc
+    type: playbook
+    task:
+      id: 49dccc52-763b-4e4c-8113-1c97af54f3bc
+      version: -1
+      name: Isolate Endpoint - Generic
+      playbookName: Isolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      EndpointId:
+        complex:
+          root: Splunk
+          accessor: Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: device
+      Hostname:
+        complex:
+          root: Splunk
+          accessor: Result
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: host
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+      xdr_endpoint_id:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: Endpoint.endpoint_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 41f96103-69c2-4d51-81fa-9255efc4d076
+    type: playbook
+    task:
+      id: 41f96103-69c2-4d51-81fa-9255efc4d076
+      version: -1
+      name: Block File - Generic v2
+      playbookName: Block File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      EventId: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 33e6d2fd-a085-4f62-8acd-55c894191d07
+    type: playbook
+    task:
+      id: 33e6d2fd-a085-4f62-8acd-55c894191d07
+      version: -1
+      name: Block File - Generic v2
+      playbookName: Block File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      EventId: {}
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3495,
+        "width": 2770,
+        "x": -770,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Endpoint ID
+  value:
+    simple: ${incident.endpointid}
+  required: false
+  description: ID of the endpoint in question.
+  playbookInputQuery: null
+- key: Hostname
+  value:
+    simple: ${incident.hostname}
+  required: false
+  description: Hostname of the endpoint in question.
+  playbookInputQuery: null
+- key: Email
+  value:
+    simple: ${incident.email}
+  required: false
+  description: Email attachment.
+  playbookInputQuery: null
+- key: File
+  value:
+    simple: ${File}
+  required: false
+  description: Payload file that was executed.
+  playbookInputQuery: null
+- key: File Path
+  value:
+    simple: ${incident.filepath}
+  required: false
+  description: File Path of the Executed Payload.
+  playbookInputQuery: null
+outputs: []
