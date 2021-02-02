@@ -1,7 +1,5 @@
 # pylint: disable=unsubscriptable-object
-import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 ''' IMPORTS '''
 from contextlib import closing
