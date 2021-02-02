@@ -25,7 +25,6 @@ The Cyren Threat InDepth content pack includes access to these streams of indica
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Cyren Threat InDepth API URL | True |
 | apikey | API JWT token that has been issued to you | True |
 | feed_name | Name of the particular feed that matches your API JWT token | True |
 | max_indicators | The maximum number of indicators to fetch | False |
