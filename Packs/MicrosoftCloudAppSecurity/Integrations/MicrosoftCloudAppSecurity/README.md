@@ -1,5 +1,10 @@
 This is the MicrosoftCloudAppSecurity integration.
 This integration was integrated and tested with version 178 of MicrosoftCloudAppSecurity
+
+For more details about how to generate a new token, see [Microsoft Cloud App Security - Managing API tokens](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication).
+
+For more details about the kind of permission are needed for the token owner in Microsoft Cloud App Security, see [Microsoft Cloud App Security - Manage admin access](https://docs.microsoft.com/en-us/cloud-app-security/manage-admins).
+
 ## Configure MicrosoftCloudAppSecurity on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
