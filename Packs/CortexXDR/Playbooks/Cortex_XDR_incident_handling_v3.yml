@@ -1024,7 +1024,7 @@ tasks:
       '#default#':
       - "44"
       "yes":
-      - "42"
+      - "57"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1045,45 +1045,6 @@ tasks:
         "position": {
           "x": 510,
           "y": -110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "42":
-    id: "42"
-    taskid: 472956e6-8189-4dff-8fd7-f2c6fc31a385
-    type: regular
-    task:
-      id: 472956e6-8189-4dff-8fd7-f2c6fc31a385
-      version: -1
-      name: Link similar incidents
-      description: Link two or more incidents.
-      scriptName: DemistoLinkIncidents
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "44"
-    scriptarguments:
-      masterID:
-        complex:
-          root: incident
-          accessor: id
-      otherIDs:
-        complex:
-          root: similarIncident
-          accessor: rawId
-      unlink: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 800,
-          "y": 60
         }
       }
     note: false
@@ -1512,6 +1473,87 @@ tasks:
     nexttasks:
       '#none#':
       - "23"
+    scriptarguments:
+      IPAddresses:
+        complex:
+          root: IP
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: IP.Malicious
+                iscontext: true
+          accessor: Address
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_remote_ip
+          - operator: uniq
+      InternalDomainName:
+        complex:
+          root: inputs.InternalDomainName
+      InternalHostRegex:
+        complex:
+          root: inputs.InternalHostRegexc
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      MD5:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256
+          - operator: uniq
+      URLDomain:
+        complex:
+          root: Domain
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Domain.Malicious
+                iscontext: true
+          accessor: Name
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.network_artifacts.network_domain
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
@@ -1589,6 +1631,46 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "57":
+    id: "57"
+    taskid: eb23aec7-0bf3-4b59-884c-6c8b6a90b5bf
+    type: regular
+    task:
+      id: eb23aec7-0bf3-4b59-884c-6c8b6a90b5bf
+      version: -1
+      name: Link similar incidents
+      description: commands.local.cmd.linkIncidents
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      action: {}
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      linkedIncidentIDs:
+        complex:
+          root: similarIncident
+          accessor: rawId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1597,6 +1679,8 @@ view: |-
       "33_23_#default#": 0.53,
       "33_55_yes": 0.39,
       "37_7_CONTINUE": 0.77,
+      "41_44_#default#": 0.49,
+      "41_57_yes": 0.4,
       "43_2_#default#": 0.32,
       "44_2_no": 0.31,
       "44_46_yes": 0.35,
@@ -1633,8 +1717,7 @@ inputs:
     simple: "Yes"
   required: false
   description: This input indicates whether the playbook will link similar incidents.
-    To link similar incidents, you must enable the Demisto REST API integration. Specify
-    Yes/No.
+    To link similar incidents, Specify Yes/No.
   playbookInputQuery:
 - key: Hunting
   value:
