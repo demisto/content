@@ -120,7 +120,7 @@ def update_new_conf_json(future):
             NEW_CONF_JSON_OBJECT.extend(calc_conf_json_object(pack_integrations, pack_test_playbooks))
 
     except Exception:
-        logging.exception(f'Failed to collect pack test configurations')
+        logging.exception('Failed to collect pack test configurations')
         raise
 
 def main():
