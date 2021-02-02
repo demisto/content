@@ -9,7 +9,7 @@ VULNERABILITIES_FIELDS_MAP = [
     ("name", "dvchost="),
     ("profile", "cs1Label=Profile cs1="),
     ("display_profile_category", "cs2Label=Category cs2="),
-    ("profile_vertical", "cs1Labe3=Profile cs3="),
+    ("profile_vertical", "cs3Label=ProfileVertical cs3="),
     ("vendor", "cs4Label=Vendor cs4="),
     ("model", "cs5Label=Model cs5="),
     ("vlan", "cs6Label=Vlan cs6="),
