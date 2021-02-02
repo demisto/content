@@ -1520,12 +1520,13 @@ class Pack(object):
             if packs_statistic_df is not None:
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
-            self._create_date = self._get_pack_creation_date(index_folder_path)
+            if need_to_update_create_time:
+                self._create_date = released_date
+            else:
+                self._create_date = self._get_pack_creation_date(index_folder_path)
 
             if released_date:
                 self._update_date = released_date
-                if need_to_update_create_time:
-                    self.create_date = released_date
             else:
                 self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
 

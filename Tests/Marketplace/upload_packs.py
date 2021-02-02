@@ -794,6 +794,7 @@ def compare_rn_and_get_updated_date(pack_name, index_folder_path_fix, index_fold
     # older version
     old_latest_changelog_released_date = ""
     old_pack_version = ""
+    old_changelog = ""
     changelog_index_path = os.path.join(index_folder_path_fix, pack_name, Pack.CHANGELOG_JSON)
     if os.path.exists(changelog_index_path):
         with open(changelog_index_path, "r") as changelog_file:
@@ -815,12 +816,12 @@ def compare_rn_and_get_updated_date(pack_name, index_folder_path_fix, index_fold
     # If the 2 latest versions in both indexes are the same - revert to old date
     if new_pack_version and old_pack_version:
         if old_pack_version.vstring == new_pack_version.vstring:
-            return old_pack_version.vstring, old_latest_changelog_released_date, False
-
-    # If the pack don't have a new changelog file it means it's created in the upload flow
-    # therefore we need to update the create time as well
-    if old_changelog and not new_changelog:
-        return old_pack_version.vstring, old_latest_changelog_released_date, True
+            # If the pack have only 1 changelog section it's the initial version
+            # therefore we need to update the create time as well
+            if len(old_changelog.keys()) == 1:
+                return old_pack_version.vstring, old_latest_changelog_released_date, True
+            else:
+                return old_pack_version.vstring, old_latest_changelog_released_date, False
 
     # if the pack was updated (or released) in the last 2 weeks
     return None, None, False
