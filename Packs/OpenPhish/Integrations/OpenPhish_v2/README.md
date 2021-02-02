@@ -7,7 +7,7 @@ OpenPhish uses proprietary Artificial Intelligence algorithms to automatically i
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | https | Use secured protocol \(https\) | False |
+    | https | Use HTTPS connection | False |
     | fetchIntervalHours | Database refresh interval \(hours\) | False |
     | proxy | Use system proxy settings | False |
     | insecure | Trust any certificate \(not secure\) | False |
