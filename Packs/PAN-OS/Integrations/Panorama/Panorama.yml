@@ -2565,7 +2565,6 @@ script:
       predefined:
       - application-pcap
       - filter-pcap
-      - threat-pcap
       - dlp-pcap
       required: true
       secret: false
@@ -2582,7 +2581,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of all PCAP files by PCAP type.
+    description: Returns a list of all PCAP files by PCAP type. Not available for threat PCAPs.
     execution: false
     name: panorama-list-pcaps
   - arguments:

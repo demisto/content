@@ -2460,8 +2460,7 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 
 ### panorama-list-pcaps
 ***
-Returns a list of all PCAP files by PCAP type.
-
+Returns a list of all PCAP files by PCAP type. Not available for threat PCAPs.
 
 #### Base Command
 
