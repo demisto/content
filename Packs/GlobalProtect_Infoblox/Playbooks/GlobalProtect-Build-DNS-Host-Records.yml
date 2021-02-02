@@ -1,0 +1,514 @@
+id: 1bcf148e-2ab7-42a1-8481-4bf195efa054
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: GlobalProtect-Build-DNS-Host-Records
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 60dab33c-5b56-4e48-8a89-d06b50a5c0e1
+    type: start
+    task:
+      id: 60dab33c-5b56-4e48-8a89-d06b50a5c0e1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 5a54924c-551a-4cf3-8e08-603367ce5bab
+    type: regular
+    task:
+      id: 5a54924c-551a-4cf3-8e08-603367ce5bab
+      version: -1
+      name: List Connected GP Users
+      description: Gets the current Global Protect Users
+      script: '|||panos-get-current-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 40d6cb57-d3a6-40e8-8766-16ef9bb94bbf
+    type: regular
+    task:
+      id: 40d6cb57-d3a6-40e8-8766-16ef9bb94bbf
+      version: -1
+      name: Get Existing Host Record RefID
+      description: Return RefID on Records and  place in context GlobalProtect.Hosts
+        (Adds, Updates, or Deletes)
+      script: '|||gp-infoblox-get-refid'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      deletes: {}
+      domain:
+        simple: defense.local
+      host:
+        complex:
+          root: ${GlobalProtect
+          accessor: CurrentUsers.entry.computer}
+          transformers:
+          - operator: toLowerCase
+      ipadd:
+        simple: ${GlobalProtect.CurrentUsers.entry.virtual-ip}
+      status: {}
+      view: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 0cfe7cab-335c-41a0-8d5c-0909348c8d45
+    type: regular
+    task:
+      id: 0cfe7cab-335c-41a0-8d5c-0909348c8d45
+      version: -1
+      name: Create Host Record
+      description: Add a Host record to an empty IP
+      script: '|||gp-infoblox-add-host-record'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      host:
+        simple: ${GlobalProtect.Hosts.Adds.name}
+      ipadd:
+        simple: ${GlobalProtect.Hosts.Adds.ipadd}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: bf89b2e8-b3ae-4810-8e05-4b7a4b20f8b5
+    type: regular
+    task:
+      id: bf89b2e8-b3ae-4810-8e05-4b7a4b20f8b5
+      version: -1
+      name: Close Case
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        complex:
+          root: incident
+          accessor: id
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 92eba8b2-d731-40e2-88cb-be43f52172c3
+    type: title
+    task:
+      id: 92eba8b2-d731-40e2-88cb-be43f52172c3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: ac8220bf-5337-4551-8571-88c85252c085
+    type: regular
+    task:
+      id: ac8220bf-5337-4551-8571-88c85252c085
+      version: -1
+      name: Extract Data From Current GP Users
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        simple: ${GlobalProtect.CurrentUsers.entry}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 0ec89cdd-9f57-4b48-8395-3cfe0e2a9b7c
+    type: regular
+    task:
+      id: 0ec89cdd-9f57-4b48-8395-3cfe0e2a9b7c
+      version: -1
+      name: Extract Indicators from Incident
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        simple: ${incident.details}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: fbbee664-069c-484a-8d14-da57280eb8b1
+    type: regular
+    task:
+      id: fbbee664-069c-484a-8d14-da57280eb8b1
+      version: -1
+      name: Update Host Record
+      description: Updates a host records IP address
+      script: '|||gp-infoblox-update-host-record'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      host:
+        simple: ${GlobalProtect.Hosts.Updates.name}
+      ipadd:
+        simple: ${GlobalProtect.Hosts.Updates.ipadd}
+      refid:
+        simple: ${GlobalProtect.Hosts.Updates.refid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: f7ec317f-0ca8-486f-8429-025b5df448db
+    type: regular
+    task:
+      id: f7ec317f-0ca8-486f-8429-025b5df448db
+      version: -1
+      name: Remove RefId
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: GlobalProtect.Hosts
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 5f5cfb7a-5eb0-47c5-8a2d-1b4809db7854
+    type: condition
+    task:
+      id: 5f5cfb7a-5eb0-47c5-8a2d-1b4809db7854
+      version: -1
+      name: Are There Hosts To Update?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GlobalProtect.Hosts.Updates
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: c678ecfb-ffc2-48f2-8622-31a6a0da5cc8
+    type: condition
+    task:
+      id: c678ecfb-ffc2-48f2-8622-31a6a0da5cc8
+      version: -1
+      name: Are There Hosts to Add?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GlobalProtect.Hosts.Adds
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 68ea09bc-e14e-4733-81ce-ab0c6df51a22
+    type: title
+    task:
+      id: 68ea09bc-e14e-4733-81ce-ab0c6df51a22
+      version: -1
+      name: Update User Table
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 6b687963-e88e-46bd-84aa-bcfc3205e438
+    type: title
+    task:
+      id: 6b687963-e88e-46bd-84aa-bcfc3205e438
+      version: -1
+      name: Create DNS Record
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: af279bba-ebd7-48b7-8da1-c7edbec03d2a
+    type: title
+    task:
+      id: af279bba-ebd7-48b7-8da1-c7edbec03d2a
+      version: -1
+      name: Update DNS Record
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2395,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

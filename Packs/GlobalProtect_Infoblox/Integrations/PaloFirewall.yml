@@ -1,0 +1,320 @@
+commonfields:
+  id: PaloFirewall
+  version: -1
+name: PaloFirewall
+display: Palo Firewall
+category: Network Security
+image: data:image/png;base64,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
+description: This integration works with the Palo Alto Next Gen Firewall API
+detaileddescription: |-
+  ## Get a FireWall API Key
+    To use this integration, you need a Firewall API key.
+    1. Log in to your Palo Alto NGFW console.
+    2. Add a role to Device --> Admin Roles
+    3. Enable XML/REST API features
+    4. Add a user to Administrators
+    5. Choose the new role you created in profile
+
+    ## Configure Demisto
+    1. Enter your newly created username and password to your Integration instance
+    2. Go to the command line of XSOAR and use the ##!panos-get-api-key## command
+    3. Enter the key generated in the playground into your Integration instance
+    4. Now you can use the Test Button
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  defaultvalue: https://firewall
+  type: 0
+  required: true
+- display: Username
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Fetch incidents
+  name: isFetch
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  defaultvalue: ""
+  type: 13
+  required: false
+- display: Require Valide Certificate
+  name: secure
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: false
+  additionalinfo: This key is generated by !panos-get-api-key
+script:
+  script: |-
+    import urllib3
+
+
+
+    urllib3.disable_warnings()
+
+    PROXY = demisto.params().get('proxy')
+    SECURE = demisto.params().get('secure')
+    BASE_URL = demisto.params().get('url')
+    API_KEY = demisto.params().get('apikey')
+    URL_SUFFIX = 'api'
+    if not demisto.params().get('proxy', False):
+        del os.environ['HTTP_PROXY']
+        del os.environ['HTTPS_PROXY']
+        del os.environ['http_proxy']
+        del os.environ['https_proxy']
+
+    '''HELPER FUNCTIONS'''
+
+
+    def http_request(method, params):
+        r = requests.Response
+        if method is 'GET':
+            r = requests.get(BASE_URL + "/" + URL_SUFFIX, params=params, verify=SECURE)
+        elif method is 'POST':
+            if not API_KEY:
+                headers = {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            else:
+                headers = {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-FunTranslations-Api-Secret': API_KEY
+                }
+
+            r = requests.post(BASE_URL + "/" + URL_SUFFIX, params=params, headers=headers, verify=SECURE)
+
+        if r.status_code is not 200:
+            return_error('Error in API call [%d] - %s' % (r.status_code, r.reason))
+        json_result = json.loads(xml2json(str(r.text)))
+
+        # handle non success
+        if json_result['response']['@status'] != 'success':
+            if 'msg' in json_result['response'] and 'line' in json_result['response']['msg']:
+                # catch non existing object error and display a meaningful message
+                if json_result['response']['msg']['line'] == 'No such node':
+                    raise Exception(
+                        'Object was not found, verify that the name is correct and that the instance was committed.')
+
+                #  catch urlfiltering error and display a meaningful message
+                elif str(json_result['response']['msg']['line']).find('test -> url') != -1:
+                    raise Exception('The URL filtering license is either expired or not active.'
+                                    ' Please contact your PAN-OS representative.')
+
+                # catch non valid jobID errors and display a meaningful message
+                elif isinstance(json_result['response']['msg']['line'], str) and \
+                        json_result['response']['msg']['line'].find('job') != -1 and \
+                        (json_result['response']['msg']['line'].find('not found') != -1
+                         or json_result['response']['msg']['line'].find('No such query job')) != -1:
+                    raise Exception('Invalid Job ID error: ' + json_result['response']['msg']['line'])
+
+                # catch already at the top/bottom error for rules and return this as an entry.note
+                elif str(json_result['response']['msg']['line']).find('already at the') != -1:
+                    demisto.results('Rule ' + str(json_result['response']['msg']['line']))
+                    sys.exit(0)
+
+                # catch already registered ip tags and return this as an entry.note
+                elif str(json_result['response']['msg']['line']).find('already exists, ignore') != -1:
+                    if isinstance(json_result['response']['msg']['line']['uid-response']['payload']['register']['entry'],
+                                  list):
+                        ips = [o['@ip'] for o in
+                               json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']]
+                    else:
+                        ips = json_result['response']['msg']['line']['uid-response']['payload']['register']['entry']['@ip']
+                    demisto.results(
+                        'IP ' + str(ips) + ' already exist in the tag. All submitted IPs were not registered to the tag.')
+                    sys.exit(0)
+
+                # catch timed out log queries and return this as an entry.note
+                elif str(json_result['response']['msg']['line']).find('Query timed out') != -1:
+                    demisto.results(str(json_result['response']['msg']['line']) + '. Rerun the query.')
+                    sys.exit(0)
+
+            if '@code' in json_result['response']:
+                raise Exception(
+                    'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
+                        json_result['response']['msg']['line']))
+            else:
+                raise Exception('Request Failed.\n' + str(json_result['response']))
+
+        # handle @code
+        if 'response' in json_result and '@code' in json_result['response']:
+            if json_result['response']['@code'] not in ['19', '20']:
+                # error code non exist in dict and not of success
+                if 'msg' in json_result['response']:
+                    raise Exception(
+                        'Request Failed.\nStatus code: ' + str(json_result['response']['@code']) + '\nWith message: ' + str(
+                            json_result['response']['msg']))
+                else:
+                    raise Exception('Request Failed.\n' + str(json_result['response']))
+
+        return json_result['response']['result']
+
+
+    """ MAIN FUNCTIONS """
+
+
+    def panos_get_api_key():
+        params = {
+            'type': 'keygen',
+            'user': demisto.params().get('credentials').get('identifier'),
+            'password': demisto.params().get('credentials').get('password')
+        }
+        r = http_request('GET', params)
+        return r
+
+
+    def panos_get_current_users():
+        params = {
+            'type': 'op',
+            'cmd': '<show><global-protect-gateway><current-user/></global-protect-gateway></show>',
+            'key': demisto.params().get('apiKey')
+        }
+        r = http_request('GET', params)
+
+        return r
+
+    def panos_get_gateways():
+        params = {
+            'type': 'op',
+            'cmd': '<show><global-protect-gateway><gateway/></global-protect-gateway></show>',
+            'key': demisto.params().get('apiKey')
+        }
+        r = http_request('GET', params)
+
+        return r
+
+    def panos_disconnect_current_user():
+        args = demisto.args()
+        command_string = '<request><global-protect-gateway><client-logout><gateway>' + args.get('gateway') + "-N"
+        command_string = command_string + '</gateway><user>' + args.get('user')
+        command_string = command_string + '</user><reason>' + args.get('reason')
+        command_string = command_string + '</reason><computer>' + args.get('computer')
+        command_string = command_string + '</computer></client-logout></global-protect-gateway></request>'
+        params = {
+            'type': 'op',
+            'cmd': command_string,
+            'key': demisto.params().get('apiKey')
+        }
+        r = http_request('GET', params)
+
+        return r
+
+
+    def panos_test():
+        """
+        test module
+        """
+
+        params = {
+            'type': 'op',
+            'cmd': '<show><system><info></info></system></show>',
+            'key': demisto.params().get('apiKey')
+        }
+
+        http_request('GET', params)
+
+        demisto.results('ok')
+
+
+    ''' EXECUTION '''
+
+
+    def main():
+        LOG('command is %s' % (demisto.command(),))
+        try:
+            if demisto.command() == 'panos-get-api-key':
+                demisto.results(panos_get_api_key())
+            if demisto.command() == 'panos-get-current-users':
+                response_from_api = panos_get_current_users()
+                raw_response = response_from_api
+                command_results = CommandResults(
+                    outputs_prefix='GlobalProtect.CurrentUsers',
+                    outputs_key_field='public-ip',
+                    outputs=response_from_api,
+                    readable_output=raw_response,
+                    raw_response=raw_response
+                )
+                return_results(command_results)
+            if demisto.command() == 'panos-get-gateways':
+                response_from_api = panos_get_gateways()
+                raw_response = response_from_api
+                command_results = CommandResults(
+                    outputs_prefix='GlobalProtect.Gateways',
+                    outputs_key_field='gateway-name',
+                    outputs=response_from_api,
+                    readable_output=raw_response,
+                    raw_response=raw_response
+                )
+                return_results(command_results)
+            if demisto.command() == 'panos-disconnect-current-user':
+                response_from_api = panos_disconnect_current_user()
+                raw_response = response_from_api
+                command_results = CommandResults(
+                    outputs_prefix='GlobalProtect.Disconnected',
+                    outputs_key_field='user',
+                    outputs=response_from_api,
+                    readable_output=raw_response,
+                    raw_response=raw_response
+                )
+                return_results(command_results)
+            elif demisto.command() == 'test-module':
+                panos_test()
+        except Exception as e:
+            logging.exception(e)
+
+
+    if __name__ == 'builtins':
+        main()
+  type: python
+  commands:
+  - name: panos-get-api-key
+    arguments: []
+    description: Get the API Key from the firewall.
+  - name: panos-get-current-users
+    arguments: []
+    outputs:
+    - contextPath: GlobalProtect.CurrentUsers
+      description: Global Protect Users
+      type: String
+    description: Gets the current Global Protect Users
+  - name: panos-disconnect-current-user
+    arguments:
+    - name: gateway
+      required: true
+    - name: user
+      required: true
+    - name: reason
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - force-logout
+      - admin
+      - initiated
+      - logout
+      description: Reason for logout
+      defaultValue: force-logout
+    - name: computer
+      required: true
+    description: Disconnects the a current users from Global Protect
+  - name: panos-get-gateways
+    arguments: []
+    description: List the Global Protect Gateway
+  dockerimage: demisto/python3:3.7.5.4583
+  isfetch: true
+  runonce: false
+  subtype: python3

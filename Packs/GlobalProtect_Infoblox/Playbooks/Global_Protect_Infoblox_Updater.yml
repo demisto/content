@@ -1,0 +1,750 @@
+commonfields:
+  id: Global Protect Infoblox Updater
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Global Protect Infoblox Updater
+display: Global Protect Infoblox Updater
+category: Network Security
+image: data:image/png;base64,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
+description: This integration is used to update Infoblox with Global Protect information.
+detaileddescription: ' '
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: url
+  defaultvalue: https://example.net
+  type: 0
+  required: true
+- display: User Name
+  name: credentials
+  type: 9
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: |
+    ''' IMPORTS '''
+    from typing import Dict, Tuple, Optional, Union, Callable, Any
+    import urllib3
+    import json
+
+    # Disable insecure warnings
+    urllib3.disable_warnings()
+
+    INTEGRATION_NAME = 'Infoblox Integration 2.10.5'
+    INTEGRATION_COMMAND_NAME = 'gp-infoblox'
+    INTEGRATION_CONTEXT_NAME = 'Global Protect Infoblox'
+    REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
+    REQUEST_PARAM_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
+    REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'name,rp_zone,comment,canonical,disable'}
+    REQUEST_PARAM_LIST_RULES = {'_return_fields+': 'name,zone,comment,disable,type'}
+    REQUEST_PARAM_SEARCH_RULES = {'_return_fields+': 'name,zone,comment,disable'}
+    REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
+
+    RESPONSE_TRANSLATION_DICTIONARY = {
+        '_ref': 'ReferenceID',
+        'fqdn': 'FQDN',
+        'rp_zone': 'Zone'
+    }
+
+    RPZ_RULES_DICT = {
+        'Passthru': {
+            'Domain Name': {
+                'infoblox_object_type': 'record:rpz:cname'
+            },
+            'IP address': {
+                'infoblox_object_type': 'record:rpz:a:ipaddress'
+            },
+            'Client IP address': {
+                'infoblox_object_type': 'record:rpz:cname:clientipaddress'
+            }
+        },
+        'Block (No such domain)': {
+            'Domain Name': {
+                'infoblox_object_type': 'record:rpz:cname'
+            },
+            'IP address': {
+                'infoblox_object_type': 'record:rpz:cname:ipaddress'
+            },
+            'Client IP address': {
+                'infoblox_object_type': 'record:rpz:cname:clientipaddress'
+            }
+        },
+        'Block (No data)': {
+            'Domain Name': {
+                'infoblox_object_type': 'record:rpz:cname'
+            },
+            'IP address': {
+                'infoblox_object_type': 'record:rpz:cname:ipaddress'
+            },
+            'Client IP address': {
+                'infoblox_object_type': 'record:rpz:cname:clientipaddress'
+            }
+        },
+        'Substitute (domain name)': {
+            'Domain Name': {
+                'infoblox_object_type': 'record:rpz:cname'
+            },
+            'IP address': {
+                'infoblox_object_type': 'record:rpz:a:ipaddress'
+            },
+            'Client IP address': {
+                'infoblox_object_type': 'record:rpz:cname:clientipaddressdn'
+            }
+        }
+    }
+
+
+    class Client(BaseClient):
+        def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, params=None):
+            super(Client, self).__init__(base_url, verify, proxy, ok_codes, headers, auth)
+            self.params = params
+
+        def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
+                          data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
+            if params:
+                self.params.update(params)
+            try:
+                return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                             auth=auth, json_data=json_data, params=self.params, data=data, files=files,
+                                             timeout=timeout, resp_type=resp_type, ok_codes=ok_codes, **kwargs)
+            except DemistoException as error:
+                raise parse_demisto_exception(error, 'text')
+
+        def test_module(self) -> Dict:
+            """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication
+            is successful.
+
+            Returns:
+                Response JSON
+            """
+            return self.list_response_policy_zones()
+
+        def list_response_policy_zones(self, max_results: Optional[str] = None) -> Dict:
+            """List all response policy zones.
+            Args:
+                    max_results:  maximum number of results
+            Returns:
+                Response JSON
+            """
+            suffix = 'zone_rp'
+            request_params = assign_params(_max_results=max_results)
+            request_params.update(REQUEST_PARAM_ZONE)
+            return self._http_request('GET', suffix, params=request_params)
+
+        def get_ip(self, ip: Optional[str]) -> Dict:
+            """Get ip information.
+            Args:
+                ip: ip to retrieve.
+
+            Returns:
+                Response JSON
+            """
+            # The server endpoint to request from
+            suffix = 'ipv4address'
+
+            # Dictionary of params for the request
+            request_params = assign_params(ip_address=ip)
+            request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            return self._http_request('GET', suffix, params=request_params)
+
+        def get_name(self, name: Optional[str]) -> Dict:
+            """Get Name information.
+            Args:
+                name: name to retrieve.
+
+            Returns:
+                Response JSON
+            """
+            # The server endpoint to request from
+            suffix = 'record:a'
+
+            # Dictionary of params for the request
+            request_params = assign_params(name=name)
+            request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            return self._http_request('GET', suffix, params=request_params)
+
+        def search_related_objects_by_ip(self, ip: Optional[str], max_results: Optional[str]) -> Dict:
+            """Search ip related objects.
+            Args:
+                ip: ip to retrieve.
+                max_results: maximum number of results
+
+            Returns:
+                Response JSON
+            """
+            # The server endpoint to request from
+            suffix = 'search'
+
+            # Dictionary of params for the request
+            request_params = assign_params(address=ip, _max_results=max_results)
+            return self._http_request('GET', suffix, params=request_params)
+
+        def list_response_policy_zone_rules(self, zone: Optional[str], max_results: Optional[str],
+                                            next_page_id: Optional[str]) -> Dict:
+            """List response policy zones rules by a given zone name.
+            Args:
+                zone: response policy zone name.
+                max_results: maximum number of results.
+                next_page_id: ID of the next page to retrieve, if given all other arguments are ignored.
+
+            Returns:
+                Response JSON
+            """
+            # The server endpoint to request from
+            suffix = 'allrpzrecords'
+            # Dictionary of params for the request
+            request_params = assign_params(zone=zone, _max_results=max_results, _page_id=next_page_id)
+            request_params.update(REQUEST_PARAM_PAGING_FLAG)
+            request_params.update(REQUEST_PARAM_LIST_RULES)
+
+            return self._http_request('GET', suffix, params=request_params)
+
+        def create_response_policy_zone(self, fqdn: Optional[str], rpz_policy: Optional[str],
+                                        rpz_severity: Optional[str], substitute_name: Optional[str],
+                                        rpz_type: Optional[str]) -> Dict:
+            """Creates new response policy zone
+            Args:
+                fqdn: The name of this DNS zone.
+                rpz_policy: The response policy zone override policy.
+                rpz_severity: The severity of this response policy zone.
+                substitute_name: The canonical name of redirect target in substitute policy.
+                rpz_type: The type of rpz zone.
+            Returns:
+                Response JSON
+            """
+
+            data = assign_params(fqdn=fqdn, rpz_policy=rpz_policy, rpz_severity=rpz_severity,
+                                 substitute_name=substitute_name, rpz_type=rpz_type)
+            suffix = 'zone_rp'
+            return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_ZONE)
+
+        def delete_response_policy_zone(self, ref_id: Optional[str]) -> Dict:
+            """Delete new response policy zone
+            Args:
+                ref_id: Zone reference id to delete.
+            Returns:
+                Response JSON
+            """
+
+            suffix = ref_id
+            return self._http_request('DELETE', suffix)
+
+        def create_rpz_rule(self, rule_type: Optional[str], object_type: Optional[str], name: Optional[str],
+                            rp_zone: Optional[str], substitute_name: Optional[str],
+                            comment: Optional[str] = None) -> Dict:
+            """Creates new response policy zone rule.
+            Args:
+                rule_type: Type of rule to create.
+                object_type: Type of object to assign the rule on.
+                name: Rule name.
+                rp_zone: The zone to assign the rule.
+                substitute_name: The substitute name to assign (In case of substitute domain only)
+                comment: A comment for this rule.
+            Returns:
+                Response JSON
+            """
+            canonical: Optional[str] = ''
+            if rule_type == 'Passthru':
+                canonical = 'rpz-passthru' if object_type == 'Client IP address' else name
+            elif rule_type == 'Block (No data)':
+                canonical = '*'
+            elif rule_type == 'Substitute (domain name)':
+                canonical = substitute_name
+
+            data = assign_params(name=name, canonical=canonical, rp_zone=rp_zone, comment=comment)
+            request_params = REQUEST_PARAM_CREATE_RULE
+            suffix = demisto.get(RPZ_RULES_DICT, f'{rule_type}.{object_type}.infoblox_object_type')
+
+            rule = self._http_request('POST', suffix, data=json.dumps(data), params=request_params)
+            rule['result']['type'] = suffix
+            return rule
+
+        def update_host(self, host: Optional[str], ipadd: Optional[str], refid: Optional[str]) -> Dict:
+            """Updates a host record.
+            Args:
+                host: FQDN to change
+                ipadd: IP Address
+                refid: Reference ID from Infoblox
+
+            Returns:
+                Response JSON
+            """
+            headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+            suffix = refid
+            payload = '{"ipv4addr":"' + str(ipadd) + '"}'
+
+            rule = self._http_request('PUT', suffix, headers=headers, data=payload)
+            return rule
+
+        def delete_host(self, refid: Optional[str]) -> Dict:
+            """Deletes a host record.
+            Args:
+                refid: Reference ID from Infoblox
+
+            Returns:
+                Response JSON
+            """
+            headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+            suffix = "record:host/" + refid
+
+            rule = self._http_request('DELETE', suffix, headers=headers)
+            return rule
+
+        def add_host(self, host: Optional[str], ipadd: Optional[str]) -> Dict:
+            """Add a host record.
+            Args:
+                host: FQDN to change
+                ipadd: IP Address
+
+            Returns:
+                Response JSON
+            """
+            suffix = "record:host"
+            payload = '{ "name":"' + host + '","ipv4addrs":[{"ipv4addr":"' + str(ipadd) + '"}]}'
+            headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+            rule = self._http_request('POST', suffix, headers=headers, data=payload)
+            return rule
+
+        def create_record(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict:
+            """Creates new record.
+            Args:
+                suffix: The infoblox object to be used as a url path.
+                kwargs: A dict of arguments to be passed to the rule body. The following may appear:
+                    - name
+                    - rp_zone
+                    - comment
+                    - ipv4addr
+                    - ipv6addr
+                    - mail_exchanger
+                    - preference
+                    - order
+                    - preference
+                    - replacement
+                    - ptrdname
+                    - priority
+                    - target
+                    - weight
+                    - port
+                    - text
+            Returns:
+                Response JSON
+            """
+            request_data = {key: val for key, val in kwargs.items() if val is not None}
+            request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable,name'}
+            rule = self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
+            rule['result']['type'] = suffix
+            return rule
+
+        def create_substitute_record_rule(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict:
+            """Creates new response policy zone substitute rule.
+            Args:
+                suffix: The infoblox object to be used as a url path.
+                kwargs: A dict of arguments to be passed to the rule body. The following may appear:
+                    - name
+                    - rp_zone
+                    - comment
+                    - ipv4addr
+                    - ipv6addr
+                    - mail_exchanger
+                    - preference
+                    - order
+                    - preference
+                    - replacement
+                    - ptrdname
+                    - priority
+                    - target
+                    - weight
+                    - port
+                    - text
+            Returns:
+                Response JSON
+            """
+            request_data = {key: val for key, val in kwargs.items() if val is not None}
+            request_params = {'_return_fields+': ','.join(request_data.keys()) + ',disable,name'}
+            rule = self._http_request('POST', suffix, data=json.dumps(request_data), params=request_params)
+            rule['result']['type'] = suffix
+            return rule
+
+        def change_rule_status(self, reference_id: Optional[str], disable: Optional[bool]) -> Dict:
+            """Changes a given rule status.
+            Args:
+                reference_id: Rule reference ID
+                disable: true or false string
+            Returns:
+                Response JSON
+            """
+            request_data = assign_params(disable=disable)
+            suffix = reference_id
+            return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
+
+        def get_object_fields(self, object_type: Optional[str]) -> Dict:
+            """Retrieve a given object fields.
+            Args:
+                object_type: Infoblox object type
+            Returns:
+                Response JSON
+            """
+            request_params = {'_schema': object_type}
+            suffix = object_type
+            return self._http_request('GET', suffix, params=request_params)
+
+        def get_refid(self,view: Optional[str], host: Optional[str], status: Optional[str]) -> Dict:
+            """Retrieve a given object fields.
+            Args:
+                host: Host name to search for
+                status: Search for either USED or UNUSED hosts
+            Returns:
+                Response JSON
+            """
+
+            headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+            payload = '{"view":"' + view + '","name":"' + host + '"}'
+            request_params = {'name': host}
+            suffix = "record:host"
+            return self._http_request('GET', suffix, headers=headers, data=payload, params=request_params)
+
+        def search_rule(self, object_type: Optional[str], rule_name: Optional[str],
+                        output_fields: Optional[str]) -> Dict:
+            """Search rule by its name
+            Args:
+                object_type: Infoblox object type
+                rule_name: Full rule name
+                output_fields: Fields to include in the return object
+            Returns:
+                Response JSON
+            """
+            request_params = assign_params(name=rule_name)
+            if output_fields:
+                request_params['_return_fields+'] = output_fields
+            suffix = object_type
+            return self._http_request('GET', suffix, params=request_params)
+
+        def delete_rpz_rule(self, reference_id: Optional[str]) -> Dict:
+            """Deletes a rule by its reference id
+            Args:
+                reference_id: Rule reference ID
+            Returns:
+                Response JSON
+            """
+
+            suffix = reference_id
+            return self._http_request('DELETE', suffix)
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+    def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text'):
+        err_msg = err_string = error.args[0]
+        if '[401]' in err_string:
+            err_msg = 'Authorization error, check your credentials.'
+        elif 'Failed to parse json object' in err_string:
+            err_msg = 'Cannot connect to Infoblox server, check your proxy and connection.'
+        elif 'Error in API call' in err_string:
+            err_lines = err_string.split('\n')
+            infoblox_err = err_lines[1] if len(err_lines) > 1 else '{}'
+            infoblox_json = json.loads(infoblox_err)
+            err_msg = infoblox_json.get(field_in_error, 'text') if infoblox_json else err_string
+        return DemistoException(err_msg)
+
+
+    ''' COMMANDS '''
+
+
+    def test_module_command(client: Client, *_) -> Tuple[str, Dict, Dict]:
+        client.test_module()
+        return 'ok', {}, {}
+
+    def add_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+        host = args.get('host')
+        ipadd = args.get('ipadd')
+
+        raw_response = client.add_host(host,ipadd)
+        demisto.results(raw_response)
+
+        return f'{INTEGRATION_NAME} - ' + raw_response['result'], {}, {}
+
+    def update_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+
+        host = args.get('host')
+        refid = args.get('refid')
+        ipadd = args.get('ipadd')
+
+        if refid:
+            payload = '{"ipv4addr":"' + str(ipadd) + '"}'
+            headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+            raw_response = client.update_host(host,ipadd,refid)
+            demisto.results(raw_response)
+
+            return f'{INTEGRATION_NAME} - ' + raw_response['result'], {}, {}
+        else:
+            return f'{INTEGRATION_NAME} - No RefID', {}, {}
+
+    def delete_host_record_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """
+        Args:
+            client: Client object
+            args: Usually demisto.args()
+
+        Returns:
+            Outputs
+        """
+
+        refid = args.get('refid')
+
+        if "/" in refid:
+            refIDStr = str(refid).split("/")
+            refIDStr = refIDStr[1].split(":")
+            refid = refIDStr[0]
+
+
+        if refid:
+            headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+            raw_response = client.delete_host(refid)
+            demisto.results(raw_response)
+
+            return f'{INTEGRATION_NAME} - ' + raw_response['result'], {}, {}
+        else:
+            return f'{INTEGRATION_NAME} - No RefID', {}, {}
+
+    def get_refid_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+        """
+        Args:
+            client: Client object
+            args: Demisto.args()
+
+        Returns:
+            Outputs: Infoblox Ref ID for host record
+        """
+        refid = ""
+
+        view = args.get('view')
+        host = args.get('host')
+        ipadd = args.get('ipadd')
+        domain = args.get('domain')
+        status = args.get('status')
+        deletes = args.get('deletes')
+        host = host.lower() + "." + domain.lower()
+        demisto.results("Getting Ref ID for " + host)
+        raw_response = client.get_refid(view,host,status)
+
+        if deletes == "yes":
+            if len(raw_response['result'])<=0:
+                demisto.results("No Results")
+                return {},{},{}
+            else:
+                retRefId = raw_response["result"][0]["_ref"]
+                if ( retRefId ):
+                    ref_array = retRefId.split("/")
+                    refid = ref_array[1]
+
+
+                    hosts = [
+                        {
+                            'name': host,
+                            'ipadd': ipadd,
+                            'refid': refid
+                        }
+                    ]
+
+                    markdown = '### Global Protect\n'
+                    markdown += tableToMarkdown('Hosts Offline', hosts, headers=['id', 'name'])
+
+                    results = CommandResults(
+                        readable_output=markdown,
+                        outputs_prefix='GlobalProtect.Hosts.Deletes',
+                        outputs_key_field='name',
+                        outputs=hosts
+                    )
+                    return_results(results)
+                    return {},{},{}
+                else:
+                    return {},{},{}
+
+
+        else:
+            # If the response is blank then Add Host GlobalProtect.Hosts.Adds key Else Add Hosts GlobalProtect.Hosts.Updates
+            if len(raw_response['result'])<=0:
+                hosts = [
+                    {
+                        'name': host,
+                        'ipadd': ipadd,
+                        'refid': ""
+                    }
+                ]
+
+                markdown = '### Global Protect\n'
+                markdown += tableToMarkdown('Hosts Online', hosts, headers=['id', 'name'])
+
+                results = CommandResults(
+                    readable_output=markdown,
+                    outputs_prefix='GlobalProtect.Hosts.Adds',
+                    outputs_key_field='name',
+                    outputs=hosts
+                )
+                return_results(results)
+                return {},{},{}
+
+            else:
+                retRefId = raw_response["result"][0]["ipv4addrs"][0]["_ref"]
+                infobloxHost = raw_response["result"][0]["ipv4addrs"][0]["host"]
+                infobloxIP = raw_response["result"][0]["ipv4addrs"][0]["ipv4addr"]
+
+                if ( retRefId and ((host != infobloxHost) or (ipadd != infobloxIP)) ):
+                    ref_array = retRefId.split("/")
+                    refid = ref_array[1]
+
+                    hosts = [
+                        {
+                            'name': host,
+                            'ipadd': ipadd,
+                            'refid': retRefId
+                        }
+                    ]
+
+                    markdown = '### Global Protect\n'
+                    markdown += tableToMarkdown('Hosts Online', hosts, headers=['id', 'name'])
+
+                    results = CommandResults(
+                        readable_output=markdown,
+                        outputs_prefix='GlobalProtect.Hosts.Updates',
+                        outputs_key_field='name',
+                        outputs=hosts
+                    )
+                    return_results(results)
+
+            ### Build Context and pretty output
+            host_list = raw_response.get('result')
+
+            # If no IP object was returned
+            if not host_list:
+                return f'{INTEGRATION_NAME} - Could not find any data corresponds to: {host}', {}, {}
+            fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
+                              host_list[0].items()}
+            title = f'{INTEGRATION_NAME} - Host: {host} info.'
+            context = {
+                f'{INTEGRATION_CONTEXT_NAME}.IP(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': fixed_keys_obj}
+            human_readable = tableToMarkdown(title, fixed_keys_obj, headerTransform=pascalToSpace)
+            return human_readable, context, raw_response
+
+    ''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+    def main():  # pragma: no cover
+        params = demisto.params()
+        base_url = f"{params.get('url', '').rstrip('/')}/wapi/v2.10.5/"
+        verify = not params.get('insecure', False)
+        proxy = params.get('proxy') == 'true'
+        user = demisto.get(params, 'credentials.identifier')
+        password = demisto.get(params, 'credentials.password')
+        default_request_params = {
+            '_return_as_object': '1'
+        }
+        client = Client(base_url, verify=verify, proxy=proxy, auth=(user, password), params=default_request_params)
+        command = demisto.command()
+        demisto.info(f'Command being called is {command}')
+
+        # Switch case
+        commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+            'test-module': test_module_command,
+            f'{INTEGRATION_COMMAND_NAME}-update-host-record': update_host_record_command,
+            f'{INTEGRATION_COMMAND_NAME}-delete-host-record': delete_host_record_command,
+            f'{INTEGRATION_COMMAND_NAME}-add-host-record': add_host_record_command,
+            f'{INTEGRATION_COMMAND_NAME}-get-refid': get_refid_command,
+        }
+        try:
+            if command in commands:
+                return_outputs(*commands[command](client, demisto.args()))
+        # Log exceptions
+        except Exception as e:
+            err_msg = f'Error in {INTEGRATION_NAME} - {e}'
+            return_error(err_msg, error=e)
+
+
+    if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
+        main()
+  type: python
+  commands:
+  - name: gp-infoblox-get-refid
+    arguments:
+    - name: view
+      description: The View inside Infoblox (Default is "default")
+      defaultValue: default
+    - name: host
+      required: true
+      description: Find the Ref ID of this Hostname
+    - name: status
+      description: The status of the host record.  Typically USED or UNUSED
+      defaultValue: USED
+    - name: domain
+      required: true
+      defaultValue: defense.local
+    - name: ipadd
+      required: true
+      description: Host IP Address
+    - name: deletes
+      auto: PREDEFINED
+      predefined:
+      - "yes"
+      - "no"
+      description: Add Disconnected to the Deletes context
+      defaultValue: "no"
+    description: Return RefID on Records and  place in context GlobalProtect.Hosts
+      (Adds, Updates, or Deletes)
+  - name: gp-infoblox-update-host-record
+    arguments:
+    - name: host
+      required: true
+      description: FQDN hostname
+    - name: ipadd
+      required: true
+      description: IP Address to Update
+    - name: refid
+      required: true
+      description: The Infoblox RefID.  (Get via infoblox-get-refid-by-host)
+    description: Updates a host records IP address
+  - name: gp-infoblox-add-host-record
+    arguments:
+    - name: host
+      required: true
+      description: Host name to add
+    - name: ipadd
+      required: true
+      description: IP Address to add
+    description: Add a Host record to an empty IP
+  - name: gp-infoblox-delete-host-record
+    arguments:
+    - name: refid
+      required: true
+  dockerimage: demisto/python3:3.7.5.4583
+  runonce: false
+  subtype: python3
+sourcemoduleid: Infoblox
