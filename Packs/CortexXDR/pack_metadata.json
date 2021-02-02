@@ -3,6 +3,7 @@
     "description": "This Content Pack automates Cortex XDR incident response, and includes custom Cortex XDR incident views and layouts to aid analyst investigations.",
     "support": "xsoar",
     "currentVersion": "2.9.0",
+    "currentVersion": "2.8.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -76,5 +77,3 @@
         }
     }
 }
-
-
