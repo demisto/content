@@ -797,10 +797,10 @@ def compare_rn_and_get_updated_date(pack_name, index_folder_path_fix, index_fold
     changelog_index_path = os.path.join(index_folder_path_fix, pack_name, Pack.CHANGELOG_JSON)
     if os.path.exists(changelog_index_path):
         with open(changelog_index_path, "r") as changelog_file:
-            changelog = json.load(changelog_file)
-            if changelog:
-                old_pack_version = max(LooseVersion(ver) for ver in changelog)
-                latest_changelog_version = changelog.get(old_pack_version.vstring, {})
+            old_changelog = json.load(changelog_file)
+            if old_changelog:
+                old_pack_version = max(LooseVersion(ver) for ver in old_changelog)
+                latest_changelog_version = old_changelog.get(old_pack_version.vstring, {})
                 old_latest_changelog_released_date = latest_changelog_version.get('released')
 
     # current version
@@ -808,15 +808,22 @@ def compare_rn_and_get_updated_date(pack_name, index_folder_path_fix, index_fold
     changelog_index_path = os.path.join(index_folder_path, pack_name, Pack.CHANGELOG_JSON)
     if os.path.exists(changelog_index_path):
         with open(changelog_index_path, "r") as changelog_file:
-            changelog = json.load(changelog_file)
-            if changelog:
-                new_pack_version = max(LooseVersion(ver) for ver in changelog)
+            new_changelog = json.load(changelog_file)
+            if new_changelog:
+                new_pack_version = max(LooseVersion(ver) for ver in new_changelog)
 
+    # If the 2 latest versions in both indexes are the same - revert to old date
     if new_pack_version and old_pack_version:
         if old_pack_version.vstring == new_pack_version.vstring:
-            return old_pack_version.vstring, old_latest_changelog_released_date
+            return old_pack_version.vstring, old_latest_changelog_released_date, False
 
-    return None, None
+    # If the pack don't have a new changelog file it means it's created in the upload flow
+    # therefore we need to update the create time as well
+    if old_changelog and not new_changelog:
+        return old_pack_version.vstring, old_latest_changelog_released_date, True
+
+    # if the pack was updated (or released) in the last 2 weeks
+    return None, None, False
 
 
 def main():
@@ -924,8 +931,9 @@ def main():
 
         # Adding the fix
         pack_name = pack.name
-        pack_version, released_date = compare_rn_and_get_updated_date(pack_name, index_folder_path_fix,
-                                                                      index_folder_path)
+        pack_version, released_date, need_to_update_create_time = compare_rn_and_get_updated_date(pack_name,
+                                                                                                  index_folder_path_fix,
+                                                                                                  index_folder_path)
 
         # change the update - this function writes back the metadata
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
@@ -935,7 +943,8 @@ def main():
                                            build_number=build_number, commit_hash=current_commit_hash,
                                            packs_statistic_df=packs_statistic_df,
                                            pack_was_modified=pack_was_modified,
-                                           released_date=released_date)
+                                           released_date=released_date,
+                                           need_to_update_create_time=need_to_update_create_time)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()

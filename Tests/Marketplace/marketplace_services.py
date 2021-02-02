@@ -1481,7 +1481,7 @@ class Pack(object):
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
                         packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df, pack_was_modified,
-                        released_date=None):
+                        released_date=None, need_to_update_create_time=False):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1524,6 +1524,8 @@ class Pack(object):
 
             if released_date:
                 self._update_date = released_date
+                if need_to_update_create_time:
+                    self.create_date = released_date
             else:
                 self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
 
