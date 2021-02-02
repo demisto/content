@@ -75,7 +75,7 @@ tasks:
       id: fdd2a8d0-924d-43e3-8bc0-278cf5bed493
       version: -1
       name: intsights-get-alert-activities
-      description: TEST Get alert activities
+      description: Get alert activities
       script: '|||intsights-get-alert-activities'
       type: regular
       iscommand: true
