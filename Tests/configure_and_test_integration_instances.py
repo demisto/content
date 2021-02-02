@@ -169,7 +169,6 @@ class Build:
         self.content_root = options.content_root
         self.pack_ids_to_install = self.fetch_pack_ids_to_install(options.pack_ids_to_install)
         self.service_account = options.service_account
-        self.private_pack = options.private_pack
 
     @property
     def proxy(self) -> MITMProxy:
@@ -240,7 +239,6 @@ def options_handler():
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
     parser.add_argument('-n', '--is-nightly', type=str2bool, help='Is nightly build')
     parser.add_argument('-pr', '--is_private', type=str2bool, help='Is private build')
-    parser.add_argument('-pac', '--private_pack', help='The private pack that should be uploaded.')
     parser.add_argument('--branch', help='GitHub branch name', required=True)
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
     parser.add_argument('--test_pack_path', help='Path to where the test pack will be saved.',

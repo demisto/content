@@ -45,7 +45,7 @@ def install_packs_private(build: Build, pack_ids: list = None) -> bool:
     for server in build.servers:
         try:
             flag = search_and_install_packs_and_their_dependencies_private(build.test_pack_path,
-                                                                           pack_ids, server.client, build.private_pack)
+                                                                           pack_ids, server.client)
             if not flag:
                 raise Exception('Failed to search and install packs.')
         except Exception:
