@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import sys
 from pprint import pformat
 
 import yaml
@@ -136,6 +137,7 @@ def main():
 
             except Exception as err:
                 logging.error(f'Failed adding pack: {pack_name} tests:\n{err}')
+                sys.exit(1)
 
     add_to_conf_json(NEW_CONF_JSON_OBJECT)
     logging.success(f'Added {len(NEW_CONF_JSON_OBJECT)} tests to the conf.json')
