@@ -187,6 +187,54 @@ def expand_urls(data, depth=0):
                     return expand_urls(value, depth + 1)
 
 
+def search_user(query: str, max_results: str = '50'):
+    """
+        Search for user by name or email address.
+    Args:
+        query: A query string that is matched against user attributes ( displayName, and emailAddress) to find relevant users.
+        max_results (str): The maximum number of items to return. default by the server: 50
+
+    Returns:
+        List of users.
+    """
+    url = f"rest/api/latest/users/search?query={query}&maxResults={max_results}"
+    res = jira_req('GET', url, resp_type='json')
+    return res
+
+
+def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Union[CommandResults, str]:
+    """
+    https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-user-search/#api-rest-api-3-user-search-get
+
+    Args:
+        attribute (str): Username or Email address of a user.
+        max_results (str): The maximum number of items to return. default by the server: 50
+    """
+    users = search_user(attribute, max_results)
+    account_ids = {
+        user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                          user.get('emailAddress', '').lower()])}
+
+    if not account_ids:
+        return f'No Account ID was found for attribute: {attribute}.'
+    if len(account_ids) > 1:
+        return f'Multiple account IDs were found for attribute: {attribute}.\n' \
+               f'Please try to provide the other attribute available - Email or DisplayName.'
+
+    account_id = next(iter(account_ids))
+    outputs = {
+        'Attribute': attribute,
+        'AccountID': account_id
+    }
+
+    return CommandResults(
+        outputs_prefix='Jira.User',
+        outputs_key_field='AccountID',
+        readable_output=f'Account ID for attribute: {attribute} is: {account_id}',
+        outputs=outputs,
+    )
+
+
 def generate_md_context_get_issue(data):
     get_issue_obj: dict = {"md": [], "context": []}
     if not isinstance(data, list):
@@ -417,7 +465,12 @@ def get_issue_fields(issue_creating=False, **issue_args):
     if issue_args.get('assignee'):
         if not issue['fields'].get('assignee'):
             issue['fields']['assignee'] = {}
-        issue['fields']['assignee']['id'] = issue_args['assignee']
+        issue['fields']['assignee']['name'] = issue_args['assignee']
+
+    if issue_args.get('assignee_id'):
+        if not issue['fields'].get('assignee'):
+            issue['fields']['assignee'] = {}
+        issue['fields']['assignee']['accountId'] = issue_args['assignee_id']
 
     if issue_args.get('reporter'):
         if not issue['fields'].get('reporter'):
@@ -766,6 +819,9 @@ def main():
 
         elif demisto.command() == 'get-remote-data':
             return_results(get_remote_data_command(**demisto.args()))
+
+        elif demisto.command() == 'jira-get-id-by-attribute':
+            return_results(get_account_id_from_attribute(**demisto.args()))
 
         else:
             raise NotImplementedError(f'{COMMAND_NOT_IMPELEMENTED_MSG}: {demisto.command()}')
