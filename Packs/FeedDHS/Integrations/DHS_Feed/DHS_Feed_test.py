@@ -17,8 +17,10 @@ def compare_list(list_a, list_b):
         list_b = list(sorted(list_b))
     except TypeError:
         pass
-    for i in range(len(list_a)):
-        if not compare(list_a[i], list_b[i]):
+    if len(list_a) != len(list_b):
+        return False
+    for a_obj, b_obj in zip(list_a, list_b):
+        if not compare(a_obj, b_obj):
             return False
     return True
 
