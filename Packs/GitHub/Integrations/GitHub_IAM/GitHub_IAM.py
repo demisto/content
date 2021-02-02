@@ -385,5 +385,7 @@ def main():
         return_error(f'Failed to execute {command} command. Exception: {e}. Traceback: {traceback.format_exc()}')
 
 
+from IAMApiModule import *  # noqa: E402
+
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

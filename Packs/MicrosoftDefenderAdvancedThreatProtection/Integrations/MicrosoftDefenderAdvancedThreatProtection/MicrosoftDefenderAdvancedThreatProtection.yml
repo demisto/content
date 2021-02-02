@@ -2650,7 +2650,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'MediumHigh'
-      description: An integer representing the severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. Default is MediumHigh.
+      description: The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all.
       isArray: false
       name: severity
       predefined:
@@ -2971,7 +2971,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'MediumHigh'
-      description: An integer representing the severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. Default is MediumHigh.
+      description: The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all.
       isArray: false
       name: severity
       predefined:
@@ -3263,9 +3263,16 @@ script:
       required: true
       secret: false
     - default: false
-      description: An integer representing the severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where High is the most severe and Informational is not severe at all.
+      defaultValue: 'MediumHigh'
+      description: The severity of the malicious behavior identified by the data within the indicator. Acceptable values are Informational, Low, MediumLow, MediumHigh, High, where High is the most severe and Informational is not severe at all.
       isArray: false
       name: severity
+      predefined:
+        - 'Informational'
+        - 'Low'
+        - 'MediumLow'
+        - 'MediumHigh'
+        - 'High'
       required: false
       secret: false
     - default: false
