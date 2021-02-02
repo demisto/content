@@ -190,7 +190,6 @@ def main():
     }
     user_params = demisto.params()
     hours_to_refresh = user_params.get('fetchIntervalHours', '1')
-    use_https = user_params.get('https', False)
 
     try:
         hours_to_refresh = float(hours_to_refresh)
