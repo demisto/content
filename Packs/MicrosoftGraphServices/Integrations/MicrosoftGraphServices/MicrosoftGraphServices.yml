@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: MicrosoftGraphApplications
+  id: MicrosoftGraphServices
   version: -1
 configuration:
 - defaultvalue: 3307a0ab-612c-47af-b3b5-8208247562db
@@ -17,9 +17,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Microsoft Graph Applications to manage authorized application.
-display: Microsoft Graph Applications
-name: MicrosoftGraphApplications
+description: Use the Microsoft Graph Services integration to manage authorized application.
+display: Microsoft Graph Services
+name: MicrosoftGraphServices
 script:
   commands:
   - deprecated: false
