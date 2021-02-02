@@ -8,11 +8,8 @@ def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_val
     for i, val in enumerate(ids):
         ids[i] = str(ids[i])
 
-    # args_names = [str(name).strip() for name in argToList(additional_arg_names)]
-    # args_values = [str(value).strip() for value in argToList(additional_arg_values)]
-
-    args_names = [name.strip() for name in argToList(additional_arg_names)]
-    args_values = [value.strip() for value in argToList(additional_arg_values)]
+    args_names = [str(name).strip() for name in argToList(additional_arg_names)]
+    args_values = [str(value).strip() for value in argToList(additional_arg_values)]
 
     if len(args_names) != len(args_values):
         raise ValueError('arg names and arg values lists does not match, please check your inputs:\n'
