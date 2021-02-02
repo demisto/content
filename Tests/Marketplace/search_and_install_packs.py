@@ -282,6 +282,12 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
     print(f'\n\ndoing ls for test_pack_path_without_packs: {test_pack_path_without_packs}\n\n')
     subprocess.check_output(f'ls {test_pack_path_without_packs}', shell=True)
     print('did ls')
+    print(f'\n\ndoing pwd\n\n')
+    subprocess.check_output(f'pwd', shell=True)
+    print('did pwd')
+    print(f'\n\ndoing general ls\n\n')
+    subprocess.check_output(f'ls', shell=True)
+    print('did general ls')
 
     private_pack_path = os.path.join(test_pack_path, f'{private_pack_name}.enc2.zip')
     upload_zipped_packs(client=client, host=host, pack_path=private_pack_path)
