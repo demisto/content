@@ -880,7 +880,11 @@ class ExchangeOnlineClient {
                                 }
                             }
                     }
-                }
+                },
+                @{
+                    Name="Handle"; Expression={$_.Handle | Select-Object value}
+                }, Issuer,
+                @{Name="IssuerName"; Expression={$_.IssuerName.Name}}
 
             return $response
         }
