@@ -114,14 +114,15 @@ def generate_pack_tests_configuration(pack_name, existing_test_playbooks):
     return pack_integrations, pack_test_playbooks, pack_name
 
 
-def update_new_conf_json(future):
+def update_new_conf_json(future, pack_name):
     try:
         pack_integrations, pack_test_playbooks, pack_name = future.result()  # blocks until results ready
         if pack_test_playbooks:
             NEW_CONF_JSON_OBJECT.extend(calc_conf_json_object(pack_integrations, pack_test_playbooks))
-    except Exception:
-        logging.exception('Failed to collect pack test configurations')
 
+    except Exception:
+        logging.exception(f'Failed to collect pack test configurations for pack: {pack_name}')
+        sys.exit(1)
 
 def main():
     install_logging('Update_Tests_step.log', include_process_name=True)
@@ -131,13 +132,8 @@ def main():
             logging.debug(f'Collecting pack: {pack_name} tests to add to conf.json')
             future_object = pool.schedule(generate_pack_tests_configuration,
                                           args=(pack_name, existing_test_playbooks), timeout=30)
-            try:
-                future_object.add_done_callback(update_new_conf_json)
-                logging.debug(f'Successfully added pack: {pack_name} test  to conf.json')
-
-            except Exception as err:
-                logging.error(f'Failed adding pack: {pack_name} tests:\n{err}')
-                sys.exit(1)
+            future_object.add_done_callback(update_new_conf_json, pack_name)
+            logging.debug(f'Successfully added pack: {pack_name} test  to conf.json')
 
     add_to_conf_json(NEW_CONF_JSON_OBJECT)
     logging.success(f'Added {len(NEW_CONF_JSON_OBJECT)} tests to the conf.json')
