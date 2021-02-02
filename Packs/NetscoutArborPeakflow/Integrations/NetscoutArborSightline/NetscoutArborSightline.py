@@ -74,7 +74,8 @@ class NetscoutClient(BaseClient):
         param_list = []
         operator_names = self.OPERATOR_NAME_DICTIONARY.values()
         for key, val in kwargs.items():
-            if key not in operator_names:
+
+            if key not in operator_names and val:
                 operator = '='
                 if operator_name := self.OPERATOR_NAME_DICTIONARY.get(key):
                     operator = kwargs.get(operator_name, '=')
@@ -84,28 +85,26 @@ class NetscoutClient(BaseClient):
 
     def fetch_incidents(self):
         demisto.getLastRun()
-        return self.list_alerts(
-            alert_class=self.alert_class,
-            alert_type=self.alert_type,
-            classification=self.classification,
-            importance=self.importance,
-            importance_operator=self.importance_operator,
-            ongoing=self.ongoing,
-        )
+        data_attribute_filter = self.build_data_attribute_filter(alert_class=self.alert_class,
+                                                                 alert_type=self.alert_type,
+                                                                 classification=self.classification,
+                                                                 importance=self.importance,
+                                                                 importance_operator=self.importance_operator,
+                                                                 ongoing=self.ongoing)
+        return self.list_alerts(data_attribute_filter=data_attribute_filter)
 
-    def list_alerts(self, **kwargs):
-        filter_value = self.build_data_attribute_filter(kwargs)
+    def list_alerts(self, page: int = None, page_size: int = None, search_filter: str = None):
 
         return self._http_request(
             method='GET',
-            url='alerts',
-            params={'filter': filter_value}
+            url_suffix='alerts',
+            params=assign_params(page=page, perPage=page_size, filter=search_filter)
         )
 
     def get_alert(self, alert_id: str):
         return self._http_request(
             method='GET',
-            url=f'alerts/{alert_id}'
+            url_suffix=f'alerts/{alert_id}'
         )
 
     def get_annotations(self, alert_id: str):
@@ -154,24 +153,39 @@ def test_module(client: NetscoutClient) -> str:
 
 
 def list_alerts_commands(client: NetscoutClient, args: dict):
+    page_size = arg_to_number(args.get('limit'))
     alert_id = args.get('alert_id')
     alert_class = args.get('alert_class')
     alert_type = args.get('alert_type')
     classification = args.get('classification')
     importance = args.get('importance')
+    importance_operator = args.get('importance')
     ongoing = args.get('ongoing')
     start_time = args.get('start_time')
+    start_time_operator = args.get('start_time_operator')
     stop_time = args.get('stop_time')
-    managed_object = args.get('managed_object')
+    stop_time_operator = args.get('stop_time_operator')
+    managed_object_id = args.get('managed_object_id')
     if alert_id:
         raw_result = client.get_alert(alert_id)
     else:
-        raw_result = client.list_alerts(alert_class, alert_type, classification, importance, ongoing, start_time,
-                                        stop_time, managed_object)
+        data_attribute_filter = client.build_data_attribute_filter(alert_id=alert_id, alert_class=alert_class,
+                                                                   alert_type=alert_type,
+                                                                   classification=classification, importance=importance,
+                                                                   importance_operator=importance_operator,
+                                                                   ongoing=ongoing, start_time=start_time,
+                                                                   start_time_operator=start_time_operator,
+                                                                   stop_time=stop_time,
+                                                                   stop_time_operator=stop_time_operator)
+        data_relationships_filter = f'AND /data/relationships/managed_object/data/id={managed_object_id}' if \
+            managed_object_id else ''
+        search_filter = data_attribute_filter + data_relationships_filter
+        raw_result = client.list_alerts(page_size=page_size, search_filter=search_filter)
+
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
-    return CommandResults(outputs_prefix='NASightline.AlertAnnotations',
-                          outputs_key_field='AlertID',
+    return CommandResults(outputs_prefix='NASightline.Alerts',
+                          outputs_key_field='id',
                           outputs=data,
                           readable_output=tableToMarkdown(f'Alerts', data),
                           raw_response=raw_result)
@@ -190,9 +204,11 @@ def alert_annotations_command(client: NetscoutClient, args: dict):
 
 
 def mitigations_list_command(client: NetscoutClient, args: dict):
+    limit = args.get('limit')
     mitigation_id = args.get('mitigation_id')
     raw_result = client.list_mitigations(mitigation_id)
     data = raw_result.get('data')
+    data = data[:limit] if isinstance(data, list) else [data]
     return CommandResults(outputs_prefix='NASightline.Mitigation',
                           outputs_key_field='id',
                           outputs=data,
@@ -245,7 +261,7 @@ def main() -> None:
             result = list_alerts_commands(client, args)
         elif demisto.command() == 'na-sightline-alert-annotations':
             result = alert_annotations_command(client, args)
-        elif demisto.command() == 'na-mitigations-list':
+        elif demisto.command() == 'na-sightline-mitigations-list':
             result = mitigations_list_command(client, args)
 
         return_results(result)

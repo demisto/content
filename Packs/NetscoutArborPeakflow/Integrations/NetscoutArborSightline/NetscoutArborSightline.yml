@@ -154,6 +154,13 @@ script:
       type: Unknown
   - arguments:
     - default: true
+      description: Maximal number of mitigations to retrieve.
+      defaultvalue: 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: true
       description: The mitigation ID to get.
       isArray: false
       name: mitigation_id
@@ -163,21 +170,34 @@ script:
     description: List all mitigations, when a mitigation ID is given the only the
       relevant mitigation will be fetched.
     execution: false
-    name: na-mitigations-list
+    name: na-sightline-mitigations-list
     outputs:
     - contextPath: BaseIntegration.Output
       description: NASightline.AlertAnnotations
       type: Unknown
   - arguments:
+    - default: true
+      description: Maximal number of alerts to retrieve.
+      defaultvalue: 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: true
+      description: Maximal number of alerts to retrieve.
+      isArray: false
+      name: page
+      required: false
+      secret: false
     - default: false
-      description: Alert ID
+      description: Alert ID.
       isArray: false
       name: alert_id
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Alert class
+      description: Alert class to filter by.
       isArray: false
       name: alert_class
       predefined:
@@ -194,7 +214,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Alert type
+      description: Alert type to filter by.
       isArray: false
       name: alert_type
       predefined:
@@ -237,7 +257,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Alert classification
+      description: Alert classification to filter by.
       isArray: false
       name: classification
       predefined:
@@ -275,9 +295,7 @@ script:
       - <
       - >
     - default: false
-      description: 'The operator to apply on the importance  argument. For example:
-        if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
-        with importance grater to 1 will be fetched.'
+      description: Alert status to filter by.
       isArray: false
       name: ongoing
       required: false
@@ -285,8 +303,54 @@ script:
       predefined:
         - true
         - false
+    - default: false
+      description: Alert start time to filter by. For more complex operators use the
+        'start_time_operator' argument.
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: 'The operator to apply on the ''start_time'' argument. For example:
+        if the chosen operator is ''>'' and the given time is ''2020-12-01T13:15:00'', only alerts
+        with starting time grater than ''2020-12-01T13:15:00'' will be fetched.'
+      isArray: false
+      name: start_time_operator
+      predefined:
+        - =
+        - <
+        - >
+      defaultvalue: =
+      required: false
+      secret: false
+    - default: false
+      description: Alert stop time to filter by. For more complex operators use the
+        'stop_time_operator' argument.
+      isArray: false
+      name: stop_time
+      required: false
+      secret: false
+    - default: false
+      description: 'The operator to apply on the ''stop_time'' argument. For example:
+        if the chosen operator is ''>'' and the given time is ''2020-12-01T13:15:00'', only alerts
+        with stopping time grater than ''2020-12-01T13:15:00'' will be fetched.'
+      isArray: false
+      name: stop_time_operator
+      predefined:
+        - =
+        - <
+        - >
+      defaultvalue: =
+      required: false
+      secret: false
+    - default: false
+      description: ID of managed object associated with the alert.
+      isArray: false
+      name: managed_object_id
+      required: false
+      secret: false
     deprecated: false
-    description: List all alerts, when a alert ID is given only the relevant alert
+    description: List all alerts, when an alert ID is given only the relevant alert
       will be fetched.
     execution: false
     name: na-sightline-alerts-list
