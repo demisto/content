@@ -1,10 +1,10 @@
-The feed allows customers to pull indicators of compromise from cyber incidents (IP addresses, URLs, domains, CVE and file hashes).
+The feed allows customers to pull indicators of compromise from cyber incidents (IP addresses, URLs, domains, CVE, and file hashes).
 
 ## Cyjax API token
-1. Login to [Cyjax threat intelligence portal](https://cymon.co).
+1. Log in to [Cyjax threat intelligence portal](https://cymon.co).
 2. On the top navigation bar, hover the cursor over your user icon and go to **Developer settings**.
-3. Open personal access token tab.
-4. Generate new token
+3. Open the personal access token tab.
+4. Generate a new token
 5. Record the API token, as it will not be accessible after the window is closed.
 
 ## Feed installation
@@ -24,12 +24,12 @@ The feed allows customers to pull indicators of compromise from cyber incidents 
 9. Set feed tags. (optional, comma delimited, eg. MyTag, YourTag)
 10. Set Indicator Expiration Method (default is never)
 11. Set fetch interval (default is to fetch every 1 hour)
-12. First fetch time. The time interval for the first fetch (retroactive). Default is 3 days.
+12. First fetch time. The time interval for the first fetch (retroactive). The default is 3 days.
 13. Test connection.
 14. Click done to save.
 
 ## Commands
-You can execute these commands from the Demisto CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Demisto CLI, as part of automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### !cyjax-get-indicators
