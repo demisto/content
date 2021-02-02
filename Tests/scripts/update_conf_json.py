@@ -123,6 +123,7 @@ def update_new_conf_json(future):
         logging.exception('Failed to collect pack test configurations')
         raise
 
+
 def main():
     install_logging('Update_Tests_step.log', include_process_name=True)
     existing_test_playbooks = load_test_data_from_conf_json()
