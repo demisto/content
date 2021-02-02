@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, timezone
 
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 from FeedCyjax import INDICATORS_LAST_FETCH_KEY, DATE_FORMAT, INDICATORS_LIMIT, Client, main, \
     test_module as module_test, get_indicators_last_fetch_date, set_indicators_last_fetch_date, map_indicator_type, \

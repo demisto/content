@@ -1,6 +1,5 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
 import urllib3
 import traceback
@@ -134,82 +133,6 @@ class Client(object):
 
 
 ''' HELPER FUNCTIONS '''
-
-
-def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=None):
-    # type: (Any, Optional[str], bool, bool, dict) -> Optional[datetime]
-
-    """Converts an XSOAR argument to a datetime
-
-    This function is used to quickly validate an argument provided to XSOAR
-    via ``demisto.args()`` into an ``datetime``. It will throw a ValueError if the input is invalid.
-    If the input is None, it will throw a ValueError if required is ``True``,
-    or ``None`` if required is ``False.
-
-    :type arg: ``Any``
-    :param arg: argument to convert
-
-    :type arg_name: ``str``
-    :param arg_name: argument name
-
-    :type is_utc: ``bool``
-    :param is_utc: if True then date converted as utc timezone, otherwise will convert with local timezone.
-
-    :type required: ``bool``
-    :param required:
-        throws exception if ``True`` and argument provided is None
-
-    :type settings: ``dict``
-    :param settings: If provided, passed to dateparser.parse function.
-
-    :return:
-        returns an ``datetime`` if conversion works
-        returns ``None`` if arg is ``None`` and required is set to ``False``
-        otherwise throws an Exception
-    :rtype: ``Optional[datetime]``
-    """
-
-    if arg is None:
-        if required is True:
-            if arg_name:
-                raise ValueError('Missing "{}"'.format(arg_name))
-            else:
-                raise ValueError('Missing required argument')
-        return None
-
-    if isinstance(arg, str) and arg.isdigit() or isinstance(arg, (int, float)):
-        # timestamp is a str containing digits - we just convert it to int
-        ms = float(arg)
-        if ms > 2000000000.0:
-            # in case timestamp was provided as unix time (in milliseconds)
-            ms = ms / 1000.0
-
-        if is_utc:
-            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
-        else:
-            return datetime.fromtimestamp(ms)
-    if isinstance(arg, str):
-        # we use dateparser to handle strings either in ISO8601 format, or
-        # relative time stamps.
-        # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        if settings:
-            date = dateparser.parse(arg, settings=settings)
-        else:
-            date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
-
-        if date is None:
-            # if d is None it means dateparser failed to parse it
-            if arg_name:
-                raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
-            else:
-                raise ValueError('"{}" is not a valid date'.format(arg))
-
-        return date
-
-    if arg_name:
-        raise ValueError('Invalid date: "{}"="{}"'.format(arg_name, arg))
-    else:
-        raise ValueError('"{}" is not a valid date'.format(arg))
 
 
 def get_indicators_last_fetch_date() -> datetime:
