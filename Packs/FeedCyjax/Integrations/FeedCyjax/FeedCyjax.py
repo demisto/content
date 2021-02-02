@@ -8,6 +8,7 @@ from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, Tuple, List, Optional
 
 import cyjax as cyjax_sdk
+from cyjax.exceptions import UnauthorizedException, TooManyRequestsException
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -63,7 +64,14 @@ class Client(object):
             if isinstance(indicators, list):
                 result = True
         except Exception as e:
-            error_msg = str(e)
+            if isinstance(e, UnauthorizedException):
+                error_msg = 'Unauthorized'
+            elif isinstance(e, TooManyRequestsException):
+                error_msg = 'Too many requests'
+            else:
+                if str(e):
+                    error_msg = str(e)
+
             demisto.debug('Error when testing connection to Cyjax API {}'.format(error_msg))
 
         return result, error_msg

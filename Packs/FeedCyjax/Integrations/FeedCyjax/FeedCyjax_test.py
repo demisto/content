@@ -7,7 +7,7 @@ from CommonServerPython import *
 from FeedCyjax import INDICATORS_LAST_FETCH_KEY, DATE_FORMAT, INDICATORS_LIMIT, Client, main, \
     test_module as module_test, get_indicators_last_fetch_date, set_indicators_last_fetch_date, map_indicator_type, \
     map_reputation_to_score, convert_cyjax_indicator, fetch_indicators_command, get_indicators_command, \
-    indicator_sighting_command
+    indicator_sighting_command, UnauthorizedException
 from test_data.indicators import mocked_indicators
 from test_data.enrichment import mocked_enrichment
 
@@ -613,6 +613,17 @@ def test_test_module_main_command_call(mocker):
     main()
     assert demisto.results.call_count == 2
     assert demisto.results.call_args[0][0] == 'Could not connect to Cyjax API (Server not responding)'
+
+
+def test_test_module_main_command_call_invalid_api_key(mocker):
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results')
+
+    mocker.patch('FeedCyjax.cyjax_sdk.IndicatorOfCompromise', side_effect=UnauthorizedException())
+
+    main()
+    assert demisto.results.call_count == 1
+    assert demisto.results.call_args[0][0] == 'Could not connect to Cyjax API (Unauthorized)'
 
 
 def test_unset_indicators_last_fetch_date_main_command_call(mocker):
