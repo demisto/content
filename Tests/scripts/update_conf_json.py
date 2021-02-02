@@ -128,7 +128,7 @@ def main():
     with ProcessPool(max_workers=os.cpu_count(), max_tasks=100) as pool:
         for pack_name in os.listdir(PACKS_DIR):
             future_object = pool.schedule(generate_pack_tests_configuration,
-                                          args=(pack_name, existing_test_playbooks), timeout=20)
+                                          args=(pack_name, existing_test_playbooks), timeout=30)
             future_object.add_done_callback(update_new_conf_json)
 
     add_to_conf_json(NEW_CONF_JSON_OBJECT)
