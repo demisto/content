@@ -15,6 +15,9 @@ from CyrenThreatInDepth import (
 
 pytestmark = pytest.mark.usefixtures("clean_integration_context")
 
+API_TOKEN = "12345"
+VERSION = "1.4.0"
+
 
 def _load_file(file_name):
     full_path = os.path.join(pathlib.Path(__file__).parent.absolute(), "test_data", file_name)
@@ -54,11 +57,25 @@ def fixture_clean_integration_context():
     demisto.setIntegrationContext({})
 
 
+def _create_client(feed):
+    return Client(feed_name=feed, api_token=API_TOKEN, base_url=BASE_URL, verify=False, proxy=False)
+
+
+def _expected_headers():
+    return {
+        "Authorization": f"Bearer {API_TOKEN}",
+        "Cyren-Client-Name": "Palo Alto Cortex XSOAR",
+        "Cyren-Client-Version": VERSION,
+    }
+
+
 def _create_instance(requests_mock, feed, feed_data, offset_data, offset=0, count=2):
+    expected_headers = _expected_headers()
     requests_mock.get(BASE_URL + "/data?format=jsonl&feedId={}&offset={}&count={}".format(feed, offset, count),
-                      text=feed_data)
-    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}".format(feed), json=offset_data)
-    client = Client(feed_name=feed, base_url=BASE_URL, verify=False, proxy=False)
+                      text=feed_data, request_headers=expected_headers)
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}".format(feed),
+                      json=offset_data, request_headers=expected_headers)
+    client = _create_client(feed)
 
     def fetch_command(initial_count=0, max_indicators=2, update_context=False):
         return fetch_indicators_command(client, initial_count, max_indicators, update_context)
@@ -222,9 +239,11 @@ def test_fetch_indicators_rate_limiting(requests_mock, response_429):
     """
 
     requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10",
+                      request_headers=_expected_headers(),
                       text=response_429, status_code=429)
-    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId=ip_reputation", json=dict(startOffset=0, endOffset=0))
-    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId=ip_reputation", json=dict(startOffset=0, endOffset=0),
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     with pytest.raises(DemistoException, match=f".*{response_429}.*"):
         fetch_indicators_command(client, 0, 10, False)
@@ -769,8 +788,9 @@ def test_test_module_server_error(requests_mock):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=500)
-    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=500,
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     assert "Test failed because of: Error in API call [500] - None" in _test_module_command(client)
 
@@ -789,9 +809,10 @@ def test_test_module_invalid_token(requests_mock):
     """
 
     requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400,
+                      request_headers=_expected_headers(),
                       json=dict(statusCode=400,
                                 error="unable to parse claims from token: ..."))
-    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
+    client = _create_client("ip_reputation")
 
     assert "Test failed because of an invalid API token!" in _test_module_command(client)
 
@@ -809,8 +830,9 @@ def test_test_module_other_400(requests_mock):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400)
-    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400,
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     assert "Test failed because of: 400 Client Error:" in _test_module_command(client)
 
@@ -828,8 +850,9 @@ def test_test_module_404(requests_mock):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=404)
-    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=404,
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     assert "Test failed because of an invalid API URL!" in _test_module_command(client)
 
@@ -847,8 +870,9 @@ def test_test_module_no_entries(requests_mock):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text="")
-    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text="",
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     assert "Test failed because no indicators could be fetched!" in _test_module_command(client)
 
@@ -866,7 +890,8 @@ def test_test_module_ok(requests_mock, ip_reputation):
 
     """
 
-    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text=ip_reputation)
-    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text=ip_reputation,
+                      request_headers=_expected_headers())
+    client = _create_client("ip_reputation")
 
     assert "ok" == _test_module_command(client)

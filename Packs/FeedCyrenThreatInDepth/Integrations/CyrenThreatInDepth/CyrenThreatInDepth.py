@@ -14,6 +14,7 @@ requests.packages.urllib3.disable_warnings()
 
 MAX_API_COUNT: int = 100000
 BASE_URL = "https://api-feeds.cyren.com/v1/feed"
+VERSION = "1.4.0"
 
 
 class FeedPath(str, Enum):
@@ -272,12 +273,17 @@ class Client(BaseClient):
         "claims are invalid",
     ]
 
-    def __init__(self, feed_name: str, *args, **kwargs):
+    def __init__(self, feed_name: str, api_token: str, *args, **kwargs):
         if not feed_name:
             raise ValueError("please specify a correct feed name")
 
         super().__init__(*args, **kwargs)
         self.feed_name = feed_name
+        self.request_headers = {
+            "Authorization": f"Bearer {api_token}",
+            "Cyren-Client-Name": "Palo Alto Cortex XSOAR",
+            "Cyren-Client-Version": VERSION,
+        }
 
     def _is_invalid_token(self, response: requests.Response) -> bool:
         if response.status_code != 400:
@@ -301,6 +307,7 @@ class Client(BaseClient):
 
         try:
             response = self._http_request(method="GET", url_suffix=path,
+                                          headers=self.request_headers,
                                           params=params, resp_type="",
                                           ok_codes=[200, 204, 201, 400, 404])
         except requests.ConnectionError as e:
@@ -423,8 +430,6 @@ def main():
     proxy = params.get("proxy", False)
     verify_certificate = not params.get("insecure", False)
 
-    headers = dict(Authorization=f"Bearer {api_token}")
-
     demisto.info(f"using feed {feed_name}, max {max_indicators}")
     commands: Dict[str, Callable] = {
         "cyren-threat-indepth-get-indicators": get_indicators_command,
@@ -438,7 +443,7 @@ def main():
         client = Client(feed_name=feed_name,
                         base_url=BASE_URL,
                         verify=verify_certificate,
-                        headers=headers,
+                        api_token=api_token,
                         proxy=proxy)
 
         if command == "fetch-indicators":
