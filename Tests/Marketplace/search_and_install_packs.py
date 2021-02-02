@@ -474,8 +474,11 @@ def install_all_content_packs(client: demisto_client, host: str, server_version:
                 pack_metadata = json.load(json_file)
                 pack_version = pack_metadata.get('currentVersion')
                 server_min_version = pack_metadata.get('serverMinVersion', '6.0.0')
-            # Check if the server version is greater than the minimum server version required for this pack:
-            if 'Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version):
+                hidden = pack_metadata.get('hidden', False)
+            # Check if the server version is greater than the minimum server version required for this pack or if the
+            # pack is hidden (deprecated):
+            if ('Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version)) and \
+                    not hidden:
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     return install_packs(client, host, all_packs)
 
