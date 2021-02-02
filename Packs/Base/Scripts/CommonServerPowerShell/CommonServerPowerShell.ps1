@@ -634,13 +634,13 @@ function ParseDateRange{
     try{
         $number = -([int]$number)
     } catch [System.Management.Automation.RuntimeException]{
-        throw "No number given in $date_str"
+        throw "No number given in '$date_str'"
     }
     if ($null -eq $unit_name){
-        throw "Time unit not given in $date_str"
+        throw "Time unit not given in '$date_str'"
     }
     if (!($unit_name.GetType() -eq [String])) {
-        throw "Too many arguemnts in $date_str"
+        throw "Too many arguemnts in '$date_str'"
     }
     if ($unit_name.Contains("minute")){
         $date = $date.AddMinutes($number)
@@ -655,7 +655,7 @@ function ParseDateRange{
     } elseif ($unit_name.Contains("year")) {
         $date = $date.AddYears($number)
     } else {
-        throw "Could not process time unit $unit_name"
+        throw "Could not process time unit '$unit_name'. Available are: minute, hour, day, week, month, year."
     }
     return $date, $now
     <#
