@@ -268,11 +268,11 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
     logging.info(f"Test pack path is: {test_pack_path}")
     logging.info(f"Pack IDs to install are: {pack_ids_to_install}")
     # Temporarily removing the installation of public packs and just installing the private pack
-    # local_packs = glob.glob(f"{test_pack_path}/*.zip")
-    # for local_pack in local_packs:
-    #     if any(pack_id in local_pack for pack_id in pack_ids_to_install):
-    #         logging.info(f'Installing the following pack: {local_pack}')
-    #         upload_zipped_packs(client=client, host=host, pack_path=local_pack)
+    local_packs = glob.glob(f"{test_pack_path}/*.zip")
+    for local_pack in local_packs:
+        if any(pack_id in local_pack for pack_id in pack_ids_to_install):
+            logging.info(f'Installing the following pack: {local_pack}')
+            upload_zipped_packs(client=client, host=host, pack_path=local_pack)
 
     logging.info(f'Installing the following pack: {private_pack_name}')
     print(f'\n\ndoing ls for test_pack_path: {test_pack_path}\n\n')
@@ -293,8 +293,8 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
     print(subprocess.check_output(f'ls', shell=True))
     print('did general ls')
 
-    private_pack_path = os.path.join(test_pack_path, f'{private_pack_name}.enc2.zip')
-    upload_zipped_packs(client=client, host=host, pack_path=private_pack_path)
+    # private_pack_path = os.path.join(test_pack_path, f'{private_pack_name}.enc2.zip')
+    # upload_zipped_packs(client=client, host=host, pack_path=private_pack_path)
 
 
 def install_packs_private(client: demisto_client,

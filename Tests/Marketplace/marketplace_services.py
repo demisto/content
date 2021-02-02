@@ -981,20 +981,34 @@ class Pack(object):
                 blob.upload_from_file(pack_zip)
             if private_content:
                 secondary_encryption_key_pack_name = f"{self._pack_name}.enc2.zip"
-                secondary_encryption_key_path = os.path.join(version_pack_path, secondary_encryption_key_pack_name)
-
-                blob = storage_bucket.blob(secondary_encryption_key_path)
-                blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-                with open(zip_pack_path, "rb") as pack_zip:
-                    blob.upload_from_file(pack_zip)
+                secondary_encryption_key_bucket_path = os.path.join(version_pack_path,
+                                                                    secondary_encryption_key_pack_name)
 
                 #  In some cases the path given is actually a zip.
                 if pack_artifacts_path.endswith('content_packs.zip'):
                     _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
                 else:
                     _pack_artifacts_path = pack_artifacts_path
-                print(f"Copying {zip_pack_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
-                shutil.copy(zip_pack_path, f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
+
+                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}', f'{self._pack_name}')
+                print(f'\n\n secondary_encryption_key_artifacts_path: {secondary_encryption_key_artifacts_path}\n\n')
+
+
+                blob = storage_bucket.blob(secondary_encryption_key_bucket_path)
+                blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+                with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
+                    blob.upload_from_file(pack_zip)
+
+                artifacts_packs = os.path.join(_pack_artifacts_path, 'packs')
+                print(f'\n\ndoing ls on: {_pack_artifacts_path}\n\n')
+                print(subprocess.check_output(f'ls {_pack_artifacts_path}', shell=True))
+                print(f'\ndid ls\n')
+                print(f'\n\ndoing ls on: {artifacts_packs}\n\n')
+                print(subprocess.check_output(f'ls {artifacts_packs}', shell=True))
+                print(f'\ndid ls\n')
+
+                print(f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
+                shutil.copy(secondary_encryption_key_artifacts_path, f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
