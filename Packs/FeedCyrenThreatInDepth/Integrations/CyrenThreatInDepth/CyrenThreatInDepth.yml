@@ -92,11 +92,6 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: https://api-feeds.cyren.com/v1/feed
-  display: API URL
-  name: url
-  required: true
-  type: 0
 - display: API Token
   name: apikey
   type: 4
@@ -144,7 +139,7 @@ script:
     description: Fetching Cyren Threat InDepth indicators
     execution: true
     name: cyren-threat-indepth-get-indicators
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: true
   isfetch: false
   longRunning: false
