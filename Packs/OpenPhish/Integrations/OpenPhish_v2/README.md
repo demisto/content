@@ -2,7 +2,7 @@ OpenPhish uses proprietary Artificial Intelligence algorithms to automatically i
 ## Configure OpenPhish_v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OpenPhish_v2.
+2. Search for OpenPhish v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -133,4 +133,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 ![image](https://user-images.githubusercontent.com/71636766/94807766-c5c92a80-03f8-11eb-9339-d8e399d895c5.png)
-
