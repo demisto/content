@@ -13,6 +13,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 MAX_API_COUNT: int = 100000
+BASE_URL = "https://api-feeds.cyren.com/v1/feed"
 
 
 class FeedPath(str, Enum):
@@ -409,7 +410,6 @@ def fetch_indicators_command(client: Client, initial_count: int, max_indicators:
 
 def main():
     params = demisto.params()
-    base_url = params.get("url", "https://api-feeds.cyren.com/v1/feed")
     api_token = params.get("apikey")
 
     feed_name = params.get("feed_name")
@@ -436,7 +436,7 @@ def main():
     error = None
     try:
         client = Client(feed_name=feed_name,
-                        base_url=base_url,
+                        base_url=BASE_URL,
                         verify=verify_certificate,
                         headers=headers,
                         proxy=proxy)
