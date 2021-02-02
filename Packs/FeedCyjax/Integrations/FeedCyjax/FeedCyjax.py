@@ -467,7 +467,7 @@ def indicator_sighting_command(client: Client, args: Dict[str, Any]) -> Optional
         'ContentsFormat': EntryFormat.JSON,
         'Contents': sightings_list,
         'ReadableContentsFormat': EntryFormat.MARKDOWN,
-        'HumanReadable': tableToMarkdown(description, sightings_list, headerTransform=pascalToSpace)
+        'HumanReadable': tableToMarkdown(description, sightings_list, headerTransform=string_to_table_header)
     }
 
     if indicator_sighting is not None:
