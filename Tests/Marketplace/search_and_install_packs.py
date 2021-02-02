@@ -253,8 +253,7 @@ def install_nightly_packs(client: demisto_client,
             }
 
 
-def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_path: str, pack_ids_to_install: List,
-                                 private_pack_name :str):
+def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_path: str, pack_ids_to_install: List):
     """
     Installs all the packs located in the artifacts folder of the BitHub actions build. Please note:
     The server always returns a 200 status even if the pack was not installed.
@@ -267,27 +266,6 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
     """
     logging.info(f"Test pack path is: {test_pack_path}")
     logging.info(f"Pack IDs to install are: {pack_ids_to_install}")
-    # Temporarily removing the installation of public packs and just installing the private pack
-
-
-    logging.info(f'Installing the following pack: {private_pack_name}')
-    print(f'\n\ndoing ls for test_pack_path: {test_pack_path}\n\n')
-    subprocess.check_output(f'ls {test_pack_path}', shell=True)
-    print(subprocess.check_output(f'ls {test_pack_path}', shell=True))
-    print('did ls')
-    test_pack_path_without_packs = test_pack_path.replace('packs', '')
-    print(f'\n\ndoing ls for test_pack_path_without_packs: {test_pack_path_without_packs}\n\n')
-    subprocess.check_output(f'ls {test_pack_path_without_packs}', shell=True)
-    print(subprocess.check_output(f'ls {test_pack_path_without_packs}', shell=True))
-    print('did ls')
-    print(f'\n\ndoing pwd\n\n')
-    subprocess.check_output(f'pwd', shell=True)
-    print(subprocess.check_output(f'pwd', shell=True))
-    print('did pwd')
-    print(f'\n\ndoing general ls\n\n')
-    subprocess.check_output(f'ls', shell=True)
-    print(subprocess.check_output(f'ls', shell=True))
-    print('did general ls')
 
     local_packs = glob.glob(f"{test_pack_path}/*.zip")
     print(f'\n\nlocal packs are: {local_packs}\n\n')
@@ -296,15 +274,11 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
             logging.info(f'Installing the following pack: {local_pack}')
             upload_zipped_packs(client=client, host=host, pack_path=local_pack)
 
-    # private_pack_path = os.path.join(test_pack_path, f'{private_pack_name}.enc2.zip')
-    # upload_zipped_packs(client=client, host=host, pack_path=private_pack_path)
-
 
 def install_packs_private(client: demisto_client,
                           host: str,
                           pack_ids_to_install: List,
-                          test_pack_path: str,
-                          private_pack_name: str):
+                          test_pack_path: str):
     """ Make a packs installation request.
 
     Args:
@@ -312,13 +286,11 @@ def install_packs_private(client: demisto_client,
         host (str): The server URL.
         pack_ids_to_install (list): List of Pack IDs to install.
         test_pack_path (str): Path where test packs are located.
-        private_pack_name (str): The name of the private pack to be installed.
     """
     install_packs_from_artifacts(client,
                                  host,
                                  pack_ids_to_install=pack_ids_to_install,
-                                 test_pack_path=test_pack_path,
-                                 private_pack_name=private_pack_name)
+                                 test_pack_path=test_pack_path)
 
 
 def install_packs(client: demisto_client,
@@ -548,14 +520,12 @@ def upload_zipped_packs(client: demisto_client,
 
 def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
                                                             pack_ids: list,
-                                                            client: demisto_client,
-                                                            private_pack_name: str):
+                                                            client: demisto_client):
     """ Searches for the packs from the specified list, searches their dependencies, and then installs them.
     Args:
         test_pack_path (str): Path of where the test packs are located.
         pack_ids (list): A list of the pack ids to search and install.
         client (demisto_client): The client to connect to.
-        private_pack_name (str): The name of the private pack that should be uploaded.
 
     Returns (list, bool):
         A list of the installed packs' ids, or an empty list if is_nightly == True.
@@ -565,7 +535,7 @@ def search_and_install_packs_and_their_dependencies_private(test_pack_path: str,
 
     logging.info(f'Starting to search and install packs in server: {host}')
 
-    install_packs_private(client, host, pack_ids, test_pack_path, private_pack_name)
+    install_packs_private(client, host, pack_ids, test_pack_path)
 
     return SUCCESS_FLAG
 
