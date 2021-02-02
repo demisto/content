@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "f03581f5-ce58-4342-8671-157960ca1750",
+    "isPredefined": true,
+    "name": "Cortex XDR Top 10 File SHA 256",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "XDRIncidentTop10FilesSHA256",
+    "size": 0,
+    "version": -1,
+    "widgetType": "pie",
+    "fromVersion": "6.0.0",
+    "description": ""
+}

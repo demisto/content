@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "ac4ba4c9-b52a-4ea3-8ddd-752ff0c821c6",
+    "isPredefined": true,
+    "name": "Cortex XDR Connected Endpoints",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "XDRConnectedEndpoints",
+    "size": 0,
+    "version": -1,
+    "widgetType": "number",
+    "fromVersion": "6.0.0",
+    "description": ""
+}

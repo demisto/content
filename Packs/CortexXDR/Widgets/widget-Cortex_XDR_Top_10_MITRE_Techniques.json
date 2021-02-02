@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "21aff69b-d79f-4feb-838b-d27fa8265510",
+    "isPredefined": true,
+    "name": "Cortex XDR Top 10 MITRE Techniques",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "XDRIncidentTop10MitreTechnique",
+    "size": 0,
+    "version": -1,
+    "widgetType": "column",
+    "fromVersion": "6.0.0",
+    "description": ""
+}

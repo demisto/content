@@ -1295,7 +1295,7 @@ def test_retrieve_file_details_command(requests_mock):
     }
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
-    requests_mock.get(f'{XDR_URL}', json=data1)
+    requests_mock.post(f'{XDR_URL}', json=data1)
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )

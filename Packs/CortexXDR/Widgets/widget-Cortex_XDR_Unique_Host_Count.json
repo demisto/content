@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": null,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "6965dcb7-f5aa-4400-839a-744b60d95187",
+    "isPredefined": true,
+    "name": "Cortex XDR Unique Host Count",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "XDRIncidentHostCount",
+    "size": 0,
+    "version": -1,
+    "widgetType": "number",
+    "fromVersion": "6.0.0",
+    "description": ""
+}

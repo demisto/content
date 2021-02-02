@@ -1,0 +1,30 @@
+{
+    "dataType": "scripts",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "ceb9e165-52b2-4ae8-88ab-f779451e886c",
+    "isPredefined": true,
+    "name": "Cortex XDR Top 10 Alerts",
+    "params": {
+        "tableColumns": [
+
+        ]
+    },
+    "query": "XDRIncidentTop10Alerts",
+    "size": 0,
+    "version": -1,
+    "widgetType": "column",
+    "fromVersion": "6.0.0",
+    "description": ""
+}
