@@ -47,12 +47,12 @@ def main():
     else:
         hr = 'Out of office Team members\nNo analysts is out of office today.'
 
-    return_results(CommandResults(
-        readable_output=hr,
-        outputs=users_list,
-        outputs_prefix="ShiftManagment.OOOUsers",
-        raw_response={},
-    ))
+    return_results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['markdown'],
+        'Contents': hr,
+        'EntryContext': {'ShiftManagment.OOOUsers': users_list}
+    })
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
