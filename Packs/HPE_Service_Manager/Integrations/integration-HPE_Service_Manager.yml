@@ -43,8 +43,6 @@ script:
 
 
     var result;
-    var resourceKey = args.resourceKey;
-    var resourceName = args.resourceName;
 
     // The command input arg holds the command sent from the user.
 
@@ -360,6 +358,7 @@ script:
     }
 
     function updateResource() {
+        var resourceName = args.resourceName;
         var newIncident = {
             [resourceName]: {
                 Category: args.category,
@@ -420,7 +419,7 @@ script:
             'HPSM.Resources': [parsedRes[resourceName]],
             Ticket: [
                 {
-                    ID: parsedRes[resourceName][resourceKey],
+                    ID: parsedRes[resourceName][args.resourceKey],
                     Creator: parsedRes[resourceName]['OpenedBy'],
                     Assignee: parsedRes[resourceName]['Assignee'],
                     State: parsedRes[resourceName]['Status']
@@ -432,12 +431,13 @@ script:
             ContentsFormat: formats.json,
             Contents: parsedRes,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Updated Resource ' + parsedRes[resourceName][resourceKey], hrIncident),
+            HumanReadable: tableToMarkdown('Updated Resource ' + parsedRes[resourceName][args.resourceKey], hrIncident),
             EntryContext: entryContext
         };
     } // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
 
     function createResource() {
+        var resourceName = args.resourceName;
         var newIncident = {
             [resourceName]: {
                 Category: args.category,
@@ -498,7 +498,7 @@ script:
             'HPSM.Resources': [parsedRes[resourceName]],
             Ticket: [
                 {
-                    ID: parsedRes[resourceName][resourceKey],
+                    ID: parsedRes[resourceName][args.resourceKey],
                     Creator: parsedRes[resourceName]['OpenedBy'],
                     Assignee: parsedRes[resourceName]['Assignee'],
                     State: parsedRes[resourceName]['Status']
@@ -510,12 +510,13 @@ script:
             ContentsFormat: formats.json,
             Contents: parsedRes,
             ReadableContentsFormat: formats.markdown,
-            HumanReadable: tableToMarkdown('Created Resource ' + parsedRes[resourceName][resourceKey], hrIncident),
+            HumanReadable: tableToMarkdown('Created Resource ' + parsedRes[resourceName][args.resourceKey], hrIncident),
             EntryContext: entryContext
         };
     } // queryToObject takes query of format field1=value1&field2=value2 and return query object like: { "field1": "value1", "field2": "value2" }
 
     function listResources() {
+        var resourceName = args.resourceName;
         var incidents = doGet('/'+resourceName, args.query);
         incidents = JSON.parse(incidents);
         var hrIncidents = [];
@@ -523,7 +524,7 @@ script:
         if (incidents.content && incidents.content.length > 0) {
             incidents.content.forEach(function(inc) {
                 hrIncidents.push(inc[resourceName]);
-                incidentIds.push(inc[resourceName][resourceKey]);
+                incidentIds.push(inc[resourceName][args.resourceKey]);
             });
         }
         var entryContext = {
@@ -540,6 +541,7 @@ script:
     }
 
     function getResourceById() {
+        var resourceName = args.resourceName;
         var incident = doGet('/'+resourceName+'/'+ args.resourceId);
         incident = JSON.parse(incident);
         hrIncident = incident.Incident;
