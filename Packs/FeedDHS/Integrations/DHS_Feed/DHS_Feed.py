@@ -1,4 +1,4 @@
-from copy import copy
+\from copy import copy
 
 import dateparser
 import urllib3
@@ -316,14 +316,22 @@ def get_indicators_results(indicators):
     )
 
 
+def batch_time(start_at: datetime, offset: int, days: int) -> Iterable[Set[str, str]]:
+    i = 0
+    hours = days * 24
+    while i * offset < hours:
+        start = (start_at - timedelta(hours=(i + 1) * offset)).strftime(TIME_FORMAT)
+        end = (start_at - timedelta(hours=i * offset)).strftime(TIME_FORMAT)
+        yield start, end
+        i += 1
+
+
 def get_indicators(client: TaxiiClient, tlp_color: Optional[str] = None,
                    limit: int = 20, offset: int = 6, days_back: int = 20,
                    tags: Optional[List[str]] = None):
     t_time = datetime.utcnow()
     all_indicators = {}
-    for i in range(int(days_back * 4)):
-        start = (t_time - timedelta(hours=(i + 1) * offset)).strftime(TIME_FORMAT)
-        end = (t_time - timedelta(hours=i * offset)).strftime(TIME_FORMAT)
+    for start, end in batch_time(t_time, offset, days_back):
         data = client.poll_request(start, end)
         try:
             for indicator in reversed(list(Indicators.indicators_from_data(data, tlp_color, tags))):
