@@ -30,12 +30,55 @@ def get_path_value(context, path):
 
 def get_context(incident_id, path):
     res = demisto.executeCommand("getContext", {'id': incident_id})
+    if isError(res):
+        return_error(f'Error occurred while trying to get context from incident {incident_id} : {get_error(res)}')
     try:
         context = res[0]['Contents'].get('context') or {}
     except Exception:
         return []
 
     return get_path_value(context, path)
+
+
+def get_incidents_ids(limit, to_date, from_date):
+    get_incidents_args = {
+        'query': 'status:Active or status:Pending and type:"Cortex XDR Incident"',
+        'limit': limit,
+        'toDate': to_date,
+        'fromDate': from_date
+    }
+
+    incidents_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
+    if isError(incidents_res):
+        return_error(f'Error occurred while trying to get incidents: {get_error(incidents_res)}')
+
+    incidents = json.loads(incidents_res[0].get('Contents'))
+    return [inc.get('id') for inc in incidents]
+
+
+def update_result_dict(context, res_dict, query_type):
+    for val in context:
+        if not val:
+            continue
+
+        if 'This alert from content' in val:
+            continue
+        if query_type == 'Users' and val.partition('\\')[2]:
+            val = val.partition('\\')[2]
+
+        if query_type == 'Hosts':
+            val = val.partition(':')[0]
+
+        if not val:
+            continue
+
+        val = val.capitalize()
+
+        if res_dict.get(val):
+            res_dict[val] = res_dict[val] + 1
+        else:
+            res_dict[val] = 1
+    return res_dict
 
 
 def main():
@@ -48,45 +91,12 @@ def main():
         to_date = args.get('to')
         from_date = args.get('from')
 
-        get_incidents_args = {
-            'query': 'status:Active or status:Pending and type:"Cortex XDR Incident"',
-            'limit': limit,
-            'toDate': to_date,
-            'fromDate': from_date
-        }
-
-        incidents_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
-        if isError(incidents_res):
-            return_error(f'Error occurred while trying to get incidents: {get_error(incidents_res)}')
-
-        incidents = json.loads(incidents_res[0].get('Contents'))
-        incidents_ids = [inc.get('id') for inc in incidents]
+        incidents_ids = get_incidents_ids(limit, to_date, from_date)
 
         res_dict = {}  # type:dict
-        for incident in incidents_ids:
-            context = get_context(incident, QUERY_TYPE_TO_PATH[query_type])
-
-            for val in context:
-                if not val:
-                    continue
-
-                if 'This alert from content' in val:
-                    continue
-                if query_type == 'Users' and val.partition('\\')[2]:
-                    val = val.partition('\\')[2]
-
-                if query_type == 'Hosts':
-                    val = val.partition(':')[0]
-
-                if not val:
-                    continue
-
-                val = val.capitalize()
-
-                if res_dict.get(val):
-                    res_dict[val] = res_dict[val] + 1
-                else:
-                    res_dict[val] = 1
+        for incident_id in incidents_ids:
+            context = get_context(incident_id, QUERY_TYPE_TO_PATH[query_type])
+            update_result_dict(context, res_dict, query_type)
 
         if res_type == 'Top10':
             res = sorted(res_dict.items(), key=lambda x: x[1], reverse=True)[:10]

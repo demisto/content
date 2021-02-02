@@ -43,6 +43,6 @@ tags: []
 type: python
 comment: This script used to gets statistics on Cortex XDR open incidents and generate
   widget according to queryType parameter.
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
