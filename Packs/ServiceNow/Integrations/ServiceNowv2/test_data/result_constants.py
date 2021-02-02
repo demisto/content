@@ -342,7 +342,7 @@ EXPECTED_DOCUMENT_ROUTE = {
         }
 }
 
-EXPECTED_MAPPING = [{
+EXPECTED_MAPPING = {
     "incident": {
         "active": "",
         "activity_due": "",
@@ -417,4 +417,4 @@ EXPECTED_MAPPING = [{
         "sys_updated_by": "",
         "sys_updated_on": ""
     }
-}]
+}

@@ -1,0 +1,891 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <SecurityPolicy transactionid="">
+    <Name>Auto added firewall policy for MTA</Name>
+    <Description>This rule was added automatically by SFOS MTA. However you could edit this policy based on network requirement.</Description>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>PublicNonHTTPPolicy</PolicyType>
+    <After>
+      <Name>testing</Name>
+    </After>
+    <MatchIdentity>Disable</MatchIdentity>
+    <PublicNonHTTPBasedPolicy>
+      <ScanSMTP>Enable</ScanSMTP>
+      <ScanIMAP>Disable</ScanIMAP>
+      <ScanIMAPS>Disable</ScanIMAPS>
+      <ScanPOP3>Disable</ScanPOP3>
+      <ScanSMTPS>Enable</ScanSMTPS>
+      <ScanPOP3S>Disable</ScanPOP3S>
+    </PublicNonHTTPBasedPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <LogTraffic>Disable</LogTraffic>
+    <ApplyNAT>CustomNatPolicy</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+    <OutboundAddress>MASQ</OutboundAddress>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>[example] Traffic to DMZ</Name>
+    <Description>A disabled Firewall rule with the destination zone as DMZ. Such rules would be added to Traffic to DMZ group on the first match basis if user selects automatic grouping option.</Description>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Disable</Status>
+    <Position>After</Position>
+    <PolicyType>User</PolicyType>
+    <After>
+      <Name>user_testing</Name>
+    </After>
+    <DestinationZones>
+      <Zone>DMZ</Zone>
+    </DestinationZones>
+    <Schedule>All The Time</Schedule>
+    <LogTraffic>Enable</LogTraffic>
+    <Action>Drop</Action>
+    <MatchIdentity>Enable</MatchIdentity>
+    <ShowCaptivePortal>Enable</ShowCaptivePortal>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>[example] Traffic to WAN</Name>
+    <Description>A disabled Firewall rule with the destination zone as WAN. Such rules would be added to Traffic to WAN group on the first match basis if user selects automatic grouping option.</Description>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Disable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>RULE3</Name>
+    </After>
+    <DestinationZones>
+      <Zone>WAN</Zone>
+    </DestinationZones>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Enable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>[example] Traffic to Internal Zones</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>x</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>RULE2</Name>
+    <Description>desc for RULE1</Description>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>RULE14</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking/>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>RULE3</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>RULE2</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking/>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>RULE4</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>Auto added firewall policy for MTA</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking/>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>RULE5</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>RULE4</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking/>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>RULE6</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>RULE5</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking/>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>RULE8</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>RULE6</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking/>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>sdfsdfsd</Name>
+    <Description>sdfsdfsdfsd</Description>
+    <IPFamily>IPv6</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name/>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking>-1</DSCPMarking>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>CustomNatPolicy</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <OutboundAddress>MASQ</OutboundAddress>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>jfhjhg</Name>
+    <Description>ghjghj</Description>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>fhfhfg</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking>-1</DSCPMarking>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>CustomNatPolicy</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <OutboundAddress>MASQ</OutboundAddress>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>ghjghjghhjghjgh</Name>
+    <Description>ghjghjgh</Description>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>jfhjhg</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking>-1</DSCPMarking>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>CustomNatPolicy</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <OutboundAddress>MASQ</OutboundAddress>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>Some rule</Name>
+    <Description>Rule desc</Description>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>RULE8</Name>
+    </After>
+    <SourceZones>
+      <Zone>LAN</Zone>
+    </SourceZones>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Enable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking>-1</DSCPMarking>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>CustomNatPolicy</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <OutboundAddress>MASQ</OutboundAddress>
+    <BackupGateway/>
+    <ScanHTTP>Enable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Enable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>RULE14</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>RULE16</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking/>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>test_rule2</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>14.12.2020.1</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>RULE16</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>RULE60</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Enable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking>-1</DSCPMarking>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>xy1</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>RULE20</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>Top</Position>
+    <PolicyType>Network</PolicyType>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>14.12.2020</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>rule10012</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>14.12.20201</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>14.12.2020</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>RULE60</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>RULE20</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking/>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>x</Name>
+    <Description>y</Description>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>ghjghjghhjghjgh</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking>-1</DSCPMarking>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>CustomNatPolicy</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <OutboundAddress>MASQ</OutboundAddress>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>fhfhfg</Name>
+    <Description>fghfghfgh</Description>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>Some rule</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking>-1</DSCPMarking>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>CustomNatPolicy</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <OutboundAddress>MASQ</OutboundAddress>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>x1</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>[example] Traffic to Internal Zones</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking/>
+    <ApplicationControl>None</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>None</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>testing</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>[example] Traffic to DMZ</Name>
+    </After>
+    <DestinationZones>
+      <Zone>LAN</Zone>
+      <Zone>WAN</Zone>
+    </DestinationZones>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>user_testing</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>[example] Traffic to WAN</Name>
+    </After>
+    <SourceZones>
+      <Zone>LAN</Zone>
+      <Zone>DMZ</Zone>
+    </SourceZones>
+    <DestinationZones>
+      <Zone>WAN</Zone>
+      <Zone>VPN</Zone>
+    </DestinationZones>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <SourceNetworks>
+      <Network>##ALL_RW</Network>
+      <Network>##ALL_SSLVPN_RW</Network>
+    </SourceNetworks>
+    <Services>
+      <Service>AH</Service>
+      <Service>BGP</Service>
+    </Services>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>test_update_cli</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>User</PolicyType>
+    <After>
+      <Name>test_rule2</Name>
+    </After>
+    <DestinationZones>
+      <Zone>LAN</Zone>
+    </DestinationZones>
+    <Schedule>All The Time</Schedule>
+    <LogTraffic>Disable</LogTraffic>
+    <Action>Accept</Action>
+    <MatchIdentity>Enable</MatchIdentity>
+    <ShowCaptivePortal>Enable</ShowCaptivePortal>
+    <ScanFTP>Disable</ScanFTP>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <DataAccounting>Disable</DataAccounting>
+    <PrimaryGateway/>
+    <RewriteSourceAddress>Enable</RewriteSourceAddress>
+    <DSCPMarking/>
+    <ApplicationControl>Allow All</ApplicationControl>
+    <ApplicationControlInternetScheme>Disable</ApplicationControlInternetScheme>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebFilterInternetScheme>Disable</WebFilterInternetScheme>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>generalpolicy</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+    <Identity>
+      <Member>Guest Group</Member>
+    </Identity>
+    <OutboundAddress>MASQ</OutboundAddress>
+    <BackupGateway/>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>rule10012</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>x1</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>test_update_cli_network</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>test_update_cli</Name>
+    </After>
+    <SourceZones>
+      <Zone>VPN</Zone>
+    </SourceZones>
+    <DestinationZones>
+      <Zone>LAN</Zone>
+    </DestinationZones>
+    <Schedule>All The Time</Schedule>
+    <Action>Accept</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+    <DSCPMarking/>
+    <ApplicationControl>Allow All</ApplicationControl>
+    <ApplicationBaseQoSPolicy>Revoke</ApplicationBaseQoSPolicy>
+    <WebFilter>None</WebFilter>
+    <WebCategoryBaseQoSPolicy>Revoke</WebCategoryBaseQoSPolicy>
+    <IntrusionPrevention>generalpolicy</IntrusionPrevention>
+    <TrafficShappingPolicy>None</TrafficShappingPolicy>
+    <ApplyNAT>Disable</ApplyNAT>
+    <OverrideGatewayDefaultNATPolicy>Disable</OverrideGatewayDefaultNATPolicy>
+    <PrimaryGateway/>
+    <BackupGateway/>
+    <ScanHTTP>Disable</ScanHTTP>
+    <ScanHTTPS>Disable</ScanHTTPS>
+    <Sandstorm>Disable</Sandstorm>
+    <BlockQuickQuic>Disable</BlockQuickQuic>
+    <ScanFTP>Disable</ScanFTP>
+    <SourceSecurityHeartbeat>Disable</SourceSecurityHeartbeat>
+    <MinimumSourceHBPermitted>No Restriction</MinimumSourceHBPermitted>
+    <DestSecurityHeartbeat>Disable</DestSecurityHeartbeat>
+    <MinimumDestinationHBPermitted>No Restriction</MinimumDestinationHBPermitted>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>14.12.20209</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>14.12.20201</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+  </SecurityPolicy>
+  <SecurityPolicy transactionid="">
+    <Name>14.12.2020.1</Name>
+    <Description/>
+    <IPFamily>IPv4</IPFamily>
+    <Status>Enable</Status>
+    <Position>After</Position>
+    <PolicyType>Network</PolicyType>
+    <After>
+      <Name>14.12.20209</Name>
+    </After>
+    <Schedule>All The Time</Schedule>
+    <Action>Drop</Action>
+    <LogTraffic>Disable</LogTraffic>
+    <MatchIdentity>Disable</MatchIdentity>
+  </SecurityPolicy>
+</Response>
