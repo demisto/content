@@ -41,7 +41,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-create
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "16"
@@ -123,7 +123,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "15"
@@ -267,7 +267,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "13"
@@ -304,7 +304,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "12"
@@ -547,7 +547,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-update
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "19"
@@ -606,7 +606,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-assign
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "20"
@@ -642,7 +642,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "21"
@@ -791,7 +791,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-close
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "28"
@@ -855,7 +855,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "29"
@@ -928,7 +928,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-delete
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "35"
@@ -1036,7 +1036,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-create
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "34"
@@ -1197,7 +1197,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-create
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "38"
@@ -1318,7 +1318,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-link-request-modify
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "42"
@@ -1393,7 +1393,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-linked-request-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "41"
@@ -1425,7 +1425,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-link-request-modify
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "44"
@@ -1462,7 +1462,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-linked-request-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "45"
@@ -1558,7 +1558,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-resolution-add
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "49"
@@ -1594,7 +1594,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-delete
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "3"
@@ -1626,7 +1626,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-resolutions-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "50"
@@ -1696,7 +1696,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-pickup
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "52"
@@ -1729,7 +1729,7 @@ tasks:
       script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus (On-Premise)
+      brand:
     nexttasks:
       '#none#':
       - "53"
