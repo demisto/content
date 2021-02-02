@@ -3,11 +3,11 @@ commonfields:
   id: OpenPhish_v2
   version: -1
 configuration:
-- defaultvalue: http://openphish.com
-  display: Server URL
-  name: url
-  required: true
-  type: 0
+- defaultvalue: ""
+  display: Use secured protocol (https)
+  name: https
+  required: false
+  type: 8
 - display: Database refresh interval (hours)
   name: fetchIntervalHours
   defaultvalue: 1
