@@ -13,7 +13,7 @@ configuration:
   required: true
   type: 0
 - display: API Key
-  additionalinfo: Cyjax API Key obtained from Cyjax portal.
+  additionalinfo: Cyjax API key obtained from Cyjax portal.
   name: apikey
   required: true
   type: 4
