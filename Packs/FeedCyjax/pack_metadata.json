@@ -1,6 +1,6 @@
 {
     "name": "Cyjax Feed",
-    "description": "This Content Pack is used to pull indicators of compromise from the Cyjax Threat Intelligence Platform.",
+    "description": "This pack is used to pull indicators of compromise from the Cyjax Threat Intelligence Platform.",
     "support": "developer",
     "currentVersion": "1.0.0",
     "author": "Jakub Orzol",
