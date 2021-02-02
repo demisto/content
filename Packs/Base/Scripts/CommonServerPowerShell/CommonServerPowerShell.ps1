@@ -664,7 +664,8 @@ function ParseDateRange{
     the date range.
 
     .PARAMETER date_str
-     a date string in a human readable format as "3 days", "5 years"
+     a date string in a human readable format as "3 days", "5 years".
+     Available units: minute, hour, day, week, month, year.
 
     .EXAMPLE
     ParseDateRange("3 days") (current date it 04/01/21)
