@@ -1,6 +1,6 @@
 {
     "name": "CyberArk",
-    "description": "Provides a Safe Haven, where all your administrative passwords can be securely archived, transferred and shared by authorized users.",
+    "description": "Test.",
     "support": "xsoar",
     "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
