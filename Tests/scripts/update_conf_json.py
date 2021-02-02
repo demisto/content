@@ -127,9 +127,15 @@ def main():
     existing_test_playbooks = load_test_data_from_conf_json()
     with ProcessPool(max_workers=os.cpu_count(), max_tasks=100) as pool:
         for pack_name in os.listdir(PACKS_DIR):
+            logging.debug(f'Collecting pack: {pack_name} tests to add to conf.json')
             future_object = pool.schedule(generate_pack_tests_configuration,
                                           args=(pack_name, existing_test_playbooks), timeout=30)
-            future_object.add_done_callback(update_new_conf_json)
+            try:
+                future_object.add_done_callback(update_new_conf_json)
+                logging.debug(f'Successfully added pack: {pack_name} test  to conf.json')
+
+            except Exception as err:
+                logging.error(f'Failed adding pack: {pack_name} tests:\n{err}')
 
     add_to_conf_json(NEW_CONF_JSON_OBJECT)
     logging.success(f'Added {len(NEW_CONF_JSON_OBJECT)} tests to the conf.json')
