@@ -38,16 +38,17 @@ tasks:
       version: -1
       name: service-desk-plus-request-create
       description: Create new requests
-      script: ServiceDeskPlus|||service-desk-plus-request-create
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-create
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "16"
     scriptarguments:
       assets: {}
-      category: {}
+      category:
+        simple: "Informational"
       description: {}
       email_ids_to_notify: {}
       group: {}
@@ -55,17 +56,20 @@ tasks:
       is_fcr: {}
       item: {}
       level: {}
-      mode: {}
+      mode:
+        simple: "Web Form"
       priority: {}
       request_type: {}
-      requester: {}
+      requester:
+        simple: "Palo Alto Xsoar"
       resources: {}
       service_category: {}
       site: {}
       status: {}
-      subcategory: {}
+      subcategory:
+        simple: "Informational"
       subject:
-        simple: '${RandomString} '
+        simple: ${RandomString}
       technician: {}
       udf_fields: {}
       urgency: {}
@@ -116,10 +120,10 @@ tasks:
       name: service-desk-plus-requests-list
       description: View the details of requests. If no parameters are given the details
         of all requests will be shown.
-      script: ServiceDeskPlus|||service-desk-plus-requests-list
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "15"
@@ -260,10 +264,10 @@ tasks:
       name: service-desk-plus-requests-list
       description: View the details of requests. If no parameters are given the details
         of all requests will be shown.
-      script: ServiceDeskPlus|||service-desk-plus-requests-list
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "13"
@@ -297,10 +301,10 @@ tasks:
       name: service-desk-plus-requests-list
       description: View the details of requests. If no parameters are given the details
         of all requests will be shown.
-      script: ServiceDeskPlus|||service-desk-plus-requests-list
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "12"
@@ -540,10 +544,10 @@ tasks:
       version: -1
       name: service-desk-plus-request-update
       description: Update the request with the given request id.
-      script: ServiceDeskPlus|||service-desk-plus-request-update
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-update
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "19"
@@ -563,12 +567,12 @@ tasks:
         simple: ${SaveId}
       request_type: {}
       requester:
-        simple: Daniel
+        simple: Palo Alto Xsoar
       resources: {}
       service_category: {}
       site: {}
       status:
-        simple: On Hold
+        simple: Resolved
       status_change_comments: {}
       subcategory: {}
       subject:
@@ -599,10 +603,10 @@ tasks:
       version: -1
       name: service-desk-plus-request-assign
       description: Assignes the request with the given request id to a technician/group
-      script: ServiceDeskPlus|||service-desk-plus-request-assign
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-assign
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "20"
@@ -611,7 +615,7 @@ tasks:
       request_id:
         simple: ${SaveId}
       technician:
-        simple: '"Arseny Krupnik"'
+        simple: 'Palo Alto Xsoar'
     separatecontext: false
     view: |-
       {
@@ -635,10 +639,10 @@ tasks:
       name: service-desk-plus-requests-list
       description: View the details of requests. If no parameters are given the details
         of all requests will be shown.
-      script: ServiceDeskPlus|||service-desk-plus-requests-list
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "21"
@@ -722,7 +726,7 @@ tasks:
       left:
         simple: ${ServiceDeskPlus.Request.Status}
       right:
-        simple: On Hold
+        simple: Resolved
     results:
     - AreValuesEqual
     separatecontext: false
@@ -784,10 +788,10 @@ tasks:
       version: -1
       name: service-desk-plus-request-close
       description: Close the existing request with the given request id
-      script: ServiceDeskPlus|||service-desk-plus-request-close
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-close
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "28"
@@ -848,10 +852,10 @@ tasks:
       name: service-desk-plus-requests-list
       description: View the details of requests. If no parameters are given the details
         of all requests will be shown.
-      script: ServiceDeskPlus|||service-desk-plus-requests-list
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "29"
@@ -921,10 +925,10 @@ tasks:
       version: -1
       name: service-desk-plus-request-delete
       description: Delete the request with the given id.
-      script: ServiceDeskPlus|||service-desk-plus-request-delete
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-delete
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "35"
@@ -1029,16 +1033,17 @@ tasks:
       version: -1
       name: service-desk-plus-request-create
       description: Create new requests
-      script: ServiceDeskPlus|||service-desk-plus-request-create
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-create
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "34"
     scriptarguments:
       assets: {}
-      category: {}
+      category:
+        simple: "Informational"
       description: {}
       email_ids_to_notify: {}
       group: {}
@@ -1046,15 +1051,18 @@ tasks:
       is_fcr: {}
       item: {}
       level: {}
-      mode: {}
+      mode:
+        simple: "Web Form"
       priority: {}
       request_type: {}
-      requester: {}
+      requester:
+        simple: "Palo Alto Xsoar"
       resources: {}
       service_category: {}
       site: {}
       status: {}
-      subcategory: {}
+      subcategory:
+        simple: "Informational"
       subject:
         simple: ${RandomString} - second
       technician: {}
@@ -1186,16 +1194,17 @@ tasks:
       version: -1
       name: service-desk-plus-request-create
       description: Create new requests
-      script: ServiceDeskPlus|||service-desk-plus-request-create
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-create
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "38"
     scriptarguments:
       assets: {}
-      category: {}
+      category:
+        simple: "Informational"
       description: {}
       email_ids_to_notify: {}
       group: {}
@@ -1203,15 +1212,18 @@ tasks:
       is_fcr: {}
       item: {}
       level: {}
-      mode: {}
+      mode:
+        simple: "Web Form"
       priority: {}
       request_type: {}
-      requester: {}
+      requester:
+        simple: "Palo Alto Xsoar"
       resources: {}
       service_category: {}
       site: {}
       status: {}
-      subcategory: {}
+      subcategory:
+        simple: "Informational"
       subject:
         simple: ${RandomString} - third
       technician: {}
@@ -1303,17 +1315,18 @@ tasks:
       version: -1
       name: service-desk-plus-link-request-modify
       description: Link or Unlink multiple commands
-      script: ServiceDeskPlus|||service-desk-plus-link-request-modify
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-link-request-modify
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "42"
     scriptarguments:
       action:
         simple: Link
-      comment: {}
+      comment:
+        simple: 'link request modify test'
       linked_requests_id:
         simple: ${Request2}
       request_id:
@@ -1377,10 +1390,10 @@ tasks:
       version: -1
       name: service-desk-plus-linked-request-list
       description: Gets a list with all the linked requests under a request
-      script: ServiceDeskPlus|||service-desk-plus-linked-request-list
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-linked-request-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "41"
@@ -1409,10 +1422,10 @@ tasks:
       version: -1
       name: service-desk-plus-link-request-modify
       description: Link or Unlink multiple commands
-      script: ServiceDeskPlus|||service-desk-plus-link-request-modify
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-link-request-modify
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "44"
@@ -1446,10 +1459,10 @@ tasks:
       version: -1
       name: service-desk-plus-linked-request-list
       description: Gets a list with all the linked requests under a request
-      script: ServiceDeskPlus|||service-desk-plus-linked-request-list
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-linked-request-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "45"
@@ -1542,10 +1555,10 @@ tasks:
       version: -1
       name: service-desk-plus-request-resolution-add
       description: Adds a resolution to the given request
-      script: ServiceDeskPlus|||service-desk-plus-request-resolution-add
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-resolution-add
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "49"
@@ -1578,10 +1591,10 @@ tasks:
       version: -1
       name: service-desk-plus-request-delete
       description: Delete the request with the given id.
-      script: ServiceDeskPlus|||service-desk-plus-request-delete
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-delete
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "3"
@@ -1610,10 +1623,10 @@ tasks:
       version: -1
       name: service-desk-plus-request-resolutions-list
       description: Gets the resolution to the given request
-      script: ServiceDeskPlus|||service-desk-plus-request-resolutions-list
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-resolutions-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "50"
@@ -1680,10 +1693,10 @@ tasks:
       name: service-desk-plus-request-pickup
       description: Allows the technician to pickup the request with the given request
         id on his name.
-      script: ServiceDeskPlus|||service-desk-plus-request-pickup
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-request-pickup
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "52"
@@ -1713,10 +1726,10 @@ tasks:
       name: service-desk-plus-requests-list
       description: View the details of requests. If no parameters are given the details
         of all requests will be shown.
-      script: ServiceDeskPlus|||service-desk-plus-requests-list
+      script: ServiceDeskPlus (On-Premise)|||service-desk-plus-requests-list
       type: regular
       iscommand: true
-      brand: ServiceDeskPlus
+      brand: ServiceDeskPlus (On-Premise)
     nexttasks:
       '#none#':
       - "53"
