@@ -45,6 +45,7 @@ class BucketUploadFlow(object):
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
     BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
     UPLOAD_JOB_NAME = "Upload Packs To Marketplace"
+    LATEST_VERSION = 'latest_version'
 
 
 class GCPConfig(object):
@@ -221,6 +222,10 @@ class Pack(object):
             return self._latest_version
         else:
             return self._latest_version
+
+    @latest_version.setter
+    def latest_version(self, latest_version):
+        self._latest_version = latest_version
 
     @property
     def status(self):
@@ -984,7 +989,7 @@ class Pack(object):
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status, True, None
 
-    def copy_and_upload_to_storage(self, production_bucket, build_bucket, latest_version, successful_packs_dict):
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
         The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
@@ -992,7 +997,6 @@ class Pack(object):
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
-            latest_version (str): the pack's latest version.
             successful_packs_dict (dict): the dict of all packs were uploaded in prepare content step
 
         Returns:
@@ -1001,6 +1005,15 @@ class Pack(object):
              otherwise returned False.
 
         """
+        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
+        if pack_not_uploaded_in_prepare_content:
+            logging.warning("The following packs already exist at storage.")
+            logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
+            return True, True
+
+        latest_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
+        self._latest_version = latest_version
+
         build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, latest_version)
 
         # Verifying that the latest version of the pack has been uploaded to the build bucket
@@ -1009,12 +1022,6 @@ class Pack(object):
             logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
                           f"path {build_version_pack_path}.")
             return False, False
-
-        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
-        if pack_not_uploaded_in_prepare_content:
-            logging.warning("The following packs already exist at storage.")
-            logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-            return True, True
 
         # We upload the pack zip object taken from the build bucket into the production bucket
         prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
@@ -2033,7 +2040,8 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
                 pack.name: {
                     BucketUploadFlow.STATUS: pack.status,
                     BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
-                    else "False"
+                    else "False",
+                    BucketUploadFlow.LATEST_VERSION: pack.latest_version
                 } for pack in successful_packs
             }
         }

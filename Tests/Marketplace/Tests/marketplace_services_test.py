@@ -408,6 +408,7 @@ class TestChangelogCreation:
     """ Test class for changelog.json creation step.
 
     """
+
     @pytest.fixture(scope="class")
     def dummy_pack(self):
         """ dummy pack fixture
@@ -916,9 +917,19 @@ class TestCopyAndUploadToStorage:
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
 
         # case: latest version is not in build bucket
+        dummy_pack.latest_version = "2.0.0"
         dummy_build_bucket.list_blobs.return_value = []
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket,
-                                                                          '2.0.0', {})
+        successful_packs_dict = {
+            dummy_pack.name: {
+                BucketUploadFlow.STATUS: "",
+                BucketUploadFlow.AGGREGATED: "False",
+                BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+            }
+        }
+
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
+            dummy_prod_bucket, dummy_build_bucket, successful_packs_dict
+        )
         assert not task_status
         assert not skipped_pack
 
@@ -935,11 +946,7 @@ class TestCopyAndUploadToStorage:
         dummy_build_bucket = mocker.MagicMock()
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
-        blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
-        dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
-        dummy_prod_bucket.list_blobs.return_value = [Blob(blob_name, dummy_prod_bucket)]
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket,
-                                                                          '2.0.0', {})
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket, {})
         assert task_status
         assert skipped_pack
 
@@ -956,11 +963,18 @@ class TestCopyAndUploadToStorage:
         dummy_prod_bucket = mocker.MagicMock()
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         blob_name = "content/packs/TestPack/2.0.0/TestPack.zip"
+        dummy_pack.latest_version = "2.0.0"
         dummy_build_bucket.list_blobs.return_value = [Blob(blob_name, dummy_build_bucket)]
         dummy_build_bucket.copy_blob.return_value = Blob(blob_name, dummy_prod_bucket)
-        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(dummy_prod_bucket, dummy_build_bucket,
-                                                                          '2.0.0', {"TestPack": {"status": "status1",
-                                                                                                 "aggregated": True}})
+        task_status, skipped_pack = dummy_pack.copy_and_upload_to_storage(
+            dummy_prod_bucket, dummy_build_bucket, {
+                "TestPack": {
+                    BucketUploadFlow.STATUS: "status1",
+                    BucketUploadFlow.AGGREGATED: "False",
+                    BucketUploadFlow.LATEST_VERSION: dummy_pack.latest_version
+                }
+            }
+        )
         assert task_status
         assert not skipped_pack
 
@@ -1413,12 +1427,13 @@ class TestStoreInCircleCIArtifacts:
 
     """
     FAILED_PACK_DICT = {
-        f'{BucketUploadFlow.STATUS}': PackStatus.FAILED_UPLOADING_PACK.name,
-        f'{BucketUploadFlow.AGGREGATED}': 'False'
+        BucketUploadFlow.STATUS: PackStatus.FAILED_UPLOADING_PACK.name,
+        BucketUploadFlow.AGGREGATED: 'False'
     }
     SUCCESSFUL_PACK_DICT = {
-        f'{BucketUploadFlow.STATUS}': PackStatus.SUCCESS.name,
-        f'{BucketUploadFlow.AGGREGATED}': '[1.0.0, 1.0.1] => 1.0.1'
+        BucketUploadFlow.STATUS: PackStatus.SUCCESS.name,
+        BucketUploadFlow.AGGREGATED: '[1.0.0, 1.0.1] => 1.0.1',
+        BucketUploadFlow.LATEST_VERSION: '1.0.1'
     }
 
     @staticmethod
@@ -1428,6 +1443,7 @@ class TestStoreInCircleCIArtifacts:
             pack._status = PackStatus.SUCCESS.name
             pack._aggregated = True
             pack._aggregation_str = '[1.0.0, 1.0.1] => 1.0.1'
+            pack.latest_version = '1.0.1'
         return successful_packs
 
     @staticmethod
