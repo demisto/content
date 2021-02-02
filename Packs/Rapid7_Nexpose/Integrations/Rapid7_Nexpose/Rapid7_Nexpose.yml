@@ -602,7 +602,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      defaultValue: true
+      defaultValue: 'true'
       description: Whether to download the report immediately after generating it or not. If the report is taking more than 10 seconds to be ready, set as *false*.
       name: download_immediately
       predefined:
@@ -676,7 +676,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      defaultValue: true
+      defaultValue: 'true'
       description: Whether to download the report immediately or not. If the report is taking more than 10 seconds to be ready, set as *false*.
       name: download_immediately
       predefined:
@@ -750,7 +750,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      defaultValue: true
+      defaultValue: 'true'
       description: Whether to download the report immediately or not. If the report is taking more than 10 seconds to be ready, set as *false*.
       name: download_immediately
       predefined:
@@ -904,7 +904,7 @@ script:
       type: number
     - contextPath: Nexpose.Scan.Vulnerabilities.Total
       description: The total number of vulnerabilities.
-      type: numberFF
+      type: number
   - arguments:
     - default: false
       description: integer <int64> ID of the scan to stop.
@@ -1029,7 +1029,7 @@ script:
     - contextPath: InfoFile.Type
       description: Type of the report file
       type: string
-    description: Returns the contents of a generated report.
+    description: Returns the generated report.
   - name: nexpose-get-report-status
     arguments:
     - name: report_id

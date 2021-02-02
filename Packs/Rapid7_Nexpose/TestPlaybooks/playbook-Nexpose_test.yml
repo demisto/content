@@ -573,8 +573,8 @@ tasks:
     task:
       id: 2d7caabc-988f-4ff8-8767-e854323fba54
       version: -1
-      name: Nexpose - Create and download a report
-      playbookName: Nexpose - Create and download a report
+      name: Nexpose - Create and Download Report
+      playbookName: Nexpose - Create and Download Report
       type: playbook
       iscommand: false
       brand: ""

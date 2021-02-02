@@ -1,6 +1,6 @@
-id: Nexpose - Create and download a report
+id: Nexpose - Create and Download Report
 version: -1
-name: Nexpose - Create and download a report
+name: Nexpose - Create and Download Report
 description: |-
   Use this playbook as a sub-playbook to configure a report and download it.
   This playbook implements polling by continuously running the `nexpose-get-report-status` command until the operation completes.
@@ -219,13 +219,21 @@ tasks:
       - "6"
     scriptarguments:
       format:
-        simple: ${Nexpose.Report.Format}
+        complex:
+          root: Nexpose
+          accessor: Report.Format
       instance_id:
-        simple: ${Nexpose.Report.InstanceID}
+        complex:
+          root: Nexpose
+          accessor: Report.InstanceID
       name:
-        simple: ${Nexpose.Report.Name}
+        complex:
+          root: Nexpose
+          accessor: Report.Name
       report_id:
-        simple: ${Nexpose.Report.ID}
+        complex:
+          root: Nexpose
+          accessor: Report.ID
     separatecontext: false
     view: |-
       {
@@ -260,13 +268,21 @@ tasks:
       download_immediately:
         simple: "false"
       format:
-        simple: ${inputs.format}
+        complex:
+          root: inputs
+          accessor: format
       name:
-        simple: ${inputs.name}
+        complex:
+          root: inputs
+          accessor: name
       sites:
-        simple: ${inputs.sites}
+        complex:
+          root: inputs
+          accessor: sites
       template:
-        simple: ${inputs.template}
+        complex:
+          root: inputs
+          accessor: template
     separatecontext: false
     view: |-
       {
@@ -299,15 +315,23 @@ tasks:
       - "5"
     scriptarguments:
       assets:
-        simple: ${inputs.assets}
+        complex:
+          root: inputs
+          accessor: assets
       download_immediately:
         simple: "false"
       format:
-        simple: ${inputs.format}
+        complex:
+          root: inputs
+          accessor: format
       name:
-        simple: ${inputs.name}
+        complex:
+          root: inputs
+          accessor: name
       template:
-        simple: ${inputs.template}
+        complex:
+          root: inputs
+          accessor: template
     separatecontext: false
     view: |-
       {
@@ -341,13 +365,21 @@ tasks:
       download_immediately:
         simple: "false"
       format:
-        simple: ${inputs.format}
+        complex:
+          root: inputs
+          accessor: format
       name:
-        simple: ${inputs.name}
+        complex:
+          root: inputs
+          accessor: name
       scan:
-        simple: ${inputs.scan}
+        complex:
+          root: inputs
+          accessor: scan
       template:
-        simple: ${inputs.template}
+        complex:
+          root: inputs
+          accessor: template
     separatecontext: false
     view: |-
       {
@@ -399,7 +431,7 @@ inputs:
 - key: name
   value: {}
   required: false
-  description: ' The report name.'
+  description: The report name.
   playbookInputQuery: null
 - key: template
   value: {}

@@ -11,9 +11,9 @@ Rapid7 Nexpose Playbooks
 -
 For scans there are two sub-playbooks available, depending on the command.
 
-To start a site scan, use
-the `Nexpose Scan Site` sub-playbook. To start an assets scan, use
-the `Nexpose Scan Assets` sub-playbook.
+To start a site scan, use the `Nexpose Scan Site` sub-playbook.
+
+To start an assets scan, use the `Nexpose Scan Assets` sub-playbook.
 
 When using the `sort` parameter, the fields to sort must be provided as
 they are in the API, e.g `riskScore`. All the available fields for any

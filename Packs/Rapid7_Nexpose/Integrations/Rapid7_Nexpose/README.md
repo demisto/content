@@ -1323,7 +1323,7 @@ Returns a list of scans.
 
 ### nexpose-download-report
 ***
-Returns the contents of a generated report.
+Returns the generated report.
 
 
 #### Base Command

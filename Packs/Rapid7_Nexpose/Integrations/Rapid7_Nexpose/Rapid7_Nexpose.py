@@ -1159,7 +1159,7 @@ def create_scan_report_command():
 def create_report(scope, name, template, report_format):
     if not template:
         templates = get_report_templates()
-        if templates is None or len(templates) == 0 or 'resources' not in templates:
+        if not templates or 'resources' not in templates:
             return 'No templates found'
         template = templates['resources'][0]['id']
     for i, (k, v) in enumerate(scope.items()):
@@ -1400,21 +1400,21 @@ def main():
         SESSION = login()
         if demisto.command() == 'test-module':
             get_assets(limit=1)
-            demisto.results('ok')
+            return_results('ok')
         if demisto.command() == 'nexpose-get-assets':
-            demisto.results(get_assets_command())
+            return_results(get_assets_command())
         if demisto.command() == 'nexpose-get-asset':
-            demisto.results(get_asset_command())
+            return_results(get_asset_command())
         if demisto.command() == 'nexpose-get-asset-vulnerability':
-            demisto.results(get_asset_vulnerability_command())
+            return_results(get_asset_vulnerability_command())
         if demisto.command() == 'nexpose-search-assets':
-            demisto.results(search_assets_command())
+            return_results(search_assets_command())
         if demisto.command() == 'nexpose-get-scan':
-            demisto.results(get_scan_command())
+            return_results(get_scan_command())
         if demisto.command() == 'nexpose-get-sites':
-            demisto.results(get_sites_command())
+            return_results(get_sites_command())
         if demisto.command() == 'nexpose-get-report-templates':
-            demisto.results(get_report_templates_command())
+            return_results(get_report_templates_command())
         if demisto.command() == 'nexpose-create-assets-report':
             return_results(create_assets_report_command())
         if demisto.command() == 'nexpose-create-sites-report':
@@ -1426,21 +1426,21 @@ def main():
         if demisto.command() == 'nexpose-download-report':
             return_results(download_report_command())
         if demisto.command() == 'nexpose-start-site-scan':
-            demisto.results(start_site_scan_command())
+            return_results(start_site_scan_command())
         if demisto.command() == 'nexpose-start-assets-scan':
-            demisto.results(start_assets_scan_command())
+            return_results(start_assets_scan_command())
         if demisto.command() == 'nexpose-create-site':
-            demisto.results(create_site_command())
+            return_results(create_site_command())
         if demisto.command() == 'nexpose-delete-site':
-            demisto.results(delete_site_command())
+            return_results(delete_site_command())
         if demisto.command() == 'nexpose-stop-scan':
-            demisto.results(stop_scan_command())
+            return_results(stop_scan_command())
         if demisto.command() == 'nexpose-pause-scan':
-            demisto.results(pause_scan_command())
+            return_results(pause_scan_command())
         if demisto.command() == 'nexpose-resume-scan':
-            demisto.results(resume_scan_command())
+            return_results(resume_scan_command())
         if demisto.command() == 'nexpose-get-scans':
-            demisto.results(get_scans_command())
+            return_results(get_scans_command())
     except Exception as e:
         LOG(e)
         LOG.print_log(False)
