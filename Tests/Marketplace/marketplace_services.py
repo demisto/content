@@ -990,7 +990,7 @@ class Pack(object):
                 else:
                     _pack_artifacts_path = pack_artifacts_path
 
-                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}', f'{self._pack_name}')
+                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}', f'{self._pack_name}.enc2')
                 print(f'\n\n secondary_encryption_key_artifacts_path: {secondary_encryption_key_artifacts_path}\n\n')
 
 
