@@ -56,8 +56,8 @@ def main():
         }
 
         incidents_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
-        if isError(incidents_res[0]):
-            return_error(f'Error occurred while trying to get incidents: {incidents_res[0].get("Contents")}')
+        if isError(incidents_res):
+            return_error(f'Error occurred while trying to get incidents: {get_error(incidents_res)}')
 
         incidents = json.loads(incidents_res[0].get('Contents'))
         incidents_ids = [inc.get('id') for inc in incidents]
@@ -95,9 +95,9 @@ def main():
             for item in res:
                 data.append({'name': item[0], 'data': [item[1]]})
 
-            demisto.results(json.dumps(data))
+            return_results(json.dumps(data))
         elif res_type == 'DistinctCount':
-            demisto.results(len(res_dict.keys()))
+            return_results(str(len(res_dict.keys())))
 
     except Exception as e:
         return_error(str(e))

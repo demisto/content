@@ -20,8 +20,8 @@ def main():
             get_endpoints_args['last_seen_lte'] = last_seen_lte
 
         res = demisto.executeCommand('xdr-get-endpoints', get_endpoints_args)
-        if isError(res[0]):
-            return_error(f'Error occurred while trying to get XDR endpoints: {res[0].get("Contents")}')
+        if isError(res):
+            return_error(f'Error occurred while trying to get XDR endpoints: {get_error(res)}')
         endpoints = res[0]['Contents']
 
         connected_endpoints = 0
@@ -29,7 +29,7 @@ def main():
             if endpoint.get('endpoint_status') == 'CONNECTED':
                 connected_endpoints = connected_endpoints + 1
 
-        return_outputs(str(connected_endpoints))
+        return_results(str(connected_endpoints))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute XDRConnectedEndpoints. Error: {str(ex)}')

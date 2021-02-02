@@ -10,6 +10,8 @@ def main():
         args['queryType'] = 'Hosts'
         args['reultType'] = 'Top10'
         res = demisto.executeCommand('XDRIncidentWidgetBase', args)
+        if isError(res):
+            return_error(f'Error occured while trying to execute XDRIncidentWidgetBase script: {get_error(res)}')
         return_results(res)
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
