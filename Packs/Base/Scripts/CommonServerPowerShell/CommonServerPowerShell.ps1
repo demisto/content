@@ -663,6 +663,9 @@ function ParseDateRange{
     Gets a string represents a date range ("3 day", "2 years" etc) and return the time on the past according to
     the date range.
 
+    .PARAMETER date_str
+     a date string in a human readable format as "3 days", "5 years"
+
     .EXAMPLE
     ParseDateRange("3 days") (current date it 04/01/21)
     Date(01/01/21)
