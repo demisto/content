@@ -410,12 +410,24 @@ def get_indicators_command(client: Client, args: Dict[str, Any]) -> Optional[Dic
 
     indicators = [convert_cyjax_indicator(indicator) for indicator in cyjax_indicators]  # type:List
 
+    # Format indicators for human readable table output
+    human_readable_indicators = []
+    for indicator in indicators:
+        human_readable_indicators.append({
+            'value': indicator['value'],
+            'score': indicator['score'],
+            'type': indicator['type'],
+            'description': indicator['fields'].get('description'),
+            'date': indicator['fields'].get('firstseenbysource')
+        })
+    human_readable_headers = ['value', 'type', 'score', 'description', 'date']
+
     return {
         'Type': EntryType.NOTE,
         'ContentsFormat': EntryFormat.JSON,
         'Contents': indicators,
         'ReadableContentsFormat': EntryFormat.MARKDOWN,
-        'HumanReadable': tableToMarkdown('Cyjax indicators:', indicators,
+        'HumanReadable': tableToMarkdown('Cyjax indicators:', human_readable_indicators, headers=human_readable_headers,
                                          headerTransform=pascalToSpace),
         'EntryContext': {
             'Cyjax.Indicators(val.value && val.value === obj.value)': createContext(indicators, removeNull=True),
