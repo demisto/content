@@ -68,7 +68,7 @@ OUTPUTS = {
     }
 }
 
-# test comment
+# test comments
 def create_headers(with_auth):
     """Create headers for the http_request
 
