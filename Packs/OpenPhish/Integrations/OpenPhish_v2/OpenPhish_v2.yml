@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: false
-  display: Use secured protocol (https)
+  display: Use HTTPS connection
   name: https
   required: false
   type: 8
