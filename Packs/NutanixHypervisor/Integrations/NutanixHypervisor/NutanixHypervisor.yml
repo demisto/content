@@ -91,16 +91,15 @@ name: Nutanix Hypervisor
 script:
   commands:
   - arguments:
-    - description: " The filters used to retrieve hosts.. Each filter is written in\
-        \ the following way: filter_name==filter_value or filter_name!=filter_value.\
-        \ Here is a possible combination of OR (using comma ',') and AND (using semicolon\
-        \ ';') filters: storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x. Nutanix\
-        \ will parse the filter in the following way: Return all hosts s.t (storage.capacity_bytes\
-        \ == 2 AND host_nic_ids != 35) OR host_gpus == x. For further explanation\
-        \ about possible filters, see Nutanix documentation."
+    - description: " The filters used to retrieve hosts.. Each filter is written in
+         the following way: filter_name==filter_value or filter_name!=filter_value.
+         Here is a possible combination of OR (using comma ',') and AND (using semicolon
+         ';') filters: storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x. Nutanix
+         will parse the filter in the following way: Return all hosts s.t (storage.capacity_bytes
+         == 2 AND host_nic_ids != 35) OR host_gpus == x. For further explanation
+         about possible filters, see Nutanix documentation."
       name: filter
-    - description: Page number in the query response. Default is 1. limit argument
-        is required.
+    - description: Page number in the query response. Default is 1.
       name: page
     - defaultValue: "50"
       description: Maximum number of physical hosts to retrieve. Possible values are
@@ -327,18 +326,18 @@ script:
       description: Whether the host is in maintenance mode.
       type: Boolean
   - arguments:
-    - description: "Retrieve virtual machines that matches the filters given. . Nutanix\
-        \ filters can be one of the field returned in the response by nutanix [GET\
-        \ VMs](https://www.nutanix.dev/reference/prism_element/v2/api/vms/get-vms-getvms/)\
-        \ API call. Some of the fields in the response are not supported. Known filters\
-        \ Nutanix service supports are: *machine_type*, *power_state*, *ha_priority*,\
-        \ *uefi_boot*. You can try to enter your own filter,  but if Nutanix does\
-        \ not support the filter, an error will be thrown specifying the filter is\
-        \ invalid. Each filter is written in the following way: filter_name==filter_value\
-        \ or filter_name!=filter_value. Possible combinations of OR (using comma ',')\
-        \ and AND (using semicolon ';'), for Example: machine_type==pc;power_state!=off,ha_priority==0\
-        \ is parsed by Nutanix the following way: Return all virtual machines s.t\
-        \ (machine type == pc AND power_state != off) OR ha_priority == 0."
+    - description: "Retrieve virtual machines that matches the filters given. . Nutanix
+         filters can be one of the field returned in the response by nutanix [GET
+         VMs](https://www.nutanix.dev/reference/prism_element/v2/api/vms/get-vms-getvms/)
+         API call. Some of the fields in the response are not supported. Known filters
+         Nutanix service supports are: *machine_type*, *power_state*, *ha_priority*,
+         *uefi_boot*. You can try to enter your own filter,  but if Nutanix does
+         not support the filter, an error will be thrown specifying the filter is
+         invalid. Each filter is written in the following way: filter_name==filter_value
+         or filter_name!=filter_value. Possible combinations of OR (using comma ',')
+         and AND (using semicolon ';'), for Example: machine_type==pc;power_state!=off,ha_priority==0
+         is parsed by Nutanix the following way: Return all virtual machines s.t
+         (machine type == pc AND power_state != off) OR ha_priority == 0."
       name: filter
     - description: Maximum number of virtual machines to retrieve.
       name: limit
@@ -579,8 +578,7 @@ script:
         type, it returns a 404 error.
       isArray: true
       name: entity_types
-    - description: Page number in the query response. Default is 1. limit argument
-        is required.
+    - description: Page number in the query response. Default is 1.
       name: page
     - description: Maximum number of physical hosts to retrieve. Possible values are
         1-1000.
