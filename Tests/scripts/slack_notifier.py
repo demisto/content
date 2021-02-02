@@ -285,7 +285,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
     branch_name_reg = re.search(r'\* (.*)', branches)
     branch_name = branch_name_reg.group(1)
 
-    if branch_name == 'master':
+    if branch_name == 'fix-index-dates':
         logging.info("Extracting build status")
         if test_type == UNITTESTS_TYPE:
             logging.info("Starting Slack notifications about nightly build - unit tests")

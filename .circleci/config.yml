@@ -968,7 +968,7 @@ jobs:
       - when:
           condition:
             equal:
-              - master
+              - fix-index-dates
               - << pipeline.git.branch >>
           steps:
             - run:
@@ -1249,7 +1249,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - fix-index-dates
           requires:
             - Setup Environment
       - Force Upload Packs To Marketplace:
@@ -1257,7 +1257,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - fix-index-dates
           requires:
             - Create Instances
 
