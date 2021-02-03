@@ -281,9 +281,6 @@ script:
     - contextPath: PsRemote.Command.Name
       description: The name of the command that ran on the host.
       type: string
-    - contextPath: PsRemote.Fqdn
-      description: The Full Qualified Domain Name of the host.
-      type: string
     - contextPath: PsRemote.FQDN
       description: The Full Qualified Domain Name of the host.
       type: string
@@ -349,9 +346,6 @@ script:
     - contextPath: PsRemote.Command.Name
       description: The name of the command that ran on the host.
       type: string
-    - contextPath: PsRemote.Fqdn
-      description: The Full Qualified Domain Name of the host.
-      type: string
     - contextPath: PsRemote.Host
       description: The Host the command was invoked on.
       type: string
@@ -368,9 +362,8 @@ script:
       name: ip
     - description: Specify a volume to retrieve its master file table.
       name: volume
-      required: true
-    - defaultValue: "false"
-      description: The Path the MFT file is to be created in.
+    - description: The Path the MFT file is to be created in.
+      isArray: false
       name: output_path
     description: Extract master file table from volume.
     name: ps-remote-export-mft
