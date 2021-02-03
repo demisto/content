@@ -10,11 +10,9 @@ integrated and tested with version v2 of Nutanix.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL | \(e.g., https://example.net\) | True |
+    | Server URL | \(e.g., https://192.168.0.1:57261\) | True |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
     | Username |  | True |
     | Incidents Fetch Interval |  | False |
     | Maximum number of incidents per fetch | The maximum number of incidents to fetch each time. | False |
@@ -22,8 +20,33 @@ integrated and tested with version v2 of Nutanix.
     | Alert type IDs | Comma-separated list of alert type IDs. Fetches alerts whose type ID matches an alert_type_id in the alert_type_ids list. For example, alert 'Alert E-mail Failure' has type ID A111066. If alert_type_ids = 'A111066', only alerts of 'Alert E-mail Failure' will be displayed. | False |
     | Impact Types | Comma-separated list  of impact types. Fetch alerts whose impact type matches an impact type in Impact Types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. If Impact Types = 'SystemIndicator', only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be displayed. | False |
     | First fetch timestamp | format: `<number>` `<time unit>`, e.g., 12 hours, 7 days. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Available Alert Type IDs, Impact Types, and Entity Types
+Alert Policies contains the list of all possible alerts in the system,
+and their ID, impact type, and entity type. In order to check the optional values for these entities:
+
+1. Go to your Nutanix UI and navigate to the *Alerts* screen. (Can be found under the second tab in the top left corner, see image below)
+2. Navigate to the Alert Policies tab on the left sidebar.
+You should see the following screen:
+![Nutanix Alert Policy](https://raw.githubusercontent.com/demisto/content/abe238d3292774d7dd1b92bbca30cffa9b0a7463/Packs/NutanixHypervisor/doc_files/Alert_Policy.png)
+
+* *ID* is the alert type ID filter parameter for fetching alerts, or the argument for the ***nutanix-hypervisor-alerts-list*** command.
+* *Impact Type* is the impact type filter parameter for fetching alerts, or the argument for the ***nutanix-hypervisor-alerts-list*** command.
+
+### Permissions
+The following commands require cluster admin or higher permissions.
+(Found in Nutanix Settings in the *Users And Roles* category.)
+
+- ***nutanix-hypervisor-vm-powerstatus-change***
+- ***nutanix-hypervisor-alert-acknowledge***
+- ***nutanix-hypervisor-alert-resolve***
+- ***nutanix-hypervisor-alerts-acknowledge-by-filter***
+- ***nutanix-hypervisor-alerts-resolve-by-filter***
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -43,7 +66,7 @@ Gets the list of physical hosts configured in the cluster.
 host_nic_ids*, *host_gpus*, *storage_tier*, *das-sata.usage_bytes*, *storage.capacity_bytes*, *
 storage.logical_usage_bytes*, *storage_tier.das-sata.capacity_bytes*, *
 storage.usage_bytes*. You can try to enter your own filters, but if Nutanix does not support the filter, an error will be thrown specifying that the filter is invalid. Each filter is written in the following format: filter_name==filter_value or filter_name!=filter_value. Possible combinations of OR (using comma ',') and AND (using semicolon ';'), for example, storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x, are parsed by Nutanix as follows: Return all hosts s.t (storage.capacity_bytes == 2 AND host_nic_ids != 35) OR host_gpus == x. | Optional | 
-| page | Page number in the query response. Default is 1. When page is specified, the limit argument is required. | Optional | 
+| page | Page number in the query response. Default is 1. | Optional | 
 | limit | Maximum number of physical hosts to retrieve. Possible values are 1-1000. Default is 50. | Optional | 
 | verbose | Receive extended information from Nutanix about hosts. Possible values are: true, false. Default is false. | Optional | 
 
@@ -132,7 +155,7 @@ storage.usage_bytes*. You can try to enter your own filters, but if Nutanix does
         "Host": {
             "boot_time": "2020-11-22T14:13:52.399817+00:00",
             "boot_time_in_usecs": 1606054432399817,
-            "cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00536419cc8b",
+            "cluster_uuid": "asra1631-a234-zxd1-aa23-azxr124z23aq",
             "controller_vm_backplane_ip": "192.168.1.111",
             "cpu_model": "Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz",
             "has_csr": false,
@@ -155,7 +178,7 @@ storage.usage_bytes*. You can try to enter your own filters, but if Nutanix does
             "reboot_pending": false,
             "serial": "59bc015e-a22d-41ab-9ce2-a96164955e9q",
             "service_vmexternal_ip": "192.168.1.111",
-            "service_vmid": "0005b4b2-c8d0-bad4-34c3-00536419cc8b::2",
+            "service_vmid": "asra1631-a234-zxd1-aa23-azxr124z23aq::2",
             "state": "NORMAL",
             "uuid": "59bc015e-a22d-41ab-9ce2-a96164955e9q",
             "vzone_name": ""
@@ -167,9 +190,9 @@ storage.usage_bytes*. You can try to enter your own filters, but if Nutanix does
 #### Human Readable Output
 
 >### Nutanix Hosts List
->|host_type|vzone_name|has_csr|monitored|num_cpu_cores|service_vmexternal_ip|uuid|hypervisor_type|is_secure_booted|num_cpu_threads|name|num_vms|cpu_model|hypervisor_full_name|service_vmid|controller_vm_backplane_ip|is_hardware_virtualized|state|hypervisor_username|cluster_uuid|hypervisor_key|management_server_name|hypervisor_address|boot_time|serial|is_degraded|reboot_pending|num_cpu_sockets|boot_time_in_usecs|
+>|is_hardware_virtualized|host_type|serial|boot_time|hypervisor_type|num_cpu_sockets|hypervisor_full_name|hypervisor_username|uuid|vzone_name|hypervisor_address|num_vms|is_secure_booted|management_server_name|monitored|is_degraded|state|num_cpu_cores|name|service_vmid|service_vmexternal_ip|reboot_pending|cluster_uuid|has_csr|hypervisor_key|cpu_model|num_cpu_threads|controller_vm_backplane_ip|boot_time_in_usecs|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| HYPER_CONVERGED |  | false | true | 8 | 192.168.1.111 | 59bc015e-a22d-41ab-9ce2-a96164955e9q | kKvm | false | 8 | NTNX-386a5fb4-A | 2 | Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz | Nutanix 20190916.321 | 0005b4b2-c8d0-bad4-34c3-00536419cc8b::2 | 192.168.1.111 | false | NORMAL | root | 0005b4b2-c8d0-bad4-34c3-00536419cc8b | 192.168.1.111 | 192.168.1.111 | 192.168.1.111 | 2020-11-22T14:13:52.399817+00:00 | 59bc015e-a22d-41ab-9ce2-a96164955e9q | false | false | 2 | 1606054432399817 |
+>| false | HYPER_CONVERGED | 59bc015e-a22d-41ab-9ce2-a96164955e9q | 2020-11-22T14:13:52.399817+00:00 | kKvm | 2 | Nutanix 20190916.321 | root | 59bc015e-a22d-41ab-9ce2-a96164955e9q |  | 192.168.1.111 | 2 | false | 192.168.1.111 | true | false | NORMAL | 8 | NTNX-386a5fb4-A | asra1631-a234-zxd1-aa23-azxr124z23aq::2 | 192.168.1.111 | false | asra1631-a234-zxd1-aa23-azxr124z23aq | false | 192.168.1.111 | Intel(R) Xeon(R) Silver 4216 CPU @ 2.10GHz | 8 | 192.168.1.111 | 1606054432399817 |
 
 
 ### nutanix-hypervisor-vms-list
@@ -241,12 +264,12 @@ Gets a list of virtual machines.
             "num_vcpus": 2,
             "power_state": "on",
             "timezone": "UTC",
-            "uuid": "16c3d845-dc54-4fb1-bfc8-7671dd230966",
+            "uuid": "16c3d845-dc54-4fb1-bfc8-7671dd230967",
             "vm_features": {
                 "AGENT_VM": false,
                 "VGA_CONSOLE": true
             },
-            "vm_logical_timestamp": 240
+            "vm_logical_timestamp": 243
         }
     }
 }
@@ -255,9 +278,9 @@ Gets a list of virtual machines.
 #### Human Readable Output
 
 >### Nutanix Virtual Machines List
->|ha_priority|power_state|memory_mb|host_uuid|num_cores_per_vcpu|vm_logical_timestamp|machine_type|gpus_assigned|timezone|uuid|name|num_vcpus|allow_live_migrate|
+>|timezone|allow_live_migrate|name|ha_priority|machine_type|memory_mb|uuid|power_state|num_cores_per_vcpu|vm_logical_timestamp|gpus_assigned|host_uuid|num_vcpus|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0 | on | 4096 | 59bc015e-a22d-41ab-9ce2-a96164955e9q | 2 | 240 | pc | false | UTC | 16c3d845-dc54-4fb1-bfc8-7671dd230966 | CentOS7_Test | 2 | false |
+>| UTC | false | CentOS7_Test | 0 | pc | 4096 | 16c3d845-dc54-4fb1-bfc8-7671dd230967 | on | 2 | 243 | false | 59bc015e-a22d-41ab-9ce2-a96164955e9q | 2 |
 
 
 ### nutanix-hypervisor-vm-powerstatus-change
@@ -274,8 +297,8 @@ monitored by the nutanix-hypervisor-task-results-get command.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vm_uuid | ID of the virtual machine to change its power status. | Required | 
-| host_uuid | The UUID of the host to be used to run the virtual machine if the virtual machine is transitioned with 'ON' or 'POWERCYCLE'. | Optional | 
+| vm_uuid | ID of the virtual machine to change its power status. Virtual machine ID is the 'uuid' field returned for by command 'nutanix-hypervisor-vms-list'. | Required | 
+| host_uuid | The UUID of the host to be used to run the virtual machine if the virtual machine is transitioned with 'ON' or 'POWERCYCLE'. Host ID is the 'uuid' field returned for by command 'nutanix-hypervisor-hosts-list'. | Optional | 
 | transition | The new power state to which you want to transfer the virtual machine to. Possible values are: ON, OFF, POWERCYCLE, RESET, PAUSE, SUSPEND, RESUME, SAVE, ACPI_SHUTDOWN, ACPI_REBOOT. | Required | 
 
 
@@ -287,14 +310,14 @@ monitored by the nutanix-hypervisor-task-results-get command.
 
 
 #### Command Example
-```!nutanix-hypervisor-vm-powerstatus-change vm_uuid=16c3d845-dc54-4fb1-bfc8-7671dd230966 transition=ON```
+```!nutanix-hypervisor-vm-powerstatus-change vm_uuid=16c3d845-dc54-4fb1-bfc8-7671dd230967 transition=ON```
 
 #### Context Example
 ```json
 {
     "NutanixHypervisor": {
         "VMPowerStatus": {
-            "task_uuid": "f6015de2-f1d2-40bf-a44a-943ca79c29a1"
+            "task_uuid": "7f522fb2-1b19-491a-ab49-763f48be8712"
         }
     }
 }
@@ -305,12 +328,12 @@ monitored by the nutanix-hypervisor-task-results-get command.
 >### Results
 >|task_uuid|
 >|---|
->| f6015de2-f1d2-40bf-a44a-943ca79c29a1 |
+>| 7f522fb2-1b19-491a-ab49-763f48be8712 |
 
 
 ### nutanix-hypervisor-task-results-get
 ***
-Returns all the results of the tasks from the task_ids list that are ready at the moment the Nutanix service was polled. If no task is ready, returns a timeout response.
+Returns the results of given tasks. If a task is not ready, its status will be returned.
 
 
 #### Base Command
@@ -320,7 +343,7 @@ Returns all the results of the tasks from the task_ids list that are ready at th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_ids | Comma-separated list of the task IDs to poll. | Required | 
+| task_ids | Comma-separated list of the task IDs to get results to. Task ID is the 'task_uuid' field returned for by command 'nutanix-hypervisor-vm-powerstatus-change'. | Required | 
 
 
 #### Context Output
@@ -352,49 +375,53 @@ Returns all the results of the tasks from the task_ids list that are ready at th
 
 
 #### Command Example
-```!nutanix-hypervisor-task-results-get task_ids=z4b8bfa5-bb52-4d09-924e-6c436aa333c6```
+```!nutanix-hypervisor-task-results-get task_ids=072f64d8-c737-4230-a1ec-199b449b9795```
 
 #### Context Example
 ```json
 {
-  "NutanixHypervisor": {
-    "Task": {
-      "cluster_uuid": "asra1631-a234-zxd1-aa23-azxr124z23aq",
-      "complete_time": "2021-01-10T14:16:05.197853Z",
-      "create_time": "2021-01-10T14:16:00.827398Z",
-      "entity_list": [
-        {
-          "entity_id": "1zs412a-zxdc-324a-xcgws123df54",
-          "entity_type": "VM"
+    "NutanixHypervisor": {
+        "Task": {
+            "cluster_uuid": "asra1631-a234-zxd1-aa23-azxr124z23aq",
+            "complete_time": "2021-02-03T15:51:26.579757+00:00",
+            "complete_time_usecs": 1612367486579757,
+            "create_time": "2021-02-03T15:51:26.346257+00:00",
+            "create_time_usecs": 1612367486346257,
+            "entity_list": [
+                {
+                    "entity_id": "16c3d845-dc54-4fb1-bfc8-7671dd230967",
+                    "entity_type": "VM"
+                }
+            ],
+            "last_updated": "2021-02-03T15:51:26.579757+00:00",
+            "last_updated_time_usecs": 1612367486579757,
+            "message": "",
+            "meta_request": {
+                "method_name": "VmChangePowerState"
+            },
+            "meta_response": {
+              "error_code": 0
+            },
+            "operation_type": "VmChangePowerState",
+            "percentage_complete": 100,
+            "progress_status": "Succeeded",
+            "start_time": "2021-02-03T15:51:26.376685+00:00",
+            "start_time_usecs": 1612367486376685,
+            "subtask_uuid_list": [
+                "6f90a15d-ad76-4782-89bd-80811f162543"
+            ],
+            "uuid": "072f64d8-c737-4230-a1ec-199b449b9795"
         }
-      ],
-      "last_updated": "2021-01-10T14:16:05.197853Z",
-      "message": "",
-      "meta_request": {
-        "method_name": "VmChangePowerState"
-      },
-      "meta_response": {
-        "error_code": 0
-      },
-      "operation_type": "VmChangePowerState",
-      "percentage_complete": 100,
-      "progress_status": "Succeeded",
-      "start_time": "2021-01-10T14:16:00.863871Z",
-      "subtask_uuid_list": [
-        "asra1631-a234-zxd1-aa23-azxr124z23a2"
-      ],
-      "uuid": "123as31z-a234-zxd1-aa23-azxr124z23aq"
     }
-  }
 }
 ```
 
 #### Human Readable Output
 
-> ### Nutanix Hypervisor Tasks Status
->|Task ID|Progress Status|
->|---|---|
->| z4b8bfa5-bb52-4d09-924e-6c436aa333c6 | Succeeded |
+>### Nutanix Hypervisor Tasks Status
+>|cluster_uuid|complete_time|complete_time_usecs|create_time|create_time_usecs|entity_list|last_updated|last_updated_time_usecs|message|meta_request|meta_response|operation_type|percentage_complete|progress_status|start_time|start_time_usecs|subtask_uuid_list|uuid|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| asra1631-a234-zxd1-aa23-azxr124z23aq | 2021-02-03T15:51:26.579757+00:00 | 1612367486579757 | 2021-02-03T15:51:26.346257+00:00 | 1612367486346257 | {'entity_id': '16c3d845-dc54-4fb1-bfc8-7671dd230967', 'entity_type': 'VM'} | 2021-02-03T15:51:26.579757+00:00 | 1612367486579757 |  | method_name: VmChangePowerState | error_code: 17<br/>error_detail: Cannot complete request in state InvalidVmState: Cannot complete request in state On | VmChangePowerState | 100 | Failed | 2021-02-03T15:51:26.376685+00:00 | 1612367486376685 | 6f90a15d-ad76-4782-89bd-80811f162543 | 072f64d8-c737-4230-a1ec-199b449b9795 |
 
 
 ### nutanix-hypervisor-alerts-list
@@ -417,8 +444,8 @@ Gets the list of alerts generated in the cluster that matches the filters. Nutan
 | severity | Comma-separated list of the severity levels of the alerts to retrieve. Possible values are: CRITICAL, WARNING, INFO, AUDIT. | Optional | 
 | alert_type_ids | Comma-separated list of alert type IDs. Will retrieve alerts whose type ID matches an alert_type_id in the alert_type_ids list. For example, alert 'Alert E-mail Failure' has type id of A111066. Given alert_type_ids= 'A111066', only alerts of 'Alert E-mail Failure' will be retrieved. | Optional | 
 | impact_types | Comma-separated list of impact types. Possible values: Availability, Capacity, Configuration, Performance, and System Indicator. Will retrieve alerts whose impact type matches an impact types in the impact_types list. For example, alert 'Incorrect NTP Configuration' has impact type 'SystemIndicator'. Given impact_types ='SystemIndicator',only alerts with impact type 'SystemIndicator', such as 'Incorrect NTP Configuration' will be retrieved. Possible values are: Availability, Capacity, Configuration, Performance, System Indicator. | Optional | 
-| entity_types | Comma-separated list of entity types. Will retrieve alerts whose entity_type matches an entity_type in the entity_types list. If the Nutanix service cannot recognize the entity type, it returns a 404 error. | Optional | 
-| page | Page number in the query response. Default is 1. When page is specified, the limit argument is required. | Optional | 
+| entity_types | Comma-separated list of entity types. Will retrieve alerts whose entity_type matches an entity_type in the entity_types list. For details, see the Nutanix README. If the Nutanix service cannot recognize the entity type, it returns a 404 error. | Optional | 
+| page | Page number in the query response. Default is 1. | Optional | 
 | limit | Maximum number of physical hosts to retrieve. Possible values are 1-1000. Default is 50. | Optional | 
 | verbose | Receive extended information from Nutanix about alerts. Possible values are: true, false. Default is false. | Optional | 
 
@@ -494,11 +521,11 @@ Gets the list of alerts generated in the cluster that matches the filters. Nutan
                 "alert_title": "{vm_type} time not synchronized with any external servers.",
                 "alert_type_uuid": "A3026",
                 "auto_resolved": true,
-                "check_id": "0005b4b2-c8d0-bad4-34c3-00536419cc8b::3026",
+                "check_id": "asra1631-a234-zxd1-aa23-azxr124z23aq::3026",
                 "classifications": [
                     "ControllerVM"
                 ],
-                "cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00536419cc8b",
+                "cluster_uuid": "asra1631-a234-zxd1-aa23-azxr124z23aq",
                 "created_time": "2020-11-22T14:31:14.675609+00:00",
                 "created_time_stamp_in_usecs": 1606055474675609,
                 "detailed_message": "",
@@ -511,12 +538,12 @@ Gets the list of alerts generated in the cluster that matches the filters. Nutan
                 "message": "The {vm_type} is not synchronizing time with any external servers. {alert_msg}",
                 "node_uuid": "59bc015e-a22d-41ab-9ce2-a96164955e9q",
                 "operation_type": "kCreate",
-                "originating_cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00536419cc8b",
+                "originating_cluster_uuid": "asra1631-a234-zxd1-aa23-azxr124z23aq",
                 "resolved": true,
                 "resolved_by_username": "N/A",
                 "resolved_time": "2020-11-25T15:28:02.804758+00:00",
                 "resolved_time_stamp_in_usecs": 1606318082804758,
-                "service_vmid": "0005b4b2-c8d0-bad4-34c3-00536419cc8b::2",
+                "service_vmid": "asra1631-a234-zxd1-aa23-azxr124z23aq::2",
                 "severity": "kWarning",
                 "user_defined": false
             },
@@ -535,11 +562,11 @@ Gets the list of alerts generated in the cluster that matches the filters. Nutan
                 "alert_title": "Incorrect NTP Configuration",
                 "alert_type_uuid": "A103076",
                 "auto_resolved": true,
-                "check_id": "0005b4b2-c8d0-bad4-34c3-00536419cc8b::103076",
+                "check_id": "asra1631-a234-zxd1-aa23-azxr124z23aq::103076",
                 "classifications": [
                     "Cluster"
                 ],
-                "cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00536419cc8b",
+                "cluster_uuid": "asra1631-a234-zxd1-aa23-azxr124z23aq",
                 "created_time": "2020-11-22T14:31:14.619018+00:00",
                 "created_time_stamp_in_usecs": 1606055474619018,
                 "detailed_message": "",
@@ -552,12 +579,12 @@ Gets the list of alerts generated in the cluster that matches the filters. Nutan
                 "message": "{alert_msg}",
                 "node_uuid": "59bc015e-a22d-41ab-9ce2-a96164955e9q",
                 "operation_type": "kCreate",
-                "originating_cluster_uuid": "0005b4b2-c8d0-bad4-34c3-00536419cc8b",
+                "originating_cluster_uuid": "asra1631-a234-zxd1-aa23-azxr124z23aq",
                 "resolved": true,
                 "resolved_by_username": "N/A",
                 "resolved_time": "2020-11-25T15:28:02.851706+00:00",
                 "resolved_time_stamp_in_usecs": 1606318082851706,
-                "service_vmid": "0005b4b2-c8d0-bad4-34c3-00536419cc8b::2",
+                "service_vmid": "asra1631-a234-zxd1-aa23-azxr124z23aq::2",
                 "severity": "kWarning",
                 "user_defined": false
             }
@@ -569,10 +596,10 @@ Gets the list of alerts generated in the cluster that matches the filters. Nutan
 #### Human Readable Output
 
 >### Nutanix Alert List
->|resolved_time_stamp_in_usecs|acknowledged_time_stamp_in_usecs|user_defined|detailed_message|operation_type|id|acknowledged|classifications|service_vmid|impact_types|message|created_time_stamp_in_usecs|severity|resolved_time|resolved_by_username|last_occurrence_time_stamp_in_usecs|node_uuid|check_id|auto_resolved|acknowledged_by_username|originating_cluster_uuid|alert_title|alert_type_uuid|cluster_uuid|acknowledged_time|resolved|created_time|last_occurrence|
+>|impact_types|created_time_stamp_in_usecs|created_time|severity|acknowledged_time_stamp_in_usecs|resolved|acknowledged_by_username|resolved_by_username|last_occurrence_time_stamp_in_usecs|acknowledged_time|check_id|alert_title|service_vmid|id|classifications|acknowledged|resolved_time|last_occurrence|alert_type_uuid|detailed_message|operation_type|originating_cluster_uuid|message|node_uuid|user_defined|cluster_uuid|auto_resolved|resolved_time_stamp_in_usecs|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1606318082804758 | 1606318082804764 | false |  | kCreate | 4b12dc84-2a77-4b3a-a40a-2dc47c919caa | true | ControllerVM | 0005b4b2-c8d0-bad4-34c3-00536419cc8b::2 | Configuration | The {vm_type} is not synchronizing time with any external servers. {alert_msg} | 1606055474675609 | kWarning | 2020-11-25T15:28:02.804758+00:00 | N/A | 1606055474675609 | 59bc015e-a22d-41ab-9ce2-a96164955e9q | 0005b4b2-c8d0-bad4-34c3-00536419cc8b::3026 | true | N/A | 0005b4b2-c8d0-bad4-34c3-00536419cc8b | {vm_type} time not synchronized with any external servers. | A3026 | 0005b4b2-c8d0-bad4-34c3-00536419cc8b | 2020-11-25T15:28:02.804764+00:00 | true | 2020-11-22T14:31:14.675609+00:00 | 2020-11-22T14:31:14.675609+00:00 |
->| 1606318082851706 | 1606318082851718 | false |  | kCreate | 1c63dcd9-3b36-45a6-8991-d28cc661c861 | true | Cluster | 0005b4b2-c8d0-bad4-34c3-00536419cc8b::2 | SystemIndicator | {alert_msg} | 1606055474619018 | kWarning | 2020-11-25T15:28:02.851706+00:00 | N/A | 1606055474619018 | 59bc015e-a22d-41ab-9ce2-a96164955e9q | 0005b4b2-c8d0-bad4-34c3-00536419cc8b::103076 | true | N/A | 0005b4b2-c8d0-bad4-34c3-00536419cc8b | Incorrect NTP Configuration | A103076 | 0005b4b2-c8d0-bad4-34c3-00536419cc8b | 2020-11-25T15:28:02.851718+00:00 | true | 2020-11-22T14:31:14.619018+00:00 | 2020-11-22T14:31:14.619018+00:00 |
+>| Configuration | 1606055474675609 | 2020-11-22T14:31:14.675609+00:00 | kWarning | 1606318082804764 | true | N/A | N/A | 1606055474675609 | 2020-11-25T15:28:02.804764+00:00 | asra1631-a234-zxd1-aa23-azxr124z23aq::3026 | {vm_type} time not synchronized with any external servers. | asra1631-a234-zxd1-aa23-azxr124z23aq::2 | 4b12dc84-2a77-4b3a-a40a-2dc47c919caa | ControllerVM | true | 2020-11-25T15:28:02.804758+00:00 | 2020-11-22T14:31:14.675609+00:00 | A3026 |  | kCreate | asra1631-a234-zxd1-aa23-azxr124z23aq | The {vm_type} is not synchronizing time with any external servers. {alert_msg} | 59bc015e-a22d-41ab-9ce2-a96164955e9q | false | asra1631-a234-zxd1-aa23-azxr124z23aq | true | 1606318082804758 |
+>| SystemIndicator | 1606055474619018 | 2020-11-22T14:31:14.619018+00:00 | kWarning | 1606318082851718 | true | N/A | N/A | 1606055474619018 | 2020-11-25T15:28:02.851718+00:00 | asra1631-a234-zxd1-aa23-azxr124z23aq::103076 | Incorrect NTP Configuration | asra1631-a234-zxd1-aa23-azxr124z23aq::2 | 1c63dcd9-3b36-45a6-8991-d28cc661c861 | Cluster | true | 2020-11-25T15:28:02.851706+00:00 | 2020-11-22T14:31:14.619018+00:00 | A103076 |  | kCreate | asra1631-a234-zxd1-aa23-azxr124z23aq | {alert_msg} | 59bc015e-a22d-41ab-9ce2-a96164955e9q | false | asra1631-a234-zxd1-aa23-azxr124z23aq | true | 1606318082851706 |
 
 
 ### nutanix-hypervisor-alert-acknowledge
@@ -587,7 +614,7 @@ Acknowledges the alert with the specified alert_id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The ID of the alert to acknowledge. | Required | 
+| alert_id | The ID of the alert to acknowledge. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'. | Required | 
 
 
 #### Context Output
@@ -600,14 +627,15 @@ Acknowledges the alert with the specified alert_id.
 
 
 #### Command Example
-```!nutanix-hypervisor-alert-acknowledge alert_id=b8a8b8c8-3548-4056-8a7d-dd2c43d1c2d0```
+```!nutanix-hypervisor-alert-acknowledge alert_id=da53aaa3-8c29-4b68-9f27-e0927ca694ce```
 
 #### Context Example
 ```json
 {
     "NutanixHypervisor": {
         "AcknowledgedAlerts": {
-            "id": "b8a8b8c8-3548-4056-8a7d-dd2c43d1c2d0",
+            "id": "da53aaa3-8c29-4b68-9f27-e0927ca694ce",
+            "message": null,
             "successful": true
         }
     }
@@ -617,14 +645,14 @@ Acknowledges the alert with the specified alert_id.
 #### Human Readable Output
 
 >### Results
->|id|successful|
+>|id|message|successful|
 >|---|---|---|
->| b8a8b8c8-3548-4056-8a7d-dd2c43d1c2d0 | true |
+>| da53aaa3-8c29-4b68-9f27-e0927ca694ce |  | true |
 
 
 ### nutanix-hypervisor-alert-resolve
 ***
-Resolves the alert with the specified alert_id.
+Resolves the alert with the specified alert_id. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'
 
 
 #### Base Command
@@ -647,14 +675,15 @@ Resolves the alert with the specified alert_id.
 
 
 #### Command Example
-```!nutanix-hypervisor-alert-resolve alert_id=b8a8b8c8-3548-4056-8a7d-dd2c43d1c2d0```
+```!nutanix-hypervisor-alert-resolve alert_id=da53aaa3-8c29-4b68-9f27-e0927ca694ce```
 
 #### Context Example
 ```json
 {
     "NutanixHypervisor": {
         "ResolvedAlerts": {
-            "id": "b8a8b8c8-3548-4056-8a7d-dd2c43d1c2d0",
+            "id": "da53aaa3-8c29-4b68-9f27-e0927ca694ce",
+            "message": null,
             "successful": true
         }
     }
@@ -664,9 +693,9 @@ Resolves the alert with the specified alert_id.
 #### Human Readable Output
 
 >### Results
->|id|successful|
+>|id|message|successful|
 >|---|---|---|
->| b8a8b8c8-3548-4056-8a7d-dd2c43d1c2d0 | true |
+>| da53aaa3-8c29-4b68-9f27-e0927ca694ce |  | true |
 
 
 ### nutanix-hypervisor-alerts-acknowledge-by-filter

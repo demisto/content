@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL
-  additionalinfo: (e.g., https://example.net)
+  additionalinfo: (e.g., https://192.168.0.1:57261)
   name: base_url
   required: true
   type: 0

@@ -88,6 +88,8 @@ UTC_TIMEZONE = pytz.timezone('utc')
 
 NUTANIX_HOST_FIELDS_TO_REMOVE = {'disk_hardware_configs', 'cpu_frequency_in_hz', 'cpu_capacity_in_hz',
                                  'memory_capacity_in_bytes', 'stats', 'usage_stats'}
+
+BASE_URL_SUFFIX = '/PrismGateway/services/rest/v2.0'
 ''' CLIENT CLASS '''
 
 
@@ -472,6 +474,10 @@ def task_exists(client: Client, task_id: str) -> bool:
         raise e
 
 
+def sanitize_outputs(outputs, fields_to_ignore):
+    return [{k: v for k, v in output.items() if k not in fields_to_ignore} for output in outputs]
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -561,15 +567,13 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
 
     final_outputs = [remove_empty_elements(output) for output in outputs]
 
-    raise DemistoException('fail on purpose')
-
-    # return CommandResults(
-    #     outputs_prefix='NutanixHypervisor.Host',
-    #     outputs_key_field='uuid',
-    #     outputs=final_outputs,
-    #     readable_output=tableToMarkdown('Nutanix Hosts List', final_outputs, get_human_readable_headers(final_outputs)),
-    #     raw_response=raw_response
-    # )
+    return CommandResults(
+        outputs_prefix='NutanixHypervisor.Host',
+        outputs_key_field='uuid',
+        outputs=final_outputs,
+        readable_output=tableToMarkdown('Nutanix Hosts List', final_outputs, get_human_readable_headers(final_outputs)),
+        raw_response=raw_response
+    )
 
 
 def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
@@ -802,7 +806,7 @@ def nutanix_hypervisor_alert_acknowledge_command(client: Client, args: Dict):
     return CommandResults(
         outputs_prefix='NutanixHypervisor.AcknowledgedAlerts',
         outputs_key_field='id',
-        outputs=raw_response,
+        outputs=remove_empty_elements(raw_response),
         raw_response=raw_response
     )
 
@@ -830,7 +834,7 @@ def nutanix_hypervisor_alert_resolve_command(client: Client, args: Dict):
     return CommandResults(
         outputs_prefix='NutanixHypervisor.ResolvedAlerts',
         outputs_key_field='id',
-        outputs=raw_response,
+        outputs=remove_empty_elements(raw_response),
         raw_response=raw_response
     )
 
@@ -949,7 +953,7 @@ def main() -> None:
     username = credentials.get('identifier')
     password = credentials.get('password')
 
-    base_url = params.get('base_url')
+    base_url = params.get('base_url') + BASE_URL_SUFFIX
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)

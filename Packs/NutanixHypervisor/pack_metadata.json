@@ -10,7 +10,9 @@
   "categories": [
     "IT Services"
   ],
-  "tags": [],
+  "tags": [
+    "IT"
+  ],
   "useCases": [],
   "keywords": [],
   "dependencies": {}
