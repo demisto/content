@@ -561,13 +561,15 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
 
     final_outputs = [remove_empty_elements(output) for output in outputs]
 
-    return CommandResults(
-        outputs_prefix='NutanixHypervisor.Host',
-        outputs_key_field='uuid',
-        outputs=final_outputs,
-        readable_output=tableToMarkdown('Nutanix Hosts List', final_outputs, get_human_readable_headers(final_outputs)),
-        raw_response=raw_response
-    )
+    raise DemistoException('fail on purpose')
+
+    # return CommandResults(
+    #     outputs_prefix='NutanixHypervisor.Host',
+    #     outputs_key_field='uuid',
+    #     outputs=final_outputs,
+    #     readable_output=tableToMarkdown('Nutanix Hosts List', final_outputs, get_human_readable_headers(final_outputs)),
+    #     raw_response=raw_response
+    # )
 
 
 def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
