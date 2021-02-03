@@ -288,10 +288,10 @@ def convert_cyjax_indicator(cyjax_indicator: dict, score: Optional[int] = None, 
         fields['source'] = cyjax_indicator['source']
 
     if 'industry_type' in cyjax_indicator:
-        fields['industrytypes'] = cyjax_indicator['industry_type']
+        fields['cyjaxindustrytypes'] = cyjax_indicator['industry_type']
 
     if 'ttp' in cyjax_indicator:
-        fields['techniquestacticsprocedures'] = cyjax_indicator['ttp']
+        fields['cyjaxtechniquestacticsprocedures'] = cyjax_indicator['ttp']
 
     if 'asn' in cyjax_indicator and 'asn' in cyjax_indicator['asn']:
         fields['ASN'] = cyjax_indicator['asn']['asn']
