@@ -1,7 +1,7 @@
 {
     "brandName": "Nutanix Hypervisor",
     "custom": true,
-    "id": "NutanixHypervisor-mapper",
+    "id": "NutanixHypervisor",
     "isDefault": false,
     "mapping": {
         "Nutanix Hypervisor Alert": {

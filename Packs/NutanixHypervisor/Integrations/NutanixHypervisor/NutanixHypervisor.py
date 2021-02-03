@@ -20,7 +20,7 @@ USECS_ENTRIES_MAPPING = {'boot_time_in_usecs': 'boot_time',
                          'acknowledged_time_stamp_in_usecs': 'acknowledged_time',
                          'resolved_time_stamp_in_usecs': 'resolved_time'}
 
-HOST_FIELDS_NOT_VERBOSE = [
+HOST_FIELDS_NOT_VERBOSE = {
     "service_vmid",
     "uuid",
     "name",
@@ -50,9 +50,9 @@ HOST_FIELDS_NOT_VERBOSE = [
     "has_csr",
     "host_type",
     "boot_time"
-]
+}
 
-ALERT_FIELDS_NOT_VERBOSE = [
+ALERT_FIELDS_NOT_VERBOSE = {
     "id",
     "alert_type_uuid",
     "check_id",
@@ -80,7 +80,7 @@ ALERT_FIELDS_NOT_VERBOSE = [
     "affected_entities",
     "created_time",
     "last_occurrence"
-]
+}
 
 TIMEOUT_INTERVAL = 1
 
@@ -122,17 +122,16 @@ class Client(BaseClient):
         except DemistoException as e:
             if 'Invalid filter criteria specified.' in str(e):
                 raise DemistoException(
-                    'Filter criteria given is invalid, or is not written in the correct format. Check your format is '
-                    'correct by looking in the description of filter argument in the command')
+                    '''Filter criteria given is invalid or is not written in the correct format. Use the 'filter' 
+                    argument description 'to build your filter correctly ''')
 
             if 'Unrecognized field' in str(e):
                 raise DemistoException('Filter criteria given is invalid.')
 
             if 'General error parsing FIQL expression' in str(e):
                 raise DemistoException(
-                    'Filter criteria given to command nutanix-hypervisor-vms-list is not written in the current '
-                    'format. Check the correct format by looing in the description of filter argument in the '
-                    'command.')
+                    'Filter criteria given is not written in a valid format. The correct format can be found in the '
+                    'argument description')
             raise e
 
     def fetch_incidents(self, params: Dict, last_run: Dict):
@@ -670,20 +669,13 @@ def nutanix_hypervisor_task_results_get_command(client: Client, args: Dict):
     raw_response = client.nutanix_hypervisor_task_results(task_ids_list)
     outputs = copy.deepcopy(raw_response.get('completed_tasks_info', []))
 
-    readable_task_details_output: List[Dict] = []
     for output in outputs:
         task_id = output.get('uuid')
-        progress_status = output.get('progress_status')
-        readable_task_details_output.append({'Task ID': task_id, 'Progress Status': progress_status})
         task_ids_list.remove(task_id)
 
     for uncompleted_task_id in task_ids_list:
         progress_status = 'In Progress' if task_exists(client, uncompleted_task_id) else 'Task Was Not Found'
-        readable_task_details_output.append({'Task ID': uncompleted_task_id, 'Progress Status': progress_status})
         outputs.append({'uuid': uncompleted_task_id, 'progress_status': progress_status})
-
-    readable_output = tableToMarkdown('Nutanix Hypervisor Tasks Status', readable_task_details_output,
-                                      headers=['Task ID', 'Progress Status'])
 
     add_iso_entries_to_dict(outputs)
 
@@ -692,7 +684,7 @@ def nutanix_hypervisor_task_results_get_command(client: Client, args: Dict):
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Task',
         outputs_key_field='uuid',
-        readable_output=readable_output,
+        readable_output=tableToMarkdown('Nutanix Hypervisor Tasks Status', final_outputs),
         outputs=final_outputs,
         raw_response=raw_response
     )
@@ -970,7 +962,6 @@ def main() -> None:
 
         if command == 'test-module':
             return_results(test_module_command(client, params))
-            return_results('ok')
 
         elif command == 'fetch-incidents':
             fetch_incidents_command(client, params)

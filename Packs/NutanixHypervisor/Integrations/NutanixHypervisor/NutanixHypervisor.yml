@@ -1,4 +1,4 @@
-category: Utilities
+category: IT Services
 commonfields:
   id: Nutanix Hypervisor
   version: -1
@@ -16,14 +16,6 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Username
   name: credentials
   required: true
@@ -83,6 +75,14 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Nutanix Hypervisor abstracts and isolates the VMs and their programs
   from the underlying server hardware, enabling a more efficient use of physical resources,
   simpler maintenance and operations, and reduced costs.
@@ -91,7 +91,7 @@ name: Nutanix Hypervisor
 script:
   commands:
   - arguments:
-    - description: " The filters used to retrieve hosts.. Each filter is written in
+    - description: "The filters used to retrieve hosts.. Each filter is written in
          the following way: filter_name==filter_value or filter_name!=filter_value.
          Here is a possible combination of OR (using comma ',') and AND (using semicolon
          ';') filters: storage.capacity_bytes==2;host_nic_ids!=35,host_gpus==x. Nutanix
@@ -99,8 +99,9 @@ script:
          == 2 AND host_nic_ids != 35) OR host_gpus == x. For further explanation
          about possible filters, see Nutanix documentation."
       name: filter
-    - description: Page number in the query response. Default is 1.
+    - description: Page number in the query response.
       name: page
+      defaultValue: "1"
     - defaultValue: "50"
       description: Maximum number of physical hosts to retrieve. Possible values are
         1-1000.
@@ -402,11 +403,11 @@ script:
       description: The machine type of the virtual machine.
       type: String
   - arguments:
-    - description: ID of the virtual machine to change its power status.
+    - description: "ID of the virtual machine to change its power status. Virtual machine ID is the 'uuid' field returned for by command 'nutanix-hypervisor-vms-list'"
       name: vm_uuid
       required: true
-    - description: The UUID of the host to be used to run the virtual machine if the
-        virtual machine is transitioned with 'ON' or 'POWERCYCLE'.
+    - description: "The UUID of the host to be used to run the virtual machine if the
+        virtual machine is transitioned with 'ON' or 'POWERCYCLE'. Host ID is the 'uuid' field returned for by command 'nutanix-hypervisor-hosts-list'"
       name: host_uuid
     - auto: PREDEFINED
       description: The new power state to which you want to transfer the virtual machine
@@ -438,11 +439,11 @@ script:
         the nutanix-hypervisor-task-results-get command.
       type: String
   - arguments:
-    - description: Comma-separated list of the task IDs to poll.
+    - description: "Comma-separated list of the task IDs to get results to. Task ID is the 'task_uuid' field returned for by command 'nutanix-hypervisor-vm-powerstatus-change'"
       name: task_ids
       required: true
       isArray: true
-    description: Returns all the results of the tasks from the task_ids list that are ready at the moment the Nutanix service was polled. If no task is ready, returns a timeout response.
+    description: Returns the results of given tasks. If a task is not ready, its status will be returned.
     name: nutanix-hypervisor-task-results-get
     outputs:
     - contextPath: NutanixHypervisor.Task.timed_out
@@ -578,8 +579,9 @@ script:
         type, it returns a 404 error.
       isArray: true
       name: entity_types
-    - description: Page number in the query response. Default is 1.
+    - description: Page number in the query response.
       name: page
+      defaultValue: '1'
     - description: Maximum number of physical hosts to retrieve. Possible values are
         1-1000.
       name: limit
@@ -730,7 +732,7 @@ script:
       description: Metric value details.
       type: Unknown
   - arguments:
-    - description: The ID of the alert to acknowledge.
+    - description: "The ID of the alert to acknowledge. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'"
       name: alert_id
       required: true
     description: Acknowledges the alert with the specified alert_id.
@@ -749,7 +751,7 @@ script:
     - description: The ID of the alert to resolve.
       name: alert_id
       required: true
-    description: Resolves the alert with the specified alert_id.
+    description: "Resolves the alert with the specified alert_id. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'"
     name: nutanix-hypervisor-alert-resolve
     outputs:
     - contextPath: NutanixHypervisor.ResolvedAlerts.id
