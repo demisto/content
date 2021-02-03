@@ -13,13 +13,12 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b9c27ffc-fbfa-4518-868a-5dae75d3878c
+    taskid: b221086e-e3e5-4bab-83a1-d6ae44c05eda
     type: start
     task:
-      id: b9c27ffc-fbfa-4518-868a-5dae75d3878c
+      id: b221086e-e3e5-4bab-83a1-d6ae44c05eda
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -40,10 +39,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 91a1eebe-d910-422d-88f5-0bab42ee920a
+    taskid: 36988f2e-bd88-49bd-8122-6dfd4c15a207
     type: condition
     task:
-      id: 91a1eebe-d910-422d-88f5-0bab42ee920a
+      id: 36988f2e-bd88-49bd-8122-6dfd4c15a207
       version: -1
       name: Check input
       description: Checks which command to run.
@@ -120,10 +119,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: fd177fe6-09a8-406b-83a7-1961a42aa4a9
+    taskid: dd55700f-caa2-494c-8be4-13637d6888e6
     type: playbook
     task:
-      id: fd177fe6-09a8-406b-83a7-1961a42aa4a9
+      id: dd55700f-caa2-494c-8be4-13637d6888e6
       version: -1
       name: GenericPolling
       description: |-
@@ -140,7 +139,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "11"
     scriptarguments:
       AdditionalPollingCommandArgNames:
         simple: report_id
@@ -168,7 +167,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 645
+          "y": 665
         }
       }
     note: false
@@ -178,13 +177,12 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 429d530a-1c05-4c18-8444-bf6fb3679232
+    taskid: 475f5eb1-f8a7-4956-84df-931bdc8cfb09
     type: title
     task:
-      id: 429d530a-1c05-4c18-8444-bf6fb3679232
+      id: 475f5eb1-f8a7-4956-84df-931bdc8cfb09
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -193,7 +191,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1145
+          "y": 1440
         }
       }
     note: false
@@ -203,10 +201,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 8ea60f14-0c51-46ba-87ff-e435e1446afb
+    taskid: b5f6dc85-89e7-4132-81ec-3866600f677c
     type: regular
     task:
-      id: 8ea60f14-0c51-46ba-87ff-e435e1446afb
+      id: b5f6dc85-89e7-4132-81ec-3866600f677c
       version: -1
       name: Download Report
       description: Returns the contents of a generated report.
@@ -239,7 +237,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 790
+          "y": 1210
         }
       }
     note: false
@@ -249,10 +247,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: ba286bb7-dc1b-43e6-8292-ba9bb8b2f1ab
+    taskid: 5a7a409f-1929-4c41-80e9-5588b4dbfda3
     type: regular
     task:
-      id: ba286bb7-dc1b-43e6-8292-ba9bb8b2f1ab
+      id: 5a7a409f-1929-4c41-80e9-5588b4dbfda3
       version: -1
       name: Create Sites report
       description: Generates a new report on given sites according to a template and
@@ -298,10 +296,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: b557eb65-3e13-45fb-8c7f-b32b44db2b20
+    taskid: f2522ae9-89c4-4035-872f-72bf630669ad
     type: regular
     task:
-      id: b557eb65-3e13-45fb-8c7f-b32b44db2b20
+      id: f2522ae9-89c4-4035-872f-72bf630669ad
       version: -1
       name: Create Assets report
       description: Generates a new report on given assets according to a template
@@ -347,10 +345,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: aca12254-c863-4f8a-8ff4-23eb288286e5
+    taskid: dbccdbf6-e3ec-415f-8c45-45bd7066da9d
     type: regular
     task:
-      id: aca12254-c863-4f8a-8ff4-23eb288286e5
+      id: dbccdbf6-e3ec-415f-8c45-45bd7066da9d
       version: -1
       name: Create Scan report
       description: Generates a new report for a specified scan.
@@ -393,12 +391,88 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3a3107d6-4c15-410d-81cf-2ad12ceab134
+    type: regular
+    task:
+      id: 3a3107d6-4c15-410d-81cf-2ad12ceab134
+      version: -1
+      name: Get Report Status
+      description: Returns the status of a report generation process.
+      script: '|||nexpose-get-report-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      instance_id:
+        complex:
+          root: Nexpose.Report.InstanceID
+      report_id:
+        complex:
+          root: Nexpose.Report.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 8cfd8f0a-7506-4420-8276-057d5c20228b
+    type: condition
+    task:
+      id: 8cfd8f0a-7506-4420-8276-057d5c20228b
+      version: -1
+      name: Verify Status
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Nexpose.Report.Status
+            iscontext: true
+          right:
+            value:
+              simple: complete
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1160,
+        "height": 1455,
         "width": 1230,
         "x": -160,
         "y": 50
@@ -462,6 +536,16 @@ outputs:
   type: number
 - contextPath: InfoFile.Type
   description: Type of the report file
+  type: string
+- contextPath: Nexpose.Report.ID
+  description: The identifier of the report.
+  type: string
+- contextPath: Nexpose.Report.InstanceID
+  description: The identifier of the report instance.
+  type: string
+- contextPath: Nexpose.Report.Status
+  description: 'The status of the report generation process. Valid values: "aborted",
+    "failed", "complete", "running", "unknown"'
   type: string
 fromversion: 5.0.0
 tests:
