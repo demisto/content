@@ -27,7 +27,30 @@ IP_DICTIONARY = {
     'IPv4': 4,
     'IPv6': 6
 }
-RELAT
+
+ROUTERS_HR_HEADERS = [
+    'description',
+    'id',
+    'is_proxy',
+    'license_type',
+    'name',
+    'snmp_authprotocol',
+    'snmp_priv_protocol',
+    'snmp_security_level',
+    'snmp_version',
+]
+
+MANAGED_OBJECTS_HR_HEADERS = [
+    'tags',
+    'name',
+    'match_type',
+    'match_enabled',
+    'match',
+    'id',
+    'family',
+    'autodetected'
+]
+
 ''' CLIENT CLASS '''
 
 
@@ -76,6 +99,7 @@ class NetscoutClient(BaseClient):
             },
             "alert": {
                 "data": {
+                    "id": "101", "type": "alert"
                     "id": "101", "type": "alert"
                 }
             }
@@ -229,6 +253,8 @@ def build_human_readable(data: dict):
         hr[key] = val
     del hr['attributes']
     del hr['relationships']
+    if hr.get('subobject'):
+        del hr['subobject']
     return hr
 
 
@@ -362,11 +388,11 @@ def mitigation_template_list_command(client: NetscoutClient, args: dict):
     raw_result = client.mitigation_template_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
-    hr = build_human_readable(data)
+    hr = [build_human_readable(mitigation_template) for mitigation_template in data]
     return CommandResults(outputs_prefix='NASightline.MitigationTemplate',
                           outputs_key_field='id',
                           outputs=data,
-                          readable_output=tableToMarkdown(f'Mitigation template list', hr),
+                          readable_output=tableToMarkdown(f'Mitigation template list', hr, removeNull=True),
                           raw_response=raw_result)
 
 
@@ -374,11 +400,12 @@ def router_list_command(client: NetscoutClient, args: dict):
     raw_result = client.router_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
-    hr = build_human_readable(data)
+    hr = [build_human_readable(router) for router in data]
     return CommandResults(outputs_prefix='NASightline.Router',
                           outputs_key_field='id',
                           outputs=data,
-                          readable_output=tableToMarkdown(f'Router list', hr),
+                          readable_output=tableToMarkdown(f'Router list', hr, headers=ROUTERS_HR_HEADERS,
+                                                          removeNull=True),
                           raw_response=raw_result)
 
 
@@ -386,11 +413,12 @@ def managed_object_list_command(client: NetscoutClient, args: dict):
     raw_result = client.managed_object_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
-    hr = build_human_readable(data)
+    hr = [build_human_readable(managed_object) for managed_object in data]
     return CommandResults(outputs_prefix='NASightline.ManagedObject',
                           outputs_key_field='id',
                           outputs=data,
-                          readable_output=tableToMarkdown(f'Managed object list', hr),
+                          readable_output=tableToMarkdown(f'Managed object list', hr,
+                                                          headers=MANAGED_OBJECTS_HR_HEADERS, removeNull=True),
                           raw_response=raw_result)
 
 
@@ -398,11 +426,11 @@ def tms_group_list(client: NetscoutClient, args: dict):
     raw_result = client.tms_group_list()
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
-    hr = build_human_readable(data)
+    hr = [build_human_readable(tms_group) for tms_group in data]
     return CommandResults(outputs_prefix='NASightline.TMSGroup',
                           outputs_key_field='id',
                           outputs=data,
-                          readable_output=tableToMarkdown(f'TMS group list', hr),
+                          readable_output=tableToMarkdown(f'TMS group list', hr, removeNull=True),
                           raw_response=raw_result)
 
 

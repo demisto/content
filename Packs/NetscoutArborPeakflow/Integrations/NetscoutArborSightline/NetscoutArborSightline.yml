@@ -318,8 +318,7 @@ script:
           required: true
           description: 'JSON object that specifies the attributes specific to the mitigation
           subtype. For example: {"bgp_announce": false}. For the full list of values
-          supported for each sub-type visit the product documentation:
-          <your_server_url>/api/sp/doc/v7/mitigations.html#url-/mitigations/'
+          supported for each sub-type visit the product documentation: <your_server_url>/api/sp/doc/v7/mitigations.html#url-/mitigations/'
         - name: alert_id
           description: ' ID of the alert associated with the mitigation.'
         - name: mitigation_template_id
@@ -339,6 +338,18 @@ script:
             IDs run the 'na-sightline-tms-group-list'.
       description: List all alerts, when an alert ID is given only the relevant alert
         will be fetched.
+    - name: na-sightline-mitigation-template-list
+      arguments: []
+      description: Get a list of available mitigation templates.
+    - name: na-sightline-router-list
+      arguments: []
+      description: Get a list of available routers.
+    - name: na-sightline-managed-object-list
+      arguments: []
+      description: Get a list of available managed objects.
+    - name: na-sightline-tms-group-list
+      arguments: []
+      description: Get a list of available TMS groups.
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
   isfetch: true
