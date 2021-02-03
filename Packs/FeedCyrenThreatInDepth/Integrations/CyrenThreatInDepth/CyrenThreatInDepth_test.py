@@ -9,7 +9,7 @@ import demistomock as demisto
 
 from CyrenThreatInDepth import (
     Client, fetch_indicators_command, get_indicators_command,
-    test_module_command as _test_module_command
+    test_module_command as _test_module_command, BASE_URL
 )
 
 
@@ -55,11 +55,10 @@ def fixture_clean_integration_context():
 
 
 def _create_instance(requests_mock, feed, feed_data, offset_data, offset=0, count=2):
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId={}&offset={}&count={}".format(feed, offset, count),
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId={}&offset={}&count={}".format(feed, offset, count),
                       text=feed_data)
-    requests_mock.get(base_url + "info?format=jsonl&feedId={}".format(feed), json=offset_data)
-    client = Client(feed_name=feed, base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId={}".format(feed), json=offset_data)
+    client = Client(feed_name=feed, base_url=BASE_URL, verify=False, proxy=False)
 
     def fetch_command(initial_count=0, max_indicators=2, update_context=False):
         return fetch_indicators_command(client, initial_count, max_indicators, update_context)
@@ -222,11 +221,10 @@ def test_fetch_indicators_rate_limiting(requests_mock, response_429):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10",
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10",
                       text=response_429, status_code=429)
-    requests_mock.get(base_url + "info?format=jsonl&feedId=ip_reputation", json=dict(startOffset=0, endOffset=0))
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/info?format=jsonl&feedId=ip_reputation", json=dict(startOffset=0, endOffset=0))
+    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
 
     with pytest.raises(DemistoException, match=f".*{response_429}.*"):
         fetch_indicators_command(client, 0, 10, False)
@@ -771,9 +769,8 @@ def test_test_module_server_error(requests_mock):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=500)
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=500)
+    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
 
     assert "Test failed because of: Error in API call [500] - None" in _test_module_command(client)
 
@@ -791,11 +788,10 @@ def test_test_module_invalid_token(requests_mock):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400,
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400,
                       json=dict(statusCode=400,
                                 error="unable to parse claims from token: ..."))
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
 
     assert "Test failed because of an invalid API token!" in _test_module_command(client)
 
@@ -813,9 +809,8 @@ def test_test_module_other_400(requests_mock):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400)
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=400)
+    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
 
     assert "Test failed because of: 400 Client Error:" in _test_module_command(client)
 
@@ -833,9 +828,8 @@ def test_test_module_404(requests_mock):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=404)
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", status_code=404)
+    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
 
     assert "Test failed because of an invalid API URL!" in _test_module_command(client)
 
@@ -853,9 +847,8 @@ def test_test_module_no_entries(requests_mock):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text="")
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text="")
+    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
 
     assert "Test failed because no indicators could be fetched!" in _test_module_command(client)
 
@@ -873,8 +866,7 @@ def test_test_module_ok(requests_mock, ip_reputation):
 
     """
 
-    base_url = "https://cyren.feed/"
-    requests_mock.get(base_url + "data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text=ip_reputation)
-    client = Client(feed_name="ip_reputation", base_url=base_url, verify=False, proxy=False)
+    requests_mock.get(BASE_URL + "/data?format=jsonl&feedId=ip_reputation&offset=0&count=10", text=ip_reputation)
+    client = Client(feed_name="ip_reputation", base_url=BASE_URL, verify=False, proxy=False)
 
     assert "ok" == _test_module_command(client)
