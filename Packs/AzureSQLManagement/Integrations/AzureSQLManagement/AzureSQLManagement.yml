@@ -314,8 +314,7 @@ script:
       description: Number of days to keep in the Threat Detection audit logs.
       type: Number
     - contextPath: AzureSQL.DBThreatPolicy.storageAccountAccessKey
-      description: The identifier key of the Threat Detection audit storage.
-        account.
+      description: The identifier key of the Threat Detection audit storage account.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.storageEndpoint
       description: Threat Detection audit storage account.
@@ -353,7 +352,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Set the state of the policy. Possible values: "Enable" or "Disable". When state is enabled, storage_endpoint or is_azure_monitor_target_enabled are required.'
+      description: 'Set the state of the policy. Possible values: "Enable" or "Disable". When state is enabled, storage_endpoint or is_azure_monitor_target_enabled is required.'
       isArray: false
       name: state
       predefined:
@@ -415,7 +414,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Storage endpoint. If the value for the state argument is Enabled, the value for the storage_endpoint or is_azure_monitor_target_enabled argument is required.
+      description: Storage endpoint. If the value for the state argument is enabled, the value for the storage_endpoint or is_azure_monitor_target_enabled argument is required.
       isArray: false
       name: storage_endpoint
       required: false
@@ -438,7 +437,7 @@ script:
       description: Resource type.
       type: String
     - contextPath: AzureSQL.DBAuditPolicy.isAzureMonitorTargetEnabled
-      description: Whether audit events are sent to Azure Monitor. The value is "True" (Enabled) or "False" (Disabled).
+      description: Whether audit events are sent to the Azure Monitor. The value is "True" (Enabled) or "False" (Disabled).
       type: Boolean
     - contextPath: AzureSQL.DBAuditPolicy.retentionDays
       description: Number of days to keep in the audit logs in the storage account.
@@ -514,7 +513,7 @@ script:
       secret: false
     - default: false
       description: 'Comma-separated list of alerts that are disabled. Possible values:
-        "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration",
+        "None", "Sql_Injection", "Sql_Injection_Vulnerability", "Access_Anomaly", "Data_Exfiltration", and
         "Unsafe_Action".'
       isArray: true
       name: disabled_alerts
@@ -582,7 +581,7 @@ script:
       description: Threat Detection audit storage account.
       type: String
     - contextPath: AzureSQL.DBThreatPolicy.emailAccountAdmins
-      description: Email accounts of the administrators who the alert is sent to.
+      description: Email accounts administrators who the alert is sent to.
       type: Boolean
     - contextPath: AzureSQL.DBThreatPolicy.emailAddresses
       description: List of email addresses to which the alert is sent.
