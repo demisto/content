@@ -1,4 +1,4 @@
-\from copy import copy
+from copy import copy
 
 import dateparser
 import urllib3
