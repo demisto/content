@@ -15,17 +15,17 @@ def check_key(field_value, regex=None):
 
 
 def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
-
     keys_list = args.get('key', '').split(".")
     regex = args.get('regex')
     ignore_case = argToBoolean(args.get('ignore_case', 'False'))
+
     regex_ignore_case_flag = re.IGNORECASE if ignore_case else 0
     regex = re.compile(regex, regex_ignore_case_flag) if regex else None
 
     context = dict_safe_get(demisto.context(), keys_list)
 
     data = {
-        'key': '.'.join(key),
+        'key': '.'.join(keys_list),
         'exists': False
     }
 
@@ -35,17 +35,17 @@ def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
     context_value = {
         'CheckContextKey(val.key == obj.key)': data
     }
-
     human_readable = 'The key exists.' if data['exists'] else 'The key does not exist.'
+
     return human_readable, context_value, data
 
 
 def main():
     try:
         return_outputs(*poll_field(demisto.args()))
-    except Exception as ex:
+    except Exception as err:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute CheckFieldValue script. Error: {str(ex)}')
+        return_error(f'Failed to execute CheckFieldValue script. Error: {str(err)}')
 
 
 ''' ENTRY POINT '''
