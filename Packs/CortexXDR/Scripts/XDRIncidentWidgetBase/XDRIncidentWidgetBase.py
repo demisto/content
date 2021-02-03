@@ -13,55 +13,17 @@ QUERY_TYPE_TO_KEY = {
 }
 
 
-def get_key_value(context: dict, key: str) -> []:
+def get_xdr_incidents(limit: int, to_date: str, from_date: str) -> []:
     """
-    Return the value of the key from the context dict item, if the key is not exists the function return empty array.
-    :param context: The incident context.
-    :param key: The Key inside the context to get the value from.
-    :return: List of values from this key.
-    """
-    key = key.split('.')
-    for item in key:
-        if isinstance(context, list):
-            res = []
-            for val in context:
-                res.append(val[item])
-            return res
-        elif context.get(item):
-            context = context[item]
-            continue
-        return []
-    return context
-
-
-def get_context(incident_id: str, key: str) -> list:
-    """
-    Gets incident ID and key inside the incident context and returns the value from this key.
-    :param incident_id: Cortex XDR incident ID.
-    :param key: The Key inside the context to get the value from.
-    :return: List of values from this key.
-    """
-    res = demisto.executeCommand("getContext", {'id': incident_id})
-    if isError(res):
-        return_error(f'Error occurred while trying to get context from incident {incident_id} : {get_error(res)}')
-    try:
-        context = res[0]['Contents'].get('context') or {}
-    except Exception:
-        return []
-
-    return get_key_value(context, key)
-
-
-def get_incidents_ids(limit: int, to_date: str, from_date: str) -> []:
-    """
-    Returns Cortex XDR incident ids with status Active or Pending using GetIncidentsByQuery script.
+    Returns Cortex XDR incident with status Active or Pending using GetIncidentsByQuery script.
     :param limit: The maximum number of incidents to fetch
     :param to_date: The end date by which to filter incidents.
     :param from_date: The start date by which to filter incidents.
-    :return: Cortex XDR incident ids
+    :return: Cortex XDR incident objects
     """
     get_incidents_args = {
         'query': 'status:Active or status:Pending and type:"Cortex XDR Incident"',
+        'includeContext': True,
         'limit': limit,
         'toDate': to_date,
         'fromDate': from_date
@@ -71,8 +33,7 @@ def get_incidents_ids(limit: int, to_date: str, from_date: str) -> []:
     if isError(incidents_res):
         return_error(f'Error occurred while trying to get incidents: {get_error(incidents_res)}')
 
-    incidents = json.loads(incidents_res[0].get('Contents'))
-    return [inc.get('id') for inc in incidents]
+    return json.loads(incidents_res[0].get('Contents'))
 
 
 def update_result_dict(context: list, res_dict: dict, query_type: str):
@@ -118,13 +79,15 @@ def main():
             limit = int(args.get('limit'))
         except ValueError:
             limit = 3000
-
-        incidents_ids = get_incidents_ids(limit, to_date, from_date)
+        incidents = get_xdr_incidents(limit, to_date, from_date)
 
         res_dict = {}  # type:dict
-        for incident_id in incidents_ids:
-            context = get_context(incident_id, QUERY_TYPE_TO_KEY[query_type])
-            update_result_dict(context, res_dict, query_type)
+        for incident in incidents:
+            context = incident.get('context')
+
+            val = demisto.dt(context, QUERY_TYPE_TO_KEY[query_type])
+            if val:
+                update_result_dict(val, res_dict, query_type)
 
         if res_type == 'Top10':
             res = sorted(res_dict.items(), key=lambda x: x[1], reverse=True)[:10]
