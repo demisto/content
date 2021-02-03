@@ -60,4 +60,4 @@ example: `!cyjax-indicator-sighting value=176.117.5.126`
 ### !cyjax-unset-indicators-last-fetch-date
 ***
 Unset the indicators feed last fetch date. Should only be used if user needs to use `re-fetch` button 
-and want to fetch old indicators from Cyjax. Next feed will use date set in first_fetch (default is last 3 days)
+and wants to fetch old indicators from Cyjax. Next feed will use date set in first_fetch (default is last 3 days)
