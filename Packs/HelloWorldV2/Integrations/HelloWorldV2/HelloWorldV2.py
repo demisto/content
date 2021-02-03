@@ -9,7 +9,7 @@ your integration follows the Code Conventions and passes the Linting phase.
 Developer Documentation: https://xsoar.pan.dev/docs/welcome
 Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
 Linting: https://xsoar.pan.dev/docs/integrations/linting
-New line - should be added to the final version.
+
 When building a Cortex XSOAR integration that is reusable, a lot of effort
 must be placed in the design. We recommend to fill a Design Document template,
 that allows you to capture Use Cases, Requirements and Inputs/Outputs.
@@ -367,7 +367,7 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     # so the null check here as XSOAR will always check it before your code is called.
     # Although it's not mandatory to check, you are welcome to do so.
 
-    name = args.get('name', None)
+    name = args.get('name')
     if not name:
         raise ValueError('name not specified')
 
