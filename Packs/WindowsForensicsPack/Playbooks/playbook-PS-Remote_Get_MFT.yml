@@ -50,31 +50,12 @@ tasks:
       - "3"
       "yes":
       - "4"
+    scriptarguments:
+      brandname:
+        simple: PowerShell Remoting
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: PowerShell Remoting
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -103,8 +84,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": 1940
+          "x": 570,
+          "y": 2150
         }
       }
     note: false
@@ -205,14 +186,17 @@ tasks:
       '#none#':
       - "11"
     scriptarguments:
-      check_hash: {}
+      check_hash:
+        simple: "true"
       host:
         simple: ${inputs.Host}
+      host_prefix:
+        simple: ${inputs.AddHostNameToFile}
       ip: {}
       path:
         simple: ${inputs.FilePath}
       zip_file:
-        simple: "true"
+        simple: ${inputs.ZipMft}
     separatecontext: false
     view: |-
       {
@@ -310,7 +294,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "14"
+      - "15"
       "yes":
       - "12"
     separatecontext: false
@@ -353,7 +337,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
@@ -412,16 +396,47 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 1770
+          "y": 1980
         }
       }
     note: false
-    evidencedata:
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d7db312d-7719-42d6-8819-d4fa97fb6e37
+    type: regular
+    task:
+      id: d7db312d-7719-42d6-8819-d4fa97fb6e37
+      version: -1
+      name: Mark and tag MFT
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      desc:
+        simple: A MFT file acquired from a host
       description:
         simple: A MFT file acquired from a host
       tags:
         simple: MFT
-      customfields: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1805
+        }
+      }
+    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -431,8 +446,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1925,
-        "width": 1100,
+        "height": 2135,
+        "width": 1130,
         "x": -180,
         "y": 80
       }
@@ -443,37 +458,35 @@ inputs:
   value: {}
   required: false
   description: The host name for which to export the registry file. For example testpc01
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: FilePath
   value:
-    complex:
-      root: inputs.Host
-      transformers:
-      - operator: concat
-        args:
-          prefix:
-            value:
-              simple: c:\
-          suffix:
-            value:
-              simple: .mft
+    simple: c:\mft.mft
   required: false
-  description: The path on the hostname on which to create the registry file. The
-    default path will be c:\<The host name>.mft
-  playbookInputQuery:
+  description: |-
+    The path on the hostname on which to create the MFT file. The default path will be c:\mft.mft
+    In case you use the AddHostNameToFile input as true the file downloaded to XSOAR will be comprised of the hostname.
+  playbookInputQuery: null
 - key: VolumeForMft
   value:
     simple: c
   required: false
   description: |
     Specify the volume for which to create the MFT, The default is c.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZipMft
   value:
     simple: "true"
   required: false
   description: Specify true to zip the MFT file before sending it to XSOAR.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: AddHostNameToFile
+  value:
+    simple: "true"
+  required: false
+  description: Specify true for the downloaded file name to be comprised of the host
+    name or false  to keep the file name as configured in the FilePath argument.
+  playbookInputQuery: null
 outputs:
 - contextPath: MftDetails
   description: The MFT file details.

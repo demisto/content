@@ -43,40 +43,23 @@ tasks:
       id: 3d412b04-16a0-4b5f-8b0f-08eb4e46478c
       version: -1
       name: Is PowerShell Remoting enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
       "yes":
       - "4"
+    scriptarguments:
+      brandname:
+        simple: PowerShell Remoting
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: PowerShell Remoting
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -106,7 +89,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1950
+          "y": 2130
         }
       }
     note: false
@@ -236,10 +219,10 @@ tasks:
       version: -1
       name: PS-Remote download file
       description: Download a file from the remote endpoint.
-      script: PowerShell Remoting|||ps-remote-download-file
+      script: '|||ps-remote-download-file'
       type: regular
       iscommand: true
-      brand: PowerShell Remoting
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -248,6 +231,8 @@ tasks:
         simple: "true"
       host:
         simple: ${inputs.Host}
+      host_prefix:
+        simple: ${inputs.AddHostNameToFile}
       ip: {}
       path:
         simple: ${inputs.EtlPath}
@@ -281,7 +266,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "12"
+      - "13"
     scriptarguments:
       EntryID:
         complex:
@@ -465,7 +450,46 @@ tasks:
       {
         "position": {
           "x": -160,
-          "y": 1765
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 55f220bf-71cd-4297-870d-0b269d16646c
+    type: regular
+    task:
+      id: 55f220bf-71cd-4297-870d-0b269d16646c
+      version: -1
+      name: Mark and tag PCAP
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      desc:
+        simple: A PCAP file acquired from a host
+      description:
+        simple: A PCAP file acquired from a host
+      entryIDs: {}
+      occurred: {}
+      tags:
+        simple: PCAP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 1775
         }
       }
     note: false
@@ -478,7 +502,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1915,
+        "height": 2095,
         "width": 1250,
         "x": -420,
         "y": 100
@@ -490,50 +514,48 @@ inputs:
   value: {}
   required: false
   description: The host name for which to create the ETL file. For example testpc01
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EtlSizeLimit
   value:
     simple: "10"
   required: false
   description: The maximum file size for the ETL. Once the file has reached this size
     the capute will stop. For example 10MB. The default size is 10MB
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EtlPath
   value:
-    complex:
-      root: inputs.Host
-      transformers:
-      - operator: concat
-        args:
-          prefix:
-            value:
-              simple: c:\
-          suffix:
-            value:
-              simple: .etl
+    simple: c:\etl.etl
   required: false
-  description: The path on the hostname on which to create the etl file. The default
-    path will be c:\<The host name>.etl
-  playbookInputQuery:
+  description: |-
+    The path on the hostname on which to create the ETL file. The default path will be c:\etl.etl
+    In case you use the AddHostNameToFile input as true the file downloaded to XSOAR will be comprised of the hostname.
+  playbookInputQuery: null
 - key: EtlFilter
   value: {}
   required: false
   description: The filter to apply when creating the ETL file. For example IPv4.Address=1.1.1.1
     to capture traffic just from the 1.1.1.1 IP address. If no filter is specified
-    all traffic will be recorded. More example can be found here, https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj129382(v=ws.11)#using-filters-to-limit-etl-trace-file-details
-  playbookInputQuery:
+    all traffic will be recorded.
+  playbookInputQuery: null
 - key: ETlTimeToRecord
   value:
     simple: "60"
   required: false
   description: The time to record in seconds.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: ZipEtl
   value:
     simple: "true"
   required: false
   description: Specify true to zip the ETL file before sending it to XSOAR.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: AddHostNameToFile
+  value:
+    simple: "true"
+  required: false
+  description: Specify true for the downloaded file name to be comprised of the host
+    name or false  to keep the file name as configured in the FilePath argument.
+  playbookInputQuery: null
 outputs:
 - contextPath: PcapDetails
   description: The PCAP file details.

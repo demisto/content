@@ -42,40 +42,23 @@ tasks:
       id: eee3be21-cdfb-49e3-8a6b-00ad537bada1
       version: -1
       name: Is PowerShell Remoting enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
       "yes":
       - "4"
+    scriptarguments:
+      brandname:
+        simple: PowerShell Remoting
+    results:
+    - brandInstances
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.brand
-            iscontext: true
-          right:
-            value:
-              simple: PowerShell Remoting
-      - - operator: isEqualString
-          left:
-            value:
-              simple: modules.state
-            iscontext: true
-          right:
-            value:
-              simple: active
     view: |-
       {
         "position": {
@@ -105,7 +88,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2030
+          "y": 2210
         }
       }
     note: false
@@ -209,6 +192,8 @@ tasks:
         simple: "true"
       host:
         simple: ${inputs.Host}
+      host_prefix:
+        simple: ${inputs.AddHostNameToFile}
       ip: {}
       path:
         simple: ${inputs.FilePath}
@@ -311,7 +296,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "14"
+      - "15"
       "yes":
       - "12"
     separatecontext: false
@@ -354,7 +339,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "15"
     scriptarguments:
       entryID:
         complex:
@@ -424,16 +409,49 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 1860
+          "y": 2040
         }
       }
     note: false
-    evidencedata:
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: dfd2bb85-11ef-472b-89e3-b02a2a9e8875
+    type: regular
+    task:
+      id: dfd2bb85-11ef-472b-89e3-b02a2a9e8875
+      version: -1
+      name: Mark and tag registry
+      description: |
+        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      desc:
+        simple: A registry file acquired from a host
       description:
         simple: A registry file acquired from a host
+      entryIDs: {}
+      occurred: {}
       tags:
         simple: Registry
-      customfields: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1880
+        }
+      }
+    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -443,7 +461,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2005,
+        "height": 2185,
         "width": 1020,
         "x": -190,
         "y": 90
@@ -452,41 +470,38 @@ view: |-
   }
 inputs:
 - key: Host
-  value:
-    simple: EC2AMAZ-UIPUP0R
+  value: {}
   required: false
   description: The host name for which to export the registry file. For example testpc01
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: RegistryPath
   value:
     simple: all
   required: false
   description: The registry hive/path to export, if no value is specified the entire
     registry will be exported.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: FilePath
   value:
-    complex:
-      root: inputs.Host
-      transformers:
-      - operator: concat
-        args:
-          prefix:
-            value:
-              simple: c:\
-          suffix:
-            value:
-              simple: .reg
+    simple: c:\registry.reg
   required: false
-  description: The path on the hostname on which to create the registry file. The
-    default path will be c:\<The host name>.reg
-  playbookInputQuery:
+  description: |-
+    The path on the hostname on which to create the registry file. The default path will be c:\registry.reg
+    In case you use the AddHostNameToFile input as true the file downloaded to XSOAR will be comprised of the hostname.
+  playbookInputQuery: null
 - key: ZipRegistry
   value:
     simple: "true"
   required: false
   description: Specify true to zip the reg file before sending it to XSOAR.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: AddHostNameToFile
+  value:
+    simple: "true"
+  required: false
+  description: Specify true for the downloaded file name to be comprised of the host
+    name or false  to keep the file name as configured in the FilePath argument.
+  playbookInputQuery: null
 outputs:
 - contextPath: RegistryDetails
   description: The Registry file details.
