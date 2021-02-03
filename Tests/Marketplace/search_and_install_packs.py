@@ -265,7 +265,9 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
     """
     logging.info(f"Test pack path is: {test_pack_path}")
     logging.info(f"Pack IDs to install are: {pack_ids_to_install}")
+
     local_packs = glob.glob(f"{test_pack_path}/*.zip")
+
     for local_pack in local_packs:
         if any(pack_id in local_pack for pack_id in pack_ids_to_install):
             logging.info(f'Installing the following pack: {local_pack}')
