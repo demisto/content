@@ -255,12 +255,6 @@ import urllib3
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
-
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
-
 ''' CLIENT CLASS '''
 
 
@@ -302,7 +296,7 @@ class Client(BaseClient):
         :rtype: ``str``
         """
 
-        return f'Hello {name}'
+        return f'Hello {name}!'
 
 
 ''' COMMAND FUNCTIONS '''
