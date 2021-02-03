@@ -582,13 +582,13 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
 
 
 def get_remote_data_command(client: Client, args: dict, params: dict) -> Union[List[Dict[str, Any]], str]:
-    case_id = str(args.get('id', ''))
-    last_update = args.get('lastUpdate')
-    _ = dateparser.parse(last_update).timestamp()  # lastUpdate is not used in the hive, dis regarding for now.
-    entries = list()
-    case = client.get_case(case_id)
+    parsed_args = GetRemoteDateArgs(args)
+
+    parsed_entries = []
+    case = client.get_case(parsed_args.remote_incident_id)
+
     if not case:
-        entries.append({
+        parsed_entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
@@ -598,11 +598,9 @@ def get_remote_data_command(client: Client, args: dict, params: dict) -> Union[L
             },
             'ContentsFormat': EntryFormat.JSON
         })
-        return [{}] + entries  # TODO
-
-    # Handle closing the case
-    if case['status'] != "Open":
-        entries.append({
+        case = {'caseId': parsed_args.remote_incident_id}  # can not be empty dict so extract_for_local will be called
+    elif case['status'] != "Open":  # Handle closing the case
+        parsed_entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
@@ -611,7 +609,8 @@ def get_remote_data_command(client: Client, args: dict, params: dict) -> Union[L
             },
             'ContentsFormat': EntryFormat.JSON
         })
-    return [case] + entries  # TODO
+
+    return GetRemoteDataResponse(case, parsed_entries)
 
 
 def test_module(client: Client):
