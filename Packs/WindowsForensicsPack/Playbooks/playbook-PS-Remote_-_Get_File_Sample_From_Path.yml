@@ -390,14 +390,12 @@ view: |-
   }
 inputs:
 - key: Host
-  value:
-    simple: EC2AMAZ-UIPUP0R
+  value: {}
   required: false
   description: Hostname of the machine on which the file is located. For example testpc01
   playbookInputQuery:
 - key: FilePath
-  value:
-    simple: C:\test.txt.txt
+  value: {}
   required: false
   description: "The path on the hostname from which to retrieve the file. \nFor example\
     \ c:\\tmp\\test.txt\nIn case you use the AddHostNameToFile input as true the file\
