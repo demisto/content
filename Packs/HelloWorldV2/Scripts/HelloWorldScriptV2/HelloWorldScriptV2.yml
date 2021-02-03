@@ -3,11 +3,11 @@ args:
   required: true
 comment: Hello World Script v2.
 commonfields:
-  id: HelloWorldAutomationV2
+  id: HelloWorldScriptV2
   version: -1
 dockerimage: demisto/python3:3.9.1.15759
 enabled: true
-name: HelloWorldAutomationV2
+name: HelloWorldScriptV2
 runas: DBotWeakRole
 runonce: false
 script: ''

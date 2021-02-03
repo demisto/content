@@ -1,0 +1,91 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This is a playbook which will handle the alerts coming from the Hello
+  World service
+id: Handle Hello World Alert v2
+inputs:
+- description: Alert ID to retrieve details for. By default retrieves from the HelloWorld
+    ID custom field in the HelloWorld incident type
+  key: AlertID
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.helloworldid}
+name: Handle Hello World Alert v2
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 55b6fa84-3501-43e2-872b-570b688fd312
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 55b6fa84-3501-43e2-872b-570b688fd312
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert_id:
+        simple: ${inputs.AlertID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieve alert extra data by ID.
+      id: 67728417-114e-4247-8ca8-23adbb17a43b
+      iscommand: true
+      name: Get alert details
+      script: '|||helloworld-get-alert-new'
+      type: regular
+      version: -1
+    taskid: 67728417-114e-4247-8ca8-23adbb17a43b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
