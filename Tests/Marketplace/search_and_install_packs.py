@@ -265,7 +265,9 @@ def install_packs_from_artifacts(client: demisto_client, host: str, test_pack_pa
     """
     logging.info(f"Test pack path is: {test_pack_path}")
     logging.info(f"Pack IDs to install are: {pack_ids_to_install}")
+
     local_packs = glob.glob(f"{test_pack_path}/*.zip")
+
     for local_pack in local_packs:
         if any(pack_id in local_pack for pack_id in pack_ids_to_install):
             logging.info(f'Installing the following pack: {local_pack}')
@@ -474,8 +476,11 @@ def install_all_content_packs(client: demisto_client, host: str, server_version:
                 pack_metadata = json.load(json_file)
                 pack_version = pack_metadata.get('currentVersion')
                 server_min_version = pack_metadata.get('serverMinVersion', '6.0.0')
-            # Check if the server version is greater than the minimum server version required for this pack:
-            if 'Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version):
+                hidden = pack_metadata.get('hidden', False)
+            # Check if the server version is greater than the minimum server version required for this pack or if the
+            # pack is hidden (deprecated):
+            if ('Master' in server_version or LooseVersion(server_version) >= LooseVersion(server_min_version)) and \
+                    not hidden:
                 all_packs.append(get_pack_installation_request_data(pack_id, pack_version))
     return install_packs(client, host, all_packs)
 

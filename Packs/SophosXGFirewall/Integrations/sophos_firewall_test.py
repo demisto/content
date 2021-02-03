@@ -662,28 +662,6 @@ def test_sophos_firewall_services_delete_command(requests_mock):
     assert result.outputs.get('Name') == 'forunitest'
 
 
-def test_sophos_firewall_app_policy_list_command(requests_mock):
-    """
-    Scenario: List all app policies.
-    Given:
-     - User has provided valid credentials.
-    When:
-     - sophos_firewall_app_policy_list is called.
-    Then:
-     - Ensure number of items is correct.
-     - Ensure outputs prefix is correct.
-     - Ensure a sample value from the API matches what is generated in the context.
-    """
-    from sophos_firewall import Client, sophos_firewall_app_policy_list_command
-    mock_response = load_mock_response('app_policy_list.xml')
-    requests_mock.get(REQUEST_URL, text=mock_response)
-    client = Client(base_url=BASE_URL, verify=False, auth=('uname', 'passwd'), proxy=False)
-    result = sophos_firewall_app_policy_list_command(client, 0, 10)
-    assert result.outputs_prefix == 'SophosFirewall.ApplicationFilterPolicy'
-    assert len(result.outputs) == 10
-    assert result.outputs[0].get('Name') == 'Allow All'
-
-
 def test_sophos_firewall_app_policy_get_command(requests_mock):
     """
     Scenario: Get a single app policy.
