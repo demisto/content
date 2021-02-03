@@ -38,12 +38,14 @@ class BucketUploadFlow(object):
     PREPARE_CONTENT_FOR_TESTING = "prepare_content_for_testing"
     UPLOAD_PACKS_TO_MARKETPLACE_STORAGE = "upload_packs_to_marketplace_storage"
     SUCCESSFUL_PACKS = "successful_packs"
+    SUCCESSFUL_PRIVATE_PACKS = "successful_private_packs"
     FAILED_PACKS = "failed_packs"
     STATUS = "status"
     AGGREGATED = "aggregated"
     BUCKET_UPLOAD_BUILD_TITLE = "Upload Packs To Marketplace Storage"
     BUCKET_UPLOAD_TYPE = "bucket_upload_flow"
     UPLOAD_JOB_NAME = "Upload Packs To Marketplace"
+    LATEST_VERSION = 'latest_version'
 
 
 class GCPConfig(object):
@@ -77,6 +79,7 @@ class Metadata(object):
     """
     DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
     XSOAR_SUPPORT = "xsoar"
+    PARTNER_SUPPORT = "partner"
     XSOAR_SUPPORT_URL = "https://www.paloaltonetworks.com/cortex"  # disable-secrets-detection
     XSOAR_AUTHOR = "Cortex XSOAR"
     SERVER_DEFAULT_MIN_VERSION = "6.0.0"
@@ -146,6 +149,8 @@ class PackStatus(enum.Enum):
     FAILED_RELEASE_NOTES = "Failed to generate changelog.json"
     FAILED_DETECTING_MODIFIED_FILES = "Failed in detecting modified files of the pack"
     FAILED_SEARCHING_PACK_IN_INDEX = "Failed in searching pack folder in index"
+    FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
+                          " which should be encrypted, seems not to be encrypted."
 
 
 class Pack(object):
@@ -193,6 +198,8 @@ class Pack(object):
         self._bucket_url = None  # URL of where the pack was uploaded.
         self._aggregated = False  # weather the pack's rn was aggregated or not.
         self._aggregation_str = ""  # the aggregation string msg when the pack versions are aggregated
+        self._create_date = None
+        self._update_date = None
 
     @property
     def name(self):
@@ -215,6 +222,10 @@ class Pack(object):
             return self._latest_version
         else:
             return self._latest_version
+
+    @latest_version.setter
+    def latest_version(self, latest_version):
+        self._latest_version = latest_version
 
     @property
     def status(self):
@@ -357,6 +368,18 @@ class Pack(object):
         """ str: pack aggregated release notes or not.
         """
         return self._aggregation_str
+
+    @property
+    def create_date(self):
+        """ str: pack create date.
+        """
+        return self._create_date
+
+    @property
+    def update_date(self):
+        """ str: pack update date.
+        """
+        return self._update_date
 
     def _get_latest_version(self):
         """ Return latest semantic version of the pack.
@@ -512,9 +535,9 @@ class Pack(object):
     def _get_certification(support_type, certification=None):
         """ Returns pack certification.
 
-        In case support type is xsoar, CERTIFIED is returned.
-        In case support is not xsoar but pack_metadata has certification field, certification value will be taken from
-        pack_metadata defined value.
+        In case support type is xsoar or partner, CERTIFIED is returned.
+        In case support is not xsoar or partner but pack_metadata has certification field, certification value will be
+        taken from pack_metadata defined value.
         Otherwise empty certification value (empty string) will be returned
 
         Args:
@@ -524,15 +547,14 @@ class Pack(object):
         Returns:
             str: certification value
         """
-        if support_type == Metadata.XSOAR_SUPPORT:
+        if support_type in [Metadata.XSOAR_SUPPORT, Metadata.PARTNER_SUPPORT]:
             return Metadata.CERTIFIED
-        elif support_type != Metadata.XSOAR_SUPPORT and certification:
+        elif certification:
             return certification
         else:
             return ""
 
-    @staticmethod
-    def _parse_pack_metadata(user_metadata, pack_content_items, pack_id, integration_images, author_image,
+    def _parse_pack_metadata(self, user_metadata, pack_content_items, pack_id, integration_images, author_image,
                              dependencies_data, server_min_version, build_number, commit_hash, downloads_count,
                              is_feed_pack=False):
         """ Parses pack metadata according to issue #19786 and #20091. Part of field may change over the time.
@@ -558,8 +580,8 @@ class Pack(object):
         pack_metadata['name'] = user_metadata.get('name') or pack_id
         pack_metadata['id'] = pack_id
         pack_metadata['description'] = user_metadata.get('description') or pack_id
-        pack_metadata['created'] = user_metadata.get('created', datetime.utcnow().strftime(Metadata.DATE_FORMAT))
-        pack_metadata['updated'] = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+        pack_metadata['created'] = self._create_date
+        pack_metadata['updated'] = self._update_date
         pack_metadata['legacy'] = user_metadata.get('legacy', True)
         pack_metadata['support'] = user_metadata.get('support') or Metadata.XSOAR_SUPPORT
         pack_metadata['supportDetails'] = Pack._create_support_section(support_type=pack_metadata['support'],
@@ -576,6 +598,7 @@ class Pack(object):
             pack_metadata['premium'] = True
             pack_metadata['vendorId'] = user_metadata.get('vendorId')
             pack_metadata['vendorName'] = user_metadata.get('vendorName')
+            pack_metadata['contentCommitHash'] = user_metadata.get('contentCommitHash', "")
             if user_metadata.get('previewOnly'):
                 pack_metadata['previewOnly'] = True
         pack_metadata['serverMinVersion'] = user_metadata.get('serverMinVersion') or server_min_version
@@ -647,15 +670,17 @@ class Pack(object):
 
         return downloads_count
 
-    @staticmethod
-    def _create_changelog_entry(release_notes, version_display_name, build_number, new_version=True):
+    def _create_changelog_entry(self, release_notes, version_display_name, build_number, pack_was_modified=False,
+                                new_version=True, initial_release=False):
         """ Creates dictionary entry for changelog.
 
         Args:
             release_notes (str): release notes md.
             version_display_name (str): display name version.
             build_number (srt): current build number.
+            pack_was_modified (bool): whether the pack was modified.
             new_version (bool): whether the entry is new or not. If not new, R letter will be appended to build number.
+            initial_release (bool): whether the entry is an initial release or not.
 
         Returns:
             dict: release notes entry of changelog
@@ -665,10 +690,18 @@ class Pack(object):
             return {'releaseNotes': release_notes,
                     'displayName': f'{version_display_name} - {build_number}',
                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
-        else:
+
+        elif initial_release:
+            return {'releaseNotes': release_notes,
+                    'displayName': f'{version_display_name} - {build_number}',
+                    'released': self._create_date}
+
+        elif pack_was_modified:
             return {'releaseNotes': release_notes,
                     'displayName': f'{version_display_name} - R{build_number}',
                     'released': datetime.utcnow().strftime(Metadata.DATE_FORMAT)}
+
+        return {}
 
     def remove_unwanted_files(self, delete_test_playbooks=True):
         """ Iterates over pack folder and removes hidden files and unwanted folders.
@@ -735,22 +768,100 @@ class Pack(object):
         finally:
             return task_status
 
-    def encrypt_pack(self, zip_pack_path, pack_name, encryption_key, extract_destination_path):
+    @staticmethod
+    def encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
+                     private_artifacts_dir, secondary_encryption_key):
+        """ decrypt the pack in order to see that the pack was encrypted in the first place.
+
+        Args:
+            zip_pack_path (str): The path to the encrypted zip pack.
+            pack_name (str): The name of the pack that should be encrypted.
+            encryption_key (str): The key which we can decrypt the pack with.
+            extract_destination_path (str): The path in which the pack resides.
+            private_artifacts_dir (str): The chosen name for the private artifacts diriectory.
+            secondary_encryption_key (str) : A second key which we can decrypt the pack with.
+        """
         try:
+            current_working_dir = os.getcwd()
             shutil.copy('./encryptor', os.path.join(extract_destination_path, 'encryptor'))
             os.chmod(os.path.join(extract_destination_path, 'encryptor'), stat.S_IXOTH)
-            current_working_dir = os.getcwd()
             os.chdir(extract_destination_path)
-            output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+
             subprocess.call('chmod +x ./encryptor', shell=True)
-            full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "' \
-                           f'{encryption_key}"'
+
+            output_file = zip_pack_path.replace("_not_encrypted.zip", ".zip")
+            full_command = f'./encryptor ./{pack_name}_not_encrypted.zip {output_file} "{encryption_key}"'
             subprocess.call(full_command, shell=True)
+
+            secondary_encryption_key_output_file = zip_pack_path.replace("_not_encrypted.zip", ".enc2.zip")
+            full_command_with_secondary_encryption = f'./encryptor ./{pack_name}_not_encrypted.zip ' \
+                f'{secondary_encryption_key_output_file} "{secondary_encryption_key}"'
+            subprocess.call(full_command_with_secondary_encryption, shell=True)
+
+            new_artefacts = os.path.join(current_working_dir, private_artifacts_dir)
+            if os.path.exists(new_artefacts):
+                shutil.rmtree(new_artefacts)
+            os.mkdir(path=new_artefacts)
+            shutil.copy(zip_pack_path, os.path.join(new_artefacts, f'{pack_name}_not_encrypted.zip'))
+            shutil.copy(output_file, os.path.join(new_artefacts, f'{pack_name}.zip'))
+            shutil.copy(secondary_encryption_key_output_file, os.path.join(new_artefacts, f'{pack_name}.enc2.zip'))
             os.chdir(current_working_dir)
-        except subprocess.CalledProcessError as error:
+        except (subprocess.CalledProcessError, shutil.Error) as error:
             print(f"Error while trying to encrypt pack. {error}")
 
-    def zip_pack(self, extract_destination_path="", pack_name="", encryption_key=""):
+    def decrypt_pack(self, encrypted_zip_pack_path, decryption_key):
+        """ decrypt the pack in order to see that the pack was encrypted in the first place.
+
+        Args:
+            encrypted_zip_pack_path (str): The path for the encrypted zip pack.
+            decryption_key (str): The key which we can decrypt the pack with.
+
+        Returns:
+            bool: whether the decryption succeeded.
+        """
+        try:
+            current_working_dir = os.getcwd()
+            extract_destination_path = f'{current_working_dir}/decrypt_pack_dir'
+            os.mkdir(extract_destination_path)
+
+            shutil.copy('./decryptor', os.path.join(extract_destination_path, 'decryptor'))
+            secondary_encrypted_pack_path = os.path.join(extract_destination_path, 'encrypted_zip_pack.zip')
+            shutil.copy(encrypted_zip_pack_path, secondary_encrypted_pack_path)
+            os.chmod(os.path.join(extract_destination_path, 'decryptor'), stat.S_IXOTH)
+            output_decrypt_file_path = f"{extract_destination_path}/decrypt_pack.zip"
+            os.chdir(extract_destination_path)
+
+            subprocess.call('chmod +x ./decryptor', shell=True)
+            full_command = f'./decryptor {secondary_encrypted_pack_path} {output_decrypt_file_path} "{decryption_key}"'
+            process = subprocess.Popen(full_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            stdout, stderr = process.communicate()
+            shutil.rmtree(extract_destination_path)
+            os.chdir(current_working_dir)
+            if stdout:
+                logging.info(str(stdout))
+            if stderr:
+                logging.error(f"Error: Premium pack {self. _pack_name} should be encrypted, but isn't.")
+                return False
+            return True
+
+        except subprocess.CalledProcessError as error:
+            logging.exception(f"Error while trying to decrypt pack. {error}")
+            return False
+
+    def is_pack_encrypted(self, encrypted_zip_pack_path, decryption_key):
+        """ Checks if the pack is encrypted by trying to decrypt it.
+
+        Args:
+            encrypted_zip_pack_path (str): The path for the encrypted zip pack.
+            decryption_key (str): The key which we can decrypt the pack with.
+
+        Returns:
+            bool: whether the pack is encrypted.
+        """
+        return self.decrypt_pack(encrypted_zip_pack_path, decryption_key)
+
+    def zip_pack(self, extract_destination_path="", pack_name="", encryption_key="",
+                 private_artifacts_dir='private_artifacts', secondary_encryption_key=""):
         """ Zips pack folder.
 
         Returns:
@@ -769,7 +880,8 @@ class Pack(object):
                         pack_zip.write(filename=full_file_path, arcname=relative_file_path)
 
             if encryption_key:
-                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path)
+                self.encrypt_pack(zip_pack_path, pack_name, encryption_key, extract_destination_path,
+                                  private_artifacts_dir, secondary_encryption_key)
             task_status = True
             logging.success(f"Finished zipping {self._pack_name} pack.")
         except Exception:
@@ -868,13 +980,25 @@ class Pack(object):
             with open(zip_pack_path, "rb") as pack_zip:
                 blob.upload_from_file(pack_zip)
             if private_content:
+                secondary_encryption_key_pack_name = f"{self._pack_name}.enc2.zip"
+                secondary_encryption_key_bucket_path = os.path.join(version_pack_path,
+                                                                    secondary_encryption_key_pack_name)
+
                 #  In some cases the path given is actually a zip.
                 if pack_artifacts_path.endswith('content_packs.zip'):
                     _pack_artifacts_path = pack_artifacts_path.replace('/content_packs.zip', '')
                 else:
                     _pack_artifacts_path = pack_artifacts_path
-                print(f"Copying {zip_pack_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
-                shutil.copy(zip_pack_path, f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
+
+                secondary_encryption_key_artifacts_path = zip_pack_path.replace(f'{self._pack_name}', f'{self._pack_name}.enc2')
+
+                blob = storage_bucket.blob(secondary_encryption_key_bucket_path)
+                blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+                with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
+                    blob.upload_from_file(pack_zip)
+
+                print(f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/packs/{self._pack_name}.zip")
+                shutil.copy(secondary_encryption_key_artifacts_path, f'{_pack_artifacts_path}/packs/{self._pack_name}.zip')
 
             self.public_storage_path = blob.public_url
             logging.success(f"Uploaded {self._pack_name} pack to {pack_full_path} path.")
@@ -885,7 +1009,7 @@ class Pack(object):
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status, True, None
 
-    def copy_and_upload_to_storage(self, production_bucket, build_bucket, latest_version, successful_packs_dict):
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
         The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
@@ -893,7 +1017,6 @@ class Pack(object):
         Args:
             production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
-            latest_version (str): the pack's latest version.
             successful_packs_dict (dict): the dict of all packs were uploaded in prepare content step
 
         Returns:
@@ -902,6 +1025,15 @@ class Pack(object):
              otherwise returned False.
 
         """
+        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
+        if pack_not_uploaded_in_prepare_content:
+            logging.warning("The following packs already exist at storage.")
+            logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
+            return True, True
+
+        latest_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
+        self._latest_version = latest_version
+
         build_version_pack_path = os.path.join(GCPConfig.BUILD_BASE_PATH, self._pack_name, latest_version)
 
         # Verifying that the latest version of the pack has been uploaded to the build bucket
@@ -910,12 +1042,6 @@ class Pack(object):
             logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
                           f"path {build_version_pack_path}.")
             return False, False
-
-        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
-        if pack_not_uploaded_in_prepare_content:
-            logging.warning("The following packs already exist at storage.")
-            logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
-            return True, True
 
         # We upload the pack zip object taken from the build bucket into the production bucket
         prod_version_pack_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, self._pack_name, latest_version)
@@ -1007,7 +1133,7 @@ class Pack(object):
         if len(pack_versions_dict) > 1:
             # In case that there is more than 1 new release notes file, wrap all release notes together for one
             # changelog entry
-            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]"\
+            aggregation_str = f"[{', '.join(lv.vstring for lv in found_versions if lv > changelog_latest_rn_version)}]" \
                               f" => {latest_release_notes}"
             logging.info(f"Aggregating ReleaseNotes versions: {aggregation_str}")
             release_notes_lines = aggregate_release_notes_for_marketplace(pack_versions_dict)
@@ -1042,13 +1168,15 @@ class Pack(object):
             f'current branch version: {latest_release_notes}\n' \
             'Please Merge from master and rebuild'
 
-    def prepare_release_notes(self, index_folder_path, build_number):
+    def prepare_release_notes(self, index_folder_path, build_number, pack_was_modified=False):
         """
         Handles the creation and update of the changelog.json files.
 
         Args:
             index_folder_path (str): Path to the unzipped index json.
             build_number (str): circleCI build number.
+            pack_was_modified (bool): whether the pack modified or not.
+
         Returns:
             bool: whether the operation succeeded.
             bool: whether running build has not updated pack release notes.
@@ -1078,19 +1206,21 @@ class Pack(object):
                     else:
                         if latest_release_notes in changelog:
                             logging.info(f"Found existing release notes for version: {latest_release_notes}")
-                            version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
+                            version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
+                                                                             pack_was_modified=pack_was_modified,
                                                                              new_version=False)
 
                         else:
                             logging.info(f"Created new release notes for version: {latest_release_notes}")
-                            version_changelog = Pack._create_changelog_entry(release_notes=release_notes_lines,
+                            version_changelog = self._create_changelog_entry(release_notes=release_notes_lines,
                                                                              version_display_name=latest_release_notes,
                                                                              build_number=build_number,
                                                                              new_version=True)
 
-                        changelog[latest_release_notes] = version_changelog
+                        if version_changelog:
+                            changelog[latest_release_notes] = version_changelog
                 else:  # will enter only on initial version and release notes folder still was not created
                     if len(changelog.keys()) > 1 or Pack.PACK_INITIAL_VERSION not in changelog:
                         logging.warning(
@@ -1098,25 +1228,32 @@ class Pack(object):
                         task_status, not_updated_build = True, True
                         return task_status, not_updated_build
 
-                    changelog[Pack.PACK_INITIAL_VERSION] = Pack._create_changelog_entry(
+                    changelog[Pack.PACK_INITIAL_VERSION] = self._create_changelog_entry(
                         release_notes=self.description,
                         version_display_name=Pack.PACK_INITIAL_VERSION,
                         build_number=build_number,
+                        initial_release=True,
                         new_version=False)
 
                     logging.info(f"Found existing release notes for version: {Pack.PACK_INITIAL_VERSION} "
                                  f"in the {self._pack_name} pack.")
 
             elif self._current_version == Pack.PACK_INITIAL_VERSION:
-                version_changelog = Pack._create_changelog_entry(
+                version_changelog = self._create_changelog_entry(
                     release_notes=self.description,
                     version_display_name=Pack.PACK_INITIAL_VERSION,
                     build_number=build_number,
-                    new_version=True
+                    new_version=True,
+                    initial_release=True
                 )
                 changelog = {
                     Pack.PACK_INITIAL_VERSION: version_changelog
                 }
+            elif self._hidden:
+                logging.warning(f"Pack {self._pack_name} is deprecated. Skipping release notes handling.")
+                task_status = True
+                not_updated_build = True
+                return task_status, not_updated_build
             else:
                 logging.error(f"No release notes found for: {self._pack_name}")
                 task_status = False
@@ -1161,7 +1298,8 @@ class Pack(object):
                 return task_status
         else:
             task_status = False
-            logging.error(f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
+            logging.error(
+                f"{self._pack_name} index changelog file is missing in build bucket path: {build_changelog_index_path}")
 
         return task_status and self.is_changelog_exists()
 
@@ -1361,7 +1499,7 @@ class Pack(object):
             return task_status, user_metadata
 
     def format_metadata(self, user_metadata, pack_content_items, integration_images, author_image, index_folder_path,
-                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df):
+                        packs_dependencies_mapping, build_number, commit_hash, packs_statistic_df, pack_was_modified):
         """ Re-formats metadata according to marketplace metadata format defined in issue #19786 and writes back
         the result.
 
@@ -1400,7 +1538,9 @@ class Pack(object):
             if packs_statistic_df is not None:
                 self.downloads_count = self._get_downloads_count(packs_statistic_df)
 
-            formatted_metadata = Pack._parse_pack_metadata(user_metadata=user_metadata,
+            self._create_date = self._get_pack_creation_date(index_folder_path)
+            self._update_date = self._get_pack_update_date(index_folder_path, pack_was_modified)
+            formatted_metadata = self._parse_pack_metadata(user_metadata=user_metadata,
                                                            pack_content_items=pack_content_items,
                                                            pack_id=self._pack_name,
                                                            integration_images=integration_images,
@@ -1420,6 +1560,55 @@ class Pack(object):
             logging.exception(f"Failed in formatting {self._pack_name} pack metadata.")
         finally:
             return task_status
+
+    def _get_changelog(self, index_folder_path):
+        """ Gets the pack changelog data.
+        Args:
+            index_folder_path (str): downloaded index folder directory path.
+        Returns:
+            dict: Get the changelog from downloaded index
+        """
+        changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
+        changelog = {}
+        if os.path.exists(changelog_index_path):
+            with open(changelog_index_path, "r") as changelog_file:
+                changelog = json.load(changelog_file)
+        return changelog
+
+    def _get_pack_creation_date(self, index_folder_path):
+        """ Gets the pack created date.
+        Args:
+            index_folder_path (str): downloaded index folder directory path.
+        Returns:
+            datetime: Pack created date.
+        """
+        earliest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+        changelog = self._get_changelog(index_folder_path)
+
+        if changelog:
+            packs_earliest_release_notes = min(LooseVersion(ver) for ver in changelog)
+            initial_changelog_version = changelog.get(packs_earliest_release_notes.vstring, {})
+            earliest_changelog_released_date = initial_changelog_version.get('released')
+
+        return earliest_changelog_released_date
+
+    def _get_pack_update_date(self, index_folder_path, pack_was_modified):
+        """ Gets the pack update date.
+        Args:
+            index_folder_path (str): downloaded index folder directory path.
+            pack_was_modified (bool): whether the pack was modified or not.
+        Returns:
+            datetime: Pack update date.
+        """
+        latest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+        changelog = self._get_changelog(index_folder_path)
+
+        if changelog and not pack_was_modified:
+            packs_latest_release_notes = max(LooseVersion(ver) for ver in changelog)
+            latest_changelog_version = changelog.get(packs_latest_release_notes.vstring, {})
+            latest_changelog_released_date = latest_changelog_version.get('released')
+
+        return latest_changelog_released_date
 
     def set_pack_dependencies(self, user_metadata, packs_dependencies_mapping):
         pack_dependencies = packs_dependencies_mapping.get(self._pack_name, {}).get('dependencies', {})
@@ -1817,7 +2006,7 @@ class Pack(object):
 # HELPER FUNCTIONS
 
 
-def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) -> Tuple[dict, dict]:
+def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) -> Tuple[dict, dict, dict]:
     """ Loads the packs_results.json file to get the successful and failed packs dicts
 
     Args:
@@ -1828,18 +2017,21 @@ def get_successful_and_failed_packs(packs_results_file_path: str, stage: str) ->
     Returns:
         dict: The successful packs dict
         dict: The failed packs dict
+        dict : The successful private packs dict
 
     """
     if os.path.exists(packs_results_file_path):
         packs_results_file = load_json(packs_results_file_path)
         successful_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
         failed_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.FAILED_PACKS, {})
-        return successful_packs_dict, failed_packs_dict
-    return {}, {}
+        successful_private_packs_dict = packs_results_file.get(stage, {}).get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS,
+                                                                              {})
+        return successful_packs_dict, failed_packs_dict, successful_private_packs_dict
+    return {}, {}, {}
 
 
 def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
-                                                      failed_packs: list):
+                                                      failed_packs: list, updated_private_packs: list):
     """ Write the successful and failed packs to the correct section in the packs_results.json file
 
     Args:
@@ -1848,6 +2040,7 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         successful_packs (list): The list of all successful packs
         failed_packs (list): The list of all failed packs
+        updated_private_packs (list) : The list of all private packs that were updated
 
     """
     packs_results = load_json(packs_results_file_path)
@@ -1872,12 +2065,20 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
                 pack.name: {
                     BucketUploadFlow.STATUS: pack.status,
                     BucketUploadFlow.AGGREGATED: pack.aggregation_str if pack.aggregated and pack.aggregation_str
-                    else "False"
+                    else "False",
+                    BucketUploadFlow.LATEST_VERSION: pack.latest_version
                 } for pack in successful_packs
             }
         }
         packs_results[stage].update(successful_packs_dict)
         logging.debug(f"Successful packs {successful_packs_dict}")
+
+    if updated_private_packs:
+        successful_private_packs_dict = {
+            BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS: {pack_name: {} for pack_name in updated_private_packs}
+        }
+        packs_results[stage].update(successful_private_packs_dict)
+        logging.debug(f"Successful private packs {successful_private_packs_dict}")
 
     if packs_results:
         json_write(packs_results_file_path, packs_results)

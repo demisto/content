@@ -37,42 +37,6 @@
        },
        {
         "endCol": 2,
-        "fieldId": "isdevicejailbroken",
-        "height": 22,
-        "id": "77897930-2e58-11eb-b078-43650932fa7f",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "isdevicequarantined",
-        "height": 22,
-        "id": "78c9e870-2e58-11eb-b078-43650932fa7f",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "compliancestate",
-        "height": 22,
-        "id": "22ed0310-2e58-11eb-b078-43650932fa7f",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "securitystate",
-        "height": 22,
-        "id": "7fc74e60-2e58-11eb-b078-43650932fa7f",
-        "index": 2,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "dbotsource",
         "height": 22,
         "id": "2ec78700-2e58-11eb-b078-43650932fa7f",
@@ -383,126 +347,6 @@
        },
        {
         "endCol": 2,
-        "fieldId": "deviceuuid",
-        "height": 53,
-        "id": "1637fda0-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "deviceudid",
-        "height": 53,
-        "id": "9190e010-2e59-11eb-b078-43650932fa7f",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "deviceserialnumber",
-        "height": 53,
-        "id": "67928f30-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "devicealtserialnumber",
-        "height": 53,
-        "id": "59f59ac0-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "lastcheckintimestamp",
-        "height": 53,
-        "id": "7a8cce20-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "deviceregistrationtimestamp",
-        "height": 53,
-        "id": "65fd9750-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "deviceregistrationstatus",
-        "height": 53,
-        "id": "64576160-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "imsi",
-        "height": 53,
-        "id": "6ff21d30-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "imei",
-        "height": 53,
-        "id": "6e62caa0-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "platform",
-        "height": 53,
-        "id": "7e585510-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "dropEffect": "move",
-        "endCol": 2,
-        "fieldId": "deviceowner",
-        "height": 53,
-        "id": "62ae9360-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "listId": "caseinfoid-89e30b50-2e58-11eb-b078-43650932fa7f",
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "manufacturer",
-        "height": 53,
-        "id": "7bf055c0-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
         "fieldId": "mobileironmanufacturer",
         "height": 53,
         "id": "45951e90-4521-11eb-97b3-a3577eafb040",
@@ -638,24 +482,6 @@
       "hideName": false,
       "i": "caseinfoid-1af6c8c0-2e59-11eb-b078-43650932fa7f",
       "items": [
-       {
-        "endCol": 2,
-        "fieldId": "useremailaddress",
-        "height": 53,
-        "id": "814da040-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
-       {
-        "endCol": 2,
-        "fieldId": "deviceuserid",
-        "height": 53,
-        "id": "6a78bf30-2e58-11eb-b078-43650932fa7f",
-        "index": 0,
-        "sectionItemType": "field",
-        "startCol": 0
-       },
        {
         "endCol": 2,
         "fieldId": "username",
