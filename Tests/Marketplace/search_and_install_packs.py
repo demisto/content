@@ -469,6 +469,7 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     # Add deprecated packs to IGNORED_FILES list:
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if is_pack_hidden(pack_id):
+            logging.debug(f'Skipping installation of hidden pack "{pack_id}"')
             IGNORED_FILES.append(pack_id)
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
