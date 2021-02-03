@@ -707,8 +707,7 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == 'get-remote-data':
-            demisto.results(get_remote_data_command(client, args, params))
-
+        return_results(get_remote_data_command(client, args, params))
         elif command == 'update-remote-system':
             demisto.results(update_remote_system_command(client, args, params))
 
