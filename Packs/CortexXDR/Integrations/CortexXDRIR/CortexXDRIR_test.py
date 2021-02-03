@@ -1750,12 +1750,12 @@ def test_create_account_context_with_data():
     assert account_context == [{'Username': 'ec2-user', 'Domain': 'test.domain'}]
 
 
-def test_create_account_context_no_data():
+def test_create_account_context_no_domain():
     """
     Given:
         - get_endpoints command
     When
-        -  the endpoint is missing a domain or a user - which means an account context can't be created.
+        -  the endpoint is missing a domain - which means an account context can't be created.
     Then
         - verify the account context is an empty list and the method is finished with no errors.
     """
@@ -1772,7 +1772,7 @@ def test_create_account_context_user_is_none():
     Given:
         - get_endpoints command
     When
-        -  the endpoint is missing a domain or a user - which means an account context can't be created.
+        -  the user value is None - which means an account context can't be created.
     Then
         - verify the account context is an empty list and the method is finished with no errors.
     """
