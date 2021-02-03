@@ -9,7 +9,7 @@ from CommonServerUserPython import *
 
 
 import tempfile
-from typing import Optional, List, Dict, Union, Text, Iterator, Any, Callable, Hashable, Set, Iterable
+from typing import Optional, List, Dict, Union, Text, Iterator, Any, Iterable, Tuple
 import uuid
 
 from xmltodict import parse
@@ -316,7 +316,7 @@ def get_indicators_results(indicators):
     )
 
 
-def batch_time(start_at: datetime, offset: int, days: int) -> Iterable[Set[str, str]]:
+def batch_time(start_at: datetime, offset: int, days: int) -> Iterable[Tuple[str, str]]:
     i = 0
     hours = days * 24
     while i * offset < hours:
