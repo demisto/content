@@ -4,8 +4,8 @@
  "fromVersion": "6.0.0",
  "vcShouldIgnore": false,
  "locked": false,
- "name": "Hive",
- "prevName": "Hive",
+ "name": "TheHive",
+ "prevName": "TheHive",
  "color": "#FB8C00",
  "hours": 0,
  "days": 0,
@@ -19,5 +19,5 @@
  "autorun": false,
  "disabled": false,
  "reputationCalc": 0,
- "layout": "2772b108-f1f6-43ad-829e-d3621f08f5ef"
+ "layout": "TheHive layout (custom)"
 }

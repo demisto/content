@@ -56,7 +56,7 @@
        },
        {
         "endCol": 4,
-        "fieldId": "hivetasks",
+        "fieldId": "thehivetasks",
         "height": 53,
         "id": "f236b980-c536-11ea-ad4d-2d20f6373c92",
         "index": 2,
@@ -93,7 +93,7 @@
        },
        {
         "endCol": 2,
-        "fieldId": "tlp",
+        "fieldId": "thehivecasetlp",
         "height": 22,
         "id": "c46e1900-c78c-11ea-80a0-21f79fbeba0f",
         "index": 1,
@@ -125,7 +125,7 @@
        {
         "dropEffect": "move",
         "endCol": 2,
-        "fieldId": "casepap",
+        "fieldId": "thehivecasepap",
         "height": 22,
         "id": "d02fa870-cc47-11ea-bdb9-5527704e87b7",
         "index": 3,
@@ -247,7 +247,7 @@
        },
        {
         "endCol": 2,
-        "fieldId": "casesummary",
+        "fieldId": "thehivecasesummary  ",
         "height": 44,
         "id": "05e4ac00-cb61-11ea-bd56-e1bd9c9fbbdb",
         "index": 2,
@@ -595,8 +595,8 @@
   ]
  },
  "group": "incident",
- "id": "2772b108-f1f6-43ad-829e-d3621f08f5ef",
- "name": "Hive layout (custom)",
+ "id": "TheHive layout (custom)",
+ "name": "TheHive layout (custom)",
  "system": false,
  "version": -1,
  "fromVersion": "6.0.0",
