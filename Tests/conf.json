@@ -2459,7 +2459,7 @@
             "integrations": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
             "fromversion": "5.0.0",
-            "memory_threshold": 75
+            "memory_threshold": 90
         },
         {
             "integrations": "AWS - EC2",
@@ -3459,18 +3459,10 @@
         "Microsoft Graph Device Management": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
         "AWS - CloudWatchLogs": "Issue 20958",
-        "AWS - AccessAnalyzer": "Issue 24926",
-        "AWS - ACM": "Issue 24926",
         "AWS - Athena - Beta": "Issue 24926",
         "AWS - CloudTrail": "Issue 24926",
-        "AWS - EC2": "Issue 24926",
-        "AWS - GuardDuty": "Issue 24926",
-        "AWS - IAM": "Issue 24926",
         "AWS - Lambda": "Issue 24926",
-        "AWS - Route53": "Issue 24926",
-        "AWS - S3": "Issue 24926",
-        "AWS - SQS": "Issue 24926",
-        "Amazon DynamoDB": "Issue 24926",
+        "AWS - S3": "uploads and downloads files",
         "AWS Sagemaker": "Issue 24926",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
@@ -3497,6 +3489,9 @@
         "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [
+        "AWS - EC2",
+        "Amazon DynamoDB",
+        "AWS - ACM",
         "Cryptocurrency",
         "SNDBOX",
         "Whois",
