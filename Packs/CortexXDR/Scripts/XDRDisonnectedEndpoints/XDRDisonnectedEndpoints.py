@@ -7,8 +7,8 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         args = demisto.args()
-        last_seen_gte = args.get('from')
-        last_seen_lte = args.get('to')
+        last_seen_gte = args.get('fromDate')
+        last_seen_lte = args.get('toDate')
         limit = args.get('limit', '100')
 
         get_endpoints_args = {'limit': limit}

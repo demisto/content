@@ -7,13 +7,12 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         args = demisto.args()
-        last_seen_gte = args.get('from')
-        last_seen_lte = args.get('to')
+        last_seen_gte = args.get('fromDate')
+        last_seen_lte = args.get('toDate')
         limit = args.get('limit', '100')
 
         get_endpoints_args = {'limit': limit}
 
-        get_endpoints_args = {}
         if last_seen_gte:
             get_endpoints_args['last_seen_gte'] = last_seen_gte
         if last_seen_lte and last_seen_lte != '0001-01-01T00:00:00Z':

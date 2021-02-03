@@ -88,8 +88,8 @@ def main():
         limit = int(args.get('limit'))
         res_type = args.get('reultType')
         query_type = args.get('queryType')
-        to_date = args.get('to')
-        from_date = args.get('from')
+        to_date = args.get('toDate')
+        from_date = args.get('fromDate')
 
         incidents_ids = get_incidents_ids(limit, to_date, from_date)
 
