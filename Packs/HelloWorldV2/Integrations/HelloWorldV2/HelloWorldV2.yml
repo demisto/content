@@ -42,25 +42,25 @@ script:
     name: helloworld-get-alert-new
     outputs:
     - contextPath: HelloWorld.Alert.alert_id
-      description: Alert ID.
+      description: New Alert ID.
       type: String
     - contextPath: HelloWorld.Alert.created
-      description: Alert created time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
+      description: New alert created time. Format is ISO8601 (i.e. '2020-04-30T10:35:00.000Z').
       type: Date
     - contextPath: HelloWorld.Alert.description
-      description: Alert description.
+      description: New alert description.
       type: String
     - contextPath: HelloWorld.Alert.device_id
-      description: ID of the device involved in the alert.
+      description: ID of the device involved in the new alert.
       type: String
     - contextPath: HelloWorld.Alert.device_ip
-      description: IP Address of the device involved in the alert.
+      description: IP Address of the device involved in the new alert.
       type: String
     - contextPath: HelloWorld.Alert.location
-      description: Location of the device involved in the alert.
+      description: Location of the device involved in the new alert.
       type: String
     - contextPath: HelloWorld.Alert.user
-      description: User involved in the alert.
+      description: User involved in the new alert.
       type: String
   dockerimage: demisto/python3:3.9.1.15759
   runonce: false
