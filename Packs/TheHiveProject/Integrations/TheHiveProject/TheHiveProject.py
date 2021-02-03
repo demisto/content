@@ -610,7 +610,7 @@ def get_remote_data_command(client: Client, args: dict, params: dict) -> Union[L
             'ContentsFormat': EntryFormat.JSON
         })
 
-    return GetRemoteDataResponse(case, parsed_entries)
+    return GetRemoteDataResponse(case, parsed_entries)  # mypy: ignore
 
 
 def test_module(client: Client):

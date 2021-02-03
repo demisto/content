@@ -3,9 +3,9 @@ commonfields:
   id: TheHive Project
   version: -1
 configuration:
-  - additionalinfo: Ensure to include the port number with the URL
+  - additionalinfo: Ensure to include the port number with the URL (e.g. http://IP_OF_VM:9000)
     defaultvalue: http://IP_OF_VM:9000
-    display: Host (e.g. http://IP_OF_VM:9000)
+    display: Host
     name: url
     required: true
     type: 0
