@@ -58,11 +58,11 @@ parameters:
 references:
   environment: &environment
     environment:
-      CONTENT_VERSION: "21.1.1"
+      CONTENT_VERSION: "21.2.0"
       SERVER_VERSION: "6.0.0"
       # A flag for the demisto_client to not cache it's last response in order to avoid memory leaks
       DONT_CACHE_LAST_RESPONSE: "true"
-      GIT_SHA1: "062422af3a16fdeca23c8b29a37f607cee84ebfe" # guardrails-disable-line disable-secrets-detection
+      GIT_SHA1: "90555972b8b17a52a909b97cf99939560fdc939b" # guardrails-disable-line disable-secrets-detection
       NON_AMI_RUN: << pipeline.parameters.non_ami_run >>
       ARTIFACT_BUILD_NUM: << pipeline.parameters.artifact_build_num >>
       SERVER_BRANCH_NAME: << pipeline.parameters.server_branch_name >>
@@ -341,7 +341,7 @@ references:
         # Download private ID set
         gsutil cp gs://marketplace-dist/content/private_id_set.json $CIRCLE_ARTIFACTS/unified_id_set.json
         echo "successfully downloaded private ID set"
-        gcloud auth revoke --all
+        gcloud auth revoke --all &> /dev/null
         rm $GCS_PATH
 
         # Merge public and private ID sets
@@ -1318,8 +1318,8 @@ workflows:
   bucket_upload:
     triggers:
       - schedule:
-          # should trigger every day at 10 AM & 10 PM UTC (12:00 PM & 00:00 AM Israel Time)
-          cron: "0 10,22 * * *"
+          # should trigger every day at 9 AM & 9 PM UTC (11:00 PM & 11:00 AM Israel Time)
+          cron: "0 9,21 * * *"
           filters:
             branches:
               only:

@@ -3,6 +3,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Teams Management",
+            "playbookID": "Microsoft Teams Management - Test"
+        },
+        {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
@@ -2455,7 +2459,7 @@
             "integrations": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
             "fromversion": "5.0.0",
-            "memory_threshold": 75
+            "memory_threshold": 90
         },
         {
             "integrations": "AWS - EC2",
@@ -3254,7 +3258,10 @@
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
         "JoeSecurityTestDetonation": "Issue 25650",
         "JoeSecurityTestPlaybook": "Issue 25649",
-        "Tenable.io Scan Test": "Issue 26728"
+        "Tenable.io Scan Test": "Issue 26728",
+        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
+        "PAN-OS DAG Configuration Test": "Issue 19205",
+        "palo_alto_firewall_test_pb": "Issue 27501"
     },
     "skipped_integrations": {
 
@@ -3305,7 +3312,7 @@
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
-        "Dell Secureworks": "Instance locally installed on @liorblob PC",
+        "Dell Secureworks": "No instance",
         "Netskope": "instance is down",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
@@ -3355,9 +3362,7 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774",
-        "CrowdStrike Falcon Intel v2": "License issues #32473",
-        "CrowdStrikeMalquery": "License issues #32473"
+        "AttackIQFireDrill": "License issues #29774"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3454,18 +3459,10 @@
         "Microsoft Graph Device Management": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
         "AWS - CloudWatchLogs": "Issue 20958",
-        "AWS - AccessAnalyzer": "Issue 24926",
-        "AWS - ACM": "Issue 24926",
         "AWS - Athena - Beta": "Issue 24926",
         "AWS - CloudTrail": "Issue 24926",
-        "AWS - EC2": "Issue 24926",
-        "AWS - GuardDuty": "Issue 24926",
-        "AWS - IAM": "Issue 24926",
         "AWS - Lambda": "Issue 24926",
-        "AWS - Route53": "Issue 24926",
-        "AWS - S3": "Issue 24926",
-        "AWS - SQS": "Issue 24926",
-        "Amazon DynamoDB": "Issue 24926",
+        "AWS - S3": "uploads and downloads files",
         "AWS Sagemaker": "Issue 24926",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
@@ -3492,6 +3489,9 @@
         "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [
+        "AWS - EC2",
+        "Amazon DynamoDB",
+        "AWS - ACM",
         "Cryptocurrency",
         "SNDBOX",
         "Whois",
