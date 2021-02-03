@@ -71,7 +71,7 @@ script:
       description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
@@ -146,7 +146,7 @@ script:
       description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
