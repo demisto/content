@@ -1,0 +1,118 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: CrowdStrike Indicator Feed
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- display: Crowdstrike API client ID
+  name: client_id
+  required: true
+  type: 4
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+  defaultvalue: Good
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: GREEN
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- defaultvalue: indicatorType
+  display: ''
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- display: Crowdstrike API client secret
+  hidden: false
+  name: client_secret
+  required: true
+  type: 4
+description: 'CrowdStrike Falcon Intel Indicator Feed'
+display: CrowdStrike Indicator Feed
+name: CrowdStrike Indicator Feed
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The maximum number of indicators to return. Default is 10.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The index of the first indicator to fetch.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    description: Gets indicators from Crowdstrike Falcon Intel Feed.
+    name: get-indicators
+  feed: true
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.8.6.14516
+fromversion: 5.0.0
+tests:
+- No tests
