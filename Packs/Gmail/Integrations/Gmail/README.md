@@ -59,7 +59,7 @@ In order to revoke/fetch a user role, you need an Immutable Google Apps ID param
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | adminEmail | Email of user with admin privileges \(the Password refers to the Service Account private key\) | True |
+    | adminEmail | Email of user with admin privileges \(the Password refers to the content of the Service Account file\) | True |
     | gappsID | Immutable Google Apps Id -  Only the Cxxxxxxxx, section is needed| False |
     | query | Events query \(e.g. "from:example@demisto.com"\) The query language follows the Gmail query specification example: "from:someuser@example.com rfc822msgid:<somemsgid@example.com> is:unread". For more information, read the [Gmail Query Language documentation](https://support.google.com/mail/answer/7190?hl=en). | False |
     | queryUserKey | Events user key \(e.g. example@demisto.com\) Use this to specify the email account to search for messages. By default, the integration uses the email address specified in the admin instance. | False |
