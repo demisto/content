@@ -449,6 +449,15 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     production_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
     logging.debug(f"Installing all content packs for nightly flow in server {host}")
 
+    # Add deprecated packs to IGNORED_FILES list:
+    for pack_id in os.listdir(PACKS_FULL_PATH):
+        metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILE)
+        with open(metadata_path, 'r') as json_file:
+            pack_metadata = json.load(json_file)
+            hidden = pack_metadata.get('hidden', False)
+            if hidden:
+                IGNORED_FILES.append(pack_id)
+
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES:
             pack_version = get_latest_version_from_bucket(pack_id, production_bucket)
