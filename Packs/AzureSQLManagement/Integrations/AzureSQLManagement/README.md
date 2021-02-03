@@ -1,4 +1,6 @@
-Microsoft Azure SQL Database is a managed cloud database provided as part of Microsoft Azure.
+Microsoft Azure SQL Management Integration manages the Auditing and Threat Policies for Azure SQL.
+
+> <i>Note:</i> The integration is in ***beta*** as it uses a preview version of the Azure SQL Database API. The stable Azure SQL Database API version does not contain all required endpoints used in some of the integration commands.
 
 ## Configure Azure SQL Management on Cortex XSOAR
 

@@ -27,8 +27,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Microsoft Azure SQL Database is a managed cloud database provided as
-  part of Microsoft Azure.
+description: Microsoft Azure SQL Management Integration manages the Auditing and Threat Policies for Azure SQL.
 display: Azure SQL Management (Beta)
 name: Azure SQL Management
 script:
@@ -610,3 +609,4 @@ script:
 tests:
 - Azure SQL - Test
 fromversion: 5.0.0
+beta: true
