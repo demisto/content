@@ -7,7 +7,7 @@ inputs:
   playbookInputQuery: null
   required: true
   value: {}
-- description: The regex to check the field for. By default the regex contains .+,
+id: Context Polling - Generic
     which matches anything other than None.
   key: value
   playbookInputQuery: null
