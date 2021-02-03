@@ -11,5 +11,3 @@ What does this pack do?
 -methods for working with objects Users: create, update, search, delete
 
 Fetch updated data from secret for usage in owner automate process.
-
-_For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/access-investigation---generic)_
