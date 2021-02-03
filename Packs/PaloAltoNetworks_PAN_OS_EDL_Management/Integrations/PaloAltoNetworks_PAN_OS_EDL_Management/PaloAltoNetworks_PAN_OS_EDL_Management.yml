@@ -7,7 +7,7 @@ configuration:
   name: hostname
   required: true
   type: 0
-- display: server port
+- display: Server port
   name: port
   required: false
   type: 0
@@ -324,7 +324,7 @@ script:
     description: Updates a remote file with the contents of an internal list.
     execution: false
     name: pan-os-edl-update-external-file
-  dockerimage: demisto/openssh:1.0.0.305
+  dockerimage: demisto/openssh:1.0.0.12410
   isfetch: false
   longRunning: false
   longRunningPort: false

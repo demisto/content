@@ -31,14 +31,14 @@ script:
       name: id
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1'
       description: Page number to retrieve. Default is 1.
       isArray: false
       name: page_number
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: Page size. Default is 50.
       isArray: false
@@ -114,14 +114,14 @@ script:
       name: inventory_id
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1'
       description: Page number to retrieve. Default is 1.
       isArray: false
       name: page
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: Page size. Default is 50.
       isArray: false
@@ -200,7 +200,7 @@ script:
       name: description
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 'True'
       description: Whether this host will be online and available for running jobs. Default is "True".
       isArray: false
@@ -282,14 +282,14 @@ script:
       name: inventory_id
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1'
       description: Page number to retrieve. Default is 1.
       isArray: false
       name: page
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: Page size. Default is 50.
       isArray: false
@@ -395,14 +395,14 @@ script:
       name: id
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1'
       description: Page number to retrieve. Default is 1.
       isArray: false
       name: page
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: Page size. Default is 50.
       isArray: false
@@ -584,7 +584,7 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: all
       description: 'The hosts to relaunch the job. Can be all the hosts or only the ones where the job failed. Possible values are: "all" and "failed". Default is "all".'
       isArray: false
@@ -817,7 +817,7 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'True'
       description: 'Whether to print the output. Possible values are: "True" and "False". Default is "True".'
       isArray: false
@@ -965,14 +965,14 @@ script:
       name: id
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '1'
       description: The page number to retrieve. Default is 1.
       isArray: false
       name: page
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: Page size. Default is 50.
       isArray: false
@@ -1352,7 +1352,7 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'True'
       description: 'Prints the ad hoc command output. Possible values are: "True" and "False". Default is "True".'
       isArray: false
