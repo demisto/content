@@ -1441,7 +1441,7 @@ script:
         the current incident, and should be used for debugging purposes.
       execution: false
       name: get-remote-data
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   isfetch: true
   ismappable: true
   isremotesyncin: true

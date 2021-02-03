@@ -572,23 +572,19 @@ def get_mapping_fields_command(client: Client, args: dict, params: dict) -> Dict
 
 
 def update_remote_system_command(client: Client, args: dict, params: dict) -> str:
-    data: dict = args.get('data', {})
-    delta: dict = args.get('delta', {})
-    changes = {k: v for k, v in delta.items() if k in data.keys()}
-    entries = args.get('entries')  # TODO
-    incident_changed = args.get('incidentChanged')
-    case_id = str(args.get('remoteId'))
-    status = args.get('status')  # TODO
-    if incident_changed:
+    parsed_args = UpdateRemoteSystemArgs(args)
+
+    changes = {k: v for k, v in delta.items() if k in parsed_args.data.keys()}
+    if parsed_args.remote_incident_id:
         # Apply the updates
-        client.update_case(case_id=case_id, updates=changes)
+        client.update_case(case_id=parsed_args.remote_incident_id, updates=changes)
     return case_id
 
 
 def get_remote_data_command(client: Client, args: dict, params: dict) -> Union[List[Dict[str, Any]], str]:
     case_id = str(args.get('id', ''))
     last_update = args.get('lastUpdate')
-    last_update_timestamp = dateparser.parse(last_update).timestamp()  # TODO
+    _ = dateparser.parse(last_update).timestamp()  # lastUpdate is not used in the hive, dis regarding for now.
     entries = list()
     case = client.get_case(case_id)
     if not case:
