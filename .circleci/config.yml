@@ -968,7 +968,7 @@ jobs:
       - when:
           condition:
             equal:
-              - ipload-fix-dates-new
+              - master
               - << pipeline.git.branch >>
           steps:
             - run:
@@ -1249,7 +1249,7 @@ workflows:
           filters:
             branches:
               only:
-                - ipload-fix-dates-new
+                - master
           requires:
             - Setup Environment
       - Force Upload Packs To Marketplace:
@@ -1257,7 +1257,7 @@ workflows:
           filters:
             branches:
               only:
-                - ipload-fix-dates-new
+                - master
           requires:
             - Create Instances
 
