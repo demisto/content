@@ -2185,7 +2185,7 @@ def convert_type(items: List, conversion_map: Dict[str, Any]):
             if key in item:
                 try:
                     item[key] = convert_to(item[key])
-                except TypeError:
+                except (TypeError, ValueError):
                     demisto.error(f'could not convert key {key} to type {convert_to}. value: {item[key]}')
 
     return items

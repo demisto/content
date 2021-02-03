@@ -1784,3 +1784,58 @@ def test_create_account_context_user_is_none():
     account_context = create_account_context(endpoints_list)
 
     assert account_context == []
+
+
+class TestConvertType:
+    @staticmethod
+    def test_sanity():
+        from CortexXDRIR import convert_type
+        items = [
+            {'key1': 1, 'key2': 2},
+            {'key1': 3, 'key2': 4},
+        ]
+
+        expected = [
+            {'key1': '1', 'key2': 2},
+            {'key1': '3', 'key2': 4},
+        ]
+        assert expected == convert_type(items, {'key1': str})
+
+    @staticmethod
+    def test_missing_key():
+        from CortexXDRIR import convert_type
+        items = [
+            {'key1': 1, 'key2': 2},
+            {'key1': 3, 'key2': 4},
+        ]
+        assert items == convert_type(items, {'key3': str})
+
+    @staticmethod
+    def test_cant_convert_ignore_value_error(capfd):
+        from CortexXDRIR import convert_type
+        items = [
+            {'key1': '', 'key2': 2},
+            {'key1': '3', 'key2': 4},
+        ]
+
+        expected = [
+            {'key1': '', 'key2': 2},
+            {'key1': 3, 'key2': 4},
+        ]
+        with capfd.disabled():
+            assert expected == convert_type(items, {'key1': int})
+
+    @staticmethod
+    def test_cant_convert_ignore_type_error(capfd):
+        from CortexXDRIR import convert_type
+        items = [
+            {'key1': '', 'key2': 2},
+            {'key1': 3, 'key2': 4},
+        ]
+
+        expected = [
+            {'key1': [], 'key2': 2},
+            {'key1': 3, 'key2': 4},
+        ]
+        with capfd.disabled():
+            assert expected == convert_type(items, {'key1': list})
