@@ -10,7 +10,7 @@
     "categories": [
         "Authenticaton"
     ],
-    "tags": [],
+    "tags": [Thycotic, PAM, Secret Server],
     "useCases": [],
     "keywords": [],
     "githubUser": [
