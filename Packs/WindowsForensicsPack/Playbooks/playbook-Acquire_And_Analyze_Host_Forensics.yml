@@ -1,8 +1,8 @@
 id: Acquire And Analyze Host Forensics
 version: -1
 name: Acquire And Analyze Host Forensics
-description: This playbook allows both the gathering of forensic data from a host
-  and the analysis of the acquired data by using the relevant forensics automations.
+description: This playbook enables gathering forensic data from a host
+  and analyzing the acquired data by using the relevant forensics automations.
 starttaskid: "0"
 tasks:
   "0":
@@ -41,10 +41,9 @@ tasks:
       version: -1
       name: PS-Remote Acquire Host Forensics
       description: This playbook allows the user to gather multiple forensic data
-        from a windows endpoint. Including network traffic, MFT (Master File Table)
-        or registry export by using the PS remote automation which enables to connect
-        to a windows host without the need to install any 3rd party tools using just
-        native Windows management tools.
+        from a Windows endpoint, including network traffic, MFT (Master File Table),
+        and registry export, by using the PS remote automations that enable you to connect
+        to a Windows host using just the native Windows management tools. You do not need to install any 3rd-party tools.
       playbookName: PS-Remote Acquire Host Forensics
       playbookId: PS-Remote Acquire Host Forensics
       type: playbook
@@ -114,7 +113,7 @@ tasks:
       version: -1
       name: Forensics Tools Analysis
       description: This playbook allows the user to analyze forensic evidence acquired
-        from a host. Such as registry files, memory dump files or PCAP files.
+        from a host, such as registry files, memory dump filesm and PCAP files.
       playbookName: Forensics Tools Analysis
       type: playbook
       iscommand: false
@@ -199,7 +198,7 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: 'The host name from which to acquire the forensic data. For example
+  description: 'The host name from which to acquire the forensic data. For example,
     testpc01. '
   playbookInputQuery:
 outputs: []
