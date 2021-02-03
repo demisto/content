@@ -4,7 +4,6 @@ import sys
 import argparse
 import shutil
 import uuid
-from distutils.version import LooseVersion
 import prettytable
 import glob
 import requests
@@ -17,8 +16,8 @@ from Tests.Marketplace.marketplace_services import init_storage_client, init_big
     get_packs_statistics_dataframe, BucketUploadFlow, load_json, get_content_git_client, get_recent_commits_data, \
     store_successful_and_failed_packs_in_ci_artifacts
 from demisto_sdk.commands.common.tools import run_command, str2bool
+
 from Tests.scripts.utils.log_util import install_logging
-from tempfile import gettempdir
 
 
 def get_packs_names(target_packs: str, previous_commit_hash: str = "HEAD^") -> set:
@@ -76,7 +75,7 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     logging.info("Finished extracting packs artifacts")
 
 
-def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, fix=False) -> Tuple[str, Any, int]:
+def download_and_extract_index(storage_bucket: Any, extract_destination_path: str) -> Tuple[str, Any, int]:
     """Downloads and extracts index zip from cloud storage.
 
     Args:
@@ -90,8 +89,6 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
     """
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
-    elif fix:
-        index_storage_path = os.path.join('content/builds/master/252889/content/packs', f"{GCPConfig.INDEX_NAME}.zip")
     else:
         index_storage_path = os.path.join(GCPConfig.STORAGE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     download_index_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_NAME}.zip")
@@ -790,49 +787,11 @@ def get_packs_summary(packs_list):
     return successful_packs, skipped_packs, failed_packs
 
 
-def compare_rn_and_get_updated_date(pack_name, index_folder_path_fix, index_folder_path):
-    # older version
-    old_latest_changelog_released_date = ""
-    old_pack_version = ""
-    old_changelog = ""
-    changelog_index_path = os.path.join(index_folder_path_fix, pack_name, Pack.CHANGELOG_JSON)
-    if os.path.exists(changelog_index_path):
-        with open(changelog_index_path, "r") as changelog_file:
-            old_changelog = json.load(changelog_file)
-            if old_changelog:
-                old_pack_version = max(LooseVersion(ver) for ver in old_changelog)
-                latest_changelog_version = old_changelog.get(old_pack_version.vstring, {})
-                old_latest_changelog_released_date = latest_changelog_version.get('released')
-
-    # current version
-    new_pack_version = ""
-    changelog_index_path = os.path.join(index_folder_path, pack_name, Pack.CHANGELOG_JSON)
-    if os.path.exists(changelog_index_path):
-        with open(changelog_index_path, "r") as changelog_file:
-            new_changelog = json.load(changelog_file)
-            if new_changelog:
-                new_pack_version = max(LooseVersion(ver) for ver in new_changelog)
-
-    # If the 2 latest versions in both indexes are the same - revert to old date
-    if new_pack_version and old_pack_version:
-        if old_pack_version.vstring == new_pack_version.vstring:
-            # If the pack have only 1 changelog section it's the initial version
-            # therefore we need to update the create time as well
-            if len(old_changelog.keys()) == 1:
-                return old_pack_version.vstring, old_latest_changelog_released_date, True
-            else:
-                return old_pack_version.vstring, old_latest_changelog_released_date, False
-
-    # if the pack was updated (or released) in the last 2 weeks
-    return None, None, False
-
-
 def main():
     install_logging('Prepare_Content_Packs_For_Testing.log')
     option = option_handler()
     packs_artifacts_path = option.artifacts_path
     extract_destination_path = option.extract_path
-    extract_destination_path_fix = gettempdir()
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
     target_packs = option.pack_names if option.pack_names else ""
@@ -858,13 +817,6 @@ def main():
     # download and extract index from public bucket
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path)
-    # DATES FIX
-    # download and extract index OLDER index
-    storage_bucket_name_dates_fix = "marketplace-ci-build"  # consider changing bucket
-
-    storage_bucket_dates_fix = storage_client.bucket(storage_bucket_name_dates_fix)
-    index_folder_path_fix, _, _ = \
-        download_and_extract_index(storage_bucket_dates_fix, extract_destination_path_fix, True)
 
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
@@ -930,29 +882,19 @@ def main():
             pack.cleanup()
             continue
 
-        # Adding the fix
-        pack_name = pack.name
-        pack_version, released_date, need_to_update_create_time = compare_rn_and_get_updated_date(pack_name,
-                                                                                                  index_folder_path_fix,
-                                                                                                  index_folder_path)
-
-        # change the update - this function writes back the metadata
         task_status = pack.format_metadata(user_metadata=user_metadata, pack_content_items=pack_content_items,
                                            integration_images=integration_images, author_image=author_image,
                                            index_folder_path=index_folder_path,
                                            packs_dependencies_mapping=packs_dependencies_mapping,
                                            build_number=build_number, commit_hash=current_commit_hash,
                                            packs_statistic_df=packs_statistic_df,
-                                           pack_was_modified=pack_was_modified,
-                                           released_date=released_date,
-                                           need_to_update_create_time=need_to_update_create_time)
+                                           pack_was_modified=pack_was_modified)
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
             continue
 
-        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified,
-                                                                    pack_version, released_date)
+        task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number, pack_was_modified)
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
