@@ -156,6 +156,26 @@
 <td style="width: 458px;">SHA256 hash of the file.</td>
 </tr>
 <tr>
+<td style="width: 210px;">File.FeedRelatedIndicator</td>
+<td style="width: 72px;">string</td>
+<td style="width: 458px;">Indicators that are associated with the File</td>
+</tr>
+<tr>
+<td style="width: 210px;">File.Tags</td>
+<td style="width: 72px;">string</td>
+<td style="width: 458px;">Tags that are associated with the File</td>
+</tr>
+<tr>
+<td style="width: 210px;">File.Behavior.Details</td>
+<td style="width: 72px;">string</td>
+<td style="width: 458px;">File behavior details</td>
+</tr>
+<tr>
+<td style="width: 210px;">File.Behavior.Action</td>
+<td style="width: 72px;">string</td>
+<td style="width: 458px;">File behavior action</td>
+</tr>
+<tr>
 <td style="width: 210px;">File.Malicious.Vendor</td>
 <td style="width: 72px;">string</td>
 <td style="width: 458px;">For malicious files, the vendor that made the decision.</td>
