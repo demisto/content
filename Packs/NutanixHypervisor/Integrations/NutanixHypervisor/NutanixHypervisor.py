@@ -123,9 +123,8 @@ class Client(BaseClient):
             )
         except DemistoException as e:
             if 'Invalid filter criteria specified.' in str(e):
-                raise DemistoException(
-                    '''Filter criteria given is invalid or is not written in the correct format. Use the 'filter' 
-                    argument description 'to build your filter correctly ''')
+                raise DemistoException('''Filter criteria given is invalid or is not written in the correct format.
+                 Use the 'filter' argument description 'to build your filter correctly.''')
 
             if 'Unrecognized field' in str(e):
                 raise DemistoException('Filter criteria given is invalid.')
@@ -133,7 +132,7 @@ class Client(BaseClient):
             if 'General error parsing FIQL expression' in str(e):
                 raise DemistoException(
                     'Filter criteria given is not written in a valid format. The correct format can be found in the '
-                    'argument description')
+                    'argument description.')
             raise e
 
     def fetch_incidents(self, params: Dict, last_run: Dict):
