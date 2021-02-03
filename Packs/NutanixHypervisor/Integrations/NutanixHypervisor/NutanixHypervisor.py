@@ -474,10 +474,6 @@ def task_exists(client: Client, task_id: str) -> bool:
         raise e
 
 
-def sanitize_outputs(outputs, fields_to_ignore):
-    return [{k: v for k, v in output.items() if k not in fields_to_ignore} for output in outputs]
-
-
 ''' COMMAND FUNCTIONS '''
 
 
