@@ -12,6 +12,11 @@ configuration:
   name: credentials
   type: 9
   required: false
+- display: Application ID
+  name: application_id
+  type: 0
+  required: true
+  defaultvalue: a0c73c16-a7e3-4564-9a95-2bdf47383716
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -174,4 +179,4 @@ script:
   dockerimage: demisto/powershell-ubuntu:7.0.3.12001
 fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
+- Audit Log - Test

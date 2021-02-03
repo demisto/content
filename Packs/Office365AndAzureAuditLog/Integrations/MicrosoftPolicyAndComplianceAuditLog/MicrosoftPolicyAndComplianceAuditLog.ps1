@@ -101,8 +101,8 @@ function CreateNewSession {
 
 class OAuth2DeviceCodeClient
 {
-    [string]$application_id = "a0c73c16-a7e3-4564-9a95-2bdf47383716"
     [string]$application_scope = "offline_access%20https%3A//outlook.office365.com/.default"
+    [string]$application_id
     [string]$device_code
     [int]$device_code_expires_in
     [int]$device_code_creation_time
@@ -113,8 +113,12 @@ class OAuth2DeviceCodeClient
     [bool]$insecure
     [bool]$proxy
 
-    OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
-                            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy) {
+    OAuth2DeviceCodeClient(
+            [string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
+            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure,
+            [bool]$proxy, [string]$application_id
+    ) {
+        $this.application_id = $application_id
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -172,10 +176,19 @@ class OAuth2DeviceCodeClient
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext(
+            [string]$application_id, [bool]$insecure, [bool]$proxy
+    ){
         $ic = $script:Demisto.getIntegrationContext()
-        $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
+        if ($application_id.Contains("@")){
+            $application_id_t, $refresh_token_t = $application_id.Split("@")
+        }else {
+            $application_id_t = $application_id
+            $refresh_token_t = $ic.RefreshToken
+        }
+        $client = [OAuth2DeviceCodeClient]::new(
+                $ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $refresh_token_t,
+                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id_t)
 
         return $client
         <#
@@ -614,11 +627,12 @@ function Main {
     #>
     $no_proxy = $false
     $insecure = (ConvertTo-Boolean $integration_params.insecure)
+    $application_id = $integration_params.application_id
 
     try
     {
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($application_id, $insecure, $no_proxy)
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()
         # Creating ExchangeOnline client
