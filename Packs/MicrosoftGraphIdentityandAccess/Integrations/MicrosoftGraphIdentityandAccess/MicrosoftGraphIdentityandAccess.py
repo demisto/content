@@ -75,7 +75,7 @@ class Client:
         """
         return self.ms_client.http_request(
             'POST',
-            'v1.0/roleTemplateId',
+            'v1.0//directoryRoles',
             json_data={'roleTemplateId': template_id}
         )
 
