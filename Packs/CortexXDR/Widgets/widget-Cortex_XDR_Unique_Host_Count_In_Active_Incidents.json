@@ -15,7 +15,7 @@
     },
     "id": "6965dcb7-f5aa-4400-839a-744b60d95187",
     "isPredefined": true,
-    "name": "Cortex XDR Unique Host Count",
+    "name": "Cortex XDR Unique Host Count In Active Incidents",
     "params": {
         "tableColumns": [
 
