@@ -1,5 +1,5 @@
 $script:COMMAND_PREFIX = "o365"
-$script:INTEGRATION_ENTRY_CONTEXT = "O365"
+$script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
 
 function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
     $integration_context = @{
@@ -508,14 +508,8 @@ class ExchangeOnlineClient
 }
 
 function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [ExchangeOnlineClient]$exo_client) {
-    try {
-        $exo_client.CreateSession()
-    }
-    finally {
-        $exo_client.CloseSession()
-    }
     $raw_response = $null
-    $human_readable = "ok"
+    $human_readable = "The test module is not functional, run the o365-auditlog-auth-start command instead."
     $entry_context = $null
 
     return Write-Output $human_readable, $entry_context, $raw_response
@@ -602,7 +596,7 @@ function SearchAuditLogCommand{
         }
         $human_readable = TableToMarkdown $list.ToArray() "Audit log from $start_date to $end_date"
         $context = @{
-            "$script:INTEGRATION_ENTRY_CONTEXT.AuditLog(val.Id === obj.Id)" = $list
+            "$script:INTEGRATION_ENTRY_CONTEXT(val.Id === obj.Id)" = $list
         }
         return Write-Output $human_readable, $context, $list
     } finally {

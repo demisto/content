@@ -33,7 +33,8 @@ script:
   - name: o365-search-auditlog
     arguments:
     - name: start_date
-      required: true
+      defaultValue: 24 hours
+      required: false
       description: The start_date parameter specifies the start date of the date range
         or a date range (3 days, 1 year etc). Entries are stored in the unified audit
         log in Coordinated Universal Time (UTC). If you specify a date/time value
@@ -46,13 +47,13 @@ script:
         in UTC. If empty, wll take current time.
     - name: free_text
       required: false
-      description: The free_text parameter filters the log entries by the specified
-        text string. If the value contains spaces, enclose the value in quotation
-        marks (").
+      description: "The free_text parameter filters the log entries by the specified\
+        \ text string. If the value contains spaces, enclose the value in quotation\
+        \ marks (\" as an example: \"Invalid logon\""
     - name: record_type
       required: false
-      description: The record_type parameter filters the log entries by record type.
-        [Available record type](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype)
+      description: "The record_type parameter filters the log entries by record type.\
+        \ Available record types: https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype"
     - name: ip_addresses
       required: false
       isArray: true
@@ -61,103 +62,103 @@ script:
     - name: operations
       required: false
       isArray: true
-      description: The operations parameter filters the log entries by operation. The
-        available values for this parameter depend on the record_types value. [Available
-        values](https://docs.microsoft.com/en-us/microsoft-365/compliance/search-the-audit-log-in-security-and-compliance?view=o365-worldwide#audited-activities)
+      description: The operations parameter filters the log entries by operation.
+        The available values for this parameter depend on the record_types value.
+        [Available values](https://docs.microsoft.com/en-us/microsoft-365/compliance/search-the-audit-log-in-security-and-compliance?view=o365-worldwide#audited-activities)
     - name: user_ids
       required: false
       isArray: true
-      description: The UserIds parameter filters the log entries by the ID of the
+      description: The user_ids parameter filters the log entries by the ID of the
         user who performed the action. You can enter multiple values separated by
-        commas.
+        commas. Can be acquired from ews-users-list.
     - name: result_size
       required: false
       defaultValue: 10
       description: The result_size parameter specifies the maximum number of results
         to return.
     outputs:
-    - contextPath: O365.AuditLog.Actor.ID
+    - contextPath: O365AuditLog.Actor.ID
       description: ''
       type: String
-    - contextPath: O365.AuditLog.Actor.Type
+    - contextPath: O365AuditLog.Actor.Type
       description: ''
       type: Number
-    - contextPath: O365.AuditLog.ActorContextId
+    - contextPath: O365AuditLog.ActorContextId
       description: ''
       type: String
-    - contextPath: O365.AuditLog.ActorIpAddress
+    - contextPath: O365AuditLog.ActorIpAddress
       description: ''
       type: String
-    - contextPath: O365.AuditLog.ApplicationId
+    - contextPath: O365AuditLog.ApplicationId
       description: ''
       type: String
-    - contextPath: O365.AuditLog.AzureActiveDirectoryEventType
+    - contextPath: O365AuditLog.AzureActiveDirectoryEventType
       description: ''
       type: Number
-    - contextPath: O365.AuditLog.ClientIP
+    - contextPath: O365AuditLog.ClientIP
       description: ''
       type: String
-    - contextPath: O365.AuditLog.CreationTime
+    - contextPath: O365AuditLog.CreationTime
       description: ''
       type: Date
-    - contextPath: O365.AuditLog.ExtendedProperties.Name
+    - contextPath: O365AuditLog.ExtendedProperties.Name
       description: ''
       type: String
-    - contextPath: O365.AuditLog.ExtendedProperties.Value
+    - contextPath: O365AuditLog.ExtendedProperties.Value
       description: ''
       type: String
-    - contextPath: O365.AuditLog.Id
+    - contextPath: O365AuditLog.Id
       description: ''
       type: String
-    - contextPath: O365.AuditLog.InterSystemsId
+    - contextPath: O365AuditLog.InterSystemsId
       description: ''
       type: String
-    - contextPath: O365.AuditLog.IntraSystemId
+    - contextPath: O365AuditLog.IntraSystemId
       description: ''
       type: String
-    - contextPath: O365.AuditLog.LogonError
+    - contextPath: O365AuditLog.LogonError
       description: ''
       type: String
-    - contextPath: O365.AuditLog.ObjectId
+    - contextPath: O365AuditLog.ObjectId
       description: ''
       type: String
-    - contextPath: O365.AuditLog.Operation
+    - contextPath: O365AuditLog.Operation
       description: ''
       type: String
-    - contextPath: O365.AuditLog.OrganizationId
+    - contextPath: O365AuditLog.OrganizationId
       description: ''
       type: String
-    - contextPath: O365.AuditLog.RecordType
+    - contextPath: O365AuditLog.RecordType
       description: ''
       type: Number
-    - contextPath: O365.AuditLog.ResultStatus
+    - contextPath: O365AuditLog.ResultStatus
       description: ''
       type: String
-    - contextPath: O365.AuditLog.SupportTicketId
+    - contextPath: O365AuditLog.SupportTicketId
       description: ''
       type: String
-    - contextPath: O365.AuditLog.Target.ID
+    - contextPath: O365AuditLog.Target.ID
       description: ''
       type: String
-    - contextPath: O365.AuditLog.Target.Type
+    - contextPath: O365AuditLog.Target.Type
       description: ''
       type: Number
-    - contextPath: O365.AuditLog.TargetContextId
+    - contextPath: O365AuditLog.TargetContextId
       description: ''
       type: String
-    - contextPath: O365.AuditLog.UserId
+    - contextPath: O365AuditLog.UserId
       description: ''
       type: String
-    - contextPath: O365.AuditLog.UserKey
+    - contextPath: O365AuditLog.UserKey
       description: ''
       type: String
-    - contextPath: O365.AuditLog.UserType
+    - contextPath: O365AuditLog.UserType
       description: ''
       type: Number
-    - contextPath: O365.AuditLog.Version
+    - contextPath: O365AuditLog.Version
       description: ''
       type: Number
-    - contextPath: O365.AuditLog.Workload
+    - contextPath: O365AuditLog.Workload
       description: ''
       type: String
     description: Tests the OAuth2.0 authorization process.
