@@ -1,13 +1,15 @@
 args:
 - name: dummy
   required: true
-comment: Hello World Script v2.
+- name: dummier
+  required: true
+comment: Hello World Automation v2.
 commonfields:
-  id: HelloWorldScriptV2
+  id: HelloWorldAutomationV2
   version: -1
 dockerimage: demisto/python3:3.9.1.15759
 enabled: true
-name: HelloWorldScriptV2
+name: HelloWorldAutomationV2
 runas: DBotWeakRole
 runonce: false
 script: ''

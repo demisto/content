@@ -33,7 +33,7 @@ def basescript_dummy(dummy: str) -> Dict[str, str]:
 ''' COMMAND FUNCTION '''
 
 
-# TODO: REMOVE the following dummy command function
+# TODO: REMOVE the following command function
 def basescript_dummy_command(args: Dict[str, Any]) -> CommandResults:
 
     dummy = args.get('dummy', 'example dummy')
