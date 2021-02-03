@@ -12,11 +12,11 @@
     },
     "status": {
      "complex": null,
-     "simple": "casestatus"
+     "simple": "thehivecasestatus"
     },
     "summary": {
      "complex": null,
-     "simple": "casesummary"
+     "simple": "thehivecasesummary"
     },
     "tlp": {
      "complex": {
@@ -24,7 +24,7 @@
       "filters": [
 
       ],
-      "root": "casetlp",
+      "root": "thehivecasetlp",
       "transformers": [
        {
         "args": {
@@ -105,11 +105,11 @@
     },
     "status": {
      "complex": null,
-     "simple": "casestatus"
+     "simple": "thehivecasestatus"
     },
     "summary": {
      "complex": null,
-     "simple": "casesummary"
+     "simple": "thehivecasesummary"
     },
     "title": {
      "complex": null,

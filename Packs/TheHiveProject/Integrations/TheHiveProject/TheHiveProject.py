@@ -574,18 +574,18 @@ def get_mapping_fields_command(client: Client, args: dict, params: dict) -> Dict
 def update_remote_system_command(client: Client, args: dict, params: dict) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
 
-    changes = {k: v for k, v in delta.items() if k in parsed_args.data.keys()}
+    changes = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data.keys()}
     if parsed_args.remote_incident_id:
         # Apply the updates
         client.update_case(case_id=parsed_args.remote_incident_id, updates=changes)
-    return case_id
+    return parsed_args.remote_incident_id
 
 
 def get_remote_data_command(client: Client, args: dict, params: dict) -> Union[List[Dict[str, Any]], str]:
-    parsed_args = GetRemoteDateArgs(args)
+    parsed_args = GetRemoteDataArgs(args)
 
     parsed_entries = []
-    case = client.get_case(parsed_args.remote_incident_id)
+    case: dict = client.get_case(parsed_args.remote_incident_id)
 
     if not case:
         parsed_entries.append({

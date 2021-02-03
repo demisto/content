@@ -51,7 +51,7 @@
     },
     "Hive Tasks": {
      "complex": null,
-     "simple": "tasks"
+     "simple": "thehivetasks"
     },
     "Observables": {
      "complex": {
@@ -101,7 +101,7 @@
    "internalMapping": {
     "Hive Tasks": {
      "complex": null,
-     "simple": "tasks"
+     "simple": "thehivetasks"
     }
    }
   },
