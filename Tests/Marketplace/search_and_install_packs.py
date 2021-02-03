@@ -39,6 +39,23 @@ def get_pack_display_name(pack_id: str) -> str:
     return ''
 
 
+def is_pack_hidden(pack_id: str) -> bool:
+    """
+    Check if the given pack is deprecated.
+
+    :param pack_id: ID of the pack.
+    :return: True if the pack is deprecated, i.e. has 'hidden: true' field, False otherwise.
+    """
+    metadata_path = os.path.join(PACKS_FULL_PATH, pack_id, PACK_METADATA_FILE)
+    if pack_id and os.path.isfile(metadata_path):
+        with open(metadata_path, 'r') as json_file:
+            pack_metadata = json.load(json_file)
+            return pack_metadata.get('hidden', False)
+    else:
+        logging.warning(f'Could not open metadata file of pack {pack_id}')
+    return False
+
+
 def create_dependencies_data_structure(response_data: dict, dependants_ids: list, dependencies_data: list,
                                        checked_packs: list):
     """ Recursively creates the packs' dependencies data structure for the installation requests
@@ -448,6 +465,12 @@ def install_all_content_packs_for_nightly(client: demisto_client, host: str, ser
     storage_client = init_storage_client(service_account)
     production_bucket = storage_client.bucket(GCPConfig.PRODUCTION_BUCKET)
     logging.debug(f"Installing all content packs for nightly flow in server {host}")
+
+    # Add deprecated packs to IGNORED_FILES list:
+    for pack_id in os.listdir(PACKS_FULL_PATH):
+        if is_pack_hidden(pack_id):
+            logging.debug(f'Skipping installation of hidden pack "{pack_id}"')
+            IGNORED_FILES.append(pack_id)
 
     for pack_id in os.listdir(PACKS_FULL_PATH):
         if pack_id not in IGNORED_FILES:
