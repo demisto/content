@@ -2165,6 +2165,32 @@ def sort_by_key(list_to_sort, main_key, fallback_key):
     return sorted_list
 
 
+def convert_type(items: List, conversion_map: Dict[str, Any]):
+    """
+    For each item in given list, converts its values according to the given mapping.
+    if key is not in the mapping, will keep the value as is.
+
+    Note:
+        Edits the original list.
+
+    Args:
+        items: items list to modify
+        conversion_map: a <key, type> mapping.
+
+    Returns:
+        items list
+    """
+    for item in items:
+        for key, convert_to in conversion_map.items():
+            if key in item:
+                try:
+                    item[key] = convert_to(item[key])
+                except TypeError:
+                    demisto.error(f'could not convert key {key} to type {convert_to}. value: {item[key]}')
+
+    return items
+
+
 def sort_all_list_incident_fields(incident_data):
     """Sorting all lists fields in an incident - without this, elements may shift which results in false
     identification of changed fields"""
@@ -2180,7 +2206,11 @@ def sort_all_list_incident_fields(incident_data):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
 
     if incident_data.get('alerts', []):
-        incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
+        alerts = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
+        incident_data['alerts'] = convert_type(alerts, {
+            'detection_timestamp': str,
+        })
+
         reformat_sublist_fields(incident_data['alerts'])
 
     if incident_data.get('file_artifacts', []):
@@ -2189,8 +2219,11 @@ def sort_all_list_incident_fields(incident_data):
         reformat_sublist_fields(incident_data['file_artifacts'])
 
     if incident_data.get('network_artifacts', []):
-        incident_data['network_artifacts'] = sort_by_key(incident_data.get('network_artifacts', []),
-                                                         main_key='network_domain', fallback_key='network_remote_ip')
+        network_artifacts = sort_by_key(incident_data.get('network_artifacts', []),
+                                        main_key='network_domain', fallback_key='network_remote_ip')
+        incident_data['network_artifacts'] = convert_type(network_artifacts, {
+            'network_remote_port': str,
+        })
         reformat_sublist_fields(incident_data['network_artifacts'])
 
 
