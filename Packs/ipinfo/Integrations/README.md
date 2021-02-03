@@ -41,7 +41,21 @@ Check IP reputation (when information is available, returns a JSON with details)
 | IP.Geo.Location | String | The IP geographic location in coordinates | 
 | IP.Geo.Country | String | The IP country | 
 | IP.Geo.Description | String | The IP location as \<City, Region, Postal Code, Country\> | 
-
+| IP.ASOwner | string | The IP AS owner |
+| IP.FeedRelatedIndicators | string | Indicators that are associated with the IP |
+| IP.Tags | string | Tags that are associated with the IP |
+| IP.Registrar.Abuse.Address | string | The abuse address of the IP |
+| IP.Registrar.Abuse.Country | string | The abuse country of the IP |
+| IP.Registrar.Abuse.Name | string | The abuse name of the IP |
+| IP.Registrar.Abuse.Network | string | The abuse network of the IP |
+| IP.Registrar.Abuse.Phone | string | The abuse phone of the IP |
+| IP.Registrar.Abuse.Email | string | The abuse email of the IP |
+| IP.Organization.Name | string | description: The organization name of the IP |
+| IP.Organization.Type | string | description: The organization type of the IP |
+| DBotScore.Indicator | string | description: The indicator that was tested. |
+| DBotScore.Type | string | description: The indicator type. |
+| DBotScore.Vendor | string | description: The vendor used to calculate the score. |
+| DBotScore.Score | Number | description: The actual score. |
 
 #### Command Example
 ``` !ip ip=1.1.1.1 ```
