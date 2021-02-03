@@ -61,7 +61,7 @@ script:
     - name: operations
       required: false
       isArray: true
-      description: he operations parameter filters the log entries by operation. The
+      description: The operations parameter filters the log entries by operation. The
         available values for this parameter depend on the record_types value. [Available
         values](https://docs.microsoft.com/en-us/microsoft-365/compliance/search-the-audit-log-in-security-and-compliance?view=o365-worldwide#audited-activities)
     - name: user_ids
