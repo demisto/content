@@ -892,7 +892,7 @@ script:
             }
         }
         var result = httpMultipart(url, entry, {Method: 'POST', Headers: {'Accept': ['application/json']}}, {apikey: params.APIKey},
-            params.insecure, params.proxy, undefined, 'file', fileName);
+            params.insecure, params.useproxy, undefined, 'file', fileName);
         if (result.StatusCode < 200 || result.StatusCode > 299) {
             throw 'Failed to perform request ' + url + ', request status code: ' + result.StatusCode;
         }
