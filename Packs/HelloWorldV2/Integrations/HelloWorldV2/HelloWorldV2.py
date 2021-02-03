@@ -255,12 +255,6 @@ import urllib3
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
-
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
-
 ''' CLIENT CLASS '''
 
 
@@ -414,7 +408,7 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     alert_id = args.get('alert_id')
     if not alert_id:
-        raise ValueError('alert_id not specified')
+        raise ValueError('alert_id was not specified')
 
     alert = client.get_alert(alert_id=alert_id)
 
