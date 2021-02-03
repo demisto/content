@@ -1,4 +1,4 @@
-This playbook allows both the gathering of forensic data from a host and the analysis of the acquired data by using the relevant forensics automations.
+This playbook enables gathering forensic data from a host and analyzing the acquired data by using the relevant forensics automations.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
