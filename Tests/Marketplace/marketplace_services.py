@@ -1229,6 +1229,11 @@ class Pack(object):
                 changelog = {
                     Pack.PACK_INITIAL_VERSION: version_changelog
                 }
+            elif self._hidden:
+                logging.warning(f"Pack {self._pack_name} is deprecated. Skipping release notes handling.")
+                task_status = True
+                not_updated_build = True
+                return task_status, not_updated_build
             else:
                 logging.error(f"No release notes found for: {self._pack_name}")
                 task_status = False
