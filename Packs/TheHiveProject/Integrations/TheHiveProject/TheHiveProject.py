@@ -707,12 +707,12 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == 'get-remote-data':
-        return_results(get_remote_data_command(client, args, params))
+            return_results(get_remote_data_command(client, args, params))
         elif command == 'update-remote-system':
-            demisto.results(update_remote_system_command(client, args, params))
+            return_results(update_remote_system_command(client, args, params))
 
         elif command == 'get-mapping-fields':
-            demisto.results(get_mapping_fields_command(client, args, params))
+            return_results(get_mapping_fields_command(client, args, params))
 
         elif command in command_map:
             command_map[command](client, args)  # type: ignore
