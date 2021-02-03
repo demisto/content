@@ -2,7 +2,6 @@
 
 To configure your instance of a Cyren Threat InDepth indicator feed, please provide the following:
 
-* API URL: Should be pre-filled out for you, but in case you are being told to use a different one
 * API Token: Supply your API JWT token that has been issued to you
 * Feed name: Choose from the available options to ingest the type of data you are interested in
   * Keep in mind that the API token issued to you only corresponds to one of the data types each

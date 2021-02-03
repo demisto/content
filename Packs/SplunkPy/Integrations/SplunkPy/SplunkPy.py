@@ -448,6 +448,7 @@ def splunk_job_create_command(service):
 def splunk_results_command(service):
     res = []
     sid = demisto.args().get('sid', '')
+    limit = int(demisto.args().get('limit', '100'))
     try:
         job = service.job(sid)
     except HTTPError as error:
@@ -456,7 +457,7 @@ def splunk_results_command(service):
         else:
             return_error(error.message, error)
     else:
-        for result in results.ResultsReader(job.results()):
+        for result in results.ResultsReader(job.results(count=limit)):
             if isinstance(result, results.Message):
                 demisto.results({"Type": 1, "ContentsFormat": "json", "Contents": json.dumps(result.message)})
             elif isinstance(result, dict):
@@ -647,7 +648,7 @@ def splunk_edit_notable_event_command(proxy):
                          'Contents': "Could not update notable "
                                      "events: " + demisto.args()['eventIDs'] + ' : ' + str(response_info)})
 
-    demisto.results('Splunk ES Notable events: ' + response_info['message'])
+    demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
 def splunk_job_status(service):
