@@ -27,6 +27,9 @@ args:
   - Hosts
   - Alerts
   - MitreTactic
+  - MitreTechnique
+  - FileSHA2
+  - File
   required: true
 commonfields:
   id: XDRIncidentWidgetBase
