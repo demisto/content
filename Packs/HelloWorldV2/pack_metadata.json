@@ -1,0 +1,17 @@
+{
+    "name": "HelloWorld V2",
+    "description": "description",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "author_test",
+    "url": "",
+    "email": "",
+    "created": "2021-02-03T10:55:46Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "dantavori"
+    ]
+}
