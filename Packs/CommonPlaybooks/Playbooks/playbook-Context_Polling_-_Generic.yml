@@ -1,3 +1,4 @@
+fromversion: 6.0.0
 description: This playbook polls a context key to check if a specific value exists.
 id: 7b617a6e-2b12-43cc-87e4-9d58818aec8a
 inputs:
