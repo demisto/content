@@ -1,0 +1,166 @@
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: fe22f538-0ca4-43cf-8e35-4c1ba8dae484
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: This playbook polls a context key to check if a specific value exists.
+id: 7b617a6e-2b12-43cc-87e4-9d58818aec8a
+inputs:
+- description: 'The context key to poll for a value. Can contain ''.'', for example:
+    "ContextKey1.ContextKey2.ContextKey3"'
+  key: key
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: The regex to check the field for. By default the regex contains .+,
+    which matches anything other than None.
+  key: value
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: .+
+- description: How often to check (in minutes).
+  key: frequency
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: "1"
+- description: When to timeout (in minutes).
+  key: timeout
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: "10"
+name: Context Polling - Generic
+outputs: []
+sourceplaybookid: Field Polling - Generic
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d66a3885-27e3-439d-8855-b5522c6dde35
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d66a3885-27e3-439d-8855-b5522c6dde35
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: regex
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.value
+      Ids:
+        complex:
+          root: inputs.key
+      Interval:
+        complex:
+          root: inputs.frequency
+      PollingCommandArgName:
+        simple: key
+      PollingCommandName:
+        simple: CheckContextValue
+      Timeout:
+        complex:
+          root: inputs.timeout
+      dt:
+        simple: CheckContextKey(val.key=='${inputs.key}' && val.exists==false).key
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: f6f1f1f8-71bb-4f9f-8929-9995b0574393
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: f6f1f1f8-71bb-4f9f-8929-9995b0574393
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4652f620-ec05-47da-800c-76426f68efab
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 4652f620-ec05-47da-800c-76426f68efab
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
