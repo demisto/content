@@ -1,11 +1,3 @@
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: fe22f538-0ca4-43cf-8e35-4c1ba8dae484
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: This playbook polls a context key to check if a specific value exists.
 id: 7b617a6e-2b12-43cc-87e4-9d58818aec8a
 inputs:
