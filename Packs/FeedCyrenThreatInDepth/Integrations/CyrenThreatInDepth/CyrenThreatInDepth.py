@@ -15,6 +15,7 @@ requests.packages.urllib3.disable_warnings()
 MAX_API_COUNT: int = 100000
 BASE_URL = "https://api-feeds.cyren.com/v1/feed"
 VERSION = "1.4.0"
+BAD_IP_RISK_BOUNDARY = 80
 
 
 class FeedPath(str, Enum):
@@ -210,7 +211,10 @@ class IpReputationFeedEntry(FeedEntryBase):
     def get_score(self) -> int:
         if self.action in [FeedAction.ADD, FeedAction.UPDATE]:
             if FeedCategory.SPAM in self.categories:
-                return Common.DBotScore.BAD
+                risk = self.detection.get("risk", 0)
+                if risk >= BAD_IP_RISK_BOUNDARY:
+                    return Common.DBotScore.BAD
+                return Common.DBotScore.SUSPICIOUS
             if FeedCategory.PHISHING in self.categories or FeedCategory.MALWARE in self.categories:
                 return Common.DBotScore.SUSPICIOUS
             if FeedCategory.CONFIRMED_CLEAN in self.categories:

@@ -199,8 +199,8 @@ def test_fetch_indicators_offsets(requests_mock, ip_reputation, context_data, of
     fetch, _ = _create_instance(requests_mock, "ip_reputation", ip_reputation, offsets, expected_offset, expected_count)
     created = fetch(initial_count, max_indicators, True)
 
-    assert len(created) == 5
-    assert demisto.getIntegrationContext() == dict(offset=50005)
+    assert len(created) == 8
+    assert demisto.getIntegrationContext() == dict(offset=50007)
 
 
 def test_fetch_indicators_parsing_errors(requests_mock, ip_reputation):
@@ -221,7 +221,7 @@ def test_fetch_indicators_parsing_errors(requests_mock, ip_reputation):
     fetch, _ = _create_instance(requests_mock, "ip_reputation", ip_reputation_with_errors, dict(startOffset=0, endOffset=0))
     created = fetch()
 
-    assert len(created) == 5
+    assert len(created) == 8
 
 
 def test_fetch_indicators_rate_limiting(requests_mock, response_429):
@@ -272,11 +272,11 @@ def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
     fetch, _ = _create_instance(requests_mock, "ip_reputation", ip_reputation, dict(startOffset=0, endOffset=0))
     created = fetch()
 
-    assert len(created) == 5
+    assert len(created) == 8
 
     assert created[0]["fields"] == dict(updateddate="2020-10-29T05:15:29.062Z",
                                         indicatoridentification="45.193.212.54")
-    assert created[0]["score"] == Common.DBotScore.BAD
+    assert created[0]["score"] == Common.DBotScore.SUSPICIOUS
     assert created[0]["rawJSON"]["tags"] == ["spam", "Botnet detection"]
     assert created[0]["rawJSON"]["source_tag"] == "primary"
     assert created[0]["type"] == FeedIndicatorType.IP
@@ -314,6 +314,32 @@ def test_fetch_indicators_output_ip_reputation(requests_mock, ip_reputation):
     assert created[4]["rawJSON"]["source_tag"] == "primary"
     assert created[4]["type"] == FeedIndicatorType.IP
     assert created[4]["value"] == "45.193.216.185"
+
+    assert created[5]["fields"] == dict(updateddate="2020-10-29T05:15:29.062Z",
+                                        published="2020-10-29T05:15:29.062Z",
+                                        indicatoridentification="45.193.212.55")
+    assert created[5]["score"] == Common.DBotScore.SUSPICIOUS
+    assert created[5]["rawJSON"]["tags"] == ["spam", "Botnet detection"]
+    assert created[5]["rawJSON"]["source_tag"] == "primary"
+    assert created[5]["type"] == FeedIndicatorType.IP
+    assert created[5]["value"] == "45.193.212.55"
+
+    assert created[6]["fields"] == dict(updateddate="2020-10-29T05:15:29.062Z",
+                                        indicatoridentification="45.193.212.56")
+    assert created[6]["score"] == Common.DBotScore.BAD
+    assert created[6]["rawJSON"]["tags"] == ["spam", "Botnet detection"]
+    assert created[6]["rawJSON"]["source_tag"] == "primary"
+    assert created[6]["type"] == FeedIndicatorType.IP
+    assert created[6]["value"] == "45.193.212.56"
+
+    assert created[7]["fields"] == dict(updateddate="2020-10-29T05:15:29.062Z",
+                                        published="2020-10-29T05:15:29.062Z",
+                                        indicatoridentification="45.193.212.57")
+    assert created[7]["score"] == Common.DBotScore.BAD
+    assert created[7]["rawJSON"]["tags"] == ["spam", "Botnet detection"]
+    assert created[7]["rawJSON"]["source_tag"] == "primary"
+    assert created[7]["type"] == FeedIndicatorType.IP
+    assert created[7]["value"] == "45.193.212.57"
 
 
 def test_fetch_indicators_output_malware_files(requests_mock, malware_files):
