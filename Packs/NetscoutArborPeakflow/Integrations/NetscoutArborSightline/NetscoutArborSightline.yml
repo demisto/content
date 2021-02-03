@@ -1,4 +1,4 @@
-category: Utilities
+category: Network Security
 commonfields:
   id: NetscoutArborSightline
   version: -1
@@ -131,235 +131,217 @@ configuration:
   - Not Ongoing
   required: false
   type: 15
-description: '[Enter a comprehensive, yet concise, description of what the integration
-  does, what use cases it is designed for, etc.]'
+description: DDoS protection and network visibility.
 display: NetscoutArborSightline
 name: NetscoutArborSightline
 script:
   commands:
-  - arguments:
-    - default: true
-      description: The alert ID to list the connections.
-      isArray: false
-      name: alert_id
-      required: true
-      secret: false
-    deprecated: false
-    description: Lists the collection of annotations for a given alert.
-    execution: false
-    name: na-sightline-alert-annotations
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: NASightline.AlertAnnotations
-      type: Unknown
-  - arguments:
-    - default: true
-      description: Maximal number of mitigations to retrieve.
-      defaultvalue: 50
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: true
-      description: The mitigation ID to get.
-      isArray: false
-      name: mitigation_id
-      required: false
-      secret: false
-    deprecated: false
-    description: List all mitigations, when a mitigation ID is given the only the
-      relevant mitigation will be fetched.
-    execution: false
-    name: na-sightline-mitigations-list
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: NASightline.AlertAnnotations
-      type: Unknown
-  - arguments:
-    - default: true
-      description: Maximal number of alerts to retrieve.
-      defaultvalue: 50
-      isArray: false
-      name: limit
-      required: false
-      secret: false
-    - default: true
-      description: Maximal number of alerts to retrieve.
-      isArray: false
-      name: page
-      required: false
-      secret: false
-    - default: false
-      description: Alert ID.
-      isArray: false
-      name: alert_id
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Alert class to filter by.
-      isArray: false
-      name: alert_class
-      predefined:
-      - bgp
-      - cloudsignal
-      - data
-      - dos
-      - smart
-      - system_error
-      - system_event
-      - tms
-      - traffic
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Alert type to filter by.
-      isArray: false
-      name: alert_type
-      predefined:
-      - autoclassify_restart
-      - bgp_down
-      - bgp_hijack
-      - bgp_instability
-      - bgp_trap
-      - blob_thresh
-      - cloud_mit_request
-      - cloudsignal_fault
-      - collector_down
-      - collector_start
-      - config_change
-      - device_system_error
-      - dns_baseline
-      - dos
-      - dos_host_detection
-      - dos_mo_profiled
-      - dos_profiled_network
-      - dos_profiled_router
-      - fingerprint_thresh
-      - flexible_license_error
-      - flow_down
-      - flow_missing
-      - gre_down
-      - hw_failure
-      - smart_thresh
-      - interface_usage
-      - nucleus_fault
-      - routing_failover
-      - routing_interface_failover
-      - service_thresh
-      - smart_thresh
-      - snmp_down
-      - spcomm_failure
-      - tms_fault
-      - traffic_auto_mitigation
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Alert classification to filter by.
-      isArray: false
-      name: classification
-      predefined:
-      - Possible Attack
-      - False Positive
-      - Verified Attack
-      - Network Failure
-      - Flash Crowd
-      - Trivial
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      description: Alert importance to filter by. For more complex operators use the
-        'importance_operator' argument.
-      isArray: false
-      name: importance
-      predefined:
-      - Low
-      - Medium
-      - High
-      required: false
-      secret: false
-    - default: false
-      description: 'The operator to apply on the importance  argument. For example:
-        if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
-        with importance grater to 1 will be fetched.'
-      isArray: false
-      defaultvalue: =
-      name: importance_operator
-      required: false
-      secret: false
-      predefined:
-      - =
-      - <
-      - >
-    - default: false
-      description: Alert status to filter by.
-      isArray: false
-      name: ongoing
-      required: false
-      secret: false
-      predefined:
-        - true
-        - false
-    - default: false
-      description: Alert start time to filter by. For more complex operators use the
-        'start_time_operator' argument.
-      isArray: false
-      name: start_time
-      required: false
-      secret: false
-    - default: false
-      description: 'The operator to apply on the ''start_time'' argument. For example:
-        if the chosen operator is ''>'' and the given time is ''2020-12-01T13:15:00'', only alerts
-        with starting time grater than ''2020-12-01T13:15:00'' will be fetched.'
-      isArray: false
-      name: start_time_operator
-      predefined:
-        - =
-        - <
-        - >
-      defaultvalue: =
-      required: false
-      secret: false
-    - default: false
-      description: Alert stop time to filter by. For more complex operators use the
-        'stop_time_operator' argument.
-      isArray: false
-      name: stop_time
-      required: false
-      secret: false
-    - default: false
-      description: 'The operator to apply on the ''stop_time'' argument. For example:
-        if the chosen operator is ''>'' and the given time is ''2020-12-01T13:15:00'', only alerts
-        with stopping time grater than ''2020-12-01T13:15:00'' will be fetched.'
-      isArray: false
-      name: stop_time_operator
-      predefined:
-        - =
-        - <
-        - >
-      defaultvalue: =
-      required: false
-      secret: false
-    - default: false
-      description: ID of managed object associated with the alert.
-      isArray: false
-      name: managed_object_id
-      required: false
-      secret: false
-    deprecated: false
-    description: List all alerts, when an alert ID is given only the relevant alert
-      will be fetched.
-    execution: false
-    name: na-sightline-alerts-list
-
+    - name: na-sightline-alert-annotation-list
+      arguments:
+        - name: alert_id
+          required: true
+          default: true
+          description: The alert ID to list the connections.
+      outputs:
+        - contextPath: BaseIntegration.Output
+          description: NASightline.AlertAnnotations
+          type: Unknown
+      description: Lists the collection of annotations for a given alert.
+    - name: na-sightline-alert-list
+      arguments:
+        - name: limit
+          default: true
+          description: Maximal number of alerts to retrieve.
+        - name: page
+          default: true
+          description: Maximal number of alerts to retrieve.
+        - name: alert_id
+          description: Alert ID.
+        - name: alert_class
+          auto: PREDEFINED
+          predefined:
+            - bgp
+            - cloudsignal
+            - data
+            - dos
+            - smart
+            - system_error
+            - system_event
+            - tms
+            - traffic
+          description: Alert class to filter by.
+        - name: alert_type
+          auto: PREDEFINED
+          predefined:
+            - autoclassify_restart
+            - bgp_down
+            - bgp_hijack
+            - bgp_instability
+            - bgp_trap
+            - blob_thresh
+            - cloud_mit_request
+            - cloudsignal_fault
+            - collector_down
+            - collector_start
+            - config_change
+            - device_system_error
+            - dns_baseline
+            - dos
+            - dos_host_detection
+            - dos_mo_profiled
+            - dos_profiled_network
+            - dos_profiled_router
+            - fingerprint_thresh
+            - flexible_license_error
+            - flow_down
+            - flow_missing
+            - gre_down
+            - hw_failure
+            - smart_thresh
+            - interface_usage
+            - nucleus_fault
+            - routing_failover
+            - routing_interface_failover
+            - service_thresh
+            - smart_thresh
+            - snmp_down
+            - spcomm_failure
+            - tms_fault
+            - traffic_auto_mitigation
+          description: Alert type to filter by.
+        - name: classification
+          auto: PREDEFINED
+          predefined:
+            - Possible Attack
+            - False Positive
+            - Verified Attack
+            - Network Failure
+            - Flash Crowd
+            - Trivial
+          description: Alert classification to filter by.
+        - name: importance
+          auto: PREDEFINED
+          predefined:
+            - Low
+            - Medium
+            - High
+          description: Alert importance to filter by. For more complex operators use the
+            'importance_operator' argument.
+        - name: importance_operator
+          auto: PREDEFINED
+          predefined:
+            - =
+            - <
+            - ""
+          description: 'The operator to apply on the importance  argument. For example:
+          if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
+          with importance grater to 1 will be fetched.'
+        - name: ongoing
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Alert status to filter by.
+        - name: start_time
+          description: Alert start time to filter by. For more complex operators use the
+            'start_time_operator' argument.
+        - name: start_time_operator
+          auto: PREDEFINED
+          predefined:
+            - =
+            - <
+            - ""
+          description: 'The operator to apply on the ''start_time'' argument. For example:
+          if the chosen operator is ''>'' and the given time is ''2020-12-01T13:15:00'',
+          only alerts with starting time grater than ''2020-12-01T13:15:00'' will be
+          fetched.'
+        - name: stop_time
+          description: Alert stop time to filter by. For more complex operators use the
+            'stop_time_operator' argument.
+        - name: stop_time_operator
+          auto: PREDEFINED
+          predefined:
+            - =
+            - <
+            - ""
+          description: 'The operator to apply on the ''stop_time'' argument. For example:
+          if the chosen operator is ''>'' and the given time is ''2020-12-01T13:15:00'',
+          only alerts with stopping time grater than ''2020-12-01T13:15:00'' will be
+          fetched.'
+        - name: managed_object_id
+          description: ID of managed object associated with the alert.
+      description: List all alerts, when an alert ID is given only the relevant alert
+        will be fetched.
+    - name: na-sightline-mitigation-list
+      arguments:
+        - name: mitigation_id
+          default: true
+          description: The mitigation ID to get.
+        - name: limit
+          description: Maximal number of mitigations to retrieve.
+      outputs:
+        - contextPath: BaseIntegration.Output
+          description: NASightline.AlertAnnotations
+          type: Unknown
+      description: List all mitigations, when a mitigation ID is given the only the
+        relevant mitigation will be fetched.
+    - name: na-sightline-mitigation-create
+      arguments:
+        - name: name
+          required: true
+          description: Mitigation name.
+        - name: ip_version
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - IPv4
+            - IPv6
+          description: P version of the traffic that is being mitigated. This attribute
+            cannot be changed once it is set.
+        - name: description
+          description: ' Description of the mitigation.'
+        - name: ongoing
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+          description: Whether to start the mitigation (true) or not (false).
+          defaultValue: "false"
+        - name: sub_type
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - tms
+            - flowspec
+          description: The type of mitigation.
+        - name: sub_object
+          required: true
+          description: 'JSON object that specifies the attributes specific to the mitigation
+          subtype. For example: {"bgp_announce": false}. For the full list of values
+          supported for each sub-type visit the product documentation:
+          <your_server_url>/api/sp/doc/v7/mitigations.html#url-/mitigations/'
+        - name: alert_id
+          description: ' ID of the alert associated with the mitigation.'
+        - name: mitigation_template_id
+          description: ID of the mitigation template applied to this mitigation. To get
+            a list of available templates and their IDs run the 'na-sightline-mitigation-template-list'.
+        - name: router_ids
+          description: (Flowspec mitigations only) Comma separated list of IDs of the
+            routers to which the flowspec announcement is made. To get a list of available
+            routers and their IDs run the 'na-sightline-router-list'.
+        - name: managed_object_id
+          description: (TMS mitigations only) ID of the managed object associated with
+            the alert. To get a list of available managed objects and their IDs run the
+            'na-sightline-managed-object-list'.
+        - name: tms_group_id
+          description: (TMS mitigations only) ID of the TMS group that the associated
+            managed object belongs to. To get a list of available tms groups and their
+            IDs run the 'na-sightline-tms-group-list'.
+      description: List all alerts, when an alert ID is given only the relevant alert
+        will be fetched.
   dockerimage: demisto/python3:3.8.6.14516
   feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  isfetch: true
   runonce: false
   script: '-'
   subtype: python3

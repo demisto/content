@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+from copy import deepcopy
 import requests
 import traceback
 from typing import Dict
@@ -22,7 +23,11 @@ ONGOING_DICTIONARY = {
     'Ongoing': 'true',
     'Not Ongoing': 'false',
 }
-
+IP_DICTIONARY = {
+    'IPv4': 4,
+    'IPv6': 6
+}
+RELAT
 ''' CLIENT CLASS '''
 
 
@@ -42,6 +47,10 @@ class NetscoutClient(BaseClient):
         'stop_time': 'stop_time_operator',
     }
 
+    RELATIONSHIP_TO_TYPE = {
+        'routers': 'router'
+    }
+
     def __init__(self, base_url, verify, headers, proxy, per_page=None, alert_class=None, alert_type=None,
                  classification=None, importance=None, importance_operator=None, ongoing=None):
         self.per_page = per_page
@@ -56,7 +65,42 @@ class NetscoutClient(BaseClient):
 
     # def create_mitigation(self, **kwargs):
 
-    def build_data_attribute_filter(self, **kwargs):
+    def build_relationships(self, **kwargs) -> dict:
+        """
+        Builds the relationships object for creating a mitigation. An example of relationships object is:
+        {
+            "mitigation_template": {
+                "data": {
+                    "id": "4", "type": "mitigation_template"
+                }
+            },
+            "alert": {
+                "data": {
+                    "id": "101", "type": "alert"
+                }
+            }
+        }
+        Args:
+            kwargs (dict): Dict containing key values parameters to be used for relationships. for example:
+            {'ip_version': 4}
+
+        Returns:
+            (dict) Netscout relationships object
+        """
+        relationships = {}
+        for key, val in kwargs.items():
+            if val:
+                # In some cases the name of the relationships is not the same as the type (most cases it is)
+                _type = self.RELATIONSHIP_TO_TYPE.get(key, key)
+                relationships[key] = {
+                    'data': {
+                        'type': _type,
+                        'id': val
+                    }
+                }
+        return relationships
+
+    def build_data_attribute_filter(self, **kwargs) -> str:
         """
         Builds data attribute filter in the NetscoutArbor form. For example: '/data/attributes/importance>1' where
         key=importance operator='>' and value=1.
@@ -64,11 +108,12 @@ class NetscoutClient(BaseClient):
         together the 'key operator val' such that the argument name is 'key', its value is 'val' and operator is '=' if
         no relevant operator is present. In case of multiple parameters the attributes are separated with 'AND'.
 
-        Params:
-            kwargs (dict): Dict containing all relevant filter parameters {'importance': 1}
+        Args:
+            kwargs (dict): Dict containing key values filter parameters. for example: {'importance': 1}
 
         Returns:
-            (str) data attribute filter string. For example: '/data/attributes/importance>1'
+            (str) Netscout data attribute filter string. For example:
+            /data/attributes/importance>1 AND /data/attributes/ongoing=true
         """
 
         param_list = []
@@ -119,8 +164,73 @@ class NetscoutClient(BaseClient):
             url_suffix=f'mitigations/{mitigation_id}' if mitigation_id else 'mitigations'
         )
 
+    def create_mitigation(self, data: dict):
+        return self._http_request(
+            method='POST',
+            url_suffix=f'mitigations/',
+            data=data
+        )
+
+    def mitigation_template_list(self):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'mitigation_templates/'
+        )
+
+    def router_list(self):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'routers/'
+        )
+
+    def managed_object_list(self):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'managed_objects/'
+        )
+
+    def tms_group_list(self):
+        return self._http_request(
+            method='GET',
+            url_suffix=f'tms_groups/'
+        )
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def validate_json_arg(json_str: str, arg_name: str) -> dict:
+    """
+    Parse the json data. If the format is invalid an appropriate will be raised
+    Args:
+        json_str (str): The data to parse
+        arg_name (str): The argument name where the data eas given (for exception purposes)
+    :return:
+    """
+    try:
+        sub_object = json.loads(json_str)
+        return sub_object
+    except Exception:
+        raise DemistoException(f'The value given in the {arg_name} argument is not a valid JSON format:\n{json_str}')
+
+
+def build_human_readable(data: dict):
+    """
+    Removes the relationships data from the object and extracts the  dara to the root level of the object to
+    be displayed nicely in human readable.
+    Args:
+        data (dict): The data to create human readable from.
+
+    Return:
+        The same object without the relationships data and with the attributes extracted to the root level.
+    """
+    hr = deepcopy(data)
+    for key, val in hr.get('attributes').items():
+        hr[key] = val
+    del hr['attributes']
+    del hr['relationships']
+    return hr
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -184,22 +294,24 @@ def list_alerts_commands(client: NetscoutClient, args: dict):
 
     data = raw_result.get('data')
     data = data if isinstance(data, list) else [data]
-    return CommandResults(outputs_prefix='NASightline.Alerts',
+    hr = [build_human_readable(mitigation) for mitigation in data]
+    return CommandResults(outputs_prefix='NASightline.Alert',
                           outputs_key_field='id',
                           outputs=data,
-                          readable_output=tableToMarkdown(f'Alerts', data),
+                          readable_output=tableToMarkdown(f'Alerts', hr),
                           raw_response=raw_result)
 
 
-def alert_annotations_command(client: NetscoutClient, args: dict):
+def alert_annotations_list_command(client: NetscoutClient, args: dict):
     alert_id = args.get('alert_id')
     raw_result = client.get_annotations(alert_id)
     data = raw_result.get('data')
+    hr = [build_human_readable(mitigation) for mitigation in data]
     context = {'AlertID': alert_id, 'Annotations': data}
-    return CommandResults(outputs_prefix='NASightline.AlertAnnotations',
+    return CommandResults(outputs_prefix='NASightline.AlertAnnotation',
                           outputs_key_field='AlertID',
                           outputs=context,
-                          readable_output=tableToMarkdown(f'Alert {alert_id} annotations', data),
+                          readable_output=tableToMarkdown(f'Alert {alert_id} annotations', hr),
                           raw_response=raw_result)
 
 
@@ -209,11 +321,88 @@ def mitigations_list_command(client: NetscoutClient, args: dict):
     raw_result = client.list_mitigations(mitigation_id)
     data = raw_result.get('data')
     data = data[:limit] if isinstance(data, list) else [data]
+    hr = [build_human_readable(mitigation) for mitigation in data]
     return CommandResults(outputs_prefix='NASightline.Mitigation',
                           outputs_key_field='id',
                           outputs=data,
-                          readable_output=tableToMarkdown(f'Mitigation list', data,
-                                                          ['id', 'links', 'type']),
+                          readable_output=tableToMarkdown(f'Mitigation list', hr),
+                          raw_response=raw_result)
+
+
+def mitigations_create_command(client: NetscoutClient, args: dict):
+    description = args.get('description')
+    ip_version = IP_DICTIONARY.get(args.get('ip_version'), args.get('ip_version'))
+    name = args.get('name')
+    ongoing = argToBoolean(args.get('ongoing', 'false'))
+    sub_type = args.get('subtype')
+    sub_object = validate_json_arg(args.get('sub_object'), 'sub_object')
+    alert_id = args.get('alert_id')
+    managed_object_id = args.get('managed_object_id')
+    mitigation_template_id = args.get('mitigation_template_id')
+    router_ids = args.get('router_ids')
+    tms_group_id = args.get('tms_group_id')
+
+    relationships = client.build_relationships(alert=alert_id, managed_object=managed_object_id,
+                                               mitigation_template=mitigation_template_id, routers=router_ids,
+                                               tms_group=tms_group_id)
+    attributes = assign_params(description=description, ip_version=ip_version, name=name, ongoing=ongoing,
+                               subtype=sub_type, sub_object=sub_object)
+    data = {'relationships': relationships, 'attributes': attributes}
+    raw_result = client.create_mitigation(data=data)
+    data = raw_result.get('data')
+    hr = build_human_readable(data)
+    return CommandResults(outputs_prefix='NASightline.Mitigation',
+                          outputs_key_field='id',
+                          outputs=data,
+                          readable_output=tableToMarkdown(f'Mitigation was created', hr),
+                          raw_response=raw_result)
+
+
+def mitigation_template_list_command(client: NetscoutClient, args: dict):
+    raw_result = client.mitigation_template_list()
+    data = raw_result.get('data')
+    data = data if isinstance(data, list) else [data]
+    hr = build_human_readable(data)
+    return CommandResults(outputs_prefix='NASightline.MitigationTemplate',
+                          outputs_key_field='id',
+                          outputs=data,
+                          readable_output=tableToMarkdown(f'Mitigation template list', hr),
+                          raw_response=raw_result)
+
+
+def router_list_command(client: NetscoutClient, args: dict):
+    raw_result = client.router_list()
+    data = raw_result.get('data')
+    data = data if isinstance(data, list) else [data]
+    hr = build_human_readable(data)
+    return CommandResults(outputs_prefix='NASightline.Router',
+                          outputs_key_field='id',
+                          outputs=data,
+                          readable_output=tableToMarkdown(f'Router list', hr),
+                          raw_response=raw_result)
+
+
+def managed_object_list_command(client: NetscoutClient, args: dict):
+    raw_result = client.managed_object_list()
+    data = raw_result.get('data')
+    data = data if isinstance(data, list) else [data]
+    hr = build_human_readable(data)
+    return CommandResults(outputs_prefix='NASightline.ManagedObject',
+                          outputs_key_field='id',
+                          outputs=data,
+                          readable_output=tableToMarkdown(f'Managed object list', hr),
+                          raw_response=raw_result)
+
+
+def tms_group_list(client: NetscoutClient, args: dict):
+    raw_result = client.tms_group_list()
+    data = raw_result.get('data')
+    data = data if isinstance(data, list) else [data]
+    hr = build_human_readable(data)
+    return CommandResults(outputs_prefix='NASightline.TMSGroup',
+                          outputs_key_field='id',
+                          outputs=data,
+                          readable_output=tableToMarkdown(f'TMS group list', hr),
                           raw_response=raw_result)
 
 
@@ -257,12 +446,22 @@ def main() -> None:
         args = demisto.args()
         if demisto.command() == 'test-module':
             result = test_module(client)
-        elif demisto.command() == 'na-sightline-alerts-list':
+        elif demisto.command() == 'na-sightline-alert-list':
             result = list_alerts_commands(client, args)
-        elif demisto.command() == 'na-sightline-alert-annotations':
-            result = alert_annotations_command(client, args)
-        elif demisto.command() == 'na-sightline-mitigations-list':
+        elif demisto.command() == 'na-sightline-alert-annotation-list':
+            result = alert_annotations_list_command(client, args)
+        elif demisto.command() == 'na-sightline-mitigation-list':
             result = mitigations_list_command(client, args)
+        elif demisto.command() == 'na-sightline-mitigation-create':
+            result = mitigations_create_command(client, args)
+        elif demisto.command() == 'na-sightline-mitigation-template-list':
+            result = mitigation_template_list_command(client, args)
+        elif demisto.command() == 'na-sightline-router-list':
+            result = router_list_command(client, args)
+        elif demisto.command() == 'na-sightline-managed-object-list':
+            result = managed_object_list_command(client, args)
+        elif demisto.command() == 'na-sightline-tms-group-list':
+            result = tms_group_list(client, args)
 
         return_results(result)
 
