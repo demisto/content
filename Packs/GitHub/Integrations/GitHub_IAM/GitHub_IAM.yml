@@ -7,11 +7,11 @@ configuration:
   name: url
   required: true
   type: 0
-- display: token
+- display: Token
   name: token
   required: true
   type: 4
-- display: organization name
+- display: Organization name
   name: org
   required: true
   type: 0
@@ -233,7 +233,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: false
   longRunning: false
