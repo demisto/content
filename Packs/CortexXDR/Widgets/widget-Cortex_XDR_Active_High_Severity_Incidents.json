@@ -13,21 +13,15 @@
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "6173e162-ff22-4f6c-835f-92f857225e56",
+    "id": "f2974c2d-ba6d-4deb-8d0e-be8122901b37",
     "isPredefined": true,
-    "name": "Cortex XDR Medium Severity Incidents",
+    "name": "Cortex XDR Active High Severity Incidents",
     "params": {
         "colors": {
             "isEnabled": true,
             "items": {
-                "#00CD33": {
-                    "value": null
-                },
-                "#9EABCD": {
-                    "value": 0
-                },
-                "#FAC100": {
-                    "value": 0
+                "#FF1B15": {
+                    "value": -1
                 }
             },
             "type": "above"
@@ -95,7 +89,7 @@
             }
         ]
     },
-    "query": "type:\"Cortex XDR Incident\" and severity:medium and status:Active",
+    "query": "type:\"Cortex XDR Incident\" and severity:High and status:Active",
     "size": 0,
     "version": -1,
     "widgetType": "trend",

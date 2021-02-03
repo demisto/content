@@ -8,15 +8,27 @@
             "byFrom": "days",
             "byTo": "",
             "field": "",
-            "fromValue": 30,
+            "fromValue": 7,
             "toValue": null
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "f39f1990-8c88-4e76-8fa7-a0e564692d77",
+    "id": "6173e162-ff22-4f6c-835f-92f857225e56",
     "isPredefined": true,
-    "name": "Cortex XDR Device Control Violations Incidents",
+    "name": "Cortex XDR Active Medium Severity Incidents",
     "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#00CD33": {
+                    "value": null
+                },
+                "#FAC100": {
+                    "value": -1
+                }
+            },
+            "type": "above"
+        },
         "tableColumns": [
             {
                 "isDefault": true,
@@ -80,10 +92,10 @@
             }
         ]
     },
-    "query": "type:\"Cortex XDR Device Control Violations\" and status:Active",
+    "query": "type:\"Cortex XDR Incident\" and severity:medium and status:Active",
     "size": 0,
     "version": -1,
-    "widgetType": "number",
+    "widgetType": "trend",
     "fromVersion": "6.0.0",
     "description": ""
 }

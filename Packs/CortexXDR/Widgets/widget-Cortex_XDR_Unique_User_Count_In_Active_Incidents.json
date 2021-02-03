@@ -15,7 +15,7 @@
     },
     "id": "9e85d49e-a870-4d78-882d-ddb8ea9c0f5f",
     "isPredefined": true,
-    "name": "Cortex XDR Unique User Count",
+    "name": "Cortex XDR Unique User Count In Active Incidents",
     "params": {
         "tableColumns": [
 

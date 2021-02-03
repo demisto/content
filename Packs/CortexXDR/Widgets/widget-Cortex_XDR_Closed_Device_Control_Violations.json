@@ -8,24 +8,15 @@
             "byFrom": "days",
             "byTo": "",
             "field": "",
-            "fromValue": 7,
+            "fromValue": 30,
             "toValue": null
         },
         "toDate": "0001-01-01T00:00:00Z"
     },
-    "id": "b49cb3c0-33e0-493d-8462-31929b4509e1",
+    "id": "2de3d4e6-573a-4c4e-86c1-85d57dbd88b7",
     "isPredefined": true,
-    "name": "Cortex XDR  Low Severity Incidents",
+    "name": "Cortex XDR Closed Device Control Violations",
     "params": {
-        "colors": {
-            "isEnabled": true,
-            "items": {
-                "#418ae6": {
-                    "value": 0
-                }
-            },
-            "type": "above"
-        },
         "tableColumns": [
             {
                 "isDefault": true,
@@ -89,10 +80,10 @@
             }
         ]
     },
-    "query": "type:\"Cortex XDR Incident\" and severity:Low and status:Active",
+    "query": "type:\"Cortex XDR Device Control Violations\" and status:Closed",
     "size": 0,
     "version": -1,
-    "widgetType": "trend",
+    "widgetType": "number",
     "fromVersion": "6.0.0",
     "description": ""
 }
