@@ -363,7 +363,7 @@ def say_hello_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     name = args.get('name')
     if not name:
-        raise ValueError('name not specified')
+        raise ValueError('name was not specified')
 
     # Call the Client function and get the raw response
     result = client.say_hello(name)
