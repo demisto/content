@@ -1,15 +1,14 @@
-fromversion: 6.0.0
+fromversion: 5.0.0
 description: This playbook polls a context key to check if a specific value exists.
-id: 7b617a6e-2b12-43cc-87e4-9d58818aec8a
+name: Context Polling - Generic
+id: Context Polling - Generic
 inputs:
-- description: 'The context key to poll for a value. Can contain ''.'', for example:
-    "ContextKey1.ContextKey2.ContextKey3"'
+- description: 'The context key to poll for a value. Can contain ''.'', for example: "ContextKey1.ContextKey2.ContextKey3"'
   key: key
   playbookInputQuery: null
   required: true
   value: {}
-id: Context Polling - Generic
-    which matches anything other than None.
+- description: 'The regex to check the field for. By default the regex contains .+, which matches anything other than None.'
   key: value
   playbookInputQuery: null
   required: true
@@ -27,9 +26,7 @@ id: Context Polling - Generic
   required: true
   value:
     simple: "10"
-name: Context Polling - Generic
 outputs: []
-sourceplaybookid: Field Polling - Generic
 starttaskid: "0"
 tasks:
   "0":
@@ -47,6 +44,7 @@ tasks:
       id: d66a3885-27e3-439d-8855-b5522c6dde35
       iscommand: false
       name: ""
+      description: ""
       version: -1
     taskid: d66a3885-27e3-439d-8855-b5522c6dde35
     timertriggers: []
@@ -132,6 +130,7 @@ tasks:
       id: 4652f620-ec05-47da-800c-76426f68efab
       iscommand: false
       name: Done
+      description: ""
       type: title
       version: -1
     taskid: 4652f620-ec05-47da-800c-76426f68efab
@@ -157,3 +156,5 @@ view: |-
       }
     }
   }
+tests:
+ -  No tests
