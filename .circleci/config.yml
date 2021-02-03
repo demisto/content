@@ -968,7 +968,7 @@ jobs:
       - when:
           condition:
             equal:
-              - fix-index-dates
+              - ipload-fix-dates-new
               - << pipeline.git.branch >>
           steps:
             - run:
@@ -1249,7 +1249,7 @@ workflows:
           filters:
             branches:
               only:
-                - fix-index-dates
+                - ipload-fix-dates-new
           requires:
             - Setup Environment
       - Force Upload Packs To Marketplace:
@@ -1257,11 +1257,12 @@ workflows:
           filters:
             branches:
               only:
-                - fix-index-dates
+                - ipload-fix-dates-new
           requires:
             - Create Instances
 
   instances_testing:
+    # for details of triggered builds see https://circleci.com/docs/2.0/workflows/#nightly-example
     # for details of triggered builds see https://circleci.com/docs/2.0/workflows/#nightly-example
     # for details of cron syntax see https://www.unix.com/man-page/POSIX/1posix/crontab/ disable-secrets-detection
     triggers:
