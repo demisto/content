@@ -1,9 +1,9 @@
 args:
-- name: fromDate
+- name: from
   description: 'The start date by which to filter incidents. Date format will be the
     same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
     +0200").'
-- name: toDate
+- name: to
   description: 'The end date by which to filter incidents. Date format will be the
     same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
     +0200").'

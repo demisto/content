@@ -7,16 +7,16 @@ from CommonServerPython import *  # noqa: F401
 def main():
     try:
         args = demisto.args()
-        last_seen_gte = args.get('fromDate')
-        last_seen_lte = args.get('toDate')
+        from_date = args.get('from')
+        to_date = args.get('to')
         limit = args.get('limit', '100')
 
         get_endpoints_args = {'limit': limit}
 
-        if last_seen_gte:
-            get_endpoints_args['last_seen_gte'] = last_seen_gte
-        if last_seen_lte and last_seen_lte != '0001-01-01T00:00:00Z':
-            get_endpoints_args['last_seen_lte'] = last_seen_lte
+        if from_date:
+            get_endpoints_args['last_seen_gte'] = from_date
+        if to_date and to_date != '0001-01-01T00:00:00Z':
+            get_endpoints_args['last_seen_lte'] = to_date
 
         res = demisto.executeCommand('xdr-get-endpoints', get_endpoints_args)
         if isError(res):

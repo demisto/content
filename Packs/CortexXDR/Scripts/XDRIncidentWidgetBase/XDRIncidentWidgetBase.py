@@ -72,8 +72,8 @@ def main():
 
         res_type = args.get('reultType')
         query_type = args.get('queryType')
-        to_date = args.get('toDate')
-        from_date = args.get('fromDate')
+        to_date = args.get('from')
+        from_date = args.get('to')
 
         try:
             limit = int(args.get('limit'))
