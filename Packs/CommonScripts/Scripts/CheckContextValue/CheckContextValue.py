@@ -1,8 +1,7 @@
 import re
 from typing import Any, Dict, Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+from CommonServerPython import *
 
 
 def check_key(field_value, regex=None):
