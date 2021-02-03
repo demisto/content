@@ -22,13 +22,7 @@ def poll_field(args: Dict[str, Any]) -> Tuple[str, dict, dict]:
     regex_ignore_case_flag = re.IGNORECASE if ignore_case else 0
     regex = re.compile(regex, regex_ignore_case_flag) if regex else None
 
-    context = demisto.context()
-    for k in key:
-        try:
-            context = context.get(k, {})
-        except Exception:
-            context = None
-            break
+    context = dict_safe_get(demisto.context(), keys_list)
 
     data = {
         'key': '.'.join(key),
