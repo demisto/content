@@ -6,7 +6,6 @@ import ast
 import json
 import glob
 import re
-import subprocess
 import sys
 import demisto_client
 from threading import Thread, Lock

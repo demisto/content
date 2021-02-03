@@ -266,7 +266,8 @@ def create_and_upload_marketplace_pack(upload_config: Any, pack: Any, storage_bu
         pack.cleanup()
         return
 
-    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key, private_artifacts_dir, secondary_enc_key)
+    task_status, zip_pack_path = pack.zip_pack(extract_destination_path, pack._pack_name, enc_key,
+                                               private_artifacts_dir, secondary_enc_key)
 
     if not task_status:
         pack.status = PackStatus.FAILED_ZIPPING_PACK_ARTIFACTS.name
@@ -357,8 +358,8 @@ def option_handler():
                         help="CircleCi build number (will be used as hash revision at index file)", required=False,
                         default=str(uuid.uuid4()))
     parser.add_argument('-inf', '--is_infra_run',
-                        help="Whether the upload run is an infrastructure one / nightly, or there are actual changes", required=False,
-                        type=str2bool, default=False)
+                        help="Whether the upload run is an infrastructure one / nightly, or there are actual changes",
+                        required=False, type=str2bool, default=False)
     parser.add_argument('-bn', '--branch_name', help="Name of the branch CI is being ran on.", default='unknown')
     parser.add_argument('-o', '--override_all_packs', help="Override all existing packs in cloud storage",
                         default=False, action='store_true', required=False)
