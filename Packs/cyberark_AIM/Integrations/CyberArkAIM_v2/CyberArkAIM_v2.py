@@ -54,7 +54,7 @@ class Client(BaseClient):
             kf.flush()
             return (cf.name, kf.name), cf, kf
 
-    def get_credentials(self, creds_object):
+    def get_credentials(self, creds_object: str):
         url_suffix = '/AIMWebService/api/Accounts'
         params = {
             "AppID": self._app_id,
@@ -90,12 +90,19 @@ def list_credentials_command(client):
     return results
 
 
-def fetch_credentials(client):
+def fetch_credentials(client, args: dict):
     """Fetches the available credentials.
     :param client: the client object with the given params
+    :param args: demisto args dict
     :return: a credentials object
     """
-    creds_list = client.list_credentials()
+    creds_name = args.get('identifier')
+    demisto.debug('name of cred used: ', creds_name)
+
+    if creds_name:
+        creds_list = [client.get_credentials(creds_name)]
+    else:
+        creds_list = client.list_credentials()
     credentials = []
     for cred in creds_list:
         credentials.append({
@@ -116,7 +123,6 @@ def test_module(client: Client) -> str:
 
 
 def main():
-
     params = demisto.params()
 
     url = params.get('url')
@@ -146,13 +152,13 @@ def main():
         command = demisto.command()
         demisto.debug(f'Command being called in CyberArk AIM is: {command}')
 
-        commands = {
-            'test-module': test_module,
-            'cyberark-aim-list-credentials': list_credentials_command,
-            'fetch-credentials': fetch_credentials
-        }
-        if command in commands:
-            return_results(commands[command](client))  # type: ignore[operator]
+        if command == 'test-module':
+            return_results(test_module(client))
+        elif command == 'cyberark-aim-list-credentials':
+            return_results(list_credentials_command(client))
+        elif command == 'fetch-credentials':
+            fetch_credentials(client, demisto.args())
+
         else:
             raise NotImplementedError(f'{command} is not an existing CyberArk AIM command')
     except Exception as err:
