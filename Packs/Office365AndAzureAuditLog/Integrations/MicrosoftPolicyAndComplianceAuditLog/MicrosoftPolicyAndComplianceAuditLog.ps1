@@ -282,13 +282,13 @@ class OAuth2DeviceCodeClient
         # Get new token using refresh token
         try {
             $params = @{
-                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
-                "Method" = "Post"
-                "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
-                "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
-                "NoProxy" = !$this.proxy
-                "SkipCertificateCheck" = $this.insecure
-            }
+            "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+            "Method" = "Post"
+            "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+            "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
+            "NoProxy" = !$this.proxy
+            "SkipCertificateCheck" = $this.insecure
+        }
             $response = Invoke-WebRequest @params
             $response_body = ConvertFrom-Json $response.Content
         }
@@ -503,7 +503,7 @@ class ExchangeOnlineClient
         } else {
             $cmd_args.ResultSize = 5000
         }
-        return Search-UnifiedAuditLog @cmd_args
+        return Search-UnifiedAuditLog @cmd_args -ErrorAction Stop
     }
 }
 
@@ -567,12 +567,27 @@ function SearchAuditLogCommand{
     {
         $client.CreateSession()
         if ($kwargs.end_date){
-            $end_date = $kwargs.end_date
+            $end_date = Get-Date $kwargs.end_date
         } else {
-            $end_date = Get-Date -AsUTC
+            $end_date = Get-Date
         }
+        try {
+            # If parse date range works, it is fine. The end date will be automatically now.
+            $start_date, $end_date = ParseDateRange $kwargs.start_date
+        } catch {
+            try
+            {
+                # If it didn't work, it should be a date.
+                $start_date = Get-Date $kwargs.start_date
+            } catch {
+                # If it's not a date and not a date range - throw.
+                $start_date = $kwargs.start_date
+                throw "start_date ('$start_date') is not a date range or a valid date "
+            }
+        }
+
         $raw_response = $client.SearchUnifiedAuditLog(
-                $kwargs.start_date,
+                $start_date,
                 $end_date,
                 $kwargs.free_text,
                 $kwargs.record_type,
@@ -585,7 +600,7 @@ function SearchAuditLogCommand{
         foreach ($item in $raw_response){
             $list.add((ConvertFrom-Json $item.AuditData))
         }
-        $human_readable = TableToMarkdown $list.ToArray() "Audit log"
+        $human_readable = TableToMarkdown $list.ToArray() "Audit log from $start_date to $end_date"
         $context = @{
             "$script:INTEGRATION_ENTRY_CONTEXT.AuditLog(val.Id === obj.Id)" = $list
         }
