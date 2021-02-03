@@ -1,0 +1,31 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "test",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "fieldCalcScript": "hideFieldsOnNewIncident",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_test",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "TEST",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "emailFieldTriggered",
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
