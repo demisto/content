@@ -410,10 +410,12 @@ tasks:
     scriptarguments:
       instance_id:
         complex:
-          root: Nexpose.Report.InstanceID
+          root: Nexpose
+          accessor: Report.InstanceID
       report_id:
         complex:
-          root: Nexpose.Report.ID
+          root: Nexpose
+          accessor: Report.ID
     separatecontext: false
     view: |-
       {
@@ -450,7 +452,9 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Nexpose.Report.Status
+              complex:
+                root: Nexpose
+                accessor: Report.Status
             iscontext: true
           right:
             value:
