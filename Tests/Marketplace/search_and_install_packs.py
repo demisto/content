@@ -51,6 +51,8 @@ def is_pack_hidden(pack_id: str) -> bool:
         with open(metadata_path, 'r') as json_file:
             pack_metadata = json.load(json_file)
             return pack_metadata.get('hidden', False)
+    else:
+        logging.warning(f'Could not open metadata file of pack {pack_id}')
     return False
 
 
