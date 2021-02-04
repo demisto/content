@@ -113,7 +113,7 @@ tasks:
       version: -1
       name: Forensics Tools Analysis
       description: This playbook allows the user to analyze forensic evidence acquired
-        from a host, such as registry files, memory dump filesm and PCAP files.
+        from a host, such as registry files, memory dump files, and PCAP files.
       playbookName: Forensics Tools Analysis
       type: playbook
       iscommand: false
