@@ -2,7 +2,6 @@ PhishTank is a free community site where anyone can submit, verify, track and sh
 This integration was integrated and tested with version 1.0.1 of PhishTank.
 ## Configure PhishTankV2 on Cortex XSOAR
 
-
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for PhishTankV2.
 3. Click **Add instance** to create and configure a new integration instance.
