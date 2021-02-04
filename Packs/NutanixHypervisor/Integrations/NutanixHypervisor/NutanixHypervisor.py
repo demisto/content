@@ -162,9 +162,7 @@ class Client(BaseClient):
                                                            impact_types=impact_types, entity_types=None, page=None,
                                                            limit=None)
 
-        alerts = response.get('entities')
-
-        add_iso_entries_to_dict(alerts)
+        alerts = sanitize_outputs(response.get('entities'))
 
         incidents: List[Dict[str, Any]] = []
 
@@ -473,6 +471,21 @@ def task_exists(client: Client, task_id: str) -> bool:
         raise e
 
 
+def sanitize_outputs(outputs: List[Dict]) -> List[Dict]:
+    """
+    Sanitizes outputs, adds ISO entries to outputs if needed, and
+    removes empty elements.
+    Args:
+        outputs (List[Dict]): The outputs to sanitize.
+
+    Returns:
+        Outputs with additional ISO entries if needed, and all empty elements removed.
+    """
+    outputs_without_empty_elements = [remove_empty_elements(output) for output in outputs]
+    add_iso_entries_to_dict(outputs_without_empty_elements)
+    return outputs_without_empty_elements
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -558,9 +571,7 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
                     if k in HOST_FIELDS_NOT_VERBOSE}
                    for raw_output in raw_outputs]
 
-    add_iso_entries_to_dict(outputs)
-
-    final_outputs = [remove_empty_elements(output) for output in outputs]
+    final_outputs = sanitize_outputs(outputs)
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Host',
@@ -598,16 +609,14 @@ def nutanix_hypervisor_vms_list_command(client: Client, args: Dict):
 
     raw_response = client.get_nutanix_hypervisor_vms_list(filter_, offset, limit)
 
-    outputs = raw_response.get('entities')
-
-    final_outputs = [remove_empty_elements(output) for output in outputs]
+    outputs = sanitize_outputs(raw_response.get('entities'))
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.VM',
         outputs_key_field='uuid',
-        outputs=final_outputs,
-        readable_output=tableToMarkdown('Nutanix Virtual Machines List', final_outputs,
-                                        get_human_readable_headers(final_outputs)),
+        outputs=outputs,
+        readable_output=tableToMarkdown('Nutanix Virtual Machines List', outputs,
+                                        get_human_readable_headers(outputs)),
         raw_response=raw_response
     )
 
@@ -678,9 +687,7 @@ def nutanix_hypervisor_task_results_get_command(client: Client, args: Dict):
         progress_status = 'In Progress' if task_exists(client, uncompleted_task_id) else 'Task Was Not Found'
         outputs.append({'uuid': uncompleted_task_id, 'progress_status': progress_status})
 
-    add_iso_entries_to_dict(outputs)
-
-    final_outputs = [remove_empty_elements(output) for output in outputs]
+    final_outputs = sanitize_outputs(outputs)
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Task',
@@ -756,24 +763,19 @@ def nutanix_hpyervisor_alerts_list_command(client: Client, args: Dict):
                                                              acknowledged, severity,
                                                              alert_type_ids, impact_types, entity_types,
                                                              page, limit)
-    raw_outputs = raw_response.get('entities')
 
-    if verbose:
-        outputs = copy.deepcopy(raw_outputs)
-    else:
+    outputs = sanitize_outputs(raw_response.get('entities'))
+
+    if not verbose:
         outputs = [{k: v for k, v in raw_output.items()
                     if k in ALERT_FIELDS_NOT_VERBOSE}
-                   for raw_output in raw_outputs]
-
-    add_iso_entries_to_dict(outputs)
-
-    final_outputs = [remove_empty_elements(output) for output in outputs]
+                   for raw_output in outputs]
 
     return CommandResults(
         outputs_prefix='NutanixHypervisor.Alerts',
         outputs_key_field='id',
-        outputs=final_outputs,
-        readable_output=tableToMarkdown('Nutanix Alert List', final_outputs, get_human_readable_headers(final_outputs)),
+        outputs=outputs,
+        readable_output=tableToMarkdown('Nutanix Alert List', outputs, get_human_readable_headers(outputs)),
         raw_response=raw_response
     )
 
