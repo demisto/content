@@ -259,10 +259,11 @@ script:
                     }
                 }
 
-                // if no records were fetched, then we set the currentFetch to now time as in later runs we could send
-                // a big query with old timestamp that could cause a timeout
+                // if no records were fetched, then we set the currentFetch to (now time - 1 minute) as in
+                // later runs we could send a big query with old timestamp that could cause a timeout
+                // we are setting to (now - 1 minute) to avoid missing events
                 if (updatedCurrentFetch === currentFetch) {
-                    currentFetch = now;
+                    currentFetch = now - (60 * 1000);
                 } else {
                     currentFetch = updatedCurrentFetch;
                 }
