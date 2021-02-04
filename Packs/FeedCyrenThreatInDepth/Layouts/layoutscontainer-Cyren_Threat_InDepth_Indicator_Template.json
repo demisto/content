@@ -1,4 +1,5 @@
 {
+    "description": "This template contains layouts and widgets to be used in Indicator Quick Views and Summaries. Besides general information Cyren Threat InDepth provides detailed information and relationship information on each indicator.",
     "group": "indicator",
     "id": "Cyren Threat InDepth Indicator Template",
     "indicatorsDetails": {
@@ -170,6 +171,15 @@
                                 "id": "f1eb5220-4f6e-11eb-9734-39b78acb9fd7",
                                 "index": 0,
                                 "listId": "iufi8jtdew-815234d0-4f6d-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 3
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "cyrencountryname",
+                                "height": 53,
+                                "id": "3a379770-66ce-11eb-964b-b5485262f529",
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 3
                             }
@@ -479,9 +489,9 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "malwarefamily",
-                                "height": 22,
-                                "id": "55ea76a0-4f71-11eb-9734-39b78acb9fd7",
+                                "fieldId": "cyrenmalwarefamily",
+                                "height": 53,
+                                "id": "1fa56040-66ce-11eb-964b-b5485262f529",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -610,7 +620,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideName": false,
                         "i": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
                         "items": [
@@ -628,7 +638,7 @@
                                 "fieldId": "cyrenobjecttype",
                                 "height": 22,
                                 "id": "301b65a0-4f72-11eb-9734-39b78acb9fd7",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -637,7 +647,7 @@
                                 "fieldId": "cyrenprotocol",
                                 "height": 22,
                                 "id": "350a0fd0-4f72-11eb-9734-39b78acb9fd7",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -646,7 +656,7 @@
                                 "fieldId": "cyrenport",
                                 "height": 22,
                                 "id": "36882450-4f72-11eb-9734-39b78acb9fd7",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -655,7 +665,7 @@
                                 "fieldId": "cyrenipclass",
                                 "height": 22,
                                 "id": "3330bbf0-4f72-11eb-9734-39b78acb9fd7",
-                                "index": 5,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -664,7 +674,7 @@
                                 "fieldId": "cyrenipintensity",
                                 "height": 22,
                                 "id": "3d653100-4f72-11eb-9734-39b78acb9fd7",
-                                "index": 6,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -674,6 +684,17 @@
                                 "fieldId": "cyrencountrycode",
                                 "height": 22,
                                 "id": "4225ed60-4f72-11eb-9734-39b78acb9fd7",
+                                "index": 6,
+                                "listId": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "cyrencountryname",
+                                "height": 22,
+                                "id": "4489a6a0-66ce-11eb-964b-b5485262f529",
                                 "index": 7,
                                 "listId": "i9sfyzkmx9-b0057ae0-4f71-11eb-9734-39b78acb9fd7",
                                 "sectionItemType": "field",
@@ -927,9 +948,9 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "malwarefamily",
+                                "fieldId": "cyrenmalwarefamily",
                                 "height": 22,
-                                "id": "6b138700-4f72-11eb-9734-39b78acb9fd7",
+                                "id": "2635faa0-66ce-11eb-964b-b5485262f529",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -953,6 +974,5 @@
     "name": "Cyren Threat InDepth Indicator Template",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": "This template contains layouts and widgets to be used in Indicator Quick Views and Summaries. Besides general information Cyren Threat InDepth provides detailed information and relationship information on each indicator."
+    "fromVersion": "6.0.0"
 }
