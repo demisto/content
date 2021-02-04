@@ -1,164 +1,108 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
+# IMPORTS
+from datetime import datetime
 import requests
-import traceback
-from typing import Dict, Any
+from typing import List, Tuple, Optional
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-
-
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
-''' CLIENT CLASS '''
+requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    def __init__(self, client_id, client_secret, base_url, verify, proxy):
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._verify_certificate = verify
+        super().__init__(base_url=base_url, verify=self._verify_certificate,
+                         ok_codes=tuple(), proxy=proxy)
+        self._token = self._get_access_token()
+        self._headers = {'Authorization': 'Bearer ' + self._token}
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    def http_request(self, method, url_suffix, full_url=None, headers=None, json_data=None, params=None, data=None,
+                     files=None, timeout=10, ok_codes=None, return_empty_response=False, auth=None):
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
+        return super()._http_request(method=method, url_suffix=url_suffix, full_url=full_url, headers=headers,
+                                     json_data=json_data, params=params, data=data, files=files, timeout=timeout,
+                                     ok_codes=ok_codes, return_empty_response=return_empty_response, auth=auth)
 
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
-
-''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-''' COMMAND FUNCTIONS '''
+    def _get_access_token(self) -> str:
+        body = {
+            'client_id': self._client_id,
+            'client_secret': self._client_secret
+        }
+        token_res = self.http_request('POST', '/oauth2/token', data=body, auth=(self._client_id, self._client_secret))
+        return token_res.get('access_token')
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+def fetch_indicators(client: Client, feed_tags, tlp_color, include_deleted, _type, malicious_confidence, _filter, q):
+    raise Exception('TODO')
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
 
-    :type client: ``Client``
-    :param Client: client to use
+def crowdstrike_indicators_list_command(client: Client, args: dict):
+    include_deleted = args.get('include_deleted')
+    _type = args.get('type')
+    malicious_confidence = args.get('malicious_confidence')
+    _filter = args.get('filter')
+    q = args.get('generic_phrase_match')
 
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
 
-    message: str = ''
+def test_module(client: Client, args: dict):
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
-
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+        # TODO
+        args.get('TODO')
+    except Exception:
+        raise Exception("Could not fetch CrowdStrike Indicator Feed\n"
+                        "\nCheck your API key and your connection to CrowdStrike.")
+    return 'ok', {}, {}
 
 
 ''' MAIN FUNCTION '''
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
-    """
-
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('apikey')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
+    params = demisto.params()
+    client_id = params.get('client_id')
+    client_secret = params.get('client_secret')
+    proxy = params.get('proxy', False)
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    feed_tags = argToList(params.get('feedTags'))
+    base_url = "https://api.crowdstrike.com/"
+    tlp_color = params.get('tlp_color')
+    include_deleted = params.get('include_deleted')
+    _type = params.get('type')
+    malicious_confidence = params.get('malicious_confidence')
+    _filter = params.get('filter')
+    q = params.get('q')
+    command = demisto.command()
+    args = demisto.args()
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
         client = Client(
+            client_id=client_id,
+            client_secret=client_secret,
             base_url=base_url,
             verify=verify_certificate,
-            headers=headers,
             proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, args)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif command == 'fetch-indicators':
+            indicators = fetch_indicators(client, feed_tags, tlp_color, include_deleted, _type, malicious_confidence,
+                                          _filter, q)
+            # we submit the indicators in batches
+            for b in batch(indicators, batch_size=2000):
+                demisto.createIndicators(b)
+
+        elif command == 'crowdstrike-indicators-list':
+            crowdstrike_indicators_list_command(client, args)
 
     # Log exceptions and return errors
     except Exception as e:

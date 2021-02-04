@@ -14,6 +14,7 @@ configuration:
   type: 4
 - additionalinfo: Indicators from this integration instance will be marked with this
     reputation
+  defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -23,7 +24,6 @@ configuration:
   - Bad
   required: false
   type: 18
-  defaultvalue: Good
 - additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
   display: Source Reliability
@@ -37,8 +37,9 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- defaultvalue: GREEN
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
+  defaultvalue: GREEN
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -49,7 +50,6 @@ configuration:
   required: false
   type: 15
 - defaultvalue: indicatorType
-  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -59,7 +59,6 @@ configuration:
   required: false
   type: 17
 - defaultvalue: '20160'
-  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
@@ -86,7 +85,36 @@ configuration:
   name: client_secret
   required: true
   type: 4
-description: 'CrowdStrike Falcon Intel Indicator Feed'
+- defaultvalue: 'false'
+  display: Include deleted indicators
+  hidden: false
+  name: include_deleted
+  options:
+  - 'false'
+  - 'true'
+  required: false
+  type: 15
+- display: Type
+  hidden: false
+  name: type
+  required: false
+  type: 0
+- display: Malicious confidence
+  hidden: false
+  name: malicious_confidence
+  required: false
+  type: 0
+- display: Filter
+  hidden: false
+  name: filter
+  required: false
+  type: 0
+- display: Generic phrase match
+  hidden: false
+  name: q
+  required: false
+  type: 0
+description: CrowdStrike Falcon Intel Indicator Feed
 display: CrowdStrike Indicator Feed
 name: CrowdStrike Indicator Feed
 script:
@@ -104,15 +132,49 @@ script:
       name: offset
       required: false
       secret: false
+    - default: false
+      description: Include deleted indicators.
+      isArray: false
+      name: include_deleted
+      required: false
+      secret: false
+    - default: false
+      description: indicator type.
+      isArray: false
+      name: type
+      required: false
+      secret: false
+    - default: false
+      description: Malicious Confidence
+      isArray: false
+      name: malicious_confidence
+      required: false
+      secret: false
+    - default: false
+      description: Indicators filter
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: generic phrase match
+      isArray: false
+      name: generic_phrase_match
+      required: false
+      secret: false
+    deprecated: false
     description: Gets indicators from Crowdstrike Falcon Intel Feed.
-    name: get-indicators
+    execution: false
+    name: crowdstrike-indicators-list
+  dockerimage: demisto/python3:3.8.6.14516
   feed: true
   isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
   script: '-'
-  type: python
   subtype: python3
-  dockerimage: demisto/python3:3.8.6.14516
-fromversion: 5.0.0
+  type: python
 tests:
 - No tests
+fromversion: 5.0.0
