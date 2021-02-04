@@ -562,10 +562,12 @@ def nutanix_hypervisor_hosts_list_command(client: Client, args: Dict):
     raw_response = client.get_nutanix_hypervisor_hosts_list(filter_, limit, page)
     raw_outputs = raw_response.get('entities')
 
+    # if verbose - remove fields that should be removed always
     if verbose:
         outputs = [{k: v for k, v in raw_output.items()
                     if k not in NUTANIX_HOST_FIELDS_TO_REMOVE}
                    for raw_output in raw_outputs]
+    # if not verbose - output only fields that should be outputted.
     else:
         outputs = [{k: v for k, v in raw_output.items()
                     if k in HOST_FIELDS_NOT_VERBOSE}
@@ -766,6 +768,7 @@ def nutanix_hpyervisor_alerts_list_command(client: Client, args: Dict):
 
     outputs = sanitize_outputs(raw_response.get('entities'))
 
+    # if not verbose - output only fields that should be outputted.
     if not verbose:
         outputs = [{k: v for k, v in raw_output.items()
                     if k in ALERT_FIELDS_NOT_VERBOSE}
