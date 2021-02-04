@@ -2,9 +2,9 @@ id: PS-Remote Acquire Host Forensics
 version: -1
 name: PS-Remote Acquire Host Forensics
 description: This playbook allows the user to gather multiple forensic data from a
-  windows endpoint. Including network traffic, MFT (Master File Table) or registry
-  export by using the PS remote automation which enables to connect to a windows host
-  without the need to install any 3rd party tools using just native Windows management
+  Windows endpoint including network traffic, MFT (Master File Table), and registry
+  export by using the PS Remote automation which enables connecting to a Windows host
+  without the need to install any 3rd-party tools using just native Windows management
   tools.
 starttaskid: "0"
 tasks:
@@ -45,9 +45,9 @@ tasks:
       id: b420f60c-eb1b-4ac3-8b35-93972d1ec7b7
       version: -1
       name: PS-Remote Get Registry
-      description: This playbook leverages the windows builtin Powershell and WinRM
+      description: This playbook leverages the Windows built-in PowerShell and WinRM
         capabilities to connect to a Windows host to acquire and export the registry
-        as a forensic evidence for further analysis. The capture can be for the entire
+        as forensic evidence for further analysis. The capture can be for the entire
         registry or for a specific hive or path.
       playbookName: PS-Remote Get Registry
       type: playbook
@@ -249,11 +249,11 @@ tasks:
       id: 99ace9d4-ba58-4fb1-81bd-0f5cb3a8369c
       version: -1
       name: PS-Remote Get Network Traffic
-      description: This playbook leverages the windows builtin Powershell and WinRM
-        capabilities to connect to a Windows host and then the Netsh tool to create
-        an ETL file which is the equivalent of a Wireshark PCAP file by using PS-Remote
-        integration. After receiving the resultant ETL,  XSOAR will be able to convert
-        the ETL to a PCAP file to be parsed and enriched later on.
+      description: This playbook leverages the Windows built-in PowerShell and WinRM
+        capabilities to connect to a Windows host and then use the Netsh tool to create
+        an ETL file which is the equivalent of a Wireshark PCAP file by using the PowerShell Remoting
+        integration. After receiving the resultant ETL, XSOAR will convert
+        the ETL to a PCAP file to be parsed and enriched later.
       playbookName: PS-Remote Get Network Traffic
       type: playbook
       iscommand: false
@@ -308,9 +308,9 @@ tasks:
       id: 617d2a7e-00a3-419d-85cc-c4b356293c66
       version: -1
       name: PS-Remote Get MFT
-      description: This playbook leverages the windows builtin Powershell and WinRM
+      description: This playbook leverages the Windows built-in PowerShell and WinRM
         capabilities to connect to a Windows host to acquire and export the MFT (Master
-        File Table) as a forensic evidence for further analysis.
+        File Table) as forensic evidence for further analysis.
       playbookName: PS-Remote Get MFT
       type: playbook
       iscommand: false
@@ -364,8 +364,8 @@ tasks:
       id: fc934299-715b-4167-8f19-9ab015b24659
       version: -1
       name: Set PCAP details
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in the context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -402,8 +402,8 @@ tasks:
       id: 5029298e-3a5c-4fdb-8d43-6f75624a4dc9
       version: -1
       name: Set MFT details
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in the context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -441,8 +441,8 @@ tasks:
       id: 7c028be0-a979-46e4-8cc5-e2a3ba93528f
       version: -1
       name: Set registry file details
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script doesn't do anything.
+      description: Set a value in the context under the key you entered. If no value is
+        entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -505,17 +505,17 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: The host name for which to export the registry file. For example testpc01
+  description: The host name for which to export the registry file. For example, testpc01.
   playbookInputQuery:
 outputs:
 - contextPath: PcapDetails
-  description: Pcap file details.
+  description: PCAP file details.
   type: string
 - contextPath: RegistryDetails
   description: Registry file details.
   type: string
 - contextPath: MftDetails
-  description: MFT file details
+  description: MFT file details.
   type: string
 tests:
 - No tests (auto formatted)

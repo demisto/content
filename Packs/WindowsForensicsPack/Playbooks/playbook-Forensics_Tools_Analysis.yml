@@ -3,7 +3,7 @@ contentitemexportablefields:
     propagationLabels:
     - all
 description: This playbook allows the user to analyze forensic evidence acquired from
-  a host. Such as registry files, memory dump files or PCAP files.
+  a host, such as registry files, memory dump files, and PCAP files.
 id: Forensics Tools Analysis
 inputs:
 - description: The entryid for the PCAP file to analyze.
@@ -71,9 +71,9 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This playbook leverages the Regipy tool to perform registry analysis
-        and extract forensic artifacts.  The Automation includes common registry objects
-        to extract which are useful for analyzing registry or a user provides registry
+      description: This playbook leverages the Registry Parse automation to perform registry analysis
+        and extract forensic artifacts. The automation includes common registry objects
+        to extract which are useful for analyzing a registry or a user provides registry
         path to parse.
       id: 1f2906b2-124b-45dc-872f-92e3a21cb918
       iscommand: false
@@ -249,7 +249,7 @@ tasks:
         the PCAP. The values to search are IP addresses, CIDR ranges, and TCP or UDP
         ports or protocols. In the event that more than one input type was specified,
         specify in the QueryOperator input (such as IP addresses and TCP ports) if
-        the PCAP filter query will use an AND or an OR operator between the inputs.  Another
+        the PCAP filter query will use an AND or an OR operator between the inputs. Another
         option is to use advanced filters just like in Wireshark to use refined filters
         or for objects not specified in other inputs. Additional inputs allow the
         user to provide the WPA password for decrypting 802.11 (wireless) traffic

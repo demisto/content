@@ -1,10 +1,10 @@
-This playbook allows the user to analyze forensic evidence acquired from a host. Such as registry files, memory dump files or PCAP files.
+This playbook allows the user to analyze forensic evidence acquired from a host, such as registry files, memory dump files, and PCAP files.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Regipy Data Analysis
+* Registry Parse Data Analysis
 * PCAP Search
 
 ### Integrations
