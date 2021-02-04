@@ -14,32 +14,32 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
+        "Asset": {
+            "mandatory": false,
+            "display_name": "Asset"
+        },
         "AccessInvestigation": {
             "mandatory": false,
             "display_name": "Access Investigation"
         },
-        "CommonTypes": {
+        "CommonScripts": {
             "mandatory": true,
-            "display_name": "Common Types"
+            "display_name": "Common Scripts"
         },
         "CommonPlaybooks": {
             "mandatory": true,
             "display_name": "Common Playbooks"
         },
-        "Asset": {
+        "CommonTypes": {
             "mandatory": true,
-            "display_name": "Asset"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
+            "display_name": "Common Types"
         }
     },
     "displayedImages": [
-        "AccessInvestigation",
-        "CommonTypes",
-        "CommonPlaybooks",
         "Asset",
-        "CommonScripts"
+        "AccessInvestigation",
+        "CommonScripts",
+        "CommonPlaybooks",
+        "CommonTypes"
     ]
 }
