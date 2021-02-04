@@ -1536,6 +1536,8 @@ def main():
             set_library_log_detail_level(last_log_detail_level)
 
 
+from IAMApiModule import *  # noqa: E402
+
 # python2 uses __builtin__ python3 uses builtins
 if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()

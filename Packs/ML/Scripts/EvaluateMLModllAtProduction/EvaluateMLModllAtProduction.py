@@ -30,7 +30,7 @@ def get_phishing_map_labels(comma_values):
     return {k: canonize_label(v) for k, v in labels_dict.items()}
 
 
-def get_data_with_mapped_label(y_true_list, y_pred_list, y_pred_prob_list, labels_mapping):
+def get_data_with_mapped_label(y_true_list, labels_mapping):
     mapped_y_true = []
     relevant_indices = []
     for i, y_true in enumerate(y_true_list):
@@ -118,7 +118,7 @@ def main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob
         if y_pred_prob_field not in i:
             incidents_with_missing_pred_prob += 1
         y_pred_prob.append(i.get(y_pred_prob_field, None))
-    y_true, relevant_indices = get_data_with_mapped_label(y_true, y_pred, y_pred_prob_field, labels_mapping)
+    y_true, relevant_indices = get_data_with_mapped_label(y_true, labels_mapping)
     y_pred = [y_pred[i] for i in relevant_indices]
     y_pred_prob = [y_pred_prob[i] for i in relevant_indices]
     incidents = [incidents[i] for i in relevant_indices]
