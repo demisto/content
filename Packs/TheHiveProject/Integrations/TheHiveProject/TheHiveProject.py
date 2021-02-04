@@ -564,7 +564,7 @@ def update_observable_command(client: Client, args: dict):
 
 def get_mapping_fields_command(client: Client, args: dict) -> Dict[str, Any]:
     instance_name = demisto.integrationInstance()
-    SCHEMA['dbotMirrorDirection'] = self.mirroring
+    SCHEMA['dbotMirrorDirection'] = client.mirroring
     SCHEMA['dbotMirrorInstance'] = instance_name
     return {"Default Schema": SCHEMA}
 
