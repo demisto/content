@@ -41,4 +41,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![QRadar Generic](Insert the link to your image here)
+![QRadar Generic](https://raw.githubusercontent.com/demisto/content/da7d9073aa658bd7df7feb6c70871335a3616d3f/Packs/QRadar/doc_files/QRadar_Generic.png)
