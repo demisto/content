@@ -1,0 +1,17 @@
+{
+    "name": "Simple Email Reputation",
+    "description": "EmailRep is a system of crawlers, scanners and enrichment services that collects data on email addresses, domains, and internet personas. EmailRep uses hundreds of data points from social media profiles, professional networking sites, dark web credential leaks, data breaches, phishing kits, phishing emails, spam lists, open mail relays, domain age and reputation, deliverability, and more to predict the risk of an email address.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "DNB Bank ASA",
+    "url": "",
+    "email": "",
+    "created": "2021-02-04T14:50:24Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "znuf"
+    ]
+}
