@@ -26,7 +26,7 @@ args:
     Try to keep your searches as exact as possible, for example registry_path=`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows
     NT\CurrentVersion\AeDebug\AutoExclusionList`. Support comma-sep list.
   name: customRegistryPaths
-comment: "This command uses the regipy tool to extract critical forensics data from\
+comment: "This command uses the Registry Parse automation to extract critical forensics data from\
   \ a registry file. The essential values are specified by the argument. \n"
 commonfields:
   id: RegistryParse
