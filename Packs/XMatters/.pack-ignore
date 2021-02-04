@@ -1,6 +1,7 @@
-xMatters-Test.yml
 [file:xMatters.yml]
 ignore=IN136
 
 [file:README.md]
 ignore=RM102
+
+xMatters-Test.yml
