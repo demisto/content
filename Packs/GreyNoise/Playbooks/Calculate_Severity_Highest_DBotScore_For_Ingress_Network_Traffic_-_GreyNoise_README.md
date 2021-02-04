@@ -32,4 +32,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![Calculate Severity Highest DBotScore For Ingress Network Traffic - GreyNoise](Calculate_Severity_Highest_DBotScore_For_Ingress_Network_Traffic_-_GreyNoise.png)
+![Calculate Severity Highest DBotScore For Ingress Network Traffic - GreyNoise](./../doc_files/Calculate_Severity_Highest_DBotScore_For_Ingress_Network_Traffic_-_GreyNoise.png)

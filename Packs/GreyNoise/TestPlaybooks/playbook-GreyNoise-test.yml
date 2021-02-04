@@ -1,19 +1,19 @@
 id: GreyNoise-Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: GreyNoise-Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: e341ba62-a046-41d8-86a1-c6c7ac74600a
+    taskid: d10c3fb2-3b14-4997-8e76-0bf3165b324f
     type: start
     task:
-      id: e341ba62-a046-41d8-86a1-c6c7ac74600a
+      id: d10c3fb2-3b14-4997-8e76-0bf3165b324f
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -32,10 +32,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 56b84340-d08a-4c38-80d6-929586dbf490
+    taskid: 0b2ee48c-0659-4a4e-886d-4346c0b59d4e
     type: regular
     task:
-      id: 56b84340-d08a-4c38-80d6-929586dbf490
+      id: 0b2ee48c-0659-4a4e-886d-4346c0b59d4e
       version: -1
       name: DeleteContext
       description: Delete existing context data.
@@ -58,7 +58,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 180
+          "y": 195
         }
       }
     note: false
@@ -68,10 +68,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: e9121dc6-e068-461e-8be0-c25f7ce68894
+    taskid: 966952be-d3bc-4e78-8632-247a0abf5635
     type: regular
     task:
-      id: e9121dc6-e068-461e-8be0-c25f7ce68894
+      id: 966952be-d3bc-4e78-8632-247a0abf5635
       version: -1
       name: ip
       description: Retrieves reputation of the IP.
@@ -92,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1390
+          "y": 1070
         }
       }
     note: false
@@ -102,10 +102,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 953d454d-b91e-4cdc-8cdd-bb7b8785402b
+    taskid: 77f0b6c9-eb1e-4a4e-8a53-014d553f5e70
     type: condition
     task:
-      id: 953d454d-b91e-4cdc-8cdd-bb7b8785402b
+      id: 77f0b6c9-eb1e-4a4e-8a53-014d553f5e70
       version: -1
       name: Verify Outputs
       description: Verify context data set by the previous command.
@@ -164,71 +164,6 @@ tasks:
             value:
               simple: IP.Geo.Description
             iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "4":
-    id: "4"
-    taskid: 3f125445-7c18-4ee9-892c-553fcc0a584e
-    type: regular
-    task:
-      id: 3f125445-7c18-4ee9-892c-553fcc0a584e
-      version: -1
-      name: greynoise-ip-context
-      description: Retrieves context data for IP.
-      script: '|||greynoise-ip-context'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      ip:
-        complex:
-          root: GreyNoise.IP
-          accessor: address
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 680
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "5":
-    id: "5"
-    taskid: 8056096c-a255-4795-8c2b-83e93d558626
-    type: condition
-    task:
-      id: 8056096c-a255-4795-8c2b-83e93d558626
-      version: -1
-      name: Verify Outputs
-      description: Verify context data set by the previous command.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "6"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
       - - operator: isExists
           left:
             value:
@@ -313,7 +248,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 860
+          "y": 1245
         }
       }
     note: false
@@ -323,10 +258,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 0826f47a-548e-4ef4-8fd3-c5f6fd6aec87
+    taskid: 225eeab0-5162-4cd2-8170-97597bf7fb20
     type: regular
     task:
-      id: 0826f47a-548e-4ef4-8fd3-c5f6fd6aec87
+      id: 225eeab0-5162-4cd2-8170-97597bf7fb20
       version: -1
       name: greynoise-ip-quick-check
       description: Retrieves quick check data for IP.
@@ -347,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1050
+          "y": 720
         }
       }
     note: false
@@ -357,10 +292,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 2efad191-dc51-43ed-8b3e-7300c7ab8af0
+    taskid: fe8a83be-4142-44c7-8761-e0d1a1a41f1f
     type: condition
     task:
-      id: 2efad191-dc51-43ed-8b3e-7300c7ab8af0
+      id: fe8a83be-4142-44c7-8761-e0d1a1a41f1f
       version: -1
       name: Verify Outputs
       description: Verify context data set by the previous command.
@@ -398,7 +333,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1200
+          "y": 895
         }
       }
     note: false
@@ -408,10 +343,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: f5cf34c4-31af-4e65-80e8-663f2fbec7a5
+    taskid: 66034cc7-14b8-4c90-881d-81e640f3c886
     type: regular
     task:
-      id: f5cf34c4-31af-4e65-80e8-663f2fbec7a5
+      id: 66034cc7-14b8-4c90-881d-81e640f3c886
       version: -1
       name: greynoise-query
       description: Retrieves single record from GreyNoise using a query command.
@@ -438,7 +373,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 330
+          "y": 370
         }
       }
     note: false
@@ -448,10 +383,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 21c83cf0-c1da-404c-84be-8c872355cb0d
+    taskid: 6d0f8e33-fd90-48e6-817d-8267b24d128a
     type: condition
     task:
-      id: 21c83cf0-c1da-404c-84be-8c872355cb0d
+      id: 6d0f8e33-fd90-48e6-817d-8267b24d128a
       version: -1
       name: Verify Outputs
       description: Verify context data set by the previous command.
@@ -460,7 +395,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "4"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -569,7 +504,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 490
+          "y": 545
         }
       }
     note: false
@@ -579,10 +514,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 06317841-a9fb-44d4-866a-cea0a6c4a79d
+    taskid: ae677357-e9dc-42db-841e-5e7db0a6c722
     type: regular
     task:
-      id: 06317841-a9fb-44d4-866a-cea0a6c4a79d
+      id: ae677357-e9dc-42db-841e-5e7db0a6c722
       version: -1
       name: greynoise-stats
       description: Retrieves stats data from GreyNoise.
@@ -608,7 +543,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1930
+          "y": 1595
         }
       }
     note: false
@@ -618,10 +553,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: cd6078df-2524-4b59-8d61-6e471aac95b6
+    taskid: f5457bca-6844-4bdd-80e1-c66c85f80c51
     type: condition
     task:
-      id: cd6078df-2524-4b59-8d61-6e471aac95b6
+      id: f5457bca-6844-4bdd-80e1-c66c85f80c51
       version: -1
       name: Verify Outputs
       description: Verify context data set by the previous command.
@@ -739,7 +674,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2100
+          "y": 1770
         }
       }
     note: false
@@ -749,22 +684,21 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: fbba2e24-65e1-44e2-81cb-42805de3380a
+    taskid: d791cfd6-9b83-49ed-8c0f-d016cb4c2e2b
     type: title
     task:
-      id: fbba2e24-65e1-44e2-81cb-42805de3380a
+      id: d791cfd6-9b83-49ed-8c0f-d016cb4c2e2b
       version: -1
       name: Test Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2290
+          "y": 1945
         }
       }
     note: false
@@ -774,10 +708,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: e5381280-bf82-45a4-8a20-15f7346020ba
+    taskid: 341632df-8aa2-454f-80cd-aa746eeb684c
     type: regular
     task:
-      id: e5381280-bf82-45a4-8a20-15f7346020ba
+      id: 341632df-8aa2-454f-80cd-aa746eeb684c
       version: -1
       name: DeleteContext
       description: Delete existing context data.
@@ -800,7 +734,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1750
+          "y": 1420
         }
       }
     note: false
@@ -813,7 +747,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2305,
+        "height": 1960,
         "width": 380,
         "x": 50,
         "y": 50
@@ -826,4 +760,3 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
-description: A test playbook for GreyNoise integration commands

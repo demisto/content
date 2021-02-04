@@ -86,77 +86,9 @@ Runs reputation on IPs.
 
 ### IP: 71.6.135.131 found with Reputation: Good
 ### IP Context
-|IP|First Seen|Last Seen|Seen|Tags|Actor|Spoofable|Classification|CVE|VPN|VPN Service|Meta Data|
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| [71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131) | 2017-09-20 | 2021-01-11 | true | Bitcoin Node Scanner,<br/>Bluekeep Exploit,<br/>Cassandra Scanner,<br/>Cobalt Strike Scanner,<br/>Consul Crawler | Shodan.io | false | benign | CVE-1999-0526,<br/>CVE-2013-6117,<br/>CVE-2019-0708 | True | Dummy Service |ASN: AS10439,<br/>City: San Diego,<br/>Country: United States,<br/>Country Code: US,<br/>Organization: CariNet, Inc.,<br/>Category: business,<br/>Tor: False,<br/>RDNS: ubuntu20135131.aspadmin.net,<br/>OS: Linux 3.11+,<br/>Region: California,<br/>Spoofable: False,<br/>VPN: False |
-### IP Context Raw Data
-|Scan (Port/Protocol)|Web (Paths)|Web (User-Agents)|JA3 (Fingerprint/Port)|HASSH|
-|---|---|---|---|---|
-| 7 / UDP,<br/>11 / TCP,<br/>13 / TCP,<br/>15 / TCP,<br/>17 / TCP,<br/>19 / TCP,<br/>21 / TCP,<br/>22 / TCP,<br/>23 / TCP,<br/>25 / TCP,<br/>26 / TCP,<br/>37 / TCP,<br/>43 / TCP,<br/>49 / TCP,<br/>53 / TCP | /robots.txt,<br/>/.well-known/security.txt,<br/>/sitemap.xml,<br/>/favicon.ico,<br/>/ | Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.137 Safari/537.36,<br/>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:80.0) Gecko/20100101 Firefox/80.0,<br/>,<br/>Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36 | 330ed8deb9b34592442c3bb392ee0926 / 311,<br/>917fde1bf3bcb67f961b77b18d9ee14a / 443,<br/>c369db2c355ad05c76f5660af3179b01 / 443,<br/>1289771a3fce256d5fb4cb5c95b43ee6 / 443,<br/>a96dc3876784813c57d302241e620acd / 443,<br/>006315b3ad276906ff11527f9594e5ba / 443,<br/>a66e498c488aa0523759691248cdfb01 / 443| 330ed8deb9b34592442c3bb392ee0926 / 311,<br/>917fde1bf3bcb67f961b77b18d9ee14a / 443,<br/>c369db2c355ad05c76f5660af3179b01 / 443,<br/>1289771a3fce256d5fb4cb5c95b43ee6 / 443,<br/>a96dc3876784813c57d302241e620acd / 443,<br/>006315b3ad276906ff11527f9594e5ba / 443,<br/>a66e498c488aa0523759691248cdfb01 / 443|
-
-### greynoise-ip-context
-***
-Get information about a given IP address. Returns classification (benign, malicious or unknown), IP metadata (network owner, ASN, reverse DNS pointer, country), associated actors, activity tags, and raw port scan and web request information.
-
-
-#### Base Command
-
-`greynoise-ip-context`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ip | IP address to retrieve details about. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GreyNoise.IP.address | string | The IP address of the scanning device IP. | 
-| GreyNoise.IP.first_seen | date | The date the device was first observed by GreyNoise. Format is ISO8601. | 
-| GreyNoise.IP.last_seen | date | The date the device was last observed by GreyNoise. Format is ISO8601. | 
-| GreyNoise.IP.seen | boolean | IP is in record with GreyNoise. | 
-| GreyNoise.IP.tags | array | A list of the tags the device has been assigned over the past 90 days. | 
-| GreyNoise.IP.actor | string | The overt actor the device has been associated with. | 
-| GreyNoise.IP.spoofable | boolean | Boolean indicates if IP is spoofable. | 
-| GreyNoise.IP.classification | string | Whether the device has been categorized as unknown, benign, or malicious. | 
-| GreyNoise.IP.cve | array | CVEs associated with IP. | 
-| GreyNoise.IP.vpn | boolean | Whether the device is VPN endpoint or not. | 
-| GreyNoise.IP.vpn_service | string | The name of the VPN service provider of the device. | 
-| GreyNoise.IP.metadata.asn | string | The autonomous system identification number. | 
-| GreyNoise.IP.metadata.city | string | The city the device is geographically located in. | 
-| GreyNoise.IP.metadata.region | string | The full name of the region the device is geographically located in. | 
-| GreyNoise.IP.metadata.country | string | The full name of the country. | 
-| GreyNoise.IP.metadata.country_code | string | The two-character country code of the country. | 
-| GreyNoise.IP.metadata.organization | string | The organization that owns the network that the IP address belongs to. | 
-| GreyNoise.IP.metadata.category | string | Whether the device belongs to a business, isp, hosting, education, or mobile network. | 
-| GreyNoise.IP.metadata.tor | boolean | Whether or not the device is a known Tor exit node. | 
-| GreyNoise.IP.metadata.rdns | string | Reverse DNS lookup of the IP address. | 
-| GreyNoise.IP.metadata.os | string | The name of the operating system of the device. | 
-| GreyNoise.IP.raw_data.scan.port | number | The port number\(s\) the devices has been observed scanning. | 
-| GreyNoise.IP.raw_data.scan.protocol | string | The protocol of the port the device has been observed scanning. | 
-| GreyNoise.IP.raw_data.web.paths | array | Any HTTP paths the device has been observed crawling the Internet for. | 
-| GreyNoise.IP.raw_data.web.useragents | array | Any HTTP user-agents the device has been observed using while crawling the Internet. | 
-| GreyNoise.IP.raw_data.ja3.fingerprint | string | The JA3 TLS/SSL fingerprint. | 
-| GreyNoise.IP.raw_data.ja3.port | number | The corresponding TCP port for the given JA3 fingerprint. | 
-| GreyNoise.IP.raw_data.hassh.fingerprint | string | HASSH hash fingerprint string. | 
-| GreyNoise.IP.raw_data.hassh.port | number | TCP port connection where the HASSH hash was identified. | 
-
-
-#### Command Example
-``` !greynoise-ip-context ip="71.6.135.131" ```
-
-#### Human Readable Output
-### IP Context
-|IP|First Seen|Last Seen|Seen|Tags|Actor|Spoofable|Classification|CVE|VPN|VPN Service|Meta Data|
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| [71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131) | 2017-09-20 | 2021-01-11 | true | Bitcoin Node Scanner,<br/>Bluekeep Exploit,<br/>Cassandra Scanner,<br/>Cobalt Strike Scanner,<br/>Consul Crawler | Shodan.io | false | benign | CVE-1999-0526,<br/>CVE-2013-6117,<br/>CVE-2019-0708 | True | Dummy Service |ASN: AS10439,<br/>City: San Diego,<br/>Country: United States,<br/>Country Code: US,<br/>Organization: CariNet, Inc.,<br/>Category: business,<br/>Tor: False,<br/>RDNS: ubuntu20135131.aspadmin.net,<br/>OS: Linux 3.11+,<br/>Region: California,<br/>Spoofable: False,<br/>VPN: False |
-### IP Context Raw Data
-|Scan (Port/Protocol)|Web (Paths)|Web (User-Agents)|JA3 (Fingerprint/Port)|HASSH|
-|---|---|---|---|---|
-| 7 / UDP,<br/>11 / TCP,<br/>13 / TCP,<br/>15 / TCP,<br/>17 / TCP,<br/>19 / TCP,<br/>21 / TCP,<br/>22 / TCP,<br/>23 / TCP,<br/>25 / TCP,<br/>26 / TCP,<br/>37 / TCP,<br/>43 / TCP,<br/>49 / TCP,<br/>53 / TCP | /robots.txt,<br/>/.well-known/security.txt,<br/>/sitemap.xml,<br/>/favicon.ico,<br/>/ | Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/34.0.1847.137 Safari/537.36,<br/>Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:80.0) Gecko/20100101 Firefox/80.0,<br/>,<br/>Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36 | 330ed8deb9b34592442c3bb392ee0926 / 311,<br/>917fde1bf3bcb67f961b77b18d9ee14a / 443,<br/>c369db2c355ad05c76f5660af3179b01 / 443,<br/>1289771a3fce256d5fb4cb5c95b43ee6 / 443,<br/>a96dc3876784813c57d302241e620acd / 443,<br/>006315b3ad276906ff11527f9594e5ba / 443,<br/>a66e498c488aa0523759691248cdfb01 / 443| 330ed8deb9b34592442c3bb392ee0926 / 311,<br/>917fde1bf3bcb67f961b77b18d9ee14a / 443,<br/>c369db2c355ad05c76f5660af3179b01 / 443,<br/>1289771a3fce256d5fb4cb5c95b43ee6 / 443,<br/>a96dc3876784813c57d302241e620acd / 443,<br/>006315b3ad276906ff11527f9594e5ba / 443,<br/>a66e498c488aa0523759691248cdfb01 / 443|
-
+|IP|Classification|Actor|CVE|Spoofable|VPN|First Seen|Last Seen|
+|---|---|---|---|---|---|---|---|
+| [71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131) | benign | Shodan.io | CVE-1999-0526,<br/>CVE-2013-6117,<br/>CVE-2019-0708 | false | false | 2017-09-20 | 2021-02-03 |
 
 ### greynoise-ip-quick-check
 ***
@@ -261,9 +193,9 @@ Get the information of IP based on the providence filters.
 #### Human Readable Output
 ### Total findings: 2846548
 ### IP Context
-|IP|First Seen|Last Seen|Seen|Tags|Actor|Spoofable|Classification|CVE|VPN|VPN Service|Meta Data|
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| [71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131) | 2017-09-20 | 2021-01-11 | true | Bitcoin Node Scanner,<br/>Bluekeep Exploit,<br/>Cassandra Scanner,<br/>Cobalt Strike Scanner,<br/>Consul Crawler | Shodan.io | false | benign | CVE-1999-0526,<br/>CVE-2013-6117,<br/>CVE-2019-0708 | True | Dummy Service |ASN: AS10439,<br/>City: San Diego,<br/>Country: United States,<br/>Country Code: US,<br/>Organization: CariNet, Inc.,<br/>Category: business,<br/>Tor: False,<br/>RDNS: ubuntu20135131.aspadmin.net,<br/>OS: Linux 3.11+,<br/>Region: California,<br/>Spoofable: False,<br/>VPN: False |
+|IP|Classification|Actor|CVE|Spoofable|VPN|First Seen|Last Seen|
+|---|---|---|---|---|---|---|---|
+| [71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131) | benign | Shodan.io | CVE-1999-0526,<br/>CVE-2013-6117,<br/>CVE-2019-0708 | false | false | 2017-09-20 | 2021-02-03 |
 
 ### Next Page Token: 
 DnF1ZXJ5VGhlbkZldGNoBQAAAAAcV1_HFkFKSExEdUc4VEtta2

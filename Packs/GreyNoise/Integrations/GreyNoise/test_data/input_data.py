@@ -96,22 +96,6 @@ test_module_data = [
      "The server encountered an internal error for GreyNoise and was unable to complete your request.")
 ]
 
-# args, test_scenario, api_response, status_code, expected_output
-ip_context_command_data = [
-    ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_ip_response_expected),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "positive", {"ip": "71.6.135.131", "seen": False}, 200,  # NOSONAR
-     {"address": "71.6.135.131", "seen": False}),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "custom", "invalid ip response", 200,  # NOSONAR
-     "Invalid response from GreyNoise. Response: invalid ip response"),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "negative", "forbidden", 401, "Unauthenticated. Check the configured API Key."),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "negative", {}, 429, "API Rate limit hit. Try after sometime."),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "negative", "Dummy message", 405,  # NOSONAR
-     "Failed to execute  command.\n Error: Dummy message"),  # NOSONAR
-    ({"ip": "71.6.135.131"}, "negative", {}, 505,  # NOSONAR
-     "The server encountered an internal error for GreyNoise and was unable to complete your request."),
-    ({"ip": "5844.2204.2191.2471"}, "negative", {}, 200, "Invalid IP address: '5844.2204.2191.2471'"),  # NOSONAR
-    ({"ip": ""}, "negative", {}, 200, "Invalid IP address: ''")  # NOSONAR
-]
 
 ip_reputation_command_data = [
     ({"ip": "71.6.135.131"}, "positive", valid_ip_response, 200, valid_ip_response_expected),  # NOSONAR
@@ -476,65 +460,33 @@ valid_ip_context_data = {
     }
 }
 
-valid_ip_context_data_response = (
-    [
-        {
-            "Meta Data": [
-                "Country: china",
-                "Country Code: cn",
-                "City: kunshan",
-                "Organization: chinanet jiangsu province network",
-                "ASN: as4134",
-                "Tor: False",
-                "OS: windows 7/8",
-                "Category: isp"
-            ],
-            "VPN": True,
-            "VPN Service": "dummy vpn",
-            "IP": "[71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131)",  # NOSONAR
-            "Seen": True,
-            "Classification": "malicious",
-            "First Seen": "2019-04-04",
-            "Last Seen": "2019-08-21",
-            "Actor": "unknown",
-            "Tags": [
-                "mssql bruteforcer",
-                "mssql scanner",
-                "rdp scanner"
-            ]
-        }
-    ],
-    [
-        {
-            "Scan (Port/Protocol)": [
-                "1433 / tcp",
-                "3389 / tcp",
-                "65529 / tcp"
-            ],
-            "Web (Paths)": [
-                "/sitemap.xml",
-                "/.well-known/security.txt",
-                "/favicon.ico",
-                "/robots.txt",
-                "/"
-            ],
-            "Web (User-Agents)": [
-                "useragent0",
-                "useragent1",
-                "useragent2"
-            ],
-            "JA3 (Fingerprint/Port)": [
-                "30017f6f809155387cbcf95be6e7225d / 443",
-                "330ed8deb9b34592442c3bb392ee0926 / 444"
-            ],
-            "HASSH": [
-                "30017f6f809155387cbcf95be6e7225d / 443",
-                "330ed8deb9b34592442c3bb392ee0926 / 444"
-            ]
-
-        }
-    ]
-)
+valid_ip_context_data_response = [
+    {
+        "MetaData": [
+            "Country: china",
+            "Country Code: cn",
+            "City: kunshan",
+            "Organization: chinanet jiangsu province network",
+            "ASN: as4134",
+            "Tor: False",
+            "OS: windows 7/8",
+            "Category: isp"
+        ],
+        "VPN": True,
+        "VPN Service": "dummy vpn",
+        "IP": "[71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131)",  # NOSONAR
+        "Seen": True,
+        "Classification": "malicious",
+        "First Seen": "2019-04-04",
+        "Last Seen": "2019-08-21",
+        "Actor": "unknown",
+        "Tags": [
+            "mssql bruteforcer",
+            "mssql scanner",
+            "rdp scanner"
+        ]
+    }
+]
 
 get_ip_context_data_data = [
     ([valid_ip_context_data], valid_ip_context_data_response)

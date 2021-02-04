@@ -5,7 +5,6 @@ from test_data.input_data import (  # type: ignore
     parse_code_and_body_data,
     get_ip_reputation_score_data,
     test_module_data,
-    ip_context_command_data,
     ip_reputation_command_data,
     ip_quick_check_command_data,
     generate_advanced_query_data,
@@ -19,7 +18,6 @@ class DummyResponse:
     """
     Dummy Response object of requests.response for unit testing.
     """
-
     def __init__(self, headers, text, status_code):
         self.headers = headers
         self.text = text
@@ -65,35 +63,6 @@ def test_test_module(api_key, api_response, status_code, expected_output, mocker
         mocker.patch('requests.Session.get', return_value=dummy_response)
         with pytest.raises(Exception) as err:
             _ = GreyNoise.test_module(client)
-        assert str(err.value) == expected_output
-
-
-@pytest.mark.parametrize("args, test_scenario, api_response, status_code, expected_output", ip_context_command_data)
-def test_ip_context_command(args, test_scenario, api_response, status_code, expected_output, mocker):
-    """
-    Tests various combinations of valid and invalid responses for ip-context-command.
-    """
-    client = GreyNoise.Client("true_api_key", "dummy_server", 10, "proxy", False, "dummy_integration")
-    dummy_response = DummyResponse(
-        {
-            "Content-Type": "application/json"
-        },
-        json.dumps(api_response),
-        status_code
-    )
-    if test_scenario == "positive":
-        mocker.patch('requests.Session.get', return_value=dummy_response)
-        response = GreyNoise.ip_context_command(client, args)
-        assert response.outputs == expected_output
-    elif test_scenario == "negative":
-        mocker.patch('requests.Session.get', return_value=dummy_response)
-        with pytest.raises(Exception) as err:
-            _ = GreyNoise.ip_context_command(client, args)
-        assert str(err.value) == expected_output
-    elif test_scenario == "custom":
-        mocker.patch('greynoise.GreyNoise.ip', return_value=api_response)
-        with pytest.raises(Exception) as err:
-            _ = GreyNoise.ip_context_command(client, args)
         assert str(err.value) == expected_output
 
 

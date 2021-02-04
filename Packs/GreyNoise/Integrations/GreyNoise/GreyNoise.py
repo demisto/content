@@ -29,7 +29,7 @@ PRETTY_KEY = {
     "spoofable": "Spoofable",
     "classification": "Classification",
     "cve": "CVE",
-    "metadata": "Meta Data",
+    "metadata": "MetaData",
     "asn": "ASN",
     "city": "City",
     "country": "Country",
@@ -53,8 +53,8 @@ PRETTY_KEY = {
     "fingerprint": "fingerprint",
     "hassh": "hassh"
 }
-IP_CONTEXT_HEADERS = ["IP", "First Seen", "Last Seen", "Seen", "Tags", "Actor",
-                      "Spoofable", "Classification", "CVE", "VPN", "VPN Service", "Meta Data"]
+IP_CONTEXT_HEADERS = ["IP", "Classification", "Actor", "CVE", "Spoofable", "VPN",
+                      "First Seen", "Last Seen"]
 API_SERVER = util.DEFAULT_CONFIG.get("api_server")
 IP_QUICK_CHECK_HEADERS = ['IP', 'Noise', 'Code', 'Code Description']
 STATS_KEY = {
@@ -104,7 +104,6 @@ EXCEPTION_MESSAGES = {
 class Client(GreyNoise):
     """Client class to interact with the service API
     """
-
     def authenticate(self):
         """
         Used to authenticate GreyNoise credentials.
@@ -177,7 +176,7 @@ def parse_code_and_body(message: str) -> Tuple[int, str]:
     return int(code), body
 
 
-def get_ip_context_data(responses: list) -> tuple:
+def get_ip_context_data(responses: list) -> list:
     """Parse ip context and raw data from GreyNoise SDK response.
 
     Returns value of ip context data.
@@ -186,12 +185,11 @@ def get_ip_context_data(responses: list) -> tuple:
     :type responses: ``list``
     :param responses: list of values of ip-context or ip-query.
 
-    :return: tuple of ips context data and their respective raw data.
-    :rtype: ``tuple``
+    :return: list of ips context data.
+    :rtype: ``list``
     """
 
     ip_context_responses = []
-    ip_context_raw_data = []
 
     responses = remove_empty_elements(responses)
     for response in responses:
@@ -200,37 +198,18 @@ def get_ip_context_data(responses: list) -> tuple:
         for key, value in response.get("metadata", {}).items():
             if value != "":
                 metadata_list.append(f"{PRETTY_KEY.get(key, key)}: {value}")
-        tmp_response['Meta Data'] = metadata_list
+        tmp_response['MetaData'] = metadata_list
 
         for key, value in response.items():
             if value != "" and key not in ["metadata", "raw_data"]:
                 tmp_response[PRETTY_KEY.get(key, key)] = value
 
-        raw_data: dict = {
-            "Scan (Port/Protocol)": [],
-            "Web (Paths)": [],
-            "Web (User-Agents)": [],
-            "JA3 (Fingerprint/Port)": [],
-            "HASSH": []
-        }
-        for each in response.get("raw_data", {}).get("scan", []):
-            raw_data['Scan (Port/Protocol)'].append(f"{each.get('port')} / {each.get('protocol')}")
-        for each in response.get("raw_data", {}).get("web", {}).get("paths", []):
-            raw_data['Web (Paths)'].append(f"{each}")
-        for each in response.get("raw_data", {}).get("web", {}).get("useragents", []):
-            raw_data['Web (User-Agents)'].append(f"{each}")
-        for each in response.get("raw_data", {}).get("ja3", []):
-            raw_data['JA3 (Fingerprint/Port)'].append(f"{each.get('fingerprint')} / {each.get('port')}")
-        for each in response.get("raw_data", {}).get("hassh", []):
-            raw_data['HASSH'].append(f"{each.get('fingerprint')} / {each.get('port')}")
-
         ip = tmp_response['IP']
         tmp_response['IP'] = f"[{ip}](https://viz.greynoise.io/ip/{ip})"
 
         ip_context_responses.append(tmp_response)
-        ip_context_raw_data.append(raw_data)
 
-    return ip_context_responses, ip_context_raw_data
+    return ip_context_responses
 
 
 def get_ip_reputation_score(classification: str) -> Tuple[int, str]:
@@ -370,58 +349,6 @@ def ip_quick_check_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 @exception_handler
 @logger
-def ip_context_command(client: Client, args: dict) -> CommandResults:
-    """Get information about a given IP address. Returns classification (benign, malicious or unknown),
-        IP metadata (network owner, ASN, reverse DNS pointer, country), associated actors, activity tags,
-        and raw port scan and web request information.
-
-    :type client: ``Client``
-    :param client: Client object for interaction with GreyNoise.
-
-    :type args: ``dict``
-    :param args: All command arguments, usually passed from ``demisto.args()``.
-
-    :return: A ``CommandResults`` object that is then passed to ``return_results``,
-        that contains the IP information.
-    :rtype: ``CommandResults``
-    """
-    ip = args.get("ip")
-
-    response = client.ip(ip)
-
-    if not isinstance(response, dict):
-        raise DemistoException(EXCEPTION_MESSAGES['INVALID_RESPONSE'].format(response))
-
-    original_response = copy.deepcopy(response)
-    tmp_response, raw_data = get_ip_context_data([response])
-
-    human_readable = tableToMarkdown(
-        name='IP Context',
-        t=tmp_response,
-        headers=IP_CONTEXT_HEADERS,
-        removeNull=True
-    )
-    if response.get("seen"):
-        human_readable += tableToMarkdown(
-            name='IP Context Raw Data',
-            t=raw_data,
-            headers=["Scan (Port/Protocol)", "Web (Paths)", "Web (User-Agents)", "JA3 (Fingerprint/Port)", "HASSH"],
-            removeNull=False
-        )
-
-    response['address'] = response['ip']
-    del response['ip']
-
-    return CommandResults(
-        readable_output=human_readable,
-        outputs_prefix='GreyNoise.IP',
-        outputs_key_field='address',
-        outputs=remove_empty_elements(response),
-        raw_response=original_response
-    )
-
-
-@logger
 def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
     """Get information about a given IP address. Returns classification (benign, malicious or unknown),
         IP metadata (network owner, ASN, reverse DNS pointer, country), associated actors, activity tags,
@@ -441,12 +368,27 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
     command_results = []
     for ip in ips:
 
-        response: Any = ip_context_command(client, {"ip": ip})
+        response = client.ip(ip)
 
-        dbot_score_int, dbot_score_string = get_ip_reputation_score(response.outputs.get("classification"))
+        if not isinstance(response, dict):
+            raise DemistoException(EXCEPTION_MESSAGES['INVALID_RESPONSE'].format(response))
+
+        original_response = copy.deepcopy(response)
+        tmp_response = get_ip_context_data([response])
+        response = remove_empty_elements(response)
+
+        response['address'] = response['ip']
+        del response['ip']
+
+        dbot_score_int, dbot_score_string = get_ip_reputation_score(response.get("classification"))
 
         human_readable = f'### IP: {ip} found with Reputation: {dbot_score_string}\n'
-        human_readable += response.readable_output
+        human_readable += tableToMarkdown(
+            name='IP Context',
+            t=tmp_response,
+            headers=IP_CONTEXT_HEADERS,
+            removeNull=True
+        )
 
         try:
             response_quick: Any = ip_quick_check_command(client, {"ip": ip})
@@ -454,23 +396,23 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
         except Exception:
             malicious_description = ""
         dbot_score = Common.DBotScore(
-            indicator=response.outputs.get('address'),
+            indicator=response.get('address'),
             indicator_type=DBotScoreType.IP,
             score=dbot_score_int,
             integration_name='GreyNoise',
             malicious_description=malicious_description
         )
 
-        city = response.outputs.get('metadata', {}).get('city', '')
-        region = response.outputs.get('metadata', {}).get('region', '')
-        country_code = response.outputs.get('metadata', {}).get('country_code', '')
+        city = response.get('metadata', {}).get('city', '')
+        region = response.get('metadata', {}).get('region', '')
+        country_code = response.get('metadata', {}).get('country_code', '')
         geo_description = f"City: {city}, Region: {region}, Country Code: {country_code}"\
             if (city or region or country_code) else ""
         ip_standard_context = Common.IP(
-            ip=response.outputs.get('address'),
-            asn=response.outputs.get('metadata', {}).get('asn'),
-            hostname=response.outputs.get('actor'),
-            geo_country=response.outputs.get('metadata', {}).get('country'),
+            ip=response.get('address'),
+            asn=response.get('metadata', {}).get('asn'),
+            hostname=response.get('actor'),
+            geo_country=response.get('metadata', {}).get('country'),
             geo_description=geo_description,
             dbot_score=dbot_score
         )
@@ -480,9 +422,9 @@ def ip_reputation_command(client: Client, args: dict) -> List[CommandResults]:
                 readable_output=human_readable,
                 outputs_prefix='GreyNoise.IP',
                 outputs_key_field='address',
-                outputs=response.outputs,
+                outputs=response,
                 indicator=ip_standard_context,
-                raw_response=response.raw_response
+                raw_response=original_response
             )
         )
 
@@ -519,8 +461,7 @@ def query_command(client: Client, args: dict) -> CommandResults:
     original_response = copy.deepcopy(query_response)
     tmp_response = []
     for each in query_response.get("data", []):
-        each_response, _ = get_ip_context_data([each])
-        tmp_response += each_response
+        tmp_response += get_ip_context_data([each])
         each['address'] = each['ip']
         del each['ip']
 
@@ -640,10 +581,6 @@ def main() -> None:
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result: Any = test_module(client)
-            return_results(result)
-
-        elif demisto.command() == 'greynoise-ip-context':
-            result = ip_context_command(client, demisto.args())
             return_results(result)
 
         elif demisto.command() == 'greynoise-ip-quick-check':

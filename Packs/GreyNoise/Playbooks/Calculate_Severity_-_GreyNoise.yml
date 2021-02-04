@@ -1,14 +1,12 @@
-id: Calculate Severity - Generic v2 - GreyNoise
+id: Calculate Severity - GreyNoise
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Calculate Severity - Generic v2 - GreyNoise
+name: Calculate Severity - GreyNoise
 description: |-
   Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
 
   - DBotScores of indicators
-  - Critical assets
-  - Email authenticity
   - Current incident severity
 starttaskid: "0"
 tasks:
@@ -26,15 +24,13 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
-      - "18"
-      - "24"
-      - "27"
+      - "29"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": -440
+          "x": 1280,
+          "y": -380
         }
       }
     note: false
@@ -601,8 +597,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1050
+          "x": 2290,
+          "y": 1010
         }
       }
     note: false
@@ -788,10 +784,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: bbfdfe72-13f4-48a2-8cbb-79fd7952704b
+    taskid: c0322e71-69cb-444c-8126-4ef7413a64d3
     type: condition
     task:
-      id: bbfdfe72-13f4-48a2-8cbb-79fd7952704b
+      id: c0322e71-69cb-444c-8126-4ef7413a64d3
       version: -1
       name: Determine incident severity
       description: Determines the severity level based on the highest result of all
@@ -829,24 +825,6 @@ tasks:
                       value:
                         simple: Critical
                     ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: Severities.CriticalAssetsSeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Critical
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: Severities.EmailAuthenticitySeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Critical
-                    ignorecase: true
                   - operator: isEqualString
                     left:
                       value:
@@ -869,24 +847,6 @@ tasks:
                     left:
                       value:
                         simple: Severities.DBotScoreSeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: High
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: Severities.CriticalAssetsSeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: High
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: Severities.EmailAuthenticitySeverity
                       iscontext: true
                     right:
                       value:
@@ -919,23 +879,6 @@ tasks:
                       value:
                         simple: Medium
                     ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: Severities.CriticalAssetsSeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Medium
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: Severities.EmailAuthenticitySeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Medium
                   - operator: isEqualString
                     left:
                       value:
@@ -964,24 +907,6 @@ tasks:
                       value:
                         simple: Low
                     ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: Severities.CriticalAssetsSeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Low
-                    ignorecase: true
-                  - operator: containsGeneral
-                    left:
-                      value:
-                        simple: Severities.EmailAuthenticitySeverity
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Low
-                    ignorecase: true
                   - operator: isEqualString
                     left:
                       value:
@@ -995,8 +920,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1080,
-          "y": 560
+          "x": 1110,
+          "y": 440
         }
       }
     note: false
@@ -1034,154 +959,14 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1010,
-          "y": 185
+          "x": 1110,
+          "y": -70
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-  "18":
-    id: "18"
-    taskid: 29bad58f-8797-49ff-8681-68363fc8e9a5
-    type: playbook
-    task:
-      id: 29bad58f-8797-49ff-8681-68363fc8e9a5
-      version: -1
-      name: Calculate Severity - Critical Assets v2
-      description: |-
-        Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of "Critical" if at least one critical asset is associated with the investigation.
-        Critical assets refer to: users, user groups, endpoints and endpoint groups.
-      playbookName: Calculate Severity - Critical Assets v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      Account:
-        complex:
-          root: inputs.Account
-          transformers:
-          - operator: uniq
-      CriticalEndpoints:
-        complex:
-          root: inputs.CriticalEndpoints
-          transformers:
-          - operator: uniq
-      CriticalGroups:
-        complex:
-          root: inputs.CriticalGroups
-          transformers:
-          - operator: uniq
-      CriticalUsers:
-        complex:
-          root: inputs.CriticalUsers
-          transformers:
-          - operator: uniq
-      Endpoint:
-        complex:
-          root: inputs.Endpoint
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 570,
-          "y": 185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "19":
-    id: "19"
-    taskid: b20ff842-f44e-4314-8d7a-ce51e1d69c16
-    type: playbook
-    task:
-      id: b20ff842-f44e-4314-8d7a-ce51e1d69c16
-      version: -1
-      name: Calculate Severity By Highest DBotScore
-      description: Calculates the incident severity level according to the highest
-        indicator DBotScore.
-      playbookName: Calculate Severity By Highest DBotScore
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      DBotScore:
-        complex:
-          root: inputs.DBotScore
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1480,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "24":
-    id: "24"
-    taskid: 1a13e3e0-18fb-4c0f-8866-9d56b0df1017
-    type: playbook
-    task:
-      id: 1a13e3e0-18fb-4c0f-8866-9d56b0df1017
-      version: -1
-      name: Calculate Severity By Email Authenticity
-      description: Calculates a severity according to the verdict coming from the
-        CheckEmailAuthenticity script.
-      playbookName: Calculate Severity By Email Authenticity
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      EmailAuthenticityCheck:
-        complex:
-          root: inputs.EmailAuthenticityCheck
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 120,
-          "y": 185
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
   "25":
     id: "25"
@@ -1359,50 +1144,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "27":
-    id: "27"
-    taskid: 4ce027b8-d33a-4467-8458-19601cecb6a9
-    type: condition
-    task:
-      id: 4ce027b8-d33a-4467-8458-19601cecb6a9
-      version: -1
-      name: Is Calculate Severity Using GreyNoise enabled?
-      description: Checks whether CalcualteSeverityUsingGreyNoise is enabled in the
-        inputs or not
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "19"
-      "yes":
-      - "29"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.CalcualteSeverityUsingGreyNoise
-            iscontext: true
-          right:
-            value:
-              simple: "true"
-          ignorecase: true
-    view: |-
-      {
-        "position": {
-          "x": 1680,
-          "y": -170
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
   "29":
     id: "29"
     taskid: c684e78a-3087-4850-8916-d134a29d8f99
@@ -1436,8 +1177,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1940,
-          "y": 180
+          "x": 1620,
+          "y": -70
         }
       }
     note: false
@@ -1475,8 +1216,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1750,
-          "y": 350
+          "x": 1450,
+          "y": 250
         }
       }
     note: false
@@ -1514,8 +1255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2230,
-          "y": 350
+          "x": 2040,
+          "y": 250
         }
       }
     note: false
@@ -1534,10 +1275,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1555,
-        "width": 2490,
-        "x": 120,
-        "y": -440
+        "height": 1455,
+        "width": 2428,
+        "x": 242,
+        "y": -380
       }
     }
   }
@@ -1549,62 +1290,9 @@ inputs:
   required: false
   description: 'Array of all indicators associated with the incident. '
   playbookInputQuery:
-- key: CriticalUsers
-  value:
-    simple: admin,administrator
-  required: false
-  description: CSV of usernames of critical users.
-  playbookInputQuery:
-- key: CriticalEndpoints
-  value:
-    simple: admin
-  required: false
-  description: CSV of hostnames of critical endpoints.
-  playbookInputQuery:
-- key: CriticalGroups
-  value:
-    simple: admins,administrators
-  required: false
-  description: CSV of DN names of critical AD groups.
-  playbookInputQuery:
-- key: Account
-  value:
-    complex:
-      root: Account
-      transformers:
-      - operator: uniq
-  required: false
-  description: User accounts to check against the critical lists.
-  playbookInputQuery:
-- key: Endpoint
-  value:
-    complex:
-      root: Endpoint
-      transformers:
-      - operator: uniq
-  required: false
-  description: Endpoints to check against the CriticalEndpoints list.
-  playbookInputQuery:
-- key: EmailAuthenticityCheck
-  value:
-    complex:
-      root: Email
-      accessor: AuthenticityCheck
-      transformers:
-      - operator: uniq
-  required: false
-  description: 'Indicates the email authenticity resulting from the EmailAuthenticityCheck
-    script. Possible values are: Pass, Fail, Suspicious, and Undetermined.'
-  playbookInputQuery:
-- key: CalcualteSeverityUsingGreyNoise
-  value:
-    simple: "true"
-  required: false
-  description: Flag to enable/disable GreyNoise Calculate severity playbook.
-  playbookInputQuery:
 - key: NetworkTrafficDirection
   value:
-    simple: Ingress
+    simple: Egress
   required: false
   description: The direction of network traffic event associated with the Incident(Egress/Ingress).
     If not supplied, Ingress is considered.

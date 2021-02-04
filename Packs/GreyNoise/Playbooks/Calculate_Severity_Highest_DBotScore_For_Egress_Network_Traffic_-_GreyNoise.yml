@@ -470,25 +470,21 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: ff3469dc-fa7b-4af8-8f77-866dd1aeb30e
+    taskid: a25ce05f-7490-4284-8f93-d477dfbc57c7
     type: regular
     task:
-      id: ff3469dc-fa7b-4af8-8f77-866dd1aeb30e
+      id: a25ce05f-7490-4284-8f93-d477dfbc57c7
       version: -1
-      name: Execute GreyNoise IP Context
-      description: Get information about a given IP address. Returns classification
-        (benign, malicious or unknown), IP metadata (network owner, ASN, reverse DNS
-        pointer, country), associated actors, activity tags, and raw port scan and
-        web request information.
-      script: '|||greynoise-ip-context'
+      name: Get IP information from GreyNoise
+      description: Runs reputation on IPs.
+      script: GreyNoise|||ip
       type: regular
       iscommand: true
-      brand: ""
+      brand: GreyNoise
     nexttasks:
       '#none#':
       - "3"
     scriptarguments:
-      cache: {}
       ip:
         complex:
           root: DBotScore
