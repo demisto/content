@@ -19,4 +19,4 @@ jobs:
           github-automation webhook-manage -c .github/project_conf/contributions.ini -e "$EVENT"
         env:
           EVENT: ${{ toJson(github.event) }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
