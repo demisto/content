@@ -106,12 +106,11 @@ def jarm_fingerprint_command(
 
     result = client.jarm_fingerprint(target_host, port)
 
+    output = {}
     if target_type == 'ip':
         output = {"IP": target_host, "Port": port, "Fingerprint": result[0]}
     elif target_type == 'fqdn':
         output = {"FQDN": target_host, "Port": port, "Fingerprint": result[0]}
-    else:
-        raise RuntimeError('Invalid target type')  # this code should be unreachable
 
     return [
         CommandResults(
