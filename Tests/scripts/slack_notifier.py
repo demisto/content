@@ -313,7 +313,7 @@ def slack_notifier(build_url, slack_token, test_type, env_results_file_name=None
         slack_client = SlackClient(slack_token)
         slack_client.api_call(
             "chat.postMessage",
-            json={'channel': 'dmst-bucket-upload',
+            json={'channel': 'dmst-content-team',
                   'username': 'Content CircleCI',
                   'as_user': 'False',
                   'attachments': content_team_attachments}
