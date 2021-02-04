@@ -1,6 +1,6 @@
-id: PS Remote - Get File Sample From Path
+id: PS Remote Get File Sample From Path
 version: -1
-name: PS Remote - Get File Sample From Path
+name: PS Remote Get File Sample From Path
 description: This playbook leverages the windows builtin Powershell and WinRM capabilities
   to connect to a Windows host to acquire and acquire a file as forensic evidence
   for further analysis.
@@ -417,6 +417,9 @@ inputs:
 outputs:
 - contextPath: AcquiredFile
   description: The acquired file details.
+  type: string
+- contextPath: File
+  description: The file to sample.
   type: string
 tests:
 - No tests (auto formatted)

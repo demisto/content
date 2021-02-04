@@ -11,8 +11,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 * UnzipFile
-* AddEvidence
 * IsIntegrationAvailable
+* AddEvidence
 * Set
 
 ### Commands
@@ -34,7 +34,8 @@ This playbook does not use any integrations.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | AcquiredFile | The acquired file details. | string |
+| File | The file to sample. | string |
 
 ## Playbook Image
 ---
-![PS Remote - Get File Sample From Path](Insert the link to your image here)
+![PS Remote Get File Sample From Path](Insert the link to your image here)
