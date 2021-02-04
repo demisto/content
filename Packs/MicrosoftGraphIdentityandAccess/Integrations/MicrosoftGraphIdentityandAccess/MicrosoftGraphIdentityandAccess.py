@@ -14,6 +14,12 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 class Client:
     def __init__(self, app_id: str, verify: bool, proxy: bool):
+        if '@' in app_id:
+            app_id, refresh_token = app_id.split('@')
+            integration_context = get_integration_context()
+            integration_context['current_refresh_token'] = refresh_token
+            set_integration_context(integration_context)
+
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=app_id,
@@ -73,11 +79,16 @@ class Client:
         Docs:
             https://docs.microsoft.com/en-us/graph/api/directoryrole-post-directoryroles?view=graph-rest-1.0&tabs=http
         """
-        return self.ms_client.http_request(
-            'POST',
-            'v1.0//directoryRoles',
-            json_data={'roleTemplateId': template_id}
-        )
+        try:
+            return self.ms_client.http_request(
+                'POST',
+                'v1.0/directoryRoles',
+                json_data={'roleTemplateId': template_id}
+            )
+        except Exception as exc:
+            if 'A conflicting object with one or more of the specified property values is present in the directory.' in str(exc):
+                raise DemistoException(f'template_id "{template_id}" already active.')
+            raise exc
 
     def add_member_to_role(self, role_object_id: str, user_id: str) -> bool:
         """Adds a member to a specific role.
@@ -157,7 +168,7 @@ def test_connection(client: Client) -> str:
 def reset_auth() -> CommandResults:
     set_integration_context({})
     return CommandResults(
-        readable_output='Authorization was reset successfully. Run **!microsoft-teams-auth-start** to ' \
+        readable_output='Authorization was reset successfully. Run **!microsoft-teams-auth-start** to '
                         'start the authentication process.'
     )
 
@@ -179,9 +190,15 @@ def list_directory_roles(ms_client: Client, args: dict) -> CommandResults:
         raise DemistoException(f'Limit must be an integer, not "{limit_str}"')
     results = ms_client.get_directory_roles(limit)
     return CommandResults(
-        "Graph.Identity.Role",
+        "MSGraphIdentity.Role",
         "id",
-        outputs=results
+        outputs=results,
+        readable_output=tableToMarkdown(
+            'Directory roles:',
+            results,
+            ['id', 'displayName', 'description', 'roleTemplateId', 'deletedDateTime'],
+            removeNull=True
+        )
     )
 
 
@@ -202,14 +219,19 @@ def list_role_members_command(ms_client: Client, args: dict) -> CommandResults:
         raise DemistoException(f'Limit must be an integer, not "{limit_str}"')
     role_id = args['role_id']
     if results := ms_client.get_role_members(role_id, limit):
-        context = [member['id'] for member in results]
+        ids = [member['id'] for member in results]
+        context = {
+            'role_id': role_id,
+            'user_id': ids
+        }
         return CommandResults(
-            "Graph.Identity.RoleMember",
-            "id",
+            'MSGraphIdentity.RoleMember',
+            'role_id',
             outputs=context,
             raw_response=results,
             readable_output=tableToMarkdown(
-                f"Role members of role id '{role_id}'", context, ["id"]
+                f'Role \'{role_id}\' members:',
+                context
             )
         )
     else:
@@ -217,14 +239,10 @@ def list_role_members_command(ms_client: Client, args: dict) -> CommandResults:
 
 
 def activate_directory_role_command(ms_client: Client, args: dict) -> CommandResults:
-    """
-    Docs:
-        https://docs.microsoft.com/en-us/graph/api/directoryrole-post-directoryroles?view=graph-rest-1.0
-    """
     template_id = args['role_template_id']
     results = ms_client.activate_directory_role(template_id)
     return CommandResults(
-        "Graph.Identity.Role",
+        "MSGraphIdentity.Role",
         "id",
         outputs=results
     )
@@ -241,7 +259,7 @@ def remove_member_from_role(client: Client, args: dict) -> str:
     role_object_id = args['role_id']
     user_id = args['user_id']
     client.remove_member_from_role(role_object_id, user_id)
-    return f"User ID {user_id} has been remove from role {role_object_id}"
+    return f"User ID {user_id} has been removed from role {role_object_id}"
 
 
 def main():
@@ -251,11 +269,10 @@ def main():
         params = demisto.params()
         args = demisto.args()
         client = Client(
-            app_id=params.get('app_id', ''),
+            app_id=params['app_id'],
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
         )
-
         if command == 'test-module':
             return_results('The test module is not functional, run the msgraph-identity--auth-start command instead.')
         elif command == 'msgraph-identity-auth-start':
