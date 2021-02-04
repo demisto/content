@@ -331,6 +331,22 @@
 <td style="width: 267px;">URLScan.EffectiveURL </td>
 <td style="width: 454px;">Effective URL of the original URL</td>
 </tr>
+<tr>
+<td style="width: 267px;">URL.ASN </td>
+<td style="width: 454px;">The URL ASN</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.FeedRelatedIndicators </td>
+<td style="width: 454px;">Indicators that are associated with the URL</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.Geo.Country </td>
+<td style="width: 454px;">The URL country</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.RelatedASNs </td>
+<td style="width: 454px;">ASNs that are associated with the URL</td>
+</tr>
 </tbody>
 </table>
 <h5> </h5>
