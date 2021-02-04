@@ -46,7 +46,7 @@ class Client:
         Docs:
             https://docs.microsoft.com/en-us/graph/api/serviceprincipal-list?view=graph-rest-1.0&tabs=http
         """
-        suffix = f'v1.0/servicePrincipals'
+        suffix = 'v1.0/servicePrincipals'
         if limit > 0:
             res = self.ms_client.http_request(
                 'GET',
