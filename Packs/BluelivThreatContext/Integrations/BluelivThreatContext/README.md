@@ -259,24 +259,24 @@ Gets information about CVE
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BluelivThreatContext.cve.name | Unknown | CVE name | 
-| BluelivThreatContext.cve.description | Unknown | CVE description | 
-| BluelivThreatContext.cve.updatedAt | Unknown | CVE updated at | 
-| BluelivThreatContext.cve.score | Unknown | CVE score | 
-| BluelivThreatContext.cve.attackPatterns | Unknown | CVE attack patterns | 
-| BluelivThreatContext.cve.attackPatternIds | Unknown | CVE attackp patterns internal IDs | 
-| BluelivThreatContext.cve.signatures | Unknown | CVE signatures | 
-| BluelivThreatContext.cve.signatureIds | Unknown | CVE signatures internal IDs | 
-| BluelivThreatContext.cve.tags | Unknown | CVE tags | 
-| BluelivThreatContext.cve.tagIds | Unknown | CVE tags internal IDs | 
-| BluelivThreatContext.cve.crimeServers | Unknown | CVE Crime servers | 
-| BluelivThreatContext.cve.crimeServerIds | Unknown | CVE crime servers internal IDs | 
-| BluelivThreatContext.cve.sparks | Unknown | CVE sparks | 
-| BluelivThreatContext.cve.sparkIds | Unknown | CVE sparks internal IDs | 
-| BluelivThreatContext.cve.malware | Unknown | CVE malware | 
-| BluelivThreatContext.cve.malwareIds | Unknown | CVE malwares internal IDs | 
-| BluelivThreatContext.cve.exploits | Unknown | CVE exploits | 
-| BluelivThreatContext.cve.platforms | Unknown | CVE platforms | 
+| cve.name | Unknown | CVE name | 
+| cve.description | Unknown | CVE description | 
+| cve.updatedAt | Unknown | CVE updated at | 
+| cve.score | Unknown | CVE score | 
+| cve.attackPatterns | Unknown | CVE attack patterns | 
+| cve.attackPatternIds | Unknown | CVE attackp patterns internal IDs | 
+| cve.signatures | Unknown | CVE signatures | 
+| cve.signatureIds | Unknown | CVE signatures internal IDs | 
+| cve.tags | Unknown | CVE tags | 
+| cve.tagIds | Unknown | CVE tags internal IDs | 
+| cve.crimeServers | Unknown | CVE Crime servers | 
+| cve.crimeServerIds | Unknown | CVE crime servers internal IDs | 
+| cve.sparks | Unknown | CVE sparks | 
+| cve.sparkIds | Unknown | CVE sparks internal IDs | 
+| cve.malware | Unknown | CVE malware | 
+| cve.malwareIds | Unknown | CVE malwares internal IDs | 
+| cve.exploits | Unknown | CVE exploits | 
+| cve.platforms | Unknown | CVE platforms | 
 
 
 #### Command Example
@@ -311,22 +311,22 @@ Gets information about FQDN
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BluelivThreatContext.indicator.lastSeen | Unknown | Indicator last seen | 
-| BluelivThreatContext.indicator.risk | Unknown | Indicator risk | 
-| BluelivThreatContext.indicator.campaigns | Unknown | Indicator campaigns | 
-| BluelivThreatContext.indicator.campaignIds | Unknown | Indicator campaigns internal IDs | 
-| BluelivThreatContext.indicator.signatures | Unknown | Indicator signatures | 
-| BluelivThreatContext.indicator.signatureIds | Unknown | Indicator signatures internal IDs | 
-| BluelivThreatContext.indicator.threatActors | Unknown | Indicator threat actors | 
-| BluelivThreatContext.indicator.threatActorIds | Unknown | Indicator threat actors internal IDs | 
-| BluelivThreatContext.indicator.tags | Unknown | Indicator tags | 
-| BluelivThreatContext.indicator.tagIds | Unknown | Indicator tags internal IDs | 
-| BluelivThreatContext.indicator.crimeServers | Unknown | Indicator crime servers | 
-| BluelivThreatContext.indicator.crimeServerIds | Unknown | Indicator crime servers internal IDs | 
-| BluelivThreatContext.indicator.sparks | Unknown | Indicator sparks | 
-| BluelivThreatContext.indicator.sparkIds | Unknown | Indicator sparks internal IDs | 
-| BluelivThreatContext.indicator.ips | Unknown | Indicator IPs | 
-| BluelivThreatContext.indicator.ipIds | Unknown | Indicator IPs internal IDs | 
+| indicator.lastSeen | Unknown | Indicator last seen | 
+| indicator.risk | Unknown | Indicator risk | 
+| indicator.campaigns | Unknown | Indicator campaigns | 
+| indicator.campaignIds | Unknown | Indicator campaigns internal IDs | 
+| indicator.signatures | Unknown | Indicator signatures | 
+| indicator.signatureIds | Unknown | Indicator signatures internal IDs | 
+| indicator.threatActors | Unknown | Indicator threat actors | 
+| indicator.threatActorIds | Unknown | Indicator threat actors internal IDs | 
+| indicator.tags | Unknown | Indicator tags | 
+| indicator.tagIds | Unknown | Indicator tags internal IDs | 
+| indicator.crimeServers | Unknown | Indicator crime servers | 
+| indicator.crimeServerIds | Unknown | Indicator crime servers internal IDs | 
+| indicator.sparks | Unknown | Indicator sparks | 
+| indicator.sparkIds | Unknown | Indicator sparks internal IDs | 
+| indicator.ips | Unknown | Indicator IPs | 
+| indicator.ipIds | Unknown | Indicator IPs internal IDs | 
 
 
 #### Command Example
@@ -387,21 +387,21 @@ Gets information about a Crime Server
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BluelivThreatContext.indicator.lastSeen | Unknown | Indicator lastSeen | 
-| BluelivThreatContext.indicator.status | Unknown | Indicator status | 
-| BluelivThreatContext.indicator.risk | Unknown | Indicator risk | 
-| BluelivThreatContext.indicator.isFalsePositive | Unknown | Indicator is a false positive | 
-| BluelivThreatContext.indicator.crimeServerUrl | Unknown | Indicator crime server URL | 
-| BluelivThreatContext.indicator.creditCardsCount | Unknown | Indicator credit cards count | 
-| BluelivThreatContext.indicator.credentialsCount | Unknown | Indicator credentials count | 
-| BluelivThreatContext.indicator.botsCount | Unknown | Indicator bots count | 
-| BluelivThreatContext.indicator.fqdnId | Unknown | Indicator FQDNs internal IDs | 
-| BluelivThreatContext.indicator.malware | Unknown | Indicator malware | 
-| BluelivThreatContext.indicator.malwareIds | Unknown | Indicator malwares internal IDs | 
-| BluelivThreatContext.indicator.tags | Unknown | Indicator tags | 
-| BluelivThreatContext.indicator.tagIds | Unknown | Indicator tags internal IDs | 
-| BluelivThreatContext.indicator.sparks | Unknown | Indicator sparks | 
-| BluelivThreatContext.indicator.sparkIds | Unknown | Indicator sparks internal IDs | 
+| indicator.lastSeen | Unknown | Indicator lastSeen | 
+| indicator.status | Unknown | Indicator status | 
+| indicator.risk | Unknown | Indicator risk | 
+| indicator.isFalsePositive | Unknown | Indicator is a false positive | 
+| indicator.crimeServerUrl | Unknown | Indicator crime server URL | 
+| indicator.creditCardsCount | Unknown | Indicator credit cards count | 
+| indicator.credentialsCount | Unknown | Indicator credentials count | 
+| indicator.botsCount | Unknown | Indicator bots count | 
+| indicator.fqdnId | Unknown | Indicator FQDNs internal IDs | 
+| indicator.malware | Unknown | Indicator malware | 
+| indicator.malwareIds | Unknown | Indicator malwares internal IDs | 
+| indicator.tags | Unknown | Indicator tags | 
+| indicator.tagIds | Unknown | Indicator tags internal IDs | 
+| indicator.sparks | Unknown | Indicator sparks | 
+| indicator.sparkIds | Unknown | Indicator sparks internal IDs | 
 
 
 #### Command Example
@@ -713,7 +713,7 @@ Gets information about a Tool
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BluelivThreatContext.tool.name | Unknown | Tool Name | 
+| BluelivThreatContext.tool.Name | Unknown | Tool Name | 
 | BluelivThreatContext.tool.description | Unknown | Tool description | 
 | BluelivThreatContext.tool.lastSeen | Unknown | Tool last seen | 
 | BluelivThreatContext.tool.campaigns | Unknown | Tool campaigns | 
