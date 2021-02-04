@@ -46,16 +46,24 @@ class Client:
         Docs:
             https://docs.microsoft.com/en-us/graph/api/serviceprincipal-list?view=graph-rest-1.0&tabs=http
         """
-        res = self.ms_client.http_request(
-            'GET',
-            'v1.0/servicePrincipals'
-        )
-        results = list()
-        results.extend(res.get('value'))
-        while (next_link := res.get('@odata.nextLink')) and len(results) < limit:
-            res = self.ms_client.http_request('GET', '', next_link)
+        suffix = f'v1.0/servicePrincipals'
+        if limit > 0:
+            res = self.ms_client.http_request(
+                'GET',
+                suffix + f'?$top={limit}'
+            )
+            return res['value']
+        else:  # unlimited, should page
+            results = list()
+            res = self.ms_client.http_request(
+                'GET',
+                suffix
+            )
             results.extend(res.get('value'))
-        return results[:limit]
+            while next_link := res.get('@odata.nextLink'):
+                res = self.ms_client.http_request('GET', '', next_link)
+                results.extend(res.get('value'))
+            return results
 
     def delete_service_principals(
             self,
