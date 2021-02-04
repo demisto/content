@@ -19,6 +19,7 @@ tasks:
       id: b221086e-e3e5-4bab-83a1-d6ae44c05eda
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -183,6 +184,7 @@ tasks:
       id: 475f5eb1-f8a7-4956-84df-931bdc8cfb09
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -437,6 +439,7 @@ tasks:
       id: 8cfd8f0a-7506-4420-8276-057d5c20228b
       version: -1
       name: Verify Status
+      description: ""
       type: condition
       iscommand: false
       brand: ""
