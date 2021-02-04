@@ -603,7 +603,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Whether to download the report immediately after generating it or not. If the report is taking more than 10 seconds to be ready, set as *false*.
+      description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
       name: download_immediately
       predefined:
       - 'true'
@@ -614,22 +614,22 @@ script:
     name: nexpose-create-assets-report
     outputs:
     - contextPath: InfoFile.EntryId
-      description: Entry Id of the report file
+      description: Entry Id of the report file.
       type: string
     - contextPath: InfoFile.Name
-      description: Name of the report file
+      description: Name of the report file.
       type: string
     - contextPath: InfoFile.Extension
-      description: File extension of the report file
+      description: File extension of the report file.
       type: string
     - contextPath: InfoFile.Info
-      description: Info about the report file
+      description: Informatiom about the report file.
       type: string
     - contextPath: InfoFile.Size
-      description: Size of the report file
+      description: Size of the report file (in bytes).
       type: number
     - contextPath: InfoFile.Type
-      description: Type of the report file
+      description: Type of the report file.
       type: string
     - contextPath: Nexpose.Report.ID
       description: The identifier of the report.
@@ -677,7 +677,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Whether to download the report immediately or not. If the report is taking more than 10 seconds to be ready, set as *false*.
+      description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
       name: download_immediately
       predefined:
       - 'true'
@@ -751,7 +751,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Whether to download the report immediately or not. If the report is taking more than 10 seconds to be ready, set as *false*.
+      description: If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false".
       name: download_immediately
       predefined:
       - 'true'
@@ -1012,22 +1012,22 @@ script:
       defaultValue: pdf
     outputs:
     - contextPath: InfoFile.EntryId
-      description: Entry Id of the report file
+      description: Entry ID of the report file.
       type: string
     - contextPath: InfoFile.Name
-      description: Name of the report file
+      description: Name of the report file.
       type: string
     - contextPath: InfoFile.Extension
-      description: File extension of the report file
+      description: File extension of the report file.
       type: string
     - contextPath: InfoFile.Info
-      description: Info about the report file
+      description: Information about the report file.
       type: string
     - contextPath: InfoFile.Size
-      description: Size of the report file
+      description: Size of the report file (in bytes).
       type: number
     - contextPath: InfoFile.Type
-      description: Type of the report file
+      description: Type of the report file.
       type: string
     description: Returns the generated report.
   - name: nexpose-get-report-status

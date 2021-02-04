@@ -868,19 +868,19 @@ Generates a new report on given assets according to a template and arguments.
 | template | &lt;string&gt; Report template id to create the report with. If none is provided, the first template available will be used. | Optional | 
 | name | &lt;string&gt; The report name. | Optional | 
 | format | &lt;string&gt; The report format, default is PDF. Possible values are: pdf, rtf, xml, html, text. | Optional | 
-| download_immediately | Whether to download the report immediately after generating it or not. If the report is taking more than 10 seconds to be ready, set as *false*. Possible values are: true, false. Default is True. | Optional | 
+| download_immediately | If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file | 
-| InfoFile.Name | string | Name of the report file | 
-| InfoFile.Extension | string | File extension of the report file | 
-| InfoFile.Info | string | Info about the report file | 
-| InfoFile.Size | number | Size of the report file | 
-| InfoFile.Type | string | Type of the report file | 
+| InfoFile.EntryId | string | Entry Id of the report file. | 
+| InfoFile.Name | string | Name of the report file. | 
+| InfoFile.Extension | string | File extension of the report file. | 
+| InfoFile.Info | string | Information about the report file. | 
+| InfoFile.Size | number | Size of the report file (in bytes). | 
+| InfoFile.Type | string | Type of the report file. | 
 | Nexpose.Report.ID | string | The identifier of the report. | 
 | Nexpose.Report.InstanceID | string | The identifier of the report instance. | 
 | Nexpose.Report.Name | string | The report name. | 
@@ -924,19 +924,19 @@ Generates a new report on given sites according to a template and arguments.
 | template | &lt;string&gt; Report template id to create the report with. If none is provided, the first template available will be used. | Optional | 
 | name | &lt;string&gt; The report name. | Optional | 
 | format | &lt;string&gt; The report format, default is PDF. Possible values are: pdf, rtf, xml, html, text. | Optional | 
-| download_immediately | Whether to download the report immediately or not. If the report is taking more than 10 seconds to be ready, set as *false*. Possible values are: true, false. Default is True. | Optional | 
+| download_immediately | If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file | 
-| InfoFile.Name | string | Name of the report file | 
-| InfoFile.Extension | string | File extension of the report file | 
-| InfoFile.Info | string | Info about the report file | 
-| InfoFile.Size | number | Size of the report file | 
-| InfoFile.Type | string | Type of the report file | 
+| InfoFile.EntryId | string | Entry Id of the report file. | 
+| InfoFile.Name | string | Name of the report file. | 
+| InfoFile.Extension | string | File extension of the report file. | 
+| InfoFile.Info | string | Information about the report file. | 
+| InfoFile.Size | number | Size of the report file (in bytes). | 
+| InfoFile.Type | string | Type of the report file. | 
 | Nexpose.Report.ID | string | The identifier of the report. | 
 | Nexpose.Report.InstanceID | string | The identifier of the report instance. | 
 | Nexpose.Report.Name | string | The report name. | 
@@ -977,19 +977,19 @@ Generates a new report for a specified scan.
 | template | &lt;string&gt; Report template id to create the report with. If none is provided, the first template available will be used. | Optional | 
 | name | &lt;string&gt; The report name. | Optional | 
 | format | &lt;string&gt; The report format, default is PDF. Possible values are: pdf, rtf, xml, html, text. | Optional | 
-| download_immediately | Whether to download the report immediately or not. If the report is taking more than 10 seconds to be ready, set as *false*. Possible values are: true, false. Default is True. | Optional | 
+| download_immediately | If true, downloads the report immediately after the report is generated. The default is "true". If the report takes longer than 10 seconds to generate, set to "false". | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file | 
-| InfoFile.Name | string | Name of the report file | 
-| InfoFile.Extension | string | File extension of the report file | 
-| InfoFile.Info | string | Info about the report file | 
-| InfoFile.Size | number | Size of the report file | 
-| InfoFile.Type | string | Type of the report file | 
+| InfoFile.EntryId | string | Entry Id of the report file. | 
+| InfoFile.Name | string | Name of the report file. | 
+| InfoFile.Extension | string | File extension of the report file. | 
+| InfoFile.Info | string | Information about the report file. | 
+| InfoFile.Size | number | Size of the report file (in bytes). | 
+| InfoFile.Type | string | Type of the report file. | 
 | Nexpose.Report.ID | string | The identifier of the report. | 
 | Nexpose.Report.InstanceID | string | The identifier of the report instance. | 
 | Nexpose.Report.Name | string | The report name. | 
@@ -1343,12 +1343,12 @@ Returns the generated report.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryId | string | Entry Id of the report file | 
-| InfoFile.Name | string | Name of the report file | 
-| InfoFile.Extension | string | File extension of the report file | 
-| InfoFile.Info | string | Info about the report file | 
-| InfoFile.Size | number | Size of the report file | 
-| InfoFile.Type | string | Type of the report file | 
+| InfoFile.EntryId | string | Entry Id of the report file. | 
+| InfoFile.Name | string | Name of the report file. | 
+| InfoFile.Extension | string | File extension of the report file. | 
+| InfoFile.Info | string | Information about the report file. | 
+| InfoFile.Size | number | Size of the report file (in bytes). | 
+| InfoFile.Type | string | Type of the report file. | 
 
 #### Command Example
 ```!nexpose-download-report report_id=1983 instance_id=1976```
