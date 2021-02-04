@@ -138,7 +138,8 @@
             "playbookID": "Service Desk Plus Test",
             "instance_names": "sdp_instance_1",
             "fromversion": "5.0.0",
-            "toversion": "5.9.9"
+            "toversion": "5.9.9",
+            "is_mockable": false
         },
         {
             "integrations": "ServiceDeskPlus",
@@ -151,7 +152,8 @@
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus Test",
             "instance_names": "sdp_instance_2",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "ServiceDeskPlus",
@@ -786,13 +788,15 @@
             "playbookID": "test playbook - QRadarCorrelations",
             "timeout": 2000,
             "fromversion": "5.0.0",
-            "toversion": "5.9.9"
+            "toversion": "5.9.9",
+            "is_mockable": false
         },
         {
             "integrations": "QRadar_v2",
             "playbookID": "test playbook - QRadarCorrelations For V2",
             "timeout": 2000,
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Awake Security",
@@ -1389,7 +1393,8 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "is_mockable": false
         },
         {
             "integrations": "Symantec Endpoint Protection V2",
@@ -1439,7 +1444,8 @@
         {
             "integrations": "jira-v2",
             "playbookID": "Jira-v2-Test",
-            "timeout": 500
+            "timeout": 500,
+            "is_mockable": false
         },
         {
             "integrations": "ipinfo",
@@ -1602,12 +1608,14 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "is_mockable": false
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewsv2_separate_process"
+            "instance_names": "ewsv2_separate_process",
+            "is_mockable": false
         },
         {
             "integrations": "remedy_sr_beta",
@@ -1830,7 +1838,8 @@
         {
             "integrations": "QRadar",
             "playbookID": "test_Qradar",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "QRadar_v2",
@@ -2829,7 +2838,8 @@
         {
             "integrations": "DShield Feed",
             "playbookID": "playbook-DshieldFeed_test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "AlienVault Reputation Feed",
@@ -3147,7 +3157,8 @@
         {
             "integrations": "Rundeck",
             "playbookID": "Rundeck_test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "playbookID": "Field polling test",
@@ -3374,17 +3385,11 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
-        "DShield Feed": "Has a command that downloads a file (!dshield-get-indicators)",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
         "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
         "urlscan.io": "Uses data that comes in the headers",
-        "QRadar_v2": "Test playbook 'test playbook - QRadarCorrelations' has multiple branches",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
-        "EWS v2": "Fetches bytes data (!ews-get-items-from-folder)",
-        "jira-v2": "has a command that uploads a file ( !jira-issue-upload-file)",
-        "Rundeck": "has a command that uploads a file (!rundeck-adhoc-script-run)",
-        "ServiceDeskPlus": "Playbook uses a random string and verifying the response contain it",
         "Feodo Tracker IP Blocklist Feed": "test-module downloads a file",
         "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
@@ -3447,7 +3452,6 @@
         "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
-        "Anomali ThreatStream": "'proxy' parameter not working",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "RedLock": "SSL Issues",
@@ -3488,7 +3492,6 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
         "MISP V2": "Cleanup process isn't performed as expected."
     },
     "parallel_integrations": [
