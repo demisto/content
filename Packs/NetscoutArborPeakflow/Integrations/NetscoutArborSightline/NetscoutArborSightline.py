@@ -86,7 +86,24 @@ class NetscoutClient(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    # def create_mitigation(self, **kwargs):
+    def _http_request(self, **kwargs):
+        try:
+            return super()._http_request(**kwargs)
+
+        except DemistoException as error:
+            bad_request_message = 'Error in API call [400] - BAD REQUEST\n'
+            error_str = str(error)
+            if bad_request_message in error_str:
+                error_obg = json.loads(error_str.split(bad_request_message)[1])
+                demisto.info(json.dumps(error_obg))
+                error_list = []
+                for err in error_obg.get('errors'):
+                    new_error_source = err.get('source', {}).get('pointer', '').split('/')[-1]
+                    new_error_details = err.get('detail')
+                    new_error = f'{new_error_source}: {new_error_details}' if new_error_source else new_error_details
+                    error_list.append(new_error)
+                error = ','.join(error_list)
+            raise DemistoException(error)
 
     def build_relationships(self, **kwargs) -> dict:
         """
@@ -192,7 +209,7 @@ class NetscoutClient(BaseClient):
         return self._http_request(
             method='POST',
             url_suffix=f'mitigations/',
-            data=data
+            json_data=data
         )
 
     def mitigation_template_list(self):
@@ -356,11 +373,14 @@ def mitigations_list_command(client: NetscoutClient, args: dict):
 
 
 def mitigations_create_command(client: NetscoutClient, args: dict):
+    ip_version = IP_DICTIONARY.get(args.get('ip_version'))
+    if not ip_version:
+        raise DemistoException(f'ip_version value can be one of the following: '
+                               f'{",".join(list(IP_DICTIONARY.keys()))}. {args.get("ip_version")} was given.')
     description = args.get('description')
-    ip_version = IP_DICTIONARY.get(args.get('ip_version'), args.get('ip_version'))
     name = args.get('name')
     ongoing = argToBoolean(args.get('ongoing', 'false'))
-    sub_type = args.get('subtype')
+    sub_type = args.get('sub_type')
     sub_object = validate_json_arg(args.get('sub_object'), 'sub_object')
     alert_id = args.get('alert_id')
     managed_object_id = args.get('managed_object_id')
@@ -374,7 +394,7 @@ def mitigations_create_command(client: NetscoutClient, args: dict):
     attributes = assign_params(description=description, ip_version=ip_version, name=name, ongoing=ongoing,
                                subtype=sub_type, sub_object=sub_object)
     data = {'relationships': relationships, 'attributes': attributes}
-    raw_result = client.create_mitigation(data=data)
+    raw_result = client.create_mitigation(data={'data': data})
     data = raw_result.get('data')
     hr = build_human_readable(data)
     return CommandResults(outputs_prefix='NASightline.Mitigation',

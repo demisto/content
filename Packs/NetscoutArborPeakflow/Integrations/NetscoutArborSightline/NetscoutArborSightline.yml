@@ -149,13 +149,8 @@ script:
       description: Lists the collection of annotations for a given alert.
     - name: na-sightline-alert-list
       arguments:
-        - name: limit
-          default: true
-          description: Maximal number of alerts to retrieve.
-        - name: page
-          default: true
-          description: Maximal number of alerts to retrieve.
         - name: alert_id
+          default: true
           description: Alert ID.
         - name: alert_class
           auto: PREDEFINED
@@ -230,12 +225,12 @@ script:
         - name: importance_operator
           auto: PREDEFINED
           predefined:
-            - =
-            - <
-            - ""
-          description: 'The operator to apply on the importance  argument. For example:
-          if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
-          with importance grater to 1 will be fetched.'
+            - '='
+            - '>'
+            - '<'
+          description: 'The operator to apply on the importance argument (''>'' is grater than, ''<'' is smaller than,
+          ''=''is equal). For example: if the chosen operator is ''>'' and the chosen importance is ''1'', only alerts
+          with importance grater than 1 will be fetched.'
         - name: ongoing
           auto: PREDEFINED
           predefined:
@@ -248,9 +243,9 @@ script:
         - name: start_time_operator
           auto: PREDEFINED
           predefined:
-            - =
-            - <
-            - ""
+            - '='
+            - '>'
+            - '<'
           description: 'The operator to apply on the ''start_time'' argument. For example:
           if the chosen operator is ''>'' and the given time is ''2020-12-01T13:15:00'',
           only alerts with starting time grater than ''2020-12-01T13:15:00'' will be
@@ -261,15 +256,19 @@ script:
         - name: stop_time_operator
           auto: PREDEFINED
           predefined:
-            - =
-            - <
-            - ""
+            - '='
+            - '>'
+            - '<'
           description: 'The operator to apply on the ''stop_time'' argument. For example:
           if the chosen operator is ''>'' and the given time is ''2020-12-01T13:15:00'',
           only alerts with stopping time grater than ''2020-12-01T13:15:00'' will be
           fetched.'
         - name: managed_object_id
           description: ID of managed object associated with the alert.
+        - name: page
+          description: Maximal number of alerts to retrieve.
+        - name: limit
+          description: Maximal number of alerts to retrieve.
       description: List all alerts, when an alert ID is given only the relevant alert
         will be fetched.
     - name: na-sightline-mitigation-list
