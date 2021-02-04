@@ -258,10 +258,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_gsuitetempemail",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_incomingmirrorerror",
                         "isVisible": true
                     },

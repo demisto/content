@@ -2085,7 +2085,7 @@ def test_list_detections_command(client):
     with open("./TestData/list_detections_ec.json", "r") as f:
         dummy_ec = json.load(f)
 
-    with open("./TestData/list_detections_hr.md", "r") as f:
+    with open("TestData/list_detections_hr.md", "r") as f:
         dummy_hr = f.read()
 
     mock_response = (
