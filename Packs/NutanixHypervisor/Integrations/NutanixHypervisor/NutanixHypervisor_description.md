@@ -7,7 +7,7 @@ and their ID, impact type, and entity type. In order to check the optional value
 1. Go to your Nutanix UI and navigate to the *Alerts* screen. (Can be found under the second tab in the top left corner, see image below)
 2. Navigate to the Alert Policies tab on the left sidebar.
 You should see the following screen:
-![Nutanix Alert Policy](https://raw.githubusercontent.com/demisto/content/f99411d5ab548fddfadf7500aba6528a189cbf79/Packs/NutanixHypervisor/doc_files/Alert_Policy.png)
+![Nutanix Alert Policy](https://raw.githubusercontent.com/demisto/content/a9d939eff92aeb3accf7fa4e4bf90ecb8a9e158c/Packs/NutanixHypervisor/doc_files/Alert_Policy.png)
 * *ID* is the alert type ID filter parameter for fetching alerts, or the argument for the ***nutanix-hypervisor-alerts-list*** command.
 * *Impact Type* is the impact type filter parameter for fetching alerts, or the argument for the ***nutanix-hypervisor-alerts-list*** command.
 
