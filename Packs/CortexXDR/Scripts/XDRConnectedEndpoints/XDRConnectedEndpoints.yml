@@ -1,11 +1,11 @@
 args:
 - name: from
   description: 'The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    same as in the incidents query page, for example: "3 days ago", "2019-01-01T00:00:00
     +0200").'
 - name: to
   description: 'The end date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
+    same as in the incidents query page, for example: "3 days ago", "2019-01-01T00:00:00
     +0200").'
 - defaultValue: "3000"
   name: limit

@@ -33,7 +33,13 @@ def get_xdr_incidents(limit: int, to_date: str, from_date: str) -> []:
     if isError(incidents_res):
         return_error(f'Error occurred while trying to get incidents: {get_error(incidents_res)}')
 
-    return json.loads(incidents_res[0].get('Contents'))
+    incidents = []
+    try:
+        incidents = json.loads(incidents_res[0].get('Contents'))
+    except json.JSONDecodeError:
+        demisto.error(f'Failed to parse incidents response from GetIncidentsByQuery, result = {incidents_res}')
+        pass
+    return incidents
 
 
 def update_result_dict(context: list, res_dict: dict, query_type: str):
@@ -49,12 +55,16 @@ def update_result_dict(context: list, res_dict: dict, query_type: str):
 
         if 'This alert from content' in val:
             continue
-        if query_type == 'Users' and val.partition('\\')[2]:
-            val = val.partition('\\')[2]
 
-        if query_type == 'Hosts':
-            val = val.partition(':')[0]
+        try:
+            if query_type == 'Users' and val.partition('\\')[2]:
+                val = val.partition('\\')[2]
 
+            if query_type == 'Hosts':
+                val = val.partition(':')[0]
+        except Exception as err:
+            demisto.error(f'Could not parse value: {val}, error: {err}')
+            pass
         if not val:
             continue
 
@@ -72,8 +82,8 @@ def main():
 
         res_type = args.get('reultType')
         query_type = args.get('queryType')
-        to_date = args.get('from')
-        from_date = args.get('to')
+        to_date = args.get('to')
+        from_date = args.get('from')
 
         try:
             limit = int(args.get('limit'))
@@ -98,7 +108,7 @@ def main():
 
             return_results(json.dumps(data))
         elif res_type == 'DistinctCount':
-            return_results(str(len(res_dict.keys())))
+            return_results(len(res_dict))
 
     except Exception as e:
         return_error(str(e))
