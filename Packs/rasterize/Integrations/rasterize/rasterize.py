@@ -279,7 +279,7 @@ def convert_pdf_to_jpeg(path: str, max_pages: int, password: str, horizontal: bo
 
         imgs_comb = Image.fromarray(imgs_comb)
         output = BytesIO()
-        imgs_comb.save(output, 'JPEG')
+        imgs_comb.save(output, 'JPEG')  # type: ignore
         demisto.debug('Combining all pages - COMPLETED')
 
         return output.getvalue()

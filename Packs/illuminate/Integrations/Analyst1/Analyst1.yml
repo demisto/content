@@ -13,7 +13,7 @@ configuration:
   defaultvalue: ''
   type: 9
   required: true
-- display: Domain of Analyst1 server to use (format - server.that_you_use.com - No
+- display: Domain of Analyst1 server to use (format - server.thatyouuse.com - No
     http/https)
   name: server
   defaultvalue: analysis.cloud.analyst1.com
@@ -601,7 +601,7 @@ script:
       type: String
     description: Queries the Analyst1 REST API and enriches the given URL with Analyst1
       indicator data.
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.15759
   runonce: false
   subtype: python3
 fromversion: 5.0.0
