@@ -1228,11 +1228,13 @@ def create_account_context(endpoints):
     for endpoint in endpoints:
         domain = endpoint.get('domain')
         if domain:
-            for user in endpoint.get('users', []):
-                account_context.append({
-                    'Username': user,
-                    'Domain': domain,
-                })
+            users = endpoint.get('users', [])  # in case the value of 'users' is None
+            if users and isinstance(users, list):
+                for user in users:
+                    account_context.append({
+                        'Username': user,
+                        'Domain': domain,
+                    })
 
     return account_context
 
