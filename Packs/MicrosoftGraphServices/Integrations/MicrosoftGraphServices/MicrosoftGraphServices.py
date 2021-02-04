@@ -9,11 +9,17 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 
 class Client:
     def __init__(self, app_id: str, verify: bool, proxy: bool):
+        if '@' in app_id:
+            app_id, refresh_token = app_id.split('@')
+            integration_context = get_integration_context()
+            integration_context.update(current_refresh_token=refresh_token)
+            set_integration_context(integration_context)
+
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=app_id,
@@ -25,7 +31,10 @@ class Client:
             scope='offline_access Application.ReadWrite.All'
         )
 
-    def get_service_principals(self, limit: int) -> list:
+    def get_service_principals(
+            self,
+            limit: int
+    ) -> list:
         """Get all service principals.
 
         Arguments:
@@ -33,17 +42,25 @@ class Client:
 
         Returns:
             All given service principals
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/serviceprincipal-list?view=graph-rest-1.0&tabs=http
         """
-        results = list()
         res = self.ms_client.http_request(
-            'GET', 'v1.0/servicePrincipals')
+            'GET',
+            'v1.0/servicePrincipals'
+        )
+        results = list()
         results.extend(res.get('value'))
         while (next_link := res.get('@odata.nextLink')) and len(results) < limit:
             res = self.ms_client.http_request('GET', '', next_link)
             results.extend(res.get('value'))
         return results[:limit]
 
-    def delete_service_principals(self, service_id: str) -> bool:
+    def delete_service_principals(
+            self,
+            service_id: str
+    ):
         """Deletes a given id from authorized apps.
 
         Arguments:
@@ -54,11 +71,13 @@ class Client:
 
         Raises:
             DemistoException if no app exists or any other requests error.
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/serviceprincipal-delete?view=graph-rest-1.0&tabs=http
         """
         self.ms_client.http_request(
             'DELETE', f'v1.0/servicePrincipals/{service_id}', return_empty_response=True
         )
-        return True
 
 
 ''' COMMAND FUNCTIONS '''
@@ -85,7 +104,7 @@ def test_connection(client: Client) -> str:
 def reset_auth() -> CommandResults:
     set_integration_context({})
     return CommandResults(
-        readable_output='Authorization was reset successfully. Run **!microsoft-teams-auth-start** to start the '
+        readable_output='Authorization was reset successfully. Run **!msgraph-apps-start** to start the '
                         'authentication process.'
     )
 
@@ -107,9 +126,15 @@ def list_service_principals_command(ms_client: Client, args: dict) -> CommandRes
         raise DemistoException(f'Limit must be an integer, not "{limit_str}"')
     results = ms_client.get_service_principals(limit)
     return CommandResults(
-        "Graph.Application",
-        "id",
-        outputs=results
+        'MSGraphService',
+        'id',
+        outputs=results,
+        readable_output=tableToMarkdown(
+            'Available services (applications):',
+            results,
+            headers=['id', 'appId', 'appDisplayName', 'accountEnabled', 'deletedDateTime'],
+            removeNull=True
+        )
     )
 
 
@@ -126,11 +151,12 @@ def remove_service_principals_command(ms_client: Client, args: dict) -> CommandR
     app_id = str(args.get('id'))
     ms_client.delete_service_principals(app_id)
     return CommandResults(
-        readable_output=f'The app id {app_id} has been deleted'
+        readable_output=f'Service {app_id} was deleted.'
     )
 
 
 def main():
+    handle_proxy()
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         command = demisto.command()
@@ -144,7 +170,7 @@ def main():
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results('The test module is not functional, run the msgraph-apps--auth-start command instead.')
+            return_results('The test module is not functional, run the msgraph-apps-auth-start command instead.')
         elif command == 'msgraph-apps-auth-start':
             return_results(start_auth(client))
         elif command == 'msgraph-apps-auth-complete':
@@ -153,9 +179,9 @@ def main():
             return_results(test_connection(client))
         elif command == 'msgraph-apps-auth-reset':
             return_results(test_connection(client))
-        elif command == 'msgraph-apps-list-service-principal':
+        elif command == 'msgraph-apps-service-principal-list':
             return_results(list_service_principals_command(client, args))
-        elif command == 'msgraph-apps-remove-service-principal':
+        elif command == 'msgraph-apps-service-principal-remove':
             return_results(remove_service_principals_command(client, args))
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
