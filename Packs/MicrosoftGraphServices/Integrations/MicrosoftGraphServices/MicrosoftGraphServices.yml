@@ -48,7 +48,7 @@ script:
     arguments:
     - name: limit
       default: false
-      description: Maximum results to fetch
+      description: Maximum results to fetch. 0 is all.
       isArray: false
       required: false
       defaultValue: 10
