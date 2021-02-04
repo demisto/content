@@ -413,7 +413,7 @@ def get_case_tasks_command(client: Client, args: dict):
     )
 
 
-def get_task_command(client: Client, args: dict, params: dict):
+def get_task_command(client: Client, args: dict):
     task_id = args.get('id')
     tasks = client.get_task(task_id)
     output_results(
@@ -425,7 +425,7 @@ def get_task_command(client: Client, args: dict, params: dict):
     )
 
 
-def get_attachment_command(client: Client, args: dict, params: dict):
+def get_attachment_command(client: Client, args: dict):
     log_id = args.get('id')
     log = client.get_log(log_id)
     if log and "attachment" in log:
@@ -443,7 +443,7 @@ def get_attachment_command(client: Client, args: dict, params: dict):
         demisto.results('No attachments in log ID {log_id}')
 
 
-def update_task_command(client: Client, args: dict, params: dict):
+def update_task_command(client: Client, args: dict):
     task_id = args.get('id')
     data = args
     del data['id']
@@ -459,7 +459,7 @@ def update_task_command(client: Client, args: dict, params: dict):
     )
 
 
-def search_users_command(client: Client, args: dict = None, params: dict = None):
+def search_users_command(client: Client, args: dict = None):
     users = client.search_users()
     output_results(
         title='TheHive Users:',
@@ -470,7 +470,7 @@ def search_users_command(client: Client, args: dict = None, params: dict = None)
     )
 
 
-def get_user_command(client: Client, args: dict, params: dict):
+def get_user_command(client: Client, args: dict):
     user_id = str(args.get('id', ''))
     user = client.get_user(user_id)
     output_results(
@@ -482,7 +482,7 @@ def get_user_command(client: Client, args: dict, params: dict):
     )
 
 
-def create_local_user_command(client: Client, args: dict, params: dict):
+def create_local_user_command(client: Client, args: dict):
     user_data = {
         "login": args.get('login'),
         "name": args.get('name'),
@@ -500,7 +500,7 @@ def create_local_user_command(client: Client, args: dict, params: dict):
     )
 
 
-def block_user_command(client: Client, args: dict, params: dict):
+def block_user_command(client: Client, args: dict):
     user_id = args.get('id')
     if client.block_user(user_id):
         demisto.results(f'User "{user_id}" blocked successfully')
@@ -508,7 +508,7 @@ def block_user_command(client: Client, args: dict, params: dict):
         demisto.results(f'User "{user_id}" was not blocked successfully')
 
 
-def list_observables_command(client: Client, args: dict, params: dict):
+def list_observables_command(client: Client, args: dict):
     case_id = args.get('id')
     observables = client.list_observables(case_id)
     title = f"Observables for Case {case_id}" if case_id else "Observables:"
@@ -521,7 +521,7 @@ def list_observables_command(client: Client, args: dict, params: dict):
     )
 
 
-def create_observable_command(client: Client, args: dict, params: dict):
+def create_observable_command(client: Client, args: dict):
     case_id = args.get('id')
     data = {
         "data": args.get('data'),
@@ -543,7 +543,7 @@ def create_observable_command(client: Client, args: dict, params: dict):
     )
 
 
-def update_observable_command(client: Client, args: dict, params: dict):
+def update_observable_command(client: Client, args: dict):
     artifact_id = args.get('id')
     data = {
         "message": args.get('message'),
@@ -562,10 +562,9 @@ def update_observable_command(client: Client, args: dict, params: dict):
     )
 
 
-def get_mapping_fields_command(client: Client, args: dict, mirror_direction: str) -> Dict[str, Any]:
+def get_mapping_fields_command(client: Client, args: dict) -> Dict[str, Any]:
     instance_name = demisto.integrationInstance()
-    mirror_direction = None if mirror_direction == "Disabled" else mirror_direction
-    SCHEMA['dbotMirrorDirection'] = mirror_direction
+    SCHEMA['dbotMirrorDirection'] = self.mirroring
     SCHEMA['dbotMirrorInstance'] = instance_name
     return {"Default Schema": SCHEMA}
 
@@ -711,7 +710,7 @@ def main() -> None:
             return_results(update_remote_system_command(client, args))
 
         elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields_command(client, args, params.get('mirror')))
+            return_results(get_mapping_fields_command(client, args))
 
         elif command in command_map:
             command_map[command](client, args)  # type: ignore
