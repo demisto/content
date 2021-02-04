@@ -562,16 +562,15 @@ def update_observable_command(client: Client, args: dict, params: dict):
     )
 
 
-def get_mapping_fields_command(client: Client, args: dict, params: dict) -> Dict[str, Any]:
+def get_mapping_fields_command(client: Client, args: dict, mirror_direction: str) -> Dict[str, Any]:
     instance_name = demisto.integrationInstance()
-    mirror_direction = params.get('mirror')
     mirror_direction = None if mirror_direction == "Disabled" else mirror_direction
     SCHEMA['dbotMirrorDirection'] = mirror_direction
     SCHEMA['dbotMirrorInstance'] = instance_name
     return {"Default Schema": SCHEMA}
 
 
-def update_remote_system_command(client: Client, args: dict, params: dict) -> str:
+def update_remote_system_command(client: Client, args: dict) -> str:
     parsed_args = UpdateRemoteSystemArgs(args)
 
     changes = {k: v for k, v in parsed_args.delta.items() if k in parsed_args.data.keys()}
@@ -581,7 +580,7 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
     return parsed_args.remote_incident_id
 
 
-def get_remote_data_command(client: Client, args: dict, params: dict) -> Union[List[Dict[str, Any]], str]:
+def get_remote_data_command(client: Client, args: dict) -> Union[List[Dict[str, Any]], str]:
     parsed_args = GetRemoteDataArgs(args)
 
     parsed_entries = []
@@ -707,12 +706,12 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == 'get-remote-data':
-            return_results(get_remote_data_command(client, args, params))
+            return_results(get_remote_data_command(client, args))
         elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args, params))
+            return_results(update_remote_system_command(client, args))
 
         elif command == 'get-mapping-fields':
-            return_results(get_mapping_fields_command(client, args, params))
+            return_results(get_mapping_fields_command(client, args, params.get('mirror')))
 
         elif command in command_map:
             command_map[command](client, args)  # type: ignore
