@@ -1,6 +1,10 @@
-Powershell Remoting is a built in capability in Windows hosts that enables to connect remotley and in order to execute scripts and Poweshell commands. By using Powershell Remoting the SOC analyst or incident resopnder will be able to connect to the windows host in oder to perform various tasks such as gathering data, remediating the host, move files to and from the host to XSOAR and much more.
-##### What does this pack do?
-This pack provides an easy, quick and agentless method to connect to windows hosts by leveraging builtin capabilities within windows such as Powershall Remoting as the infrastructure and multiple other windows built in capabilities in order to move files to and from hosts and execute Powershell commands and scripts.
+Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
-The pack includes: 
-The Powershell Remoting integration which allows you to interact with windows hosts for actions such as acquiring forensic data and much more.
+Powershell Remoting is a built-in feature in Windows that enables connecting remotely to hosts in order to execute scripts and Powershell commands. By using Powershell Remoting, the SOC analyst or incident responder is able to connect to a Windows host and perform tasks such as gathering data, remediating the host, moving files to and from the host and XSOAR, and much more.
+
+##### What does this pack do?
+Allows you to interact with Windows hosts for actions such as acquiring forensic data.
+
+The pack includes the Powershell Remoting integration.
+
+For more information, visit the [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/integration/PowerShell_Remoting).
