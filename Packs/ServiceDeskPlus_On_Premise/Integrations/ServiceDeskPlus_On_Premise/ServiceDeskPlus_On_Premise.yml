@@ -140,7 +140,7 @@ script:
   - arguments:
     - default: false
       description: The ID of the request to delete.
-      isArray: false
+      isArray: true
       name: request_id
       required: true
       secret: false

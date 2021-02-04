@@ -10,7 +10,7 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": []
+    "tags": ["IT", "Incident Handling", "Incident Mirroring"],
+    "useCases": ["Case Management", "IT Services"],
+    "keywords": ["Service", "ServiceDesk", "ServiceDeskPlus", "ManageEngine"]
 }
