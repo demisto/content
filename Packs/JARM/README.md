@@ -8,15 +8,19 @@ JARM can be useful in a number of use-cases including:
 JARM is an active fingerprinting tool, which means that generating a JARM fingerprint requires making multiple connections to the target server. Specifically, the JARM fingerprinting uses 10 custom crafted TLS client hello packets to generate the raw information necessary for fingerprinting. 
 You can read more about how JARM works [here](https://engineering.salesforce.com/easily-identify-malicious-servers-on-the-internet-with-jarm-e095edac525a). 
 
-## Default Indicator Type
-This pack includes the JARM indicator type.
+## JARM Indicator Type
+This pack includes the JARM indicator type with its own layout.
+
+The JARM fingerprint is a 62 digit hexadecimal string and is compatible with auto-extract.
 
 ## Indicator Fields
 This following are the indicator fields for the JARM indicator layout.
-- Fingerprint
-- IP
-- Port
+- JARM Fingerprint (primary key)
+- JARM Hosts (the hosts that originated this fingerprint). It is a grid field comprised of:
+    - IP Address
+    - FQDN
+    - Port
 
-## Commands
-This pack includes following Command.
-- **jarm-fingerprint** - Accepts a host and a port to attempt to generate a JARM fingerprint for.
+## Integrations
+This pack includes an integration that implements the following Command.
+- **jarm-fingerprint** - Accepts a host (FQDN or IP) and a port to attempt to generate a JARM fingerprint for.
