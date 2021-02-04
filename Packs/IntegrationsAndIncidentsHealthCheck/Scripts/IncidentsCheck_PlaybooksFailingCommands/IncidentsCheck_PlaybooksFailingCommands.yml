@@ -1,9 +1,9 @@
-comment: Health Check dynamic section, showing the top ten commands
-  of the failed incidents in a pie chart.
+comment: Health Check dynamic section, showing the top ten commands of the failed
+  incidents in a pie chart.
 commonfields:
   id: IncidentsCheck-PlaybooksFailingCommands
   version: -1
-dockerimage: demisto/python3:3.8.6.12176
+dockerimage: demisto/python3:3.9.1.15759
 enabled: true
 name: IncidentsCheck-PlaybooksFailingCommands
 runas: DBotWeakRole
