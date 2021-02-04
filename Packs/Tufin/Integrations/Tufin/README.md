@@ -269,8 +269,8 @@ Get information on a SecureChange Ticket (Ticket ID retrieved from Tufin UI)
 | Tufin.Ticket.Priority | unknown | Ticket priority | 
 | Tufin.Ticket.Status | unknown | Ticket status | 
 | Tufin.Ticket.Requester | unknown | Ticket requester | 
-| Tufin.Ticket.Workflow.ID | unknown | Ticket workflow ID | 
-| Tufin.Ticket.Workflow.Name | unknown | Ticket workflow name | 
+| Tufin.Ticket.WorkflowID | unknown | Ticket workflow ID | 
+| Tufin.Ticket.WorkflowName | unknown | Ticket workflow name | 
 | Tufin.Ticket.CurrentStep | unknown | Ticket current step | 
 
 
@@ -331,19 +331,19 @@ Get SecureApp application connections
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tufin.App.Connections.ID | unknown | Connection ID | 
-| Tufin.App.Connections.Name | unknown | Connection name | 
-| Tufin.App.Connections.Status | unknown | Connection status | 
-| Tufin.App.Connections.Source.ID | unknown | Connection source ID | 
-| Tufin.App.Connections.Source.Type | unknown | Connection source type | 
-| Tufin.App.Connections.Source.Name | unknown | Connection source name | 
-| Tufin.App.Connections.Destination.ID | unknown | Connection destination ID | 
-| Tufin.App.Connections.Destination.Type | unknown | Connection destination type | 
-| Tufin.App.Connections.Destination.Name | unknown | Connection destination name | 
-| Tufin.App.Connections.Service.ID | unknown | Connection service ID | 
-| Tufin.App.Connections.Service.Name | unknown | Connection service name | 
-| Tufin.App.Connections.Comment | unknown | Connection comment | 
-| Tufin.App.Connections.ApplicationID | unknown | Application ID | 
+| Tufin.AppConnections.ID | unknown | Connection ID | 
+| Tufin.AppConnections.Name | unknown | Connection name | 
+| Tufin.AppConnections.Status | unknown | Connection status | 
+| Tufin.AppConnections.Source.ID | unknown | Connection source ID | 
+| Tufin.AppConnections.Source.Type | unknown | Connection source type | 
+| Tufin.AppConnections.Source.Name | unknown | Connection source name | 
+| Tufin.AppConnections.Destination.ID | unknown | Connection destination ID | 
+| Tufin.AppConnections.Destination.Type | unknown | Connection destination type | 
+| Tufin.AppConnections.Destination.Name | unknown | Connection destination name | 
+| Tufin.AppConnections.Service.ID | unknown | Connection service ID | 
+| Tufin.AppConnections.Service.Name | unknown | Connection service name | 
+| Tufin.AppConnections.Comment | unknown | Connection comment | 
+| Tufin.AppConnections.ApplicationID | unknown | Application ID | 
 
 
 ##### Command Example
