@@ -63,15 +63,12 @@ To access the Security & Compliance Center, you need to be a global administrato
          2. Open playground -  War-room:
 
             1. Run the ***!o365-sc-auth-start*** command and follow the instructions. Expected output is:
-
-
-            >## Security And Compliance - Authorize instructions
+    
+            > ## Security And Compliance - Authorize instructions
             >
-            >1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
-            >2. Run the command ***!o365-sc-auth-complete*** command in the War Room.
-
+            > 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **XXXXXXX** to authenticate.
+            > 2. Run the command ***!o365-sc-auth-complete*** command in the War Room.
             
-
             2. Test - OAuth2.0 authorization, Run the ***!o365-sc-auth-test*** command. 
 
    2. Basic authentication (Not recommended):
@@ -180,7 +177,7 @@ Create compliance search in the Security & Compliance Center.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_name | The name of the compliance search. | Required |
+| search_name | The name of the compliance search. If not specified, will have the prefix "XSOAR-" followed by the GUID e.g., XSOAR-d6228fd0-756b-4e4b-8721-76776df91526. | Required |
 | case | The name of a Core eDiscovery case to associate with the new compliance search. | Optional |
 | kql | Text search string or a query that is formatted using the Keyword Query Language (KQL). | Optional |
 | description | Description of the compliance search. | Optional |

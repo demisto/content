@@ -243,15 +243,19 @@ def fetch_indicators_from_file(args):
 
     # Create indicators in demisto
     errors = []
+    domains = []
     for indicator in indicator_list:
         res = demisto.executeCommand("createNewIndicator", indicator)
         if is_error(res[0]):
             errors.append("Error creating indicator - {}".format(res[0]["Contents"]))
 
+        domain_obj = {'Name': indicator.get('value')}
+        if indicator.get('type') == FeedIndicatorType.Domain and domain_obj not in domains:
+            domains.append(domain_obj)
     if errors:
         return_error(json.dumps(errors, indent=4))
-
-    return human_readable, None, indicator_list
+    domain_context = {outputPaths['domain']: domains} if domains else None
+    return human_readable, domain_context, indicator_list
 
 
 def main():

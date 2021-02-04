@@ -36,10 +36,12 @@ script:
     name: o365-sc-auth-test
   - arguments:
     - default: false
-      description: The name of the compliance search.
+      description: |
+        The name of the compliance search.
+        If not specified, will have the prefix "XSOAR-" followed by the GUID e.g., XSOAR-d6228fd0-756b-4e4b-8721-76776df91526.
       isArray: false
       name: search_name
-      required: true
+      required: false
       secret: false
     - default: false
       description: The name of a Core eDiscovery case to associate with the new compliance search.

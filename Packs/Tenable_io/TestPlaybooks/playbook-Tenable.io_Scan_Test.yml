@@ -71,7 +71,7 @@ tasks:
       brand: ""
     scriptarguments:
       scan-id:
-        simple: "25"
+        simple: "7"
       targets: {}
     separatecontext: true
     loop:

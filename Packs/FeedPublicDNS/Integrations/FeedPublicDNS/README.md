@@ -1,4 +1,4 @@
-Fetches IP addresses from Public DNS feed.
+A feed of known benign IPs of public DNS servers.
 ## Configure Public DNS Feed on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

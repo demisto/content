@@ -29,15 +29,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| search_name | The name of the compliance search. |  | Required |
+| search_name | The name of the compliance search. If not specified will have prefix of "XSOAR-" and GUID e.g. XSOAR-d6228fd0-756b-4e4b-8721-76776df91526. |  | Optional |
 | force | If false, use the existing search without modifying any search parameters. If true, overwrite the existing search. Possible values are: "true" and "false". | false | Required |
 | preview | Whether to preview results using the search action. Possible values are: "true" and "false". | false | Required |
 | case | The name of a Core eDiscovery case to associate with the new compliance search. |  | Optional |
 | kql | Text search string or a query that is formatted using the Keyword Query Language \(KQL\). |  | Optional |
 | description | Description of the compliance search. |  | Optional |
 | allow_not_found_exchange_locations | Whether to include mailboxes other than regular user mailboxes in the compliance search. Possible values are: "true" and "false". | true | Optional |
-| exchange_location | Comma-separated list of mailboxes/distribution groups to include, or use the value "All" to include all. | All | Optional |
-|  exchange_location_exclusion | Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. |  | Optional |
+| exchange_location | Comma-separated list of mailboxes/distribution groups to include, or use the value "All" to include all. | All | Required |
+| exchange_location_exclusion | Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. |  | Optional |
 | public_folder_location | Comma-separated list of public folders to include, or use the value "All" to include all. |  | Optional |
 | share_point_location | Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or use the value "All" to include all sites. |  | Optional |
 | share_point_location_exclusion | Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value. |  | Optional |
@@ -122,3 +122,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Image
 ---
 ![O365 - Security And Compliance - Search](../doc_imgs/O365-SecurityAndCompliance-Search.png)
+
+
+## Known Limitations
+---
+* Each security and compliance command creates a PSSession (PowerShell session). The security and compliance PowerShell limits the number of concurrent sessions to 3. Since this affects the behavior of multiple playbooks running concurrently it we recommend that you retry failed tasks when using the integration commands in playbooks.
+* In order to handle sessions limits, A retry mechanism is applied which will retry for 10 time with 30 sec breaks. (The retry isn't applied on the generic polling as its not supported yet)  

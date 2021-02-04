@@ -260,7 +260,7 @@ script:
     - default: false
       description: start index from which the results are returned.
       isArray: false
-      name: 'start  '
+      name: start
       required: false
       secret: false
     deprecated: false

@@ -1,0 +1,163 @@
+category: Network Security
+commonfields:
+  id: Cisco Umbrella Enforcement
+  version: -1
+configuration:
+- defaultvalue: https://s-platform.api.opendns.com
+  display: Server URL (e.g., https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Add and remove domains in Cisco OpenDNS.
+display: Cisco Umbrella Enforcement
+name: Cisco Umbrella Enforcement
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Alert time of the new event in datetime format, e.g., 2013-02-08T09:30:26.0Z.
+      isArray: false
+      name: alert_time
+      required: true
+      secret: false
+    - default: false
+      description: Device ID of the new event.
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    - default: false
+      description: Destination domain of the new event.
+      isArray: false
+      name: destination_domain
+      required: true
+      secret: false
+    - default: false
+      description: Destination URL of the new event.
+      isArray: false
+      name: destination_url
+      required: true
+      secret: false
+    - default: false
+      description: Device version for the new event.
+      isArray: false
+      name: device_version
+      required: true
+      secret: false
+    - default: false
+      description: The destination IP address of the domain, specified in IPv4 dotted-decimal
+        notation e.g., '8.8.8.8'.
+      isArray: false
+      name: destination_ip
+      required: false
+      secret: false
+    - default: false
+      description: 'The partner threat level or rating, e.g., severe, bad, high, and
+        so on.'
+      isArray: false
+      name: event_severity
+      required: false
+      secret: false
+    - default: false
+      description: Common name or classification of the threat.
+      isArray: false
+      name: event_type
+      required: false
+      secret: false
+    - default: false
+      description: Variant or other descriptor of the event type.
+      isArray: false
+      name: event_description
+      required: false
+      secret: false
+    - default: false
+      description: Path to the file exhibiting malicious behavior.
+      isArray: false
+      name: file_name
+      required: false
+      secret: false
+    - default: false
+      description: SHA-1 of file reported by the appliance.
+      isArray: false
+      name: file_hash
+      required: false
+      secret: false
+    - default: false
+      description: IP/Host of the infected computer/device that was patient 0 for
+        the event.
+      isArray: false
+      name: source
+      required: false
+      secret: false
+    deprecated: false
+    description: Posts a malware event to the API for processing and optionally adding
+      to a customer's domain lists.
+    execution: false
+    name: umbrella-domain-event-add
+  - arguments:
+    - default: false
+      description: Number of page to return. Default is "1".
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of queries per page. Default is "50".
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: List of domains.
+    execution: false
+    name: umbrella-domains-list
+    outputs:
+    - contextPath: UmbrellaEnforcement.Domains.name
+      description: Name of the domains.
+      type: String
+    - contextPath: UmbrellaEnforcement.Domains.id
+      description: ID of the domains.
+      type: Number
+    - contextPath: UmbrellaEnforcement.Domains.IsDeleted
+      description: True if the domain has been deleted from list.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: ID of the domain.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the domain.
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: Delete domain.
+    execution: false
+    name: umbrella-domain-delete
+  dockerimage: demisto/python3:3.8.6.14516
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: true
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.0.0

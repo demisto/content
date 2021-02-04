@@ -1,4 +1,3 @@
-elasticcommonfields: {}
 id: TestAzureSentinelPlaybook
 version: -1
 name: TestAzureSentinelPlaybook
@@ -6,11 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c2c2a582-b110-414a-8611-38638dd413fa
+    taskid: e3113883-22ae-4eab-88cf-278acff75ec6
     type: start
     task:
-      elasticcommonfields: {}
-      id: c2c2a582-b110-414a-8611-38638dd413fa
+      id: e3113883-22ae-4eab-88cf-278acff75ec6
       version: -1
       name: ""
       iscommand: false
@@ -33,11 +31,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 75293c4b-ebac-453f-84da-8c9072ad2019
+    taskid: 173d22a0-016f-4e54-8806-47f0072bc599
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 75293c4b-ebac-453f-84da-8c9072ad2019
+      id: 173d22a0-016f-4e54-8806-47f0072bc599
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -65,11 +62,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 63897835-c62c-4f6a-8a2f-b9dda2873bda
+    taskid: fb3829fe-bf2e-41ae-86ed-382745ea4e96
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 63897835-c62c-4f6a-8a2f-b9dda2873bda
+      id: fb3829fe-bf2e-41ae-86ed-382745ea4e96
       version: -1
       name: azure-sentinel-get-incident-by-id
       script: '|||azure-sentinel-get-incident-by-id'
@@ -97,11 +93,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: a771979e-279d-4bf3-8f6e-0cf1434fb719
+    taskid: 0bfb8fec-952c-473b-86fd-994e60aa976d
     type: condition
     task:
-      elasticcommonfields: {}
-      id: a771979e-279d-4bf3-8f6e-0cf1434fb719
+      id: 0bfb8fec-952c-473b-86fd-994e60aa976d
       version: -1
       name: Verify Outputs
       type: condition
@@ -157,11 +152,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 08e4e845-b700-4c95-8768-20cac20da44d
+    taskid: 31d8f4ed-6928-4d6c-89bc-f91550eae916
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 08e4e845-b700-4c95-8768-20cac20da44d
+      id: 31d8f4ed-6928-4d6c-89bc-f91550eae916
       version: -1
       name: azure-sentinel-list-incidents
       script: '|||azure-sentinel-list-incidents'
@@ -193,11 +187,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: 66715da6-8d45-4b12-8f25-a3dd78b238ae
+    taskid: c2594103-648e-48de-8044-8c1627b51355
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 66715da6-8d45-4b12-8f25-a3dd78b238ae
+      id: c2594103-648e-48de-8044-8c1627b51355
       version: -1
       name: Verify Outputs
       type: condition
@@ -259,11 +252,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 717929bf-1f8b-4b51-8f89-eb6ae106259e
+    taskid: 43c4841d-9c8d-467d-857a-81a9863bf691
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 717929bf-1f8b-4b51-8f89-eb6ae106259e
+      id: 43c4841d-9c8d-467d-857a-81a9863bf691
       version: -1
       name: azure-sentinel-update-incident
       script: '|||azure-sentinel-update-incident'
@@ -300,11 +292,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 179f7527-c4e0-4b25-8092-875e33e1755f
+    taskid: 036cc98c-0207-4a6d-8c12-c62c18071d02
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 179f7527-c4e0-4b25-8092-875e33e1755f
+      id: 036cc98c-0207-4a6d-8c12-c62c18071d02
       version: -1
       name: Verify Outputs
       type: condition
@@ -355,11 +346,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: 200792e9-c5f0-4f79-845e-5997729ee1da
+    taskid: bbaf3364-2b45-48b2-8c7e-c7a960a81d5c
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 200792e9-c5f0-4f79-845e-5997729ee1da
+      id: bbaf3364-2b45-48b2-8c7e-c7a960a81d5c
       version: -1
       name: azure-sentinel-list-incident-comments
       script: '|||azure-sentinel-list-incident-comments'
@@ -390,11 +380,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 250a2635-dd7d-493c-8806-48558ffc8954
+    taskid: cfe575e9-0315-4009-8040-ad33480f91ec
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 250a2635-dd7d-493c-8806-48558ffc8954
+      id: cfe575e9-0315-4009-8040-ad33480f91ec
       version: -1
       name: Verify Outputs
       type: condition
@@ -436,11 +425,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: 0abe15ae-0fad-4e3c-827f-54e9960bf206
+    taskid: 85876c9d-39d3-47e6-86d3-59257682ff3f
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 0abe15ae-0fad-4e3c-827f-54e9960bf206
+      id: 85876c9d-39d3-47e6-86d3-59257682ff3f
       version: -1
       name: azure-sentinel-incident-add-comment
       script: '|||azure-sentinel-incident-add-comment'
@@ -470,11 +458,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: 0455e6fb-2efd-4506-878a-e26f02fbc39c
+    taskid: c8e4e269-1566-4106-80b9-b8da5b77cbac
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 0455e6fb-2efd-4506-878a-e26f02fbc39c
+      id: c8e4e269-1566-4106-80b9-b8da5b77cbac
       version: -1
       name: Verify Outputs
       type: condition
@@ -520,11 +507,10 @@ tasks:
     quietmode: 0
   "15":
     id: "15"
-    taskid: bded4673-05b7-4644-8ff0-9553b92d22d8
+    taskid: 59ced209-ee58-4737-85d9-23c55fd91eca
     type: regular
     task:
-      elasticcommonfields: {}
-      id: bded4673-05b7-4644-8ff0-9553b92d22d8
+      id: 59ced209-ee58-4737-85d9-23c55fd91eca
       version: -1
       name: azure-sentinel-list-incident-relations
       script: '|||azure-sentinel-list-incident-relations'
@@ -558,11 +544,10 @@ tasks:
     quietmode: 0
   "16":
     id: "16"
-    taskid: 00fa0a03-3a21-4305-8d95-033a1c60553b
+    taskid: 3fbdd27c-aeb1-4ed4-8289-7901e4eccbf5
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 00fa0a03-3a21-4305-8d95-033a1c60553b
+      id: 3fbdd27c-aeb1-4ed4-8289-7901e4eccbf5
       version: -1
       name: Verify Outputs
       type: condition
@@ -570,7 +555,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -611,11 +596,10 @@ tasks:
     quietmode: 0
   "17":
     id: "17"
-    taskid: 091ccfed-530d-47fa-8573-7eb29fe10b81
+    taskid: aece4861-be6f-45fa-8033-9ff230334e83
     type: title
     task:
-      elasticcommonfields: {}
-      id: 091ccfed-530d-47fa-8573-7eb29fe10b81
+      id: aece4861-be6f-45fa-8033-9ff230334e83
       version: -1
       name: Test Done
       type: title
@@ -626,7 +610,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2820
         }
       }
     note: false
@@ -636,11 +620,10 @@ tasks:
     quietmode: 0
   "18":
     id: "18"
-    taskid: ec77bfac-5eb8-4df3-8758-b1a8ac7603b4
+    taskid: bbbf2644-cc9f-4287-827e-b2536579f462
     type: regular
     task:
-      elasticcommonfields: {}
-      id: ec77bfac-5eb8-4df3-8758-b1a8ac7603b4
+      id: bbbf2644-cc9f-4287-827e-b2536579f462
       version: -1
       name: azure-sentinel-update-incident (reset to old values)
       script: '|||azure-sentinel-update-incident'
@@ -675,12 +658,52 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "19":
+    id: "19"
+    taskid: 7ce33c31-471b-4f0e-88d4-ccb374b5262d
+    type: regular
+    task:
+      id: 7ce33c31-471b-4f0e-88d4-ccb374b5262d
+      version: -1
+      name: close incident
+      script: '|||azure-sentinel-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      classification:
+        simple: Undetermined
+      classification_reason: {}
+      description: {}
+      incident_id:
+        simple: ${AzureSentinel.Incident.ID}
+      owner_email: {}
+      severity: {}
+      status:
+        simple: Closed
+      title: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2660,
+        "height": 2835,
         "width": 380,
         "x": 50,
         "y": 50

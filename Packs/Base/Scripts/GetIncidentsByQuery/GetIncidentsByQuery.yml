@@ -50,7 +50,8 @@ args:
   default: false
   defaultValue: created
   description: The incident field to specify for the date range. Can be "created"
-    or "modified". The default is "created".
+    or "modified". The default is "created". Due to performance considerations, you should only use "modified" if you
+    have a large number of incidents.
   isArray: false
   name: timeField
   predefined:
@@ -112,7 +113,7 @@ tags:
 timeout: 60µs
 type: python
 runas: DBotRole
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.8.6.14516
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0

@@ -1,88 +1,172 @@
+args:
+- default: true
+  description: A comma-separated list of incident IDs by which to filter the results.
+  isArray: true
+  name: id
+  required: false
+  secret: false
+- default: false
+  description: A comma-separated list of incident names by which to filter the results.
+  isArray: true
+  name: name
+  required: false
+  secret: false
+- default: false
+  description: 'A comma-separated list of incident statuses by which to filter the
+    results. For example: assigned.'
+  isArray: true
+  name: status
+  required: false
+  secret: false
+- default: false
+  description: 'A comma-separated list of incident statuses to exclude from the results.  For
+    example: assigned.'
+  isArray: true
+  name: notstatus
+  required: false
+  secret: false
+- default: false
+  description: A comma-separated list of incident close reasons by which to filter
+    the results.
+  isArray: true
+  name: reason
+  required: false
+  secret: false
+- default: false
+  description: Filter by from date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  isArray: false
+  name: fromdate
+  required: false
+  secret: false
+- default: false
+  description: Filter by to date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  isArray: false
+  name: todate
+  required: false
+  secret: false
+- default: false
+  description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  isArray: false
+  name: fromclosedate
+  required: false
+  secret: false
+- default: false
+  description: Filter by to close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  isArray: false
+  name: toclosedate
+  required: false
+  secret: false
+- default: false
+  description: Filter by from due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  isArray: false
+  name: fromduedate
+  required: false
+  secret: false
+- default: false
+  description: Filter by to due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
+  isArray: false
+  name: toduedate
+  required: false
+  secret: false
+- default: false
+  description: Filter by Severity
+  isArray: true
+  name: level
+  required: false
+  secret: false
+- default: false
+  description: Filter by incident owners
+  isArray: true
+  name: owner
+  required: false
+  secret: false
+- default: false
+  description: Filter by incident details
+  isArray: false
+  name: details
+  required: false
+  secret: false
+- default: false
+  description: Filter by incident type
+  isArray: true
+  name: type
+  required: false
+  secret: false
+- default: false
+  description: Use free form query (use Lucene syntax) as filter. All other filters
+    will be ignored when this filter is used.
+  isArray: false
+  name: query
+  required: false
+  secret: false
+- default: false
+  description: Filter by the page number
+  isArray: false
+  name: page
+  required: false
+  secret: false
+- default: false
+  description: Number of incidents per page (per fetch)
+  isArray: false
+  name: size
+  required: false
+  secret: false
+- default: false
+  description: Sort in format of field.asc,field.desc,...
+  isArray: false
+  name: sort
+  required: false
+  secret: false
+comment: Searches Demisto incidents
 commonfields:
   id: SearchIncidentsV2
   version: -1
-name: SearchIncidentsV2
-script: '-'
-system: false
-timeout: '0'
-type: python
-subtype: python3
-dockerimage: demisto/python3:3.8.6.13358
-tags:
-- Utility
-comment: Searches Demisto incidents
 enabled: true
-args:
-- name: id
-  default: true
-  description: A comma-separated list of incident IDs by which to filter the results.
-  isArray: true
-- name: name
-  description: A comma-separated list of incident names by which to filter the results.
-  isArray: true
-- name: status
-  description: "A comma-separated list of incident statuses by which to filter the results. For example: assigned."
-  isArray: true
-- name: notstatus
-  description: "A comma-separated list of incident statuses to exclude from the results.  For example: assigned."
-  isArray: true
-- name: reason
-  description: A comma-separated list of incident close reasons by which to filter the results.
-  isArray: true
-- name: fromdate
-  description: Filter by from date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: todate
-  description: Filter by to date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: fromclosedate
-  description: Filter by from close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: toclosedate
-  description: Filter by to close date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: fromduedate
-  description: Filter by from due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: toduedate
-  description: Filter by to due date (e.g. 2006-01-02T15:04:05+07:00 or 2006-01-02T15:04:05Z)
-- name: level
-  description: Filter by Severity
-  isArray: true
-- name: owner
-  description: Filter by incident owners
-  isArray: true
-- name: details
-  description: Filter by incident details
-- name: type
-  description: Filter by incident type
-  isArray: true
-- name: query
-  description: Use free form query (use Lucene syntax) as filter. All other filters will be ignored when this filter is used.
-  isArray: false
-- name: page
-  description: Filter by the page number
-- name: size
-  description: Number of incidents per page (per fetch)
-- name: sort
-  description: Sort in format of field.asc,field.desc,...
+name: SearchIncidentsV2
 outputs:
 - contextPath: foundIncidents.id
   description: A list of incident IDs returned from the query.
+  type: Unknown
 - contextPath: foundIncidents.name
   description: A list of incident names returned from the query.
+  type: Unknown
 - contextPath: foundIncidents.severity
   description: A list of incident severities returned from the query.
+  type: Unknown
 - contextPath: foundIncidents.status
   description: A list of incident statuses returned from the query.
+  type: Unknown
 - contextPath: foundIncidents.owner
   description: A list of incident owners returned from the query.
+  type: Unknown
 - contextPath: foundIncidents.created
   description: A list of the incident create date returned from the query.
+  type: Unknown
 - contextPath: foundIncidents.closed
   description: A list of incident close dates returned from the query.
+  type: Unknown
 - contextPath: foundIncidents.labels
   description: An array of labels per incident returned from the query.
+  type: Unknown
 - contextPath: foundIncidents.details
   description: Details of the incidents returned from the query.
+  type: Unknown
 - contextPath: foundIncidents.dueDate
   description: A list of incident due dates returned from the query.
+  type: Unknown
 - contextPath: foundIncidents.phase
   description: A list of incident phases returned from the query.
+  type: Unknown
+- contextPath: foundIncidents.incidentLink
+  description: A list with links to the incidents returned from the query.
+  type: Unknown
+script: '-'
+subtype: python3
+system: false
+tags:
+- Utility
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.8.6.14516
 runas: DBotRole
 fromversion: 5.0.0

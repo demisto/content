@@ -470,6 +470,11 @@ script: >-
       appendContext('zero_key', 0)
       appendContext('none_key', None)
       demisto.results("placeholder so the run would finish")
+  
+  def test_warnings():
+      import warnings
+      warnings.warn('this should not fail the command ' + str(datetime.now()), RuntimeWarning)
+      demisto.results("check that we didn't get stderr output from warnings")
 
   ''' MAIN TEST RUNNER '''
 
@@ -487,7 +492,8 @@ script: >-
       'ARG_TO_LIST': test_argToList,
       'RETURN_OUTPUTS': test_return_outputs,
       'REMOVE_DICTIONARY_NULLS': test_remove_nulls,
-      'APPEND_CONTEXT': test_append_context
+      'APPEND_CONTEXT': test_append_context,
+      'PY_WARNINGS': test_warnings,
   }
 
 
@@ -600,6 +606,7 @@ args:
   - RETURN_OUTPUTS
   - APPEND_CONTEXT
   - REMOVE_DICTIONARY_NULLS
+  - PY_WARNINGS
   description: one of python common server testing features
   defaultValue: DQ
 scripttarget: 0

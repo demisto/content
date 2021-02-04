@@ -1,0 +1,240 @@
+id: Feed Expanse Test
+version: -1
+name: Feed Expanse Test
+description: Test Playbook for FeedExpanse
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fe73b563-e450-4e03-886c-e3df93ea1cea
+    type: start
+    task:
+      id: fe73b563-e450-4e03-886c-e3df93ea1cea
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7747cfc8-2afe-492e-844e-64853c5dbf55
+    type: regular
+    task:
+      id: 7747cfc8-2afe-492e-844e-64853c5dbf55
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: dfdc1bec-7705-4fd1-8a15-5b1506bdc5ac
+    type: regular
+    task:
+      id: dfdc1bec-7705-4fd1-8a15-5b1506bdc5ac
+      version: -1
+      name: FeedExpanse Get Indicators
+      description: Retrieve discovered IPs/IP Ranges/Domains/Certificates as indicators
+      script: '|||feedexpanse-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      certificate: {}
+      domain: {}
+      extend-context:
+        simple: Indicator=.
+      ip: {}
+      iprange: {}
+      max_indicators:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6a084d19-4509-44bd-8b36-496971c17a24
+    type: condition
+    task:
+      id: 6a084d19-4509-44bd-8b36-496971c17a24
+      version: -1
+      name: Check Indicators
+      description: Check if the retrieved indicators are correct.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CIDR
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain,DomainGlob
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Certificate
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: hasLength
+          left:
+            value:
+              simple: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 10bbb801-099b-49aa-8f41-51efd523c48f
+    type: title
+    task:
+      id: 10bbb801-099b-49aa-8f41-51efd523c48f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 795,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

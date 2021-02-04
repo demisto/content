@@ -133,7 +133,7 @@ COMMANDS_CONFIG = {
         "pass_args": True
     },
 
-    "infinipoint-get-events": {
+    "infinipoint-get-non-compliance": {
         "args": {
             "offset": "contains",
             "limit": "contains"

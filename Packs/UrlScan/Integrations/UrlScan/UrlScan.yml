@@ -16,7 +16,8 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '1'
-  display: URL Threshold. Minimum number of positive results from urlscan.io to consider the URL malicious.
+  display: URL Threshold. Minimum number of positive results from urlscan.io to consider
+    the URL malicious.
   name: url_threshold
   required: false
   type: 0
@@ -32,7 +33,8 @@ script:
   commands:
   - arguments:
     - default: true
-      description: A parameter for which to search (as a string), for example an IP address, file name, SHA256 hash, URL, domain, and so on.
+      description: A parameter for which to search (as a string), for example an IP
+        address, file name, SHA256 hash, URL, domain, and so on.
       isArray: false
       name: searchParameter
       required: true
@@ -88,7 +90,8 @@ script:
       secret: false
     - default: false
       defaultValue: '60'
-      description: The amount of time (in seconds) to wait for the scan ID result before timeout. Default is 60.
+      description: The amount of time (in seconds) to wait for the scan ID result
+        before timeout. Default is 60.
       isArray: false
       name: timeout
       required: false
@@ -101,15 +104,22 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: The maximum number of Limits the returned list of Certificates, IP's and ASN's
+      description: The maximum number of Limits the returned list of Certificates,
+        IP's and ASN's
       isArray: false
       name: limit
       required: false
       secret: false
-    - default: false
-      description: Determines whether a scan should continue if one of the URLs is blacklisted.
-      isArray: false
+    - auto: PREDEFINED
+      default: false
+      description: Determines whether a scan should continue if one of the URLs is
+        blacklisted.
+      isArray: true
       name: continue_on_blacklisted_urls
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: true
@@ -195,7 +205,8 @@ script:
       secret: false
     - default: false
       defaultValue: '60'
-      description: The amount of time (in seconds) to wait for the scan ID result before timeout. Default is 60.
+      description: The amount of time (in seconds) to wait for the scan ID result
+        before timeout. Default is 60.
       isArray: false
       name: timeout
       required: false
@@ -215,7 +226,8 @@ script:
       secret: false
     - default: false
       defaultValue: '5'
-      description: The amount of time (in seconds) to wait between tries if the API rate limit is exceeded.
+      description: The amount of time (in seconds) to wait between tries if the API
+        rate limit is exceeded.
       isArray: false
       name: wait
       required: false
@@ -227,10 +239,16 @@ script:
       name: retries
       required: false
       secret: false
-    - default: false
-      description: Determines whether a scan should continue if one of the URLs is blacklisted.
-      isArray: false
+    - auto: PREDEFINED
+      default: false
+      description: Determines whether a scan should continue if one of the URLs is
+        blacklisted.
+      isArray: true
       name: continue_on_blacklisted_urls
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
       required: false
       secret: false
     deprecated: false
@@ -328,7 +346,8 @@ script:
       secret: false
     - default: false
       defaultValue: '20'
-      description: The maximum number of results to return to the War Room. Maximum is 100. Default is 20.
+      description: The maximum number of results to return to the War Room. Maximum
+        is 100. Default is 20.
       isArray: false
       name: limit
       required: false
@@ -340,7 +359,8 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Returns the HTTP transaction list for the specified URL. Do not use this command in conjunction with the urlscan-get-http-transactions script.
+    description: Returns the HTTP transaction list for the specified URL. Do not use
+      this command in conjunction with the urlscan-get-http-transactions script.
     execution: false
     name: urlscan-get-http-transaction-list
     outputs:
@@ -348,7 +368,8 @@ script:
       description: The URL address that was scanned.
       type: string
     - contextPath: URLScan.httpTransaction
-      description: A link to the HTTP transaction made during the search for the specified URL.
+      description: A link to the HTTP transaction made during the search for the specified
+        URL.
       type: string
   - arguments:
     - default: false
@@ -369,7 +390,8 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: Polls the urlscan service regarding the results of the specified URI.
+    description: Polls the urlscan service regarding the results of the specified
+      URI.
     execution: false
     name: urlscan-poll-uri
   - arguments:
@@ -383,12 +405,13 @@ script:
     description: Returns the results page for the specified UUID.
     execution: false
     name: urlscan-get-result-page
+  feed: false
   isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
-  script: ''
-  type: python
+  script: '-'
   subtype: python2
+  type: python
 defaultEnabled: false
 fromversion: 5.0.0

@@ -1684,7 +1684,7 @@ def main():
     fetch_category = params.get('fetch_category', [])
     max_fetch = int(params.get('max_fetch', '50'))
     verify_certificate = not params.get('insecure', False)
-    first_fetch_time = params.get('fetch_time', '3 days').strip()
+    first_fetch_time = params.get('first_fetch', '3 days').strip()
     proxy = params.get('proxy', False)
     demisto.info(f'Command being called is {demisto.command()}')
     try:

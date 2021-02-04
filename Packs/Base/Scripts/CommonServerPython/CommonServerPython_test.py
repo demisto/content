@@ -8,6 +8,7 @@ import sys
 import requests
 from pytest import raises, mark
 import pytest
+import warnings
 
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, camelize, pascalToSpace, argToList, \
@@ -15,7 +16,8 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     IntegrationLogger, parse_date_string, IS_PY3, DebugLogger, b64_encode, parse_date_range, return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers,\
+    url_to_clickable_markdown, WarningsHandler
 
 try:
     from StringIO import StringIO
@@ -124,6 +126,99 @@ TABLE_TO_MARKDOWN_ONLY_DATA_PACK = [
 '''
     )
 ]
+
+DATA_WITH_URLS =  [(
+        [
+            {
+            'header_1': 'a1',
+            'url1': 'b1',
+            'url2': 'c1'
+            },
+            {
+            'header_1': 'a2',
+            'url1': 'b2',
+            'url2': 'c2'
+            },
+            {
+            'header_1': 'a3',
+            'url1': 'b3',
+            'url2': 'c3'
+            }
+        ],
+'''### tableToMarkdown test
+|header_1|url1|url2|
+|---|---|---|
+| a1 | [b1](b1) | [c1](c1) |
+| a2 | [b2](b2) | [c2](c2) |
+| a3 | [b3](b3) | [c3](c3) |
+'''
+    )]
+
+COMPLEX_DATA_WITH_URLS = [(
+    [
+    {'data':
+         {'id': '1',
+          'result':
+              {'files':
+                  [
+                      {
+                          'filename': 'name',
+                          'size': 0,
+                          'url': 'url'
+                      }
+                  ]
+              },
+          'links': ['link']
+          }
+     },
+    {'data':
+        {'id': '2',
+            'result':
+            {'files':
+               [
+                   {
+                       'filename': 'name',
+                       'size': 0,
+                       'url': 'url'
+                    }
+               ]
+            },
+            'links': ['link']
+         }
+     }
+],
+    [
+    {'data':
+         {'id': '1',
+          'result':
+              {'files':
+                  [
+                      {
+                          'filename': 'name',
+                          'size': 0,
+                          'url': '[url](url)'
+                      }
+                  ]
+              },
+          'links': ['[link](link)']
+          }
+     },
+    {'data':
+        {'id': '2',
+            'result':
+            {'files':
+               [
+                   {
+                       'filename': 'name',
+                       'size': 0,
+                       'url': '[url](url)'
+                    }
+               ]
+            },
+            'links': ['[link](link)']
+         }
+     }
+])]
 
 
 @pytest.mark.parametrize('data, expected_table', TABLE_TO_MARKDOWN_ONLY_DATA_PACK)
@@ -367,6 +462,17 @@ def test_tbl_to_md_header_with_special_character():
 '''
     assert table_with_character == expected_string_with_special_character
 
+
+@pytest.mark.parametrize('data, expected_table', DATA_WITH_URLS)
+def test_tbl_to_md_clickable_url(data, expected_table):
+    table = tableToMarkdown('tableToMarkdown test', data, url_keys=['url1', 'url2'])
+    assert table == expected_table
+
+
+@pytest.mark.parametrize('data, expected_data', COMPLEX_DATA_WITH_URLS)
+def test_url_to_clickable_markdown(data, expected_data):
+    table = url_to_clickable_markdown(data, url_keys=['url', 'links'])
+    assert table == expected_data
 
 def test_flatten_cell():
     # sanity
@@ -733,6 +839,131 @@ def test_debug_logger_replace_strs(mocker):
         assert s not in msg
 
 
+def test_build_curl_post_noproxy():
+    """
+    Given:
+       - HTTP client log messages of POST query
+       - Proxy is not used and insecure is not checked
+    When
+       - Building curl query
+    Then
+       - Ensure curl is generated as expected
+    """
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'POST /api HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"data\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy "*" -d \'{"data": "value"}\''
+    ]
+
+
+def test_build_curl_post_xml():
+    """
+    Given:
+       - HTTP client log messages of POST query with XML body
+       - Proxy is not used and insecure is not checked
+    When
+       - Building curl query
+    Then
+       - Ensure curl is generated as expected
+    """
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'POST /api HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'<?xml version=\"1.0\" encoding=\"utf-8\"?>'")
+    assert ilog.curl == [
+        'curl -X POST https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy "*" -d \'<?xml version="1.0" encoding="utf-8"?>\''
+    ]
+
+
+def test_build_curl_get_withproxy(mocker):
+    """
+    Given:
+       - HTTP client log messages of GET query
+       - Proxy used and insecure checked
+    When
+       - Building curl query
+    Then
+       - Ensure curl is generated as expected
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'proxy': True,
+        'insecure': True
+    })
+    os.environ['https_proxy'] = 'http://proxy'
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'GET /api HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"data\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X GET https://demisto.com/api -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--proxy http://proxy -k -d \'{"data": "value"}\''
+    ]
+
+
+def test_build_curl_multiple_queries():
+    """
+    Given:
+       - HTTP client log messages of POST and GET queries
+       - Proxy is not used and insecure is not checked
+    When
+       - Building curl query
+    Then
+       - Ensure two curl queries are generated as expected
+    """
+    ilog = IntegrationLogger()
+    ilog.build_curl("send: b'POST /api/post HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"postdata\": \"value\"}'")
+    ilog.build_curl("send: b'GET /api/get HTTP/1.1\\r\\n"
+                    "Host: demisto.com\\r\\n"
+                    "User-Agent: python-requests/2.25.0\\r\\n"
+                    "Accept-Encoding: gzip, deflate\r\n"
+                    "Accept: */*\\r\\n"
+                    "Connection: keep-alive\\r\\n"
+                    "Authorization: TOKEN\\r\\n"
+                    "Content-Length: 57\\r\\n"
+                    "Content-Type: application/json\\r\\n\\r\\n'")
+    ilog.build_curl("send: b'{\"getdata\": \"value\"}'")
+    assert ilog.curl == [
+        'curl -X POST https://demisto.com/api/post -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy "*" -d \'{"postdata": "value"}\'',
+        'curl -X GET https://demisto.com/api/get -H "Authorization: TOKEN" -H "Content-Type: application/json" '
+        '--noproxy "*" -d \'{"getdata": "value"}\''
+    ]
+
+
 def test_is_mac_address():
     from CommonServerPython import is_mac_address
 
@@ -831,7 +1062,7 @@ def test_exception_in_return_error(mocker):
 
     expected = {'EntryContext': None, 'Type': 4, 'ContentsFormat': 'text', 'Contents': 'Message'}
     mocker.patch.object(demisto, 'results')
-    mocker.patch.object(IntegrationLogger, '__call__')
+    mocker.patch.object(IntegrationLogger, '__call__', return_value='Message')
     with raises(SystemExit, match='0'):
         return_error("Message", error=ValueError("Error!"))
     results = demisto.results.call_args[0][0]
@@ -1142,7 +1373,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_multiple_indicators(self, clear_version_cache):
@@ -1227,7 +1459,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_return_list_of_items(self, clear_version_cache):
@@ -1257,7 +1490,8 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_return_list_of_items_the_old_way(self):
@@ -1290,7 +1524,8 @@ class TestCommandResults:
                 'Jira.Ticket(val.ticket_id == obj.ticket_id)': tickets
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         })
 
     def test_create_dbot_score_with_invalid_score(self):
@@ -1307,6 +1542,75 @@ class TestCommandResults:
             assert False
         except TypeError:
             assert True
+
+    def test_create_dbot_score_with_invalid_reliability(self):
+        """
+        Given:
+            -  an invalid reliability value.
+        When
+            - creating a DBotScore entry
+        Then
+            - an error should be raised
+        """
+        from CommonServerPython import Common, DBotScoreType
+
+        try:
+            Common.DBotScore(
+                indicator='8.8.8.8',
+                integration_name='Virus Total',
+                score=0,
+                indicator_type=DBotScoreType.IP,
+                reliability='Not a reliability'
+            )
+            assert False
+        except TypeError:
+            assert True
+
+    def test_create_dbot_score_with_valid_reliability(self):
+        """
+        Given:
+            -  a valid reliability value
+        When
+            - creating a DBotScore entry
+        Then
+            - the proper entry is created
+        """
+        from CommonServerPython import Common, DBotScoreType, DBotScoreReliability, CommandResults
+
+        dbot_score = Common.DBotScore(
+            indicator='8.8.8.8',
+            integration_name='Virus Total',
+            score=Common.DBotScore.GOOD,
+            indicator_type=DBotScoreType.IP,
+            reliability=DBotScoreReliability.B,
+        )
+
+        ip = Common.IP(
+            ip='8.8.8.8',
+            dbot_score=dbot_score,
+        )
+
+        results = CommandResults(
+            indicator=ip,
+        )
+
+        assert results.to_context()['EntryContext'] == {
+            'IP(val.Address && val.Address == obj.Address)': [
+                {
+                    'Address': '8.8.8.8'
+                }
+            ],
+            'DBotScore(val.Indicator && val.Indicator == '
+            'obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)': [
+                {
+                    'Indicator': '8.8.8.8',
+                    'Type': 'ip',
+                    'Vendor': 'Virus Total',
+                    'Score': 1,
+                    'Reliability': 'B - Usually reliable'
+                }
+            ]
+        }
 
     def test_create_domain(self):
         from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
@@ -1435,7 +1739,8 @@ class TestCommandResults:
                 ]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_create_certificate(self):
@@ -1837,7 +2142,8 @@ class TestCommandResults:
                 }]
             },
             'IndicatorTimeline': [],
-            'IgnoreAutoExtract': False
+            'IgnoreAutoExtract': False,
+            'Note': False
         }
 
     def test_indicator_timeline_with_list_of_indicators(self):
@@ -1999,6 +2305,28 @@ class TestCommandResults:
         )
 
         assert results.to_context().get('IgnoreAutoExtract') is True
+
+    def test_entry_as_note(self):
+        """
+        Given:
+        - mark_as_note set to True
+
+        When:
+        - creating a CommandResults object
+
+        Then:
+        - the Note field is set to True
+        """
+        from CommonServerPython import CommandResults
+
+        results = CommandResults(
+            outputs_prefix='Test',
+            outputs_key_field='value',
+            outputs=None,
+            mark_as_note=True
+        )
+
+        assert results.to_context().get('Note') is True
 
 
 class TestBaseClient:
@@ -2275,6 +2603,26 @@ def test_http_client_debug(mocker):
     r.read()
     assert demisto.info.call_count > 5
     assert debug_log is not None
+
+
+def test_http_client_debug_int_logger_sensitive_query_params(mocker):
+    if not IS_PY3:
+        pytest.skip("test not supported in py2")
+        return
+    mocker.patch.object(demisto, 'params', return_value={'APIKey': 'dummy'})
+    mocker.patch.object(demisto, 'info')
+    debug_log = DebugLogger()
+    from http.client import HTTPConnection
+    HTTPConnection.debuglevel = 1
+    con = HTTPConnection("google.com")
+    con.request('GET', '?apikey=dummy')
+    r = con.getresponse()
+    r.read()
+    assert debug_log
+    for arg in demisto.info.call_args_list:
+        assert 'dummy' not in arg[0][0]
+        if 'apikey' in arg[0][0]:
+            assert 'apikey=<XX_REPLACED>' in arg[0][0]
 
 
 class TestParseDateRange:
@@ -3402,3 +3750,14 @@ def test_arg_to_timestamp_invalid_inputs():
 
     except ValueError as e:
         assert '"2010-32-01" is not a valid date' in str(e)
+
+
+def test_warnings_handler(mocker):
+    mocker.patch.object(demisto, 'info')
+    # need to initialize WarningsHandler as pytest over-rides the handler
+    handler = WarningsHandler()  # noqa
+    warnings.warn("This is a test", RuntimeWarning)
+    # call_args is tuple (args list, kwargs). we only need the args
+    msg = demisto.info.call_args[0][0]
+    assert 'This is a test' in msg
+    assert 'python warning' in msg

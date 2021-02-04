@@ -124,6 +124,26 @@ def test_get_categories(mocker):
                      mocker=mocker)
 
 
+def test_get_categories_custom_only(mocker):
+    # zscaler-get-categories
+    import Zscaler
+    run_command_test(command_func=Zscaler.get_categories_command,
+                     args={'display_url': 'true', 'custom_only': True},
+                     response_path='test_data/responses/categories2.json',
+                     expected_result_path='test_data/results/get_categories.json',
+                     mocker=mocker)
+
+
+def test_url_quota_command(mocker):
+    # zscaler-url-quota
+    import Zscaler
+    run_command_test(command_func=Zscaler.url_quota_command,
+                     args={},
+                     response_path='test_data/responses/url_quota.json',
+                     expected_result_path='test_data/results/url_quota.json',
+                     mocker=mocker)
+
+
 def test_get_blacklist(mocker):
     # zscaler-get-blacklist
     import Zscaler

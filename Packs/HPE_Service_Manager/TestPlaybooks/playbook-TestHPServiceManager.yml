@@ -1,6 +1,6 @@
 id: TestHPServiceManager
 version: -1
-name: TestHPServiceManager
+name: TestHPServiceManager test
 starttaskid: "0"
 tasks:
   '0':
@@ -34,7 +34,7 @@ tasks:
     taskid: 0078ae49-bd9b-406d-875a-3c5b44e275ed
     type: regular
     task:
-      id: a68cf45b-e944-40cb-8d55-8592b592103b
+      id: 0078ae49-bd9b-406d-875a-3c5b44e275ed
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -67,7 +67,7 @@ tasks:
     taskid: 059a422b-ddc9-41be-84b7-40fe71efd907
     type: regular
     task:
-      id: 3721dbde-c958-4760-8c07-1e8b56ff52bf
+      id: 059a422b-ddc9-41be-84b7-40fe71efd907
       version: -1
       name: VerifyContext HPSM.Incidents
       description: |-
@@ -107,7 +107,7 @@ tasks:
     taskid: 915d0b30-749a-46af-819e-0527589c0928
     type: regular
     task:
-      id: 5aca81bb-4da2-4985-80c5-2e35c4c7ffcc
+      id: 915d0b30-749a-46af-819e-0527589c0928
       version: -1
       name: VerifyContext HPSM.Ticket
       description: Verify that get-incident-by-id exports and converts ticket in Demisto general format
@@ -142,7 +142,7 @@ tasks:
     taskid: 6eb21ea1-34ea-4eda-84e1-f20c5ed677b9
     type: regular
     task:
-      id: 8fd733b2-b206-4feb-87cb-22230a899f40
+      id: 6eb21ea1-34ea-4eda-84e1-f20c5ed677b9
       version: -1
       name: hpsm-create-incident
       description: 'Creating new incident '
@@ -190,7 +190,7 @@ tasks:
     taskid: 0ffb1072-3851-47eb-886c-26d56e59b461
     type: regular
     task:
-      id: 374f31f9-5b48-474e-86dc-90720214838e
+      id: 0ffb1072-3851-47eb-886c-26d56e59b461
       version: -1
       name: hpsm-list-incidents
       description: Returns all incidents
@@ -222,7 +222,7 @@ tasks:
     taskid: 0951a22e-5cfd-42c0-8599-d11bb83237b9
     type: regular
     task:
-      id: 4f34fba9-8047-4201-8701-4139b20d1683
+      id: 0951a22e-5cfd-42c0-8599-d11bb83237b9
       version: -1
       name: hpsm-get-incident-by-id
       script: Service Manager|||hpsm-get-incident-by-id
@@ -253,7 +253,7 @@ tasks:
     taskid: acbea6dd-4bfa-4d12-8185-873c582f6f1a
     type: regular
     task:
-      id: a1d2b6bb-4398-48f3-8954-d84613b4009d
+      id: acbea6dd-4bfa-4d12-8185-873c582f6f1a
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -286,7 +286,7 @@ tasks:
     taskid: 3b074203-ccca-47f9-856b-4617c9acd131
     type: regular
     task:
-      id: a16b7448-9d05-4f55-8c38-713bdd6c0246
+      id: 3b074203-ccca-47f9-856b-4617c9acd131
       version: -1
       name: VerifyContext Ticket
       description: Verify that get-incident-by-id exports and converts ticket in Demisto general format
@@ -321,7 +321,7 @@ tasks:
     taskid: 5326d459-3e65-49b5-8221-64c54344d314
     type: regular
     task:
-      id: accefebe-2c7d-4238-8821-72ba278605ea
+      id: 5326d459-3e65-49b5-8221-64c54344d314
       version: -1
       name: VerifyContext HPSM.Incidents
       description: |-
@@ -361,7 +361,7 @@ tasks:
     taskid: 9f52ca06-1fb7-4fc0-8516-3ff366edbc6b
     type: regular
     task:
-      id: b29cb06c-8eb2-4618-8e40-5890813ec954
+      id: 9f52ca06-1fb7-4fc0-8516-3ff366edbc6b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -394,7 +394,7 @@ tasks:
     taskid: 85baa12e-1ec3-4f0e-8d64-6c6e4d8019ee
     type: regular
     task:
-      id: 4c117414-49cf-43b0-84b4-d5e974e85cd7
+      id: 85baa12e-1ec3-4f0e-8d64-6c6e4d8019ee
       version: -1
       name: VerifyContext HPSM.IncidentIDs
       description: |-
@@ -434,7 +434,7 @@ tasks:
     taskid: a8ee6ef8-874d-44c8-86c0-83d3f7366ea9
     type: regular
     task:
-      id: 5e466429-1b4d-472b-8345-bcf9185c00c4
+      id: a8ee6ef8-874d-44c8-86c0-83d3f7366ea9
       version: -1
       name: VerifyContextFields Tickets fields correct
       script: VerifyContextFields
@@ -479,7 +479,7 @@ tasks:
     taskid: ae10e437-0242-411d-82ba-6ce313e306ed
     type: regular
     task:
-      id: 9432fc74-24dc-4e81-8a64-c192689e3e4a
+      id: ae10e437-0242-411d-82ba-6ce313e306ed
       version: -1
       name: hpsm-get-device
       script: Service Manager|||hpsm-get-device
@@ -510,7 +510,7 @@ tasks:
     taskid: f4eded68-7ef1-4009-8cee-bdac8ac12e07
     type: regular
     task:
-      id: f2adcf2d-8cb6-4104-80ee-6f00b6887c82
+      id: f4eded68-7ef1-4009-8cee-bdac8ac12e07
       version: -1
       name: Verify Context Fields HPSM.Devices
       script: VerifyContext

@@ -1,26 +1,26 @@
 {
- "id": "Cryptocurrency Address",
- "version": -1,
- "modified": "2020-11-15T08:32:40.171839+02:00",
- "shouldCommit": false,
- "regex": "\\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\\b",
- "details": "Cryptocurrency Address",
- "prevDetails": "Cryptocurrency Address",
- "reputationCommand": "crypto",
- "system": false,
- "locked": false,
- "disabled": false,
- "file": false,
- "updateAfter": 0,
- "mergeContext": false,
- "formatScript": "CryptoCurrenciesFormat",
- "manualMapping": {
-  "cryptocurrencyaddresstype": {
-   "simple": "Cryptocurrency.AddressType",
-   "complex": null
-  }
- },
- "expiration": 0,
- "layout": "Cryptocurrency",
- "fromVersion": "5.0.0"
+  "id": "Cryptocurrency Address",
+  "version": -1,
+  "modified": "2020-12-28T13:52:59.871675Z",
+  "shouldCommit": false,
+  "regex": "\\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\\b",
+  "details": "Cryptocurrency Address",
+  "prevDetails": "Cryptocurrency Address",
+  "reputationCommand": "crypto",
+  "system": false,
+  "locked": false,
+  "disabled": false,
+  "file": false,
+  "updateAfter": 0,
+  "mergeContext": false,
+  "formatScript": "CryptoCurrenciesFormat",
+  "manualMapping": {
+    "cryptocurrencyaddresstype": {
+      "simple": "Cryptocurrency.AddressType",
+      "complex": null
+    }
+  },
+  "expiration": 0,
+  "layout": "Cryptocurrency",
+  "fromVersion": "5.0.0"
 }
