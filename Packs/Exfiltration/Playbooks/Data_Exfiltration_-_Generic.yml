@@ -5918,6 +5918,8 @@ tasks:
     nexttasks:
       '#default#':
       - "88"
+      "yes":
+      - "74"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -6004,6 +6006,8 @@ tasks:
     nexttasks:
       '#default#':
       - "88"
+      "yes":
+      - "87"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -6860,7 +6864,9 @@ view: |-
       "78_82_Automatically": 0.35,
       "79_80_#default#": 0.48,
       "79_82_yes": 0.17,
+      "84_74_yes": 0.51,
       "84_88_#default#": 0.13,
+      "86_87_yes": 0.36,
       "86_88_#default#": 0.16
     },
     "paper": {
