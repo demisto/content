@@ -44,4 +44,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![PS-Remote Get Network Traffic](Insert the link to your image here)
+![PS-Remote Get Network Traffic](https://raw.githubusercontent.com/demisto/content/65c9d37bc1973acdb297e39173648cb1ba7cb0fb/Packs/WindowsForensicsPack/doc_files/PS-Remote_Get_Network_Traffic.png)
