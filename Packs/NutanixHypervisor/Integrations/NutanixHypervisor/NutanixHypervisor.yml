@@ -572,7 +572,7 @@ script:
       - Capacity
       - Configuration
       - Performance
-      - System Indicator
+      - SystemIndicator
     - description: Comma-separated list of entity types. Will retrieve alerts whose
         entity_type matches an entity_type in the entity_types list. For details,
         see the Nutanix README. If the Nutanix service cannot recognize the entity
@@ -732,7 +732,7 @@ script:
       description: Metric value details.
       type: Unknown
   - arguments:
-    - description: "The ID of the alert to acknowledge. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'"
+    - description: The ID of the alert to acknowledge. Alert ID is the 'id' field returned for alerts by command 'nutanix-hypervisor-alerts-list'
       name: alert_id
       required: true
     description: Acknowledges the alert with the specified alert_id.
@@ -789,6 +789,12 @@ script:
         such as 'Incorrect NTP Configuration' will be acknowledged.
       isArray: true
       name: impact_types
+      predefined:
+      - Availability
+      - Capacity
+      - Configuration
+      - Performance
+      - SystemIndicator
     - description: Comma-separated list of entity types. Will retrieve alerts whose
         entity_type matches an entity_type in the entity_types list. For more details
         see Nutanix README. If Nutanix service cannot recognize the entity type, it
@@ -843,6 +849,12 @@ script:
         \ such as 'Incorrect NTP Configuration' will be resolved."
       isArray: true
       name: impact_types
+      predefined:
+      - Availability
+      - Capacity
+      - Configuration
+      - Performance
+      - SystemIndicator
     - description: Comma-separated list of entity types. Will resolve alerts whose
         entity_type matches an entity_type in the entity_types list. For more details
         see Nutanix README. If Nutanix service cannot recognize the entity type, it
