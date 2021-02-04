@@ -1,7 +1,7 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: AbuseIPDB
-  version: -1
+  version: 1
 configuration:
 - defaultvalue: https://api.abuseipdb.com/api/v2/
   display: AbuseIP server URL

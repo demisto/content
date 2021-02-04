@@ -1,7 +1,7 @@
 category: Endpoint
 commonfields:
   id: Cortex XDR - IR
-  version: -1
+  version: 1
 configuration:
 - display: Fetch incidents
   name: isFetch

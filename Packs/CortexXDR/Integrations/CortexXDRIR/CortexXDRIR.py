@@ -12,6 +12,7 @@ import traceback
 from operator import itemgetter
 import copy
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -99,6 +100,7 @@ def create_auth(api_key):
     hash_ = hashlib.sha256()
     hash_.update((api_key + nonce + timestamp).encode("utf-8"))
     return nonce, timestamp, hash_.hexdigest()
+    print('wow')
 
 
 def clear_trailing_whitespace(res):
