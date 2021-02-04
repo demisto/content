@@ -26,7 +26,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Host | The host name for which to export the registry file. For example testpc01 |  | Optional |
-| RegistryPath | The registry hive/path to export, if no value is specified the entire registry will be exported. | all | Optional |
+| RegistryHive | The registry hive/path to export, if no value is specified the entire registry will be exported. | all | Optional |
 | FilePath | The path on the hostname on which to create the registry file. The default path will be c:\\registry.reg<br/>In case you use the AddHostNameToFile input as true the file downloaded to XSOAR will be comprised of the hostname. | c:\registry.reg | Optional |
 | ZipRegistry | Specify true to zip the reg file before sending it to XSOAR. | true | Optional |
 | AddHostNameToFile | Specify true for the downloaded file name to be comprised of the host name or false  to keep the file name as configured in the FilePath argument. | true | Optional |

@@ -4,8 +4,8 @@ name: PS-Remote Get Network Traffic
 description: This playbook leverages the windows builtin Powershell and WinRM capabilities
   to connect to a Windows host and then the Netsh tool to create an ETL file which
   is the equivalent of a Wireshark PCAP file by using PS-Remote integration. After
-  receiving the resultant ETL,  XSOAR will be able to convert the ETL to a PCAP file
-  to be parsed and enriched later on.
+  receiving the resultant ETL, XSOAR will be able to convert the ETL to a PCAP file
+  to be parsed and enriched later on. eview Microsoft documentation for how to use ETL filters https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj129382(v=ws.11)#using-filters-to-limit-etl-trace-file-details
 starttaskid: "0"
 tasks:
   "0":
@@ -258,7 +258,7 @@ tasks:
     task:
       id: 379481fb-392e-4c4d-89b9-a01b0687aa84
       version: -1
-      name: Convert ETL to Pcap
+      name: Convert ETL to PCAP
       scriptName: Etl2Pcap
       type: regular
       iscommand: false

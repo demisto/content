@@ -1,4 +1,4 @@
-This playbook allows the user to gather multiple forensic data from a windows endpoint. Including network traffic, MFT (Master File Table) or registry export by using the PS remote automation which enables to connect to a windows host without the need to install any 3rd party tools using just native Windows management tools.
+This playbook allows the user to gather multiple forensic data from a windows endpoint. Including network traffic, MFT (Master File Table) or registry export by using the Powershell Remoting integration which enables to connect to a windows host without the need to install any 3rd party tools using just native Windows management tools.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

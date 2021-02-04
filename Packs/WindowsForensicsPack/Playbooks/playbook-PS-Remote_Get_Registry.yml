@@ -157,7 +157,7 @@ tasks:
         simple: ${inputs.Host}
       ip: {}
       reg_key_hive:
-        simple: ${inputs.RegistryPath}
+        simple: ${inputs.RegistryHive}
     separatecontext: false
     view: |-
       {
@@ -474,7 +474,7 @@ inputs:
   required: false
   description: The host name for which to export the registry file. For example testpc01
   playbookInputQuery: null
-- key: RegistryPath
+- key: RegistryHive
   value:
     simple: all
   required: false

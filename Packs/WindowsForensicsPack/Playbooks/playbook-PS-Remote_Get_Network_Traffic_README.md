@@ -1,4 +1,4 @@
-This playbook leverages the windows builtin Powershell and WinRM capabilities to connect to a Windows host and then the Netsh tool to create an ETL file which is the equivalent of a Wireshark PCAP file by using PS-Remote integration. After receiving the resultant ETL,  XSOAR will be able to convert the ETL to a PCAP file to be parsed and enriched later on.
+This playbook leverages the windows builtin Powershell and WinRM capabilities to connect to a Windows host and then the Netsh tool to create an ETL file which is the equivalent of a Wireshark PCAP file by using PS-Remote integration. After receiving the resultant ETL, XSOAR will be able to convert the ETL to a PCAP file to be parsed and enriched later on. Review Microsoft documentation for how to use ETL filters https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj129382(v=ws.11)#using-filters-to-limit-etl-trace-file-details
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
