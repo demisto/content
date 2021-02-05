@@ -6822,6 +6822,14 @@ script:
       required: true
       description: Case ID
     description: Print case comments as notes
+  - name: argus-print-case-metadata-by-id
+    arguments:
+    - name: case_id
+      required: true
+      description: Case ID
+    - name: skip_redirect
+      description: If true, skip automatic redirect (for merged cases)
+    description: Print case metadata as HTML. Does not add to context.
   dockerimage: demisto/argus-toolbelt:1.0.0.16101
   feed: false
   isfetch: true

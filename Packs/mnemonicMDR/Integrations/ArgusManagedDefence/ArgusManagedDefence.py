@@ -167,6 +167,18 @@ def pretty_print_case_metadata(result: dict, title: str = None) -> str:
     return string
 
 
+def pretty_print_case_metadata_html(case: dict, title: str = None) -> str:
+    string = title if title else f"<h2>#{case['id']}: {case['subject']}</h2>"
+    string += "<em>Priority: {}, status: {}, last updated: {}</em><br>".format(
+        case["priority"], case["status"], pretty_print_date(case["lastUpdatedTime"])
+    )
+    string += "Reported by {} at {}<br><br>".format(
+        case["publishedByUser"]["name"], pretty_print_date(case["publishedTime"])
+    )
+    string += case["description"]
+    return string
+
+
 def pretty_print_comment(comment: dict, title: str = None) -> str:
     string = title if title else ""
     string += f"#### *{comment['addedByUser']['userName']} - {pretty_print_date(comment['addedTime'])}*\n"
@@ -276,7 +288,7 @@ def fetch_incidents(
             "dbotMirrorDirection": MIRROR_DIRECTION[mirror_direction],
         }
         case["url"] = f"https://portal.mnemonic.no/spa/case/view/{case['id']}"
-        # "dbotMirrorTags": 
+        # "dbotMirrorTags":
         incident = {
             "name": f"#{case['id']}: {case['subject']}",
             "occurred": case["createdTime"],
@@ -818,6 +830,23 @@ def get_case_metadata_by_id_command(args: Dict[str, Any]) -> CommandResults:
         outputs=result,
         raw_response=result,
     )
+
+
+def print_case_metadata_by_id_command(args: Dict[str, Any]) -> Dict:
+    case_id = args.get("case_id", None)
+    if not case_id:
+        raise ValueError("case id not specified")
+
+    result = get_case_metadata_by_id(
+        id=case_id, skipRedirect=args.get("skip_redirect", None)
+    )
+
+    return {
+        "ContentsFormat": formats["html"],
+        "Type": EntryType.NOTE,
+        "Contents": pretty_print_case_metadata_html(result.get("data")),
+        #"Note": True,
+    }
 
 
 def list_case_attachments_command(args: Dict[str, Any]) -> CommandResults:
@@ -1422,6 +1451,9 @@ def main() -> None:
 
         elif demisto.command() == "argus-print-case-comments":
             return_results(print_case_comments_command(demisto.args()))
+
+        elif demisto.command() == "argus-print-case-metadata-by-id":
+            return_results(print_case_metadata_by_id_command(demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
