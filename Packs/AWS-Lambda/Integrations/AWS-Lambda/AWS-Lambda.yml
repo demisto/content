@@ -44,6 +44,24 @@ configuration:
   name: secret_key
   required: false
   type: 4
+- display: Timeout
+  name: timeout
+  additionalinfo: The time in seconds till a timeout exception is reached. You can
+    specify just the read timeout (for example 60) or also the connect timeout followed
+    after a comma (for example 60,10). If a connect timeout is not specified, a default
+    of 10 second will be used. You may also override the value at the aws-lambda-invoke
+    command.
+  defaultvalue: 60,10
+  required: false
+  type: 0
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: The maximum retry attempts when connection or throttling errors
+    are encountered. Set to 0 to disable retries. You may also override the value
+    when executing the aws-lambda-invoke command.
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -539,16 +557,33 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - default: false
+      description: The maximum retry attempts when connection or throttling errors
+        are encountered. Set to 0 to disable retries. If not, specified will use the
+        instances configured default timeout.
+      isArray: false
+      name: retries
+      required: false
+      secret: false
+    - default: false
+      description: The time in seconds till a timeout exception is reached. You can
+        specify just the read timeout (for example 60) or also the connect timeout
+        followed after a comma (for example 60,10). If not specified, will use the
+        instances configured default timeout.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
     deprecated: false
     description: Invokes a Lambda function. Specify just a function name to invoke
       the latest version of the function. To invoke a published version, use the Qualifier
       parameter to specify a version or alias .  If you use the RequestResponse (synchronous)
-      invocation option, the function will be invoked only once. If you use the Event
-      (asynchronous) invocation option, the function will be invoked at least once
-      in response to an event and the function must be idempotent to handle this.  For
-      functions with a long timeout, your client may be disconnected during synchronous
-      invocation while it waits for a response. Configure your demisto server to allow
-      for long connections with timeout or keep-alive settings.
+      invocation option, note that the function may be invoked multiple times if a
+      timeout is reached. For functions with a long timeout, your client may be disconnected
+      during synchronous invocation while it waits for a response. Use the "timeout"
+      and "retries" args to control this behavior. If you use the Event (asynchronous)
+      invocation option, the function will be invoked at least once in response to
+      an event and the function must be idempotent to handle this.
     execution: true
     name: aws-lambda-invoke
     outputs:
@@ -655,7 +690,7 @@ script:
     - contextPath: AWS.Lambda.AccountUsage. FunctionCount
       description: The number of Lambda functions.
       type: number
-  dockerimage: demisto/boto3py3:1.0.0.13191
+  dockerimage: demisto/boto3py3:1.0.0.14975
   isfetch: false
   runonce: false
   subtype: python3

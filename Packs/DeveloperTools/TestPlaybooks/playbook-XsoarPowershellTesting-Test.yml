@@ -1,0 +1,179 @@
+id: XsoarPowershellTesting-Test
+version: -1
+name: XsoarPowershellTesting-Test
+description: This playbook test basic powershell XSOAR server functionallity.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9d5494f9-4284-43a1-876e-35722e64aef1
+    type: start
+    task:
+      id: 9d5494f9-4284-43a1-876e-35722e64aef1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ff74a901-b5d3-4c6f-8ee2-731ef37f3999
+    type: regular
+    task:
+      id: ff74a901-b5d3-4c6f-8ee2-731ef37f3999
+      version: -1
+      name: Set integration context
+      description: Set integration context.
+      script: XsoarPowershellTesting|||pwsh-test-set-integration-context
+      type: regular
+      iscommand: true
+      brand: XsoarPowershellTesting
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7617209d-f03d-426f-802f-cbf2ebe5f1f4
+    type: regular
+    task:
+      id: 7617209d-f03d-426f-802f-cbf2ebe5f1f4
+      version: -1
+      name: Get integration context
+      description: Get integration context.
+      script: XsoarPowershellTesting|||pwsh-test-get-integration-context
+      type: regular
+      iscommand: true
+      brand: XsoarPowershellTesting
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e464849b-a56d-41c7-8eb5-66c3638db14d
+    type: condition
+    task:
+      id: e464849b-a56d-41c7-8eb5-66c3638db14d
+      version: -1
+      name: Check integration context set/get value
+      description: Check integration context setup succesfully and retrieve succesfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: XSOAR.IntegrationContext.Value
+            iscontext: true
+          right:
+            value:
+              simple: test
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 75cfaaa1-e31e-49f3-8bcc-1d999e312fd7
+    type: title
+    task:
+      id: 75cfaaa1-e31e-49f3-8bcc-1d999e312fd7
+      version: -1
+      name: Finished succefully
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 815,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: value
+  value:
+    simple: test
+  required: true
+  description: Value to set in integration context
+  playbookInputQuery: null
+outputs: []
+fromversion: 5.5.0

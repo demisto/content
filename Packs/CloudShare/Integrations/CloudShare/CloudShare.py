@@ -1170,7 +1170,7 @@ def main() -> None:
             'cloudshare-get-class': get_class_command,
             'cloudshare-delete-class': delete_class_command,
             'cloudshare-delete-class-environemtns': delete_class_environments_command,  # This is here for maintaining BC
-            'cloudshare-delete-class-environemnts': delete_class_environments_command,
+            'cloudshare-delete-class-environments': delete_class_environments_command,
             'cloudshare-get-classes-countries': get_classes_countries_command,
             'cloudshare-get-classes-customfields': get_classes_customfields_command,
             'cloudshare-get-classes-detailed': get_classes_detailed_command,
@@ -1180,7 +1180,8 @@ def main() -> None:
             'cloudshare-suspend-class-environments': suspend_class_environments_command,
             'cloudshare-modify-class': modify_class_command,
             'cloudshare-get-students': get_students_command,
-            'cloudshare-get-student': delete_student_command,
+            'cloudshare-get-student': get_student_command,
+            'cloudshare-delete-student': delete_student_command,
             'cloudshare-register-student': register_student_command,
             'cloudshare-modify-student': modify_student_command,
             'cloudshare-get-regions': get_regions_command,

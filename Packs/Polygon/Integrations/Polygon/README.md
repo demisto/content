@@ -845,11 +845,11 @@ Export an archive with TDS Polygon report to War Room
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | The report file name | 
-| InfoFile.EntryID | string | Report file ID in Demisto | 
-| InfoFile.Size | number | The report size | 
-| InfoFile.Type | string | The report file type | 
-| InfoFile.Info | string | The report file info | 
+| File.Name | string | The report file name | 
+| File.EntryID | string | Report file ID in Demisto | 
+| File.Size | number | The report size | 
+| File.Type | string | The report file type | 
+| File.Info | string | The report file info | 
 
 
 #### Command Example
@@ -892,11 +892,11 @@ Network activity dump export
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | The dump file name | 
-| InfoFile.EntryID | string | The dump file ID in Demisto | 
-| InfoFile.Size | number | The dump file size | 
-| InfoFile.Type | string | The dump file type | 
-| InfoFile.Info | unknown | The dump file info | 
+| File.Name | string | The dump file name | 
+| File.EntryID | string | The dump file ID in Demisto | 
+| File.Size | number | The dump file size | 
+| File.Type | string | The dump file type | 
+| File.Info | unknown | The dump file info | 
 
 
 #### Command Example
@@ -939,11 +939,11 @@ Screen activity video export
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | The video file name | 
-| InfoFile.EntryID | string | The video file ID in Demisto | 
-| InfoFile.Size | number | The video file size | 
-| InfoFile.Type | string | The video file type | 
-| InfoFile.Info | string | The video file info | 
+| File.Name | string | The video file name | 
+| File.EntryID | string | The video file ID in Demisto | 
+| File.Size | number | The video file size | 
+| File.Type | string | The video file type | 
+| File.Info | string | The video file info | 
 
 
 #### Command Example

@@ -51,7 +51,7 @@ sends the event to xMatters
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| request_id | string | Request ID from xMatters | 
+| xMatters.Workflow.request_id | string | Request ID from xMatters | 
 
 
 #### Command Example

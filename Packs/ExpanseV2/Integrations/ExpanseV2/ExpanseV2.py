@@ -2081,7 +2081,7 @@ def main() -> None:
             progress_status = params.get('progress_status')
             business_units = argToList(params.get('business_unit'))
             issue_types = argToList(params.get('issue_type'))
-            tags = argToList(params.get('tags'))
+            tags = argToList(params.get('tag'))
 
             sync_tags = argToList(params.get('sync_tags'))
 
