@@ -545,8 +545,17 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
     if raw_incident.get('allSystems'):
         assets = list(
             filter(lambda system: system['isInternal'] is True, raw_incident['allSystems']))
+        #asset keys need to be lowercase
+        lc_assets = []
+        for asset in assets:
+           lc_assets.append(dict((k.lower(), v) for k,v in asset.items()))
+
         external_systems = list(
             filter(lambda system: system['isInternal'] is False, raw_incident['allSystems']))
+
+        lc_external_systems = []
+        for es in lc_external_systems:
+            lc_external_systems.append(dict((k.lower(), v) for k,v in es.items()))
 
     # aggregate accounts
     accounts = []
@@ -608,8 +617,8 @@ def format_raw_incident(raw_incident, external_tenant_id, internal_tenant_id):
         'attackTactic': raw_incident.get('attackTactic'),
         'assetCriticality': raw_incident.get('assetClass'),
         'assetCount': raw_incident.get('internalSystemsCount'),
-        'assets': assets,
-        'externalSystems': external_systems,
+        'assets': lc_assets,
+        'externalSystems': lc_external_systems,
         'accounts': accounts,
         'domains': domains,
         'hashes': hashes,
