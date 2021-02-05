@@ -113,13 +113,13 @@ def is_reload_needed(client: Client, context: dict) -> bool:
 
 def get_url_data(client: Client, url: str):
     url = remove_last_slash(url)
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context()
     current_data_url = None
     if is_reload_needed(client, integration_context):
         data = reload(client)
         current_date = date_to_timestamp(datetime.now(), DATE_FORMAT)
         context = {"list": data, "timestamp": current_date}
-        demisto.setIntegrationContext(context)
+        set_integration_context(context)
         data_contains_url = url in data
         if data_contains_url:
             current_data_url = data[url]
@@ -130,7 +130,7 @@ def get_url_data(client: Client, url: str):
     return current_data_url, url
 
 
-def url_data_to_dbot_score(url_data, url):
+def url_data_to_dbot_score(url_data: dict, url: str):
     if url_data["verified"] == "yes":
         dbot_score = 3
     else:
@@ -139,7 +139,7 @@ def url_data_to_dbot_score(url_data, url):
                             "Match found in PhishTankV2 database")
 
 
-def create_verified_markdown(url_data, url):
+def create_verified_markdown(url_data: dict, url: str):
     markdown = f'#### Found matches for URL {url} \n'
     markdown += tableToMarkdown('', url_data)
     phish_tank_url = f'http://www.phishtank.com/phish_detail.php?phish_id={url_data["phish_id"]}'
@@ -182,7 +182,7 @@ def phishtank_reload_command(client: Client):
     parsed_response = reload(client)  # gets a parsed response
     current_date = date_to_timestamp(datetime.now(), DATE_FORMAT)
     context = {"list": parsed_response, "timestamp": current_date}
-    demisto.setIntegrationContext(context)
+    set_integration_context(context)
     readable_output = 'PhishTankV2 Database reloaded \n'
     number_of_urls_loaded = len(parsed_response.keys())
     readable_output += f'Total **{number_of_urls_loaded}** URLs loaded.\n'
@@ -201,7 +201,7 @@ def phishtank_status_command():
         - readable_output (str) : contains the number of urls that were reloaded in the last reload and the date
                                 of the last reload.
     """
-    data = demisto.getIntegrationContext()
+    data = get_integration_context()
     status = "PhishTankV2 Database Status\n"
     data_was_not_reloaded_yet = data == dict()
     last_load = ""
@@ -257,13 +257,13 @@ def reload(client: Client) -> dict:
     return parsed_response
 
 
-def parse_response_line(current_line, index, response):
+def parse_response_line(current_line: list, index: int, response: list):
     """
     This function checks if current line is a valid line.
     note: there is a specific line in PhishTank csv response that is broken into 2 following lines. In this case,
             those 2 lines are concatenate into one complete line.
     Args:
-        current_line (str): current response's line to be parsed
+        current_line (list): current response's line to be parsed
         index (int) : current line's index
         response (list) : list of PhishTank csv response
 
