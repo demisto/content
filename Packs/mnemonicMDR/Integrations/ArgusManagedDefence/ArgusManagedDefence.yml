@@ -6815,7 +6815,7 @@ script:
       required: true
       description: Case ID
     description: Print case comments as notes
-  dockerimage: demisto/argus-toolbelt:1.0.0.15350
+  dockerimage: demisto/argus-toolbelt:1.0.0.16101
   feed: false
   isfetch: true
   ismappable: true

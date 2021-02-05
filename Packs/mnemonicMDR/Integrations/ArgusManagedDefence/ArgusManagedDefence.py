@@ -241,7 +241,9 @@ def fetch_incidents(
     min_severity: str = "low",
     mirror_direction: str = "None",
 ):
-    demisto.debug("foobar " + str(last_run), demisto.getLastRun(), first_fetch_period)
+    demisto.debug(
+        "argusfetch " + str(last_run), demisto.getLastRun(), first_fetch_period
+    )
     start_timestamp = last_run.get("start_time", None) if last_run else None
     # noinspection PyTypeChecker
     result = advanced_case_search(
@@ -258,21 +260,20 @@ def fetch_incidents(
     incidents = []
     for case in result.get("data", []):
         # Get base incident
-        xsoar_mirroring = {}
-        xsoar_mirroring["dbotMirrorDirection"] = MIRROR_DIRECTION[mirror_direction]
-        xsoar_mirroring["dbotMirrorInstance"] = demisto.integrationInstance()
-        xsoar_mirroring["dbotMirrorId"] = str(case["id"])
-        case["xsoar_mirroring"] = xsoar_mirroring
+        case["xsoar_mirroring"] = {
+            "dbotMirrorId": str(case["id"]),
+            "dbotMirrorInstance": demisto.integrationInstance(),
+            "dbotMirrorDirection": MIRROR_DIRECTION[mirror_direction],
+        }
+        case["url"] = f"https://portal.mnemonic.no/spa/case/view/{case['id']}"
         # "dbotMirrorTags": TODO
         incident = {
             "name": f"#{case['id']}: {case['subject']}",
             "occurred": case["createdTime"],
             "severity": argus_priority_to_demisto_severity(case["priority"]),
             "status": argus_status_to_demisto_status(case["status"]),
-
             "details": json.dumps(case),
             "rawJSON": json.dumps(case),
-
         }
 
         # Attach files
@@ -306,67 +307,22 @@ def fetch_incidents(
     return last_run, incidents
 
 
-def fetch_incidents_old(
-    last_run: dict, first_fetch_period: str, limit: int = 25, min_severity: str = "low"
-):
-    start_timestamp = last_run.get("start_time", None) if last_run else None
-    # noinspection PyTypeChecker
-    result = advanced_case_search(
-        startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
-        endTimestamp="now",
-        limit=limit,
-        sortBy=["createdTimestamp"],
-        priority=build_argus_priority_from_min_severity(min_severity),
-        subCriteria=[
-            {"exclude": True, "status": ["closed"]},
-        ],
-        timeFieldStrategy=["createdTimestamp"],
-    )
-    incidents = []
-    for case in result["data"]:
-        incidents.append(
-            {
-                "name": f"#{case['id']}: {case['subject']}",
-                "occurred": case["createdTime"],
-                "severity": argus_priority_to_demisto_severity(case["priority"]),
-                "status": argus_status_to_demisto_status(case["status"]),
-                "details": case["description"],
-                "customFields": {
-                    "argus_id": str(case["id"]),
-                    "type": case["type"],
-                    "category": case["category"]["name"] if case["category"] else None,
-                    "service": case["service"]["name"],
-                    "lastUpdatedTime": case["lastUpdatedTime"],
-                    "createdTimestamp": case["createdTimestamp"],
-                    "customer": case["customer"]["shortName"],
-                },
-                "rawJSON": json.dumps(case),
-            }
-        )
-    if result["data"]:
-        last_run["start_time"] = str(result["data"][-1]["createdTimestamp"] + 1)
-
-    return last_run, incidents
-
-
 def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
-    demisto.debug(f"##### get-remote-data args: {json.dumps(args, indent=4)}")
-    # demisto.results(str(args))
+    demisto.debug(f"argusget {json.dumps(args, indent=4)}")
     remote_args = GetRemoteDataArgs(args)
-    demisto.debug(f"Getting update for remote [{remote_args.remote_incident_id}]")
     case_id = remote_args.remote_incident_id
-    demisto.debug(f"remoteargs {str(remote_args)}")
-    # case_id = args.get("remote_incident_id", "")
     if not case_id:
         case_id = args.get("id", "")
     if not case_id:
         raise ValueError("case id not found")
-    demisto.debug(f"Getting update with last update [{remote_args.last_update}]")
+    demisto.debug(f"Getting update for remote [{case_id}]")
+
     last_mirror_update = dateparser.parse(remote_args.last_update)
     if not last_mirror_update:
         last_mirror_update = dateparser.parse(args.get("lastUpdate", ""))
     if not last_mirror_update:
         raise ValueError("last update not found")
+    demisto.debug(f"Getting update with last update [{last_mirror_update}]")
 
     case = get_case_metadata_by_id(id=int(case_id)).get("data", {})
 
@@ -389,17 +345,27 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
                     "file_name": attachment["name"],
                 }
             )
-            entries.append(file)
-            incident_attachments.append(
+            # entries.append(file)
+            # incident_attachments.append(
+            #     {
+            #         "path": file.get("FileID", ""),
+            #         "name": file.get("File", ""),
+            #         # "type": file.get("Type", ""),
+            #         "description": "File downloaded from Argus",
+            #     }
+            # )
+            entries.append(
                 {
-                    "path": file.get("FileID", ""),
-                    "name": file.get("File", ""),
-                    # "type": file.get("Type", ""),
-                    "description": "File downloaded from Argus",
+                    "attachment": {
+                        "path": file.get("FileID", ""),
+                        "name": file.get("File", ""),
+                        # "type": file.get("Type", ""),
+                        "description": "File downloaded from Argus",
+                    }
                 }
             )
-    if incident_attachments:
-        entries.append({"attachment": incident_attachments})
+    # if incident_attachments:
+    #     entries.append({"attachment": incident_attachments})
 
     # Attach comments as notes
     case_comments = list_case_comments(caseID=int(case_id)).get("data", [])
@@ -431,14 +397,26 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
     case["xsoar_mirroring"] = {
         "dbotMirrorId": remote_args.remote_incident_id,
         "dbotMirrorInstance": demisto.integrationInstance(),
-        "dbotMirrorDirection": MIRROR_DIRECTION[demisto.params().get(
-            "mirror_direction", "None"
-        )]
+        "dbotMirrorDirection": MIRROR_DIRECTION[
+            demisto.params().get("mirror_direction", "None")
+        ],
     }
 
+    # Close case?
+    if case.get("status", "") == "closed":
+        entries.append(
+            {
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": "Argus case closed",
+                    "closeNotes": "Argus case closed",
+                }
+            }
+        )
+
     return GetRemoteDataResponse(case, entries)
-    # Attach case tags
-    # Close case
+    # TODO Attach case tags
+    # TODO Attach case events
 
 
 def get_modified_remote_data_command(args: Dict[str, Any]) -> CommandResults:
@@ -446,11 +424,87 @@ def get_modified_remote_data_command(args: Dict[str, Any]) -> CommandResults:
 
 
 def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+    t = "argusupdate "
+    for key, value in args.items():
+        t += f"({key}: {value}) "
+    demisto.debug(t)
+    parsed_args = UpdateRemoteSystemArgs(args)
+    if parsed_args.delta:
+        demisto.debug(
+            f"Got the following delta keys {str(list(parsed_args.delta.keys()))}"
+        )
+    demisto.debug(parsed_args.delta)
+    demisto.debug(
+        f"Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n"
+    )
+    s = ""
+    for key, value in parsed_args.data.items():
+        s += f"({key}: {value}) "
+    demisto.debug(s)
+    s = ""
+    demisto.debug(parsed_args.entries)
+    if parsed_args.entries:
+        for e in parsed_args.entries:
+            for key, value in e.items():
+                s += f"({key}: {value}) "
+    demisto.debug(s)
+
+    updated_incident = {}
+    if not parsed_args.remote_incident_id or parsed_args.incident_changed:
+        if parsed_args.remote_incident_id:
+            # First, get the incident as we need the version
+            old_incident = get_case_metadata_by_id(id=parsed_args.remote_incident_id)
+            for changed_key in parsed_args.delta.keys():
+                old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
+
+            parsed_args.data = old_incident
+
+        else:
+            parsed_args.data["createInvestigation"] = True
+
+        parsed_args.data["case_id"] = parsed_args.remote_incident_id
+        updated_incident = update_case_command(parsed_args.data).raw_response
+
+    else:
+        demisto.debug(
+            f"Skipping updating remote incident fields [{parsed_args.remote_incident_id}] as it is "
+            f"not new nor changed."
+        )
+
+    if parsed_args.entries:
+        for entry in parsed_args.entries:
+            demisto.debug(f'Sending entry {entry.get("id")}')
+            append_demisto_entry_to_argus_case(
+                int(parsed_args.remote_incident_id), entry
+            )
+
+    # Close incident if relevant
+    if updated_incident and parsed_args.inc_status == IncidentStatus.DONE:
+        demisto.debug(f"Closing remote incident {parsed_args.remote_incident_id}")
+        close_case(
+            caseID=parsed_args.remote_incident_id,
+            comment=(
+                f"## Case closed by XSOAR\n"
+                f"Reason:\n{parsed_args.data.get('closeReason')}"
+                f"Version:\n{parsed_args.data.get('closeReason')}"
+                f"Closing notes:\n{str(parsed_args.data.get('closeNotes'))}"
+            ),
+        )
+    return parsed_args.remote_incident_id
 
 
-def get_mapping_fields_command(args: Dict[str, Any]) -> CommandResults:
-    raise NotImplementedError
+def append_demisto_entry_to_argus_case(case_id: int, entry: Dict[str, Any]) -> None:
+    demisto.debug(f"Appending entries to case {case_id}: {str(entry)}")
+
+
+def get_mapping_fields_command(args: Dict[str, Any]) -> GetMappingFieldsResponse:
+    import requests
+
+    response = requests.get("https://api.mnemonic.no/cases/swagger.json").json()
+    for key in response.get("paths", []).keys():
+        print(key)
+
+    return GetMappingFieldsResponse()
 
 
 def add_case_tag_command(args: Dict[str, Any]) -> CommandResults:
@@ -824,7 +878,6 @@ def print_case_comments_command(args: Dict[str, Any]) -> List[Dict]:
                 "Type": entryTypes["note"],
                 "Contents": pretty_print_comment_html(comment),
                 "Note": True,
-
             }
         )
     return notes
