@@ -1,0 +1,15 @@
+comment: Shows limited feed relationship data in a table with the ability to navigate
+commonfields:
+  id: CyrenThreatInDepthRelatedWidgetQuick
+  version: -1
+enabled: true
+name: CyrenThreatInDepthRelatedWidgetQuick
+script: '-'
+subtype: python3
+system: false
+tags:
+- dynamic-indicator-section
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.1.15759
+fromversion: 6.0.0

@@ -710,6 +710,25 @@
                         "w": 1,
                         "x": 0,
                         "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "i9sfyzkmx9-9922ac60-67b5-11eb-9ff8-ff9166c6bf9f",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren Indicator Relationships",
+                        "query": "CyrenThreatInDepthRelatedWidgetQuick",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
                     }
                 ],
                 "type": "custom"
@@ -851,6 +870,25 @@
                         "w": 1,
                         "x": 0,
                         "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "mnedsjopmn-b1320940-67b5-11eb-9ff8-ff9166c6bf9f",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren Indicator Relationships",
+                        "query": null,
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
                     }
                 ],
                 "type": "custom"
@@ -965,6 +1003,25 @@
                         "w": 1,
                         "x": 0,
                         "y": 2
+                    },
+                    {
+                        "h": 2,
+                        "i": "4hotcwypyz-cde0dee0-67b5-11eb-9ff8-ff9166c6bf9f",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Cyren Indicator Relationships",
+                        "query": "CyrenThreatInDepthRelatedWidgetQuick",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
                     }
                 ],
                 "type": "custom"
