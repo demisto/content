@@ -1,18 +1,18 @@
 {
-  "name": "Export Indicators",
-  "description": "Use the Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.",
-  "support": "xsoar",
-  "currentVersion": "1.0.0",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-03-09T16:04:45Z",
-  "categories": [
-    "Data Enrichment & Threat Intelligence"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": [
-    "Export Indicators"
-  ]
+    "name": "Export Indicators",
+    "description": "Use the Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.",
+    "support": "xsoar",
+    "currentVersion": "1.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-03-09T16:04:45Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Export Indicators"
+    ]
 }

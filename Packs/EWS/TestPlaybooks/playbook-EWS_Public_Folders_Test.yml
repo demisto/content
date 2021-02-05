@@ -9,23 +9,20 @@ tasks:
     taskid: 3ae4ee2b-2135-4207-8917-f0bed3a119d9
     type: start
     task:
-      description: ""
       id: 3ae4ee2b-2135-4207-8917-f0bed3a119d9
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "2"
-      - "3"
-      - "1"
       - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 50,
           "y": 50
         }
       }
@@ -38,11 +35,16 @@ tasks:
       id: afa7fd40-59b1-4b4f-869e-266afabe5d05
       version: -1
       name: ews-find-folders
-      description: Get folders information for a mailbox. Only folders with read permissions will be return as a result. Notice that your visual folders on the mailbox (like Inbox, etc) is under the folder "Top of Information Store".
+      description: Get folders information for a mailbox. Only folders with read permissions
+        will be return as a result. Notice that your visual folders on the mailbox
+        (like Inbox, etc) is under the folder "Top of Information Store".
       script: '|||ews-find-folders'
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
     scriptarguments:
       is-public: {}
       target-mailbox: {}
@@ -50,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 195
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -79,7 +81,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": 720
         }
       }
     note: false
@@ -91,11 +93,15 @@ tasks:
       id: ee559217-5399-41b9-8778-abab57420f2f
       version: -1
       name: ews-search-mailbox
-      description: Search items in a specific mailbox. Notice that a proper permissions needed for this operation to search in another target mailbox than the default.
+      description: Search items in a specific mailbox. Notice that a proper permissions
+        needed for this operation to search in another target mailbox than the default.
       script: '|||ews-search-mailbox'
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
     scriptarguments:
       folder-path:
         simple: pub/sub
@@ -109,8 +115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 195
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -122,11 +128,15 @@ tasks:
       id: 3affa4ea-b4a8-4ca8-823b-c9baa7619948
       version: -1
       name: ews-get-items-from-folder
-      description: Get items from a specific folder in a mailbox. The items will return order by created time, first item is the most recent item.
+      description: Get items from a specific folder in a mailbox. The items will return
+        order by created time, first item is the most recent item.
       script: '|||ews-get-items-from-folder'
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
     scriptarguments:
       folder-path:
         simple: pub/sub
@@ -138,7 +148,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 50,
           "y": 195
         }
       }
@@ -148,8 +158,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 240,
-        "width": 1670,
+        "height": 765,
+        "width": 380,
         "x": 50,
         "y": 50
       }

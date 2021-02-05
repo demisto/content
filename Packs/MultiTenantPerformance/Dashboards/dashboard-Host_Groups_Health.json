@@ -1,0 +1,495 @@
+{
+    "id": "HA Groups - Health",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "description": "",
+    "period": {
+        "by": "",
+        "byTo": "days",
+        "byFrom": "hours",
+        "toValue": 0,
+        "fromValue": 24,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "HA Groups - Health",
+    "layout": [
+        {
+            "id": "3a264720-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "3a264720-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 5,
+            "h": 2,
+            "widget": {
+                "id": "ha-group-cpu-bar",
+                "version": 1,
+                "sequenceNumber": 17755,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.38135Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Average CPU Usage per HA Group",
+                "prevName": "Average Hosts Group CPU Usage % per Group",
+                "dataType": "system",
+                "widgetType": "bar",
+                "query": "host.cpu",
+                "sort": null,
+                "isPredefined": true,
+                "description": "The average percentage of CPU usage per HA group.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "haGroup"
+                    ]
+                },
+                "size": 61,
+                "category": ""
+            }
+        },
+        {
+            "id": "3b3baec0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 5,
+            "y": 0,
+            "i": "3b3baec0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 7,
+            "h": 2,
+            "widget": {
+                "id": "ha-group-cpu-line",
+                "version": 1,
+                "sequenceNumber": 17761,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.38143Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Average CPU Usage per HA Group (last 24h)",
+                "prevName": "Average Hosts Group CPU Usage % per group (last 24h)",
+                "dataType": "system",
+                "widgetType": "line",
+                "query": "host.cpu",
+                "sort": null,
+                "isPredefined": true,
+                "description": "The average percentage of CPU usage per HA group in the previous 24h.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "minutes",
+                        "toValue": null,
+                        "fromValue": 60,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "haGroup"
+                    ],
+                    "timeFrame": "minutes"
+                },
+                "size": 1440,
+                "category": ""
+            }
+        },
+        {
+            "id": "3deb8c80-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 0,
+            "y": 4,
+            "i": "3deb8c80-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 5,
+            "h": 2,
+            "widget": {
+                "id": "ha-group-disk-bar",
+                "version": 1,
+                "sequenceNumber": 17749,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381263Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Average Disk Usage per HA Group",
+                "prevName": "Average Hosts Group Disk Usage % per group",
+                "dataType": "system",
+                "widgetType": "bar",
+                "query": "host.disk",
+                "sort": null,
+                "isPredefined": true,
+                "description": "The average percentage of disk usage per HA group.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "haGroup"
+                    ]
+                },
+                "size": 61,
+                "category": ""
+            }
+        },
+        {
+            "id": "3eae8e60-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 5,
+            "y": 4,
+            "i": "3eae8e60-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 7,
+            "h": 2,
+            "widget": {
+                "id": "ha-group-disk-line",
+                "version": 1,
+                "sequenceNumber": 17754,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381335Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Average Disk Usage per HA Group (last 24h)",
+                "prevName": "Average Hosts Group Disk Usage % per group (last 24h)",
+                "dataType": "system",
+                "widgetType": "line",
+                "query": "host.disk",
+                "sort": null,
+                "isPredefined": true,
+                "description": "The average percentage of disk usage per HA group in the last 24h.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "minutes",
+                        "toValue": null,
+                        "fromValue": 60,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "haGroup"
+                    ],
+                    "timeFrame": "minutes"
+                },
+                "size": 1440,
+                "category": ""
+            }
+        },
+        {
+            "id": "4287f800-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 0,
+            "y": 6,
+            "i": "4287f800-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 5,
+            "h": 2,
+            "widget": {
+                "id": "ha-group-container-bar",
+                "version": 1,
+                "sequenceNumber": 17750,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381277Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Average Docker Container Count per HA Group",
+                "prevName": "Average Hosts Group Docker containers count per group",
+                "dataType": "system",
+                "widgetType": "bar",
+                "query": "host.account-docker-containers",
+                "sort": null,
+                "isPredefined": true,
+                "description": "The average number of containers used by each HA group.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "haGroup"
+                    ]
+                },
+                "size": 61,
+                "category": ""
+            }
+        },
+        {
+            "id": "436b5320-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 5,
+            "y": 6,
+            "i": "436b5320-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 7,
+            "h": 2,
+            "widget": {
+                "id": "ha-group-containers-line",
+                "version": 1,
+                "sequenceNumber": 17757,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381375Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Average Docker Containers Count per HA Group (last 24h)",
+                "prevName": "Average Hosts Group Docker containers count per group (last 24h)",
+                "dataType": "system",
+                "widgetType": "line",
+                "query": "host.account-docker-containers",
+                "sort": null,
+                "isPredefined": true,
+                "description": "The average number of containers used per each HA group in the last 24h.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "minutes",
+                        "toValue": null,
+                        "fromValue": 60,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "haGroup"
+                    ],
+                    "timeFrame": "minutes"
+                },
+                "size": 1440,
+                "category": ""
+            }
+        },
+        {
+            "id": "470087d0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "470087d0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 5,
+            "h": 2,
+            "widget": {
+                "id": "ha-group-memory-bar",
+                "version": 1,
+                "sequenceNumber": 17747,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381225Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Average Memory Usage per HA Group",
+                "prevName": "Average Hosts Group Memory Usage % per group",
+                "dataType": "system",
+                "widgetType": "bar",
+                "query": "host.memory",
+                "sort": null,
+                "isPredefined": true,
+                "description": "The average percentage of memory usage per HA group.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "haGroup"
+                    ]
+                },
+                "size": 61,
+                "category": ""
+            }
+        },
+        {
+            "id": "49295b40-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 5,
+            "y": 2,
+            "i": "49295b40-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 7,
+            "h": 2,
+            "widget": {
+                "id": "ha-group-memory-line",
+                "version": 1,
+                "sequenceNumber": 17759,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381403Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Average Memory Usage per HA Group (last 24h)",
+                "prevName": "Average Hosts Group Memory Usage % per group (last 24h)",
+                "dataType": "system",
+                "widgetType": "line",
+                "query": "host.memory",
+                "sort": null,
+                "isPredefined": true,
+                "description": "The average percentage of memory usage per HA group in the last 24h.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "minutes",
+                        "toValue": null,
+                        "fromValue": 60,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "haGroup"
+                    ],
+                    "timeFrame": "minutes"
+                },
+                "size": 1440,
+                "category": ""
+            }
+        }
+    ],
+    "isPredefined": true
+}

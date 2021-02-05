@@ -1,5 +1,5 @@
 Leverage the Centrify Vault integration to create and manage Secrets.
-This integration was integrated and tested with version xx of Centrify Vault
+
 ## Configure Centrify Vault on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

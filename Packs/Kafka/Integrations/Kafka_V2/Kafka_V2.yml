@@ -11,10 +11,7 @@ configuration:
   name: use_ssl
   required: false
   type: 8
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                   Certificate Settings
-    CA certificate of Kafka server (.cer)
+- display: CA certificate of Kafka server (.cer)
   name: ca_cert
   required: false
   type: 12
@@ -30,10 +27,7 @@ configuration:
   name: additional_password
   required: false
   type: 4
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                               Fetch Incidents Settings
-    Topic to fetch incidents from (Required for fetch incidents)
+- display: Topic to fetch incidents from (Required for fetch incidents)
   name: topic
   required: false
   type: 0
@@ -168,7 +162,7 @@ script:
     - contextPath: Kafka.Topic.Partition
       description: Prints all partitions for a topic.
       type: number
-  dockerimage: demisto/pykafka:1.0.0.9548
+  dockerimage: demisto/pykafka:1.0.0.15212
   feed: false
   isfetch: true
   longRunning: false

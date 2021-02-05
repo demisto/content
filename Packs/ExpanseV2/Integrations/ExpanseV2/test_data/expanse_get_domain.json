@@ -1,0 +1,342 @@
+{
+    "data": [
+        {
+            "annotations": {
+                "contacts": [],
+                "note": "",
+                "tags": []
+            },
+            "businessUnits": [
+                {
+                    "id": "0188ec31-04fb-447d-8217-f398f6552f23",
+                    "name": "Test Company Dev",
+                    "tenantId": "0188ec31-04fb-447d-8217-f398f6552f23"
+                }
+            ],
+            "dateAdded": "2020-11-25T04:05:21.210Z",
+            "details": null,
+            "dnsResolutionStatus": [
+                "HAS_DNS_RESOLUTION"
+            ],
+            "domain": "bbbbbb-31e1-479d-b9eb-ca4a55487f88.dev.uk.example.local",
+            "firstObserved": "2020-11-24T06:00:41.122Z",
+            "hasLinkedCloudResources": false,
+            "id": "17f94d88-55bf-32f7-ad61-acb447851ef2",
+            "isCollapsed": false,
+            "isPaidLevelDomain": false,
+            "lastObserved": "2020-11-24T06:00:41.122Z",
+            "lastSampledIp": "1.1.1.1",
+            "lastSubdomainMetadata": null,
+            "providers": [
+                {
+                    "id": "OnPrem",
+                    "name": "On Prem"
+                }
+            ],
+            "serviceStatus": [
+                "NO_ACTIVE_SERVICE",
+                "NO_ACTIVE_ON_PREM_SERVICE",
+                "NO_ACTIVE_CLOUD_SERVICE"
+            ],
+            "sourceDomain": "example.local",
+            "tenant": {
+                "id": "69b6f467-45f9-4bed-a7d8-e15706cf2bdc",
+                "name": "Test Company",
+                "tenantId": "69b6f467-45f9-4bed-a7d8-e15706cf2bdc"
+            },
+            "whois": [
+                {
+                    "admin": {
+                        "city": "",
+                        "country": "UNITED STATES",
+                        "emailAddress": "",
+                        "faxExtension": "",
+                        "faxNumber": "",
+                        "name": "",
+                        "organization": "Example, Inc.",
+                        "phoneExtension": "",
+                        "phoneNumber": "",
+                        "postalCode": "",
+                        "province": "CA",
+                        "registryId": null,
+                        "street": ""
+                    },
+                    "creationDate": "2005-02-21T02:42:10Z",
+                    "dnssec": null,
+                    "domain": "example.local",
+                    "domainStatuses": [
+                        "clientDeleteProhibited clientTransferProhibited clientUpdateProhibited"
+                    ],
+                    "nameServers": [
+                        "NS1.P23.EXAMPLE.NET",
+                        "NS2.P23.EXAMPLE.NET",
+                        "NS3.P23.EXAMPLE.NET",
+                        "NS4.P23.EXAMPLE.NET",
+                        "NS5.EXAMPLE.COM",
+                        "NS6.EXAMPLE.COM",
+                        "NS7.EXAMPLE.COM"
+                    ],
+                    "registrant": {
+                        "city": "",
+                        "country": "UNITED STATES",
+                        "emailAddress": "",
+                        "faxExtension": "",
+                        "faxNumber": "",
+                        "name": "",
+                        "organization": "Example, Inc.",
+                        "phoneExtension": "",
+                        "phoneNumber": "",
+                        "postalCode": "",
+                        "province": "CA",
+                        "registryId": null,
+                        "street": ""
+                    },
+                    "registrar": {
+                        "abuseContactEmail": null,
+                        "abuseContactPhone": null,
+                        "formattedName": "MarkMonitor",
+                        "ianaId": null,
+                        "name": "MarkMonitor Inc.",
+                        "registrationExpirationDate": null,
+                        "url": null,
+                        "whoisServer": "whois.markmonitor.com"
+                    },
+                    "registryDomainId": null,
+                    "registryExpiryDate": "2024-02-21T02:42:10Z",
+                    "reseller": null,
+                    "tech": null,
+                    "updatedDate": "2017-08-30T20:42:10Z"
+                }
+            ]
+        },
+        {
+            "annotations": {
+                "contacts": [],
+                "note": "",
+                "tags": []
+            },
+            "businessUnits": [
+                {
+                    "id": "9929dfc4-17a2-4be1-a35e-0fb3f5a0c42c",
+                    "name": "Test Company Prod",
+                    "tenantId": "9929dfc4-17a2-4be1-a35e-0fb3f5a0c42c"
+                }
+            ],
+            "dateAdded": "2020-09-28T14:28:26.702Z",
+            "details": null,
+            "dnsResolutionStatus": [
+                "HAS_DNS_RESOLUTION"
+            ],
+            "domain": "*.aaaaaaa-0d9a-4397-b8e7-9d4daf12a82b.dev-qa2.uk.example.local",
+            "firstObserved": "2020-09-28T05:25:30.295Z",
+            "hasLinkedCloudResources": false,
+            "id": "041739cb-1cec-3b11-9816-fa3eb7a9bf0f",
+            "isCollapsed": false,
+            "isPaidLevelDomain": false,
+            "lastObserved": "2020-11-23T07:46:23.124Z",
+            "lastSampledIp": "8.8.8.8",
+            "lastSubdomainMetadata": null,
+            "providers": [
+                {
+                    "id": "Google",
+                    "name": "Google"
+                },
+                {
+                    "id": "OnPrem",
+                    "name": "On Prem"
+                }
+            ],
+            "serviceStatus": [
+                "NO_ACTIVE_ON_PREM_SERVICE",
+                "HAS_ACTIVE_CLOUD_SERVICE",
+                "HAS_ACTIVE_SERVICE"
+            ],
+            "sourceDomain": "example.local",
+            "tenant": {
+                "id": "69b6f467-45f9-4bed-a7d8-e15706cf2bdc",
+                "name": "Test Company",
+                "tenantId": "69b6f467-45f9-4bed-a7d8-e15706cf2bdc"
+            },
+            "whois": [
+                {
+                    "admin": {
+                        "city": "",
+                        "country": "UNITED STATES",
+                        "emailAddress": "",
+                        "faxExtension": "",
+                        "faxNumber": "",
+                        "name": "",
+                        "organization": "Example, Inc.",
+                        "phoneExtension": "",
+                        "phoneNumber": "",
+                        "postalCode": "",
+                        "province": "CA",
+                        "registryId": null,
+                        "street": ""
+                    },
+                    "creationDate": "2005-02-21T02:42:10Z",
+                    "dnssec": null,
+                    "domain": "example.local",
+                    "domainStatuses": [
+                        "clientDeleteProhibited clientTransferProhibited clientUpdateProhibited"
+                    ],
+                    "nameServers": [
+                        "NS1.P23.EXAMPLE.NET",
+                        "NS2.P23.EXAMPLE.NET",
+                        "NS3.P23.EXAMPLE.NET",
+                        "NS4.P23.EXAMPLE.NET",
+                        "NS5.EXAMPLE.COM",
+                        "NS6.EXAMPLE.COM",
+                        "NS7.EXAMPLE.COM"
+                    ],
+                    "registrant": {
+                        "city": "",
+                        "country": "UNITED STATES",
+                        "emailAddress": "",
+                        "faxExtension": "",
+                        "faxNumber": "",
+                        "name": "",
+                        "organization": "Example, Inc.",
+                        "phoneExtension": "",
+                        "phoneNumber": "",
+                        "postalCode": "",
+                        "province": "CA",
+                        "registryId": null,
+                        "street": ""
+                    },
+                    "registrar": {
+                        "abuseContactEmail": null,
+                        "abuseContactPhone": null,
+                        "formattedName": "MarkMonitor",
+                        "ianaId": null,
+                        "name": "MarkMonitor Inc.",
+                        "registrationExpirationDate": null,
+                        "url": null,
+                        "whoisServer": "whois.markmonitor.com"
+                    },
+                    "registryDomainId": null,
+                    "registryExpiryDate": "2024-02-21T02:42:10Z",
+                    "reseller": null,
+                    "tech": null,
+                    "updatedDate": "2017-08-30T20:42:10Z"
+                }
+            ]
+        },
+        {
+            "annotations": {
+                "contacts": [],
+                "note": "",
+                "tags": []
+            },
+            "businessUnits": [
+                {
+                    "id": "0188ec31-04fb-447d-8217-f398f6552f23",
+                    "name": "Test Company Dev",
+                    "tenantId": "0188ec31-04fb-447d-8217-f398f6552f23"
+                }
+            ],
+            "dateAdded": "2020-11-25T04:05:21.210Z",
+            "details": null,
+            "dnsResolutionStatus": [
+                "HAS_DNS_RESOLUTION"
+            ],
+            "domain": "03f69f6f-2d50-4255-a054-18fe2e3609f4.dev.uk.example.local",
+            "firstObserved": "2020-11-24T07:56:26.379Z",
+            "hasLinkedCloudResources": false,
+            "id": "bc4f11a9-eb78-3017-88bd-2474262d05c5",
+            "isCollapsed": false,
+            "isPaidLevelDomain": false,
+            "lastObserved": "2020-11-24T07:56:26.379Z",
+            "lastSampledIp": "1.1.1.2",
+            "lastSubdomainMetadata": null,
+            "providers": [
+                {
+                    "id": "OnPrem",
+                    "name": "On Prem"
+                }
+            ],
+            "serviceStatus": [
+                "NO_ACTIVE_SERVICE",
+                "NO_ACTIVE_ON_PREM_SERVICE",
+                "NO_ACTIVE_CLOUD_SERVICE"
+            ],
+            "sourceDomain": "example.local",
+            "tenant": {
+                "id": "69b6f467-45f9-4bed-a7d8-e15706cf2bdc",
+                "name": "Test Company",
+                "tenantId": "69b6f467-45f9-4bed-a7d8-e15706cf2bdc"
+            },
+            "whois": [
+                {
+                    "admin": {
+                        "city": "",
+                        "country": "UNITED STATES",
+                        "emailAddress": "",
+                        "faxExtension": "",
+                        "faxNumber": "",
+                        "name": "",
+                        "organization": "Example, Inc.",
+                        "phoneExtension": "",
+                        "phoneNumber": "",
+                        "postalCode": "",
+                        "province": "CA",
+                        "registryId": null,
+                        "street": ""
+                    },
+                    "creationDate": "2005-02-21T02:42:10Z",
+                    "dnssec": null,
+                    "domain": "example.local",
+                    "domainStatuses": [
+                        "clientDeleteProhibited clientTransferProhibited clientUpdateProhibited"
+                    ],
+                    "nameServers": [
+                        "NS1.P23.EXAMPLE.NET",
+                        "NS2.P23.EXAMPLE.NET",
+                        "NS3.P23.EXAMPLE.NET",
+                        "NS4.P23.EXAMPLE.NET",
+                        "NS5.EXAMPLE.COM",
+                        "NS6.EXAMPLE.COM",
+                        "NS7.EXAMPLE.COM"
+                    ],
+                    "registrant": {
+                        "city": "",
+                        "country": "UNITED STATES",
+                        "emailAddress": "",
+                        "faxExtension": "",
+                        "faxNumber": "",
+                        "name": "",
+                        "organization": "Example, Inc.",
+                        "phoneExtension": "",
+                        "phoneNumber": "",
+                        "postalCode": "",
+                        "province": "CA",
+                        "registryId": null,
+                        "street": ""
+                    },
+                    "registrar": {
+                        "abuseContactEmail": null,
+                        "abuseContactPhone": null,
+                        "formattedName": "MarkMonitor",
+                        "ianaId": null,
+                        "name": "MarkMonitor Inc.",
+                        "registrationExpirationDate": null,
+                        "url": null,
+                        "whoisServer": "whois.markmonitor.com"
+                    },
+                    "registryDomainId": null,
+                    "registryExpiryDate": "2024-02-21T02:42:10Z",
+                    "reseller": null,
+                    "tech": null,
+                    "updatedDate": "2017-08-30T20:42:10Z"
+                }
+            ]
+        }
+    ],
+    "pagination": {
+        "next": null,
+        "pref": null
+    },
+    "meta": {
+        "totalCount": 3
+    }
+}

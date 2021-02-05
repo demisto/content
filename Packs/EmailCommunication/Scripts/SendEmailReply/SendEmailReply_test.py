@@ -25,7 +25,7 @@ def test_send_reply(mocker):
     email_reply_response = util_load_json('test_data/email_reply.json')
     mocker.patch("SendEmailReply.send_mail_request", return_value=email_reply_response)
     result = send_reply('123', 'email_subject', 'test1@gmail.com,test2@gmail.com', 'reply_body', 'test.onmicrosoft.com',
-                        'test3@gmail.com', 'reply_html_body', {}, 'item_id')
+                        'test3@gmail.com', 'reply_html_body', {}, 'item_id', '12345678')
     assert "Mail sent successfully. To: test1@gmail.com,test2@gmail.com Cc: test3@gmail.com" == result
 
 
