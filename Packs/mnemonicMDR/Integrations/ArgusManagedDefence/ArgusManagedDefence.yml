@@ -42,6 +42,13 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- display: Exclude tag
+  name: exclude_tag
+  type: 0
+  required: false
+  additionalinfo: 'Excludes fetching incidents with the optional tag. May be used
+  to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value
+  pairs. You may exclude with tag key, or key: value pairs by a comma-separated string.'
 - defaultvalue: Incoming And Outgoing
   display: Incident Mirroring Direction
   name: mirror_direction

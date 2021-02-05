@@ -240,11 +240,23 @@ def fetch_incidents(
     limit: int = 25,
     min_severity: str = "low",
     mirror_direction: str = "None",
+    exclude_tag: str = "",
 ):
-    demisto.debug(
-        "argusfetch " + str(last_run), demisto.getLastRun(), first_fetch_period
-    )
     start_timestamp = last_run.get("start_time", None) if last_run else None
+    # Exclude closed cases
+    sub_criteria = [{"exclude": True, "status": ["closed"]}]
+    # Exclude cases with {key} or {key: value} tags
+    if exclude_tag:
+        tag_list = exclude_tag.strip().split(",")
+        if len(tag_list) == 1:
+            sub_criteria.append({"exclude": True, "tag": {"key": tag_list[0]}})
+        elif len(tag_list) == 2:
+            sub_criteria.append(
+                {"exclude": True, "tag": {"key": tag_list[0], "values": tag_list[1]}}
+            )
+    demisto.debug(
+        "argusfetch " + str(last_run), demisto.getLastRun(), first_fetch_period, sub_criteria
+    )
     # noinspection PyTypeChecker
     result = advanced_case_search(
         startTimestamp=start_timestamp if start_timestamp else first_fetch_period,
@@ -252,9 +264,7 @@ def fetch_incidents(
         limit=limit,
         sortBy=["createdTimestamp"],
         priority=build_argus_priority_from_min_severity(min_severity),
-        subCriteria=[
-            {"exclude": True, "status": ["closed"]},
-        ],
+        subCriteria=sub_criteria,
         timeFieldStrategy=["createdTimestamp"],
     )
     incidents = []
@@ -266,7 +276,7 @@ def fetch_incidents(
             "dbotMirrorDirection": MIRROR_DIRECTION[mirror_direction],
         }
         case["url"] = f"https://portal.mnemonic.no/spa/case/view/{case['id']}"
-        # "dbotMirrorTags": TODO
+        # "dbotMirrorTags": 
         incident = {
             "name": f"#{case['id']}: {case['subject']}",
             "occurred": case["createdTime"],
@@ -1301,7 +1311,7 @@ def main() -> None:
                 limit=demisto.params().get("max_fetch", 25),
                 min_severity=demisto.params().get("min_severity", "low").lower(),
                 mirror_direction=demisto.params().get("mirror_direction", "None"),
-                # exclude_tag=demisto.params().get('exclude_tag') TODO implement
+                exclude_tag=demisto.params().get("exclude_tag")
                 # mirror_tag
             )
 
