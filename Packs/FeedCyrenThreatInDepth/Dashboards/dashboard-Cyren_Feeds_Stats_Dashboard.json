@@ -762,7 +762,7 @@
                 "isPredefined": false,
                 "itemVersion": "",
                 "modified": "2021-01-12T14:29:28.838759555+01:00",
-                "name": "Incidents by Type enriched by Cyren",
+                "name": "Indicators found in incidents by Cyren",
                 "packID": "",
                 "params": {
                     "groupBy": [
