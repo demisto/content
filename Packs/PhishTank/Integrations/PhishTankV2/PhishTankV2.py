@@ -9,6 +9,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 BASE_URL = 'http://data.phishtank.com'
+HTTPS_BASE_URL = 'https://data.phishtank.com'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 RELOAD_DATA_URL_SUFFIX = "data/online-valid.csv"
 
@@ -26,14 +27,14 @@ class Client(BaseClient):
     Client to use in the PhisTankV2 integration. Overrides BaseClient.
 
         Args:
-           proxy (bool): False if feed HTTPS server certificate will not use proxies, True otherwise.
-           insecure (bool): False if feed HTTPS server certificate should be verified, True otherwise.
-           verify (bool) : not insecure
+           proxy (bool): Whether the client should use proxies.
+           verify (bool): Whether to check for SSL certificate validity.
            fetch_interval_hours (str) : Database refresh interval (hours)
+           use_https (bool): Whether to use HTTPS URL or HTTP URL.
    """
 
-    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str):
-        super().__init__(proxy=proxy, verify=verify, base_url=BASE_URL)
+    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str, use_https: str):
+        super().__init__(proxy=proxy, verify=verify, base_url=HTTPS_BASE_URL if use_https else BASE_URL)
         self.fetch_interval_hours = fetch_interval_hours
 
     def get_http_request(self, url_suffix: str):
@@ -303,38 +304,40 @@ def is_number(fetch_interval_hours: str) -> bool:
 
 
 def main() -> None:
-    proxy = demisto.params().get('proxy')
-    verify = not demisto.params().get('insecure')
-    fetch_interval_hours = demisto.params().get('fetchIntervalHours')
+    params = demisto.params()
+    use_https = params.get('use_https', False)
+    proxy = params.get('proxy')
+    verify = not params.get('insecure')
+    fetch_interval_hours = params.get('fetchIntervalHours')
 
     if not is_number(fetch_interval_hours):
         return_error("PhishTankV2 error: Please provide a numeric value (and bigger than 0) for Database refresh "
                      "interval (hours)")
 
     # initialize a client
-    client = Client(proxy, verify, fetch_interval_hours)
+    client = Client(proxy, verify, fetch_interval_hours, use_https)
 
     command = demisto.command()
     demisto.debug(f'PhishTankV2: command is {command}')
 
     try:
-        if demisto.command() == "test-module":
+        if command == "test-module":
             return_results(test_module(client))
 
-        elif demisto.command() == 'url':
+        elif command == 'url':
             url = argToList(demisto.args().get("url"))
             return_results(url_command(client, url))
 
-        elif demisto.command() == 'phishtank-reload':
+        elif command == 'phishtank-reload':
             return_results(phishtank_reload_command(client))
 
-        elif demisto.command() == 'phishtank-status':
+        elif command == 'phishtank-status':
             return_results(phishtank_status_command())
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
