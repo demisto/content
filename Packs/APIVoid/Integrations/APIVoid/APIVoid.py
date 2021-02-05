@@ -162,7 +162,7 @@ def test_module(client):
 
     result = client.test()
 
-    if result.get('success', None):
+    if result.get('success'):
         return 'ok'
     else:
         return 'Test Failed: ' + str(result)
