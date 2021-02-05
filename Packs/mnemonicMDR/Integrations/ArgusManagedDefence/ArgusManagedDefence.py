@@ -196,12 +196,14 @@ def pretty_print_comment(comment: dict, title: str = None) -> str:
 
 def pretty_print_comment_html(comment: dict, title: str = None) -> str:
     string = f"<h2>{title}</h2>" if title else ""
+    string += "<small>"
     string += f"<em>{comment['addedByUser']['userName']} - {pretty_print_date(comment['addedTime'])}</em><br>"
     string += (
         f"<em>Last updated {pretty_print_date(comment['lastUpdatedTime'])}</em><br>\n"
         if comment["lastUpdatedTime"]
         else ""
     )
+    string += "</small>"
     string += f"{comment['comment']}"
     string += "<small>"
     string += f"<br><em>id: {comment['id']}</em><br>"
@@ -267,7 +269,10 @@ def fetch_incidents(
                 {"exclude": True, "tag": {"key": tag_list[0], "values": tag_list[1]}}
             )
     demisto.debug(
-        "argusfetch " + str(last_run), demisto.getLastRun(), first_fetch_period, sub_criteria
+        "argusfetch " + str(last_run),
+        demisto.getLastRun(),
+        first_fetch_period,
+        sub_criteria,
     )
     # noinspection PyTypeChecker
     result = advanced_case_search(
@@ -297,28 +302,6 @@ def fetch_incidents(
             "details": json.dumps(case),
             "rawJSON": json.dumps(case),
         }
-
-        # Attach files
-        # TODO add json to case?
-        argus_attachments = list_case_attachments(caseID=case["id"]).get("data", [])
-        incident_attachments = []
-        for attachment in argus_attachments:
-            file = download_attachment_command(
-                {
-                    "case_id": case["id"],
-                    "attachment_id": attachment["id"],
-                    "file_name": attachment["name"],
-                }
-            )
-            incident_attachments.append(
-                {
-                    "path": file.get("FileID", ""),
-                    "name": file.get("File", ""),
-                    # "type": file.get("Type", ""),
-                    "description": "File downloaded from Argus",
-                }
-            )
-        incident["attachment"] = incident_attachments
 
         # Append incident
         incidents.append(incident)
@@ -357,37 +340,17 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
 
     # Add new attachments
     case_attachments = list_case_attachments(caseID=int(case_id)).get("data", [])
-    incident_attachments = []
     for attachment in case_attachments:
         if last_update_timestamp < attachment.get("addedTimestamp", 0):
-            file = download_attachment_command(
-                {
-                    "case_id": case_id,
-                    "attachment_id": attachment["id"],
-                    "file_name": attachment["name"],
-                }
-            )
-            # entries.append(file)
-            # incident_attachments.append(
-            #     {
-            #         "path": file.get("FileID", ""),
-            #         "name": file.get("File", ""),
-            #         # "type": file.get("Type", ""),
-            #         "description": "File downloaded from Argus",
-            #     }
-            # )
+
             entries.append(
-                {
-                    "attachment": {
-                        "path": file.get("FileID", ""),
-                        "name": file.get("File", ""),
-                        # "type": file.get("Type", ""),
-                        "description": "File downloaded from Argus",
-                    }
-                }
+                fileResult(
+                    attachment["name"],
+                    download_attachment(
+                        caseID=int(case_id), attachmentID=attachment["id"]
+                    ).content,
+                )
             )
-    # if incident_attachments:
-    #     entries.append({"attachment": incident_attachments})
 
     # Attach comments as notes
     case_comments = list_case_comments(caseID=int(case_id)).get("data", [])
@@ -428,6 +391,8 @@ def get_remote_data_command(args: Dict[str, Any]) -> GetRemoteDataResponse:
     if case.get("status", "") == "closed":
         entries.append(
             {
+                'Type': EntryType.NOTE,
+                'ContentsFormat': EntryFormat.JSON,
                 "Contents": {
                     "dbotIncidentClose": True,
                     "closeReason": "Argus case closed",
@@ -459,11 +424,11 @@ def update_remote_system_command(args: Dict[str, Any]) -> CommandResults:
     demisto.debug(
         f"Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system\n"
     )
-    s = ""
+    s = "argusupdatedata"
     for key, value in parsed_args.data.items():
         s += f"({key}: {value}) "
     demisto.debug(s)
-    s = ""
+    s = "argusupdateentry"
     demisto.debug(parsed_args.entries)
     if parsed_args.entries:
         for e in parsed_args.entries:
@@ -770,6 +735,24 @@ def download_attachment_command(args: Dict[str, Any]) -> fileResult:
     return fileResult(file_name, result.content)
 
 
+def download_case_attachments_command(args: Dict[str, Any]) -> [fileResult]:
+    case_id = args.get("case_id", None)
+    if case_id is None:
+        raise ValueError("case id not specified")
+    case_attachments = list_case_attachments(caseID=int(case_id)).get("data", [])
+    incident_files = []
+    for attachment in case_attachments:
+        incident_files.append(
+            fileResult(
+                attachment["name"],
+                download_attachment(
+                    caseID=int(case_id), attachmentID=attachment["id"]
+                ).content,
+            )
+        )
+    return incident_files
+
+
 def edit_comment_command(args: Dict[str, Any]) -> CommandResults:
     case_id = args.get("case_id", None)
     comment_id = args.get("comment_id", None)
@@ -845,7 +828,7 @@ def print_case_metadata_by_id_command(args: Dict[str, Any]) -> Dict:
         "ContentsFormat": formats["html"],
         "Type": EntryType.NOTE,
         "Contents": pretty_print_case_metadata_html(result.get("data")),
-        #"Note": True,
+        # "Note": True,
     }
 
 
@@ -1366,9 +1349,6 @@ def main() -> None:
             return_results(add_comment_command(demisto.args()))
 
         elif demisto.command() == "argus-advanced-case-search":
-            demisto.log(json.dumps(demisto.args()))
-            demisto.log(json.dumps(demisto.params()))
-            demisto.log(str(demisto))
             return_results(advanced_case_search_command(demisto.args()))
 
         elif demisto.command() == "argus-close-case":
@@ -1454,6 +1434,9 @@ def main() -> None:
 
         elif demisto.command() == "argus-print-case-metadata-by-id":
             return_results(print_case_metadata_by_id_command(demisto.args()))
+
+        elif demisto.command() == "argus-download-case-attachments":
+            return_results(download_case_attachments_command(demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

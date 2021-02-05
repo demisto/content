@@ -47,8 +47,9 @@ configuration:
   type: 0
   required: false
   additionalinfo: 'Excludes fetching incidents with the optional tag. May be used
-  to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value
-  pairs. You may exclude with tag key, or key: value pairs by a comma-separated string.'
+    to exclude fetching Argus Cases created by XSOAR. Tags in Argus are of key: value
+    pairs. You may exclude with tag key, or key: value pairs by a comma-separated
+    string.'
 - defaultvalue: Incoming And Outgoing
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -6830,7 +6831,13 @@ script:
     - name: skip_redirect
       description: If true, skip automatic redirect (for merged cases)
     description: Print case metadata as HTML. Does not add to context.
-  dockerimage: demisto/argus-toolbelt:1.0.0.16101
+  - name: argus-download-case-attachments
+    arguments:
+    - name: case_id
+      required: true
+      description: Case ID
+    description: Download all attachments related to Argus Case.
+  dockerimage: demisto/argus-toolbelt:1.0.0.16134
   feed: false
   isfetch: true
   ismappable: true
