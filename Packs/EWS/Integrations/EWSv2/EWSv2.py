@@ -949,7 +949,7 @@ def email_ec(item):
         'Subject': item.subject,
         'Text': item.text_body,
         'HTML': item.body,
-        'HeadersMap': {header.name: header.value for header in item.headers},
+        'HeadersMap': dict() if not item.headers else {header.name: header.value for header in item.headers},
     }
 
 
