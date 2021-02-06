@@ -1614,7 +1614,7 @@ script:
           type: String
     - arguments:
         - default: false
-          description: The process GUID to search.
+          description: The process GUID to search. Must be focused on a single process.
           isArray: false
           name: process_guid
           required: false
