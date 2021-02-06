@@ -1401,7 +1401,7 @@ tasks:
       - "11"
     scriptarguments:
       seconds:
-        simple: "10"
+        simple: "30"
     separatecontext: false
     view: |-
       {
