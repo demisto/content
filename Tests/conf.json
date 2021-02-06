@@ -7,6 +7,9 @@
             "playbookID": "Microsoft Teams Management - Test"
         },
         {
+            "playbookID": "SetIfEmpty - non-ascii chars - Test"
+        },
+        {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
