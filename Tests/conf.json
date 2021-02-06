@@ -3249,7 +3249,6 @@
         "Polygon-Test": "Issue 29060",
         "AttackIQ - Test": "Issue 29774",
         "AWS-securityhub Test": "Issue 29796",
-        "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
         "Azure Compute - Test": "Issue 28056",
         "forcepoint test": "Issue 28043",
         "CanaryTools Test": "Issue 30796",
