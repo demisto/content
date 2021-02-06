@@ -51,16 +51,17 @@ script: >
       return keysToKeepObj;
   }
 
-  function createContext(keysToKeepObj) {
+  function createContextOutput(keysToKeepObj) {
       context = {};
       for (var key in keysToKeepObj) {
+          // remove lists representation keys e.g: a.b.[0]
           newKey = key.replace(/.\[\d+\]/g, '');
 
           while(newKey != newKey.replace(/.\[\d+\]/g, '')){
               newKey = newKey.replace(/.\[\d+\]/g, '')
           }
 
-          if (context[newKey]) {
+          if (newKey in context) {
               if (!Array.isArray(context[newKey])) {
                   context[newKey] = [context[newKey]]
               }
@@ -102,7 +103,7 @@ script: >
           message = "Context cleared";
       }
 
-      context = createContext(keysToKeepObj);
+      context = createContextOutput(keysToKeepObj);
 
       return {
           Type: entryTypes.note,
