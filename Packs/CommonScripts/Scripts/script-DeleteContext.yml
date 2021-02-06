@@ -1,7 +1,7 @@
 commonfields:
-  id: DeleteContext-test
+  id: DeleteContext
   version: -1
-name: DeleteContext-test
+name: DeleteContext
 script: >
   function errorEntry(text) {
       return  {
@@ -53,7 +53,7 @@ script: >
 
   function createContext(keysToKeepObj) {
       context = {};
-      for (key in keysToKeepObj) {
+      for (var key in keysToKeepObj) {
           newKey = key.replace(/.\[\d+\]/g, '');
 
           while(newKey != newKey.replace(/.\[\d+\]/g, '')){
@@ -157,31 +157,7 @@ script: >
       if (isSubPlaybookKey) {
         key = 'subplaybook-${currentPlaybookID}.' + key;
       }
-
-      var result = executeCommand('delContext', {key: key});
-
-      if(!result || result.type === entryTypes.error) {
-          errorsStr = errorsStr + "\n" + result.Contents;
-      }
-
-      var message;
-      if (errorsStr) {
-          message = "Context cleared with the following errors:" + errorsStr;
-      } else {
-          message = "Context cleared";
-      }
-
-      var keysToKeepObj = getKeysToKeep(args)
-      context = createContext(keysToKeepObj);
-
-      return {
-          Type: entryTypes.note,
-          Contents: message,
-          ContentsFormat: formats.json,
-          HumanReadable: message,
-          ReadableContentsFormat: formats.markdown,
-          EntryContext: context
-      };
+      return executeCommand('delContext', {key: key});
   }
 type: javascript
 tags:
@@ -206,7 +182,7 @@ args:
   - "auto"
   description: Specify "yes" if the context key is inside of a sub-playbook. Use **auto** to delete either from the sub-playbook context (if the playbook is called as a sub-playbook) or from the global context (if the playbook is the top playbook).
 - name: keysToKeep
-  description: Context keys to keep when deleting all context. Supports comma separated values and nested objects, e.g. URL.Data,IP.Address
+  description: Context keys to keep when deleting all context. Supports comma separated values and nested objects, e.g. URL.Data,IP.Address.
 - name: index
   description: index to delete in case 'key' argument was specified
 scripttarget: 0
