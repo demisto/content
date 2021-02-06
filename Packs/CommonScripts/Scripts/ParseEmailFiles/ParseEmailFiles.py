@@ -3588,7 +3588,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             # if we are outter email is a singed attachment it is a wrapper and we don't return the output of
                             # this inner email as it will be returned as part of the main result
                             if 'multipart/signed' not in eml.get_content_type():
-                                return_outputs(readable_output=(inner_eml, attachment_file_name, file_name),
+                                return_outputs(readable_output=data_to_md(inner_eml, attachment_file_name, file_name),
                                                outputs=None)
                         finally:
                             os.remove(f.name)
