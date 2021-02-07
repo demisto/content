@@ -373,7 +373,7 @@ def get_instances_ips_and_names(tests_settings):
     if tests_settings.server:
         return [tests_settings.server]
     env_json = load_env_results_json()
-    instances_ips = [(env.get('Role'), env.get('InstanceDNS')) for env in env_json]
+    instances_ips = [(env.get('Role'), f"{env.get('InstanceDNS')}:{env.get('TunnelPort')}") for env in env_json]
     return instances_ips
 
 
