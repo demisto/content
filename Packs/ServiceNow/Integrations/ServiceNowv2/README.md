@@ -642,8 +642,8 @@ Retrieves ticket information according to the supplied query.
 | ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
 | query | The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html | Optional | 
 | offset | Starting record index to begin retrieving records from. | Optional | 
-| additional_fields | Additional fields to present in the War Room entry and incident context. | Optional | 
-| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&amp;sysparm_exclude_reference_link=True" | Optional | 
+| additional_fields | Additional fields to present in the War Room entry and incident context. | Optional || system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True" | Optional | 
+| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True" | Optional | 
 
 
 #### Context Output
@@ -952,7 +952,7 @@ Queries the specified table in ServiceNow.
 | query | The query to run. For more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html | Optional | 
 | fields | Comma-separated list of table fields to display and output to the context, for example: name,tag,company. ID field is added by default. | Optional | 
 | offset | Starting record index to begin retrieving records from. | Optional | 
-| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&amp;sysparm_exclude_reference_link=True" | Optional | 
+| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True" | Optional | 
 
 
 #### Context Output
