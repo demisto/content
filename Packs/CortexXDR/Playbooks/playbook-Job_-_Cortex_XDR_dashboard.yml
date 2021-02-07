@@ -1,0 +1,149 @@
+id: Job - Cortex XDR dashboard
+version: -1
+name: Job - Cortex XDR dashboard
+description: "Use this job to collect Cortex XDR incident data and store it into a\
+  \ related XSOAR list for the use of Cortex XDR dashboard widgets.\n\n- To configure\
+  \ the job correctly:\n- Create a new recurring job.\n- Configure the recurring schedule(Every\
+  \ 10 minutes is recommended).\n- Add a name.\n- Configure this playbook as the job\
+  \ playbook.\n\nJob configuration and detailed information \nhttps://xsoar.pan.dev/docs/incidents/incident-jobs\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7f7698df-3474-4cb5-80e6-3f9b1b2c5b7c
+    type: start
+    task:
+      id: 7f7698df-3474-4cb5-80e6-3f9b1b2c5b7c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 9eee75e1-e81c-468b-8174-bc233cf05587
+    type: regular
+    task:
+      id: 9eee75e1-e81c-468b-8174-bc233cf05587
+      version: -1
+      name: Collect Cortex XDR incident data
+      description: The script creates lists with statistic data for the widgets inside
+        Cortex XDR dashboard.
+      scriptName: XDRCreateDashboardData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      includeClosedIncidents: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 6909142b-8c2b-4b26-85bf-f8a3789a2eb3
+    type: title
+    task:
+      id: 6909142b-8c2b-4b26-85bf-f8a3789a2eb3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e5e6e72b-5ea0-4e1d-8083-64cfcb2dc6bf
+    type: regular
+    task:
+      id: e5e6e72b-5ea0-4e1d-8083-64cfcb2dc6bf
+      version: -1
+      name: Close Job
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      incomingmirrorerror: {}
+      outgoingmirrorerror: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 565,
+        "width": 380,
+        "x": 450,
+        "y": 120
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
