@@ -1295,7 +1295,7 @@ def test_retrieve_file_details_command(requests_mock):
     }
 
     requests_mock.post(f'{XDR_URL}/public_api/v1/actions/file_retrieval_details/', json=data)
-    requests_mock.post(f'{XDR_URL}', json=data1)
+    requests_mock.get(f'{XDR_URL}', json=data1)
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
@@ -1728,3 +1728,59 @@ def test_get_modified_remote_data_command(requests_mock):
     response = get_modified_remote_data_command(client, args)
 
     assert response.modified_incident_ids == ['1', '2']
+
+
+def test_create_account_context_with_data():
+    """
+    Given:
+        - get_endpoints command
+    When
+        - creating the account context from the response succeeds - which means there exists both domain and user in the
+         response.
+    Then
+        - verify the context is created successfully.
+    """
+    from CortexXDRIR import create_account_context
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    endpoints_list = get_endpoints_response.get('reply').get('endpoints')
+    endpoints_list[0]['domain'] = 'test.domain'
+
+    account_context = create_account_context(endpoints_list)
+
+    assert account_context == [{'Username': 'ec2-user', 'Domain': 'test.domain'}]
+
+
+def test_create_account_context_no_domain():
+    """
+    Given:
+        - get_endpoints command
+    When
+        -  the endpoint is missing a domain - which means an account context can't be created.
+    Then
+        - verify the account context is an empty list and the method is finished with no errors.
+    """
+    from CortexXDRIR import create_account_context
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    endpoints_list = get_endpoints_response.get('reply').get('endpoints')
+    account_context = create_account_context(endpoints_list)
+
+    assert account_context == []
+
+
+def test_create_account_context_user_is_none():
+    """
+    Given:
+        - get_endpoints command
+    When
+        -  the user value is None - which means an account context can't be created.
+    Then
+        - verify the account context is an empty list and the method is finished with no errors.
+    """
+    from CortexXDRIR import create_account_context
+    get_endpoints_response = load_test_data('./test_data/get_endpoints.json')
+    endpoints_list = get_endpoints_response.get('reply').get('endpoints')
+    endpoints_list[0]['user'] = None
+
+    account_context = create_account_context(endpoints_list)
+
+    assert account_context == []
