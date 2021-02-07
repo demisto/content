@@ -1,11 +1,11 @@
 id: PS-Remote Get Network Traffic
 version: -1
 name: PS-Remote Get Network Traffic
-description: This playbook leverages the windows builtin Powershell and WinRM capabilities
-  to connect to a Windows host and then the Netsh tool to create an ETL file which
-  is the equivalent of a Wireshark PCAP file by using PS-Remote integration. After
+description: This playbook leverages the Windows built-in PowerShell and WinRM capabilities
+  to connect to a Windows host. It then connectst to the Netsh tool to create an ETL file which
+  is the equivalent of a Wireshark PCAP file by using the PS-Remote integration. After
   receiving the resultant ETL, XSOAR will be able to convert the ETL to a PCAP file
-  to be parsed and enriched later on. eview Microsoft documentation for how to use ETL filters https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj129382(v=ws.11)#using-filters-to-limit-etl-trace-file-details
+  to be parsed and enriched later. Review the Microsoft documentation for how to use ETL filters (https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2012-r2-and-2012/jj129382(v=ws.11)#using-filters-to-limit-etl-trace-file-details).
 starttaskid: "0"
 tasks:
   "0":
@@ -43,8 +43,8 @@ tasks:
       id: 3d412b04-16a0-4b5f-8b0f-08eb4e46478c
       version: -1
       name: Is PowerShell Remoting enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if the integration brand is available. Otherwise returns
+        'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -143,8 +143,8 @@ tasks:
       id: 708d6c10-eeef-48ef-8d71-133fbd9c4e88
       version: -1
       name: PS-Remote start capture
-      description: This command starts the recording of an ETL file on a windows endpoint.
-        ETL is just like a PCAP file which is created by the Windows Netsh command.
+      description: This command starts the recording of an ETL file on a Windows endpoint.
+        ETL is similar to a PCAP file which is created by the Windows Netsh command.
       script: '|||ps-remote-etl-create-start'
       type: regular
       iscommand: true
@@ -185,7 +185,7 @@ tasks:
       id: e9dfb6c7-aaa3-4801-85df-fd8d2c59083d
       version: -1
       name: PS-Remote stop capture
-      description: This command ends the recording of an ETL file on a windows endpoint.
+      description: This command ends the recording of an ETL file on a Windows endpoint.
       script: '|||ps-remote-etl-create-stop'
       type: regular
       iscommand: true
@@ -258,7 +258,7 @@ tasks:
     task:
       id: 379481fb-392e-4c4d-89b9-a01b0687aa84
       version: -1
-      name: Convert ETL to PCAP
+      name: Convert ETL to PCAP.
       scriptName: Etl2Pcap
       type: regular
       iscommand: false
@@ -292,7 +292,7 @@ tasks:
     note: false
     evidencedata:
       description:
-        simple: A PCAP file acquired from a host
+        simple: A PCAP file acquired from a host.
       tags:
         simple: PCAP
       customfields: {}
@@ -308,7 +308,7 @@ tasks:
       id: 31df3aba-23a1-4d17-8c5e-f971330de227
       version: -1
       name: Sleep
-      description: Sleep for X seconds
+      description: Sleep for X seconds.
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -339,7 +339,7 @@ tasks:
     task:
       id: 12258569-d5e3-403a-8e6f-de4010c7bc48
       version: -1
-      name: Was file zipped?
+      name: Was the file zipped?
       type: condition
       iscommand: false
       brand: ""
@@ -467,7 +467,7 @@ tasks:
       version: -1
       name: Mark and tag PCAP
       description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+        Adds provided entries to the incident Evidence Board. In a playbook, can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
       scriptName: AddEvidence
       type: regular
       iscommand: false
@@ -477,9 +477,9 @@ tasks:
       - "12"
     scriptarguments:
       desc:
-        simple: A PCAP file acquired from a host
+        simple: A PCAP file acquired from a host.
       description:
-        simple: A PCAP file acquired from a host
+        simple: A PCAP file acquired from a host.
       entryIDs: {}
       occurred: {}
       tags:
@@ -513,28 +513,28 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: The host name for which to create the ETL file. For example testpc01
+  description: The hostname from which to create the ETL file. For example, testpc01.
   playbookInputQuery: null
 - key: EtlSizeLimit
   value:
     simple: "10"
   required: false
-  description: The maximum file size for the ETL. Once the file has reached this size
-    the capute will stop. For example 10MB. The default size is 10MB
+  description: The maximum file size for the ETL. Once the file has reached this size,
+    the capture will stop. For example, 10MB. The default size is 10MB.
   playbookInputQuery: null
 - key: EtlPath
   value:
     simple: c:\etl.etl
   required: false
   description: |-
-    The path on the hostname on which to create the ETL file. The default path will be c:\etl.etl
-    In case you use the AddHostNameToFile input as true the file downloaded to XSOAR will be comprised of the hostname.
+    The path on the hostname on which to create the ETL file. The default path will be c:\etl.etl.
+    If the AddHostNameToFile input is "true", the file downloaded to XSOAR will contain the hostname.
   playbookInputQuery: null
 - key: EtlFilter
   value: {}
   required: false
-  description: The filter to apply when creating the ETL file. For example IPv4.Address=1.1.1.1
-    to capture traffic just from the 1.1.1.1 IP address. If no filter is specified
+  description: The filter to apply when creating the ETL file. For example, IPv4.Address=1.1.1.1
+    to capture traffic just from the 1.1.1.1 IP address. If no filter is specified,
     all traffic will be recorded.
   playbookInputQuery: null
 - key: ETlTimeToRecord
@@ -547,14 +547,14 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Specify true to zip the ETL file before sending it to XSOAR.
+  description: Specify "true" to zip the ETL file before sending it to XSOAR.
   playbookInputQuery: null
 - key: AddHostNameToFile
   value:
     simple: "true"
   required: false
-  description: Specify true for the downloaded file name to be comprised of the host
-    name or false  to keep the file name as configured in the FilePath argument.
+  description: Specify "true" for the downloaded filename to contain the hostname,
+    or "false" to keep the filename as configured in the FilePath argument.
   playbookInputQuery: null
 outputs:
 - contextPath: PcapDetails
