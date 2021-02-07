@@ -46,7 +46,7 @@ def alexa_domain_command():
         rank = root.find(".//POPULARITY").attrib['TEXT']  # type: ignore
     except:  # noqa
         rank = alexa_fallback_command(domain)
-    if int(rank) <= BENIGN:
+    if int(rank) <= BENIGN and int(rank) > 0:
         dbot_score = 1
         dbot_score_text = 'good'
     elif int(rank) > THRESHOLD:

@@ -92,7 +92,7 @@ script:
       name: fields
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The maximum number of relations returned (default: 50).'
       isArray: false
@@ -135,7 +135,7 @@ script:
       name: class
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: ServiceNow
       description: 'The discovery source value. You can see all available values from
         the sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci.
@@ -171,7 +171,7 @@ script:
       name: fields
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The maximum number of relations returned (default: 50).'
       isArray: false
@@ -220,7 +220,7 @@ script:
       name: sys_id
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: ServiceNow
       description: 'The discovery source value. You can see all available values from
         sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci.
@@ -243,7 +243,7 @@ script:
       name: fields
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The maximum number of relations returned (default: 50).'
       isArray: false
@@ -292,7 +292,7 @@ script:
       name: sys_id
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: ServiceNow
       description: 'The discovery source value. You can see all available values from
         sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci.
@@ -321,7 +321,7 @@ script:
       name: fields
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The maximum number of relations returned (default: 50).'
       isArray: false
@@ -382,7 +382,7 @@ script:
       name: fields
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The maximum number of relations returned (default: 50).'
       isArray: false
