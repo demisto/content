@@ -2229,7 +2229,7 @@ Retrieve the results of a script execution action.
                     "domain": "WORKGROUP",
                     "endpoint_id": "23a86310665d413a958926fce5b794b3",
                     "endpoint_ip_address": [
-                        "192.168.1.69"
+                        "196.168.0.1"
                     ],
                     "endpoint_name": "DESKTOP-S2455R8",
                     "endpoint_status": "STATUS_010_CONNECTED",
@@ -2250,7 +2250,7 @@ Retrieve the results of a script execution action.
 >### Script Execution Results - 3641
 >|_return_value|domain|endpoint_id|endpoint_ip_address|endpoint_name|endpoint_status|execution_status|failed_files|retrieved_files|standard_output|
 >|---|---|---|---|---|---|---|---|---|---|
->| false | WORKGROUP | 23a86310665d413a958926fce5b794b3 | 192.168.1.69 | DESKTOP-S2455R8 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY | 0 | 0 | Input path <test.txt> not valid, must be an absolute path |
+>| false | WORKGROUP | 23a86310665d413a958926fce5b794b3 | 196.168.0.1 | DESKTOP-S2455R8 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY | 0 | 0 | Input path \<test.txt\> not valid, must be an absolute path |
 
 ### xdr-get-script-execution-result-files
 ***
