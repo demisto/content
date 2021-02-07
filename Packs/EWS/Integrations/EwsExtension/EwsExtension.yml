@@ -1673,7 +1673,7 @@ script:
       secret: false
     outputs:
       - contextPath: EWS.MailboxAuditBypassAssociation.AuditBypassEnabled
-        description: ''
+        description: Whatever the audit bypass is enabled.
         type: Boolean
       - contextPath: EWS.MailboxAuditBypassAssociation.DistinguishedName
         description: ''
@@ -1682,16 +1682,16 @@ script:
         description: ''
         type: String
       - contextPath: EWS.MailboxAuditBypassAssociation.ExchangeVersion
-        description: ''
+        description: The version of the exchanged server.
         type: String
       - contextPath: EWS.MailboxAuditBypassAssociation.Guid
-        description: ''
+        description: A unique identifier.
         type: String
       - contextPath: EWS.MailboxAuditBypassAssociation.Id
-        description: ''
+        description: A unique identifier.
         type: String
       - contextPath: EWS.MailboxAuditBypassAssociation.Identity
-        description: ''
+        description: The unique identity.
         type: String
       - contextPath: EWS.MailboxAuditBypassAssociation.IsValid
         description: ''
