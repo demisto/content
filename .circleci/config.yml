@@ -1033,6 +1033,9 @@ jobs:
               - master
               - << pipeline.git.branch >>
           steps:
+            - set-instance-role-env-variable:
+                instance_role: Server Master
+            - start-tunnel
             - run:
                 name: Upload Packs To Marketplace Storage
                 command: |
