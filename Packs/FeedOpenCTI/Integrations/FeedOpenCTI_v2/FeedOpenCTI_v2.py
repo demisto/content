@@ -65,7 +65,7 @@ def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: O
     """
     indicator_type = build_indicator_list(indicator_type)
 
-    observables = client.stix_observable.list(types=indicator_type, first=limit, after=last_run_id, withPagination=True)
+    observables = client.stix_cyber_observable.list(types=indicator_type, first=limit, after=last_run_id, withPagination=True)
     new_last_run = observables.get('pagination').get('endCursor')
 
     indicators = []
