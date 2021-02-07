@@ -235,8 +235,8 @@ def create_email_summary_hr(incidents_df):
     clean_email_body = incidents_df.iloc[0][PREPROCESSED_EMAIL_BODY]
     email_summary += '\n' + summarize_email_body(clean_email_body, clean_email_subject)
     for word in KEYWORDS:
-        email_summary = re.sub(r'(?<!\w)({})(?!\w)'.format(word), '**{}**'.format(word), email_summary,
-                               flags=re.IGNORECASE)
+        for cased_word in [word.lower(), word.title(), word.upper()]:
+            email_summary = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word), email_summary)
     hr_email_summary += '\n\n' + '### Current Incident\'s Email Summary'
     hr_email_summary += '\n ##### ' + email_summary
     context = add_context_key(create_context_for_campaign_details(campaign_found=True, incidents_df=incidents_df))
