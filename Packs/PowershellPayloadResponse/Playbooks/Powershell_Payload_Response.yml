@@ -2,6 +2,8 @@ id: Powershell Payload Response
 version: 23
 vcShouldKeepItemLegacyProdMachine: false
 name: Powershell Payload Response
+description: 'The Powershell Payload Response playbook is designed to be used when file payload executions
+are detected from an endpoint machines Powershell and begins the remediation process.'
 starttaskid: "0"
 tasks:
   "0":
@@ -1650,4 +1652,5 @@ inputs:
   required: false
   description: File Path of the Executed Payload.
   playbookInputQuery: null
+fromversion: 5.0.0
 outputs: []
