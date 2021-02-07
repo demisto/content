@@ -1,9 +1,9 @@
 id: PS-Remote Get MFT
 version: -1
 name: PS-Remote Get MFT
-description: This playbook leverages the windows builtin Powershell and WinRM capabilities
+description: This playbook leverages the Windows built-in PowerShell and WinRM capabilities
   to connect to a Windows host to acquire and export the MFT (Master File Table) as
-  a forensic evidence for further analysis.
+  forensic evidence for further analysis.
 starttaskid: "0"
 tasks:
   "0":
@@ -217,7 +217,7 @@ tasks:
     task:
       id: 6cd97deb-540a-48e6-8959-2af17a02788f
       version: -1
-      name: Was a MFT file path specified?
+      name: Was an MFT file path specified?
       type: condition
       iscommand: false
       brand: ""
@@ -256,7 +256,7 @@ tasks:
       id: 36ec8072-289b-4b06-8d5b-526be956e01a
       version: -1
       name: Sleep
-      description: Sleep for X seconds
+      description: Sleep for X seconds.
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -329,7 +329,7 @@ tasks:
       id: 0edb3fc1-2f10-40ab-844f-b9132750f91b
       version: -1
       name: Unzip file
-      description: Unzip a file using fileName or entryID to specify a file. Unzipped
+      description: Unzip a file using the fileName or entryID to specify a file. Unzipped
         files will be loaded to the War Room and names will be put into the context.
       scriptName: UnzipFile
       type: regular
@@ -413,7 +413,7 @@ tasks:
       version: -1
       name: Mark and tag MFT
       description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+        Adds provided entries to the incident Evidence Board. In a playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments).
       scriptName: AddEvidence
       type: regular
       iscommand: false
@@ -423,9 +423,9 @@ tasks:
       - "14"
     scriptarguments:
       desc:
-        simple: A MFT file acquired from a host
+        simple: An MFT file acquired from a host.
       description:
-        simple: A MFT file acquired from a host
+        simple: An MFT file acquired from a host.
       tags:
         simple: MFT
     separatecontext: false
@@ -457,35 +457,34 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: The host name for which to export the registry file. For example testpc01
+  description: The hostname from which to export the registry file. For example, testpc01.
   playbookInputQuery: null
 - key: FilePath
   value:
     simple: c:\mft.mft
   required: false
   description: |-
-    The path on the hostname on which to create the MFT file. The default path will be c:\mft.mft
-    In case you use the AddHostNameToFile input as true the file downloaded to XSOAR will be comprised of the hostname.
+    The path on the host on which to create the MFT file. The default path will be c:\mft.mft.
+    If you the AddHostNameToFile input os "true", the file downloaded to XSOAR will contain the hostname.
   playbookInputQuery: null
 - key: VolumeForMft
   value:
     simple: c
   required: false
   description: |
-    Specify the volume for which to create the MFT, The default is c.
+    Specify the volume for which to create the MFT. The default is c.
   playbookInputQuery: null
 - key: ZipMft
   value:
     simple: "true"
   required: false
-  description: Specify true to zip the MFT file before sending it to XSOAR.
+  description: Specify "true" to zip the MFT file before sending it to XSOAR.
   playbookInputQuery: null
 - key: AddHostNameToFile
   value:
     simple: "true"
   required: false
-  description: Specify true for the downloaded file name to be comprised of the host
-    name or false  to keep the file name as configured in the FilePath argument.
+  description: Specify "true" for the downloaded filename to contain the hostname, or "false" to keep the file name as configured in the FilePath argument.
   playbookInputQuery: null
 outputs:
 - contextPath: MftDetails
