@@ -96,6 +96,8 @@ class TestConf(object):
         for integration in tested_integrations:
             try:
                 int_path = id_set__get_integration_file_path(id_set, integration)
+                if not int_path:
+                    continue
                 pack = tools.get_pack_name(int_path)
                 if pack:
                     packs.add(pack)
@@ -304,6 +306,8 @@ def id_set__get_integration_file_path(id_set, integration_id):
     for integration in id_set.get('integrations', []):
         if integration_id in integration.keys():
             return integration[integration_id]['file_path']
+        else:
+            logging.warning(f'Could not find path for integrations "{integration}"')
 
 
 def check_if_fetch_incidents_is_tested(missing_ids, integration_ids, id_set, conf, tests_set):
