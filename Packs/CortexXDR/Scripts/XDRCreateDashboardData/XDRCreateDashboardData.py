@@ -96,7 +96,7 @@ def main():
 
             # update all the lists for each incident
             for key, val in QUERY_TYPE_TO_KEY.items():
-                val = demisto.dt(context, QUERY_TYPE_TO_KEY[key])
+                val = demisto.dt(context, QUERY_TYPE_TO_KEY[key])  # type:list
                 if val:
                     update_xdr_list(val, xdr_data_lists[key], key, created_date)
 
