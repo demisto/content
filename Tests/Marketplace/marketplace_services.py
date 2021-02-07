@@ -1582,15 +1582,25 @@ class Pack(object):
         Returns:
             datetime: Pack created date.
         """
-        earliest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+        created_time = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
         changelog = self._get_changelog(index_folder_path)
+        metadata = self._get_metadata(index_folder_path)
+
+        if metadata:
+            created_time = metadata.get('created')
 
         if changelog:
             packs_earliest_release_notes = min(LooseVersion(ver) for ver in changelog)
             initial_changelog_version = changelog.get(packs_earliest_release_notes.vstring, {})
             earliest_changelog_released_date = initial_changelog_version.get('released')
 
-        return earliest_changelog_released_date
+        #TEST
+        earliest_changelog_released_date = None
+
+        if not created_time and earliest_changelog_released_date:
+            created_time = earliest_changelog_released_date
+
+        return created_time
 
     def _get_pack_update_date(self, index_folder_path, pack_was_modified):
         """ Gets the pack update date.
