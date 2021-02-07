@@ -1742,7 +1742,7 @@ script:
     description: Use the Get-User command to view existing user objects in your organization.
     execution: false
     name: ews-mailbox-audit-bypass-association-list
-  dockerimage: demisto/powershell-ubuntu:7.0.3.12001
+  dockerimage: demisto/powershell-ubuntu:7.1.1.16151
   feed: false
   isfetch: false
   longRunning: false
