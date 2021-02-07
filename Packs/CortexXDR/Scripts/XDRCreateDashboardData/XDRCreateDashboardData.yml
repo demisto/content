@@ -1,0 +1,17 @@
+commonfields:
+  id: XDRCreateDashboardData
+  version: -1
+comment: The script creates lists with statistic data for the widgets inside Cortex XDR dashboard.
+name: XDRCreateDashboardData
+script: ''
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.1.15759
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
