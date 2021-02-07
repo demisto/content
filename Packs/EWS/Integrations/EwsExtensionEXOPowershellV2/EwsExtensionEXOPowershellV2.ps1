@@ -17,9 +17,9 @@ class ExchangeOnlinePowershellV2Client {
         [SecureString]$password
     ) {
         $this.url = $url
-        $this.password = $password
-        $ByteArray = [System.Convert]::FromBase64String($certificate);
+        $ByteArray = [System.Convert]::FromBase64String($certificate)
         $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $password)
+
         $this.organization = $organization
         $this.app_id = $app_id
     }
@@ -252,7 +252,7 @@ function GetEXORecipientCommand {
     $limit = $kwargs.limit -as [int]
     $raw_response = $client.GetEXORecipient($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXORecipient(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Recipient(obj.Guid === val.Guid)" = $raw_response }
     return Write-Output $human_readable, $entry_context, $raw_response
 }
 
@@ -266,7 +266,7 @@ function GetEXORecipientPermissionCommand {
     $limit = $kwargs.limit -as [int]
     $raw_response = $client.GetEXORecipientPermission($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXORecipientPermission(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.RecipientPermission(obj.Guid === val.Guid)" = $raw_response }
     return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOMailBoxPermissionCommand {
@@ -279,7 +279,7 @@ function GetEXOMailBoxPermissionCommand {
     $raw_response = $client.GetEXOMailBoxPermission($identity)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{
-        "$script:INTEGRATION_ENTRY_CONTEXT.EXOMailboxPermission(obj.Identity === val.Identity)" = @{
+        "$script:INTEGRATION_ENTRY_CONTEXT.MailboxPermission(obj.Identity === val.Identity)" = @{
             "Identity" = $identity
             "Permission" = $raw_response
         }
@@ -297,7 +297,7 @@ function GetEXOMailBoxCommand {
     $raw_response = $client.GetEXOMailBox($identity, $limit)
     $human_readable = TableToMarkdown $raw_response "Results of $command"
     $entry_context = @{
-        "$script:INTEGRATION_ENTRY_CONTEXT.EXOMailbox(obj.Guid === val.Guid)" = $raw_response }
+        "$script:INTEGRATION_ENTRY_CONTEXT.Mailbox(obj.Guid === val.Guid)" = $raw_response }
     return Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetEXOCASMailboxCommand {
@@ -315,7 +315,7 @@ function GetEXOCASMailboxCommand {
             $identity, $organizational_unit, $primary_smtp_address, $user_principal_name, $limit
     )
     $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.EXOCASMailBox(obj.Guid === val.Guid)" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.CASMailbox(obj.Guid === val.Guid)" = $raw_response }
     return Write-Output $human_readable, $entry_context, $raw_response
 }
 function TestModuleCommand(){
@@ -351,19 +351,19 @@ function Main {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand
             }
-            "$script:COMMAND_PREFIX-get-cas-mailbox" {
+            "$script:COMMAND_PREFIX-cas-mailbox-list" {
                 ($human_readable, $entry_context, $raw_response) = GetEXOCASMailboxCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-mailbox" {
+            "$script:COMMAND_PREFIX-mailbox-list" {
                 ($human_readable, $entry_context, $raw_response) = GetEXOMailBoxCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-mailbox-permission" {
+            "$script:COMMAND_PREFIX-mailbox-permission-list" {
                 ($human_readable, $entry_context, $raw_response) = GetEXOMailBoxPermissionCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-recipient-permission" {
+            "$script:COMMAND_PREFIX-recipient-permission-get" {
                 ($human_readable, $entry_context, $raw_response) = GetEXORecipientPermissionCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-recipient" {
+            "$script:COMMAND_PREFIX-recipient-list" {
                 ($human_readable, $entry_context, $raw_response) = GetEXORecipientCommand $exo_client $command_arguments
             }
             default {
@@ -371,7 +371,7 @@ function Main {
             }
         }
         # Return results to Demisto Server
-        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        ReturnOutputs $human_readable $entry_context $raw_response
     }
     catch {
         $Demisto.debug(
@@ -385,7 +385,7 @@ function Main {
             Integration: $script:INTEGRATION_NAME
             Command: $command
             Arguments: $($command_arguments | ConvertTo-Json)
-            Error: $($_.Exception)" | Out-Null
+            Error: $($_.Exception)"
         }
         else {
             ReturnError $_.Exception.Message

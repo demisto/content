@@ -1,29 +1,51 @@
 args:
 - default: false
-  description: Password to protect the certificate
+  description: Password to protect the certificate.
   isArray: false
   name: password
   required: true
-  secret: false
+  secret: true
 - default: false
-  description: Number of days the certificate is available
+  description: Number of days the certificate is available.
   isArray: false
   name: days
   required: true
   secret: false
-  defaultvalue: 365
-comment: Creates a pfx certificate in base64 and a public key cert file
+  defaultValue: '365'
+- default: false
+  description: A friendly name to identify the certificate.
+  isArray: false
+  name: friendly_name
+  required: false
+  secret: false
+- default: false
+  description: Country of the certificate issuer.
+  isArray: false
+  name: country
+  required: false
+  secret: false
+- default: false
+  description: State or Province of the certificate issuer.
+  isArray: false
+  name: state_or_province
+  required: false
+  secret: false
+comment: Creates a public key (.cer file), a private key (.pfx) file and a base64 encoded private key
+  to use to authenticate to integration as EWS Extension Online Powershell v2.
 commonfields:
   id: CreateCertificate
   version: -1
 enabled: false
 name: CreateCertificate
 outputs:
-- contextPath: CreateCertificate.pfx_name
-  description: name of the pfx file
+- contextPath: Certificate.PublicKey
+  description: Use this file (.cer file) to add to the Azure app.
   type: String
-- contextPath: CreateCertificate.cert_name
-  description: name of the cert file
+- contextPath: Certificate.PrivateKey
+  description: The binary certificate (.pfx file)
+  type: String
+- contextPath: Certificate.PrivateKeyBase64
+  description: The private key encoded in Base64 to use in the integration parameter.
   type: String
 script: '-'
 system: false
@@ -31,5 +53,7 @@ tags:
 - basescript
 timeout: '0'
 type: powershell
-dockerimage: demisto/powershell-ubuntu:7.1.1-alpine-3.11-20210125
+dockerimage: devdemisto/pwsh-exchange:1.0.0.16239
 fromversion: 5.5.0
+tests:
+- No Tests

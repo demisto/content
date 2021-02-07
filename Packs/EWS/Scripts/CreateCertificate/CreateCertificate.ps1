@@ -1,5 +1,3 @@
-# Install-Module -Name SelfSignedCertificate -AllowPrerelease -Force
-
 function CreateCertificate
 {
     [CmdletBinding()]
@@ -11,26 +9,32 @@ function CreateCertificate
         [Parameter(Mandatory)]
         [int]$Days,
 
+        [String]$FriendlyName,
         [String]$Country,
-        [String]$StateOrProvince,
-        [String]$FriendlyName
+        [String]$StateOrProvince
     )
     $cmd_args = @{
         "OutCertPath" = $OutputPath
         "NotAfter" = (Get-Date).AddDays($Days)
         "Password" = $Password
+        "FriendlyName" = $FriendlyName
         "Country" = $Country
         "StateOrProvince" = $StateOrProvince
-        "FriendlyName" = $FriendlyName
     }
     @($cmd_args.keys) | % {
-    if (-not $cmd_args[$_]) { $cmd_args.Remove($_) }
+        if (-not$cmd_args[$_])
+        {
+            $cmd_args.Remove($_)
+        }
     }
-    New-SelfSignedCertificate @cmd_args
+    New-SelfSignedCertificate @cmd_args | Out-Null
 }
 
-function Main(){
+function Main()
+{
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Function')]
     $pfx_path = "certificate.pfx"
+    $b64_path = "certificateBase64.txt"
     $public_key_cert_path = "publickey.cer"
     $dargs = $demisto.Args()
     $plain_pass = $dargs.password
@@ -43,17 +47,16 @@ function Main(){
         # returns the base64 string
         $base_64_encoded = [System.Convert]::ToBase64String($File);
 
-        $b64_name = "certificateBase64.txt"
-
         $unique = $demisto.UniqueFile()
-        $b64_path = $demisto.Investigation().id + "_" + $unique
-        [System.IO.File]::WriteAllText($b64_path, $base_64_encoded)
+        $b64_temp_path = $demisto.Investigation().id + "_" + $unique
+        [System.IO.File]::WriteAllText($b64_temp_path, $base_64_encoded)
+
         $demisto.Results(
                 @{
                     "Contents" = ''
                     "ContentsFormat" = [EntryFormats]::text.ToString()
                     "Type" = 3
-                    "File" = $b64_name
+                    "File" = $b64_path
                     "FileID" = $unique
                 }
         )
@@ -63,7 +66,6 @@ function Main(){
         $public_key_content = [System.IO.File]::ReadAllText($public_key_cert_path)
         $public_key_temp_path = $demisto.Investigation().id + "_" + $unique
         [System.IO.File]::WriteAllText($public_key_temp_path, $public_key_content)
-
         $demisto.Results(
                 @{
                     "Contents" = ''
@@ -78,7 +80,6 @@ function Main(){
         $unique = $demisto.UniqueFile()
         $pfx_content_temp_path = $demisto.Investigation().id + "_" + $unique
         [System.IO.File]::WriteAllBytes($pfx_content_temp_path, $pfx_content)
-
         $demisto.Results(
                 @{
                     "Contents" = ''
@@ -88,11 +89,23 @@ function Main(){
                     "FileID" = $unique
                 }
         )
-    }finally{
-        rm $pfx_path
+        $context = @{
+            "Certificate" = @{
+                "PrivateKey" = $pfx_path
+                "PublicKey" = $public_key_cert_path
+                "PrivateKeyBase64" = $b64_path
+            }
+        }
+        $readable_output = TableToMarkdown $context.Certificate "Use those certificates to connect to the desired service."
+        ReturnOutputs $readable_output $context $null | Out-Null
+    }
+    finally
+    {
+        Remove-Item -Path $pfx_path, $public_key_cert_path | Out-Null
     }
 }
 
-if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT $Test) {
+if ($MyInvocation.ScriptName -notlike "*.tests.ps1" -AND -NOT$Test)
+{
     Main
 }
