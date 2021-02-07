@@ -1307,6 +1307,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
 
     if is_nightly:
         logging.debug('Collected the following tests:\n{0}\n'.format(tests_string))
+        logging.debug('Collected the following packs to install:\n{0}\n'.format(packs_to_install))
 
     else:
         if tests_string:
