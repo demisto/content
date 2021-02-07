@@ -90,16 +90,20 @@ script:
       description: The actor's IP address in IPV4 or IPV6 address format.
       type: String
     - contextPath: O365AuditLog.ApplicationId
-      description: The GUID that represents the application that is requesting the login. The display name can be looked up via the Azure Active Directory Graph API.
+      description: The GUID that represents the application that is requesting the
+        login. The display name can be looked up via the Azure Active Directory Graph
+        API.
       type: String
     - contextPath: O365AuditLog.AzureActiveDirectoryEventType
       description: The type of Azure AD event.
       type: Number
     - contextPath: O365AuditLog.ClientIP
-      description: The IP address of the device that was used when the activity was logged. The IP address is displayed in either an IPv4 or IPv6 address format.
+      description: The IP address of the device that was used when the activity was
+        logged. The IP address is displayed in either an IPv4 or IPv6 address format.
       type: String
     - contextPath: O365AuditLog.CreationTime
-      description: The date and time in Coordinated Universal Time (UTC) when the user performed the activity.
+      description: The date and time in Coordinated Universal Time (UTC) when the
+        user performed the activity.
       type: Date
     - contextPath: O365AuditLog.ExtendedProperties.Name
       description: Name of the extended properties.
@@ -111,46 +115,61 @@ script:
       description: The unique ID of the log.
       type: String
     - contextPath: O365AuditLog.InterSystemsId
-      description: The GUID that track the actions across components within the Office 365 service.
+      description: The GUID that track the actions across components within the Office
+        365 service.
       type: String
     - contextPath: O365AuditLog.IntraSystemId
       description: ''
       type: String
     - contextPath: O365AuditLog.LogonError
-      description: For failed logins, this property contains a user-readable description of the reason for the failed login.
+      description: For failed logins, this property contains a user-readable description
+        of the reason for the failed login.
       type: String
     - contextPath: O365AuditLog.ObjectId
-      description: For SharePoint and OneDrive for Business activity, the full path name of the file or folder accessed by the user. For Exchange admin audit logging, the name of the object that was modified by the cmdlet.
+      description: For SharePoint and OneDrive for Business activity, the full path
+        name of the file or folder accessed by the user. For Exchange admin audit
+        logging, the name of the object that was modified by the cmdlet.
       type: String
     - contextPath: O365AuditLog.Operation
       description: The operation used in the log.
       type: String
     - contextPath: O365AuditLog.OrganizationId
-      description: The GUID for your organization's Office 365 tenant. This value will always be the same for your organization, regardless of the Office 365 service in which it occurs.
+      description: The GUID for your organization's Office 365 tenant. This value
+        will always be the same for your organization, regardless of the Office 365
+        service in which it occurs.
       type: String
     - contextPath: O365AuditLog.RecordType
-      description: The type of operation indicated by the record. See the AuditLogRecordType table for details on the types of audit log records.
+      description: The type of operation indicated by the record. See the AuditLogRecordType
+        table for details on the types of audit log records.
       type: Number
     - contextPath: O365AuditLog.ResultStatus
-      description: Indicates whether the action (specified in the Operation property) was successful or not. Possible values are Succeeded, PartiallySucceeded, or Failed. For Exchange admin activity, the value is either True or False.
+      description: Indicates whether the action (specified in the Operation property)
+        was successful or not. Possible values are Succeeded, PartiallySucceeded,
+        or Failed. For Exchange admin activity, the value is either True or False.
       type: String
     - contextPath: O365AuditLog.SupportTicketId
-      description: The customer support ticket ID for the action in "act-on-behalf-of" situations.
+      description: The customer support ticket ID for the action in "act-on-behalf-of"
+        situations.
       type: String
     - contextPath: O365AuditLog.Target.ID
-      description: The user that the action (identified by the Operation property) was performed on.
+      description: The user that the action (identified by the Operation property)
+        was performed on.
       type: String
     - contextPath: O365AuditLog.Target.Type
-      description: The user that the action (identified by the Operation property) was performed on.
+      description: The user that the action (identified by the Operation property)
+        was performed on.
       type: Number
     - contextPath: O365AuditLog.TargetContextId
       description: The GUID of the organization that the targeted user belongs to.
       type: String
     - contextPath: O365AuditLog.UserId
-      description: Identifier (for example, email address) for the user who clicked on the URL.
+      description: Identifier (for example, email address) for the user who clicked
+        on the URL.
       type: String
     - contextPath: O365AuditLog.UserKey
-      description: An alternative ID for the user identified in the UserId property. For example, this property is populated with the passport unique ID (PUID) for events performed by users in SharePoint, OneDrive for Business, and Exchange.
+      description: An alternative ID for the user identified in the UserId property.
+        For example, this property is populated with the passport unique ID (PUID)
+        for events performed by users in SharePoint, OneDrive for Business, and Exchange.
       type: String
     - contextPath: O365AuditLog.UserType
       description: The type of user that performed the operation.
