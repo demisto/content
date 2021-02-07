@@ -10,8 +10,8 @@ from Tests.scripts.utils.content_packs_util import (is_pack_xsoar_supported,
                                                     should_test_content_pack, should_install_content_pack)
 
 
-# with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
-#     MOCK_ID_SET = json.load(mock_id_set_f)
+with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
+    MOCK_ID_SET = json.load(mock_id_set_f)
 
 
 @pytest.mark.parametrize("pack_metadata_content, expected", [

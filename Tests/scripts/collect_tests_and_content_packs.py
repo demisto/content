@@ -16,7 +16,6 @@ from typing import Dict, Tuple, Union, Optional
 import demisto_sdk.commands.common.tools as tools
 from demisto_sdk.commands.common.constants import *  # noqa: E402
 
-from Tests.Marketplace.marketplace_services import IGNORED_FILES
 from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata, \
     should_install_content_pack
@@ -760,12 +759,11 @@ def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     """Gets first occurrence of test conf with matching playbookID value to test_id with a valid from/to version"""
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
-    test_conf = next((test_conf for test_conf in test_conf_lst if (
-            test_conf.get('playbookID') == test_id
-            and is_runnable_in_server_version(
-        from_v=test_conf.get('fromversion', '0.0'),
-        server_v=server_version,
-        to_v=test_conf.get('toversion', '99.99.99')))), None)
+    test_conf = next((test_conf for test_conf in test_conf_lst if
+                      (test_conf.get('playbookID') == test_id and is_runnable_in_server_version(
+                          from_v=test_conf.get('fromversion', '0.0'),
+                          server_v=server_version,
+                          to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
