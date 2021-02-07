@@ -205,7 +205,7 @@
             "integrations": "CloudConvert",
             "playbookID": "CloudConvert-test",
             "fromversion": "5.0.0",
-            "timeout": 2000
+            "timeout": 3000
         },
         {
             "integrations": "Cisco Firepower",
