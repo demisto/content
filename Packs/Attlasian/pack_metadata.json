@@ -1,0 +1,14 @@
+{
+    "name": "Atlassian Cloud IT Admin",
+    "description": "Atlassian Cloud IT Admin Integration consists of set of endpoints that allows the customers to do the CRUD operation.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2021-02-01T11:04:01Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": []
+}
