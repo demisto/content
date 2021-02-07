@@ -1,0 +1,35 @@
+args:
+- default: false
+  description: Password to protect the certificate
+  isArray: false
+  name: password
+  required: true
+  secret: false
+- default: false
+  description: Number of days the certificate is available
+  isArray: false
+  name: days
+  required: true
+  secret: false
+  defaultvalue: 365
+comment: Creates a pfx certificate in base64 and a public key cert file
+commonfields:
+  id: CreateCertificate
+  version: -1
+enabled: false
+name: CreateCertificate
+outputs:
+- contextPath: CreateCertificate.pfx_name
+  description: name of the pfx file
+  type: String
+- contextPath: CreateCertificate.cert_name
+  description: name of the cert file
+  type: String
+script: '-'
+system: false
+tags:
+- basescript
+timeout: '0'
+type: powershell
+dockerimage: demisto/powershell-ubuntu:7.1.1-alpine-3.11-20210125
+fromversion: 5.5.0
