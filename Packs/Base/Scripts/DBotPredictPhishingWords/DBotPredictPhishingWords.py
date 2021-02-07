@@ -83,9 +83,9 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     negative_words = [w for w in negative_words if w.isalnum()]
     highlighted_text_markdown = tokenized_text_result['originalText'].strip()
     for word in positive_words:
-        highlighted_text_markdown = re.sub(r'(?<!\w)({})(?!\w)'.format(word), '**{}**'.format(word),
-                                           highlighted_text_markdown,
-                                           flags=re.IGNORECASE)
+        for cased_word in [word.lower(), word.title(), word.upper()]:
+            highlighted_text_markdown = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word),
+                                               highlighted_text_markdown)
     highlighted_text_markdown = re.sub(r'\n+', '\n', highlighted_text_markdown)
     explain_result['PositiveWords'] = [w.lower() for w in positive_words]
     explain_result['NegativeWords'] = [w.lower() for w in negative_words]
