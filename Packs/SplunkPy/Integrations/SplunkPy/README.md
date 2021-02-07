@@ -78,17 +78,17 @@ The `Select Schema` option retrieves possible objects, even if they are not the 
 This enables you to map fields for an incident without having to generate a new alert or incident just for the sake of mapping.
 The `get-mapping-fields` command can be executed in the Playground to test and review the list of sample objects that are returned under the current configuration.
 
-### Mapping Splunk CIM fields using Select Schema
-This integration supports the `Select Schema` feature of XSOAR 6.0 by providing the `get-mapping-fields` command. 
-When creating a new field Mapping for fetched incidents, the `Pull Instances` option retrieves current alerts which can be clicked to visually map fields.
-If the user has configured the `Use CIM Schemas for Mapping` parameter then the `Select Schema` option retrieves fields based Splunk CIM.
-For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
-The CIM mapping fields implemented in this integration are of 4.18.0 version.
-
 To use this feature, you must set several integration instance parameters:
  - `Fetch notable events ES query` - The query used for fetching new incidents. `Select Schema` will run a modified version of this query to get the object samples, so it is important to have the correct query here. 
  - `Event Type Field` - The name of the field that contains the type of the event or alert. The default value is `source` which for `Notable Events` will contains the rule name. However you may choose any custom field that suits this purpose.
  - `First fetch timestamp` - The time scope of objects to be pulled. You may choose to go back further in time to include samples for alert types that haven't triggered recently - so long as your Splunk server can handle the more intensive Search Job involved.
+
+### Mapping Splunk CIM fields using Select Schema
+This integration supports the `Select Schema` feature of XSOAR 6.0 by providing the `get-mapping-fields` command. 
+When creating a new field Mapping for fetched incidents, the `Pull Instances` option retrieves current alerts which can be clicked to visually map fields.
+If the user has configured the `Use CIM Schemas for Mapping` parameter then the `Select Schema` option retrieves fields based on Splunk CIM.
+For more information see: https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview
+The CIM mapping fields implemented in this integration are of 4.18.0 version.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

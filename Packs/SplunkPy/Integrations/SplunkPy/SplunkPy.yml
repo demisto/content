@@ -115,7 +115,7 @@ configuration:
   name: use_cim
   required: false
   type: 8
-  additionalinfo: Use this option to get the mapping fields by Splunk CIM. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. 
+  additionalinfo: If selected, when creating a mapper using the `Select Schema` feature (Supported from XSOAR V6.0), Splunk CIM field will be pulled. See https://docs.splunk.com/Documentation/CIM/4.18.0/User/Overview for more info. 
 description: Run queries on Splunk servers.
 display: SplunkPy
 name: SplunkPy
