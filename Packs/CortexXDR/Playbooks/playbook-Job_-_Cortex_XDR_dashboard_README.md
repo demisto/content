@@ -35,4 +35,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Job - Cortex XDR dashboard](Insert the link to your image here)
+![Job - Cortex XDR dashboard](https://raw.githubusercontent.com/demisto/content/4123f22947b742a3dfe63e4be0f6cfefb60cab23/Packs/CortexXDR/doc_files/Job_-_Cortex_XDR_dashboard.png)
