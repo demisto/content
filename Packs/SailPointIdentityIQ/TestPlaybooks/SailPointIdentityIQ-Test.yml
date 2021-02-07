@@ -598,10 +598,10 @@ tasks:
     skipunavailable: false
   '16':
     id: '16'
-    taskid: '16'
+    taskid: 7ae92da2-5a35-45ba-978e-20b798d145c7
     type: condition
     task:
-      id: '16'
+      id: 7ae92da2-5a35-45ba-978e-20b798d145c7
       version: -1
       name: Verify Outputs
       type: condition
