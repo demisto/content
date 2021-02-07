@@ -1,0 +1,53 @@
+{
+  "eventType": "Ips Events",
+  "events": [
+    {
+      "eventId": 3,
+      "occurred": "2020-08-10T06:30:58Z",
+      "srcIp": "0.0.0.0",
+      "srcPort": 64275,
+      "dstIp": "0.0.0.0",
+      "dstPort": 80,
+      "vlan": 0,
+      "signatureMatchCnt": 1,
+      "signatureIden": 85305165,
+      "signatureRev": 14,
+      "severity": 7,
+      "vmVerified": true,
+      "srcMac": "00:00:00:00:00:00",
+      "dstMac": "00:00:00:00:00:00",
+      "ruleName": "IPS-TEST-FIRE : Malicious Adobe PDF Download",
+      "sensorId": "fireeye-941918",
+      "cveId": null,
+      "actionTaken": 3,
+      "attackMode": "client",
+      "interfaceId": 19,
+      "protocol": 6,
+      "incidentId": null
+    },
+    {
+      "eventId": 4,
+      "occurred": "2020-08-10T06:30:58Z",
+      "srcIp": "0.0.0.0",
+      "srcPort": 64275,
+      "dstIp": "0.0.0.0",
+      "dstPort": 80,
+      "vlan": 0,
+      "signatureMatchCnt": 1,
+      "signatureIden": 85305165,
+      "signatureRev": 14,
+      "severity": 7,
+      "vmVerified": true,
+      "srcMac": "00:00:00:00:00:00",
+      "dstMac": "00:00:00:00:00:00",
+      "ruleName": "IPS-TEST-FIRE : Malicious Adobe PDF Download",
+      "sensorId": "fireeye-941918",
+      "cveId": null,
+      "actionTaken": 3,
+      "attackMode": "client",
+      "interfaceId": 19,
+      "protocol": 6,
+      "incidentId": null
+    }
+  ]
+}

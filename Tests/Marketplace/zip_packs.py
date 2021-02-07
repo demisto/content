@@ -206,7 +206,7 @@ def get_latest_pack_zip_from_blob(pack, blobs):
 
 
 def main():
-    install_logging('Zip Content Packs From GCS.log')
+    install_logging('Zip_Content_Packs_From_GCS.log')
     option = option_handler()
     storage_bucket_name = option.bucket_name
     zip_path = option.zip_path

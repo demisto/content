@@ -2,7 +2,7 @@
     "name": "DomainTools Iris",
     "description": "A threat intelligence and investigation platform for domain names, IP addresses, email addresses, name servers and so on.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.1.0",
     "author": "DomainTools",
     "url": "https://www.domaintools.com/support/",
     "email": "memberservices@domaintools.com",
@@ -12,5 +12,6 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "certification": "certified"
 }

@@ -1,3 +1,4 @@
+from typing import Dict
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -75,14 +76,28 @@ class Client(BaseClient):
 
         return parameter_conditions
 
-    def parse_action_parameters(self, parameters):
-        parameters = parameters.split(';')
-        parameter_conditions = []
-        for param in parameters:
-            parameter_conditions.append({
-                'key': param.split('=')[0],
-                'value': param.split('=')[1]})
+    def parse_action_parameters(self, parameters: str) -> List[Any]:
+        """
+        Receives a string representing a key=value list separated by ';', and returns them as a list of dictionaries
+        Args:
+            parameters (str): string which contains keys and values
 
+        Returns:
+            parameter_conditions (List): list of dictionaries
+        """
+        parameters = parameters.split(';')
+        parameter_conditions: List[Dict[str, str]] = list()
+        add_to_the_previous_pram = ''
+        # Goes over the parameters from the end and any param that does not contain a key and value is added to the previous param
+        for param in reversed(parameters):
+            param += add_to_the_previous_pram
+            add_to_the_previous_pram = ''
+            if '=' not in param or param.startswith('='):
+                add_to_the_previous_pram = f';{param}'
+                continue
+            parameter_conditions.insert(0, {
+                'key': param.split('=', 1)[0],
+                'value': param.split('=', 1)[1]})
         return parameter_conditions
 
     def add_parameters_to_question(self, question_response, parameters):

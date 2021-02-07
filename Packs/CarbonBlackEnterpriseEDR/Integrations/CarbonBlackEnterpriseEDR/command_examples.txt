@@ -1,0 +1,3 @@
+!cb-eedr-process-search process_name="vmtoolsd.exe" limit=10
+!cb-eedr-process-search-results job_id="99aad740-3903-4148-a5e7-7b5648794862"
+!cb-eedr-events-by-process-get process_guid="7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43" event_type="modload" start_time="1 month"

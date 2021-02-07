@@ -110,8 +110,13 @@ def download_email_command():
 
     response = download_email(message_id)
     parsed_response = response.replace('<br/>', '\n')
-    auth_index = parsed_response.index('Authentication')
-    pre_index = parsed_response.index('</PRE>')
+    try:
+        auth_index = parsed_response.index('Authentication')
+        pre_index = parsed_response.index('</PRE>')
+
+    except ValueError:
+        return_error('Could not extract email content from the server response:\n{}'.format(parsed_response))
+
     eml_content = parsed_response[auth_index:pre_index]
     file_name = message_id + '.eml'
     demisto.results(fileResult(file_name, eml_content))

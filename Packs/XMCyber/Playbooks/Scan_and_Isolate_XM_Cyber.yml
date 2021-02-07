@@ -1,0 +1,498 @@
+id: Scan and Isolate - XM Cyber
+version: -1
+fromversion: 6.0.0
+name: Scan and Isolate - XM Cyber
+description: An example of playbook using data from XM Cyber to help decide about scanning and isolating a threat
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1a23d67b-eb97-498e-8298-63dfee60a9cd
+    type: start
+    task:
+      id: 1a23d67b-eb97-498e-8298-63dfee60a9cd
+      version: -1
+      name: ""
+      description: Start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 20b96c38-a6c2-43a5-8933-3168f6d77042
+    type: condition
+    task:
+      id: 20b96c38-a6c2-43a5-8933-3168f6d77042
+      version: -1
+      description: Based on XM Cyber enrichment was there an entity with a complexity level of low of higher
+      name: is entity at risk?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: incident.xmcyberaveragecomplexitylevel
+            iscontext: true
+          right:
+            value:
+              simple: low, medium, high
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7da8389c-2be0-48db-81fd-32dc38f1a794
+    type: condition
+    task:
+      id: 7da8389c-2be0-48db-81fd-32dc38f1a794
+      version: -1
+      name: Are critical assets at risk
+      type: condition
+      description: Based on XM Cyber enrichment, is there at least one critical asset at risk from this entity 
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: incident.xmcybercriticalassetsatrisk
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2223e2c3-b944-4547-8ff4-df31cd1da516
+    type: title
+    task:
+      id: 2223e2c3-b944-4547-8ff4-df31cd1da516
+      version: -1
+      name: Nothing to see here
+      description: No risk found
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 78381ffe-69de-413a-8d81-05957751506e
+    type: playbook
+    task:
+      id: 78381ffe-69de-413a-8d81-05957751506e
+      version: -1
+      name: Scan Assets - Nexpose
+      playbookName: Scan Assets - Nexpose
+      description: Scan Assets - Nexpose
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      HostNames:
+        simple: ${incident.xmcyberdisplayname}
+      IPs:
+        simple: ${IP.Address}
+      Name: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: c3b11eb8-723d-4957-808c-15dfcac41b1c
+    type: title
+    task:
+      id: c3b11eb8-723d-4957-808c-15dfcac41b1c
+      version: -1
+      name: Scan
+      type: title
+      description: Scan
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: f987f01d-410f-4225-846d-43af8b76ed52
+    type: condition
+    task:
+      id: f987f01d-410f-4225-846d-43af8b76ed52
+      version: -1
+      name: Is Vulnerable
+      description: Was the scan able to find a vulnerability on this host?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: Nexpose.Scan.Vulnerabilities.Total
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d0c204e2-18a3-4628-8ac2-b86a077815a9
+    type: title
+    task:
+      id: d0c204e2-18a3-4628-8ac2-b86a077815a9
+      version: -1
+      name: Isolate
+      type: title
+      iscommand: false
+      brand: ""
+      description: Isolate
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 80ff5803-6012-4a8a-8311-9ec648a9662f
+    type: condition
+    task:
+      id: 80ff5803-6012-4a8a-8311-9ec648a9662f
+      version: -1
+      name: Isolate?
+      description: Isolate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "18"
+      "Yes":
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject: null
+      body:
+        simple: Isolate this endpoint?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 6dd39c30-c6c2-46b7-85ff-0a4a2386044b
+    type: title
+    task:
+      id: 6dd39c30-c6c2-46b7-85ff-0a4a2386044b
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: c2ea9077-c256-48f1-8c48-7a4c1535f70f
+    type: playbook
+    task:
+      id: c2ea9077-c256-48f1-8c48-7a4c1535f70f
+      version: -1
+      name: IP Enrichment - XM Cyber
+      playbookName: IP Enrichment - XM Cyber
+      description: Look up the IP in XM Cyber and add risk info
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 4f4bb6ba-6ecd-4c33-8f99-f24a02fbf0d2
+    type: playbook
+    task:
+      id: 4f4bb6ba-6ecd-4c33-8f99-f24a02fbf0d2
+      version: -1
+      name: Endpoint Enrichment - XM Cyber
+      playbookName: Endpoint Enrichment - XM Cyber
+      description: Look up the endpoint name and add risk info
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 5c66cddf-70e8-4d22-8b27-e7e327f5c52a
+    type: playbook
+    task:
+      id: 5c66cddf-70e8-4d22-8b27-e7e327f5c52a
+      version: -1
+      name: Isolate Endpoint - Generic
+      playbookName: Isolate Endpoint - Generic
+      description: Isolate Endpoint - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 685,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_18_No": 0.42
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1580,
+        "width": 1025,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: The IP address to enrich.
+  playbookInputQuery: null
+- key: Hostname
+  value:
+    complex:
+      root: Endpoint
+      accessor: Hostname
+      transformers:
+      - operator: uniq
+  required: false
+  description: The hostname of the endpoint to enrich.
+  playbookInputQuery: null
+outputs: 
+- contextPath: Traps.IsolateResult.Status
+  description: The status of the isolation operation.
+  type: string
+- contextPath: Nexpose.Scan.Status
+  description: The scan status. Valid values are aborted, unknown, running, finished,
+    stopped, error, paused, dispatched, integrating
+  type: string
+- contextPath: Nexpose.Scan.Assets
+  description: The number of assets found in the scan
+  type: number
+- contextPath: Nexpose.Scan.Vulnerabilities.Total
+  description: The total number of vulnerabilities.
+  type: number
+- contextPath: XMCyber.Entity.isAsset
+  description: Is Entity a Critical Asset
+  type: boolean
+- contextPath: XMCyber.Entity.averageComplexityLevel
+  description: Level of the average complexity to compromise this entity
+  type: string
+- contextPath: XMCyber.Entity.criticalAssetsAtRisk
+  description: Number of unique critical assets at risk from this entity
+  type: number
+tests:
+ -  No tests

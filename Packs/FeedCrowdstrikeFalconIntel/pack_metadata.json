@@ -1,8 +1,8 @@
 {
     "name": "Crowdstrike Falcon Intel Feed",
-    "description": "CrowdStrike intelligence team are tracking the activities of threat actor groups and  advanced persistent threats (APTs) to understand as much as possible about their known aliases, targets, methods, and more.",
+    "description": "CrowdStrike intelligence team are tracking the activities of threat actor groups and  advanced persistent threats (APTs) to understand as much as possible about their known aliases, targets, methods, and more. Use this pack to receive information on adversaries tracked by CrowdStrike, their target nations and industries, and research on their activities.",
     "support": "xsoar",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,9 +11,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
-    "useCases": [
-        "receiving information on adversaries tracked by CrowdStrike, their target nations and industries, and our research on their activities"
-    ],
+    "useCases": [],
     "keywords": [
         "Crowdstrike",
         "Feed",

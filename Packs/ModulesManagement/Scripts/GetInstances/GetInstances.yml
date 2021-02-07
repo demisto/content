@@ -1,0 +1,45 @@
+commonfields:
+  id: GetInstances
+  version: -1
+name: GetInstances
+script: ''
+type: python
+tags: []
+enabled: true
+comment: Returns integration instances configured in Cortex XSOAR. You can filter by instance status and/or brand name (vendor).
+args:
+- name: brand
+  description: Brand name to filter instances by. 
+  isArray: true
+- defaultValue: "active"
+  name: instance_status
+  auto: PREDEFINED
+  predefined:
+  - "active"
+  - "both"
+  - "disabled"
+  description: Instance status to filter instances by. Can be "active", "disabled", or "both". Default is "active".
+outputs:
+- contextPath: Modules.name
+  description: The instance name.
+  type: string
+- contextPath: Modules.category
+  description: The instance category.
+  type: string
+- contextPath: Modules.defaultIgnored
+  description: True if the instance avilable by default, otherwise false.
+  type: string
+- contextPath: Modules.state
+  description: True if the instance is enabled, otherwise false.
+  type: string
+- contextPath: Modules.brand
+  description: The instance brand.
+  type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.6.13358
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

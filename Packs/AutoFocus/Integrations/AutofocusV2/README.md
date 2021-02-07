@@ -26,7 +26,7 @@ For more information on activating the license see [Activating AutoFocus License
 ## Configure AutoFocus V2 on Demisto
 ---
 
-1. Navigate to **Settings** > **Integrations**** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for AutoFocus V2.
 3. Click **Add instance** to create and configure a new integration instance.
 

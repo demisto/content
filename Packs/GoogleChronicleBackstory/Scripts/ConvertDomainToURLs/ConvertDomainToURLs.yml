@@ -1,0 +1,24 @@
+commonfields:
+  id: ConvertDomainToURLs
+  version: -1
+name: ConvertDomainToURLs
+script: ''
+type: python
+tags: []
+comment: Converts Domain(s) to URL(s).
+enabled: true
+args:
+- name: domains
+  required: true
+  description: List of Domain(s) to be converted to URL(s).
+outputs:
+- contextPath: DomainToURL
+  description: Converted URLs
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.8.6.14516
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

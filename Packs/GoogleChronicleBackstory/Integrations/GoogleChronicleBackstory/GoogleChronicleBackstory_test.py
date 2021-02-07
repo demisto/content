@@ -285,8 +285,8 @@ def test_validate_parameter_success(mocker):
     from GoogleChronicleBackstory import validate_configuration_parameters
     param = {
         'service_account_credential': '{"key":"value"}',
-        'fetch_limit': '20',
-        'first_fetch_time_interval_days': '10 day'
+        'max_fetch': '20',
+        'first_fetch': '10 day'
     }
     validate_configuration_parameters(param)
 
@@ -298,8 +298,8 @@ def test_validate_parameter_failure_wrong_json():
     from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_credentials = {
         'service_account_credential': '{"key","value"}',
-        'fetch_limit': '20',
-        'first_fetch_time_interval_days': '10 day'
+        'max_fetch': '20',
+        'first_fetch': '10 day'
     }
 
     with pytest.raises(ValueError) as error:
@@ -314,8 +314,8 @@ def test_validate_parameter_failure_page_size():
     from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_page_sizes = {
         'service_account_credential': '{"key":"value"}',
-        'fetch_limit': '2a0',
-        'first_fetch_time_interval_days': '10 day'
+        'max_fetch': '2a0',
+        'first_fetch': '10 day'
     }
 
     with pytest.raises(ValueError) as error:
@@ -330,8 +330,8 @@ def test_validate_parameter_failure_wrong_fetch_days_format():
     from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_fetch_days_format = {
         'service_account_credential': '{"key":"value"}',
-        'fetch_limit': '20',
-        'first_fetch_time_interval_days': '10dad'
+        'max_fetch': '20',
+        'first_fetch': '10dad'
     }
     with pytest.raises(ValueError) as error:
         validate_configuration_parameters(wrong_fetch_days_format)
@@ -346,8 +346,8 @@ def test_validate_parameter_failure_wrong_fetch_days_number():
     from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_fetch_days_number = {
         'service_account_credential': '{"key":"value"}',
-        'fetch_limit': '20',
-        'first_fetch_time_interval_days': 'Ten day'
+        'max_fetch': '20',
+        'first_fetch': 'Ten day'
     }
     with pytest.raises(ValueError) as error:
         validate_configuration_parameters(wrong_fetch_days_number)
@@ -362,8 +362,8 @@ def test_validate_parameter_failure_wrong_fetch_days_unit():
     from GoogleChronicleBackstory import validate_configuration_parameters
     wrong_fetch_days_unit = {
         'service_account_credential': '{"key":"value"}',
-        'fetch_limit': '20',
-        'first_fetch_time_interval_days': '10 dad'
+        'max_fetch': '20',
+        'first_fetch': '10 dad'
     }
     with pytest.raises(ValueError) as error:
         validate_configuration_parameters(wrong_fetch_days_unit)
@@ -377,8 +377,8 @@ def test_main_success(mocker, client):
     import GoogleChronicleBackstory
     param = {
         'service_account_credential': '{"key":"value"}',
-        'fetch_limit': '20',
-        'first_fetch_time_interval_days': '10 day',
+        'max_fetch': '20',
+        'first_fetch': '10 day',
         'configured_maliciuos_categories': "Spyware Reporting Server, Target of a DDoS, Known Spam Source"
 
     }
@@ -471,7 +471,7 @@ def test_get_artifact_type():
     """
     from GoogleChronicleBackstory import get_artifact_type
 
-    ip = get_artifact_type('10.0.0.1')
+    ip = get_artifact_type('10.0.0.1')  # NOSONAR
     assert ip == 'destination_ip_address'
 
     ipv6 = get_artifact_type('000::000')
@@ -612,8 +612,8 @@ def test_fetch_incident_success_with_param_and_alerts_when_executed_1st_time(moc
     from GoogleChronicleBackstory import fetch_incidents
 
     param = {
-        'first_fetch_time_interval_days': '4 days',
-        'fetch_limit': 20,
+        'first_fetch': '4 days',
+        'max_fetch': 20,
         'incident_severity': 'ALL',
         'backstory_alert_type': 'Assets with alerts'
     }
@@ -636,7 +636,7 @@ def test_gcb_fetch_incident_success_with_alerts_with_demisto_last_run(mocker, cl
     from GoogleChronicleBackstory import fetch_incidents
 
     param = {
-        'fetch_limit': 20,
+        'max_fetch': 20,
         'incident_severity': None,
         'backstory_alert_type': 'Assets with alerts'
     }

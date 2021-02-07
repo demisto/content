@@ -83,16 +83,8 @@ def test_get_oncall_hours_per_user(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert json.loads(results[0]) == [
-        {
-            "name": "User1", "data": [128], "groups": [{"name": "User1", "data": [128]}]
-        },
-        {
-            "name": "User2", "data": [128], "groups": [{"name": "User2", "data": [128]}]
-        },
-        {
-            "name": "Admin", "data": [0], "groups": [{"name": "Admin", "data": [0]}]
-        },
-        {
-            "name": "User3", "data": [203], "groups": [{"name": "User3", "data": [203]}]
-        }
+        {'data': [128], 'name': 'User1'},
+        {'data': [128], 'name': 'User2'},
+        {'data': [0], 'name': 'Admin'},
+        {'data': [203], 'name': 'User3'}
     ]

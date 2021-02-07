@@ -226,7 +226,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The date range in which to search for sessions. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59'
+      description: 'The date range in which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59'
       isArray: false
       name: time_range
       predefined:
@@ -983,7 +983,7 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.8.6.12176
+  dockerimage: demisto/python3:3.9.1.14969
   isfetch: false
   longRunning: false
   longRunningPort: false

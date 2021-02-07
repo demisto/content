@@ -1,19 +1,21 @@
 """Wait for server to be ready for tests"""
 import json
-import sys
-import time
-import re
-from subprocess import check_output
-from time import sleep
-import requests
-import urllib3.util
-from Tests.scripts.utils.log_util import install_logging
 import logging
 import os
+import re
+import sys
+import time
+from subprocess import check_output
+from time import sleep
 
+import requests
+import urllib3.util
+
+from Tests.scripts.utils.log_util import install_logging
 from demisto_sdk.commands.common.tools import run_command
-
 # Disable insecure warnings
+from demisto_sdk.commands.test_content.tools import is_redhat_instance
+
 urllib3.disable_warnings()
 
 ARTIFACTS_PATH = os.environ.get('CIRCLE_ARTIFACTS')
@@ -58,8 +60,27 @@ def download_cloud_init_logs_from_server(ip: str) -> None:
         logging.exception(f'Could not download cloud-init file from server {ip}.')
 
 
+def docker_login(ip: str) -> None:
+    """
+    Login-in to docker on the server to avoid docker rate limit quota violation
+    Args:
+        ip: The ip of the server that should be logged in
+    """
+    docker_username = os.environ.get('DOCKERHUB_USER')
+    docker_password = os.environ.get('DOCKERHUB_PASSWORD')
+    container_engine_type = 'podman' if is_redhat_instance(ip) else 'docker'
+    try:
+        check_output(
+            f'ssh -o StrictHostKeyChecking=no ec2-user@{ip} '
+            f'cd /home/demisto && '
+            f'sudo -u demisto {container_engine_type} login --username {docker_username} --password-stdin'.split(),
+            input=docker_password.encode())
+    except Exception:
+        logging.exception(f'Could not login to {container_engine_type} on server {ip}')
+
+
 def main():
-    install_logging('Wait Until Server Ready.log')
+    install_logging('Wait_Until_Server_Ready.log')
     global SETUP_TIMEOUT
     instance_name_to_wait_on = sys.argv[1]
     ready_ami_list = []
@@ -115,6 +136,7 @@ def main():
                                               ami_instance_name == instance_name_to_wait_on]
         for ip in instance_ips_to_download_log_files:
             download_cloud_init_logs_from_server(ip)
+            docker_login(ip)
 
 
 if __name__ == "__main__":

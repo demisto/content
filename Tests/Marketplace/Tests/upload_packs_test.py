@@ -1,6 +1,9 @@
+import json
+import os
+
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_names
+from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_packs
 
 
 # disable-secrets-detection-start
@@ -10,7 +13,7 @@ class TestModifiedPacks:
         ("pack1, pack2,  pack3", {"pack1", "pack2", "pack3"})
     ])
     def test_get_packs_names_specific(self, packs_names_input, expected_result):
-        modified_packs = get_packs_names(packs_names_input)
+        modified_packs = get_packs_names(packs_names_input, 'fake_commit_hash')
 
         assert modified_packs == expected_result
 
@@ -20,7 +23,7 @@ class TestModifiedPacks:
                                        "Packs/Pack1/Integrations/Integration1/CHANGELOG.md\n"
                                        "Packs/Pack2/pack_metadata.json\n")
         mocker.patch('Tests.Marketplace.upload_packs.run_command', return_value=modified_packs_return_value)
-        modified_packs = get_packs_names(target_packs="modified")
+        modified_packs = get_packs_names("modified", 'fake_commit_hash')
 
         assert modified_packs == {"Pack1", "Pack2"}
 
@@ -390,58 +393,6 @@ class TestUpdateIndex:
             assert call_arg[0] in expected_copy_args
 
 
-class TestPrivatePacks:
-    def test_add_private_packs_to_index(self, mocker):
-        from Tests.Marketplace import upload_packs
-
-        dirs = scan_dir()
-        mocker.patch('os.scandir', return_value=dirs)
-        mocker.patch('os.path.isdir', side_effect=FakeDirEntry.isdir)
-        mocker.patch.object(upload_packs, 'update_index_folder')
-
-        upload_packs.add_private_packs_to_index('test', 'private_test')
-
-        index_call_args = upload_packs.update_index_folder.call_args[0]
-        index_call_count = upload_packs.update_index_folder.call_count
-
-        assert index_call_count == 1
-        assert index_call_args[0] == 'test'
-        assert index_call_args[1] == 'mock_dir'
-        assert index_call_args[2] == 'mock_path'
-
-    def test_get_private_packs(self, mocker):
-        import os
-        from Tests.Marketplace import upload_packs, marketplace_services
-
-        mocker.patch('glob.glob', return_value=[os.path.join(marketplace_services.CONTENT_ROOT_PATH,
-                                                             'Tests', 'Marketplace', 'Tests',
-                                                             'test_data', 'metadata.json')])
-
-        private_packs = upload_packs.get_private_packs('path')
-
-        assert private_packs == [{'id': 'ImpossibleTraveler', 'price': 100}]
-
-    def test_get_private_packs_empty(self, mocker):
-        from Tests.Marketplace import upload_packs
-
-        mocker.patch('glob.glob', return_value=[])
-        mocker.patch("Tests.Marketplace.upload_packs.logging.warning")
-
-        private_packs = upload_packs.get_private_packs('path')
-
-        assert private_packs == []
-
-    def test_get_private_packs_error(self, mocker):
-        from Tests.Marketplace import upload_packs
-
-        mocker.patch('glob.glob', side_effect=InterruptedError)
-        mocker.patch("Tests.Marketplace.upload_packs.logging.warning")
-
-        private_packs = upload_packs.get_private_packs('path')
-
-        assert private_packs == []
-
-
 class TestCleanPacks:
     """ Test for clean_non_existing_packs function scenarios.
     """
@@ -547,3 +498,62 @@ class TestCleanPacks:
 
         assert not skipped_cleanup
         shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
+
+
+class TestUpdatedPrivatePacks:
+
+    @staticmethod
+    def get_pack_metadata():
+        metadata_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data', 'metadata.json')
+        with open(metadata_path, 'r') as metadata_file:
+            pack_metadata = json.load(metadata_file)
+
+        return pack_metadata
+
+    @staticmethod
+    def get_index_folder_path():
+        index_json_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data')
+        return index_json_path
+
+    def test_content_commit_hash_diff(self):
+        """
+         Scenario: as part of upload packs flow, we want to find all private packs that were updated during current
+         build run.
+
+         Given
+         - valid public index json
+         - valid 3 metadata of private packs
+
+         When
+         - 2 packs were not updated during current build run
+         - 1 pack was updated during current build run - has (in metadata file) an updated different contentCommitHash
+
+         Then
+         - Ensure that only the last pack was recognized as updated private pack
+         """
+
+        index_folder_path = self.get_index_folder_path()
+        private_packs = []
+
+        # index json has no contentCommitHash for this pack
+        metadata_no_commit_hash = self.get_pack_metadata()
+        metadata_no_commit_hash.update({"contentCommitHash": ""})
+        metadata_no_commit_hash.update({"id": "first_non_updated_pack"})
+        private_packs.append(metadata_no_commit_hash)
+
+        # index json has the same contentCommitHash for this pack (nothing was updated)
+        metadata_not_updated_commit_hash = self.get_pack_metadata()
+        metadata_not_updated_commit_hash.update({"contentCommitHash": "111"})
+        metadata_not_updated_commit_hash.update({"id": "second_non_updated_pack"})
+        private_packs.append(metadata_not_updated_commit_hash)
+
+        # index json has an old contentCommitHash for this pack (should be recognize as an updated pack)
+        metadata_updated_commit_hash = self.get_pack_metadata()
+        metadata_updated_commit_hash.update({"contentCommitHash": "222"})
+        metadata_updated_commit_hash.update({"id": "updated_pack"})
+        private_packs.append(metadata_updated_commit_hash)
+
+        updated_private_packs = get_updated_private_packs(private_packs, index_folder_path)
+        assert len(updated_private_packs) == 1
+        assert updated_private_packs[0] == "updated_pack" and updated_private_packs[0] != "first_non_updated_pack" and \
+               updated_private_packs[0] != "second_non_updated_pack"

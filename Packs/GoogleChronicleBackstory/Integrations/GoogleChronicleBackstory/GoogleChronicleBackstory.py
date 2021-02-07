@@ -233,18 +233,18 @@ def validate_configuration_parameters(param: Dict[str, Any]):
     """
     # get configuration parameters
     service_account_json = param.get('service_account_credential', '')
-    fetch_days = param.get('first_fetch_time_interval_days', '3 days').lower()
-    page_size = param.get('fetch_limit', '10')
+    fetch_days = param.get('first_fetch', '3 days').lower()
+    page_size = param.get('max_fetch', '10')
 
     try:
         # validate service_account_credential configuration parameter
         json.loads(service_account_json, strict=False)
 
-        # validate fetch_limit configuration parameter
+        # validate max_fetch configuration parameter
         if not page_size.isdigit():
             raise ValueError('Incidents fetch limit must be a number')
 
-        # validate first_fetch_time_interval_days parameter
+        # validate first_fetch parameter
         range_split = fetch_days.split(' ')
         if len(range_split) != 2:
             raise ValueError('First fetch days must be "number time_unit", '
@@ -873,18 +873,18 @@ def parse_alert_info(alert_infos, filter_severity):
     return infos, len(infos)
 
 
-def get_ioc_domain_matches(client_obj, start_time, fetch_limit):
+def get_ioc_domain_matches(client_obj, start_time, max_fetch):
     """
-    Calls list IOC API with :start_time, :end_time and :fetch_limit.
+    Calls list IOC API with :start_time, :end_time and :max_fetch.
         filter_severity to filter out an alert after getting a response from API. Passing ALL will not filter any data
     :param client_obj perform API request
     :param start_time
-    :param fetch_limit
+    :param max_fetch
 
     return events - list of dict representing events
     """
 
-    request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time, fetch_limit)
+    request_url = '{}/ioc/listiocs?start_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time, max_fetch)
 
     response_body = validate_response(client_obj, request_url)
     ioc_matches = response_body.get('response', {}).get('matches', [])
@@ -892,20 +892,20 @@ def get_ioc_domain_matches(client_obj, start_time, fetch_limit):
     return parsed_ioc['context']
 
 
-def get_gcb_alerts(client_obj, start_time, end_time, fetch_limit, filter_severity):
+def get_gcb_alerts(client_obj, start_time, end_time, max_fetch, filter_severity):
     """
-    Calls list alert API with :start_time, :end_time and :fetch_limit.
+    Calls list alert API with :start_time, :end_time and :max_fetch.
         filter_severity to filter out an alert after getting a response from API. Passing ALL will not filter any data
     :param client_obj perform API request
     :param start_time
     :param end_time
-    :param fetch_limit
+    :param max_fetch
     :param filter_severity
 
     return events - list of dict representing events
     """
     request_url = '{}/alert/listalerts?start_time={}&end_time={}&page_size={}'.format(BACKSTORY_API_V1_URL, start_time,
-                                                                                      end_time, fetch_limit)
+                                                                                      end_time, max_fetch)
     json_response = validate_response(client_obj, request_url)
 
     alerts = []
@@ -1394,8 +1394,8 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
     :param params:
     :return:
     """
-    first_fetch_in_days = params.get('first_fetch_time_interval_days', '3 days').lower()  # 3 days as default
-    fetch_limit = params.get('fetch_limit', 10)  # default page size
+    first_fetch_in_days = params.get('first_fetch', '3 days').lower()  # 3 days as default
+    max_fetch = params.get('max_fetch', 10)  # default page size
     filter_severity = params.get('incident_severity', 'ALL')  # All to get all type of severity
 
     # getting numeric value from string representation
@@ -1410,7 +1410,7 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
 
     incidents = []
     if 'ioc domain matches' != backstory_alert_type.lower():
-        events = get_gcb_alerts(client_obj, start_time, end_time, fetch_limit, filter_severity)
+        events = get_gcb_alerts(client_obj, start_time, end_time, max_fetch, filter_severity)
 
         _, contexts = group_infos_by_alert_asset_name(events)
 
@@ -1425,7 +1425,7 @@ def fetch_incidents(client_obj, params: Dict[str, Any]):
             }
             incidents.append(incident)
     else:
-        events = get_ioc_domain_matches(client_obj, start_time, fetch_limit)
+        events = get_ioc_domain_matches(client_obj, start_time, max_fetch)
         # Converts IoCs into actionable incidents
         for event in events:
             incident = {
