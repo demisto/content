@@ -1,6 +1,6 @@
 {
     "name": "Alexa Rank Indicator",
-    "description": "Test - Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.",
+    "description": "Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.",
     "support": "xsoar",
     "currentVersion": "1.1.1",
     "author": "Cortex XSOAR",
