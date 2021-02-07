@@ -1,6 +1,6 @@
 {
   "name": "AWS - GuardDuty",
-  "description": "test - Amazon Web Services Guard Duty Service (gd)",
+  "description": "Amazon Web Services Guard Duty Service (gd)",
   "support": "xsoar",
   "currentVersion": "1.0.0",
   "author": "Cortex XSOAR",

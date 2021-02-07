@@ -1128,7 +1128,6 @@ def get_test_list_and_content_packs_to_install(files_string,
 
     # All filtering out of packs should be done here
     packs_to_install = filter_installed_packs(packs_to_install)
-    logging.info(f"packs_to_install are: {packs_to_install}")
 
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
@@ -1267,8 +1266,6 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
         packs_to_install = filter_installed_packs(set(os.listdir(PACKS_DIR)))
-        # packs_to_install = set(filter(lambda should_test_content_pack: should_test_content_pack[0], os.listdir(
-        #     PACKS_DIR)))
         tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET))
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
