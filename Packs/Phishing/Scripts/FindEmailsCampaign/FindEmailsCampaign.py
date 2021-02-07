@@ -38,7 +38,7 @@ KEYWORDS = ['#1', '100%', 'access', 'accordance', 'account', 'act', 'action', 'a
             'immediate', 'immediately', 'important', 'income', 'increase', 'instant', 'interest', 'investment',
             'invoice', 'kindly', 'last', 'lender', 'lenders', 'lifetime', 'limited', 'loan', 'loans', 'login', 'lose',
             'loss', 'luxury', 'market', 'marketing', 'mass', 'mastrubate', 'mastrubating', 'med', 'medications',
-            'medicine', 'meds', 'member', 'membership', 'message', 'million', 'millions', 'miracle', 'money', 'monthly',
+            'medicine', 'meds', 'member', 'membership', 'million', 'millions', 'miracle', 'money', 'monthly',
             'months', 'mortgage', 'newsletter', 'notification', 'notify', 'obligation', 'offer', 'offers', 'oil',
             'only', 'open', 'opt', 'order', 'package', 'paid', 'parcel', 'partners', 'password', 'passwords',
             'payment', 'payments', 'paypal', 'payroll', 'pdf', 'penis', 'pennies', 'permanently', 'pharmacy', 'pics',
@@ -51,7 +51,7 @@ KEYWORDS = ['#1', '100%', 'access', 'accordance', 'account', 'act', 'action', 'a
             'supply', 'suspended', 'temporarily', 'terms', 'trader', 'trading', 'traffic', 'transaction', 'transfer',
             'trial', 'unlimited', 'unsecured', 'unsolicited', 'unsubscribe', 'update', 'ups', 'urgent', 'user', 'usps',
             'valium', 'verification', 'verify', 'viagra', 'vicodin', 'videos', 'vids', 'viedo', 'virus', 'waiting',
-            'wallet', 'warranty', 'we', 'web', 'weight', 'win', 'winner', 'winning', 'wire', 'xanax']
+            'wallet', 'warranty', 'web', 'weight', 'win', 'winner', 'winning', 'wire', 'xanax']
 
 
 def add_context_key(entry_context):
