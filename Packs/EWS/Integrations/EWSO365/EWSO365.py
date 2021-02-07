@@ -1950,7 +1950,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
                     email_content.add_header(header.name, header.value)
 
         eml_name = item.subject if item.subject else "demisto_untitled_eml"
-        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        file_result = fileResult(eml_name + ".eml", get_email_data(email_content))
         file_result = (
             file_result if file_result else "Failed uploading eml file to war room"
         )
@@ -2057,10 +2057,9 @@ def parse_incident_from_item(item):
                                     and header.name != "Content-Type"
                             ):
                                 attached_email.add_header(header.name, header.value)
-
                     file_result = fileResult(
                         get_attachment_name(attachment.name) + ".eml",
-                        attached_email.as_string(),
+                        get_email_data(attached_email),
                     )
 
                 if file_result:
@@ -2384,6 +2383,13 @@ def sub_main():
                         ex
                     )
                 )
+
+
+def get_email_data(email_obj):
+    try:
+        return email_obj.as_string()
+    except:
+        return email_obj.as_bytes()
 
 
 def process_main():
