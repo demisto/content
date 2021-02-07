@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM102
+
+[file:Tufin.yml]
+ignore=IN136
