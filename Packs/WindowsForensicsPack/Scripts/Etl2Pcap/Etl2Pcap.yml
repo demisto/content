@@ -1,6 +1,6 @@
 comment: Receives an ETL file and converts it to a PCAP file.
 args:
-- description: The file entry ID of the ETL File
+- description: The file entry ID of the ETL File.
   name: EntryID
   required: true
 commonfields:
@@ -11,7 +11,7 @@ enabled: true
 name: Etl2Pcap
 outputs:
 - contextPath: EtlToPcap.NewFileName
-  description: The output file name
+  description: The output filename.
 runas: DBotWeakRole
 runonce: false
 script: ''
