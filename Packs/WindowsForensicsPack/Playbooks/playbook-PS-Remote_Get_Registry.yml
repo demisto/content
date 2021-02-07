@@ -1,8 +1,8 @@
 id: PS-Remote Get Registry
 version: -1
 name: PS-Remote Get Registry
-description: This playbook leverages the windows builtin Powershell and WinRM capabilities
-  to connect to a Windows host to acquire and export the registry as a forensic evidence
+description: This playbook leverages the Windows built-in PowerShell and WinRM capabilities
+  to connect to a Windows host to acquire and export the registry as forensic evidence
   for further analysis. The capture can be for the entire registry or for a specific
   hive or path.
 starttaskid: "0"
@@ -42,7 +42,7 @@ tasks:
       id: eee3be21-cdfb-49e3-8a6b-00ad537bada1
       version: -1
       name: Is PowerShell Remoting enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
+      description: Returns 'yes' if the integration brand is available. Otherwise, returns
         'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -142,7 +142,7 @@ tasks:
       id: 093c8c39-ca13-4c1a-8c35-24d95aae0eb6
       version: -1
       name: PS-Remote export registry
-      description: This command exports the specified Registry of hive to a file.
+      description: This command exports the specified registry of hive to a file.
       script: '|||ps-remote-export-registry'
       type: regular
       iscommand: true
@@ -258,7 +258,7 @@ tasks:
       id: 23d533b8-20a3-4a66-892c-88a0edb7347b
       version: -1
       name: Sleep
-      description: Sleep for X seconds
+      description: Sleep for X seconds.
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -426,7 +426,7 @@ tasks:
       version: -1
       name: Mark and tag registry
       description: |
-        Adds provided entries to the incident Evidence Board. In playbook, can be positioned after a task to add the previous task's entries to Evidence Board automatically (with no need to provide arguments)
+        Adds provided entries to the incident Evidence Board. In a playbook, can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
       scriptName: AddEvidence
       type: regular
       iscommand: false
@@ -436,9 +436,9 @@ tasks:
       - "14"
     scriptarguments:
       desc:
-        simple: A registry file acquired from a host
+        simple: A registry file acquired from a host.
       description:
-        simple: A registry file acquired from a host
+        simple: A registry file acquired from a host.
       entryIDs: {}
       occurred: {}
       tags:
@@ -472,13 +472,13 @@ inputs:
 - key: Host
   value: {}
   required: false
-  description: The host name for which to export the registry file. For example testpc01
+  description: The hostname from which to export the registry file. For example, testpc01.
   playbookInputQuery: null
 - key: RegistryHive
   value:
     simple: all
   required: false
-  description: The registry hive/path to export, if no value is specified the entire
+  description: The registry hive/path to export. If no value is specified, the entire
     registry will be exported.
   playbookInputQuery: null
 - key: FilePath
@@ -486,21 +486,21 @@ inputs:
     simple: c:\registry.reg
   required: false
   description: |-
-    The path on the hostname on which to create the registry file. The default path will be c:\registry.reg
-    In case you use the AddHostNameToFile input as true the file downloaded to XSOAR will be comprised of the hostname.
+    The path on the hostname on which to create the registry file. The default path will be c:\registry.reg.
+    If the AddHostNameToFile input is "true", the file downloaded to XSOAR will contain the hostname.
   playbookInputQuery: null
 - key: ZipRegistry
   value:
     simple: "true"
   required: false
-  description: Specify true to zip the reg file before sending it to XSOAR.
+  description: Specify "true" to zip the reg file before sending it to XSOAR.
   playbookInputQuery: null
 - key: AddHostNameToFile
   value:
     simple: "true"
   required: false
-  description: Specify true for the downloaded file name to be comprised of the host
-    name or false  to keep the file name as configured in the FilePath argument.
+  description: Specify "true" for the downloaded filename to contain the hostname,
+    or "false" to keep the filename as configured in the FilePath argument.
   playbookInputQuery: null
 outputs:
 - contextPath: RegistryDetails
