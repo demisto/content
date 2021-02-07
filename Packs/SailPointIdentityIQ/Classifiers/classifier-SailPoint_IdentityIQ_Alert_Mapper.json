@@ -25,35 +25,6 @@
                 "SailPoint IdentityIQ Alert Type": {
                     "complex": null,
                     "simple": "type"
-                },
-                "SailPointIdentityIQ Alert DisplayName": {
-                    "complex": null,
-                    "simple": "displayName"
-                },
-                "SailPointIdentityIQ Alert TargetDisplayName": {
-                    "complex": {
-                        "accessor": "",
-                        "filters": [
-
-                        ],
-                        "root": "targetDisplayName",
-                        "transformers": [
-
-                        ]
-                    },
-                    "simple": ""
-                },
-                "SailPointIdentityIQ Alert TargetId": {
-                    "complex": null,
-                    "simple": "targetId"
-                },
-                "SailPointIdentityIQ Alert TargetType": {
-                    "complex": null,
-                    "simple": "targetType"
-                },
-                "SailPointIdentityIQ Alert Type": {
-                    "complex": null,
-                    "simple": "type"
                 }
             }
         }
