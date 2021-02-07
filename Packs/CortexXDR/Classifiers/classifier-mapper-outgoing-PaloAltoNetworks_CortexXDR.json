@@ -7,15 +7,15 @@
 		"Cortex XDR Incident": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
-				"XDR Assigned User Email": {
+				"assigned_user_mail": {
 					"complex": null,
 					"simple": "xdrassigneduseremail"
 				},
-				"XDR Assigned User Pretty Name": {
+				"assigned_user_pretty_name": {
 					"complex": null,
 					"simple": "xdrassigneduserprettyname"
 				},
-				"XDR manual severity": {
+				"manual_severity": {
 					"complex": {
 						"accessor": "",
 						"filters": [],
@@ -117,11 +117,11 @@
 					},
 					"simple": ""
 				},
-				"XDR Resolve Comment": {
+				"resolve_comment": {
 					"complex": null,
 					"simple": "xdrresolvecomment"
 				},
-				"XDR Status v2": {
+				"status": {
 					"complex": null,
 					"simple": "xdrstatusv2"
 				}
