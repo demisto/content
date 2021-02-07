@@ -1594,9 +1594,6 @@ class Pack(object):
             initial_changelog_version = changelog.get(packs_earliest_release_notes.vstring, {})
             earliest_changelog_released_date = initial_changelog_version.get('released')
 
-        #TEST
-        earliest_changelog_released_date = None
-
         if not created_time and earliest_changelog_released_date:
             created_time = earliest_changelog_released_date
 
