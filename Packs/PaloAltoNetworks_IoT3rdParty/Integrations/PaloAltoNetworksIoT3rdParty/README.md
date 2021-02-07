@@ -1,7 +1,7 @@
 Use the Palo Alto Networks IoT 3rd Party integration to get devices, alerts, and vulnerabilities from PANW IoT Cloud.
 ## Configure Palo Alto Networks IoT 3rd Party on Cortex XSOAR
 
-1. Navigate to **Settings** &gt; **Integrations** &gt; **Servers & Services**.
+1. Navigate to **Settings**, **Integrations**, **Servers & Services**.
 2. Search for Palo Alto Networks IoT 3rd Party.
 3. Click **Add instance** to create and configure a new integration instance.
 
