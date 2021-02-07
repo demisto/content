@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 
+DEFAULT_SOURCE = 'Cortex XSOAR'
 INDICATOR_TYPES = {
     'IP': DBotScoreType.IP,
     'File SHA1': DBotScoreType.FILE,
@@ -17,8 +18,10 @@ def iterate_indicator_entry(indicator, entry):
     indicator_type = entry["indicator_type"]
     indicator_type = INDICATOR_TYPES.get(indicator_type, indicator_type)
     sources = entry.get('sourceBrands', [])
-    sources = sources if sources else ['']
+    sources = sources if sources else [None]
     for source in sources:
+        if not source:
+            source = DEFAULT_SOURCE
         dbot_score = Common.DBotScore(indicator=indicator, indicator_type=indicator_type,
                                       integration_name=source, score=entry["score"]).to_context()
         dbot_score = dbot_score.get(Common.DBotScore.CONTEXT_PATH, dbot_score)
