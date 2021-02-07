@@ -13,13 +13,18 @@ QUERY_TYPE_TO_KEY = {
 }
 
 
-def get_xdr_incidents() -> list:
+def get_xdr_incidents(include_closed_incidents: bool) -> list:
     """
     Returns Cortex XDR incident with status Active or Pending using GetIncidentsByQuery script.
+    :param include_closed_incidents: Whether to query closed incidents or not.
     :return: Cortex XDR incident objects
     """
+    query = 'status:Active or status:Pending and type:"Cortex XDR Incident"'
+    if include_closed_incidents:
+        query = 'type:"Cortex XDR Incident"'
+
     get_incidents_args = {
-        'query': 'status:Active or status:Pending and type:"Cortex XDR Incident"',
+        'query': query,
         'includeContext': True,
         'limit': 3000
     }
@@ -79,6 +84,7 @@ def update_xdr_list(context: list, xdr_list: list, query_type: str, created_date
 def main():
     try:
         date_pattern = re.compile('\d{4}[-/]\d{2}[-/]\d{2}T\d{2}:\d{2}:\d{2}')
+        include_closed_incidents = argToBoolean(demisto.getArg('includeClosedIncidents'))
 
         # initialize xdr data lists
         xdr_data_lists = {}  # type:dict
@@ -86,7 +92,7 @@ def main():
             xdr_data_lists[key] = []
 
         # get the xdr incidents
-        incidents = get_xdr_incidents()
+        incidents = get_xdr_incidents(include_closed_incidents)
 
         for incident in incidents:
             context = incident.get('context')
