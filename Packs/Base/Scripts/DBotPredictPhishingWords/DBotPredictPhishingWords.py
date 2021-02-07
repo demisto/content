@@ -131,9 +131,7 @@ def find_words_contain_tokens(positive_tokens, words_to_token_maps):
 def try_get_incident_field(field):
     value = ''
     incident = demisto.incident()
-    if field in incident:
-        value = incident[field]
-    elif 'CustomFields' in incident and field in incident['CustomFields']:
+    if 'CustomFields' in incident and field in incident['CustomFields']:
         value = incident['CustomFields'][field]
     return value
 
@@ -147,7 +145,7 @@ def main():
     if email_subject == '':
         email_subject = try_get_incident_field(field='emailsubject')
     if email_body == '':
-        email_body = try_get_incident_field(field='emailnody')
+        email_body = try_get_incident_field(field='emailbody')
     result = predict_phishing_words(demisto.args()['modelName'],
                                     demisto.args()['modelStoreType'],
                                     email_subject,
