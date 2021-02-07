@@ -175,7 +175,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: opencti-reset-fetch-indicators
-  dockerimage: devdemisto/opencti-v4.1.2:1.0.0.16150
+  dockerimage: demisto/opencti-v4.1.2:1.0.0.16153
   feed: true
   isfetch: false
   longRunning: false
