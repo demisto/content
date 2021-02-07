@@ -220,7 +220,7 @@ script:
                                     'use_tags','tag_include_selector','tag_exclude_selector','tag_set_by','tag_set_include','tag_set_exclude'],
 
         'reportLaunchCompliancePolicy': ['template_id','report_title','output_format','hide_header',
-                                        'recipient_group_id','pdf_password','recipient_group',
+                                        'recipient_group_id','pdf_password','recipient_group', 'policy_id',
                                          'report_refs','asset_group_ids','ips','host_id','instance_string',
                                          'use_tags','tag_include_selector','tag_exclude_selector','tag_set_by','tag_set_include','tag_set_exclude'],
 
