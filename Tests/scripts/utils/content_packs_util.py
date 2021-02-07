@@ -93,10 +93,10 @@ def should_install_content_pack(pack_name: str) -> Tuple[bool, str]:
     if not pack_name:
         return False, 'Invalid pack name'
     pack_path = os.path.join(PACKS_DIR, pack_name)
-    if pack_name in IGNORED_FILES:
-        return False, f'Pack should be ignored as it one of the files to ignore: {IGNORED_FILES}'
     if pack_name in SKIPPED_PACKS:
         return False, 'Pack is either the "NonSupported" pack or the "DeprecatedContent" pack.'
+    if pack_name in IGNORED_FILES:
+        return False, f'Pack should be ignored as it one of the files to ignore: {IGNORED_FILES}'
     if is_pack_deprecated(pack_path):
         return False, 'Pack is Deprecated'
     return True, ''

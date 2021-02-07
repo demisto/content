@@ -1033,11 +1033,14 @@ def filter_tests(tests: set, id_set: json) -> set:
 
 def filter_installed_packs(packs_to_install: set) -> set:
     """
-    Filter packs that should be installed out from the installed packs set if they are
+    Filter packs that should be installed out from the installed packs set if they are:
+        - Content pack is not in skipped packs
+        - Content pack is certified
+        - Content pack is not deprecated
     Args:
         packs_to_install (set): Set of installed packs collected so far.
     Returns:
-        (set): Set of packs without ignored, non supported and deprecated-packs tests.
+        (set): Set of packs without ignored, skipped and deprecated-packs.
     """
 
     return {pack for pack in packs_to_install if should_install_content_pack(pack)}
