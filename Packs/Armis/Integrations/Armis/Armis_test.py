@@ -53,7 +53,6 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import json
-import io
 
 
 def test_start_scan(requests_mock):
