@@ -16,7 +16,7 @@ INDICATOR_TYPES = {
 
 def iterate_indicator_entry(indicator, entry):
     indicator_type = entry["indicator_type"]
-    indicator_type = INDICATOR_TYPES.get(indicator_type, indicator_type)
+    indicator_type = INDICATOR_TYPES.get(indicator_type, indicator_type).lower()
     sources = entry.get('sourceBrands', [])
     sources = sources if sources else [None]
     for source in sources:
