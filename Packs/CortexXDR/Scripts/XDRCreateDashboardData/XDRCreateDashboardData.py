@@ -13,7 +13,7 @@ QUERY_TYPE_TO_KEY = {
 }
 
 
-def get_xdr_incidents() -> []:
+def get_xdr_incidents() -> list:
     """
     Returns Cortex XDR incident with status Active or Pending using GetIncidentsByQuery script.
     :return: Cortex XDR incident objects
@@ -45,7 +45,7 @@ def update_xdr_list(context: list, xdr_list: list, query_type: str, created_date
     :param query_type: The item to gets the result in the incident(users/hosts/alarms/e.g).
     :param created_date: The incident creation time.
     """
-    tmp_dict = {}
+    tmp_dict = {}  # type:dict
     for val in context:
         if not val:
             continue
@@ -81,7 +81,7 @@ def main():
         date_pattern = re.compile('\d{4}[-/]\d{2}[-/]\d{2}T\d{2}:\d{2}:\d{2}')
 
         # initialize xdr data lists
-        xdr_data_lists = {}
+        xdr_data_lists = {}  # type:dict
         for key in QUERY_TYPE_TO_KEY.keys():
             xdr_data_lists[key] = []
 
@@ -103,7 +103,7 @@ def main():
         # create demisto list for each list item
         for key in QUERY_TYPE_TO_KEY.keys():
             list_name = f'xdrIncidents_{key}'
-            res = demisto.results(demisto.executeCommand('createList', {'listName': list_name, 'listData': xdr_data_lists[key]}))
+            res = demisto.executeCommand('createList', {'listName': list_name, 'listData': xdr_data_lists[key]})
             if isError(res):
                 return_error(f'Error occurred while trying to create the list {list_name}: {get_error(res)}')
         return_results('Done')
