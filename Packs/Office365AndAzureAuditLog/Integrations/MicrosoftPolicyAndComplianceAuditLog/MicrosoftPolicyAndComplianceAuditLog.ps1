@@ -1,4 +1,4 @@
-$script:COMMAND_PREFIX = "o365"
+$script:COMMAND_PREFIX = "o365-auditlog"
 $script:INTEGRATION_ENTRY_CONTEXT = "O365AuditLog"
 
 function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client){
@@ -101,8 +101,8 @@ function CreateNewSession {
 
 class OAuth2DeviceCodeClient
 {
+    [string]$application_id = "a0c73c16-a7e3-4564-9a95-2bdf47383716"
     [string]$application_scope = "offline_access%20https%3A//outlook.office365.com/.default"
-    [string]$application_id
     [string]$device_code
     [int]$device_code_expires_in
     [int]$device_code_creation_time
@@ -115,10 +115,8 @@ class OAuth2DeviceCodeClient
 
     OAuth2DeviceCodeClient(
             [string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
-            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure,
-            [bool]$proxy, [string]$application_id
+            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy
     ) {
-        $this.application_id = $application_id
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -176,19 +174,12 @@ class OAuth2DeviceCodeClient
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext(
-            [string]$application_id, [bool]$insecure, [bool]$proxy
-    ){
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
         $ic = $script:Demisto.getIntegrationContext()
-        if ($application_id.Contains("@")){
-            $application_id_t, $refresh_token_t = $application_id.Split("@")
-        }else {
-            $application_id_t = $application_id
-            $refresh_token_t = $ic.RefreshToken
-        }
         $client = [OAuth2DeviceCodeClient]::new(
-                $ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $refresh_token_t,
-                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id_t)
+                $ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
+                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy
+        )
 
         return $client
         <#
@@ -295,13 +286,13 @@ class OAuth2DeviceCodeClient
         # Get new token using refresh token
         try {
             $params = @{
-            "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
-            "Method" = "Post"
-            "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
-            "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
-            "NoProxy" = !$this.proxy
-            "SkipCertificateCheck" = $this.insecure
-        }
+                "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
+                "Method" = "Post"
+                "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+                "Body" = "grant_type=refresh_token&client_id=$($this.application_id)&refresh_token=$($this.refresh_token)&scope=$($this.application_scope)"
+                "NoProxy" = !$this.proxy
+                "SkipCertificateCheck" = $this.insecure
+            }
             $response = Invoke-WebRequest @params
             $response_body = ConvertFrom-Json $response.Content
         }
@@ -399,8 +390,10 @@ class OAuth2DeviceCodeClient
         #>
     }
 }
-class ExchangeOnlineClient
-{
+
+#### Security And Compliance client - OAUTH2.0 ####
+
+class ExchangeOnlineClient {
     [string]$url
     [string]$upn
     [string]$password
@@ -409,9 +402,8 @@ class ExchangeOnlineClient
     [bool]$insecure
     [bool]$proxy
 
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope = 'Function')]
-    ExchangeOnlineClient([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
-    {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
+    ExchangeOnlineClient([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy) {
         $this.upn = $upn
         $this.password = $password
         $this.bearer_token = $bearer_token
@@ -445,8 +437,7 @@ class ExchangeOnlineClient
         #>
     }
 
-    CreateSession()
-    {
+    CreateSession() {
         $this.session = CreateNewSession -url $this.url -upn $this.upn -password $this.password -bearer_token $this.bearer_token -insecure $this.insecure -proxy $this.proxy
         <#
             .DESCRIPTION
@@ -461,10 +452,8 @@ class ExchangeOnlineClient
         #>
     }
 
-    CloseSession()
-    {
-        if ($this.session)
-        {
+    CloseSession() {
+        if ($this.session) {
             Remove-PSSession $this.session
         }
         <#
@@ -520,9 +509,17 @@ class ExchangeOnlineClient
     }
 }
 
+#### COMMAND FUNCTIONS ####
+
 function TestModuleCommand ([OAuth2DeviceCodeClient]$oclient, [ExchangeOnlineClient]$exo_client) {
+    try {
+        $exo_client.CreateSession()
+    }
+    finally {
+        $exo_client.CloseSession()
+    }
     $raw_response = $null
-    $human_readable = "The test module is not functional, run the o365-auditlog-auth-start command instead."
+    $human_readable = "ok"
     $entry_context = $null
 
     return Write-Output $human_readable, $entry_context, $raw_response
@@ -532,7 +529,7 @@ function StartAuthCommand ([OAuth2DeviceCodeClient]$client) {
     $raw_response = $client.AuthorizationRequest()
     $human_readable = "## $script:INTEGRATION_NAME - Authorize instructions
 1. To sign in, use a web browser to open the page [https://microsoft.com/devicelogin](https://microsoft.com/devicelogin) and enter the code **$($raw_response.user_code)** to authenticate.
-2. Run the following command **!$script:COMMAND_PREFIX-auditlog-auth-complete** in the War Room."
+2. Run the following command **!$script:COMMAND_PREFIX-auth-complete** in the War Room."
     $entry_context = @{}
 
     return Write-Output $human_readable, $entry_context, $raw_response
@@ -627,12 +624,11 @@ function Main {
     #>
     $no_proxy = $false
     $insecure = (ConvertTo-Boolean $integration_params.insecure)
-    $application_id = $integration_params.application_id
 
     try
     {
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($application_id, $insecure, $no_proxy)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()
         # Creating ExchangeOnline client
@@ -646,16 +642,16 @@ function Main {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client $exo_client
             }
-            "$script:COMMAND_PREFIX-search-auditlog" {
+            "$script:COMMAND_PREFIX-search" {
                 ($human_readable, $entry_context, $raw_response) = SearchAuditLogCommand $exo_client $command_arguments
             }
-                "$script:COMMAND_PREFIX-auditlog-auth-start" {
+                "$script:COMMAND_PREFIX-auth-start" {
                 ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
             }
-            "$script:COMMAND_PREFIX-auditlog-auth-complete" {
+            "$script:COMMAND_PREFIX-auth-complete" {
                 ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
             }
-            "$script:COMMAND_PREFIX-auditlog-auth-test" {
+            "$script:COMMAND_PREFIX-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $exo_client
             }
             default{

@@ -37,14 +37,14 @@ tasks:
     task:
       id: 624a1f4f-b347-498e-8af9-57d9c025c2cf
       version: -1
-      name: o365-search-auditlog
+      name: o365-auditlog-search
       description: Use the o365-search-auditlog command to search the unified audit
         log. This log contains events from Exchange Online, SharePoint Online, OneDrive
         for Business, Azure Active Directory, Microsoft Teams, Power BI, and other
         Microsoft 365 services. You can search for all events in a specified date
         range, or you can filter the results based on specific criteria, such as the
         user who performed the action, the action, or the target object.
-      script: MicrosoftPolicyAndComplianceAuditLog|||o365-search-auditlog
+      script: MicrosoftPolicyAndComplianceAuditLog|||o365-auditlog-search
       type: regular
       iscommand: true
       brand: MicrosoftPolicyAndComplianceAuditLog
