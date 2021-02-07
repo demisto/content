@@ -8,7 +8,7 @@ from PhishTankV2 import phishtank_status_command, url_command
 
 
 def create_client(proxy: bool = False, verify: bool = False, fetch_interval_hours: str = "1"):
-    return Client(proxy=proxy, verify=verify, fetch_interval_hours=fetch_interval_hours)
+    return Client(proxy=proxy, verify=verify, fetch_interval_hours=fetch_interval_hours, use_https=False)
 
 
 @pytest.mark.parametrize('number, output', [("True", False), ('432', True), ("str", False),
@@ -46,12 +46,12 @@ def test_remove_last_slash(url, output):
 
 
 @pytest.mark.parametrize('client,data,output', [
-    (Client(False, False, "2"), {}, True),
-    (Client(False, False, "1"),
+    (Client(False, False, "2", False), {}, True),
+    (Client(False, False, "1", False),
      {"list": {"id": 200}, "timestamp": 1601542800000}, False),
-    (Client(False, False, "2"),
+    (Client(False, False, "2", False),
      {"list": {"id": 200}, "timestamp": 1601542800000}, False),
-    (Client(False, False, "0.5"),
+    (Client(False, False, "0.5", False),
      {"list": {"id": 200}, "timestamp": 1601542800000}, True),
 ])
 def test_is_reloaded_needed(client, data, output):
