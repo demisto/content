@@ -26,14 +26,14 @@ name: sophos_firewall
 script:
   commands:
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
       isArray: false
       name: start
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
       isArray: false
@@ -119,7 +119,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Enable
       description: 'Whether to enable the new rule. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
@@ -130,7 +130,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: IPv4
       description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
       isArray: false
@@ -230,7 +230,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable traffic logging for the policy. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -241,7 +241,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to check if the specified user/user group from the\
         \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". When enabling match_identity, the members argument is required.'
@@ -253,7 +253,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to accept traffic from unknown users. The captive portal page\
         \ is displayed to the user where the user can log in to access the Internet.\
@@ -272,7 +272,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Drop
       description: 'Action for the rule traffic. Possible values: "Accept", "Reject", and "Drop". Default is "Drop".'
       isArray: false
@@ -301,7 +301,7 @@ script:
       name: backup_gateway
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: Allow All
       description: The Application Filter policy for the rule. Default is "Allow All".
       isArray: false
@@ -309,7 +309,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Revoke
       description: 'Whether to limit the bandwidth for the applications categorized\
         \ under the Application category. This tag is only applicable when\
@@ -321,7 +321,7 @@ script:
       - Revoke
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: Allow All
       description: The Web Filter policy for the rule. Default is "Allow All".
       isArray: false
@@ -329,7 +329,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Revoke
       description: 'Whether to limit the bandwidth for the URLs categorized under the Web\
         \ category. This tag is only applicable when a web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
@@ -340,7 +340,7 @@ script:
       - Revoke
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: None
       description: The Traffic Shaping policy for the rule. Default is "None".
       isArray: false
@@ -348,7 +348,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable virus and spam scanning for the HTTP protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -359,7 +359,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable virus and spam scanning for the HTTPS protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -370,7 +370,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable sandstorm analysis. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -381,7 +381,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable Google websites to use HTTP/s instead of QUICK QUIC. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -392,7 +392,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable scanning of FTP traffic. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -403,7 +403,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to exclude a user''s network traffic from data accounting.
         This option is available only if the match_identity argument is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
@@ -415,7 +415,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Enable
       description: 'Whether to enable the NAT policy. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
@@ -426,7 +426,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable the Internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -437,7 +437,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable the Internet scheme to apply user-based Application Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -448,7 +448,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to override the gateway of the default NAT policy. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -459,7 +459,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable the source security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -470,7 +470,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable the destination security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -480,28 +480,28 @@ script:
       - Disable
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: MASQ
       description: The NAT policy to apply. Default is "MASQ".
       isArray: false
       name: outbound_address
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: No Restriction
       description: The minimum source health status permitted. Default is "No Restriction".
       isArray: false
       name: minimum_source_hb_permitted
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: No Restriction
       description: The minimum destination health status permitted. Default is "No Restriction".
       isArray: false
       name: minimum_destination_hb_permitted
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: generalpolicy
       description: The IPS policy for the rule. Default is "generalpolicy".
       isArray: false
@@ -551,7 +551,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Enable
       description: 'Whether the rule is enabled. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
@@ -562,7 +562,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: IPv4
       description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
       isArray: false
@@ -662,7 +662,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable traffic logging for the policy. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -673,7 +673,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to check if the specified user/user group from the\
         \ selected zone is allowed to access the selected service. Possible values: "Enable" and "Disable". Default is "Disable". IMPORTANT: When enabling match_identity, the members argument is required.'
@@ -685,7 +685,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to accept traffic from unknown users. The captive portal page\
         \ is displayed to the user where the user can log in to access the Internet.\
@@ -704,7 +704,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Drop
       description: 'Action for the rule traffic. Possible values: "Accept", "Reject", and "Drop". Default is "Drop".'
       isArray: false
@@ -733,7 +733,7 @@ script:
       name: backup_gateway
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: Allow All
       description: The Application Filter policy for the rule. Default is "Allow All".
       isArray: false
@@ -741,7 +741,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Revoke
       description: 'Whether to limit the bandwidth for the applications categorized\
         \ under the Application category. This tag is only applicable when\
@@ -753,7 +753,7 @@ script:
       - Revoke
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: Allow All
       description: The Web Filter policy for the rule. Default is "Allow All".
       isArray: false
@@ -761,7 +761,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Revoke
       description: 'Whether to limit the bandwidth for the URLs categorized under the Web\
         \ category. This tag is only applicable when a web_filter is defined." Possible values: "Apply" and "Revoke". Default is "Revoke".'
@@ -772,7 +772,7 @@ script:
       - Revoke
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: None
       description: The Traffic Shaping policy for the rule. Default is "None".
       isArray: false
@@ -780,7 +780,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable virus and spam scanning for HTTP protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -791,7 +791,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable virus and spam scanning for HTTPS protocol. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -802,7 +802,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable sandstorm analysis. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -813,7 +813,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable Google websites to use HTTP/s instead of QUICK QUIC. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -824,7 +824,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable scanning of FTP traffic. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -835,7 +835,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to exclude a user''s network traffic from data accounting.
         This option is available only if the match_identity argument is enabled. Possible values: "Enable" and "Disable". Default is "Disable".'
@@ -847,7 +847,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Enable
       description: 'Whether to enable the NAT policy. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
@@ -858,7 +858,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable the Internet scheme to apply the user-based Web Filter policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".' 
       isArray: false
@@ -869,7 +869,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable the Internet scheme to apply user-based Application Filter Policy for the rule. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -880,7 +880,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to override the gateway of the default NAT policy. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -891,7 +891,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable the source security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -902,7 +902,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Disable
       description: 'Whether to enable the destination security heartbeat. Possible values: "Enable" and "Disable". Default is "Disable".'
       isArray: false
@@ -912,28 +912,28 @@ script:
       - Disable
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: MASQ
       description: The NAT policy to be applied. Default is "MASQ".
       isArray: false
       name: outbound_address
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: No Restriction
       description: The minimum source health status permitted. Default is "No Restriction".
       isArray: false
       name: minimum_source_hb_permitted
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: No Restriction
       description: The minimum destination health status permitted. Default is "No Restriction".
       isArray: false
       name: minimum_destination_hb_permitted
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: generalpolicy
       description: The IPS policy for the rule. Default is "generalpolicy".
       isArray: false
@@ -988,14 +988,14 @@ script:
       description: Whether the rule is deleted.
       type: Bool
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
       isArray: false
       name: start
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
       isArray: false
@@ -1240,14 +1240,14 @@ script:
       description: Whether the group is deleted.
       type: Bool
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
       isArray: false
       name: start
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
       isArray: false
@@ -1374,14 +1374,14 @@ script:
       description: Whether the URL group is deleted.
       type: Bool
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
       isArray: false
       name: start
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
       isArray: false
@@ -1443,7 +1443,7 @@ script:
       required: true
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: IPv4
       description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
       isArray: false
@@ -1523,7 +1523,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: IPv4
       description: 'The IP family. Possible values: "IPv4" and "IPv6". Default is "IPv4".'
       isArray: false
@@ -1602,14 +1602,14 @@ script:
       description: Whether the IP host is deleted.
       type: Bool
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
       isArray: false
       name: start
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
       isArray: false
@@ -1768,14 +1768,14 @@ script:
       description: Whether the IP host group is deleted.
       type: Bool
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
       isArray: false
       name: start
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
       isArray: false
@@ -2740,14 +2740,14 @@ script:
       description: Whether the firewall service is deleted.
       type: Bool
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
       isArray: false
       name: start
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
       isArray: false
@@ -2838,7 +2838,7 @@ script:
       name: email
       required: true
       secret: false
-    - default: true
+    - default: false
       defaultValue: Guest Group
       description: Group of the user. Default is "Guest Group".
       isArray: false
@@ -2852,7 +2852,7 @@ script:
       required: true
       secret: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: User
       description: 'The type of the user. Possible values: "Administrator" and "User". Default is "User".' 
       isArray: false
@@ -2876,35 +2876,35 @@ script:
       - HAProfile
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: Unlimited Internet Access
       description: The Surfing Quota policy. Default is "Unlimited Internet Access".
       isArray: false
       name: surfing_quota_policy
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: Allowed all the time
       description: The Access Time policy. Default is "Allowed all the time".
       isArray: false
       name: access_time_policy
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: No Policy Applied
       description: The SSL VPN policy. Default is "No Policy Applied".
       isArray: false
       name: ssl_vpn_policy
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: No Policy Applied
       description: The clientless policy. Default is "No Policy Applied".
       isArray: false
       name: clientless_policy
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 100 MB Total Data Transfer policy
       description: 'The Data Transfer policy. Default is: "100 MB Total Data Transfer policy".'
       isArray: false
@@ -2912,7 +2912,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Enable
       description: 'Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
@@ -2922,7 +2922,7 @@ script:
       - Disable
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: All The Time
       description: 'The schedule for appliance access. Default is "All The Time". IMPORTANT: This option\
         \ is available only for Administrators.'
@@ -2930,7 +2930,7 @@ script:
       name: schedule_for_appliance_access
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: High Guarantee User
       description: The QoS policy. Default is "High Guarantee User".
       isArray: false
@@ -2938,7 +2938,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: UserGroupNode
       description: 'The login restriction option. Possible values: "AnyNode" and "UserGroupNode". Default is "UserGroupNode".'
       isArray: false
@@ -2999,7 +2999,7 @@ script:
       name: email
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: Guest Group
       description: Group of the user. Default is "Guest Group".
       isArray: false
@@ -3013,7 +3013,7 @@ script:
       required: false
       secret: true
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: User
       description: 'The type of the user. Possible values: "Administrator" and "User". Default is "User".' 
       isArray: false
@@ -3037,35 +3037,35 @@ script:
       - HAProfile
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: Unlimited Internet Access
       description: The Surfing Quota policy. Default is "Unlimited Internet Access".
       isArray: false
       name: surfing_quota_policy
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: Allowed all the time
       description: The Access Time policy. Default is "Allowed all the time".
       isArray: false
       name: access_time_policy
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: No Policy Applied
       description: The SSL VPN policy. Default is "No Policy Applied".
       isArray: false
       name: ssl_vpn_policy
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: No Policy Applied
       description: The clientless policy. Default is "No Policy Applied".
       isArray: false
       name: clientless_policy
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: 100 MB Total Data Transfer policy
       description: 'The Data Transfer policy. Default is: "100 MB Total Data Transfer policy".'
       isArray: false
@@ -3073,7 +3073,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Enable
       description: 'Whether to enable simultaneous logins global. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
@@ -3083,7 +3083,7 @@ script:
       - Disable
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: All The Time
       description: 'The schedule for appliance access. Default is "All The Time".IMPORTANT: This option\
         \ is available only for Administrators.'
@@ -3091,7 +3091,7 @@ script:
       name: schedule_for_appliance_access
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: High Guarantee User
       description: The QoS policy. Default is "High Guarantee User".
       isArray: false
@@ -3099,7 +3099,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: UserGroupNode
       description: 'The login restriction option. Possible values: "AnyNode" and "UserGroupNode". Default is "UserGroupNode".'
       isArray: false
@@ -3154,14 +3154,14 @@ script:
       description: Whether the user is deleted.
       type: Bool
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
       isArray: false
       name: start
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
       isArray: false
@@ -3482,14 +3482,14 @@ script:
       description: Whether the firewall app policy is deleted.
       type: Bool
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
       isArray: false
       name: start
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
       isArray: false
@@ -3574,14 +3574,14 @@ script:
       description: Bandwidth usage type of the category.
       type: String
   - arguments:
-    - default: true
+    - default: false
       defaultValue: '0'
       description: 'The start index for the rules to list, e.g: 5. Default is "0".'
       isArray: false
       name: start
       required: false
       secret: false
-    - default: true
+    - default: false
       defaultValue: '50'
       description: 'The end index for the rules to list, e.g: 20. Default is "50".'
       isArray: false
@@ -3827,7 +3827,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Enable
       description: 'Whether to enable reporting of the policy. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
@@ -4045,7 +4045,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: Enable
       description: 'Whether to enable reporting of the policy. Possible values: "Enable" and "Disable". Default is "Enable".'
       isArray: false
