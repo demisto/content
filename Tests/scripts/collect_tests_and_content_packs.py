@@ -1056,10 +1056,12 @@ def get_test_list_and_content_packs_to_install(files_string,
     """Create a test list that should run"""
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
      modified_packs, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
+    logging.info(f"modified_packs are: {modified_packs}")
 
     all_modified_files_paths = set(
         modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
     )
+    logging.info(f"all_modified_files_paths are: {all_modified_files_paths}")
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths,
                                                                           id_set,
@@ -1077,6 +1079,7 @@ def get_test_list_and_content_packs_to_install(files_string,
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
+        logging.info(f"packs_to_install 1 are: {packs_to_install}")
 
     # Adding a unique test for a json file.
     if is_reputations_json:
@@ -1101,8 +1104,10 @@ def get_test_list_and_content_packs_to_install(files_string,
     # get all modified packs - not just tests related
     # TODO: need to move the logic of collecting packs of all items to be inside get_modified_files_for_testing
     modified_packs = get_modified_packs(files_string)
+    logging.info(f"modified_packs from get_modified_packs are: {modified_packs}")
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
+        logging.info(f"packs_to_install 2 are: {packs_to_install}")
 
     # Get packs of integrations corresponding to each test, as listed in conf.json
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
@@ -1119,6 +1124,7 @@ def get_test_list_and_content_packs_to_install(files_string,
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
 
+    logging.info(f"packs_to_install 3 are: {packs_to_install}")
     if not tests:
         logging.info("No tests found running sanity check only")
 
