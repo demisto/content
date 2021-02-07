@@ -69,7 +69,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
+      default: false
       defaultValue: 'true'
       description: Whether there are multiple URLs in the 'url' argument. If a URL
         contains commas, set this argument to 'false' and enter the single URL as

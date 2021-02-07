@@ -6,7 +6,7 @@ display: ThreatConnect v2
 category: Data Enrichment & Threat Intelligence
 description: ThreatConnect's intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
 configuration:
-- display: baseUrl
+- display: Base Url
   name: baseUrl
   defaultvalue: https://api.threatconnect.com
   type: 0
@@ -1112,9 +1112,6 @@ script:
       description: The active DNS indicator (only for hosts).
     - name: whoisActive
       description: The active indicator (only for hosts).
-    - name: updatedValues
-      description: A comma-separated list of field:value pairs to update. For example, "rating=3",
-        "confidence=42", and "description=helloWorld".
     - name: falsePositive
       auto: PREDEFINED
       predefined:

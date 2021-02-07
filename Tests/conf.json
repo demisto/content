@@ -3,6 +3,13 @@
     "testInterval": 20,
     "tests": [
         {
+            "integrations": "Microsoft Teams Management",
+            "playbookID": "Microsoft Teams Management - Test"
+        },
+        {
+            "playbookID": "SetIfEmpty - non-ascii chars - Test"
+        },
+        {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
@@ -42,7 +49,7 @@
         },
         {
             "integrations": "EmailRepIO",
-            "playbookID": "TestEmailRepPlaybook",
+            "playbookID": "TestEmailRepIOPlaybook",
             "fromversion": "5.0.0"
         },
         {
@@ -112,7 +119,8 @@
         },
         {
             "integrations": "OpenCTI Feed",
-            "playbookID": "OpenCTI Feed Test"
+            "playbookID": "OpenCTI Feed Test",
+            "fromversion": "5.5.0"
         },
         {
             "integrations": "AWS - Security Hub",
@@ -133,7 +141,8 @@
             "playbookID": "Service Desk Plus Test",
             "instance_names": "sdp_instance_1",
             "fromversion": "5.0.0",
-            "toversion": "5.9.9"
+            "toversion": "5.9.9",
+            "is_mockable": false
         },
         {
             "integrations": "ServiceDeskPlus",
@@ -146,7 +155,8 @@
             "integrations": "ServiceDeskPlus",
             "playbookID": "Service Desk Plus Test",
             "instance_names": "sdp_instance_2",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "ServiceDeskPlus",
@@ -266,7 +276,8 @@
         },
         {
             "integrations": "Trend Micro Apex",
-            "playbookID": "Trend Micro Apex - Test"
+            "playbookID": "Trend Micro Apex - Test",
+            "is_mockable": false
         },
         {
             "integrations": "Blocklist_de Feed",
@@ -522,7 +533,8 @@
         },
         {
             "integrations": "Cloaken",
-            "playbookID": "Cloaken-Test"
+            "playbookID": "Cloaken-Test",
+            "is_mockable": false
         },
         {
             "integrations": "ThreatX",
@@ -779,13 +791,15 @@
             "playbookID": "test playbook - QRadarCorrelations",
             "timeout": 2000,
             "fromversion": "5.0.0",
-            "toversion": "5.9.9"
+            "toversion": "5.9.9",
+            "is_mockable": false
         },
         {
             "integrations": "QRadar_v2",
             "playbookID": "test playbook - QRadarCorrelations For V2",
             "timeout": 2000,
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "is_mockable": false
         },
         {
             "integrations": "Awake Security",
@@ -909,7 +923,7 @@
             "integrations": "Tenable.io",
             "playbookID": "Tenable.io Scan Test",
             "nightly": true,
-            "timeout": 900
+            "timeout": 1400
         },
         {
             "integrations": "Tenable.sc",
@@ -1382,7 +1396,8 @@
         {
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "is_mockable": false
         },
         {
             "integrations": "Symantec Endpoint Protection V2",
@@ -1432,7 +1447,8 @@
         {
             "integrations": "jira-v2",
             "playbookID": "Jira-v2-Test",
-            "timeout": 500
+            "timeout": 500,
+            "is_mockable": false
         },
         {
             "integrations": "ipinfo",
@@ -1595,12 +1611,14 @@
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewv2_regular"
+            "instance_names": "ewv2_regular",
+            "is_mockable": false
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
-            "instance_names": "ewsv2_separate_process"
+            "instance_names": "ewsv2_separate_process",
+            "is_mockable": false
         },
         {
             "integrations": "remedy_sr_beta",
@@ -1808,7 +1826,8 @@
         {
             "integrations": "VxStream",
             "playbookID": "VxStream Test",
-            "nightly": true
+            "nightly": true,
+            "is_mockable": false
         },
         {
             "integrations": "Cylance Protect",
@@ -1822,7 +1841,8 @@
         {
             "integrations": "QRadar",
             "playbookID": "test_Qradar",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "QRadar_v2",
@@ -2091,7 +2111,7 @@
             "playbookID": "Phishing v2 - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1200,
-            "nightly": true,
+            "nightly": false,
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
@@ -2104,7 +2124,7 @@
             "playbookID": "Phishing - Core - Test - Incident Starter",
             "fromversion": "6.0.0",
             "timeout": 1700,
-            "nightly": true,
+            "nightly": false,
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
@@ -2140,7 +2160,8 @@
         },
         {
             "playbookID": "Docker Hardening Test",
-            "fromversion": "5.0.0"
+            "fromversion": "5.0.0",
+            "runnable_on_docker_only": true
         },
         {
             "integrations": "Active Directory Query v2",
@@ -2450,7 +2471,7 @@
             "integrations": "AWS - EC2",
             "playbookID": "AWS - EC2 Test Playbook",
             "fromversion": "5.0.0",
-            "memory_threshold": 75
+            "memory_threshold": 90
         },
         {
             "integrations": "AWS - EC2",
@@ -2820,7 +2841,8 @@
         {
             "integrations": "DShield Feed",
             "playbookID": "playbook-DshieldFeed_test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "integrations": "AlienVault Reputation Feed",
@@ -3138,7 +3160,8 @@
         {
             "integrations": "Rundeck",
             "playbookID": "Rundeck_test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "is_mockable": false
         },
         {
             "playbookID": "Field polling test",
@@ -3157,7 +3180,8 @@
         },
         {
             "integrations": "Cryptocurrency",
-            "playbookID": "Cryptocurrency-Test"
+            "playbookID": "Cryptocurrency-Test",
+            "is_mockable": false
         },
         {
             "integrations": "Public DNS Feed",
@@ -3213,7 +3237,6 @@
         "palo_alto_panorama_test_pb": "Issue #22835",
         "Create Phishing Classifier V2 ML Test": "Issue 26341",
         "DBotCreatePhishingClassifierV2FromFile-Test": "Issue 26456",
-        "HybridAnalysis-Test": "Issue 26599",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
@@ -3222,29 +3245,19 @@
         "Cortex XDR - IOC - Test": "Issue 25598",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Cherwell - test": "Issue 26780",
-        "pyEWS_Test": "Issue 28339",
-        "GmailTest": "Issue 27057",
         "SMB test": "Issue 26454",
-        "TestCofenseFeed": "Issue 29198",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "TCPUtils-Test": "Issue 29677",
-        "OpenCTI Feed Test": "Issue 29592",
         "Microsoft Advanced Threat Analytics - Test": "Issue 29593",
         "Polygon-Test": "Issue 29060",
         "AttackIQ - Test": "Issue 29774",
         "AWS-securityhub Test": "Issue 29796",
-        "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
-        "Trend Micro Apex - Test": "Issue 27280",
         "Azure Compute - Test": "Issue 28056",
-        "TestEmailRepPlaybook": "Issue 30070",
-        "SymantecEndpointProtection_Test": "Issue 30157",
         "forcepoint test": "Issue 28043",
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
-        "PhishLabsIOC TestPlaybook": "Issue 30874",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
-        "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
@@ -3252,17 +3265,21 @@
         "Carbon Black Enterprise Protection V2 Test": "Issue 32322",
         "Google_Vault-Search_And_Display_Results_test": "Issue 24348",
         "FeedThreatConnect-Test": "Issue 32317",
-        "Phishing v2 - Test - Incident Starter": "Issue 26783",
-        "Phishing - Core - Test - Incident Starter": "Issue 26784",
-        "Process Email - Generic - Test - Incident Starter": "Issue 32459",
         "HelloWorldPremium_Scan-Test": "Issue 32512",
-        "RSA NetWitness Test": "Issue 32566",
         "ThreatMiner-Test": "Issue 32688",
         "Palo_Alto_Networks_Enterprise_DLP - Test": "Issue 32568",
-        "Microsoft Graph Groups - Test": "Issue 27890"
+        "JoeSecurityTestDetonation": "Issue 25650",
+        "JoeSecurityTestPlaybook": "Issue 25649",
+        "Tenable.io Scan Test": "Issue 26728",
+        "PAN-OS Create Or Edit Rule Test": "Issue 26465",
+        "PAN-OS DAG Configuration Test": "Issue 19205",
+        "palo_alto_firewall_test_pb": "Issue 27501",
+        "Cortex Data Lake Test": "Issue 24346",
+        "O365-SecurityAndCompliance-Test": "Issue 32364",
+        "pyEWS_Test": "Issue 27942"
     },
     "skipped_integrations": {
-        
+
         "_comment1": "~~~ NO INSTANCE ~~~",
         "Forcepoint": "instance issues. Issue 28043",
         "ZeroFox": "Issue 29284",
@@ -3271,7 +3288,7 @@
         "Traps": "Issue 24122",
         "Fidelis Elevate Network": "Issue 26453",
         "CrowdStrike Falcon X": "Issue 26209",
-        "ArcSight Logger": "Issue 24303",
+        "ArcSight Logger": "Issue 19117",
         "Sophos Central": "No instance",
         "MxToolBox": "No instance",
         "Prisma Access": "Instance will be provided soon by Lior and Prasen - Issue 27112",
@@ -3310,7 +3327,7 @@
         "SCADAfence CNM": "Issue 18376",
         "ArcSight ESM v2": "Issue #18328",
         "AlienVault USM Anywhere": "Issue #18273",
-        "Dell Secureworks": "Instance locally installed on @liorblob PC",
+        "Dell Secureworks": "No instance",
         "Netskope": "instance is down",
         "Service Manager": "Expired license",
         "carbonblackprotection": "License expired",
@@ -3337,19 +3354,19 @@
         "Workday": "License expired Issue: 29595",
         "FireEyeFeed": "License expired Issue: 31838",
         "Akamai WAF": "Issue 32318",
-        
+
         "_comment2": "~~~ UNSTABLE ~~~",
         "Tenable.sc": "unstable instance",
         "ThreatConnect v2": "unstable instance",
         "Infoblox": "Unstable instance, issue 25651",
-        
+
         "_comment3": "~~~ QUOTA ISSUES ~~~",
         "XFE_v2": "Required proper instance, otherwise we get quota errors",
         "Lastline": "issue 20323",
         "Google Resource Manager": "Cannot create projects because have reached allowed quota.",
         "Looker": "Warehouse 'DEMO_WH' cannot be resumed because resource monitor 'LIMITER' has exceeded its quota.",
         "Ipstack": "Issue 26266",
-        
+
         "_comment4": "~~~ OTHER ~~~",
         "Pentera": "authentication method will not work with testing",
         "AlienVault OTX TAXII Feed": "Issue 29197",
@@ -3360,10 +3377,7 @@
         "HelloWorldSimple": "This is just an example integration - no need for test",
         "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "Lastline v2": "Temporary skipping, due to quota issues, in order to merge a PR",
-        "AttackIQFireDrill": "License issues #29774",
-        "CrowdStrike Falcon Intel v2": "License issues #32473",
-        "CrowdStrikeMalquery": "License issues #32473",
-        "CrowdstrikeFalcon": "License issues #32473"
+        "AttackIQFireDrill": "License issues #29774"
     },
     "nightly_integrations": [
         "Lastline v2",
@@ -3372,24 +3386,19 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
-        "DShield Feed": "Has a command that downloads a file (!dshield-get-indicators)",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
         "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
         "urlscan.io": "Uses data that comes in the headers",
-        "QRadar_v2": "Test playbook 'test playbook - QRadarCorrelations' has multiple branches",
         "CloudConvert": "has a command that uploads a file (!cloudconvert-upload)",
-        "EWS v2": "Fetches bytes data (!ews-get-items-from-folder)",
-        "jira-v2": "has a command that uploads a file ( !jira-issue-upload-file)",
-        "Rundeck": "has a command that uploads a file (!rundeck-adhoc-script-run)",
-        "ServiceDeskPlus": "Playbook uses a random string and verifying the response contain it",
         "Feodo Tracker IP Blocklist Feed": "test-module downloads a file",
         "McAfee Advanced Threat Defense": "has a command that uploads file (!atd-file-upload)",
         "Symantec Messaging Gateway": "Test playbook uses a random string",
         "Cylance Protect": "Test playbook (get_file_sample_by_hash_-_cylance_protect_-_test) downloads a file",
-        "WildFire-v2": "has a command that uploads file (!wildfire-upload)",
-        "carbonblackliveresponse": "has a command that uploads file (!cb-push-file-to-endpoint)",
-        "ServiceNow v2": "has a command that uploads file (!servicenow-upload-file)",
+        "WildFire-v2": "has a command that uploads a file (!wildfire-upload)",
+        "carbonblackliveresponse": "has a command that uploads a file (!cb-push-file-to-endpoint)",
+        "ServiceNow v2": "has a command that uploads a file (!servicenow-upload-file)",
+        "Hybrid Analysis": "has a command that uploads a file (!hybrid-analysis-submit-sample)",
         "AlienVault OTX TAXII Feed": "Client from 'cabby' package generates uuid4 in the request",
         "Generic Webhook": "Does not send HTTP traffic",
         "Microsoft Endpoint Configuration Manager": "Uses Microsoft winRM",
@@ -3405,6 +3414,7 @@
         "SNDBOX": "Submits a file - tests that send files shouldn't be mocked",
         "Joe Security": "Submits a file - tests that send files shouldn't be mocked",
         "Maltiverse": "issue 24335",
+        "ActiveMQ": "stomp sdk not supporting proxy.",
         "MITRE ATT&CK": "Using taxii2client package",
         "MongoDB": "Our instance not using SSL",
         "Cortex Data Lake": "Integration requires SSL",
@@ -3443,7 +3453,6 @@
         "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
-        "Anomali ThreatStream": "'proxy' parameter not working",
         "Recorded Future": "might be dynamic test",
         "AlphaSOC Wisdom": "Test module issue",
         "RedLock": "SSL Issues",
@@ -3458,18 +3467,10 @@
         "Microsoft Graph Device Management": "Test direct access to oproxy",
         "Azure Compute v2": "Test direct access to oproxy",
         "AWS - CloudWatchLogs": "Issue 20958",
-        "AWS - AccessAnalyzer": "Issue 24926",
-        "AWS - ACM": "Issue 24926",
         "AWS - Athena - Beta": "Issue 24926",
         "AWS - CloudTrail": "Issue 24926",
-        "AWS - EC2": "Issue 24926",
-        "AWS - GuardDuty": "Issue 24926",
-        "AWS - IAM": "Issue 24926",
         "AWS - Lambda": "Issue 24926",
-        "AWS - Route53": "Issue 24926",
-        "AWS - S3": "Issue 24926",
-        "AWS - SQS": "Issue 24926",
-        "Amazon DynamoDB": "Issue 24926",
+        "AWS - S3": "uploads and downloads files",
         "AWS Sagemaker": "Issue 24926",
         "Gmail Single User": "googleclient sdk has time based challenge exchange",
         "Gmail": "googleclient sdk has time based challenge exchange",
@@ -3492,10 +3493,14 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "QRadar": "Playbooks has parallel steps which are causing inconsistent results",
-        "MISP V2": "Cleanup process isn't performed as expected."
+        "MISP V2": "Cleanup process isn't performed as expected.",
+        "Rapid7 Nexpose": "Test playbook (nexpose_test) downloads a file"
     },
     "parallel_integrations": [
+        "AWS - EC2",
+        "Amazon DynamoDB",
+        "AWS - ACM",
+        "Cryptocurrency",
         "SNDBOX",
         "Whois",
         "Rasterize",
@@ -3542,7 +3547,7 @@
         "Mail Listener v2"
     ],
     "docker_thresholds": {
-        
+
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
             "demisto/chromium": {
