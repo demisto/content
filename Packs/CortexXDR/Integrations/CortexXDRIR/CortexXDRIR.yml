@@ -2290,6 +2290,13 @@ script:
     description: Initiate a new endpoint script execution action using provided snippet code.
     execution: false
     name: xdr-run-snippet-code-script
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: PaloAltoNetworksXDR.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
   - arguments:
     - default: false
       description: Action ID retrieved from the xdr-run-script command.
@@ -2476,7 +2483,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Path of file to check for existance.
+      description: Path of file to check for existence.
       isArray: false
       name: file_path
       required: true
