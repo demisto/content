@@ -862,31 +862,7 @@ class ExchangeOnlineClient {
             if ($domain_controller) {
                 $cmd_params.DomainController = $domain_controller
             }
-            $select_outputs = @(
-                "AdminDisplayName", "ApplicationIdentifier","ApplicationUri", "DistinguishedName",
-                "ExchangeObjectId", "ExchangeVersion", "Guid", "Id", "Identity", "IsValid", "Name"
-            )
-            $response = Get-FederationTrust @cmd_params | Select-Object AdminDisplayName, ApplicationIdentifier,
-                ApplicationUri, DistinguishedName, ExchangeObjectId, ExchangeVersion, Guid, Id, Identity,
-                IsValid, Name, NamespaceProvisioner, ObjectCategory, ObjectClass, ObjectState,
-                @{
-                    Name="OrgCertificate";
-                    Expression={
-                        $_.OrgCertificate | Select-Object Archived, ServerItem, Issuer, NotAfter, NotBefore, PrivateKey,
-                            @{
-                                Name="Extensions";
-                                Expression={
-                                    $_.Extensions | Select-Object Critical, KeyUsages, CertificateAuthorityOrgCertificate, Oid
-                                }
-                            }
-                    }
-                },
-                @{
-                    Name="Handle"; Expression={$_.Handle | Select-Object value}
-                }, Issuer,
-                @{Name="IssuerName"; Expression={$_.IssuerName.Name}}
-
-            return $response
+            return Get-FederationTrust @cmd_params
         }
         finally {
             $this.CloseSession()
@@ -1044,7 +1020,7 @@ class ExchangeOnlineClient {
             if ($limit -gt 0){
                 $cmd_params.ResultSize = $limit
             }
-            return Get-MailboxAuditBypassAssociation @cmd_params
+            return Get-MailboxAuditBypassAssociation @cmd_params -WarningAction SilentlyContinue
         } finally {
             $this.CloseSession()
         }
@@ -1388,19 +1364,19 @@ function Main {
             "$script:COMMAND_PREFIX-message-trace-get" {
                 ($human_readable, $entry_context, $raw_response) = GetMessageTraceCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-federation-trust" {
+            "$script:COMMAND_PREFIX-federation-trust-get" {
                 ($human_readable, $entry_context, $raw_response) = GetFederationTrustCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-federation-configuration" {
+            "$script:COMMAND_PREFIX-federation-configuration-get" {
                 ($human_readable, $entry_context, $raw_response) = GetFederationConfigurationCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-remote-domain" {
+            "$script:COMMAND_PREFIX-remote-domain-get" {
                 ($human_readable, $entry_context, $raw_response) = GetRemoteDomainCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-user" {
+            "$script:COMMAND_PREFIX-user-list" {
                 ($human_readable, $entry_context, $raw_response) = GetUserCommand $exo_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-get-mailbox-audit-bypass-association" {
+            "$script:COMMAND_PREFIX-mailbox-audit-bypass-association-list" {
                 ($human_readable, $entry_context, $raw_response) = GetMailboxAuditBypassAssociationCommand $exo_client $command_arguments
             }
             default {

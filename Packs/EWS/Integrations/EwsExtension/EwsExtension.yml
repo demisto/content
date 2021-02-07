@@ -1036,10 +1036,10 @@ script:
         description: ''
         type: Date
     deprecated: false
-    description: Use the ews-get-federation-trust command to view the federation trust
+    description: Use the ews-federation-trust-get command to view the federation trust
       configured for the Exchange organization.
     execution: false
-    name: ews-get-federation-trust
+    name: ews-federation-trust-get
   - arguments:
     - default: false
       description: |-
@@ -1064,6 +1064,7 @@ script:
       required: false
       secret: false
       defaultValue: 'false'
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
@@ -1147,9 +1148,9 @@ script:
         description: ''
         type: Date
     deprecated: false
-    description: Use the ews-get-federation-configuration command to retrieve the Exchange organization's federated organization identifier and related details, such as federated domains, organization contact and status.
+    description: Use the ews-federation-configuration-get command to retrieve the Exchange organization's federated organization identifier and related details, such as federated domains, organization contact and status.
     execution: false
-    name: ews-get-federation-configuration
+    name: ews-federation-configuration-get
   - arguments:
     - default: false
       description: |-
@@ -1160,7 +1161,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The Identity parameter specifies the remote domain that you want to view.
+      description: The Identity parameter specifies the remote domain that you want to view. You can use Guid, Id and any other identifier.
       isArray: false
       name: identity
       required: false
@@ -1301,7 +1302,7 @@ script:
     deprecated: false
     description: View the configuration information for the remote domains configured in your organization. This command is available only in the Exchange Online PowerShell V2 module.
     execution: false
-    name: ews-get-remote-domain
+    name: ews-remote-domain-get
   - arguments:
     - default: false
       description: The Identity parameter specifies the mailbox you want to view.
@@ -1648,9 +1649,9 @@ script:
         description: ''
         type: String
     deprecated: false
-    description: Use the Get-User command to view existing user objects in your organization.
+    description: Use the ews-user-list command to view existing user objects in your organization.
     execution: false
-    name: ews-get-user
+    name: ews-user-list
   - arguments:
     - default: false
       description: The Identity parameter specifies the mailbox you want to view.
@@ -1740,7 +1741,7 @@ script:
     deprecated: false
     description: Use the Get-User command to view existing user objects in your organization.
     execution: false
-    name: ews-get-mailbox-audit-bypass-association
+    name: ews-mailbox-audit-bypass-association-list
   dockerimage: demisto/powershell-ubuntu:7.0.3.12001
   feed: false
   isfetch: false
