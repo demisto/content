@@ -92,7 +92,7 @@ args:
   isArray: false
   name: threshold
   required: false
-  secret: true
+  secret: false
 - default: false
   defaultValue: '30'
   description: The maximum number of incidents to display as part of the campaign.
