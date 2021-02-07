@@ -62,7 +62,7 @@ def test_instances(secret_conf_path, server, username, password):
         validate_test = integration.get('validate_test', True)
 
         if has_integration:
-            instance_id, failure_message, _ = __create_integration_instance(
+            instance_id, failure_message = __create_integration_instance(
                 server, username, password, integration_name, integration_instance_name,
                 integration_params, is_byoi, validate_test=validate_test)
             if failure_message == 'No configuration':
