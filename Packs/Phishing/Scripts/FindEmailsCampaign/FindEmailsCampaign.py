@@ -274,7 +274,7 @@ def return_indicator_entry(incidents_df):
     indicators_df = indicators_df[indicators_df['Involved Incidents Count'] > 1]
     if len(indicators_df) == 0:
         return_no_mututal_indicators_found_entry()
-        return indicators
+        return indicators_df.to_dict(orient='records')
     indicators_df['Id'] = indicators_df['id'].apply(lambda x: "[%s](#/indicator/%s)" % (x, x))
     indicators_df = indicators_df.sort_values(['score', 'Involved Incidents Count'], ascending=False)
     indicators_df['Reputation'] = indicators_df['score'].apply(scoreToReputation)
@@ -284,7 +284,7 @@ def return_indicator_entry(incidents_df):
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
     return_outputs(hr, add_context_key(create_context_for_indicators(indicators_df['id'].tolist())))
-    return indicators
+    return indicators_df.to_dict(orient='records')
 
 
 def get_comma_sep_list(value):
