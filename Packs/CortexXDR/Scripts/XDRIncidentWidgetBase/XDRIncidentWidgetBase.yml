@@ -1,7 +1,4 @@
 args:
-- defaultValue: "3000"
-  description: The maximum number of incidents to fetch. The default value is 3000.
-  name: limit
 - auto: PREDEFINED
   description: The result of the widget.
   name: reultType

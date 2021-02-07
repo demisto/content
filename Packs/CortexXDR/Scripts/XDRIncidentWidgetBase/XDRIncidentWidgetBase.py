@@ -1,103 +1,45 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-QUERY_TYPE_TO_KEY = {
-    'Categories': 'PaloAltoNetworksXDR.Incident.alerts.category',
-    'Users': 'PaloAltoNetworksXDR.Incident.users',
-    'Hosts': 'PaloAltoNetworksXDR.Incident.hosts',
-    'Alerts': 'PaloAltoNetworksXDR.Incident.alerts.name',
-    'MitreTactic': 'PaloAltoNetworksXDR.Incident.alerts.mitre_tactic_id_and_name',
-    'MitreTechnique': 'PaloAltoNetworksXDR.Incident.alerts.mitre_technique_id_and_name',
-    'FileSHA2': 'PaloAltoNetworksXDR.Incident.file_artifacts.file_sha256',
-    'File': 'PaloAltoNetworksXDR.Incident.file_artifacts.file_name'
-}
-
-
-def get_xdr_incidents(limit: int, to_date: str, from_date: str) -> []:
-    """
-    Returns Cortex XDR incident with status Active or Pending using GetIncidentsByQuery script.
-    :param limit: The maximum number of incidents to fetch
-    :param to_date: The end date by which to filter incidents.
-    :param from_date: The start date by which to filter incidents.
-    :return: Cortex XDR incident objects
-    """
-    get_incidents_args = {
-        'query': 'status:Active or status:Pending and type:"Cortex XDR Incident"',
-        'includeContext': True,
-        'limit': limit,
-        'toDate': to_date,
-        'fromDate': from_date
-    }
-
-    incidents_res = demisto.executeCommand('GetIncidentsByQuery', get_incidents_args)
-    if isError(incidents_res):
-        return_error(f'Error occurred while trying to get incidents: {get_error(incidents_res)}')
-
-    incidents = []
-    try:
-        incidents = json.loads(incidents_res[0].get('Contents'))
-    except json.JSONDecodeError:
-        demisto.error(f'Failed to parse incidents response from GetIncidentsByQuery, result = {incidents_res}')
-        pass
-    return incidents
-
-
-def update_result_dict(context: list, res_dict: dict, query_type: str):
-    """
-    Updated the result dict counters with the current context values.
-    :param context: List of values from the incident context key.
-    :param res_dict: The result dictionary that contains the counters of the query.
-    :param query_type: The item to gets the result in the incident(users/hosts/alarms/e.g).
-    """
-    for val in context:
-        if not val:
-            continue
-
-        if 'This alert from content' in val:
-            continue
-
-        try:
-            if query_type == 'Users' and val.partition('\\')[2]:
-                val = val.partition('\\')[2]
-
-            if query_type == 'Hosts':
-                val = val.partition(':')[0]
-        except Exception as err:
-            demisto.error(f'Could not parse value: {val}, error: {err}')
-            pass
-        if not val:
-            continue
-
-        val = val.capitalize()
-
-        if res_dict.get(val):
-            res_dict[val] = res_dict[val] + 1
-        else:
-            res_dict[val] = 1
-
 
 def main():
     try:
-        args = demisto.args()
+        res_type = demisto.getArg('reultType')
+        query_type = demisto.getArg('queryType')
+        to_date = demisto.getArg('to')
+        from_date = demisto.getArg('from')
+        list_name = f'xdrIncidents_{query_type}'
 
-        res_type = args.get('reultType')
-        query_type = args.get('queryType')
-        to_date = args.get('to')
-        from_date = args.get('from')
+        # parse time arguments
+        date_pattern = re.compile('\d{4}[-/]\d{2}[-/]\d{2}T\d{2}:\d{2}:\d{2}')
 
-        try:
-            limit = int(args.get('limit'))
-        except ValueError:
-            limit = 3000
-        incidents = get_xdr_incidents(limit, to_date, from_date)
+        if to_date and to_date != '0001-01-01T00:00:00Z':
+            result = date_pattern.findall(to_date)[0]
+            to_date = datetime.strptime(result, '%Y-%m-%dT%H:%M:%S')
+        else:
+            to_date = datetime.max
+
+        if from_date and from_date != '0001-01-01T00:00:00Z':
+            result = date_pattern.findall(from_date)[0]
+            from_date = datetime.strptime(result, '%Y-%m-%dT%H:%M:%S')
+        else:
+            from_date = datetime.min
+
+        list_res = demisto.executeCommand("getList", {"listName": list_name})
+        if isError(list_res):
+            return_error(f'Error occurred while trying to get the list {list_name}: {get_error(list_res)}')
+
+        incidents = json.loads(list_res[0]["Contents"])
 
         res_dict = {}  # type:dict
         for incident in incidents:
-            context = incident.get('context')
-
-            val = demisto.dt(context, QUERY_TYPE_TO_KEY[query_type])
-            if val:
-                update_result_dict(val, res_dict, query_type)
+            creatiod_date = datetime.strptime(incident.get('created'), '%Y-%m-%dT%H:%M:%S')
+            if from_date <= creatiod_date <= to_date:
+                for key, val in incident.get('data').items():
+                    if res_dict.get(key):
+                        res_dict[key] = res_dict[key] + val
+                    else:
+                        res_dict[key] = val
 
         if res_type == 'Top10':
             res = sorted(res_dict.items(), key=lambda x: x[1], reverse=True)[:10]
