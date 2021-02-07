@@ -7,6 +7,9 @@
             "playbookID": "Microsoft Teams Management - Test"
         },
         {
+            "playbookID": "SetIfEmpty - non-ascii chars - Test"
+        },
+        {
             "integrations": "Tripwire",
             "playbookID": "TestplaybookTripwire",
             "fromversion": "5.0.0"
@@ -3253,14 +3256,12 @@
         "Polygon-Test": "Issue 29060",
         "AttackIQ - Test": "Issue 29774",
         "AWS-securityhub Test": "Issue 29796",
-        "AWS - CloudWatchLogs Test Playbook": "Issue 29828",
         "Azure Compute - Test": "Issue 28056",
         "forcepoint test": "Issue 28043",
         "CanaryTools Test": "Issue 30796",
         "Generic Webhook - Test": "Issue 30797",
         "Test-VulnDB": "Issue 30875",
         "Malware Domain List Active IPs Feed Test": "Issue 30878",
-        "nexpose_test": "Issue 31019",
         "CuckooTest": "Issue 25601",
         "Cisco Umbrella Test": "Issue 24338",
         "PhishlabsIOC_DRP-Test": "Issue 29589",
@@ -3496,7 +3497,8 @@
         "GoogleKubernetesEngine": "SDK",
         "TAXIIFeed": "Cannot use proxy",
         "EWSO365": "oproxy dependent",
-        "MISP V2": "Cleanup process isn't performed as expected."
+        "MISP V2": "Cleanup process isn't performed as expected.",
+        "Rapid7 Nexpose": "Test playbook (nexpose_test) downloads a file"
     },
     "parallel_integrations": [
         "AWS - EC2",
