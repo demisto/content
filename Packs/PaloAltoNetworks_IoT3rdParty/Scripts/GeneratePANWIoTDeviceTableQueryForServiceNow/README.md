@@ -7,7 +7,7 @@ Generates a single query or a query list to query in ServiceNow.
 | --- | --- |
 | Script Type | python |
 | Tags | servicenow,  PANW IoT 3rd Party Integration|
-
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Dependencies
 ---

@@ -7,7 +7,7 @@ Retrieves all specified assets from the PANW IoT cloud and sends them to the SIE
 | --- | --- |
 | Script Type | python3 |
 | Tags | PANW IoT 3rd Party Integration, siem |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Dependencies
 ---

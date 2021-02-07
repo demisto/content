@@ -7,7 +7,7 @@ Retrieves all devices from PANW IoT Cloud and exports them as endpoints with cus
 | --- | --- |
 | Script Type | python3 |
 | Tags | PANW IoT 3rd Party Integration, Cisco ISE |
-| Demisto Version | 6.0.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Used In
 ---

@@ -7,7 +7,7 @@ Gets all available devices from PANW IoT Cloud and sends them to ServiceNow.
 | --- | --- |
 | Script Type | python |
 | Tags | servicenow,  PANW IoT 3rd Party Integration |
-
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Dependencies
 ---
