@@ -1575,6 +1575,20 @@ class Pack(object):
                 changelog = json.load(changelog_file)
         return changelog
 
+    def _get_metadata(self, index_folder_path):
+        """ Gets the pack metadata.
+        Args:
+            index_folder_path (str): downloaded index folder directory path.
+        Returns:
+            dict: Get the metadata from downloaded index
+        """
+        metadata_index_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
+        metadata = {}
+        if os.path.exists(metadata_index_path):
+            with open(metadata_index_path, "r") as metadata:
+                metadata = json.load(metadata)
+        return metadata
+
     def _get_pack_creation_date(self, index_folder_path):
         """ Gets the pack created date.
         Args:
