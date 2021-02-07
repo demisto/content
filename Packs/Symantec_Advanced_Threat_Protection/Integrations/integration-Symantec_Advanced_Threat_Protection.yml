@@ -52,12 +52,12 @@ configuration:
   name: incidentType
   type: 13
   required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Max 30 days.
+- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days). Maximum is 30 days.
   name: first_fetch
   defaultvalue: 7 days
   type: 0
   required: false
-- display: Query string for fetch incidents. e.g. "updated>= '2020-06-06T15:39:55.616Z' and updated < '2020-08-07T00:00:00.000Z' "
+- display: Query string for fetch incidents. For example - "updated>='2020-06-06T15:39:55.616Z' and updated<'2020-08-07T00:00:00.000Z' "
   defaultvalue: ""
   name: fetch_incidents_query
   type: 0
