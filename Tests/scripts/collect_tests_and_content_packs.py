@@ -18,7 +18,8 @@ from demisto_sdk.commands.common.constants import *  # noqa: E402
 
 from Tests.Marketplace.marketplace_services import IGNORED_FILES
 from Tests.scripts.utils import collect_helpers
-from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata
+from Tests.scripts.utils.content_packs_util import should_test_content_pack, get_pack_metadata, \
+    should_install_content_pack
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
 from Tests.scripts.utils.log_util import install_logging
 
@@ -760,11 +761,11 @@ def get_test_conf_from_conf(test_id, server_version, conf=deepcopy(CONF)):
     test_conf_lst = conf.get_tests()
     # return None if nothing is found
     test_conf = next((test_conf for test_conf in test_conf_lst if (
-        test_conf.get('playbookID') == test_id
-        and is_runnable_in_server_version(
-            from_v=test_conf.get('fromversion', '0.0'),
-            server_v=server_version,
-            to_v=test_conf.get('toversion', '99.99.99')))), None)
+            test_conf.get('playbookID') == test_id
+            and is_runnable_in_server_version(
+        from_v=test_conf.get('fromversion', '0.0'),
+        server_v=server_version,
+        to_v=test_conf.get('toversion', '99.99.99')))), None)
     return test_conf
 
 
@@ -1030,6 +1031,18 @@ def filter_tests(tests: set, id_set: json) -> set:
     return tests_without_non_supported
 
 
+def filter_installed_packs(packs_to_install: set) -> set:
+    """
+    Filter packs that should be installed out from the installed packs set if they are
+    Args:
+        packs_to_install (set): Set of installed packs collected so far.
+    Returns:
+        (set): Set of packs without ignored, non supported and deprecated-packs tests.
+    """
+
+    return {pack for pack in packs_to_install if should_install_content_pack(pack)}
+
+
 def is_documentation_changes_only(files_string: str) -> bool:
     """
 
@@ -1056,12 +1069,10 @@ def get_test_list_and_content_packs_to_install(files_string,
     """Create a test list that should run"""
     (modified_files_with_relevant_tests, modified_tests_list, changed_common, is_conf_json, sample_tests,
      modified_packs, is_reputations_json, is_indicator_json) = get_modified_files_for_testing(files_string)
-    logging.info(f"modified_packs are: {modified_packs}")
 
     all_modified_files_paths = set(
         modified_files_with_relevant_tests + modified_tests_list + changed_common + sample_tests
     )
-    logging.info(f"all_modified_files_paths are: {all_modified_files_paths}")
 
     from_version, to_version = get_from_version_and_to_version_bounderies(all_modified_files_paths,
                                                                           id_set,
@@ -1079,7 +1090,6 @@ def get_test_list_and_content_packs_to_install(files_string,
     if modified_files_with_relevant_tests:
         tests, packs_to_install = find_tests_and_content_packs_for_modified_files(modified_files_with_relevant_tests,
                                                                                   conf, id_set)
-        logging.info(f"packs_to_install 1 are: {packs_to_install}")
 
     # Adding a unique test for a json file.
     if is_reputations_json:
@@ -1104,10 +1114,8 @@ def get_test_list_and_content_packs_to_install(files_string,
     # get all modified packs - not just tests related
     # TODO: need to move the logic of collecting packs of all items to be inside get_modified_files_for_testing
     modified_packs = get_modified_packs(files_string)
-    logging.info(f"modified_packs from get_modified_packs are: {modified_packs}")
     if modified_packs:
         packs_to_install = packs_to_install.union(modified_packs)
-        logging.info(f"packs_to_install 2 are: {packs_to_install}")
 
     # Get packs of integrations corresponding to each test, as listed in conf.json
     packs_of_tested_integrations = conf.get_packs_of_tested_integrations(tests, id_set)
@@ -1118,13 +1126,12 @@ def get_test_list_and_content_packs_to_install(files_string,
     packs_to_install = packs_to_install.union(packs_of_collected_tests)
 
     # All filtering out of packs should be done here
-    packs_to_install = {pack_to_install for pack_to_install in packs_to_install if pack_to_install not in IGNORED_FILES
-                        and should_test_content_pack(pack_to_install)[0]}
+    packs_to_install = filter_installed_packs(packs_to_install)
+    logging.info(f"packs_to_install are: {packs_to_install}")
 
     # All filtering out of tests should be done here
     tests = filter_tests(tests, id_set)
 
-    logging.info(f"packs_to_install 3 are: {packs_to_install}")
     if not tests:
         logging.info("No tests found running sanity check only")
 
@@ -1258,8 +1265,9 @@ def changed_files_to_string(changed_files):
 def create_test_file(is_nightly, skip_save=False, path_to_pack=''):
     """Create a file containing all the tests we need to run for the CI"""
     if is_nightly:
-        packs_to_install = set(filter(lambda should_test_content_pack: should_test_content_pack[0], os.listdir(
-            PACKS_DIR)))
+        packs_to_install = filter_installed_packs(set(os.listdir(PACKS_DIR)))
+        # packs_to_install = set(filter(lambda should_test_content_pack: should_test_content_pack[0], os.listdir(
+        #     PACKS_DIR)))
         tests = filter_tests(set(CONF.get_test_playbook_ids()), id_set=deepcopy(ID_SET))
         logging.info("Nightly - collected all tests that appear in conf.json and all packs from content repo that "
                      "should be tested")
