@@ -508,14 +508,14 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                 for udp_obj in report["network"]["UDP"]:
                     if '-ip' in udp_obj:
                         udp_ip.append(udp_obj["-ip"])
-                        feed_related_indicators.append(udp_obj["-ip"])
+                        feed_related_indicators.append({'value': udp_obj["-ip"], 'type': 'IP'})
                     if '-port' in udp_obj:
                         udp_port.append(udp_obj["-port"])
             if 'TCP' in report["network"]:
                 for tcp_obj in report["network"]["TCP"]:
                     if '-ip' in tcp_obj:
                         tcp_ip.append(tcp_obj["-ip"])
-                        feed_related_indicators.append(tcp_obj["-ip"])
+                        feed_related_indicators.append({'value': tcp_obj["-ip"], 'type': 'IP'})
                     if '-port' in tcp_obj:
                         tcp_port.append(tcp_obj['-port'])
             if 'dns' in report["network"]:
@@ -529,7 +529,7 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
                     url = report["network"]["url"]["@host"]
                 if '@uri' in report["network"]["url"]:
                     url += report["network"]["url"]["@uri"]
-                feed_related_indicators.append(url)
+                feed_related_indicators.append({'value': url, 'type': 'URL'})
 
         if 'evidence' in report and report["evidence"]:
             if 'file' in report["evidence"]:
@@ -542,18 +542,21 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
         if 'elf_info' in report and report["elf_info"]:
             if 'Domains' in report["elf_info"]:
                 if isinstance(report["elf_info"]["Domains"], dict) and 'entry' in report["elf_info"]["Domains"]:
-                    feed_related_indicators += report["elf_info"]["Domains"]["entry"]
+                    for domain in report["elf_info"]["Domains"]["entry"]:
+                        feed_related_indicators.append({'value': domain, 'type': 'Domain'})
             if 'IP_Addresses' in report["elf_info"]:
                 if isinstance(report["elf_info"]["IP_Addresses"], dict) and 'entry' in report["elf_info"]["IP_Addresses"]:
-                    feed_related_indicators += report["elf_info"]["IP_Addresses"]["entry"]
+                    for ip in report["elf_info"]["IP_Addresses"]["entry"]:
+                        feed_related_indicators.append({'value': ip, 'type': 'IP'})
             if 'suspicious' in report["elf_info"]:
                 if 'entry' in report["elf_info"]['suspicious']:
                     for entry_obj in report["elf_info"]['suspicious']['entry']:
                         if '#text' in entry_obj and '@description' in entry_obj:
-                            behavior.append({'Details': entry_obj['#text'], 'Action': entry_obj['@description']})
+                            behavior.append({'details': entry_obj['#text'], 'action': entry_obj['@description']})
             if 'URLs' in report["elf_info"]:
                 if 'entry' in report["elf_info"]['URLs']:
-                    feed_related_indicators += report["elf_info"]['URLs']['entry']
+                    for url in report["elf_info"]['URLs']['entry']:
+                        feed_related_indicators.append({'value': url, 'type': 'URL'})
 
     outputs = {
         'Status': 'Success',

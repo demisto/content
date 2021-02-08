@@ -110,16 +110,19 @@ script:
     - contextPath: InfoFile.Type
       description: The report file type.
       type: string
-    - contextPath: File.FeedRelatedIndicators
+    - contextPath: File.FeedRelatedIndicators.value
       description: Indicators that are associated with the File
+      type: String
+    - contextPath: File.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the File
       type: String
     - contextPath: File.Tags
       description: Tags that are associated with the File
       type: String
-    - contextPath: File.Behavior.Details
+    - contextPath: File.Behavior.details
       description: File behavior details
       type: String
-    - contextPath: File.Behavior.Action
+    - contextPath: File.Behavior.action
       description: File behavior action
       type: String
   - arguments:
