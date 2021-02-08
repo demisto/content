@@ -274,7 +274,7 @@ def return_indicator_entry(incidents_df):
     indicators_df = indicators_df[indicators_df['Involved Incidents Count'] > 1]
     if len(indicators_df) == 0:
         return_no_mututal_indicators_found_entry()
-        return indicators_df.to_dict(orient='records')
+        return indicators_df
     indicators_df['Id'] = indicators_df['id'].apply(lambda x: "[%s](#/indicator/%s)" % (x, x))
     indicators_df = indicators_df.sort_values(['score', 'Involved Incidents Count'], ascending=False)
     indicators_df['Reputation'] = indicators_df['score'].apply(scoreToReputation)
@@ -284,7 +284,7 @@ def return_indicator_entry(incidents_df):
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
                          headers=indicators_headers)
     return_outputs(hr, add_context_key(create_context_for_indicators(indicators_df['id'].tolist())))
-    return indicators_df.to_dict(orient='records')
+    return indicators_df
 
 
 def get_comma_sep_list(value):
@@ -292,7 +292,16 @@ def get_comma_sep_list(value):
     return [x for x in res if x != '']
 
 
-def return_involved_incdients_entry(incidents_df, fields_to_display):
+def get_reputation(id_, indicators_df):
+    relevant_indicators_df = indicators_df[indicators_df['investigationIDs'].apply(lambda x: id_ in x)]
+    if len(relevant_indicators_df) > 0:
+        max_reputation = max(relevant_indicators_df['score'])
+    else:
+        max_reputation = 0
+    return scoreToReputation(max_reputation)
+
+
+def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_display):
     incidents_df['Id'] = incidents_df['id'].apply(lambda x: "[%s](#/Details/%s)" % (x, x))
     incidents_df = incidents_df.sort_values('created', ascending=False).reset_index(drop=True)
     incidents_df['created_dt'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
@@ -300,6 +309,7 @@ def return_involved_incdients_entry(incidents_df, fields_to_display):
     incidents_df['similarity'] = incidents_df['similarity'].fillna(1)
     incidents_df['similarity'] = incidents_df['similarity'].apply(lambda x: '{:.2f}%'.format(x * 100))
     current_incident_id = demisto.incident()['id']
+    incidents_df['Reputation'] = incidents_df['id'].apply(lambda id_: get_reputation(id_, indicators_df))
     # add a mark at current incident, at its similarity cell
     incidents_df['similarity'] = incidents_df.apply(
         lambda x: '{} (current)'.format(x['similarity']) if x['id'] == current_incident_id else x['similarity'], axis=1)
@@ -308,11 +318,11 @@ def return_involved_incdients_entry(incidents_df, fields_to_display):
         FROM_FIELD: 'Email From',
         'similarity': 'Similarity to Current Incident'},
         axis=1, inplace=True)
-    incidents_headers = ['Id', 'Created', 'Name', 'Email From', 'Similarity to Current Incident']
+    incidents_headers = ['Id', 'Created', 'Name', 'Email From', 'Reputation', 'Similarity to Current Incident']
     if fields_to_display is not None:
         fields_to_display = [f for f in fields_to_display if f in incidents_df.columns]
         incidents_df[fields_to_display] = incidents_df[fields_to_display].fillna('')
-        fields_to_display = [f for f in fields_to_display if len(get_non_na_empty_values(incidents_df, f))>0]
+        fields_to_display = [f for f in fields_to_display if len(get_non_na_empty_values(incidents_df, f)) > 0]
         incidents_headers += fields_to_display
     hr = '\n\n' + tableToMarkdown('Involved Incidents', incidents_df[incidents_headers].to_dict(orient='records'),
                                   headers=incidents_headers)
@@ -326,9 +336,9 @@ def draw_canvas(incidents, indicators):
 def analyze_incidents_campaign(incidents, fields_to_display):
     incidents_df = pd.DataFrame(incidents)
     return_campaign_details_entry(incidents_df, fields_to_display)
-    indicators = return_indicator_entry(incidents_df)
-    return_involved_incdients_entry(incidents_df, fields_to_display)
-    draw_canvas(incidents, indicators)
+    indicators_df = return_indicator_entry(incidents_df)
+    return_involved_incidents_entry(incidents_df, indicators_df, fields_to_display)
+    draw_canvas(incidents, indicators_df.to_dict(orient='records'))
 
 
 def main():
