@@ -6,7 +6,7 @@ display: ThreatConnect v2
 category: Data Enrichment & Threat Intelligence
 description: ThreatConnect's intelligence-driven security operations solution with intelligence, automation, analytics, and workflows.
 configuration:
-- display: baseUrl
+- display: Base Url
   name: baseUrl
   defaultvalue: https://api.threatconnect.com
   type: 0

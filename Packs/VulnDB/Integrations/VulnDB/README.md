@@ -10,8 +10,8 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Hostname, IP address, or server URL</strong></li>
-<li><strong>client_id</strong></li>
-<li><strong>client_secret</strong></li>
+<li><strong>Client ID</strong></li>
+<li><strong>Client Secret</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 </ul>

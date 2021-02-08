@@ -34,7 +34,7 @@ script:
           name: ip
           required: true
           secret: false
-        - default: true
+        - default: false
           defaultValue: '0'
           description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
           isArray: false
@@ -50,10 +50,10 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The score of the indicator.
+          description: The actual score.
           type: Number
         - contextPath: DBotScore.Type
-          description: Indicator type.
+          description: The indicator type.
           type: String
         - contextPath: DBotScore.Vendor
           description: The vendor used to calculate the indicator score.
@@ -126,7 +126,7 @@ script:
           name: domain
           required: true
           secret: false
-        - default: true
+        - default: false
           defaultValue: '0'
           description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
           isArray: false
@@ -142,7 +142,7 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The score of the indicator.
+          description: The actual score.
           type: Number
         - contextPath: DBotScore.Type
           description: The indicator type.
@@ -218,7 +218,7 @@ script:
           name: url
           required: true
           secret: false
-        - default: true
+        - default: false
           defaultValue: '0'
           description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
           isArray: false
@@ -234,10 +234,10 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The score of the indicator.
+          description: The actual score.
           type: Number
         - contextPath: DBotScore.Type
-          description: Indicator type.
+          description: The indicator type.
           type: String
         - contextPath: DBotScore.Vendor
           description: The vendor used to calculate the indicator score.
@@ -310,7 +310,7 @@ script:
           name: file
           required: true
           secret: false
-        - default: true
+        - default: false
           defaultValue: '0'
           description: The number of outputs per indicator to be skipped when returning the result set. Default is 0.
           isArray: false
@@ -326,10 +326,10 @@ script:
           description: The indicator that was tested.
           type: String
         - contextPath: DBotScore.Score
-          description: The score of the indicator.
+          description: The actual score.
           type: Number
         - contextPath: DBotScore.Type
-          description: Indicator type.
+          description: The indicator type.
           type: String
         - contextPath: DBotScore.Vendor
           description: The vendor used to calculate the indicator score.
@@ -411,7 +411,7 @@ script:
           name: actor
           required: true
           secret: false
-        - default: true
+        - default: false
           defaultValue: '0'
           description: The number of outputs per actor to be skipped when returning the result set. Default is 0.
           isArray: false
@@ -488,7 +488,7 @@ script:
           name: post_id
           required: true
           secret: false
-        - default: true
+        - default: false
           defaultValue: '0'
           description: The number of outputs per post ID to be skipped when returning the result set. Default is 0.
           isArray: false
