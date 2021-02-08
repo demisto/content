@@ -416,43 +416,6 @@ def gh_get_message_command(client: Client, args: Dict[str, Any]) -> CommandResul
         )
 
 
-def gh_get_phish_reports_command(client: Client, limit: int):
-    filter = [
-        {
-            "workflow": "reported phish"
-        }
-    ]
-    results = client.search_events({"filters": filter, "limit": limit})
-    incidents = []
-    for event in results.get("results", []):
-        incident = {}
-        incident['name'] = event.get("subject")
-        incident['occurred'] = event.get("timestamp")
-        incident['rawJSON'] = json.dumps(event)
-        client.remediate_message("review", {"eventId": event.get("eventId", 0)})
-        incidents.append(incident)
-    return incidents
-
-
-def gh_get_quarantine_release_command(client: Client, limit: int):
-    filter = [
-        {
-            "quarReleaseRequested": "True",
-            "workflow": "unreviewed"
-        }
-    ]
-    results = client.search_events({"filters": filter, "limit": limit})
-    incidents = []
-    for event in results.get("results", []):
-        incident = {}
-        incident['name'] = event.get("subject")
-        incident['occurred'] = event.get("timestamp")
-        incident['rawJSON'] = json.dumps(event)
-        client.remediate_message("review", {"eventId": event.get("eventId", 0)})
-        incidents.append(incident)
-    return incidents
-
-
 ''' MAIN FUNCTION '''
 
 
@@ -464,8 +427,6 @@ def main():
     """
 
     api_key = demisto.params().get('apikey')
-    fetch_type = demisto.params().get('fetch_type')
-    max_fetch = demisto.params().get('max_fetch')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], demisto.params()['api_version'])
@@ -513,27 +474,6 @@ def main():
         elif demisto.command() == 'gh-search-message':
             return_results(gh_search_message_command(client, demisto.args()))
 
-        elif demisto.command() == 'fetch-incidents':
-            if fetch_type is not None:
-                last_run = demisto.getLastRun()
-                demisto.info("GOT LAST RUN: {}".format(last_run))
-                if not last_run.get("counter"):
-                    counter = 0
-                else:
-                    counter = int(last_run.get("counter"))
-                if counter % 3 == 0:
-                    if fetch_type == "phishing":
-                        incidents = gh_get_phish_reports_command(client, max_fetch)
-                    elif fetch_type == "quarantine":
-                        incidents = gh_get_quarantine_release_command(client, max_fetch)
-                    else:
-                        incidents_phish = gh_get_phish_reports_command(client, max_fetch)
-                        incidents_quarantine = gh_get_quarantine_release_command(client, max_fetch)
-                        incidents = incidents_phish
-                        incidents.extend(incidents_quarantine)
-                    demisto.incidents(incidents)
-                counter += 1
-                demisto.setLastRun({'max_phish_id': str(counter)})
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
