@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "Microsoft Teams Management",
-            "playbookID": "Microsoft Teams Management - Test"
+            "playbookID": "Microsoft Teams Management - Test",
+            "is_mockable": false
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
@@ -2118,7 +2119,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 115,
-            "pid_threshold": 60
+            "pid_threshold": 80
         },
         {
             "playbookID": "Phishing - Core - Test - Incident Starter",
@@ -2131,7 +2132,7 @@
                 "Rasterize"
             ],
             "memory_threshold": 100,
-            "pid_threshold": 60
+            "pid_threshold": 80
         },
         {
             "integrations": "duo",
