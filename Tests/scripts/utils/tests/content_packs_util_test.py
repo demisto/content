@@ -128,11 +128,11 @@ def test_should_install_content_pack(mocker, tmp_path, pack_metadata_content, pa
         - Case E: ApiModules content pack
 
     When:
-        - Checking if pack should be tested
+        - Checking if pack should be installed
 
     Then:
         - Case A: Verify pack should be installed
-        - Case B: Verify pack should not be installed
+        - Case B: Verify pack should be installed
         - Case C: Verify pack should not be installed
         - Case D: Verify pack should not be installed
         - Case E: Verify pack should not be installed

@@ -1031,9 +1031,8 @@ def filter_tests(tests: set, id_set: json) -> set:
 
 def filter_installed_packs(packs_to_install: set) -> set:
     """
-    Filter packs that should be installed out from the installed packs set if they are:
+    Filter only the packs that should get installed by the following conditions:
         - Content pack is not in skipped packs
-        - Content pack is certified
         - Content pack is not deprecated
     Args:
         packs_to_install (set): Set of installed packs collected so far.
@@ -1041,7 +1040,19 @@ def filter_installed_packs(packs_to_install: set) -> set:
         (set): Set of packs without ignored, skipped and deprecated-packs.
     """
 
-    return {pack for pack in packs_to_install if should_install_content_pack(pack)}
+    packs_that_should_not_be_installed = set()
+    packs_that_should_be_installed = set()
+    for pack in packs_to_install:
+        should_install, reason = should_install_content_pack(pack)
+        if not should_install:
+            packs_that_should_not_be_installed.add(f'{pack}: {reason}')
+        else:
+            packs_that_should_be_installed.add(pack)
+    if packs_that_should_not_be_installed:
+        logging.debug('The following packs are should not be installed and therefore not collected: \n{} '.format(
+            '\n'.join(packs_that_should_not_be_installed)))
+
+    return packs_that_should_be_installed
 
 
 def is_documentation_changes_only(files_string: str) -> bool:

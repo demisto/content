@@ -81,7 +81,6 @@ def should_test_content_pack(pack_name: str) -> Tuple[bool, str]:
 def should_install_content_pack(pack_name: str) -> Tuple[bool, str]:
     """Checks if content pack should be installed:
         - Content pack is not in skipped packs
-        - Content pack is certified
         - Content pack is not deprecated
 
     Args:
