@@ -529,10 +529,19 @@ references:
         context: bucket_upload_env
         requires:
           - Setup Environment
+    - Install Packs in Server 6_0:
+        context: bucket_upload_env
+        requires:
+          - Create Instances
+    - Install Packs in Server Master:
+        context: bucket_upload_env
+        requires:
+          - Create Instances
     - Upload Packs To Marketplace:
         context: bucket_upload_env
         requires:
-           - Create Instances
+          - Install Packs in Server 6_0
+          - Install Packs in Server Master
 
   check_user_permissions_to_upload_packs: &check_user_permissions_to_upload_packs
     when:
