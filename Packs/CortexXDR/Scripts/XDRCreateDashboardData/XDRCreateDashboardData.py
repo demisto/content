@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import time
 
 QUERY_TYPE_TO_KEY = {
     'Categories': 'PaloAltoNetworksXDR.Incident.alerts.category',
@@ -83,6 +84,7 @@ def update_xdr_list(context: list, xdr_list: list, query_type: str, created_date
 
 def main():
     try:
+        start_time = time.time()
         date_pattern = re.compile('\d{4}[-/]\d{2}[-/]\d{2}T\d{2}:\d{2}:\d{2}')
         include_closed_incidents = argToBoolean(demisto.getArg('includeClosedIncidents'))
 
@@ -106,17 +108,23 @@ def main():
                 if key_values:
                     update_xdr_list(key_values, xdr_data_lists[key], key, created_date)
 
-        created_lists = ''
+        created_lists = []
         # create demisto list for each list item
         for key in QUERY_TYPE_TO_KEY.keys():
             list_name = f'xdrIncidents_{key}'
             res = demisto.executeCommand('createList', {'listName': list_name, 'listData': xdr_data_lists[key]})
             if isError(res):
                 return_error(f'Error occurred while trying to create the list {list_name}: {get_error(res)}')
-            created_lists = created_lists + f'{list_name} with {len(xdr_data_lists[key])} items\n'
+            created_lists.append({'List name': list_name, 'Items':len(xdr_data_lists[key])})
 
-        return_results(
-            f'Collecting data for {len(incidents)} XDR incidents successfully, the script created the following lists:\n{created_lists}')
+        end_time = time.time()
+
+        return_results(CommandResults(
+            readable_output= f'Collecting data for {len(incidents)} XDR incidents successfully in {end_time - start_time} seconds.'
+                             f'\nthe script created the following lists:'
+            f'\n{tableToMarkdown("",created_lists,["List name","Items"])}'
+        ))
+
     except Exception as e:
         return_error(str(e))
 
