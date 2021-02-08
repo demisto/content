@@ -144,12 +144,10 @@ severity_to_text = [
 BASE_URL = demisto.params()['url']
 ACCESS_KEY = demisto.params()['access-key']
 SECRET_KEY = demisto.params()['secret-key']
-AUTH_HEADERS = {'X-ApiKeys': 'accessKey={}; secretKey={}'.format(ACCESS_KEY, SECRET_KEY)}
-NEW_HEADERS = {
-    'X-ApiKeys': 'accessKey={}; secretKey={}'.format(ACCESS_KEY, SECRET_KEY),
-    'accept': "application/json",
-    'content-type': "application/json"
-}
+AUTH_HEADERS = {'X-ApiKeys': 'accessKey={}; secretKey={}'.format(ACCESS_KEY, SECRET_KEY),
+                'accept': "application/json",
+                'content-type': "application/json"
+                }
 USE_SSL = not demisto.params()['unsecure']
 
 if not demisto.params()['proxy']:
@@ -642,7 +640,7 @@ def resume_scans_command():
 def get_scan_templates():
     try:
         endpoint = BASE_URL + "editor/scan/templates"
-        response = requests.request("GET", endpoint, headers=NEW_HEADERS, verify=USE_SSL)
+        response = requests.request("GET", endpoint, headers=AUTH_HEADERS, verify=USE_SSL)
         response.raise_for_status()
         # print(response.json())
         demisto.info("Ran request sucessfully")
@@ -663,7 +661,7 @@ def send_request(payload, endpoint="", method='GET', endpoint_base="tags", ignor
 
     for i in range(5):
         try:
-            res = requests.request(method, full_url, data=payload, headers=NEW_HEADERS, verify=USE_SSL, params=kwargs)
+            res = requests.request(method, full_url, data=payload, headers=AUTH_HEADERS, verify=USE_SSL, params=kwargs)
             res.raise_for_status()
             break
         except HTTPError:
