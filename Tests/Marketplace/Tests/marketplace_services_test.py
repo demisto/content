@@ -731,10 +731,9 @@ This is visible
                 return path + '/' + '/'.join(paths)
             return path
 
-        if str(path).startswith('metadata'):
-            return TestChangelogCreation.dummy_pack_metadata(TEST_METADATA)
-
         path_to_non_existing_changelog = 'dummy_path'
+        if path == 'metadata':
+            return TestChangelogCreation.dummy_pack_metadata(TEST_METADATA)
         if path == 'changelog_init_exist':
             return TestChangelogCreation.dummy_pack_changelog(CHANGELOG_DATA_INITIAL_VERSION)
         if path == 'changelog_new_exist':
@@ -763,7 +762,7 @@ This is visible
         from Tests.Marketplace.marketplace_services import os
         mocker.patch.object(os.path, 'join', side_effect=self.mock_os_path_join)
         pack_created_date = dummy_pack._get_pack_creation_date(is_metadata_exist)
-        if is_metadata_exist == 'is_metadata_exist':
+        if is_metadata_exist == 'metadata':
             os.remove(os.path.join(os.getcwd(), 'dummy_metadata.json'))
         assert pack_created_date == expected_date
 
