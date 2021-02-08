@@ -1569,21 +1569,11 @@ class Pack(object):
             datetime: Pack created date.
         """
         created_time = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-        earliest_changelog_released_date = ""
-
         metadata = load_json(os.path.join(index_folder_path, self._pack_name, Pack.METADATA))
-        changelog = load_json(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON))
 
         if metadata:
-            created_time = metadata.get('created')
-
-        if changelog:
-            packs_earliest_release_notes = min(LooseVersion(ver) for ver in changelog)
-            initial_changelog_version = changelog.get(packs_earliest_release_notes.vstring, {})
-            earliest_changelog_released_date = initial_changelog_version.get('released')
-
-        if not created_time and earliest_changelog_released_date:
-            created_time = earliest_changelog_released_date
+            if metadata.get('created'):
+                created_time = metadata.get('created')
 
         return created_time
 
