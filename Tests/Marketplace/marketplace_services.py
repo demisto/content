@@ -1574,6 +1574,8 @@ class Pack(object):
         if metadata:
             if metadata.get('created'):
                 created_time = metadata.get('created')
+            else:
+                raise Exception(f'The metadata file of the {self._pack_name} pack does not contain "created" time')
 
         return created_time
 
