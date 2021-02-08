@@ -546,11 +546,11 @@ End {
                 {
                     if ($null -ne $raw_value)
                     {
-                        if ($raw_value -Is [System.Array] -Or $raw_value -Is [Collections.IDictionary] -Or $raw_value -Is [PSCustomObject])
+                        try
                         {
                             $value = $raw_value | ConvertTo-Json -Compress -Depth 5
                         }
-                        else
+                        catch
                         {
                             $value = $raw_value.ToString()
                         }
