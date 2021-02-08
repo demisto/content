@@ -546,13 +546,13 @@ End {
                 {
                     if ($null -ne $raw_value)
                     {
-                        try
-                        {
-                            $value = $raw_value | ConvertTo-Json -Compress -Depth 5
-                        }
-                        catch
+                        if ($raw_value -is [int] -or $raw_value -is [string] -or $raw_value -is [int] -or $raw_value -is [Double])
                         {
                             $value = $raw_value.ToString()
+                        }
+                        else
+                        {
+                            $value = $raw_value | ConvertTo-Json -Compress -Depth 5
                         }
                     }
                     else

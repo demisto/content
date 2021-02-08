@@ -133,7 +133,7 @@ Describe 'Check-UtilityFunctions' {
         It "Empty list without a name" {
             TableToMarkdown @() | Should -Be "**No entries.**`n"
         }
-        It "A list with one element and no name" {
+        It "A list with one element and no name" -tag this {
             TableToMarkdown $OneElementObject | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n"
         }
         It "A list with two elements and no name" {
@@ -167,11 +167,16 @@ Describe 'Check-UtilityFunctions' {
         It "Check with False boolean that is not $null" {
             @{test=$false} | TableToMarkdown | Should -Be "| test`n| ---`n| False`n"
         }
-        It "Check with PSObject that nested list" {
+        It "Check with PSObject that nested list"{
             $OneElementObject += New-Object PSObject -Property @{Index=1;Name=@('test1';'test2')}
             $OneElementObject | TableToMarkdown | Should -Be "| Index | Name`n| --- | ---`n| 0 | First element`n| 1 | \[`"test1`",`"test2`"\]`n"
         }
-        
+        It "ArrayList object"{
+            $ArrLst = [System.Collections.ArrayList]::new()
+            $ArrLst.Add("a string")
+            $ArrLst.Add("another string")
+            @{"arraylist" = $ArrLst} | TableToMarkdown | Should -Match "another string"
+        }
     }
     Context "Test stringEscapeMD" {
         It "Escaping special chars"{
