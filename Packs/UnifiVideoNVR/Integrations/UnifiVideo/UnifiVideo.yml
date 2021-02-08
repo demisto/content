@@ -157,7 +157,7 @@ script:
     description: Get the recording snapshot (at frame) based on the recording id
     execution: false
     name: unifivideo-get-recording-snapshot
-  dockerimage: magicpl/unifi-video:latest
+  dockerimage: devdemisto/unifi-video:1.0.0.16263
   feed: false
   isfetch: true
   longRunning: false
