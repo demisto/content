@@ -1,7 +1,7 @@
 {
     "name": "JARM",
     "description": "This pack introduces the JARM indicator type and commands for generating new JARM fingerprints of servers using TLS.",
-    "support": "xsoar",
+    "support": "community",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
