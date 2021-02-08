@@ -47,6 +47,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      retry-count:
+        simple: "2"
       folderId: {}
       lastModifiedDate: {}
     separatecontext: false
@@ -80,8 +82,10 @@ tasks:
       '#none#':
       - "1"
     scriptarguments:
+      retry-count:
+        simple: "2"
       scanId:
-        simple: "7"
+        simple: "16"
     separatecontext: false
     view: |-
       {
@@ -112,12 +116,14 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
+      retry-count:
+        simple: "2"
       detailed:
         simple: "yes"
       info:
         simple: "yes"
       scanId:
-        simple: "7"
+        simple: "16"
     separatecontext: false
     view: |-
       {
@@ -181,6 +187,8 @@ tasks:
       iscommand: true
       brand: ""
     scriptarguments:
+      retry-count:
+        simple: "2"
       dateRange: {}
       vulnerabilityId:
         complex:
@@ -217,10 +225,12 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
+      retry-count:
+        simple: "2"
       assetId: {}
       dateRange: {}
       hostname:
-        simple: ec2-52-31-207-79.eu-west-1.compute.amazonaws.com
+        simple: ec2-52-50-45-109.eu-west-1.compute.amazonaws.com
       ip: {}
     separatecontext: false
     view: |-
