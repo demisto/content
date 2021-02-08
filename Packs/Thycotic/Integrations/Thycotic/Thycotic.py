@@ -1,4 +1,4 @@
-import demistomock as demisto
+mport demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Dict
@@ -16,11 +16,12 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
     def __init__(self, server_url: str, username: str, password: str, proxy: bool,
-                 verify: bool, credential_objects: str):
+                 verify: bool, credential_objects: str, is_fetch_credential: bool):
         super().__init__(base_url=server_url, proxy=proxy, verify=verify)
         self._username = username
         self._password = password
-        self._credential_objects = credential_objects,
+        self._is_fetch_credential = is_fetch_credential
+        self._credential_objects = credential_objects
         self._token = self._generate_token()
         self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
 
@@ -222,10 +223,13 @@ class Client(BaseClient):
 
 
 def test_module(client) -> str:
-    if client._token == '':
-        raise Exception('Failed to get authorization token. Check you credential and access to Secret Server.')
+    if client._is_fetch_credential and len(client._credential_objects) == 0:
+        return "Failed parameter on list secret name."
 
-    return 'ok'
+    if client._token == '':
+        return "Failed to get authorization token. Check you credential and access to Secret Server.'"
+
+    return "ok"
 
 
 def secret_password_get_command(client, secret_id: str = ''):
@@ -473,6 +477,7 @@ def main():
     proxy = demisto.params().get('proxy', False)
     verify = not demisto.params().get('insecure', False)
     credential_objects = demisto.params().get('credentialobjects')
+    is_fetch_credential = demisto.params().get('isFetchCredentials')
 
     LOG(f'Command being called is {demisto.command()}')
 
@@ -503,7 +508,8 @@ def main():
                         password=password,
                         proxy=proxy,
                         verify=verify,
-                        credential_objects=credential_objects)
+                        credential_objects=credential_objects,
+                        is_fetch_credential=is_fetch_credential)
 
         if demisto.command() in thycotic_commands:
             return_results(
