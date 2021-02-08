@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-
+CONTEXT_PATH = 'DBotScore'
 DEFAULT_SOURCE = 'Cortex XSOAR'
 INDICATOR_TYPES = {
     'IP': DBotScoreType.IP,
@@ -42,10 +42,14 @@ def main():
         if not data:
             demisto.results("No results.")
             return
+        dbot_scores = []
         for entry in data:
             for dbot_score, results in iterate_indicator_entry(indicator, entry):
                 return_results(results)
-                appendContext(Common.DBotScore.CONTEXT_PATH, dbot_score)
+                dbot_scores.append(dbot_score)
+        dbot_scores = dbot_scores if len(dbot_scores) > 1 or not dbot_scores else dbot_scores[0]
+        appendContext(CONTEXT_PATH, dbot_scores)
+
     except Exception as error:
         return_error(str(error), error)
 
