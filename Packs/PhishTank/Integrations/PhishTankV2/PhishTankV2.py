@@ -9,6 +9,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 BASE_URL = 'http://data.phishtank.com'
+HTTPS_BASE_URL = 'https://data.phishtank.com'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 RELOAD_DATA_URL_SUFFIX = "data/online-valid.csv"
 
@@ -26,14 +27,14 @@ class Client(BaseClient):
     Client to use in the PhisTankV2 integration. Overrides BaseClient.
 
         Args:
-           proxy (bool): False if feed HTTPS server certificate will not use proxies, True otherwise.
-           insecure (bool): False if feed HTTPS server certificate should be verified, True otherwise.
-           verify (bool) : not insecure
+           proxy (bool): Whether the client should use proxies.
+           verify (bool): Whether to check for SSL certificate validity.
            fetch_interval_hours (str) : Database refresh interval (hours)
+           use_https (bool): Whether to use HTTPS URL or HTTP URL.
    """
 
-    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str):
-        super().__init__(proxy=proxy, verify=verify, base_url=BASE_URL)
+    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str, use_https: str):
+        super().__init__(proxy=proxy, verify=verify, base_url=HTTPS_BASE_URL if use_https else BASE_URL)
         self.fetch_interval_hours = fetch_interval_hours
 
     def get_http_request(self, url_suffix: str):
@@ -112,13 +113,13 @@ def is_reload_needed(client: Client, context: dict) -> bool:
 
 def get_url_data(client: Client, url: str):
     url = remove_last_slash(url)
-    integration_context = demisto.getIntegrationContext()
+    integration_context = get_integration_context()
     current_data_url = None
     if is_reload_needed(client, integration_context):
         data = reload(client)
         current_date = date_to_timestamp(datetime.now(), DATE_FORMAT)
         context = {"list": data, "timestamp": current_date}
-        demisto.setIntegrationContext(context)
+        set_integration_context(context)
         data_contains_url = url in data
         if data_contains_url:
             current_data_url = data[url]
@@ -129,7 +130,7 @@ def get_url_data(client: Client, url: str):
     return current_data_url, url
 
 
-def url_data_to_dbot_score(url_data, url):
+def url_data_to_dbot_score(url_data: dict, url: str):
     if url_data["verified"] == "yes":
         dbot_score = 3
     else:
@@ -138,7 +139,7 @@ def url_data_to_dbot_score(url_data, url):
                             "Match found in PhishTankV2 database")
 
 
-def create_verified_markdown(url_data, url):
+def create_verified_markdown(url_data: dict, url: str):
     markdown = f'#### Found matches for URL {url} \n'
     markdown += tableToMarkdown('', url_data)
     phish_tank_url = f'http://www.phishtank.com/phish_detail.php?phish_id={url_data["phish_id"]}'
@@ -181,7 +182,7 @@ def phishtank_reload_command(client: Client):
     parsed_response = reload(client)  # gets a parsed response
     current_date = date_to_timestamp(datetime.now(), DATE_FORMAT)
     context = {"list": parsed_response, "timestamp": current_date}
-    demisto.setIntegrationContext(context)
+    set_integration_context(context)
     readable_output = 'PhishTankV2 Database reloaded \n'
     number_of_urls_loaded = len(parsed_response.keys())
     readable_output += f'Total **{number_of_urls_loaded}** URLs loaded.\n'
@@ -200,7 +201,7 @@ def phishtank_status_command():
         - readable_output (str) : contains the number of urls that were reloaded in the last reload and the date
                                 of the last reload.
     """
-    data = demisto.getIntegrationContext()
+    data = get_integration_context()
     status = "PhishTankV2 Database Status\n"
     data_was_not_reloaded_yet = data == dict()
     last_load = ""
@@ -256,13 +257,13 @@ def reload(client: Client) -> dict:
     return parsed_response
 
 
-def parse_response_line(current_line, index, response):
+def parse_response_line(current_line: list, index: int, response: list):
     """
     This function checks if current line is a valid line.
     note: there is a specific line in PhishTank csv response that is broken into 2 following lines. In this case,
             those 2 lines are concatenate into one complete line.
     Args:
-        current_line (str): current response's line to be parsed
+        current_line (list): current response's line to be parsed
         index (int) : current line's index
         response (list) : list of PhishTank csv response
 
@@ -303,38 +304,40 @@ def is_number(fetch_interval_hours: str) -> bool:
 
 
 def main() -> None:
-    proxy = demisto.params().get('proxy')
-    verify = not demisto.params().get('insecure')
-    fetch_interval_hours = demisto.params().get('fetchIntervalHours')
+    params = demisto.params()
+    use_https = params.get('use_https', False)
+    proxy = params.get('proxy')
+    verify = not params.get('insecure')
+    fetch_interval_hours = params.get('fetchIntervalHours')
 
     if not is_number(fetch_interval_hours):
         return_error("PhishTankV2 error: Please provide a numeric value (and bigger than 0) for Database refresh "
                      "interval (hours)")
 
     # initialize a client
-    client = Client(proxy, verify, fetch_interval_hours)
+    client = Client(proxy, verify, fetch_interval_hours, use_https)
 
     command = demisto.command()
     demisto.debug(f'PhishTankV2: command is {command}')
 
     try:
-        if demisto.command() == "test-module":
+        if command == "test-module":
             return_results(test_module(client))
 
-        elif demisto.command() == 'url':
+        elif command == 'url':
             url = argToList(demisto.args().get("url"))
             return_results(url_command(client, url))
 
-        elif demisto.command() == 'phishtank-reload':
+        elif command == 'phishtank-reload':
             return_results(phishtank_reload_command(client))
 
-        elif demisto.command() == 'phishtank-status':
+        elif command == 'phishtank-status':
             return_results(phishtank_status_command())
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''
