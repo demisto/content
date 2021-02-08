@@ -28,7 +28,7 @@ def main():
     options = options_handler()
 
     # Get the host by the ami env
-    hosts, server_version = Build.get_servers(ami_env=options.ami_env)
+    server_to_port_mapping, server_version = Build.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
     secret_conf_file = get_json_file(path=options.secret)
@@ -36,20 +36,20 @@ def main():
     password: str = secret_conf_file.get('userPassword')
 
     # Configure the Servers
-    for host in hosts:
-        server = Server(host=host, user_name=username, password=password)
-        logging.info(f'Adding Marketplace configuration to {host}')
+    for server_url, port in server_to_port_mapping.items():
+        server = Server(internal_ip=server_url, port=port, user_name=username, password=password)
+        logging.info(f'Adding Marketplace configuration to {server_url}')
         error_msg: str = 'Failed to set marketplace configuration.'
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
         set_marketplace_url(servers=[server], branch_name=options.branch, ci_build_number=options.build_number)
 
         # Acquire the server's host and install all content packs (one threaded execution)
-        logging.info(f'Starting to install all content packs in {host}')
+        logging.info(f'Starting to install all content packs in {server_url}')
         server_host: str = server.client.api_client.configuration.host
         success_flag = install_all_content_packs(client=server.client, host=server_host, server_version=server_version)
 
         if success_flag:
-            logging.success(f'Finished installing all content packs in {host}')
+            logging.success(f'Finished installing all content packs in {server_url}')
         else:
             logging.error('Failed to install all packs.')
             sys.exit(1)
