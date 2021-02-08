@@ -133,22 +133,22 @@ script:
       description: Tags that are associated with the Domain
       type: String
     - contextPath: Domain.CommunityNotes.Note
-      description: '...'
+      description: A summary note on the mentioning of the domain in a source monitored by Recorded Future.
       type: String
     - contextPath: Domain.CommunityNotes.Timestamp
-      description: '...'
+      description: The timestamp in which the community note was created.
       type: Date
     - contextPath: Domain.Publications.Source
-      description: '...'
+      description: The publication's source.
       type: String
     - contextPath: Domain.Publications.Title
-      description: '...'
+      description: The title of the published information.
       type: String
     - contextPath: Domain.Publications.Link
-      description: '...'
+      description: A link to the published information.
       type: String
     - contextPath: Domain.Publications.Timestamp
-      description: '...'
+      description: The timestamp in which the information was published.
       type: Date
   - arguments:
     - default: true
@@ -210,22 +210,22 @@ script:
       description: Tags that are associated with the Domain
       type: String
     - contextPath: IP.CommunityNotes.Note
-      description: '...'
+      description: A summary note on the mentioning of the IP in a source monitored by Recorded Future.
       type: String
     - contextPath: IP.CommunityNotes.Timestamp
-      description: '...'
+      description: The timestamp in which the community note was created.
       type: Date
     - contextPath: IP.Publications.Source
-      description: '...'
+      description: The publication's source.
       type: String
     - contextPath: IP.Publications.Title
-      description: '...'
+      description: The title of the published information.
       type: String
     - contextPath: IP.Publications.Link
-      description: '...'
+      description: A link to the published information.
       type: String
     - contextPath: IP.Publications.Timestamp
-      description: '...'
+      description: The timestamp in which the information was published.
       type: Date
   - arguments:
     - default: true
@@ -301,22 +301,22 @@ script:
       description: Tags that are associated with the Domain
       type: String
     - contextPath: File.CommunityNotes.Note
-      description: '...'
+      description: A summary note on the mentioning of the file in a source monitored by Recorded Future.
       type: String
     - contextPath: File.CommunityNotes.Timestamp
-      description: '...'
+      description: The timestamp in which the community note was created.
       type: Date
     - contextPath: File.Publications.Source
-      description: '...'
+      description: The publication's source.
       type: String
     - contextPath: File.Publications.Title
-      description: '...'
+      description: The title of the published information.
       type: String
     - contextPath: File.Publications.Link
-      description: '...'
+      description: A link to the published information.
       type: String
     - contextPath: File.Publications.Timestamp
-      description: '...'
+      description: The timestamp in which the information was published.
       type: Date
   - arguments:
     - auto: PREDEFINED
@@ -658,22 +658,22 @@ script:
       description: Tags that are associated with the Domain
       type: String
     - contextPath: URL.CommunityNotes.Note
-      description: '...'
+      description: A summary note on the mentioning of the URL in a source monitored by Recorded Future.
       type: String
     - contextPath: URL.CommunityNotes.Timestamp
-      description: '...'
+      description: The timestamp in which the community note was created.
       type: Date
     - contextPath: URL.Publications.Source
-      description: '...'
+      description: The publication's source.
       type: String
     - contextPath: URL.Publications.Title
-      description: '...'
+      description: The title of the published information.
       type: String
     - contextPath: URL.Publications.Link
-      description: '...'
+      description: A link to the published information.
       type: String
     - contextPath: URL.Publications.Timestamp
-      description: '...'
+      description: The timestamp in which the information was published.
       type: Date
   - arguments:
     - auto: PREDEFINED
