@@ -45,6 +45,10 @@ script:
     description: Gets the list of cameras bound with the NVR
     execution: false
     name: unifivideo-get-camera-list
+    outputs:
+    - contextPath: UnifiVideo.Cameras
+      description: The camera list
+      type: Unknown
   - arguments:
     - default: false
       description: The name of the camera
@@ -73,6 +77,10 @@ script:
     description: Download a recording to file
     execution: false
     name: unifivideo-get-recording
+    outputs:
+    - contextPath: UnifiVideo.Recordings
+      description: The recording list
+      type: Unknown
   - arguments:
     - default: false
       description: The camera name
