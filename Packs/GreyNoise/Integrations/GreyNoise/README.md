@@ -146,6 +146,9 @@ Get the information of IP based on the providence filters.
 | last_seen | The date the device was most recently observed by GreyNoise. Example: 1d, 2d, 12h, or 1m. | Optional | 
 | organization | The organization that owns the network that the IP address belongs to. | Optional | 
 
+#### Advance Query
+GNQL (GreyNoise Query Language) is a domain-specific query language that uses Lucene deep under the hood.  
+For more information on the syntax to write GNQL of argument `advanced_query`, click [here](https://developer.greynoise.io/reference#gnql-1).
 
 #### Context Output
 

@@ -14,7 +14,7 @@ This playbook does not use any sub-playbooks.
 * IsIntegrationAvailable
 
 ### Commands
-* greynoise-ip-context
+* ip
 
 ## Playbook Inputs
 ---
