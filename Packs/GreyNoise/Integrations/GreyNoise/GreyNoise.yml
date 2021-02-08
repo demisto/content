@@ -70,7 +70,7 @@ script:
       type: string
   - arguments:
     - default: true
-      description: List IP addresses to retrieve quick check about
+      description: A list of IP addresses to run a quick check on
       isArray: true
       name: ip
       required: true
