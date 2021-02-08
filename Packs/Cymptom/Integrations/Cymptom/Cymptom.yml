@@ -1,0 +1,108 @@
+category: Vulnerability Management
+commonfields:
+  id: Cymptom
+  version: -1
+configuration:
+- additionalinfo: URL to connect to the Cymptom service.
+  defaultvalue: ""
+  display: Management URL. for example https://customerName.cymptom.com/api/)
+  name: url
+  required: true
+  type: 0
+- additionalinfo: API key token to connect to the Cymptom API.
+  defaultvalue: ""
+  display: API key
+  name: api_key
+  required: true
+  type: 4
+- defaultvalue: ""
+  display: Fetch incidents
+  name: is_fetch
+  required: false
+  type: 8
+- additionalinfo: Whether to use the system proxy.
+  defaultvalue: ""
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- additionalinfo: Whether to accept insecure certificates.
+  defaultvalue: ""
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Initial time to start fetching mitigations.
+  defaultvalue: 3 days
+  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes).
+    Default is "3 days"
+  name: first_fetch
+  required: false
+  type: 0
+description: Cymptom is a Breach and Attack Simulation solution that revolutionizes
+  the existing approach by transforming attack simulation into a data analysis question.
+  Cymptom agentless scanning brings real-time always-on visibility into the entire
+  security posture.
+display: Cymptom
+name: Cymptom
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: "60"
+      description: Timeout for operation.
+      name: timeout
+    description: This command returns mitigations recommended by Cymptom
+    name: cymptom-get-mitigations
+    outputs:
+    - contextPath: Cymptom.Mitigations.SeverityType
+      description: The severity of the mitigation
+      type: String
+    - contextPath: Cymptom.Mitigations.Name
+      description: The name of the mitigation
+      type: String
+    - contextPath: Cymptom.Mitigations.AttackVectorsUsedPercentage
+      description: The percentege of attack vectors used that can be mitigated
+      type: String
+    - contextPath: Cymptom.Mitigations.ID
+      description: The mitigation's ID
+      type: String
+    - contextPath: Cymptom.Mitigations.AttackVectorsCount
+      description: The attack vectors counts that can be mitigated
+      type: number
+    - contextPath: Cymptom.Mitigations.Procedures
+      description: Procedures relevant for this mitigation
+      type: unknown
+    - contextPath: Cymptom.Mitigations.Techniques
+      description: Techniques relevant for this mitigation
+      type: unknown
+    - contextPath: Cymptom.Mitigations.SubTechniques
+      description: Sub Techniques relevant for this mitigation
+      type: String
+    - contextPath: Cymptom.Mitigations.References
+      description: References relevant for this mitigation
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: "60"
+      description: Timeout for operation.
+      name: timeout
+    - default: true
+      defaultValue: "True"
+      description: Return only privileged (Domaind Admin or Local Admin) or unprivileged
+        users.
+      name: privileged
+    description: This command returns users with cracked password
+    name: cymptom-get-users-with-cracked-passwords
+    outputs:
+    - contextPath: Cymptom.CrackedUsers.Username
+      description: Username of users with cracked passwords
+      type: String
+  dockerimage: demisto/python3:3.9.1.15759
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests
