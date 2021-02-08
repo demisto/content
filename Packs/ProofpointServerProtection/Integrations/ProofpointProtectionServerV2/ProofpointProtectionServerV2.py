@@ -293,7 +293,7 @@ def main() -> None:
         client = Client(
             base_url=urljoin(params['url'], '/rest/v1'),
             auth=(params['credentials']['identifier'], params['credentials']['password']),
-            verify=not params.get('insecure', False),
+            verify=not params.get('unsecure', False),
             proxy=params.get('proxy', False),
         )
         if command == 'test-module':

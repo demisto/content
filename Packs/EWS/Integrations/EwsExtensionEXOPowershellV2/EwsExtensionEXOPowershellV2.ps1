@@ -17,7 +17,12 @@ class ExchangeOnlinePowershellV2Client {
         [SecureString]$password
     ) {
         $this.url = $url
-        $ByteArray = [System.Convert]::FromBase64String($certificate)
+        try
+        {
+            $ByteArray = [System.Convert]::FromBase64String($certificate)
+        } catch {
+            throw "Could not decode the certificate. Try to re-enter it"
+        }
         $this.certificate = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($ByteArray, $password)
 
         $this.organization = $organization
@@ -371,7 +376,7 @@ function Main {
             }
         }
         # Return results to Demisto Server
-        ReturnOutputs $human_readable $entry_context $raw_response
+        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
     }
     catch {
         $Demisto.debug(

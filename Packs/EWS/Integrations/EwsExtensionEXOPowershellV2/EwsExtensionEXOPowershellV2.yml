@@ -44,14 +44,14 @@ script:
       secret: false
     - default: false
       description: The PrimarySmtpAddress identifies the mailbox that you want to
-        view by primary SMTP email address. Can't be used with user_principal_name.
+        view by primary SMTP email address. Can't be used with user_principal_name. Can be retrieved from ews-user-list command.
       isArray: false
       name: primary_smtp_address
       required: false
       secret: false
     - default: false
       description: The UserPrincipalName parameter identifies the mailbox that you
-        want to view by UPN. Can't be used with primary_smtp_address.
+        want to view by UPN. Can't be used with primary_smtp_address. Can be retrieved from ews-user-list command.
       isArray: false
       name: user_principal_name
       required: false
@@ -154,14 +154,14 @@ script:
       secret: false
     - default: false
       description: The PrimarySmtpAddress identifies the mailbox that you want to
-        view by primary SMTP email address. Can't be used with user_principal_name.
+        view by primary SMTP email address. Can't be used with user_principal_name. Can be retrieved from ews-user-list command.
       isArray: false
       name: primary_smtp_address
       required: false
       secret: false
     - default: false
       description: The UserPrincipalName parameter identifies the mailbox that you
-        want to view by UPN. Can't be used with primary_smtp_address.
+        want to view by UPN. Can't be used with primary_smtp_address. Can be retrieved from ews-user-list command.
       isArray: false
       name: user_principal_name
       required: false
