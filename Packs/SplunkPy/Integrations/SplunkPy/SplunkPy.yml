@@ -619,7 +619,7 @@ script:
       for Mapping fetched incidents through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/splunksdk:1.0.0.11989
+  dockerimage: demisto/splunksdk:1.0.0.15975
   feed: false
   isfetch: true
   longRunning: false
