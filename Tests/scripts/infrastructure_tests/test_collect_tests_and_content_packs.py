@@ -216,8 +216,7 @@ class TestChangedPlaybook:
     # points at a real file. if that file changes path the test should fail
     GIT_DIFF_RET = "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
-        # pack FakePack is deprecated and should not be collected as an installed pack
+    def test_changed_runnable_test__unmocked_get_modified_files_with_deprecated_pack(self, mocker):
         mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                             return_value=(True, ''))
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
@@ -226,7 +225,7 @@ class TestChangedPlaybook:
         assert "FakePack" not in content_packs
         assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks"}
 
-        # pack FakePack is not deprecated and should be collected as an installed pack
+    def test_changed_runnable_test__unmocked_get_modified_files_with_not_deprecated_pack(self, mocker):
         mocker.patch.object(content_packs_util, 'is_pack_deprecated', return_value=False)
         mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                             return_value=(True, ''))
@@ -410,8 +409,7 @@ class TestChangedIntegrationAndPlaybook:
     GIT_DIFF_RET = "M Packs/PagerDuty/Integrations/PagerDuty/PagerDuty.py\n" \
                    "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
-    def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
-        # Pack FakePack is deprecated and should not be in collected as an installed pack
+    def test_changed_runnable_test__unmocked_get_modified_files_with_deprecated_pack(self, mocker):
         mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                             return_value=(True, ''))
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
@@ -420,7 +418,7 @@ class TestChangedIntegrationAndPlaybook:
         assert "FakePack" not in content_packs
         assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty'}
 
-        # Pack FakePack is not deprecated and should be in collected as an installed pack
+    def test_changed_runnable_test__unmocked_get_modified_files_with_not_deprecated_pack(self, mocker):
         mocker.patch.object(content_packs_util, 'is_pack_deprecated', return_value=False)
         mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                             return_value=(True, ''))
