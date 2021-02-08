@@ -1,3 +1,4 @@
+name: Manage Contribution Board - Daily
 on:
   schedule:
     - cron:  '0 0 * * *'
