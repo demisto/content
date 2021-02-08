@@ -1,6 +1,6 @@
 {
     "group": "indicator",
-    "id": "eec8aca2-0f45-4e4f-8162-c38b5099d98c",
+    "id": "jarm",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -212,5 +212,5 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "Layout for the JARM indicator type"
 }
