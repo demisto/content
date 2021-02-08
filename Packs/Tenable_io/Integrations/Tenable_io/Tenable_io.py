@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 """Tenable.io Demisto integration."""
-import json
 import os
 import sys
 import time
@@ -578,7 +577,8 @@ def pause_scan_command():
             "Status": "Pausing"
         }
 
-        return get_entry_for_object("The requested scan was paused successfully", "TenableIO.Scan", replace_keys(paused_scan), ["Id", "Status"])
+        return get_entry_for_object(
+            "The requested scan was paused successfully", "TenableIO.Scan", replace_keys(paused_scan), ["Id", "Status"])
 
     else:
         return "Command 'tenable-io-pause-scan' cannot be called while scan status is {}".format(scan_status["Status"])
@@ -609,7 +609,8 @@ def pause_scans_command():
 
         else:
             results.append(
-                "Command 'tenable-io-pause-scans' cannot be called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
+                "Command 'tenable-io-pause-scans' cannot be "
+                "called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
 
     return results
 
@@ -630,7 +631,8 @@ def resume_scan_command():
             "Id": scan_id,
             "Status": "Resuming"
         }
-        return get_entry_for_object("The requested scan was resumed successfully", "TenableIO.Scan", replace_keys(resumed_scan), ["Id", "Status"])
+        return get_entry_for_object(
+            "The requested scan was resumed successfully", "TenableIO.Scan", replace_keys(resumed_scan), ["Id", "Status"])
 
     else:
         return "Command 'tenable-io-resume-scan' cannot be called while scan status is {}".format(scan_status["Status"])
@@ -661,57 +663,23 @@ def resume_scans_command():
 
         else:
             results.append(
-                "Command 'tenable-io-resume-scans' cannot be called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
+                "Command 'tenable-io-resume-scans' cannot be "
+                "called while scan status is {} for scanID {}".format(scan_status["Status"], scan_id))
 
     return results
-
-# Creates new tenable scan
-
-
-def create_scan_command():
-    """Function for integration command create_scan_command."""
-    scan_settings = str(demisto.getArg('scanSettings'))  # JSON string
-    scan_id = ""
-    ids_list = []
-    call_results = {}
-    try:
-        json_data = json.loads(scan_settings)
-        scans = json_data["scan_list"]
-        for scan in scans:
-            post_response = send_request(str(scan).replace("u'", '"').replace(
-                "'", '"'), endpoint="scans", method="POST", endpoint_base="")
-            scan_id += "ID of new scan " + str(post_response["scan"]["name"]) + ": " + str(post_response["scan"]["id"]) + "\n"
-            ids_list.append(post_response['scan']['id'])  # += str(post_response['scan']['id']) + ","
-
-        # l_list = ids_list[:-1]
-        call_results = {
-            'Id': scan_id,
-            'ScanIds': ids_list
-        }
-    except KeyError:
-        post_response = send_request(str(scan_settings).replace("'", '"'), endpoint="scans", method="POST", endpoint_base="")
-        scan_id = "Your new scan ID: " + str(post_response['scan']['id'])
-        ids_list.append(post_response['scan']['id'])  # = post_response['scan']['id']
-        scan_id = post_response['scan']['id']
-
-        call_results = {
-            'Id': scan_id,
-            'ScanIds': scan_id
-        }
-
-    return get_entry_for_object('Scan(s) created', 'Tenable.IO.NewScan', call_results)
 
 
 def get_scan_templates():
     """Function for integration command get_scan_templates."""
     try:
-        response = requests.request("GET", "https://cloud.tenable.com/editor/scan/templates", headers=NEW_HEADERS, verify=USE_SSL)
+        endpoint = BASE_URL + "editor/scan/templates"
+        response = requests.request("GET", endpoint, headers=NEW_HEADERS, verify=USE_SSL)
         response.raise_for_status()
-        print(response.json())
+        # print(response.json())
         demisto.info("Ran request sucessfully")
         return response
     except HTTPError:
-        print(response.status_code())
+        # print(response.status_code)
         demisto.error(traceback.format_exc())
         sys.exit(0)
 
@@ -723,7 +691,7 @@ def send_request(payload, endpoint="", method='GET', endpoint_base="tags", ignor
     if endpoint and (len(endpoint_base) > 0):
         endpoint = '/' + endpoint
     full_url = "{0}{1}{2}".format(BASE_URL, endpoint_base, endpoint)
-    print(full_url)
+    # print(full_url)
 
     for i in range(5):
         try:
@@ -782,7 +750,5 @@ elif demisto.command() == 'tenable-io-resume-scans':
     demisto.results(resume_scans_command())
 elif demisto.command() == 'tenable-io-pause-scans':
     demisto.results(pause_scans_command())
-elif demisto.command() == 'tenable-io-create-scan':
-    demisto.results(create_scan_command())
 elif demisto.command() == 'tenable-io-check-templates':
     demisto.results(get_scan_templates())

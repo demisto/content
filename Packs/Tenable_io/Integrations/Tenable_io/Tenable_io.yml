@@ -1,11 +1,11 @@
 commonfields:
-  id: Tenable.io_Custom
+  id: Tenable.io
   version: -1
-name: Tenable.io_Custom
-display: Tenable.io_Custom
+name: Tenable.io
+display: Tenable.io
 category: Data Enrichment & Threat Intelligence
-description: A comprehensive asset centric solution to accurately track resources
-  while accommodating dynamic assets such as cloud, mobile devices, containers and
+description: A comprehensive asset centric solution to accurately track resources
+  while accommodating dynamic assets such as cloud, mobile devices, containers and
   web applications.
 configuration:
 - display: URL
@@ -403,7 +403,7 @@ script:
       description: The temaplates
     description: Returns Info about scan templates
   runonce: false
-  subtype: python2
+  subtype: python3
 fromversion: 5.0.0
 tests:
 - Tenable.io test
