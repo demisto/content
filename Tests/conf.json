@@ -4,7 +4,8 @@
     "tests": [
         {
             "integrations": "Microsoft Teams Management",
-            "playbookID": "Microsoft Teams Management - Test"
+            "playbookID": "Microsoft Teams Management - Test",
+            "is_mockable": false
         },
         {
             "playbookID": "SetIfEmpty - non-ascii chars - Test"
