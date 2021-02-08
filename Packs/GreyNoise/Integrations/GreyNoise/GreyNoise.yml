@@ -100,7 +100,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The organization that owns the network that the IP address belongs to."
+      description: "The organization that owns the network the IP address belongs to."
       name: organization
       required: false
       secret: false
