@@ -1035,6 +1035,7 @@ jobs:
           steps:
             - set-instance-role-env-variable:
                 instance_role: Server Master
+                instance_created: "true"
             - start-tunnel
             - run:
                 name: Upload Packs To Marketplace Storage
