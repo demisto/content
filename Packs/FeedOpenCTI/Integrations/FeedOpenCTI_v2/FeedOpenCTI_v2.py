@@ -22,6 +22,14 @@ XSOHR_TYPES = {
     'registry-key-value': "Registry Key",
     'url': "URL"
 }
+KEY_TO_CTI_NAME = {
+    'description': 'x_opencti_description',
+    'score': 'x_opencti_score',
+    'created_by': 'createdBy',
+    'external_references': 'externalReferences',
+    'marking': 'objectMarking',
+    'label': 'objectLabel'
+}
 
 
 def build_indicator_list(indicator_list: List[str]) -> List[str]:
@@ -65,7 +73,8 @@ def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: O
     """
     indicator_type = build_indicator_list(indicator_type)
 
-    observables = client.stix_cyber_observable.list(types=indicator_type, first=limit, after=last_run_id, withPagination=True)
+    observables = client.stix_cyber_observable.list(types=indicator_type, first=limit, after=last_run_id,
+                                                    withPagination=True)
     new_last_run = observables.get('pagination').get('endCursor')
 
     indicators = []
@@ -75,8 +84,8 @@ def get_indicators(client, indicator_type: List[str], limit: int, last_run_id: O
             "type": XSOHR_TYPES.get(item['entity_type'], item['entity_type']),
             "rawJSON": item,
             "fields": {
-                "tags": [tag.get('value') for tag in item.get('tags')],
-                "description": item.get('description')
+                "tags": [tag.get('value') for tag in item.get('objectLabel')],
+                "description": item.get('x_opencti_description')
             }
         }
         if tlp_color:
@@ -124,10 +133,11 @@ def get_indicators_command(client, args: dict) -> CommandResults:
     limit = int(args.get('limit', 500))
     last_run_id, indicators_list = get_indicators(client, indicator_type, limit=limit, last_run_id=last_run_id)
     if indicators_list:
+        indicators = [{'type': indicator['type'], 'value': indicator['value'], 'id':indicator['rawJSON']['id']}
+                      for indicator in indicators_list]
         output = {'LastRunID': last_run_id,
-                  'Indicators': [{'type': indicator['type'], 'value': indicator['value']}
-                                 for indicator in indicators_list]}
-        readable_output = tableToMarkdown('Indicators from OpenCTI', indicators_list, headers=["type", "value"])
+                  'Indicators': indicators}
+        readable_output = tableToMarkdown('Indicators from OpenCTI', indicators, headers=["type", "value", "id"])
         return CommandResults(
             outputs_prefix='OpenCTI',
             outputs_key_field='LastRunID',
@@ -137,6 +147,99 @@ def get_indicators_command(client, args: dict) -> CommandResults:
         )
     else:
         return CommandResults(readable_output='No indicators')
+
+
+def indicator_delete_command(client, args: dict) -> CommandResults:
+    """ Delete indicator from opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+        """
+    indicator_id = args.get("id")
+    client.stix_cyber_observable.delete(id=indicator_id)
+    return CommandResults(readable_output='Indicator deleted.')
+
+
+def indicator_field_update_command(client, args: dict) -> CommandResults:
+    """ Update indicator field at opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+        """
+    indicator_id = args.get("id")
+    # TODO: works only with score and description
+    key = KEY_TO_CTI_NAME[args.get("key")]  # type: ignore
+    value = args.get("value")
+    result = client.stix_cyber_observable.update_field(id=indicator_id, key=key, value=value)
+
+    if id := result.get('id'):
+        readable_output = f'Indicator updated successfully with id: {id}'
+    else:
+        return_error("Can't update indicator.")
+    return CommandResults(
+        outputs_prefix='OpenCTI.Indicator',
+        outputs_key_field='id',
+        outputs={'id': result.get('id')},
+        readable_output=readable_output,
+        raw_response=result
+    )
+
+
+def indicator_create_or_update_command(client, args: dict) -> CommandResults:
+    """ Create or update indicator at opencti
+
+        Args:
+            client: OpenCTI Client object
+            args: demisto.args()
+
+        Returns:
+            readable_output, raw_response
+        """
+    indicator_id = args.get("id")
+    indicator_type = args.get("type")
+    # TODO object - creator id - how to get it ?
+    created_by = args.get("created_by")
+    # TODO marking id - how to getit ?
+    marking = args.get("marking")
+    # TODO object - label id - how to get it ?
+    label = args.get("label")
+    # TODO object - how to get it ?
+    external_references = args.get("external_references")
+    description = args.get("description")
+    score = int(args.get("score", '50'))
+    # TODO: update is not working
+    update = argToBoolean(args.get("update", False))
+    data = {}
+    try:
+        data = json.loads(args.get("data")) if args.get("data") else {}  # type: ignore
+    except Exception:
+        return_error("Data argument type should be json")
+    data['type'] = indicator_type
+    result = client.stix_cyber_observable.create(simple_observable_id=indicator_id, type=indicator_type,
+                                                 createdBy=created_by, objectMarking=marking,
+                                                 objectLabel=label, externalReferences=external_references,
+                                                 simple_observable_description=description,
+                                                 x_opencti_score=score, update=update, observableData=data,
+                                                 )
+    if id := result.get('id'):
+        readable_output = f'Indicator created successfully with id: {id}'
+    else:
+        return_error("Can't create indicator.")
+    return CommandResults(
+        outputs_prefix='OpenCTI.Indicator',
+        outputs_key_field='id',
+        outputs={'id': result.get('id')},
+        readable_output=readable_output,
+        raw_response=result
+    )
 
 
 def main():
@@ -179,11 +282,20 @@ def main():
         elif command == "opencti-reset-fetch-indicators":
             return_results(reset_last_run())
 
+        elif command == "opencti-indicator-delete":
+            return_results(indicator_delete_command(client, args))
+
+        elif command == "opencti-indicator-field-update":
+            return_results(indicator_field_update_command(client, args))
+
+        elif command == "opencti-indicator-create-update":
+            return_results(indicator_create_or_update_command(client, args))
+
     except Exception as e:
         return_error(
             f"Error [{e}]"
         )
 
 
-if __name__ == "builtins":
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
