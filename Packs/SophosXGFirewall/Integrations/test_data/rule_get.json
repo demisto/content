@@ -1,0 +1,25 @@
+{
+    "Response": {
+        "@APIVersion": "1702.1",
+        "@IPS_CAT_VER": "1",
+        "Login": {
+            "status": "Authentication Successful"
+        },
+        "SecurityPolicy": {
+            "Action": "Drop",
+            "After": {
+                "Name": "before"
+            },
+            "Description": null,
+            "IPFamily": "IPv4",
+            "IsDeleted": false,
+            "LogTraffic": "Disable",
+            "MatchIdentity": "Disable",
+            "Name": "after",
+            "PolicyType": "Network",
+            "Position": "After",
+            "Schedule": "All The Time",
+            "Status": "Enable"
+        }
+    }
+}
