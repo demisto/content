@@ -216,7 +216,8 @@ def format_results(uuid):
         url_cont['Data'] = demisto.args().get('url')
         cont['URL'] = demisto.args().get('url')
         if isinstance(scan_lists.get('urls'), list):
-            feed_related_indicators += scan_lists['urls']
+            for url in scan_lists['urls']:
+                feed_related_indicators.append({'value': url, 'type': 'URL'})
     # effective url of the submitted url
     human_readable['Effective URL'] = scan_page.get('url')
     cont['EffectiveURL'] = scan_page.get('url')
@@ -245,7 +246,8 @@ def format_results(uuid):
             i = i + 1
         cont['RelatedIPs'] = ip_ec_info
         if isinstance(scan_lists.get('ips'), list):
-            feed_related_indicators += scan_lists.get('ips')
+            for ip in scan_lists.get('ips'):
+                feed_related_indicators.append({'value': ip, 'type': 'IP'})
         IP_HEADERS = ['Count', 'IP', 'ASN']
     # add redirected URLs
     if 'requests' in scan_data:
@@ -264,15 +266,18 @@ def format_results(uuid):
         hashes = scan_lists.get('hashes', [])
         cont['RelatedHash'] = hashes
         human_readable['Related Hashes'] = hashes
-        feed_related_indicators += hashes
+        for hashe in hashes:
+            feed_related_indicators.append({'value': hashe, 'type': 'File'})
     if 'domains' in scan_lists:
         subdomains = scan_lists.get('domains', [])
         cont['Subdomains'] = subdomains
         human_readable['Subdomains'] = subdomains
-        feed_related_indicators += subdomains
+        for domain in subdomains:
+            feed_related_indicators.append({'value': domain, 'type': 'Domain'})
     if 'linkDomains' in scan_lists:
         link_domains = scan_lists.get('domains', [])
-        feed_related_indicators += link_domains
+        for domain in link_domains:
+            feed_related_indicators.append({'value': domain, 'type': 'Domain'})
     if 'asn' in scan_page:
         cont['ASN'] = scan_page['asn']
         url_cont['ASN'] = scan_page.get('asn')
@@ -281,11 +286,11 @@ def format_results(uuid):
     if 'country' in scan_page:
         url_cont['Geo']['Country'] = scan_page['country']
     if 'domain' in scan_page:
-        feed_related_indicators.append(scan_page['domain'])
+        feed_related_indicators.append({'value': scan_page['domain'], 'type': 'Domain'})
     if 'ip' in scan_page:
-        feed_related_indicators.append(scan_page['ip'])
+        feed_related_indicators.append({'value': scan_page['ip'], 'type': 'IP'})
     if 'url' in scan_page:
-        feed_related_indicators.append(scan_page['url'])
+        feed_related_indicators.append({'value': scan_page['url'], 'type': 'URL'})
     if 'overall' in scan_verdicts:
         human_readable['Malicious URLs Found'] = scan_stats['malicious']
         if scan_verdicts['overall'].get('malicious'):

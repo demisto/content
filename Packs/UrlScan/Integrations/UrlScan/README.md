@@ -336,8 +336,12 @@
 <td style="width: 454px;">The URL ASN</td>
 </tr>
 <tr>
-<td style="width: 267px;">URL.FeedRelatedIndicators </td>
+<td style="width: 267px;">URL.FeedRelatedIndicators.value </td>
 <td style="width: 454px;">Indicators that are associated with the URL</td>
+</tr>
+<tr>
+<td style="width: 267px;">URL.FeedRelatedIndicators.type </td>
+<td style="width: 454px;">The type of the indicators that are associated with the URL</td>
 </tr>
 <tr>
 <td style="width: 267px;">URL.Geo.Country </td>

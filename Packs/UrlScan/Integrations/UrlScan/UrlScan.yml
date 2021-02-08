@@ -340,8 +340,11 @@ script:
     - contextPath: URL.ASN
       description: The URL ASN
       type: String
-    - contextPath: URL.FeedRelatedIndicators
+    - contextPath: URL.FeedRelatedIndicators.value
       description: Indicators that are associated with the URL
+      type: String
+    - contextPath: URL.FeedRelatedIndicators.type
+      description: the type of the indicators that are associated with the URL
       type: String
     - contextPath: URL.Geo.Country
       description: The URL country
