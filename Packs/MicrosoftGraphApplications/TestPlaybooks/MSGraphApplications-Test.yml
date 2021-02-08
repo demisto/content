@@ -1,6 +1,6 @@
-id: MSGraph Services Test
+id: MSGraph Applications Test
 version: -1
-name: MSGraph Services Test
+name: MSGraph Applications Test
 starttaskid: "0"
 tasks:
   "0":
@@ -39,10 +39,10 @@ tasks:
       version: -1
       name: msgraph-apps-auth-test
       description: Removes any credentials stored in the integration..
-      script: MicrosoftGraphServices|||msgraph-apps-auth-test
+      script: MicrosoftGraphApplications||msgraph-apps-auth-test
       type: regular
       iscommand: true
-      brand: MicrosoftGraphServices
+      brand: MicrosoftGraphApplications
     nexttasks:
       '#none#':
       - "2"
@@ -166,4 +166,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: A test playbook for MSGraph Services
+description: A test playbook for MSGraph Applications

@@ -3201,8 +3201,8 @@
             "fromversion": "6.0.0"
         },
         {
-            "integrations": "MicrosoftGraphServices",
-            "playbookID": "MSGraph Services Test"
+            "integrations": "MicrosoftGraphApplications",
+            "playbookID": "MSGraph Applications Test"
         }
     ],
     "skipped_tests": {

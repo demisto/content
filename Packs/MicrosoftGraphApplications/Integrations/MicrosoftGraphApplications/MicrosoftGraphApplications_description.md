@@ -18,4 +18,4 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal, with mobile and desktop flows enabled.
 
 #### Required Permissions
-* Application.ReadWrite.OwnedBy - Application
+* Application.ReadWrite.All - Application

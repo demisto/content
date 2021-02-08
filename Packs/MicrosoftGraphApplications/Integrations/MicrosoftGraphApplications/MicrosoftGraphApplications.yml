@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: MicrosoftGraphServices
+  id: MicrosoftGraphApplications
   version: -1
 configuration:
 - defaultvalue: 6b071e63-f701-454b-9e54-ede4c96483e6
@@ -17,9 +17,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the Microsoft Graph Services integration to manage authorized application.
-display: Microsoft Graph Services
-name: MicrosoftGraphServices
+description: Use the Microsoft Graph Applications integration to manage authorized application.
+display: Microsoft Graph Applications
+name: MicrosoftGraphApplications
 script:
   commands:
   - deprecated: false
@@ -219,4 +219,4 @@ script:
   dockerimage: demisto/crypto:1.0.0.14297
 fromversion: 5.0.0
 tests:
-- MSGraph Services Test
+- MSGraph Applications Test
