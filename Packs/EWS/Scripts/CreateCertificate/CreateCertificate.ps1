@@ -17,22 +17,23 @@ function CreateCertificate
         "OutCertPath" = $OutputPath
         "NotAfter" = (Get-Date).AddDays($Days)
         "Password" = $Password
-        "FriendlyName" = $FriendlyName
-        "Country" = $Country
-        "StateOrProvince" = $StateOrProvince
     }
-    @($cmd_args.keys) | % {
-        if (-not$cmd_args[$_])
-        {
-            $cmd_args.Remove($_)
-        }
+    if ($FriendlyName -ne $null){
+        $cmd_args.FriendlyName = $FriendlyName
     }
+    if ($Country){
+        $cmd_args.Country = $Country
+    }
+    if ($StateOrProvince){
+        $cmd_args.StateOrProvince = $StateOrProvince
+    }
+
     New-SelfSignedCertificate @cmd_args | Out-Null
 }
 
 function Main()
 {
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Scope='Function')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
     $pfx_path = "certificate.pfx"
     $b64_path = "certificateBase64.txt"
     $public_key_cert_path = "publickey.cer"
