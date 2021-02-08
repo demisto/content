@@ -53,7 +53,7 @@ tags:
 - basescript
 timeout: '0'
 type: powershell
-dockerimage: devdemisto/pwsh-exchange:1.0.0.16239
+dockerimage: demisto/pwsh-exchange:1.0.0.16259
 fromversion: 5.5.0
 tests:
 - No Tests

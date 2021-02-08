@@ -34,6 +34,7 @@ function CreateCertificate
 function Main()
 {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '')]
+    param()
     $pfx_path = "certificate.pfx"
     $b64_path = "certificateBase64.txt"
     $public_key_cert_path = "publickey.cer"
