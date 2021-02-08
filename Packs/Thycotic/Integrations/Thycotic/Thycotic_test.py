@@ -41,7 +41,7 @@ def test_thycotic_commands(command, args, http_response, context, mocker):
 
     mocker.patch.object(Client, '_generate_token')
     client = Client(server_url="https://thss.softwarium.net/SecretServer", username="xsoar1", password="HfpuhXjv123",
-                    proxy=False, verify=False, credential_objects="")
+                    proxy=False, verify=False, credential_objects="", is_fetch_credential=False)
 
     mocker.patch.object(Client, '_http_request', return_value=http_response)
 
