@@ -2445,7 +2445,7 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 | File.Name | string | File name. | 
 | File.Type | string | File type. | 
 | File.Info | string | File info. | 
-| File.Extenstion | string | File extension. | 
+| File.Extension | string | File extension. | 
 | File.EntryID | string | FIle entryID. | 
 | File.MD5 | string | MD5 hash of the file. | 
 | File.SHA1 | string | SHA1 hash of the file. | 
@@ -3118,12 +3118,12 @@ Lists the static routes of a virtual router.
 | --- | --- | --- |
 | Panorama.StaticRoutes.Name | String | The name of the static route. | 
 | Panorama.StaticRoutes.BFDProfile | String | The BFD profile of the static route. | 
-|  Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
-|  Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
-|  Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
-|  Panorama.StaticRoutes.RouteTable | String | The route table of a static route. | 
+| Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
+| Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
+| Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
+| Panorama.StaticRoutes.RouteTable | String | The route table of a static route. | 
 | Panorama.StaticRoutes.VirtualRouter | String | The virtual router to which the static router belongs. | 
-|  Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
+| Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
 | Panorama.StaticRoutes.Uncommitted | Boolean | Whether the static route is committed. | 
 
 
@@ -3188,12 +3188,12 @@ Returns the specified static route of a virtual router.
 | --- | --- | --- |
 | Panorama.StaticRoutes.Name | String | The name of the static route. | 
 | Panorama.StaticRoutes.BFDProfile | String | The BFD profile of the static route. | 
-|  Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
-|  Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
-|  Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
-|  Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
+| Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
+| Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
+| Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
+| Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
 | Panorama.StaticRoutes.VirtualRouter | String | The virtual router to which the static router belongs. | 
-|  Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
+| Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
 
 
 #### Command Example
@@ -3252,12 +3252,12 @@ Adds a static route.
 | --- | --- | --- |
 | Panorama.StaticRoutes.Name | String | The name of the static route. | 
 | Panorama.StaticRoutes.BFDProfile | String | The BFD profile of the static route. | 
-|  Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
-|  Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
-|  Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
-|  Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
+| Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
+| Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
+| Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
+| Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
 | Panorama.StaticRoutes.VirtualRouter | String | The virtual router to which the static router belongs. | 
-|  Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
+| Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
 
 
 #### Command Example
@@ -3303,12 +3303,12 @@ Deletes a static route.
 | --- | --- | --- |
 | Panorama.StaticRoutes.Name | String | The name of the static route. | 
 | Panorama.StaticRoutes.BFDProfile | String | The BFD profile of the static route. | 
-|  Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
-|  Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
-|  Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
-|  Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
+| Panorama.StaticRoutes.Destination | String | The destination of the static route. | 
+| Panorama.StaticRoutes.Metric | Number | The metric \(port\) of the static route. | 
+| Panorama.StaticRoutes.NextHop | String | The next hop of the static route. Can be an IP address, FQDN, or a virtual router. | 
+| Panorama.StaticRoutes.RouteTable | String | The route table of the static route. | 
 | Panorama.StaticRoutes.VirtualRouter | String | The virtual router to which the static router belongs. | 
-|  Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
+| Panorama.StaticRoutes.Template | String | The template in which the static route is defined \(Panorama instances only\). | 
 | Panorama.StaticRoutes.Deleted | Boolean | Whether the static route was deleted. | 
 
 
@@ -3832,7 +3832,7 @@ Gets information for the specified security profile.
 | Panorama.Vulnerability.Rules.Packet-capture | String | Whether packet capture is enabled. | 
 | Panorama.Vulnerability.Rules.Host | String | The rule host. | 
 | Panorama.Vulnerability.Rules.Name | String | The rule name. | 
-| Panorama.Vulnerability.Rules.Cateogry | String | The category for which to apply the rule. | 
+| Panorama.Vulnerability.Rules.Category | String | The category for which to apply the rule. | 
 | Panorama.Vulnerability.Rules.CVE | String | The CVE for which to apply the rule. | 
 | Panorama.Vulnerability.Rules.Action | String | The rule action. | 
 | Panorama.Vulnerability.Rules.Severity | String | The rule severity. | 
@@ -4026,7 +4026,7 @@ There are no input arguments for this command.
 | Panorama.Spyware.BotentDomain.Packet-capture | String | Whether packet capture is enabled. | 
 | Panorama.Spyware.BotentDomain.Sinkhole.ipv4-address | String | The botnet domain IPv4 address. | 
 | Panorama.Spyware.BotentDomain.Sinkhole.ipv6-address | String | The Botnet domain IPv6 address. | 
-| Panorama.Spyware.Rule.Cateogry | String | The rule category. | 
+| Panorama.Spyware.Rule.Category | String | The rule category. | 
 | Panorama.Spyware.Rule.Action | String | The rule action. | 
 | Panorama.Spyware.Rule.Name | String | The rule name. | 
 | Panorama.Spyware.Rule.Severity | String | The rule severity. | 
@@ -4135,7 +4135,7 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | Panorama.Vulnerability.Rule.Action | String | The rule action. | 
 | Panorama.Vulnerability.Rule.CVE | String | The rule CVE. | 
-| Panorama.Vulnerability.Rule.Cateogry | String | The rule category. | 
+| Panorama.Vulnerability.Rule.Category | String | The rule category. | 
 | Panorama.Vulnerability.Rule.Host | String | The rule host. | 
 | Panorama.Vulnerability.Rule.Name | String | The rule name. | 
 | Panorama.Vulnerability.Rule.Severity | String | The rule severity. | 

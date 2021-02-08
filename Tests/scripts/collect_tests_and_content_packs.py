@@ -1175,6 +1175,11 @@ def get_from_version_and_to_version_bounderies(all_modified_files_paths: set,
             max_to_version = max(max_to_version, LooseVersion(to_version))
 
     for artifacts in id_set.values():
+
+        # Ignore the Packs list in the ID set
+        if isinstance(artifacts, dict):
+            break
+
         for artifact_dict in artifacts:
             for artifact_details in artifact_dict.values():
                 if artifact_details.get('file_path') in all_modified_files_paths:
