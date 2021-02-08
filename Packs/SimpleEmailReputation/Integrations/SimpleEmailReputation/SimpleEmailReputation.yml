@@ -32,9 +32,9 @@ script:
   commands:
   - arguments:
     - default: true
-      description: List of email
+      description: A List of email addresses - comma separated
       isArray: true
-      name: email
+      name: emailrep-get-reputation
       required: true
     description: Return email information and reputation
     name: email
