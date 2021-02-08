@@ -1561,34 +1561,6 @@ class Pack(object):
         finally:
             return task_status
 
-    def _get_changelog(self, index_folder_path):
-        """ Gets the pack changelog data.
-        Args:
-            index_folder_path (str): downloaded index folder directory path.
-        Returns:
-            dict: Get the changelog from downloaded index
-        """
-        changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
-        changelog = {}
-        if os.path.exists(changelog_index_path):
-            with open(changelog_index_path, "r") as changelog_file:
-                changelog = json.load(changelog_file)
-        return changelog
-
-    def _get_metadata(self, index_folder_path):
-        """ Gets the pack metadata.
-        Args:
-            index_folder_path (str): downloaded index folder directory path.
-        Returns:
-            dict: Get the metadata from downloaded index
-        """
-        metadata_index_path = os.path.join(index_folder_path, self._pack_name, Pack.METADATA)
-        metadata = {}
-        if os.path.exists(metadata_index_path):
-            with open(metadata_index_path, "r") as metadata:
-                metadata = json.load(metadata)
-        return metadata
-
     def _get_pack_creation_date(self, index_folder_path):
         """ Gets the pack created date.
         Args:
@@ -1597,8 +1569,10 @@ class Pack(object):
             datetime: Pack created date.
         """
         created_time = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-        changelog = self._get_changelog(index_folder_path)
-        metadata = self._get_metadata(index_folder_path)
+        earliest_changelog_released_date = ""
+
+        metadata = load_json(os.path.join(index_folder_path, self._pack_name, Pack.METADATA))
+        changelog = load_json(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON))
 
         if metadata:
             created_time = metadata.get('created')
@@ -1622,7 +1596,7 @@ class Pack(object):
             datetime: Pack update date.
         """
         latest_changelog_released_date = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
-        changelog = self._get_changelog(index_folder_path)
+        changelog = load_json(os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON))
 
         if changelog and not pack_was_modified:
             packs_latest_release_notes = max(LooseVersion(ver) for ver in changelog)
