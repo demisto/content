@@ -74,3 +74,4 @@ script:
 tests:
 - Alexa Test Playbook
 fromversion: 5.0.0
+deprecated: true
