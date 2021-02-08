@@ -17,8 +17,9 @@ from Tests.scripts.collect_tests_and_content_packs import (
     create_filter_envs_file, get_from_version_and_to_version_bounderies,
     get_test_list_and_content_packs_to_install, is_documentation_changes_only,
     remove_ignored_tests, remove_tests_for_non_supported_packs)
-from Tests.scripts.utils.get_modified_files_for_testing import \
-    get_modified_files_for_testing
+from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing
+from Tests.scripts.utils import content_packs_util
+
 from TestSuite import repo, test_tools
 
 with open('Tests/scripts/infrastructure_tests/tests_data/mock_id_set.json', 'r') as mock_id_set_f:
@@ -216,14 +217,22 @@ class TestChangedPlaybook:
     GIT_DIFF_RET = "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        # pack FakePack is deprecated and should not be collected as an installed pack
         mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                             return_value=(True, ''))
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert "FakePack" not in content_packs  # FakePack should not be in installed packs as it is deprecated
+        assert "FakePack" not in content_packs
         assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks"}
 
+        # pack FakePack is not deprecated and should be collected as an installed pack
+        mocker.patch.object(content_packs_util, 'is_pack_deprecated', return_value=False)
+        mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
+                            return_value=(True, ''))
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+        assert filterd_tests == {self.TEST_ID}
+        assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks", "FakePack"}
 
 class TestChangedTestPlaybook:
     TEST_ID = 'EWSv2_empty_attachment_test'
@@ -401,14 +410,23 @@ class TestChangedIntegrationAndPlaybook:
                    "M Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_By_Highest_DBotScore.yml"
 
     def test_changed_runnable_test__unmocked_get_modified_files(self, mocker):
+        # Pack FakePack is deprecated and should not be in collected as an installed pack
         mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                             return_value=(True, ''))
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == set(self.TEST_ID.split('\n'))
-        assert "FakePack" not in content_packs  # FakePack should not be in installed packs as it is deprecated
+        assert "FakePack" not in content_packs
         assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty'}
 
+        # Pack FakePack is not deprecated and should be in collected as an installed pack
+        mocker.patch.object(content_packs_util, 'is_pack_deprecated', return_value=False)
+        mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
+                            return_value=(True, ''))
+        filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
+
+        assert filterd_tests == set(self.TEST_ID.split('\n'))
+        assert content_packs == {"Base", "DeveloperTools", 'CommonPlaybooks', 'PagerDuty', "FakePack"}
 
 class TestChangedScript:
 
@@ -936,6 +954,7 @@ def test_modified_integration_content_pack_is_collected(mocker):
     """
     mocker.patch.object(Tests.scripts.collect_tests_and_content_packs, 'should_test_content_pack',
                         return_value=(True, ''))
+    mocker.patch.object(content_packs_util, 'is_pack_deprecated', return_value=False)
 
     from Tests.scripts import collect_tests_and_content_packs
     collect_tests_and_content_packs._FAILED = False  # reset the FAILED flag
@@ -968,9 +987,7 @@ def test_modified_integration_content_pack_is_collected(mocker):
             conf=fake_conf,
             id_set=fake_id_set
         )
-
-        assert pack_name not in content_packs  # pack_name is deprecated to should not be in installed packs
-        assert content_packs == {"Base", "DeveloperTools"}
+        assert content_packs == {"Base", "DeveloperTools", pack_name}
         assert filtered_tests == {test_name}
         assert not collect_tests_and_content_packs._FAILED
     finally:
