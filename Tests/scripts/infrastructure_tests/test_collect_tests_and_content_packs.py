@@ -221,7 +221,7 @@ class TestChangedPlaybook:
         filterd_tests, content_packs = get_mock_test_list(git_diff_ret=self.GIT_DIFF_RET)
 
         assert filterd_tests == {self.TEST_ID}
-        assert "FakePack" not in content_packs #FakePack should not be in installed packs as it is deprecated
+        assert "FakePack" not in content_packs  # FakePack should not be in installed packs as it is deprecated
         assert content_packs == {"Base", "DeveloperTools", "CommonPlaybooks"}
 
 
