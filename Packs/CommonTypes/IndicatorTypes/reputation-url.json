@@ -160,6 +160,86 @@
         }]
       }
     },
+    "feedrelatedindicators": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "FeedRelatedIndicators",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]        }
+    },
+    "asn": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "ASN",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]        }
+    },
+    "asowner": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "ASOwner",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]        }
+    },
+    "geocountry": {
+        "simple": "",
+        "complex": {
+            "root": "URL.Geo",
+            "filters": [],
+            "accessor": "Country",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]        }
+    },
+    "communitynotes": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "CommunityNotes",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]
+        }
+    },
+    "publications": {
+        "simple": "",
+        "complex": {
+            "root": "URL",
+            "filters": [],
+            "accessor": "Publications",
+            "transformers": [
+                {
+                    "operator": "uniq",
+                    "args": {}
+                }
+            ]
+        }
+    },
     "tags": {
       "simple": "",
       "complex": {

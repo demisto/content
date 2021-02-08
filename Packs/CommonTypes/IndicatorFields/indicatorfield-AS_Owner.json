@@ -1,7 +1,8 @@
 {
  "associatedToAll": false,
  "associatedTypes": [
-  "IP"
+  "IP",
+  "URL"
  ],
  "caseInsensitive": true,
  "cliName": "asowner",

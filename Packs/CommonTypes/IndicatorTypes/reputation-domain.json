@@ -394,6 +394,34 @@
 					]
 				}
 			},
+			"communitynotes": {
+				"simple": "",
+				"complex": {
+					"root": "Domain",
+					"filters": [],
+					"accessor": "CommunityNotes",
+					"transformers": [
+						{
+							"operator": "uniq",
+							"args": {}
+						}
+					]
+				}
+			},
+			"publications": {
+				"simple": "",
+				"complex": {
+					"root": "Domain",
+					"filters": [],
+					"accessor": "Publications",
+					"transformers": [
+						{
+							"operator": "uniq",
+							"args": {}
+						}
+					]
+				}
+			},
 			"threattypes": {
 				"simple": "",
 				"complex": {
