@@ -83,7 +83,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: motion
-      description: Recording setting, motion, always or disabled
+      description: Recording setting, motion,fulltime or disabled
       isArray: false
       name: rec_set
       predefined:
