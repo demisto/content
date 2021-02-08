@@ -2232,9 +2232,12 @@ script:
     - contextPath: PaloAltoNetworksXDR.GetActionStatus.action_id
       description: The specified action ID.
       type: number
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false
