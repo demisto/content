@@ -107,6 +107,19 @@ configuration:
   name: file_tag
   required: false
   type: 0
+- additionalinfo: By this field records will be queried to check for updates
+  defaultvalue: sys_updated_on
+  display: Timestamp field to query for updates as part of the mirroring flow
+  name: update_timestamp_field
+  required: false
+  type: 0
+- additionalinfo: If a greater number of incidents than the limit were modified, then
+    they won't be mirrored in
+  defaultvalue: '100'
+  display: How many incidents to mirror incoming each time
+  name: mirror_limit
+  required: false
+  type: 0
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex
     XSOAR.
   defaultvalue: 'false'
@@ -193,8 +206,8 @@ script:
       secret: false
     - default: false
       defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields in an argument
-        for this command. Default is ';'.
+      description: The delimiter character to use as a separator for a list of fields
+        in an argument for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
       required: false
@@ -771,8 +784,8 @@ script:
       secret: false
     - default: false
       defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields in an argument
-        for this command. Default is ';'.
+      description: The delimiter character to use as a separator for a list of fields
+        in an argument for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
       required: false
@@ -1319,8 +1332,8 @@ script:
       secret: false
     - default: false
       defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields in an argument
-        for this command. Default is ';'.
+      description: The delimiter character to use as a separator for a list of fields
+        in an argument for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
       required: false
@@ -1729,8 +1742,8 @@ script:
       secret: false
     - default: false
       defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields in an argument
-        for this command. Default is ';'.
+      description: The delimiter character to use as a separator for a list of fields
+        in an argument for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
       required: false
@@ -1799,8 +1812,8 @@ script:
       secret: false
     - default: false
       defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields in an argument
-        for this command. Default is ';'.
+      description: The delimiter character to use as a separator for a list of fields
+        in an argument for this command. Default is ';'.
       isArray: false
       name: fields_delimiter
       required: false
@@ -2371,6 +2384,20 @@ script:
     description: Test the instance configuration when using OAuth2 authentication.
     execution: false
     name: servicenow-oauth-test
+  - arguments:
+    - default: false
+      description: Date string representing the local time.The incident is only returned
+        if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the list of incidents that were modified since the last update.
+      Note that this method is here for debugging purposes. get-modified-remote-data
+      is used as part of a Mirroring feature, which is available from version 6.1.
+    execution: false
+    name: get-modified-remote-data
   dockerimage: demisto/python3:3.9.1.15759
   feed: false
   isfetch: true
