@@ -10,7 +10,7 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": ["JARM", "Fingerprint"],
-    "useCases": ["Data Enrichment & Threat Intelligence"],
-    "keywords": []
+    "tags": ["Threat Intelligence", "Network"],
+    "useCases": ["Hunting", "Network Security"],
+    "keywords": ["JARM", "Fingerprint   "]
 }
