@@ -1,5 +1,5 @@
 Cymptom is a Breach and Attack Simulation solution that revolutionizes the existing approach by transforming attack simulation into a data analysis question. Cymptom agentless scanning brings real-time always-on visibility into the entire security posture.
-This integration was integrated and tested with version xx of Cymptom
+This integration was integrated and tested with version 1.0 of Cymptom
 
 This integration was integrated and tested with version 0.3.4 of Cymptom.
 
@@ -9,14 +9,14 @@ This integration was integrated and tested with version 0.3.4 of Cymptom.
 2. Search for Cymptom.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| url | Management URL \(for ex: https://customer_name.cymptom.com/api/\) | True |
-| api_key | API key | True |
-| is_fetch | Fetch incidents | False |
-| proxy | Use system proxy settings | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| first_fetch | First fetch time range \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 1 hour, 30 minutes\). Default is "3 days" | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | url | Management URL \(for ex: https://customer_name.cymptom.com/api/\) | True |
+    | api_key | API key | True |
+    | is_fetch | Fetch incidents | False |
+    | proxy | Use system proxy settings | False |
+    | insecure | Trust any certificate \(not secure\) | False |
+    | first_fetch | First fetch time range \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 1 hour, 30 minutes\). Default is "3 days" | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

@@ -84,7 +84,6 @@ def api_test(client: Client):
             return return_error(f"There was an error: {results.get('status', 'Failure')} - {results.get('error')}")
     except Exception as e:
         return_error(f"There was an error in testing connection to URL: {client._base_url},"
-                     f"API Key: {client._headers['Authorization'].split()[-1]}. "
                      f"Please make sure that the API key is valid and has the right permissions, "
                      f"and that the URL is in the correct form. Error: {str(e)}")
 
@@ -203,19 +202,16 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    LOG(f'Command being called is: {demisto.command()}')
-
     params = demisto.params()
 
     base_url = params['url']
-
     api_key = params['api_key']
 
     # Flag if use server proxy
     use_proxy = params.get('proxy', False)
 
     # Flag if use server 'verification'
-    insecure = params.get('insecure', False)
+    insecure = not params.get('insecure', False)
 
     headers = {
         "Authorization": f"Bearer {api_key}"  # Replace ${token} with the token you have obtained
@@ -224,9 +220,10 @@ def main():
     demisto.debug(" ---- MAIN CALL -----")
     demisto.debug(" ---- PARAMS -----")
     demisto.debug(f"base_url: {base_url}")
-    demisto.debug(f"api_key: {api_key}")
     demisto.debug(f"insecure: {insecure}")
     demisto.debug(f"use_proxy: {use_proxy}")
+
+    demisto.info(f'Command being called is: {demisto.command()}')
 
     client = Client(base_url=base_url, headers=headers, proxy=use_proxy, verify=insecure)
 

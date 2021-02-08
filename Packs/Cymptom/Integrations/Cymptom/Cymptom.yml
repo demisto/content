@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - additionalinfo: URL to connect to the Cymptom service.
   defaultvalue: ""
-  display: 'Management URL (for ex: https://customer_name.cymptom.com/api/)'
+  display: Management URL. for example https://customerName.cymptom.com/api/)
   name: url
   required: true
   type: 0
@@ -43,7 +43,7 @@ description: Cymptom is a Breach and Attack Simulation solution that revolutioni
   the existing approach by transforming attack simulation into a data analysis question.
   Cymptom agentless scanning brings real-time always-on visibility into the entire
   security posture.
-display: Cymptom (Partner Contribution) (Partner Contribution) (Partner Contribution)
+display: Cymptom
 name: Cymptom
 script:
   commands:
@@ -83,7 +83,7 @@ script:
       description: References relevant for this mitigation
       type: String
   - arguments:
-    - default: true
+    - default: false
       defaultValue: "60"
       description: Timeout for operation.
       name: timeout
@@ -98,7 +98,7 @@ script:
     - contextPath: Cymptom.CrackedUsers.Username
       description: Username of users with cracked passwords
       type: String
-  dockerimage: demisto/python3:3.9.1.14969
+  dockerimage: demisto/python3:3.9.1.15759
   runonce: false
   script: ''
   subtype: python3
