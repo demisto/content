@@ -30,7 +30,7 @@ script:
     arguments:
     - name: ip
       default: true
-      description: List of IPs.
+      description: A comma-separated list of IPs.
       isArray: true
       required: true
     description: Runs reputation on IPs.
