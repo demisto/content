@@ -20,13 +20,14 @@ from distutils.util import strtobool
 from distutils.version import LooseVersion
 from datetime import datetime
 from zipfile import ZipFile, ZIP_DEFLATED
+
+from Tests.scripts.utils.content_packs_util import IGNORED_FILES
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace
 from typing import Tuple, Any, Union
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
-IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 
 
