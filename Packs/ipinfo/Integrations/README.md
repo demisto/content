@@ -42,7 +42,8 @@ Check IP reputation (when information is available, returns a JSON with details)
 | IP.Geo.Country | String | The IP country | 
 | IP.Geo.Description | String | The IP location as \<City, Region, Postal Code, Country\> | 
 | IP.ASOwner | string | The IP AS owner |
-| IP.FeedRelatedIndicators | string | Indicators that are associated with the IP |
+| IP.FeedRelatedIndicators.value | string | Indicators that are associated with the IP |
+| IP.FeedRelatedIndicators.type | string | The type of the indicators that are associated with the IP |
 | IP.Tags | string | Tags that are associated with the IP |
 | IP.Registrar.Abuse.Address | string | The abuse address of the IP |
 | IP.Registrar.Abuse.Country | string | The abuse country of the IP |

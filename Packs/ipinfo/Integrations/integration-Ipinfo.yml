@@ -61,7 +61,7 @@ script:
             var asn_owner = '';
             var organization = o.company? {Name:  o.company.name, Type:  o.company.type}: '';
             var abuse = o.Abuse? {Address: o.abuse.address, Country: o.abuse.country, Name: o.abuse.name, Network: o.abuse.network, Phone: o.abuse.phone, Email: o.abuse.email}: '';
-            var feed_related_indicators = [o.hostname];
+            var feed_related_indicators = [{value: o.hostname, type: 'URL'}];
             if(o.asn){
                 if(o.asn.asn){
                     asn = o.asn.asn
@@ -70,7 +70,7 @@ script:
                     asn_owner = o.asn.name
                 }
                 if(o.asn.domain){
-                    feed_related_indicators.push('o.asn.domain');
+                    feed_related_indicators.push({value: o.asn.domain, type: 'Domain'});
             }}
             else if(o.org){
                 var index = o.org.indexOf(' ');
@@ -79,7 +79,7 @@ script:
             }
             if(o.company){
                 if(o.company.domain){
-                    feed_related_indicators.push('o.company.domain');
+                    feed_related_indicators.push({value: o.company.domain, type: 'Domain'});
             }}
             var tags = [];
             if(o.privacy){
@@ -141,8 +141,11 @@ script:
     - contextPath: IP.ASOwner
       description: The IP AS owner
       type: string
-    - contextPath: IP.FeedRelatedIndicators
+    - contextPath: IP.FeedRelatedIndicators.value
       description: Indicators that are associated with the IP
+      type: string
+    - contextPath: IP.FeedRelatedIndicators.type
+      description: The type of the indicators that are associated with the IP
       type: string
     - contextPath: IP.Tags
       description: Tags that are associated with the IP
