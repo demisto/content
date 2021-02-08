@@ -96,7 +96,7 @@ def main():
 
         for incident in incidents:
             context = incident.get('context')
-            # gets the created time of the incidents in format %Y-%m-%dT%H:%M:%S:%f
+            # gets the created time of the incidents in format %Y-%m-%dT%H:%M:%S
             created_date = incident.get('created')
             created_date = date_pattern.findall(created_date)[0]
 
@@ -106,14 +106,17 @@ def main():
                 if key_values:
                     update_xdr_list(key_values, xdr_data_lists[key], key, created_date)
 
+        created_lists = ''
         # create demisto list for each list item
         for key in QUERY_TYPE_TO_KEY.keys():
             list_name = f'xdrIncidents_{key}'
             res = demisto.executeCommand('createList', {'listName': list_name, 'listData': xdr_data_lists[key]})
             if isError(res):
                 return_error(f'Error occurred while trying to create the list {list_name}: {get_error(res)}')
-        return_results('Done')
+            created_lists = created_lists + f'{list_name} with {len(xdr_data_lists[key])} items\n'
 
+        return_results(
+            f'Collecting data for {len(incidents)} XDR incidents successfully, the script created the following lists:\n{created_lists}')
     except Exception as e:
         return_error(str(e))
 

@@ -2,7 +2,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'False'
-  description: Set true to collect data for open and closed XDR incidents.
+  description: Set True to collect data for open and closed XDR incidents.
   isArray: false
   name: includeClosedIncidents
   predefined:

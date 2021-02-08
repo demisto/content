@@ -25,16 +25,21 @@ def main():
         else:
             from_date = datetime.min
 
+        incidents = []
         list_res = demisto.executeCommand("getList", {"listName": list_name})
         if isError(list_res):
             return_error(f'Error occurred while trying to get the list {list_name}: {get_error(list_res)}')
 
-        incidents = json.loads(list_res[0]["Contents"])
+        try:
+            incidents = json.loads(list_res[0]["Contents"])
+        except ValueError as e:
+            return_error(
+                f'Unable to parse JSON string from {list_name} list. Please verify the JSON is valid. - ' + str(e))
 
         res_dict = {}  # type:dict
         for incident in incidents:
-            creatiod_date = datetime.strptime(incident.get('created'), '%Y-%m-%dT%H:%M:%S')
-            if from_date <= creatiod_date <= to_date:
+            creation_date = datetime.strptime(incident.get('created'), '%Y-%m-%dT%H:%M:%S')
+            if from_date <= creation_date <= to_date:
                 for key, val in incident.get('data').items():
                     if res_dict.get(key):
                         res_dict[key] = res_dict[key] + val
