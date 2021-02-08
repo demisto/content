@@ -1,11 +1,11 @@
 {
     "name": "JARM",
     "description": "This pack introduces the JARM indicator type and commands for generating new JARM fingerprints of servers using TLS.",
-    "support": "community",
+    "support": "developer",
     "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
+    "author": "Palo Alto Networks Developer Relations",
     "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "email": "devrel@paloaltonetworks.com",
     "created": "2021-01-15T21:23:23Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
