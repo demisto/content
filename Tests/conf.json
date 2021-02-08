@@ -3210,7 +3210,8 @@
         },
         {
             "integrations": "EWS Extension Online Powershell v2",
-            "playbookID": "EWS Extension: Powershell Online V2 Test"
+            "playbookID": "EWS Extension: Powershell Online V2 Test",
+            "fromversion": "5.5.0"
         }
     ],
     "skipped_tests": {
@@ -3400,6 +3401,7 @@
         "VulnDB"
     ],
     "unmockable_integrations": {
+        "EWS Extension Online Powershell v2": "Powershell does not support proxy",
         "Office 365 Feed": "Client sends a unique uuid as first request of every run",
         "AzureWAF": "Has a command that sends parameters in the path",
         "HashiCorp Vault": "Has a command that sends parameters in the path",
