@@ -3266,7 +3266,6 @@
         "Tenable.io Scan Test": "Issue 26728",
         "PAN-OS Create Or Edit Rule Test": "Issue 26465",
         "PAN-OS DAG Configuration Test": "Issue 19205",
-        "palo_alto_firewall_test_pb": "Issue 27501",
         "Cortex Data Lake Test": "Issue 24346",
         "O365-SecurityAndCompliance-Test": "Issue 32364",
         "pyEWS_Test": "Issue 27942",
