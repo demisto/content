@@ -79,6 +79,7 @@ class Handler:
 
 
 class TAXIIServer:
+
     def __init__(self, host: str, port: int, collections: dict, certificate: str, private_key: str,
                  http_server: bool, credentials: dict):
         """
