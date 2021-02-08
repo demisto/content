@@ -21,14 +21,13 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 'true'
-  display: Turns on synchronization of Secrets with XSOAR credential store.
+  display: Turns on synchronization of secrets with XSOAR credential store.
   hidden: false
   name: isFetchCredentials
   required: false
   type: 8
-- display: A list secret names for fetch credentials (separated by commas). The list
-    of names of secrets of that will be updated by the isFetchCredentials parameter
-    checked. If the list is empty , then no secrets will be updated.
+- display: A list secret names to retrieve and sync (separated by commas). 
+           Note the sync, will function only if the synchronization check box is selected.
   hidden: false
   name: credentialobjects
   required: false
