@@ -13,7 +13,11 @@ configuration:
   name: base_url
   required: true
   type: 0
-- additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer to the integration documentation for more information. The default is "ALL".'
+- additionalinfo: 'The indicator types to fetch. Out of the box indicator types supported
+    in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
+    "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and
+    "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer
+    to the integration documentation for more information. The default is "ALL".'
   defaultvalue: ALL
   display: Indicators Type to fetch
   name: indicator_types
@@ -68,7 +72,8 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -78,7 +83,7 @@ configuration:
   - WHITE
   required: false
   type: 15
-- display: ''
+- defaultvalue: indicatorType
   name: feedExpirationPolicy
   options:
   - never
@@ -87,7 +92,7 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- display: ''
+- defaultvalue: '20160'
   name: feedExpirationInterval
   required: false
   type: 1
@@ -116,6 +121,19 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: ''
+  name: feedExpirationPolicy
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
 description: Ingest indicator feeds from OpenCTI.
 display: OpenCTI Feed v2
 name: OpenCTI Feed v2
@@ -133,7 +151,12 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ALL
-      description: 'The indicator types to fetch. Out of the box indicator types supported in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1", "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value", and "URL". The rest will not cause automatic indicator creation in XSOAR. Please refer to the integration documentation for more information. The default is "ALL".'
+      description: 'The indicator types to fetch. Out of the box indicator types supported
+        in XSOAR are: "User-Account", "Domain", "Email-Address", "File-md5", "File-sha1",
+        "File-sha256", "HostName", "IPV4-Addr", "IPV6-Addr", "Registry-Key-Value",
+        and "URL". The rest will not cause automatic indicator creation in XSOAR.
+        Please refer to the integration documentation for more information. The default
+        is "ALL".'
       isArray: true
       name: indicator_types
       predefined:
@@ -152,7 +175,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: The last ID from the previous call from which to begin pagination for this call.
+      description: The last ID from the previous call from which to begin pagination
+        for this call.
       isArray: false
       name: last_id
       required: false
@@ -175,6 +199,118 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: opencti-reset-fetch-indicators
+  - arguments:
+    - default: false
+      description: Indicator ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete indicator.
+    execution: false
+    name: opencti-indicator-delete
+  - arguments:
+    - default: false
+      description: Indicator ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Indicator key to update.
+      isArray: false
+      name: key
+      required: true
+      secret: false
+    - default: false
+      description: Value of the key to update.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Update indicator field.
+    execution: false
+    name: opencti-indicator-field-update
+    outputs:
+    - contextPath: OpenCTI.Indicator.id
+      description: 'Updated indicator id.'
+      type: String
+  - arguments:
+    - default: false
+      description: Indicator ID.
+      isArray: false
+      name: id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set true when updating existing indicator, fasle when creating
+        new indicator, default value false.
+      isArray: false
+      name: update
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: Indicator type.
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    - default: false
+      description: Indicator creator.
+      isArray: false
+      name: created_by
+      required: false
+      secret: false
+    - default: false
+      description: Indicator marking.
+      isArray: false
+      name: marking
+      required: false
+      secret: false
+    - default: false
+      description: Indicator label.
+      isArray: false
+      name: label
+      required: false
+      secret: false
+    - default: false
+      description: External References.
+      isArray: false
+      name: external_references
+      required: false
+      secret: false
+    - default: false
+      description: Indicator description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: Indicator score - number between 0 - 100. Default score value 50.
+      isArray: false
+      name: score
+      required: false
+      secret: false
+    - default: false
+      description: Indicator data - json.
+      isArray: false
+      name: data
+      required: false
+      secret: false
+    deprecated: false
+    description: Create or update indicator.
+    execution: false
+    name: opencti-indicator-create-update
+    outputs:
+    - contextPath: OpenCTI.Indicator.id
+      description: 'New indicator id.'
+      type: String
   dockerimage: demisto/opencti-v4.1.2:1.0.0.16153
   feed: true
   isfetch: false
@@ -184,5 +320,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-
 fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
