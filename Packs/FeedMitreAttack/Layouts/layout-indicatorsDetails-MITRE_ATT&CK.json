@@ -115,15 +115,6 @@
                 "index": 0,
                 "sectionItemType": "field",
                 "startCol": 0
-              },
-              {
-                "endCol": 2,
-                "fieldId": "mitredescriptionmarkdown",
-                "height": 53,
-                "id": "41c6ca30-6dd5-11ea-baf6-df533b8aa556",
-                "index": 1,
-                "sectionItemType": "field",
-                "startCol": 0
               }
             ],
             "maxW": 3,
