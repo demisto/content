@@ -19,7 +19,7 @@ This feed integration was integrated and tested with version v2.61.1 of iDefense
     | feedExpirationInterval |  | False |
     | feedFetchInterval | Feed Fetch Interval | False |
     | feedIncremental | Incremental Feed | False |
-    | fetch_time | First fetch timestamp \(&amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 12 hours, 7 days\) | False |
+    | fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
     | indicator_type | Indicator Type | True |
     | severity | Indicator Severity | False |
     | threat_type | Threat Type | False |
