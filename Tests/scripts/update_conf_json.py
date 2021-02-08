@@ -127,7 +127,7 @@ def update_new_conf_json(future):
 def main():
     install_logging('Update_Tests_step.log', include_process_name=True)
     existing_test_playbooks = load_test_data_from_conf_json()
-    with ProcessPool(max_workers=os.cpu_count(), max_tasks=100) as pool:
+    with ProcessPool(max_workers=os.cpu_count()) as pool:
         for pack_name in os.listdir(PACKS_DIR):
             logging.debug(f'Collecting pack: {pack_name} tests to add to conf.json')
             future_object = pool.schedule(generate_pack_tests_configuration,
